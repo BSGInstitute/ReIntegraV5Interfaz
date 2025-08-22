@@ -1,0 +1,1043 @@
+<div class="contenedor">
+  <diV class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">
+            Modulo de Gestion de Programa General Punto Corte
+          </h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="row mb-4">
+            <div class="col-md-12" id="pGeneralPuntoCorte">
+              <kendo-tabstrip [animate]="false" [keepTabContent]="true">
+                <kendo-tabstrip-tab title="PUNTOS DE CORTE" [selected]="true">
+                  <ng-template kendoTabContent *loadOnDemand>
+                    <div class="content-tab">
+                      <ng-container>
+                        <form
+                          class="k-form k-form-horizontal"
+                          [formGroup]="formFiltroPuntoCorte"
+                        >
+                          <div class="row my-2">
+                            <div class="col-sm-12 col-md-6">
+                              <kendo-formfield orientation="horizontal">
+                                <label [for]="areas" class="k-label">
+                                  Area:
+                                </label>
+                                <kendo-multiselect
+                                  #areas
+                                  formControlName="areas"
+                                  [data]="comboPuntoCorte.listaAreaCapacitacion"
+                                  [valuePrimitive]="true"
+                                  textField="nombre"
+                                  valueField="id"
+                                  [kendoDropDownFilter]="filterSettings"
+                                  (valueChange)="valueChangeArea($event)"
+                                >
+                                </kendo-multiselect>
+                              </kendo-formfield>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                              <kendo-formfield orientation="horizontal">
+                                <label [for]="subAreas" class="k-label">
+                                  SubArea:
+                                </label>
+                                <kendo-multiselect
+                                  #subAreas
+                                  formControlName="subAreas"
+                                  [data]="dataSubAreaFiltro"
+                                  [kendoDropDownFilter]="filterSettings"
+                                  textField="nombre"
+                                  valueField="id"
+                                  (valueChange)="valueChangeSubArea($event)"
+                                  [valuePrimitive]="true"
+                                >
+                                </kendo-multiselect>
+                              </kendo-formfield>
+                            </div>
+                          </div>
+                          <div class="row my-2">
+                            <div class="col-sm-12 col-md-6">
+                              <kendo-formfield orientation="horizontal">
+                                <label [for]="programaGeneral" class="k-label">
+                                  Programa General:
+                                </label>
+                                <kendo-multiselect
+                                  #programaGeneral
+                                  formControlName="programaGeneral"
+                                  [data]="dataProgramaGeneralFiltro"
+                                  textField="nombre"
+                                  valueField="id"
+                                  [valuePrimitive]="true"
+                                  [kendoDropDownFilter]="filterSettings"
+                                >
+                                </kendo-multiselect>
+                              </kendo-formfield>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                              <kendo-formfield orientation="horizontal">
+                                <label [for]="estadoPrograma" class="k-label">
+                                  Estado de programa::
+                                </label>
+                                <kendo-dropdownlist
+                                  #estadoPrograma
+                                  formControlName="estadoPrograma"
+                                  [data]="dataEstadoPrograma"
+                                  [defaultItem]="{
+                                    clave: '<Todos>',
+                                    valor: null
+                                  }"
+                                  [valuePrimitive]="true"
+                                  textField="clave"
+                                  valueField="valor"
+                                >
+                                </kendo-dropdownlist>
+                              </kendo-formfield>
+                            </div>
+                          </div>
+                          <div class="row my-3">
+                            <div class="col-12 d-flex justify-content-end">
+                              <button
+                                class="btn btn-sm btn-primary"
+                                (click)="
+                                  obtenerListaProgramaGeneralPuntoCorte()
+                                "
+                              >
+                                Buscar
+                                <fa-icon
+                                  [icon]="['fas', 'search']"
+                                  class="fa-lg"
+                                ></fa-icon>
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                        <div class="row mt-3">
+                          <div class="col-12 toolbar-grid-integra">
+                            <kendo-grid
+                              [kendoGridBinding]="gridPuntoCorte.data"
+                              [loading]="gridPuntoCorte.loading"
+                              [resizable]="true"
+                              [sortable]="true"
+                              kendoGridSelectBy="idProgramaGeneral"
+                              [(selectedKeys)]="listaIdPGeneral"
+                              [selectable]="{
+                                checkboxOnly: true,
+                                mode: 'multiple'
+                              }"
+                              filterable="menu"
+                              [pageable]="{
+                                buttonCount: 5,
+                                info: true,
+                                type: 'numeric',
+                                pageSizes: true,
+                                previousNext: true,
+                                position: 'bottom'
+                              }"
+                              [pageSize]="15"
+                              [rowClass]="rowCallback"
+                            >
+                              <ng-template kendoGridToolbarTemplate>
+                                <button
+                                  kendoButton
+                                  icon="reload"
+                                  fillMode="flat"
+                                  themeColor="base"
+                                  class="text-white"
+                                  (click)="
+                                    obtenerListaProgramaGeneralPuntoCorte()
+                                  "
+                                ></button>
+                                <span class="text-white fs-6"
+                                  >Lista de Programas de Corte</span
+                                >
+                                <button
+                                  kendoButton
+                                  themeColor="success"
+                                  (click)="
+                                    editarMultiplePuntoCortePrograma(
+                                      modalPuntoCortePrograma
+                                    )
+                                  "
+                                >
+                                  Edicion Multiple
+                                </button>
+                                <kendo-grid-spacer></kendo-grid-spacer>
+                                <button
+                                  kendoButton
+                                  themeColor="base"
+                                  icon="plus"
+                                  (click)="
+                                    nuevoPuntoCortePrograma(
+                                      modalPuntoCortePrograma
+                                    )
+                                  "
+                                >
+                                  Nuevo
+                                </button>
+                              </ng-template>
+                              <kendo-grid-checkbox-column
+                                [width]="45"
+                                [headerClass]="{ 'text-center': true }"
+                                [class]="{ 'text-center': true }"
+                                [showSelectAll]="true"
+                                headerClass="pgpc-headerGrid justify-content-center"
+                              >
+                              </kendo-grid-checkbox-column>
+                              <kendo-grid-column
+                                field="nombreProgramaGeneral"
+                                title="Programa General"
+                                headerClass="pgpc-headerGrid justify-content-center"
+                                [filterable]="true"
+                                [width]="300"
+                              >
+                              </kendo-grid-column>
+                              <kendo-grid-column-group
+                                *ngFor="
+                                  let item of paisesPuntoCorte;
+                                  let i = index
+                                "
+                                headerClass="pgpc-headerGrid justify-content-center"
+                                [title]="'Punto Corte ' + item.nombrePais"
+                                [columnMenu]="false"
+                                [width]="300"
+                              >
+                                <kendo-grid-column
+                                  *ngFor="let pc of puntoCortes; let j = index"
+                                  [field]="'puntoCorte' + pc + item.field"
+                                  [title]="j == 2 ? 'Muy Alta' : pc"
+                                  [filterable]="true"
+                                  headerClass="pgpc-headerGrid justify-content-center"
+                                  [width]="100"
+                                >
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-dataItem="dataItem"
+                                  >
+                                    <div
+                                      class="w-100 d-flex justify-content-center"
+                                      [ngClass]="{
+                                        textPuntCorteAlerta:
+                                          validarPuntoCortePais(
+                                            dataItem,
+                                            item.field
+                                          ),
+                                        textPuntCorteNormal:
+                                          !validarPuntoCortePais(
+                                            dataItem,
+                                            item.field
+                                          )
+                                      }"
+                                    >
+                                      {{
+                                        dataItem["flagCorte" + item.field]
+                                          ? "SI"
+                                          : "NO"
+                                      }}
+                                    </div>
+                                  </ng-template>
+                                </kendo-grid-column>
+                              </kendo-grid-column-group>
+                              <kendo-grid-command-column
+                                title="Editar"
+                                [width]="150"
+                                headerClass="pgpc-headerGrid justify-content-center"
+                              >
+                                <ng-template
+                                  kendoGridCellTemplate
+                                  let-dataItem="dataItem"
+                                  let-row="row"
+                                >
+                                  <div
+                                    class="w-100 d-flex justify-content-center"
+                                  >
+                                    <button
+                                      kendoButton
+                                      (click)="
+                                        editarPuntoCortePrograma(
+                                          modalPuntoCortePrograma,
+                                          dataItem
+                                        )
+                                      "
+                                      themeColor="warning"
+                                      fillMode="solid"
+                                      rounded="large"
+                                      size="large"
+                                      class="p-2 me-1 ms-1"
+                                      container="body"
+                                      placement="top"
+                                      ngbTooltip="Editar"
+                                    >
+                                      <span
+                                        class="k-icon k-i-edit k-icon-20"
+                                      ></span>
+                                    </button>
+                                    <button
+                                      kendoButton
+                                      themeColor="error"
+                                      fillMode="solid"
+                                      rounded="large"
+                                      size="large"
+                                      class="p-2 me-1 ms-1"
+                                      container="body"
+                                      placement="top"
+                                      ngbTooltip="Eliminar"
+                                      (click)="abrirModalEliminarPuntoCorte(dataItem, modalEliminarPuntoCortePrograma)"
+                                    >
+                                      <span
+                                        class="k-icon k-i-delete k-icon-20"
+                                      ></span>
+                                    </button>
+                                  </div>
+                                </ng-template>
+                              </kendo-grid-command-column>
+                            </kendo-grid>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+                <kendo-tabstrip-tab title="TIPOS PROBABILIDAD">
+                  <ng-template kendoTabContent *loadOnDemand>
+                    <div class="row">
+                      <div class="col-12 toolbar-grid-integra">
+                        <kendo-grid
+                          [kendoGridBinding]="gridTiposProbabilidad.data"
+                          [loading]="gridTiposProbabilidad.loading"
+                          [resizable]="true"
+                          [selectable]="true"
+                          scrollable="scrollable"
+                          [pageable]="{
+                            buttonCount: 5,
+                            info: true,
+                            type: 'numeric',
+                            pageSizes: true,
+                            previousNext: true,
+                            position: 'bottom'
+                          }"
+                          [pageSize]="15"
+                          (cancel)="gridTiposProbabilidad.cancelHandler($event)"
+                          (save)="gridTiposProbabilidad.saveHandler($event)"
+                          (remove)="gridTiposProbabilidad.removeHandler($event)"
+                          (edit)="gridTiposProbabilidad.editHandler($event)"
+                          (add)="gridTiposProbabilidad.addHandler($event)"
+                        >
+                          <ng-template kendoGridToolbarTemplate>
+                            <button
+                              kendoButton
+                              icon="reload"
+                              fillMode="flat"
+                              themeColor="base"
+                              class="text-white"
+                              (click)="obtenerTipoProbabilidad()"
+                            ></button>
+                            <kendo-grid-spacer></kendo-grid-spacer>
+                            <button
+                              kendoGridAddCommand
+                              themeColor="success"
+                              icon="plus"
+                            >
+                              Añadir
+                            </button>
+                          </ng-template>
+                          <kendo-grid-column
+                            field="idTipoCorte"
+                            title="Probabilidad"
+                            [width]="120"
+                            headerClass="pgpc-headerGrid justify-content-center text-center"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              {{ getNombreTipoCorte(dataItem) }}
+                            </ng-template>
+
+                            <ng-template
+                              kendoGridEditTemplate
+                              let-formGroup="formGroup"
+                            >
+                              <kendo-dropdownlist
+                                [formControl]="formGroup.get('idTipoCorte')"
+                                [defaultItem]="{
+                                  id: null,
+                                  nombre: 'Seleccione Probabilidad...'
+                                }"
+                                class="d-flex"
+                                size="medium"
+                                [data]="comboPuntoCorte.listaPuntoCorte"
+                                textField="nombre"
+                                valueField="id"
+                                [valuePrimitive]="true"
+                                [kendoDropDownFilter]="filterSettings"
+                              >
+                              </kendo-dropdownlist>
+                            </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            field="tipo"
+                            title="Tipo"
+                            [width]="80"
+                            headerClass="pgpc-headerGrid justify-content-center  text-center"
+                          >
+                            <ng-template
+                              kendoGridEditTemplate
+                              let-formGroup="formGroup"
+                            >
+                              <kendo-dropdownlist
+                                [formControl]="formGroup.get('tipo')"
+                                class="d-flex"
+                                size="medium"
+                                [defaultItem]="
+                                  formGroup.get('tipo').value == ''
+                                    ? 'Seleccione Tipo...'
+                                    : ''
+                                "
+                                [data]="dataOpcion"
+                              >
+                              </kendo-dropdownlist>
+                            </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            field="idAreaCapacitacion"
+                            title="Area"
+                            [width]="100"
+                            headerClass="pgpc-headerGrid justify-content-center text-center"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              {{ getNombreAreaCapacitacion(dataItem) }}
+                            </ng-template>
+                            <ng-template
+                              kendoGridEditTemplate
+                              let-formGroup="formGroup"
+                            >
+                              <kendo-dropdownlist
+                                [formControl]="
+                                  formGroup.get('idAreaCapacitacion')
+                                "
+                                [defaultItem]="{ id: -1, nombre: 'Todos' }"
+                                class="d-flex"
+                                size="medium"
+                                [data]="comboPuntoCorte.listaAreaCapacitacion"
+                                textField="nombre"
+                                valueField="id"
+                                [valuePrimitive]="true"
+                                (valueChange)="valueChangeAreaGrid($event)"
+                                [filterable]="true"
+                              >
+                              </kendo-dropdownlist>
+                            </ng-template>
+                          </kendo-grid-column>
+
+                          <kendo-grid-column
+                            field="idSubAreaCapacitacion"
+                            title="Sub Area"
+                            [width]="100"
+                            headerClass="pgpc-headerGrid justify-content-center text-center"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              {{ getNombreSubAreaCapacitacion(dataItem) }}
+                            </ng-template>
+                            <ng-template
+                              kendoGridEditTemplate
+                              let-formGroup="formGroup"
+                            >
+                              <kendo-dropdownlist
+                                [formControl]="
+                                  formGroup.get('idSubAreaCapacitacion')
+                                "
+                                class="d-flex"
+                                size="medium"
+                                [defaultItem]="{ id: -1, nombre: 'Todos' }"
+                                [data]="cascadeSubAreaFiltro"
+                                textField="nombre"
+                                valueField="id"
+                                [disabled]="disabledSubArea"
+                                (valueChange)="valueChangeSubAreaGrid($event)"
+                                [valuePrimitive]="true"
+                                [filterable]="true"
+                              >
+                              </kendo-dropdownlist>
+                            </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            field="idPgeneral"
+                            title="Programa General"
+                            [width]="200"
+                            headerClass="pgpc-headerGrid justify-content-center text-center"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              {{ getNombreProgramaGeneral(dataItem) }}
+                            </ng-template>
+                            <ng-template
+                              kendoGridEditTemplate
+                              let-formGroup="formGroup"
+                            >
+                              <kendo-dropdownlist
+                                [formControl]="formGroup.get('idPgeneral')"
+                                class="d-flex"
+                                size="medium"
+                                [disabled]="disabledProgramaGeneral"
+                                [data]="cascadeProgramaGeneralFiltro"
+                                textField="nombre"
+                                [defaultItem]="{ id: -1, nombre: 'Todos' }"
+                                valueField="id"
+                                [valuePrimitive]="true"
+                                [filterable]="true"
+                              >
+                              </kendo-dropdownlist>
+                            </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            field="color"
+                            title="Color"
+                            [width]="80"
+                            [filterable]="true"
+                            headerClass="pgpc-headerGrid justify-content-center text-center"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              <input
+                                type="color"
+                                matInput
+                                [value]="dataItem.color"
+                              />
+                            </ng-template>
+                            <ng-template
+                              kendoGridEditTemplate
+                              let-formGroup="formGroup"
+                              let-dataItem="dataItem"
+                            >
+                              <input
+                                type="color"
+                                matInput
+                                [formControl]="formGroup.get('color')"
+                                [value]="dataItem.color"
+                              />
+                            </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            field="texto"
+                            title="Texto"
+                            [filterable]="true"
+                            [width]="200"
+                            headerClass="pgpc-headerGrid justify-content-center text-center"
+                          >
+                          </kendo-grid-column>
+
+                          <kendo-grid-command-column
+                            title="Opciones"
+                            [width]="80"
+                            headerClass="pgpc-headerGrid justify-content-center text-center"
+                          >
+                            <ng-template
+                              kendoGridCellTemplate
+                              let-dataItem="dataItem"
+                              let-isNew="isNew"
+                              let-rowIndex="rowIndex"
+                            >
+                              <div class="w-100 d-flex justify-content-center">
+                                <button
+                                  kendoGridEditCommand
+                                  themeColor="warning"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  ngbTooltip="Editar"
+                                >
+                                  <span
+                                    class="k-icon k-i-edit k-icon-20"
+                                  ></span>
+                                </button>
+                                <button
+                                  kendoGridSaveCommand
+                                  [disabled]="
+                                    gridTiposProbabilidad.formGroup?.invalid
+                                  "
+                                  themeColor="primary"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  ngbTooltip="Guardar"
+                                >
+                                  <span
+                                    class="k-icon k-i-save k-icon-20"
+                                  ></span>
+                                </button>
+                                <button
+                                  kendoGridCancelCommand
+                                  themeColor="secondary"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  ngbTooltip="Cancelar"
+                                >
+                                  <span
+                                    class="k-icon k-i-cancel k-icon-20"
+                                  ></span>
+                                </button>
+                                <button
+                                  kendoGridRemoveCommand
+                                  themeColor="error"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  ngbTooltip="Eliminar"
+                                >
+                                  <span
+                                    class="k-icon k-i-delete k-icon-20"
+                                  ></span>
+                                </button>
+                              </div>
+                            </ng-template>
+                          </kendo-grid-command-column>
+                        </kendo-grid>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-12 d-flex justify-content-end">
+                        <button
+                          kendoButton
+                          themeColor="primary"
+                          (click)="actualizarPuntosProbabilidad()"
+                        >
+                          Actualizar
+                        </button>
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+              </kendo-tabstrip>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </diV>
+</div>
+<!-- Modal Punto Corte -->
+<ng-template #modalPuntoCortePrograma let-modal>
+  <div class="modal-header bg-primary-header-modal fw-bold">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{
+        esEdicionMultiple
+          ? "Edición Múltiple Puntos de Corte"
+          : isNew
+          ? "Nuevo Puntos de Corte"
+          : "Puntos de Corte del Programa: " +
+            dataItemEditTemp.nombreProgramaGeneral
+      }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      modalService
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body ktt-puntoCorte puntoCorte">
+    <div class="row my-3" *ngIf="isNew">
+      <div class="col-12 k-form k-form-horizontal">
+        <kendo-formfield orientation="horizontal">
+          <label
+            [style.width.px]="300"
+            [for]="inputProgramaGeneral"
+            class="k-label"
+          >
+            <span
+              >Programa General <span class="text-danger fw-bold">*</span></span
+            >
+          </label>
+          <kendo-combobox
+            #inputProgramaGeneral
+            [data]="programaGeneralFiltro"
+            placeholder="Programa General"
+            [formControl]="idProgramaGeneral"
+            [valuePrimitive]="true"
+            textField="nombre"
+            valueField="id"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+          ></kendo-combobox>
+          <kendo-formerror> El Programa General es Requerido </kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </div>
+    <kendo-tabstrip [animate]="false" [keepTabContent]="true">
+      <kendo-tabstrip-tab
+        *ngFor="let item of paisesPuntoCorte"
+        [title]="item.nombrePais"
+        [selected]="item.selected"
+        [disabled]="loadingModal"
+      >
+        <ng-template kendoTabContent *loadOnDemand>
+          <div class="row">
+            <h2 class="text-center mb-2">
+              Puntos de Corte - {{ item.nombrePais }}
+            </h2>
+          </div>
+          <div class="row mb-4">
+            <div class="col-sm-12 col-md-4">
+              <div class="row">
+                <div class="col-5 text-end pt-1 fw-bold fs-6">Media:</div>
+                <div class="col-7">
+                  <div class="form-control form-control-sm text-end fs-6">
+                    {{ item.puntosCorte.puntoCorteMedia.toFixed(5).toString() }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+              <div class="row">
+                <div class="col-5 text-end pt-1 fw-bold fs-6">Alta:</div>
+                <div class="col-7">
+                  <div class="form-control form-control-sm text-end fs-6">
+                    {{ item.puntosCorte.puntoCorteAlta.toFixed(5).toString() }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+              <div class="row">
+                <div class="col-5 text-end pt-1 fw-bold fs-6">Muy Alta:</div>
+                <div class="col-7">
+                  <div class="form-control form-control-sm text-end fs-6">
+                    {{
+                      item.puntosCorte.puntoCorteMuyAlta.toFixed(5).toString()
+                    }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div
+              class="alert alert-danger py-2 mb-3"
+              role="alert"
+              *ngIf="item.mensajeError != null && item.mensajeError != ''"
+            >
+              <ul class="mb-0">
+                <li>
+                  {{ item.mensajeError }}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-12">
+              <mat-accordion multi>
+                <mat-expansion-panel
+                  *ngFor="let p of item.panels; let i = index"
+                  class="mb-3"
+                >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title> {{ p.title }} </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-grid
+                        [kendoGridBinding]="p.grid.data"
+                        [resizable]="true"
+                        [pageable]="{
+                          buttonCount: 5,
+                          info: true,
+                          type: 'numeric',
+                          pageSizes: true,
+                          previousNext: true,
+                          position: 'bottom'
+                        }"
+                        [pageSize]="10"
+                        (cancel)="p.grid.cancelHandler($event)"
+                        (save)="p.grid.saveHandler($event)"
+                        (edit)="p.grid.editHandler($event)"
+                        (remove)="p.grid.removeHandler($event)"
+                        (add)="p.grid.addHandler($event)"
+                      >
+                        <ng-template kendoGridToolbarTemplate>
+                          <button
+                            kendoButton
+                            icon="reload"
+                            fillMode="flat"
+                            themeColor="base"
+                          ></button>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                          <button
+                            kendoGridAddCommand
+                            themeColor="success"
+                            icon="plus"
+                            [disabled]="loadingModal"
+                          >
+                            Añadir
+                          </button>
+                        </ng-template>
+                        <kendo-grid-column
+                          field="tipo"
+                          title="Tipo"
+                          [width]="100"
+                          [filterable]="true"
+                          headerClass="header-grid-integra"
+                        >
+                          <ng-template
+                            kendoGridEditTemplate
+                            let-formGroup="formGroup"
+                          >
+                            <kendo-dropdownlist
+                              [formControl]="formGroup.get('tipo')"
+                              class="d-flex"
+                              size="medium"
+                              [data]="dataOpcion"
+                              textField="nombre"
+                              valueField="codigo"
+                              [valuePrimitive]="true"
+                              [disabled]="loadingModal"
+                            >
+                            </kendo-dropdownlist>
+                          </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="descripcion"
+                          [width]="120"
+                          title="Descripcion"
+                          [filterable]="true"
+                          headerClass="header-grid-integra"
+                          [disabled]="loadingModal"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="valorMinimo"
+                          [width]="80"
+                          title="Valor Minimo"
+                          [filterable]="true"
+                          filter="numeric"
+                          headerClass="header-grid-integra"
+                          format="n5"
+                        >
+                          <ng-template
+                            kendoGridEditTemplate
+                            let-dataItem="dataItem"
+                            let-formGroup="formGroup"
+                          >
+                            <kendo-numerictextbox
+                              [min]="0"
+                              [decimals]="5"
+                              format="n5"
+                              [formControl]="formGroup.get('valorMinimo')"
+                            >
+                            </kendo-numerictextbox>
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="valorMaximo"
+                          [width]="80"
+                          title="Valor Maximo"
+                          [filterable]="true"
+                          filter="numeric"
+                          headerClass="header-grid-integra"
+                          format="n5"
+                        >
+                          <ng-template
+                            kendoGridEditTemplate
+                            let-dataItem="dataItem"
+                            let-formGroup="formGroup"
+                          >
+                            <kendo-numerictextbox
+                              [min]="0"
+                              [decimals]="5"
+                              format="n5"
+                              [formControl]="formGroup.get('valorMaximo')"
+                            >
+                            </kendo-numerictextbox>
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-command-column
+                          title="Opciones"
+                          [width]="80"
+                          headerClass="header-grid-integra"
+                        >
+                          <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem="dataItem"
+                            let-isNew="isNew"
+                            let-rowIndex="rowIndex"
+                          >
+                            <div class="w-100 d-flex justify-content-center">
+                              <button
+                                kendoGridEditCommand
+                                themeColor="warning"
+                                fillMode="solid"
+                                class="mx-1"
+                                icon="edit"
+                              ></button>
+                              <button
+                                kendoGridSaveCommand
+                                [disabled]="p.grid.formGroup?.invalid"
+                                themeColor="primary"
+                                fillMode="solid"
+                                class="mx-1"
+                                icon="save"
+                              ></button>
+                              <button
+                                kendoGridCancelCommand
+                                themeColor="secondary"
+                                fillMode="solid"
+                                class="mx-1"
+                                icon="cancel"
+                              ></button>
+                              <button
+                                kendoGridRemoveCommand
+                                themeColor="error"
+                                fillMode="solid"
+                                class="mx-1"
+                                icon="delete"
+                              ></button>
+                            </div>
+                          </ng-template>
+                        </kendo-grid-command-column>
+                      </kendo-grid>
+                    </div>
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+          </div>
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <div class="k-form-buttons m-0">
+                <button
+                  kendoButton
+                  *ngIf="!esEdicionMultiple"
+                  [themeColor]="isNew ? 'primary' : 'tertiary'"
+                  (click)="actualizarProgramaGeneralPuntoCorte(item)"
+                  [disabled]="loadingModal"
+                  icon="save"
+                >
+                  {{
+                    isNew
+                      ? "Nuevo(" + item.nombrePais + ")"
+                      : "Actualizar(" + item.nombrePais + ")"
+                  }}
+                </button>
+                <button
+                  kendoButton
+                  *ngIf="esEdicionMultiple"
+                  [themeColor]="isNew ? 'primary' : 'tertiary'"
+                  (click)="actualizarProgramaGeneralPuntoCorteMasivo(item)"
+                  [disabled]="loadingModal"
+                  icon="save"
+                >
+                  {{
+                    isNew
+                      ? "Nuevo(" + item.nombrePais + ")"
+                      : "Actualizar(" + item.nombrePais + ")"
+                  }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="!isNew && esEdicionMultiple"
+        themeColor="tertiary"
+        (click)="actualizarProgramaGeneralPuntoCorteMasivoPaises()"
+        [disabled]="loadingModal"
+        icon="save"
+      >
+        Actualizar Todos
+      </button>
+      <button
+        kendoButton
+        *ngIf="!isNew && !esEdicionMultiple"
+        themeColor="tertiary"
+        (click)="actualizarProgramaGeneralPuntoCortePaises()"
+        [disabled]="loadingModal"
+        icon="save"
+      >
+        Actualizar Todos
+      </button>
+      <button
+        themeColor="error"
+        icon="close"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+        [disabled]="loadingModal"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalEliminarPuntoCortePrograma let-modal>
+  <div class="modal-header bg-primary-header-modal fw-bold">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Eliminar Puntos de Corte
+    </h2>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      modalService
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body ktt-puntoCorte puntoCorte">
+    <div class="row">
+      <h3>Programa: {{
+        dataItemEditTemp.nombreProgramaGeneral
+     }}</h3>
+    </div>
+    <div class="row">
+      <div class="col">
+        Selecciones los paises:
+      </div>
+    </div>
+    <div class="row mt-2 justify-content-center">
+      <div class="col-auto fs-6">
+        <div class="form-check" *ngFor="let item of paisesPuntoCorte">
+          <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="item.checked">
+            {{ item.nombrePais }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        themeColor="primary"
+        (click)="eliminarPuntoCorte()"
+        icon="trash"
+      >
+        Eliminar
+      </button>
+      <button
+        themeColor="error"
+        icon="close"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

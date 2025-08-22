@@ -1,0 +1,229 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Cursos Moddle</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <!-- [kendoGridBinding]="gridCursoMoodle.data"-->
+
+            <kendo-grid
+              kendoGrid
+              [kendoGridBinding]="gridCursoMoodle.data"
+              [data]="gridCursoMoodle.view$ | async"
+              [loading]="gridCursoMoodle.loading"
+              (edit)="gridCursoMoodle.editHandler($event)"
+              (cancel)="gridCursoMoodle.cancelHandler($event)"
+              (save)="gridCursoMoodle.saveHandler($event)"
+              (remove)="gridCursoMoodle.removeHandler($event)"
+              (add)="gridCursoMoodle.addHandler($event)"
+              (dataStateChange)="gridCursoMoodle.onStateChange($event)"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="gridCursoMoodle.gridState.skip"
+              [pageSize]="gridCursoMoodle.gridState.take"
+              filterable="menu"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  [themeColor]="'primary'"
+                  icon="plus"
+                  (click)="abrirModalCursoMoodle(modalCursoMoodle, true)"
+                >   Agregar
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="idCursoMoodle"
+                title="Id Curso"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="nombreCursoMoodle"
+                title="Nombre Curso"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="nombreCategoria"
+                title="Tipo Categoría"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- kendoGridEditCommand -->
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      (click)="
+                          abrirModalCursoMoodle(
+                          modalCursoMoodle,
+                          false,
+                          dataItem
+                        )
+                      "
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-delete k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalCursoMoodle let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{
+        isNew ? "Registro de Categoría Moodle" : "Actualizar Categoría Moodle"
+      }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formCursoMoodle">
+      <div class="row">
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="idCursoMoodle"
+              [style.width.px]="220"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Id Curso Moodle
+            </label>
+            <kendo-numerictextbox
+              format="n0"
+              #idCursoMoodle
+              formControlName="idCursoMoodle"
+              [min]="0"
+            >
+            </kendo-numerictextbox>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="nombreCursoMoodle"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span>
+                Nombre Curso<strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <kendo-textbox
+              #nombreCursoMoodle
+              formControlName="nombreCursoMoodle"
+            >
+            </kendo-textbox>
+            <kendo-formerror
+              >El nombre del curso es necesario! No debe empezar o terminar con espacios.
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="idCategoriaMoodle"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Categoría:
+            </label>
+            <kendo-dropdownlist
+              #idCategoriaMoodle
+              formControlName="idCategoriaMoodle"
+              [data]="dataCategoria"
+              [virtual]="virtual"
+              textField="nombreCategoria"
+              valueField="idCategoriaMoodle"
+              [defaultItem]="{ idCategoriaMoodle: null, nombreCategoria: 'Seleccionar...'}"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="guardarCursoMoodle()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizarCursoMoodle()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>

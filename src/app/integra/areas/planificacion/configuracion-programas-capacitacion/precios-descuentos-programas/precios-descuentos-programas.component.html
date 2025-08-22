@@ -1,0 +1,280 @@
+<div class="contenedor">
+  <div class="card">
+    <div class="card-header py-2 bg-color-material">
+      <h2 class="mb-0 w-100 text-white text-center">
+        (O) Añadir precios y asociar descuentos a programas
+      </h2>
+    </div>
+    <div class="card-body p-3">
+      <div class="card">
+        <div class="card-header py-2 bg-color-material">
+          <h2 class="mb-0 w-100 text-white">Filtro de Programas Generales</h2>
+        </div>
+        <div class="card-body pt-4">
+          <form [formGroup]="formFiltro" orientation="horizontal">
+            <div class="row">
+              <div class="col-4">
+                <div class="row">
+                  <div class="col-md-3">
+                    <label [for]="idsTiposCategoriaError" class="k-label">
+                      <span>Área</span>
+                    </label>
+                  </div>
+                  <div class="col-md-9">
+                    <kendo-dropdownlist
+                      #idsTiposCategoriaError
+                      formControlName="idArea"
+                      [data]="dataArea"
+                      [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                      textField="nombre"
+                      valueField="id"
+                      [kendoDropDownFilter]="filterSettings"
+                      (valueChange)="onValueChangeArea($event)"
+                      [valuePrimitive]="true"
+                    >
+                    </kendo-dropdownlist>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="row">
+                  <div class="col-md-3">
+                    <label [for]="idsTiposCategoriaError" class="k-label">
+                      <span>Sub Área</span>
+                    </label>
+                  </div>
+                  <div class="col-md-9">
+                    <kendo-dropdownlist
+                      #idsTiposCategoriaError
+                      formControlName="idSubArea"
+                      [data]="filtroSubArea"
+                      [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                      [virtual]="virtual"
+                      textField="nombre"
+                      valueField="id"
+                      [kendoDropDownFilter]="filterSettings"
+                      [valuePrimitive]="true"
+                    >
+                    </kendo-dropdownlist>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="row">
+                  <div class="col-md-3">
+                    <label [for]="idsTiposCategoriaError" class="k-label">
+                      <span>Categoría</span>
+                    </label>
+                  </div>
+                  <div class="col-md-9">
+                    <kendo-dropdownlist
+                      #idsTiposCategoriaError
+                      formControlName="idCategoria"
+                      [data]="sourceCategoria"
+                      [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                      [virtual]="virtual"
+                      textField="nombre"
+                      valueField="id"
+                      [kendoDropDownFilter]="filterSettings"
+                      [valuePrimitive]="true"
+                    >
+                    </kendo-dropdownlist>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12 d-flex justify-content-end">
+                <button
+                  kendoButton
+                  icon="search"
+                  themeColor="success"
+                  (click)="filtrarProgramas()"
+                >
+                  Buscar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="card mt-3">
+        <div class="card-header py-2 bg-color-material">
+          <h2 class="mb-0 w-100 text-white">Lista de Programas Generales</h2>
+        </div>
+        <div class="card-body">
+          <kendo-grid
+            [kendoGridBinding]="gridPrograma.data"
+            [loading]="gridPrograma.loading"
+            [sortable]="true"
+            [resizable]="true"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+            filterable="menu"
+            [skyp]="0"
+            [pageSize]="15"
+          >
+            <ng-template
+              kendoPagerTemplate
+              let-totalPages="totalPages"
+              let-currentPage="currentPage"
+            >
+              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+              <kendo-pager-numeric-buttons
+                [buttonCount]="5"
+              ></kendo-pager-numeric-buttons>
+              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+              <kendo-pager-info></kendo-pager-info>
+              <kendo-pager-page-sizes
+                [pageSizes]="cantidadItems"
+              ></kendo-pager-page-sizes>
+            </ng-template>
+            <kendo-grid-column
+              field="nombre"
+              title="Nombre Programa General"
+              headerClass="header-grid-integra justify-content-center"
+              [width]="300"
+            >
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="contains"
+                >
+                  <kendo-filter-contains-operator
+                    text="Contiene"
+                  ></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idArea"
+              title="Área"
+              headerClass="header-grid-integra justify-content-center"
+              [width]="150"
+              [filterable]="false"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombreAreaById(dataItem.idArea) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idSubArea"
+              title="Sub Área"
+              headerClass="header-grid-integra justify-content-center"
+              [width]="150"
+              [filterable]="false"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombreSubAreaById(dataItem.idSubArea) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Asociar Descuentos"
+              headerClass="header-grid-integra justify-content-center"
+              [width]="80"
+            >
+              <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+              >
+                Asociar<br />Descuentos
+              </ng-template>
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <div class="row justify-content-center">
+                  <div kendoTooltip class="col-auto p-0 mx-1">
+                    <button
+                      kendoButton
+                      icon="pencil"
+                      themeColor="warning"
+                      title="Asociar Descuentos"
+                      (click)="
+                        abrirModalAsociarDescuentos(
+                          modalAsociarDescuentos,
+                          dataItem.id
+                        )
+                      "
+                    ></button>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Edicion -->
+<ng-template #modalAsociarDescuentos let-modal>
+  <div class="modal-header py-2 bg-primary-header-modal">
+    <h2 class="mb-0 w-100 text-center" id="modal-basic-title">
+      Tipo de Descuento Asociados
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body k-form">
+    <div class="row mb-2">
+      <div class="col-12">
+        <kendo-formfield>
+          <kendo-label text="Tipo de Descuento:" class="fw-bold"> </kendo-label>
+          <kendo-multiselect
+            [formControl]="formControlIdsAsociarDescuento"
+            [data]="dataTipoDescuento"
+            textField="codigo"
+            valueField="id"
+            [valuePrimitive]="true"
+            class="pdp-dropdown"
+            [kendoDropDownFilter]="filterSettings"
+          ></kendo-multiselect>
+        </kendo-formfield>
+      </div>
+    </div>
+    <loading [loading]="enProcesoSolicitud"></loading>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="primary"
+        size="medium"
+        class="w-100"
+        icon="save"
+        kendoButton
+        (click)="guardarDescuentosAsociados()"
+        [disabled]="enProcesoSolicitud"
+      >
+        Asociar
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        class="w-100"
+        icon="cancel"
+        kendoButton
+        (click)="cancelar()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- Modal Edicion -->

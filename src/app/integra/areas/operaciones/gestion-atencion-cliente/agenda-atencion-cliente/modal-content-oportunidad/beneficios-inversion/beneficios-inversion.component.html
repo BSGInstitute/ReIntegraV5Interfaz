@@ -1,0 +1,584 @@
+<div class="ActividadAoportunidad">
+  <ng-container *ngIf="esCoordinadora">
+    <br />
+    <div class="card m-3">
+      <div class="card-header pb-0" style="background-color: #2b89b3;">
+        <h2 class="mb-2 text-white text-center">
+          Beneficios Solicitados (Coordinador)
+        </h2>
+    </div>
+      <div class="card-body" style="text-align: center">
+        <!-- <div id="gridBeneficiosSolicitados" style="text-align:center"></div> -->
+
+        <kendo-grid
+          [kendoGridBinding]="gridBeneficiosSolicitados.data"
+          [loading]="gridBeneficiosSolicitados.loading"
+        >
+          <kendo-grid-column
+            field="beneficio"
+            title="Beneficio Solicitado"
+            [width]="190"
+            [filterable]="false"
+            headerClass="justify-content-center"
+          >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div [innerHTML]="dataItem.beneficio">
+             
+            </div>
+          </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="programa"
+            title="Programa"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="centroCosto"
+            title="Centro Costo"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="fechaSolicitud"
+            title="Fecha de Solicitud"
+            [width]="100"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fechaSolicitud | date : "dd-MM-yyyy" }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="fechaProgramada"
+            title="Fecha Programada"
+            [width]="100"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fechaProgramada | date : "dd-MM-yyyy" }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="fechaEntregaBeneficio"
+            title="Fecha Entrega"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fechaEntregaBeneficio | date : "dd-MM-yyyy" }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="coordinador"
+            title="Coordinador"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="estadoSolicitud"
+            title="Estado de Solicitud"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          <ng-template kendoGridCellTemplate let-dataItem>
+              {{dataItem.estadoSolicitud === null ? "Por Solicitar " : dataItem.estadoSolicitud}}
+          </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-command-column
+            field=""
+            title="Aprobar Solicitud"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="mb-2 text-center">
+                <button
+                [disabled]="dataItem.estadoSolicitud === 'Rechazada' || dataItem.estadoSolicitud === 'Aprobado' || dataItem.estadoSolicitud === 'Entregado' ? true : false"
+                type="button" class="btn btn-success"
+                  (click)="AprobarBeneficio(dataItem)"
+                >
+                  Aprobar
+                </button>
+              </div>
+              <div class="mb-2 text-center">
+                <button
+                  [disabled]="dataItem.estadoSolicitud === 'Rechazada' || dataItem.estadoSolicitud === 'Aprobado' || dataItem.estadoSolicitud === 'Entregado' ? true : false"
+                  type="button" class="btn btn-danger"
+                  (click)="RechazarBeneficio(dataItem)"
+                >
+                  Rechazar
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+
+          <kendo-grid-command-column
+            field=""
+            title="Restablecer Solicitud"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="w-100 d-flex justify-content-center">
+                <button
+                  kendoGridEditCommand
+                  [disabled]=""
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  icon="reload"
+                  container="body"
+                  (click)="RestablecerBeneficio(dataItem)"
+                ></button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+      <loading [loading]="loadingBeneficiosSolitud"></loading>
+    </div>
+    <br />
+  </ng-container>
+
+  <!-- <ng-container *ngIf="!esCoordinadora"> -->
+
+  <div class="card m-3">
+    <div class="card-header pb-0" style="background-color: #2b89b3;">
+      <h2 class="mb-2 text-white text-center">
+        Beneficios de Matricula Actual
+      </h2>
+  </div>
+    <div class="card-body" style="text-align: center">
+      <!-- <div id="gridSolicitudDocumentos" style="text-align:center"></div> -->
+      <kendo-grid
+        [data]="gridSolicitudDocumentos.view"
+        [loading]="gridSolicitudDocumentos.loading"
+      >
+        <kendo-grid-column
+          field="titulo"
+          title="Beneficio"
+          [width]="200"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div [innerHTML]="dataItem.titulo">
+           
+          </div>
+        </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="fechaSolicitud"
+          title="Fecha de Solicitud"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaSolicitud | date : "dd-MM-yyyy" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="estadoMatriculaCabeceraBeneficio"
+          title="Estado Beneficio"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="fechaProgramada"
+          title="Fecha Programada"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaProgramada | date : "dd-MM-yyyy" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="fechaEntregaBeneficio"
+          title="Fecha Entrega"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaEntregaBeneficio | date : "dd-MM-yyyy" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-command-column
+          field=""
+          title="Activar Formulario <br> de Solicitud"
+          [width]="120"
+          [hidden]="corresponde"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="w-100 d-flex justify-content-center">
+              <button
+                kendoGridEditCommand
+                [disabled]="dataItem.estadoSolicitudBeneficio == 'Por Solicitar' || dataItem.estadoSolicitudBeneficio == 'Rechazada'? false : true"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="k-button k-button-icontext habilitarSolicitud k-grid-Accion"
+                container="body"
+                (click)="solicitarDocumento(dataItem)"
+              >
+                si
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+        <kendo-grid-column
+          field="estadoSolicitudBeneficio"
+          title="Estado de Solicitud"
+          [width]="120"
+          [hidden]="corresponde"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-command-column
+          field=""
+          title="Entregar Beneficio"
+          [width]="120"
+          [hidden]="corresponde"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="w-100 d-flex justify-content-center">
+              <button
+                kendoGridEditCommand
+                [disabled]="habilitarEntregaAsesor(dataItem)"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="k-button k-button-icontext habilitarSolicitud k-grid-Accion"
+                container="body"
+                (click)="RestablecerBeneficio(dataItem)"
+              >
+                si
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+    <loading [loading]="loadingBeneficiosMatActual"></loading>
+  </div>
+
+  <!-- </ng-container> -->
+
+  <!-- <div role="tabpanel" class="card m-3" id="tabInformacion">
+    <div class="card-body">
+      <div class="px-4" id="infoBeneficio">
+        <div id="InformacionProgramaBeneficiosInversion"></div>
+        <div [innerHTML]="informacionProgramaBeneficio"></div>
+      </div>
+    </div>
+  </div> -->
+
+    <div class="card m-3">
+      <div class="card-header pb-0" style="background-color: #2b89b3;">
+        <div class="row d-flex align-items-end">
+          <div class="col-9">
+            <h2 id="inversionh2"class="text-white text-center col-auto">Inversion</h2>
+          </div>
+          <div class="col-3" style="
+          display: flex;
+          justify-content: flex-end;
+          height: 44px;
+      ">
+            <button
+              class="btn btn-success mb-2"
+              type="button"
+              icon="file-excel"
+              style="color: #ffffff; background-color: ##0079FF"
+              [hidden]="habilitarSolicitud"
+              (click)="SolicitudCambioVersion()"
+            >
+              Solicitar Cambio de Version
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+    <div class="card-body">
+      <kendo-grid
+        [kendoGridBinding]="gridInversion.data"
+        [loading]="gridInversion.loading"
+        [rowClass]="rowCallbackInversion"
+      >
+        <kendo-grid-column
+          field="nombrePaquete"
+          title="Versión"
+          [width]="100"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+          <!-- <ng-template kendoGridCellTemplate let-dataItem>
+        <div>
+          {{mostrardatos(dataItem)}}
+        </div> 
+      </ng-template> -->
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="inversionContado"
+          title="Precio Contado"
+          [width]="100"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="inversionCredito"
+          title="Precio Credito"
+          [width]="200"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+
+  <div class="card m-3">
+    <div class="card-header pb-0" style="background-color: #2b89b3;">
+      <h2 class="mb-2 text-white text-center">
+        Beneficios
+      </h2>
+  </div>
+    <div class="card-body">
+
+      
+      <kendo-grid
+        [kendoGridBinding]="gridBeneficios.data"
+        [loading]="gridBeneficios.loading"
+        [rowClass]="rowCallback"
+      >
+        <kendo-grid-column
+          field="version"
+          title="Version"
+          [width]="100"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="beneficio"
+          title="Beneficios"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div [innerHTML]="dataItem.beneficio"></div>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+  <div class="card m-3">
+    <div class="card-header pb-0" style="background-color: #2b89b3;">
+      <h2 class="mb-2 text-white text-center">
+        Monto Actual
+      </h2>
+  </div>
+    <div class="card-body">
+      <kendo-grid
+        [kendoGridBinding]="gridMontoActual.data"
+        [loading]="gridMontoActual.loading"
+      >
+        <kendo-grid-column
+          field="moneda"
+          title="Moneda"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="costoOriginal"
+          title="Costo Original"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="descuento"
+          title="Descuento"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="porcentajeDescuento"
+          title="Porcentaje Descuento"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="costoFinal"
+          title="Costo Final"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+  <div class="card m-3">
+    <div class="card-header pb-0" style="background-color: #2b89b3;">
+      <h2 class="mb-2 text-white text-center">
+        Montos Complementarios
+      </h2>
+  </div>
+    <div class="card-body" style="text-align: center">
+      <div id="gridMontoComplementarios" style="text-align: center"></div>
+      <kendo-grid
+        [kendoGridBinding]="gridMontoComplementariosCargado.data"
+        [loading]="gridMontoComplementariosCargado.loading"
+      >
+        <kendo-grid-column
+          field="version"
+          title="Version"
+          [width]="200"
+          [filterable]="false"
+          headerClass="justify-content-center"
+        >
+          <!-- <ng-template> </ng-template> -->
+        </kendo-grid-column>
+        <kendo-grid-column field="nombreCorto" title="Moneda" [width]="120" headerClass="justify-content-center">
+        </kendo-grid-column>
+        <kendo-grid-column field="precio" title="Costo Total" [width]="120" headerClass="justify-content-center">
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="montoDescuento"
+          title="Monto Descuento Otorgado"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="porcentajeDescuento"
+          title="% Descuento Otorgado"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [data]="descuentos"
+              textField="codigo"
+              valueField="id"
+              placeholder="<Seleccione Descuento>"
+              [valuePrimitive]="true"
+              [formControl]=""
+            ></kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="costoDescuento"
+          title="Costo con Descuento"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="diferenciaPagar"
+          title="Diferencia a Pagar"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+  <loading [loading]="loading"></loading>
+</div>
+
+<!-- Modal Solicitar Cambio Operaciones-->
+<ng-template #modalSolicitudCambioVersion let-modal>
+  <form [formGroup]="formSolicitud">
+    <div
+      class="modal-header"
+      style="padding: 0rem 1rem; background-color: #4584a7; color: white"
+    >
+      <h6
+        class="modal-title"
+        id="myModalLabel"
+        style="color: white; text-align: center; padding: 1%"
+      >
+        Solicitar Cambio de Version
+      </h6>
+      <button
+        type="button"
+        class="btn-close btn-close-white"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <kendo-formfield orientation="horizontal">
+          <label [for]="nuevaVersion" class="k-label">
+            <span
+              > Versiones Disponibles: 
+              <span class="text-danger fw-bold">*</span></span
+            >
+          </label>
+
+          <kendo-dropdownlist
+            #nuevaVersion
+            formControlName="listaVersion"
+            [data]="listaVersion"
+            textField="version"
+            valueField="id"
+            [defaultItem]="{ version: '<seleccione>', id: null }"
+          >
+          </kendo-dropdownlist>
+        </kendo-formfield>
+      </div>
+      <div class="row">
+        <kendo-formfield orientation="horizontal">
+          <label [for]="comentario" class="k-label">
+            <span>Observacion <span class="text-danger fw-bold">*</span></span>
+          </label>
+
+          <textarea
+          #comentario
+            [disabled]="true"
+            formControlName="observacion"
+            rows="3"
+            cols="4"
+            type="text"
+            class="form-control myeditablediv1"
+            id="inputObservacion"
+            name="inputObservacion"
+            placeholder="Observacion"
+            style="width: 100%"
+          ></textarea>
+        </kendo-formfield>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="btn btn-success"
+        type="button"
+        (click)="RegistrarSolicitudOperaciones()"
+      >
+        Aceptar
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="CancelarSolicitudOperaciones()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </form>
+</ng-template>

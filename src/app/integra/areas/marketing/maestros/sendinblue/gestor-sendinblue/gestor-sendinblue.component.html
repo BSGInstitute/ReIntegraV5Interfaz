@@ -1,0 +1,668 @@
+<ng-container
+  *ngIf="estado == 'sent' || (estado == 'inProcess' && editar == 'editar')"
+>
+  <div class="alert alert-danger" role="alert">
+    No se puede editar una campaña enviada o en proceso de envio
+  </div>
+</ng-container>
+<div mat-dialog-title>
+  <ng-container
+    *ngIf="
+      estado == 'draft' ||
+      estado == 'queued' ||
+      estado == '' ||
+      editar == null ||
+      estado == 'suspended'
+    "
+  >
+    <ng-container *ngIf="editar == 'editar'">
+      <div class="titulo">Actualizar Campaña Sendinblue</div>
+    </ng-container>
+
+    <ng-container *ngIf="editar == null">
+      <div class="titulo">Crear Campaña Sendinblue</div>
+    </ng-container>
+  </ng-container>
+</div>
+<mat-dialog-content class="mat-typography">
+  <ng-container
+    *ngIf="
+      estado == 'draft' ||
+      estado == 'queued' ||
+      estado == '' ||
+      editar == null ||
+      estado == 'suspended'
+    "
+  >
+    <div class="tipo">
+      <div class="firsline" *ngIf="editar == null">
+        <button
+          mat-flat-button
+          class="btn"
+          [ngClass]="{ colorin: seleccionado == 1 }"
+          (click)="seleccionado = 1"
+        >
+          Regular
+        </button>
+        <button
+          mat-flat-button
+          class="btn"
+          [ngClass]="{ colorin: seleccionado == 2 }"
+          (click)="seleccionado = 2"
+        >
+          Prueba A/B
+        </button>
+      </div>
+
+      <div class="firsline" *ngIf="editar == 'editar' && abTest == true">
+        <div class="btn">AbTest</div>
+      </div>
+
+      <div class="firsline" *ngIf="editar == 'editar' && abTest == false">
+        <div class="btn">Regular</div>
+      </div>
+
+      <div class="firsline" *ngIf="seleccionado == 2">
+        <button
+          class="btn2"
+          [ngClass]="{ colorin: seleccionado2 == 1 }"
+          (click)="seleccionado2 = 1"
+        >
+          <h3>Asuntos</h3>
+          <p>Pruebe dos asuntos diferentes para mejorar su tasa de apertura.</p>
+        </button>
+
+        <button
+          class="btn2"
+          [ngClass]="{ colorin: seleccionado2 == 2 }"
+          (click)="seleccionado2 = 2"
+        >
+          <h3>Contenido del e-mail</h3>
+          <p>Pruebe dos diseños diferentes para mejorar su tasa de clics.</p>
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="asuntos"
+      *ngIf="seleccionado2 == 1 || seleccionado == 1 || editar == 'editar'"
+    >
+      <div class="titulo2">Datos de la campaña</div>
+
+      <div class="remitente">
+        <div class="tit">
+          <h3>Nombre:</h3>
+          <h3>Nombre de la campaña</h3>
+        </div>
+        <div class="contenedor">
+          <div class="inre">
+            <h3>Nombre *</h3>
+
+            <mat-form-field
+              class="example-full-width"
+              appearance="outline"
+              ng-container
+            >
+              <mat-label>Nombre de la Campaña</mat-label>
+              <input matInput [(ngModel)]="jsonEnvio2.name" required />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="remitente">
+        <div class="tit">
+          <h3>De:</h3>
+          <h3>Quien está enviando esta campaña?</h3>
+        </div>
+        <div class="contenedor">
+          <div class="inre">
+            <h3>Email *</h3>
+            <mat-form-field appearance="outline">
+              <mat-label>Elija un email</mat-label>
+              <mat-select
+                (selectionChange)="capturar($event)"
+                [(ngModel)]="idsender"
+              >
+                <ng-container *ngFor="let item of listaSenders">
+                  <mat-option [value]="item.id">{{ item.email }}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="inre">
+            <h3>Nombre *</h3>
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input
+                matInput
+                [(ngModel)]="jsonEnvio2.sender.name"
+                [disabled]="true"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="para">
+        <div class="tit">
+          <h3>Para:</h3>
+          <h3>Seleccione una o varias listas de contactos</h3>
+        </div>
+        <div class="cont" *ngIf="listaJsonFolder != undefined">
+          <div class="car">
+            <h3>Seleccione nueva Carpeta *</h3>
+            <mat-form-field appearance="outline">
+              <mat-label>Elija una carpeta</mat-label>
+              <mat-select
+                [disabled]="false"
+                (selectionChange)="capturarFolder($event)"
+              >
+                <ng-container *ngFor="let item of listaJsonFolder.folders">
+                  <mat-option [value]="item.id">{{ item.name }}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-flat-button class="btn3" (click)="openDialogFolder()">
+              Crear Nueva Carpeta
+            </button>
+          </div>
+          <div>
+            <h3>Enviar a:</h3>
+          </div>
+          <div class="filtro">
+            <h3>Subir Lista a Sendinblue</h3>
+            <mat-slide-toggle [(ngModel)]="filtro"></mat-slide-toggle>
+          </div>
+          <ng-container *ngIf="filtro == false">
+            <div class="agfi" *ngIf="listaJsonLista != undefined">
+              <mat-form-field appearance="outline">
+                <mat-label>Seleccione una Lista</mat-label>
+                <mat-select [(ngModel)]="idLista">
+                  <ng-container *ngFor="let item of listaJsonLista.Listas">
+                    <mat-option [value]="item.ListaId">{{
+                      item.NombreLista
+                    }}</mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-flat-button class="btn3" (click)="AgregarLista()">
+                Agregar
+              </button>
+            </div>
+
+            <div class="tabla">
+              <div class="mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource">
+                  <!-- Position Column -->
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef style="width: 100px">
+                      Id
+                    </th>
+                    <td mat-cell *matCellDef="let element; let i = index">
+                      {{ i + 1 }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="nombre">
+                    <th mat-header-cell *matHeaderCellDef style="width: 400px">
+                      Nombre
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{ element.NombreLista }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="contactos">
+                    <th mat-header-cell *matHeaderCellDef style="width: 400px">
+                      Numero de contactos
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                      {{ element.UnicoSuscrito }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="acciones">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      style="width: 100px; text-align: center"
+                    >
+                      Acciones
+                    </th>
+                    <mat-cell *matCellDef="let row; let i = index">
+                      <button
+                        mat-button
+                        class="edit"
+                        (click)="mandarContactos(i)"
+                      >
+                        <i class="material-icons">remove_red_eye</i>
+                      </button>
+                      <button
+                        mat-button
+                        class="delete"
+                        (click)="eliminarContacto(i)"
+                      >
+                        <i class="material-icons">delete</i>
+                      </button>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Weight Column -->
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                  ></tr>
+                </table>
+
+                <mat-paginator
+                  [pageSizeOptions]="[20]"
+                  showFirstLastButtons
+                  aria-label="Select page of periodic elements"
+                >
+                </mat-paginator>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="filtro == true">
+            <div class="agfi" *ngIf="listaJsonLista != undefined">
+              <!-- <mat-form-field appearance="outline">
+              <mat-label>Seleccione un filtro</mat-label>
+              <mat-select (selectionChange)="capturarFiltro($event)">
+                <ng-container *ngFor="let item of listaFiltroSegmento">
+                  <mat-option [value]="item.id">{{ item.nombre }}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field> -->
+
+              <button mat-flat-button class="btn32" (click)="AgrecgarFiltro()">
+                Subir lista a Sendinblue
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="remitente">
+        <div class="tit">
+          <h3>Asunto:</h3>
+          <h3>Añada un asunto para esta campaña.</h3>
+        </div>
+        <div class="contenedor">
+          <div
+            class="inre"
+            *ngIf="
+              (seleccionado == 1 && abTest == false) ||
+              (editar == 'editar' && abTest == false)
+            "
+          >
+            <h3>Asunto *</h3>
+            <div class="ver">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Asunto</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="jsonEnvio2.subject"
+                  required
+                  [maxlength]="500"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="inre" *ngIf="seleccionado == 2 || abTest == true">
+            <h3>Asunto *</h3>
+            <div class="ver">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Asunto A</mat-label>
+                <input matInput [(ngModel)]="jsonEnvio2.subjectA" required />
+              </mat-form-field>
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Asunto B</mat-label>
+                <input matInput [(ngModel)]="jsonEnvio2.subjectB" required />
+              </mat-form-field>
+            </div>
+          </div>
+          <!-- <div class="inre" *ngIf="editar == null">
+            <h3>Texto Vista Previa</h3>
+            <div class="ver">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Texto Vista Previa</mat-label>
+                <input matInput />
+              </mat-form-field>
+            </div>
+          </div> -->
+        </div>
+      </div>
+
+      <div class="remitente" *ngIf="seleccionado == 2 || abTest == true">
+        <div class="tit">
+          <h3>Reglas de division:</h3>
+          <h3>Cómo debería dividirse la prueba A/B.</h3>
+        </div>
+        <div class="inre">
+          <h3>Cantidad de contactos a dividir*</h3>
+        </div>
+        <div class="hor">
+          <div class="ver">
+            <mat-form-field>
+              <input
+                type="number"
+                class="form-control"
+                matInput
+                name="value"
+                placeholder="cantidad de contactos"
+                [(ngModel)]="resultadoPorcentaje"
+                [max]="vistaResultado"
+                min="0"
+                required
+              />
+            </mat-form-field>
+          </div>
+          <div style="display: block">
+            <p style="color: red">
+              <i>Maximo {{ vistaResultado }}</i>
+            </p>
+            <p style="color: red">
+              <i>Minimo {{ vistaResultadoMin }}</i>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="remitente" *ngIf="seleccionado == 2 && editar == null">
+        <div class="tit">
+          <h3>Criterio del Ganador *</h3>
+          <h3>Elige las métricas que determinarán la versión ganadora.</h3>
+        </div>
+        <div class="inre">
+          <h3>Criterio Ganador:</h3>
+        </div>
+        <div class="hor">
+          <div class="ver">
+            <mat-form-field appearance="outline">
+              <mat-label>Seleccione una version</mat-label>
+              <mat-select [(ngModel)]="jsonEnvio2.winnerCriteria">
+                <mat-option value="open">Correos Abiertos</mat-option>
+                <mat-option value="click">Clicks</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="remitente" *ngIf="seleccionado == 2 && editar == null">
+        <div class="tit">
+          <h3>Duración de Prueba *</h3>
+          <h3>Elige la duración de la prueba en horas.</h3>
+        </div>
+        <div class="inre">
+          <h3>Horas:</h3>
+        </div>
+        <div class="hor">
+          <div class="ver">
+            <mat-form-field>
+              <input
+                type="number"
+                class="form-control"
+                matInput
+                name="jsonEnvio2.winnerDelay"
+                placeholder="Horas"
+                [(ngModel)]="jsonEnvio2.winnerDelay"
+                max="168"
+                min="0"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <p style="color: red"><i>Maximo 168 horas</i></p>
+        </div>
+      </div>
+
+      <div class="remitente" *ngIf="editar == null">
+        <div class="tit">
+          <h3>Diseño:</h3>
+          <h3>Seleccione el contenido de su e-mail</h3>
+        </div>
+        <div class="inre">
+          <h3>Seleccione la Plantilla *</h3>
+        </div>
+        <div class="row w-100" style="display: flex; padding-left: 20px;">
+          <div
+          style="padding-left: 20px;"
+            class="col-12 col-md-8 col-lg-6 ver w-100"
+            *ngIf="listaJsonPlantilla != undefined"
+          >
+            <!-- <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Seleccione una plantilla</mat-label>
+              <input
+                type="text"
+                placeholder="Pick one"
+                aria-label="Number"
+                matInput
+                [(ngModel)]="autoC"
+                (input)="OnChangesAuto()"
+                [matAutocomplete]="auto"
+              />
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                (optionSelected)="pruebas($event)"
+              >
+                <mat-option
+                  *ngFor="let option of filteredOptions"
+                  [value]="option.id"
+                >
+                  {{ option.name }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field> -->
+
+            <kendo-dropdownlist
+            [data]="listaPlantillaPrueba"
+            [kendoDropDownFilter]="filterSettings"
+            textField="nombre"
+            valueField="id"
+            [(ngModel)]="plantillaid"
+            (selectionChange)="capturarPlantillaPrueba($event)"
+            placeholder="Seleccione una plantilla.."
+          >
+          </kendo-dropdownlist>
+            
+            <!-- <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Seleccione la Plantilla</mat-label>
+              <mat-select
+                [disabled]="false"
+                (selectionChange)="capturarPlantillaPrueba($event)"
+                [(ngModel)]="plantillaid"
+              >
+                <ng-container *ngFor="let item of listaPlantillaPrueba">
+                  <mat-option [value]="item">{{ item.nombre }}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field> -->
+          </div>
+          <div class="col-12 col-md-4 col-lg-4" style="margin-top: 20px">
+            <button mat-flat-button class="btn3Editar" (click)="openDialog()">
+              Vista Previa
+            </button>
+          </div>
+          <div class="col-12 col-md-4 col-lg-4" style="margin-top: 20px">
+            <button mat-flat-button class="btn3Crear" (click)="CrearPlantilla()">
+              Crear
+            </button>
+          </div>
+          <div class="col-12 col-md-4 col-lg-4" style="margin-top: 20px">
+            <button
+              mat-flat-button
+              class="btn3Actualizar"
+              (click)="ActualizarPlantilla()"
+            >
+              Editar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="remitente">
+        <div class="titulo">Configuracion de envio</div>
+
+        <div class="progr">
+          <div class="progrb">
+            <div
+              class="send"
+              [ngClass]="{ colorin: seleccionado3 == 1 }"
+              (click)="seleccionado3 = 1"
+            >
+              <i class="material-icons mail">mail</i>
+              <h3>Enviar ahora</h3>
+            </div>
+            <div
+              class="send"
+              [ngClass]="{ colorin: seleccionado3 == 2 }"
+              (click)="seleccionado3 = 2"
+            >
+              <i class="material-icons mail">calendar_month</i>
+              <h3>Programar</h3>
+            </div>
+          </div>
+
+          <div class="selfe" *ngIf="seleccionado3 == 2">
+            <div class="fecha">
+              <h3>Fecha</h3>
+
+              <!-- <mat-form-field appearance="outline">
+          <mat-label>Escoge una fecha</mat-label>
+          <input matInput [matDatepicker]="dp">
+          <mat-hint>{{getDateFormatString()}}</mat-hint>
+          <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+          <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field> -->
+
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Escoge una fecha</mat-label>
+                <input [(ngModel)]="fecha" matInput [matDatepicker]="picker" />
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="fecha">
+              <div class="titu">
+                <h3>Hora (America/Lima GMT - 05:00)</h3>
+              </div>
+              <mat-form-field class="hora" appearance="outline">
+                <mat-label>Hora</mat-label>
+                <mat-select [disabled]="false" [(ngModel)]="getHora">
+                  <mat-option *ngFor="let item of hora" [value]="item">{{
+                    item
+                  }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="hora" appearance="outline">
+                <mat-label>Minuto</mat-label>
+                <mat-select [disabled]="false" [(ngModel)]="getMinuto">
+                  <mat-option *ngFor="let item of minuto" [value]="item">{{
+                    item
+                  }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pruebaAB" *ngIf="seleccionado2 == 2 && seleccionado == 2">
+      <div class="alert alert-danger" role="alert">
+        Este mètodo todavia no esta implementado
+      </div>
+    </div>
+  </ng-container>
+</mat-dialog-content>
+
+
+<mat-dialog-actions
+  align="end"
+  *ngIf="
+    estado == 'draft' ||
+    estado == 'queued' ||
+    estado == '' ||
+    editar == null ||
+    estado == 'suspended'
+  "
+>
+  <button
+    mat-flat-button
+    class="registrar"
+    *ngIf="seleccionado == 1 && editar == null"
+    (click)="crearCampaniaHtmlContent()"
+  >
+    Registrar Configuracion
+  </button>
+  <button
+    mat-flat-button
+    class="registrar"
+    *ngIf="seleccionado == 2 && editar == null"
+    (click)="crearCampaniaABTestHtmlContent()"
+  >
+    Registrar Configuracion
+  </button>
+  <button
+    mat-flat-button
+    class="registrar"
+    *ngIf="editar == 'editar'"
+    (click)="ActualizarCampania()"
+  >
+    Actualizar Configuracion
+  </button>
+
+  <button mat-flat-button class="cancelar" mat-dialog-close>Cancelar</button>
+</mat-dialog-actions>
+
+<!-- <mat-dialog-actions
+  align="end"
+  *ngIf="
+    estado == 'draft' ||
+    estado == 'queued' ||
+    estado == '' ||
+    editar == null ||
+    estado == 'suspended'
+  "
+>
+  <button
+    mat-flat-button
+    class="registrar"
+    *ngIf="seleccionado == 1 && editar == null"
+    (click)="crearCampania()"
+  >
+    Registrar Configuracion
+  </button>
+  <button
+    mat-flat-button
+    class="registrar"
+    *ngIf="seleccionado == 2 && editar == null"
+    (click)="crearCampaniaABTest()"
+  >
+    Registrar Configuracion
+  </button>
+  <button
+    mat-flat-button
+    class="registrar"
+    *ngIf="editar == 'editar'"
+    (click)="ActualizarCampania()"
+  >
+    Actualizar Configuracion
+  </button>
+
+  <button mat-flat-button class="registrar" (click)="crearCampaniaHtmlContent()">
+    Registrar Configuracion pruebita
+  </button>
+  <button mat-flat-button class="cancelar" mat-dialog-close>Cancelar</button>
+</mat-dialog-actions> -->

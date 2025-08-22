@@ -1,0 +1,451 @@
+<div class="modal-header bg-primary-header-modal">
+  <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+    Configuracion Evaluaciones en Estructura del Programa
+  </h3>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="modalContext.close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <kendo-grid
+    [kendoGridBinding]="gridConfiguracionSecuenciaEvaluacion.data"
+    [loading]="gridConfiguracionSecuenciaEvaluacion.loading"
+    [selectable]="true"
+    [resizable]="true"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: true,
+      previousNext: true,
+      position: 'bottom'
+    }"
+    [skip]="0"
+    [pageSize]="10"
+    filterable="menu"
+    (selectionChange)="obtenerConfiguracionEvaluacionDetalle($event)"
+  >
+    <ng-template
+      kendoPagerTemplate
+      let-totalPages="totalPages"
+      let-currentPage="currentPage"
+    >
+      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+      <kendo-pager-numeric-buttons
+        [buttonCount]="5"
+      ></kendo-pager-numeric-buttons>
+      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+      <kendo-pager-input></kendo-pager-input>
+      <kendo-pager-info></kendo-pager-info>
+      <kendo-pager-page-sizes
+        [pageSizes]="cantidadItems"
+      ></kendo-pager-page-sizes>
+    </ng-template>
+
+    <kendo-grid-column
+      field="ordenCapitulo"
+      title="Orden"
+      [width]="15"
+      [headerClass]="'justify-content-start'"
+      [filterable]="true"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-center">{{ dataItem.ordenCapitulo }}</div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="capitulo"
+      title="Capitulo"
+      [width]="100"
+      [headerClass]="'justify-content-start'"
+      [filterable]="false"
+    ></kendo-grid-column>
+  </kendo-grid>
+  <div class="row my-3" *ngIf="mostrarConfiguracionEvaluacion">
+    <kendo-grid
+      [kendoGridBinding]="gridConfiguracionSecuenciaEvaluacionDetalle.data"
+      [loading]="gridConfiguracionSecuenciaEvaluacionDetalle.loading"
+      [selectable]="false"
+      [resizable]="true"
+      filterable="menu"
+    >
+      <ng-template kendoGridToolbarTemplate>
+        <p class="pt-2 fs-6">Registro de Evaluaciones</p>
+        <kendo-grid-spacer></kendo-grid-spacer>
+        <button
+          kendoGridAddCommand
+          themeColor="success"
+          icon="plus"
+          (click)="prepararNuevaConfiguracionSecuenciaEvaluacion()"
+        >
+          Nuevo
+        </button>
+      </ng-template>
+
+      <kendo-grid-column
+        field="archivoNombre"
+        title="Orden"
+        [width]="100"
+        [headerClass]="'justify-content-center'"
+        [filterable]="true"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          <div class="text-center">{{ dataItem.ordenCapitulo }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="nombreTipoEvaluacion"
+        title="Tipo Evaluacion"
+        [width]="260"
+        [headerClass]="'justify-content-center'"
+        [filterable]="false"
+      ></kendo-grid-column>
+
+      <kendo-grid-column
+        field="nombre"
+        title="Nombre"
+        [width]="260"
+        [headerClass]="'justify-content-center'"
+        [filterable]="false"
+      ></kendo-grid-column>
+
+      <kendo-grid-command-column
+        title="Acciones"
+        [headerStyle]="{ color: '#5f75bd' }"
+        [width]="120"
+        [headerClass]="'justify-content-center'"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          <div class="text-center">
+            <button
+              kendoButton
+              themeColor="warning"
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1"
+              container="body"
+              placement="top"
+              ngbTooltip="Eliminar"
+              (click)="prepararActualConfiguracionSecuenciaEvaluacion(dataItem)"
+            >
+              <span class="k-icon k-i-pencil k-icon-20"></span>
+            </button>
+            <button
+              kendoButton
+              themeColor="error"
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1"
+              container="body"
+              placement="top"
+              ngbTooltip="Eliminar"
+              (click)="eliminarConfiguracionSecuenciaEvaluacion(dataItem)"
+            >
+              <span class="k-icon k-i-x k-icon-20"></span>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+  </div>
+  <div class="card my-3 mx-1" *ngIf="mostrarConfiguracionEvaluacionDetalle">
+    <div class="card-header text-white" style="background-color: #3f51b5">
+      Configuracion Evaluacion
+    </div>
+    <div class="card-body">
+      <form [formGroup]="formConfiguracioneEvaluacion">
+        <div class="row mb-2">
+          <div class="col-sm-7 col-md-7 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-start"
+                [style.width.px]="170"
+                [for]="ordenConfiguracionPregunta"
+                text="Orden:"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #ordenConfiguracionPregunta
+                formControlName="orden"
+                [fillMode]="'outline'"
+                [style.width.px]="170"
+              ></kendo-textbox>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-5 col-md-5 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-start"
+                [style.width.px]="105"
+                [for]="tipoEvaluacionConfiguracionPregunta"
+                text="Tipo Evaluacion:"
+              >
+              </kendo-label>
+              <kendo-dropdownlist
+                #tipoEvaluacionConfiguracionPregunta
+                [data]="listaTipoEvaluacion"
+                textField="nombre"
+                valueField="id"
+                [defaultItem]="{ nombre: 'Seleccione', id: 0 }"
+                formControlName="tipoEvaluacion"
+                [style.width.px]="175"
+                [valuePrimitive]="true"
+              ></kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-start"
+                [style.width.px]="170"
+                [for]="nombreEvaluacionConfiguracionPregunta"
+                text="Nombre Evaluacion:"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #nombreEvaluacionConfiguracionPregunta
+                formControlName="nombreEvaluacion"
+                [fillMode]="'outline'"
+                [style.width.px]="545"
+              ></kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-start"
+                [style.width.px]="170"
+                [for]="descripcionEvaluacionConfiguracionPregunta"
+                text="Descripcion de Evaluación:"
+              >
+              </kendo-label>
+              <kendo-textarea
+                #descripcionEvaluacionConfiguracionPregunta
+                formControlName="descripcionEvaluacion"
+                [fillMode]="'outline'"
+                [style.width.px]="545"
+                [rows]="3"
+                resizable="vertical"
+              ></kendo-textarea>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <p class="fw-bold" style="color: #3f51b5">Seccion de evaluacion</p>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-5 col-md-5 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-start"
+                [style.width.px]="200"
+                [for]="habilitarInstrucciones"
+                text="Habilitar Instrucciones:"
+              >
+              </kendo-label>
+              <input
+                #habilitarInstrucciones
+                formControlName="habilitarInstruccion"
+                [class]="'border border-secondary mt-2'"
+                type="checkbox"
+                [size]="'large'"
+                kendoCheckBox
+              />
+            </kendo-formfield>
+          </div>
+          <ng-container
+            *ngIf="
+              formConfiguracioneEvaluacion.get('habilitarInstruccion').value
+            "
+          >
+            <div class="col-sm-7 col-md-7 k-form-horizontal border py-2">
+              <div class="row">
+                <div class="col-md-7">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      class="d-flex align-items-start"
+                      [style.width.px]="100"
+                      [for]="comboInstrucciones"
+                      text="Instrucciones:"
+                    >
+                    </kendo-label>
+                    <kendo-dropdownlist
+                      #comboInstrucciones
+                      [data]="listaInstrucciones"
+                      valueField="id"
+                      textField="nombre"
+                      [defaultItem]="{ nombre:'Seleccione Instruccion', id:0 }"
+                      [valuePrimitive]="true"
+                      formControlName="instruccion"
+                      [style.width.px]="300"
+                    ></kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-5 col-md-5 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-start"
+                [style.width.px]="200"
+                [for]="habilitarSubidaArchivo"
+                text="Habilitar Subida Archivo:"
+              >
+              </kendo-label>
+              <input
+                #habilitarSubidaArchivo
+                formControlName="habilitarArchivo"
+                [class]="'border border-secondary mt-2'"
+                type="checkbox"
+                [size]="'large'"
+                kendoCheckBox
+              />
+            </kendo-formfield>
+          </div>
+          <ng-container
+            *ngIf="formConfiguracioneEvaluacion.get('habilitarArchivo').value"
+          >
+            <div class="col-sm-7 col-md-7 k-form-horizontal border py-2 my-0">
+              <div class="row">
+                <div class="row">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="250"
+                    [for]="descripcionDeArchivo"
+                    text="Descripcion de Archivo:"
+                  >
+                  </kendo-label>
+                </div>
+                <div class="row mx-0 mt-1">
+                  <kendo-textarea
+                    #descripcionDeArchivo
+                    resizable="auto"
+                    [rows]="3"
+                    formControlName="descripcionArchivo"
+                    [fillMode]="'outline'"
+                    [style.width.px]="700"
+                  ></kendo-textarea>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-5 col-md-5 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-start"
+                [style.width.px]="200"
+                [for]="habilitarAsignacion"
+                text="Habilitar Asignacion Preguntas:"
+              >
+              </kendo-label>
+              <input
+                #habilitarAsignacion
+                formControlName="habilitarPreguntas"
+                [class]="'border border-secondary mt-2'"
+                type="checkbox"
+                [size]="'large'"
+                kendoCheckBox
+              />
+            </kendo-formfield>
+          </div>
+          <ng-container
+            *ngIf="formConfiguracioneEvaluacion.get('habilitarPreguntas').value"
+          >
+            <div class="col-sm-7 col-md-7 k-form-horizontal border py-2">
+              <div class="row">
+                <div class="row">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="250"
+                    [for]="descripcionDePregunta"
+                    text="Descripcion Pregunta:"
+                  >
+                  </kendo-label>
+                </div>
+                <div class="row mx-0 mt-1">
+                  <kendo-textarea
+                    #descripcionDePregunta
+                    resizable="auto"
+                    [rows]="3"
+                    formControlName="descripcionPregunta"
+                    [fillMode]="'outline'"
+                    [style.width.px]="700"
+                  ></kendo-textarea>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                      [for]="preguntas"
+                      text="Seleccionar Preguntas:"
+                    >
+                    </kendo-label>
+                    <kendo-multiselect
+                      #preguntas
+                      [data]="listaPreguntas"
+                      valueField="id"
+                      textField="nombre"
+                      [valuePrimitive]="true"
+                      formControlName="preguntas"
+                      [style.width.px]="250"
+                    ></kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+    <div class="card-footer">
+      <button
+        *ngIf="esBtnNuevo"
+        class="btn btn-primary"
+        (click)="insertarConfiguracionSecuenciaEvaluacion()"
+      >
+        Registrar
+      </button>
+      <button
+        *ngIf="!esBtnNuevo"
+        class="btn btn-primary"
+        (click)="actualizarConfiguracionSecuenciaEvaluacion()"
+      >
+        Actualizar
+      </button>
+      <button
+        class="btn btn-danger mx-2"
+        (click)="mostrarConfiguracionEvaluacionDetalle = false"
+        >
+          Cancelar
+      </button>
+    </div>
+    <loading [loading]="loaderModalDetalle"></loading>
+  </div>
+  <div class="row mt-1 mb-0">
+    <div class="text-end">
+      <button class="btn btn-danger" (click)="modalContext.close()">
+        <span class="px-1">Cerrar</span>
+      </button>
+    </div>
+  </div>
+</div>
+<loading [loading]="loaderModal"></loading>

@@ -1,0 +1,539 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">
+            Gestión Complemento Partner - Certificados
+          </h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridCronograma
+              [kendoGridBinding]="gridCertificadoPartners.data"
+              [loading]="gridCertificadoPartners.loading"
+              (remove)="gridCertificadoPartners.removeHandler($event)"
+              [resizable]="true"
+              filterable="menu"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{ pageSizes: [5, 10, 20] }"
+            >
+              <!-- filterable="menu" -->
+              <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+                <button
+                  kendoButton
+                  icon="reload"
+                  fillMode="flat"
+                  themeColor="primary"
+                  (click)="obtenerTodo()"
+                ></button>
+
+                <kendo-grid-spacer></kendo-grid-spacer>
+
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="
+                    abrirModal(
+                      modalCertificadoPartnerComplemento,
+                      true,
+                      dataItem
+                    )
+                  "
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="id"
+                title="Id"
+                [width]="40"
+                headerClass="justify-content-center"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="codigo"
+                title="Codigo"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="descripcion"
+                title="Mencion en Certificado"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="estado"
+                title="Estado"
+                [width]="70"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{
+                    dataItem.estado == 1
+                      ? "activo"
+                      : dataItem.estado == 0
+                      ? "inactivo"
+                      : ""
+                  }}
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="frontalCentral"
+                title="Frontal Central"
+                [width]="120"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="frontalInferiorIzquierda"
+                title="Frontal Inferior Izquierda"
+                [width]="100"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="posteriorInferiorIzquierda"
+                title="Posterior Inferior Izquierda"
+                [width]="100"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-command-column
+                title="Acciones"
+                [headerStyle]="{ color: '#5f75bd' }"
+                [width]="90"
+                [headerClass]="'justify-content-center'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    themeColor="primary"
+                    ngbTooltip="Ver detalle"
+                    (click)="abrirModalDetalle(dataItem)"
+                  >
+                    <span class="k-icon k-i-zoom-in k-icon-20"></span>
+                  </button>
+
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    themeColor="warning"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Editar"
+                    (click)="
+                      abrirModal(
+                        modalCertificadoPartnerComplemento,
+                        false,
+                        dataItem
+                      )
+                    "
+                  >
+                    <span class="k-icon k-i-pencil k-icon-20"></span>
+                  </button>
+
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    themeColor="success"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Insertar"
+                    (click)="abrirModalInsertar(dataItem)"
+                  >
+                    <span class="k-icon k-i-align-left k-icon-20"></span>
+                  </button>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- -----------------------Modal Crear Nuevo/Actualizar ---------------------- -->
+<ng-template #modalCertificadoPartnerComplemento let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos del Certificado Partner
+    </h1>
+  </div>
+
+  <div class="modal-body p-3">
+    <form [formGroup]="formCertificadoPartnersComplemento">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="codigo" class="d-flex align-items-start">
+              <span><b>Codigo</b> <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #codigo formControlName="codigo" inputValidSpaceDir>
+            </kendo-textbox>
+            <kendo-formerror>El campo Codigo es obligatorio</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="nombre" class="d-flex align-items-start">
+              <span><b>Nombre</b><strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #nombre formControlName="nombre" inputValidSpaceDir>
+            </kendo-textbox>
+            <kendo-formerror>El campo Nombre es obligatorio</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="descripcion" class="d-flex align-items-start">
+              <span
+                ><b>Descripcion</b><strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <kendo-textbox
+              #descripcion
+              formControlName="descripcion"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+            <kendo-formerror
+              >El campo descripccion es obligatoria</kendo-formerror
+            >
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="mencionEnCertificado"
+              class="d-flex align-items-start"
+            >
+              <span><b>Mencion En Certificado</b>:</span>
+            </label>
+
+            <kendo-textbox
+              #mencionEnCertificado
+              formControlName="mencionEnCertificado"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <!--  <div class="row" *ngIf="!isNew">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-start"
+              text="Estado:"
+              [for]="estado"
+            ></kendo-label>
+            <input
+              type="checkbox"
+              #estado
+              formControlName="estado"
+              kendoCheckBox
+            />
+          </kendo-formfield>
+        </div>
+      </div> -->
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="frontalCentral" class="d-flex align-items-start">
+              <span><b>Frontal Central</b>:</span>
+            </label>
+            <kendo-textbox
+              #frontalCentral
+              formControlName="frontalCentral"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="frontalInferiorIzquierda"
+              class="d-flex align-items-start"
+            >
+              <span><b>Frontal Inferior Izquierda</b>:</span>
+            </label>
+            <kendo-textbox
+              #frontalInferiorIzquierda
+              formControlName="frontalInferiorIzquierda"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="posteriorCentral" class="d-flex align-items-start">
+              <span><b>Posterior Central</b>:</span>
+            </label>
+            <kendo-textbox
+              #posteriorCentral
+              formControlName="posteriorCentral"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="posteriorInferiorIzquierda"
+              class="d-flex align-items-start"
+            >
+              <span><b>Posterior Inferior Izquierda</b>:</span>
+            </label>
+            <kendo-textbox
+              #posteriorInferiorIzquierda
+              formControlName="posteriorInferiorIzquierda"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="guardar()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="actualizar()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+
+<!-- ----------------------Modal Detalle ------------------------>
+
+<ng-template #modalCertificadoPartnerDetalle let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      <strong>Detalle de Certificado Partner</strong>
+    </h1>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-3 col-md-12">
+      <div class="text-start col-md-3"><b>Codigo:</b></div>
+      <div class="text-start col-md-9">
+        {{ dataItemTemp.codigo }}
+      </div>
+    </div>
+
+    <div class="row mb-3 col-md-12">
+      <div class="text-start col-md-3"><b>Nombre:</b></div>
+      <div class="text-start col-md-9">
+        {{ dataItemTemp.nombre }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-start col-md-3"><b>Descripcion:</b></div>
+      <div class="text-start col-md-9">
+        {{ dataItemTemp.descripcion }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-start col-md-3"><b>Mencion En Certificado:</b></div>
+      <div class="text-start col-md-9">
+        {{ dataItemTemp.mencionEnCertificado }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-start col-md-3"><b>Frontal Central:</b></div>
+      <div class="text-start col-md-9">
+        {{ dataItemTemp.frontalCentral }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-start col-md-3"><b>Frontal Inferior Izquierda:</b></div>
+      <div class="text-start col-md-9">
+        {{ dataItemTemp.frontalInferiorIzquierda }}
+      </div>
+    </div>
+
+    <div class="row mb-3 col-md-12">
+      <div class="text-start col-md-3">
+        <b>Posterior Inferior Izquierda:</b>
+      </div>
+      <div class="text-start col-md-9">
+        {{ dataItemTemp.posteriorInferiorIzquierda }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <h2><b>Lista de Centro de Costos</b></h2>
+      <ul class="centro-costos-list">
+        <li *ngFor="let centroCosto of DatosCentroCostos">
+          <h3>{{ centroCosto.nombreCentroCosto }}</h3>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="text-end">
+        <button class="btn btn-danger" (click)="modal.dismiss()">
+          <span class="px-1">Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- ----------------------Modal AsignarComplemento ------------------------>
+
+<ng-template #modalAsignarComplementoPartner let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Asignar Complemento Partner
+    </h1>
+  </div>
+
+  <div class="modal-body p-3">
+    <form [formGroup]="formCertificadoPartnersComplemento">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" text="Nombre:">
+            </kendo-label>
+
+            <kendo-textbox
+              #nombre
+              formControlName="nombre"
+              [disabled]="true"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              text="Centro Costos Presencial / Online:"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              [data]="comboCentroCosto"
+              textField="nombre"
+              valueField="id"
+              [virtual]="true"
+              [valuePrimitive]="true"
+              [filterable]="true"
+              (filterChange)="obtenerCentroCosto($event)"
+              [defaultItem]="{
+                id: null,
+                nombre: '<Seleccione>'
+              }"
+              [formControl]="idCentroCosto"
+            ></kendo-dropdownlist>
+            <kendo-formerror
+              >Por favor Seleccionar un Centro de Costo o
+              Cancelar</kendo-formerror
+            >
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="asignar()"
+    >
+      Asignar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>

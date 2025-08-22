@@ -1,0 +1,223 @@
+<!-- #region Modal Agregar nuevo Postulante -->
+<div class="modal-header py-2 bg-light text-dark text-center">
+  <h2 class="modal-title w-100 mb-0">Importar Postulantes</h2>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body px-4 ktt-importExcel">
+  <div class="card">
+    <div class="card-header">
+      <h3>Datos para Importación de Postulantes:</h3>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="FormImportExcel" class="Form-Postulantes">
+        <div class="row mt-3">
+          <div class="col-sm-12 col-md-6 k-form-horizontal">
+            <div class="row">
+              <div class="col-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label">
+                    <span>Seleccionar Archivo*</span>
+                  </label>
+                  <kendo-fileselect
+                    [multiple]="false"
+                    [restrictions]="myRestrictions"
+                    formControlName="files"
+                  >
+                  </kendo-fileselect>
+                  <kendo-formerror>Seleccione un archivo</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label"> Proceso Seleccion* </label>
+                  <kendo-dropdownlist
+                    textField="nombre"
+                    valueField="id"
+                    [data]="comboPostulante.procesoSeleccion"
+                    [defaultItem]="{
+                      id: null,
+                      nombre: 'Seleccione Proceso de Seleccion'
+                    }"
+                    [valuePrimitive]="true"
+                    formControlName="IdProcesoSeleccion"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-dropdownlist>
+                  <kendo-formerror>Dato Requerido</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label">
+                    <span>Proveedor Proceso</span>
+                  </label>
+                  <kendo-dropdownlist
+                    textField="nombre"
+                    valueField="id"
+                    [data]="comboPostulante.listaProveedor"
+                    [defaultItem]="{
+                      id: null,
+                      nombre: 'Seleccione Pagina Reclutadora'
+                    }"
+                    [valuePrimitive]="true"
+                    formControlName="IdPaginaReclutadoraPersonal"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-dropdownlist>
+                  <kendo-formerror>Dato Requerido</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label">
+                    <span>Codigo Convocatoria</span>
+                  </label>
+                  <kendo-dropdownlist
+                    textField="nombreConvocatoria"
+                    valueField="idConvocatoria"
+                    [data]="codigoConvocatoriaFiltrado"
+                    [defaultItem]="{
+                      idConvocatoria: null,
+                      nombreConvocatoria: 'Seleccione Codigo'
+                    }"
+                    [valuePrimitive]="true"
+                    formControlName="IdConvocatoriaPersonal"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-dropdownlist>
+                  <kendo-formerror>Dato Requerido</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6 k-form-horizontal">
+            <div class="row">
+              <div class="col-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label"> Etapa Proceso Seleccion* </label>
+                  <kendo-dropdownlist
+                    textField="nombre"
+                    valueField="id"
+                    [data]="estadoEtapaProcesoSeleccionFiltrado"
+                    [defaultItem]="{
+                      id: null,
+                      nombre: 'Seleccione Etapa'
+                    }"
+                    [valuePrimitive]="true"
+                    formControlName="IdProcesoSeleccionEtapa"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-dropdownlist>
+                  <kendo-formerror>Dato Requerido</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label">
+                    <span>Operador Proceso</span>
+                  </label>
+                  <kendo-dropdownlist
+                    textField="nombre"
+                    valueField="id"
+                    [data]="comboPostulante.listaPersonal"
+                    [defaultItem]="{
+                      id: null,
+                      nombre: 'Seleccione Operador'
+                    }"
+                    [valuePrimitive]="true"
+                    formControlName="IdPersonalOperadorProceso"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-dropdownlist>
+                  <kendo-formerror>Dato Requerido</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-7"></div>
+              <div class="col-5">
+                <button
+                  themeColor="success"
+                  size="medium"
+                  class="w-100"
+                  kendoButton
+                  [disabled]="controlBotton"
+                  (click)="importarDeExcel()"
+                >
+                  <kendo-loader *ngIf="loadingPanelVisible" themeColor="light">
+                  </kendo-loader>
+                  Importar Postulates
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <kendo-tabstrip [keepTabContent]="true" class="mt-4">
+    <!-- POSTULANTES -->
+    <kendo-tabstrip-tab [selected]="true">
+      <ng-template kendoTabTitle>
+        <span>Postulante</span>
+      </ng-template>
+      <ng-template kendoTabContent>
+        <!-- CONTENT -->
+        <app-import-tabla-postulantes
+          [datosPostulanteService]="datosPostulanteService"
+        ></app-import-tabla-postulantes>
+        <!-- CONTENT -->
+      </ng-template>
+    </kendo-tabstrip-tab>
+    <!-- END POSTULANTES -->
+    <!-- POSTULANTES REPETIDOS -->
+    <kendo-tabstrip-tab *ngIf="importado">
+      <ng-template kendoTabTitle>
+        <span>Postulante Repetido</span>
+      </ng-template>
+      <ng-template kendoTabContent>
+        <!-- CONTENT -->
+        <app-import-tabla-postulantes-repetidos
+          [datosPostulanteService]="datosPostulanteService"
+        ></app-import-tabla-postulantes-repetidos>
+        <!-- CONTENT -->
+      </ng-template>
+    </kendo-tabstrip-tab>
+    <!-- END POSTULANTES REPETIDOS -->
+  </kendo-tabstrip>
+</div>
+<div class="modal-footer">
+  <div class="k-form-buttons m-0">
+    <button
+      themeColor="success"
+      size="medium"
+      class="w-100"
+      kendoButton
+      [disabled]="controlBotton"
+      (click)="insertarPostulantes()"
+    >
+      <kendo-loader *ngIf="loadingPanelVisible" themeColor="light">
+      </kendo-loader>
+      Guardar Importacion
+    </button>
+    <button
+      themeColor="error"
+      size="medium"
+      class="w-100"
+      kendoButton
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>
+
+<!-- #endregion Modal Agregar nuevo Postulante-->

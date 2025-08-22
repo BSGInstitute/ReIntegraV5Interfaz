@@ -1,0 +1,1804 @@
+<div class="example-wrapper">
+  <kendo-tabstrip style="font: 900; font-size: 16px">
+    <!-- #region TAB 1 -->
+
+    <kendo-tabstrip-tab title="Configuraciones" [selected]="true">
+      <!-- ****************************************************************************************************************        Bloque de configuraciones                                           ************* -->
+      <ng-template kendoTabContent>
+        <!-- #region Boque de Configuraciones -->
+        <kendo-expansionpanel
+          class="asignacion-datos component_tab"
+          [expanded]="false"
+          style="width: 100%"
+        >
+          <ng-template kendoExpansionPanelTitleDirective>
+            <div class="header-content">
+              <kendo-icon name="gears" [style.marginRight.px]="10"></kendo-icon>
+              <span>Configuración de sectores</span>
+            </div>
+          </ng-template>
+          <div class="body-content">
+            <div class="configuracion_sector_agrupado">
+              <div class="configuracion_sector">
+                <div>
+                  <div>
+                    <div class="body-component-tabs">
+                      <button
+                        kendoButton
+                        kendoButton
+                        themeColor="primary"
+                        (click)="abrirModal5(true)"
+                      >
+                        Agregar Origen Sector
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sector_button"></div>
+
+          <!-- Bloque de configuraciones ************************************************************************************************************** -->
+        </kendo-expansionpanel>
+        <!-- #endregion -->
+
+        <!-- ****************************************************************************************************************      Bloque body cuerpo que contieene todas las configuraciones          ************* -->
+
+        <!-- #region  Bloque body cuerpo que contieene todas las configuraciones-->
+        <div style="padding: 8px"></div>
+        <div class="body-component-tabs">
+          <div class="wrapper">
+            <kendo-expansionpanel
+              *ngFor="let OrigenSector of ListaObtenerOrigenSector"
+              [title]="OrigenSector.nombre"
+              [subtitle]="
+                'Cantidad categoría origen: ' + OrigenSector.cantidadOportunidad
+              "
+              (expand)="onExpand(OrigenSector.id)"
+              (collapse)="onCollapse(OrigenSector)"
+            >
+              <div>
+                <div class="body">
+                  <div class="row">
+                    <div class="col-12">
+                      <ng-container *ngIf="OrigenSector.grid">
+                        <kendo-grid
+                          [kendoGridBinding]="OrigenSector?.grid.data"
+                          [loading]="OrigenSector?.grid.loading"
+                          [resizable]="OrigenSector?.grid.resizable"
+                          [filterable]="OrigenSector?.grid.filterable"
+                          [height]="OrigenSector?.grid.height"
+                        >
+                          <kendo-grid-column
+                            *ngFor="let item of OrigenSector?.grid.columns"
+                            [field]="item?.field"
+                            [title]="item?.title"
+                            [width]="item?.width"
+                            [filterable]="item?.filterable"
+                            [headerClass]="item?.headerClass"
+                          >
+                            <ng-template
+                              kendoGridCellTemplate
+                              let-dataItem
+                              let-rowIndex="rowIndex"
+                            >
+                              <ng-container [ngSwitch]="item.field">
+                                <ng-container *ngSwitchCase="'nombre'">
+                                  {{ dataItem.nombre }}
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                  <div
+                                    class="w-100"
+                                    [ngClass]="{
+                                      'switch-alterado': getAlterado(
+                                        OrigenSector,
+                                        dataItem,
+                                        item?.field
+                                      )
+                                    }"
+                                  >
+                                    <kendo-switch
+                                      #estado
+                                      [(ngModel)]="dataItem[item?.field]"
+                                      (valueChange)="
+                                        onChange(
+                                          OrigenSector,
+                                          dataItem,
+                                          item?.field
+                                        )
+                                      "
+                                      size="medium"
+                                      trackRounded="full"
+                                      thumbRounded="full"
+                                      onLabel="Activo"
+                                      offLabel="Inactivo"
+                                      style="width: 85px"
+                                    >
+                                    </kendo-switch>
+
+                                    <!-- <input type="checkbox" name="" id="" [checked]="dataItem[item?.field]"> -->
+                                  </div>
+                                </ng-container>
+                              </ng-container>
+                            </ng-template>
+
+                            <ng-template
+                              kendoGridFooterTemplate
+                              let-column
+                              let-columnIndex="columnIndex"
+                            >
+                              <!-- {{ column.field }}({{ columnIndex }}) -->
+
+                              <ng-container [ngSwitch]="column.field">
+                                <ng-container *ngSwitchCase="'nombre'">
+                                  {{ getNombreAgrupado(OrigenSector) }}
+                                  <!-- {{ column.field }}({{ columnIndex }}) -->
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                  <div class="w-100">
+                                    <kendo-switch
+                                      #estado
+                                      [(ngModel)]="
+                                        OrigenSector.footer[item?.field]
+                                      "
+                                      (valueChange)="
+                                        onChangeFooter(
+                                          OrigenSector,
+                                          OrigenSector.categoriaOrigenSector
+                                            .origenDatoCalidadDetalleAgrupado
+                                            .listaOrigenesAgrupado,
+                                          OrigenSector.id
+                                        )
+                                      "
+                                      size="medium"
+                                      trackRounded="full"
+                                      thumbRounded="full"
+                                      onLabel="Activo"
+                                      offLabel="Inactivo"
+                                      style="width: 85px"
+                                      [disabled]="
+                                        OrigenSector.footer[item?.field] == null
+                                      "
+                                    >
+                                    </kendo-switch>
+
+                                    <!-- <input type="checkbox" name="" id="" [checked]="dataItem[item?.field]"> -->
+                                  </div>
+                                </ng-container>
+                              </ng-container>
+                            </ng-template>
+                          </kendo-grid-column>
+                        </kendo-grid>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+                <div class="footer_expansionPanel">
+                  <div class="example"></div>
+                  <button
+                    class="button_ExpnasionPanel"
+                    kendoButton
+                    themeColor="primary"
+                    (click)="
+                      GuardarConfiguracionesCategoriaOrigen(OrigenSector)
+                    "
+                  >
+                    Guardar Cambios
+                    <span> {{ OrigenSector.contadorCambios }}</span>
+                  </button>
+                  <button
+                    class="button_ExpnasionPanel"
+                    kendoButton
+                    themeColor="warning"
+                    (click)="DeshacerModificacionSector(OrigenSector)"
+                  >
+                    Deshacer Cambios
+                  </button>
+                  <button
+                    class="button_ExpnasionPanel"
+                    kendoButton
+                    themeColor="success"
+                    (click)="AbrirModalCateogriaOrigen(false, OrigenSector)"
+                  >
+                    Configurar Categoria Origen
+                  </button>
+                  <button
+                    kendoButton
+                    *ngIf="!opened"
+                    (click)="open()"
+                    themeColor="error"
+                  >
+                    Eliminar
+                  </button>
+                  <kendo-dialog
+                    title="Confirmación"
+                    *ngIf="opened"
+                    (close)="close('cancel')"
+                    [minWidth]="250"
+                    [width]="450"
+                  >
+                    <p style="margin: 30px; text-align: center">
+                      ¿Estas seguro de eliminar sector?
+                    </p>
+                    <kendo-dialog-actions>
+                      <button kendoButton (click)="close('no')">No</button>
+                      <button
+                        kendoButton
+                        (click)="EliminarSector(OrigenSector)"
+                        themeColor="primary"
+                      >
+                        Si
+                      </button>
+                    </kendo-dialog-actions>
+                  </kendo-dialog>
+                </div>
+              </div>
+            </kendo-expansionpanel>
+          </div>
+        </div>
+
+        <!-- #endregion -->
+      </ng-template>
+    </kendo-tabstrip-tab>
+    <!-- #endregion -->
+
+    <!-- #region TAB 2 -->
+
+    <!-- #region Bloque de configuraciones Tab 2-->
+
+    <kendo-tabstrip-tab title="Asignación regular">
+      <ng-template kendoTabContent>
+        <div class="body-component-tabs">
+          <button
+            kendoButton
+            *ngIf="!opened"
+            (click)="open()"
+            [style]="{
+              color: '#FFFFFF'
+            }"
+            [style.background]="ColorButton()"
+          >
+            Iniciar Asignación automatizada
+          </button>
+          <kendo-dialog
+            title="Confirmación"
+            *ngIf="opened"
+            (close)="close('cancel')"
+            [minWidth]="250"
+            [width]="450"
+          >
+            <p style="margin: 30px; text-align: center">
+              ¿Estás seguro que quieres iniciar la Asignación automatizada?
+            </p>
+            <kendo-dialog-actions>
+              <button kendoButton (click)="close('no')">No</button>
+              <button
+                kendoButton
+                (click)="IniciarAsignacion()"
+                themeColor="primary"
+              >
+                Si
+              </button>
+            </kendo-dialog-actions>
+          </kendo-dialog>
+        </div>
+        <div
+          class="body-content"
+          style="
+            padding: 4px;
+            background-color: #ffffff;
+            text-align: center;
+            border: 15px;
+          "
+        ></div>
+
+        <div class="body-component-tabs">
+          <div class="">
+            <div class="row">
+              <div class="col-12">
+                <div class="card-body p-4">
+                  <div class="row">
+                    <div class="col">
+                      <kendo-grid
+                        [kendoGridBinding]="gridAsesorAsignacionAutomatica.data"
+                        [filterable]="true"
+                        [sortable]="true"
+                        [resizable]="true"
+                        [sort]="gridAsesorAsignacionAutomatica.gridState.sort"
+                      >
+                        <ng-template kendoGridToolbarTemplate let-dataItem>
+                          <button
+                            kendoButton
+                            icon="reload"
+                            fillMode="flat"
+                            themeColor="secondary"
+                            (click)="ObtenerBloqueAsesores()"
+                          ></button>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                          <button
+                            kendoButton
+                            themeColor="primary"
+                            icon="plus"
+                            (click)="abrirModal(true)"
+                          >
+                            Agregar
+                          </button>
+                        </ng-template>
+
+                        <kendo-grid-column
+                          headerClass="justify-content-center"
+                          [style]="{
+                            'text-align': 'center'
+                          }"
+                          field="coordinador"
+                          title="Coordinador"
+                          [width]="250"
+                          [filterable]="true"
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                        >
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          headerClass="justify-content-center"
+                          [style]="{
+                            'text-align': 'center'
+                          }"
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                          field="asesor"
+                          title="Asesor"
+                          [width]="250"
+                        >
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="prioridad"
+                          title="Prioridad"
+                          [width]="120"
+                          [filterable]="false"
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                          [style]="{
+                            'text-align': 'center'
+                          }"
+                          headerClass="justify-content-center"
+                        >
+                          <!-- #region  -->
+                          <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                            let-rowIndex="rowIndex"
+                          >
+                            <kendo-numerictextbox
+                              [format]="'n0'"
+                              [min]="0"
+                              [spinners]="false"
+                              [(ngModel)]="dataItem.prioridad"
+                              (keydown)="ActualizarPrioridad($event, dataItem)"
+                            >
+                            </kendo-numerictextbox>
+                          </ng-template>
+                          <!-- #endregion -->
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          headerClass="justify-content-center"
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                          [style]="{
+                            'text-align': 'center'
+                          }"
+                          field="estadoAsesor"
+                          title="Estado Asesor"
+                          [width]="150"
+                          [filterable]="true"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            <span
+                              style="text-align: center"
+                              class="whole-cell"
+                              [style.color]="colorCode(dataItem.estadoAsesor)"
+                            >
+                              {{ dataItem.estadoAsesor }}
+                            </span>
+                          </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          headerClass="justify-content-center"
+                          [style]="{
+                            'text-align': 'center'
+                          }"
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                          field="oportunidadesAbiertas"
+                          title="Oportunidades Abiertas"
+                          [width]="200"
+                          [filterable]="true"
+                        >
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="topeOportunidad"
+                          title="Tope Oportunidad"
+                          [width]="120"
+                          [filterable]="false"
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                          [style]="{
+                            'text-align': 'center'
+                          }"
+                          headerClass="justify-content-center"
+                        >
+                          <!-- #region  -->
+                          <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                            let-rowIndex="rowIndex"
+                          >
+                            <kendo-numerictextbox
+                              [format]="'n0'"
+                              [min]="0"
+                              [spinners]="false"
+                              [(ngModel)]="dataItem.topeOportunidad"
+                              (keydown)="
+                                ActualizarTopeOportunidad($event, dataItem)
+                              "
+                            >
+                            </kendo-numerictextbox>
+                          </ng-template>
+                          <!-- #endregion -->
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          [style]="{
+                            'text-align': 'center'
+                          }"
+                          headerClass="justify-content-center"
+                          field="activarAsignacionAutomatica"
+                          title="Activar asignacion automática"
+                          [width]="300"
+                          [filterable]="false"
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                          headerClass="justify-content-center"
+                        >
+                          <!-- #region Kendo switch -->
+                          <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                            let-rowIndex="rowIndex"
+                          >
+                            <ng-container
+                              [ngTemplateOutlet]="templateSwitch4"
+                              headerClass="justify-content-center"
+                              [ngTemplateOutletContext]="{
+                                dataItem: dataItem,
+                                field: 'activarAsignacionAutomatica'
+                              }"
+                            >
+                            </ng-container>
+                          </ng-template>
+                          <!-- #endregion -->
+                        </kendo-grid-column>
+
+                        <kendo-grid-command-column
+                          [headerStyle]="{
+                            'text-align': 'center',
+                            'background-color': '#CBDCED'
+                          }"
+                          title="Editar"
+                          [width]="150"
+                        >
+                          <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem="dataItem"
+                          >
+                            <div class="w-100 d-flex justify-content-center">
+                              <button
+                                kendoGridRemoveCommand
+                                themeColor="error"
+                                fillMode="solid"
+                                rounded="large"
+                                size="large"
+                                class="p-2 me-1 ms-1"
+                                container="body"
+                                placement="top"
+                                ngbTooltip="Eliminar"
+                                (click)="EliminarAsesor(dataItem)"
+                              >
+                                <span
+                                  class="k-icon k-i-delete k-icon-20"
+                                ></span>
+                              </button>
+                              <button
+                                kendoButton
+                                themeColor="primary"
+                                fillMode="solid"
+                                rounded="large"
+                                size="large"
+                                class="p-2 me-1 ms-1"
+                                container="body"
+                                placement="top"
+                                ngbTooltip="Editar"
+                                (click)="abrirModal2(false, dataItem)"
+                              >
+                                <span class="k-icon k-i-rows k-icon-20"></span>
+                              </button>
+                            </div>
+                          </ng-template>
+                        </kendo-grid-command-column>
+                      </kendo-grid>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </kendo-tabstrip-tab>
+
+    <ng-template #modalConfigurarCategoriaOrigen let-modal>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          Modificar Categoria Origen
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row" style="text-align: center">
+          <div class="col-sm-12 col-md-12">
+            <label class="k-label">
+              <span style="text-align: center">
+                <B> Configurar Categoria Origen. </B>
+              </span> </label
+            ><br />
+            <br />
+
+            <div class="">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card-body p-4">
+                    <div class="row">
+                      <div class="col">
+                        <kendo-grid
+                          [kendoGridBinding]="gridOrigenSector.data"
+                          [filterable]="true"
+                          [sortable]="true"
+                          [resizable]="true"
+                          [sort]="gridOrigenSector.gridState.sort"
+                        >
+                          <ng-template kendoGridToolbarTemplate let-dataItem>
+                            <button
+                              kendoButton
+                              icon="reload"
+                              fillMode="flat"
+                              themeColor="secondary"
+                              (click)="
+                                ObtenerCategoriaOrigenPorSectorPorIdDirecto()
+                              "
+                            ></button>
+                            <kendo-grid-spacer></kendo-grid-spacer>
+                            <button
+                              kendoButton
+                              themeColor="primary"
+                              icon="plus"
+                              (click)="abrirModal6(true, dataItem)"
+                            >
+                              Agregar
+                            </button>
+                          </ng-template>
+
+                          <kendo-grid-column
+                            headerClass="justify-content-center"
+                            [style]="{
+                              'text-align': 'center'
+                            }"
+                            field="nombre"
+                            title="Nombre"
+                            [width]="200"
+                            [filterable]="true"
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                          >
+                          </kendo-grid-column>
+
+                          <kendo-grid-column
+                            [style]="{
+                              'text-align': 'center'
+                            }"
+                            headerClass="justify-content-center"
+                            field="agruparCategoriaOrigen"
+                            title="Agrupar Categoria Origen"
+                            [width]="150"
+                            [filterable]="false"
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                            headerClass="justify-content-center"
+                          >
+                            <ng-template
+                              kendoGridHeaderTemplate
+                              let-column
+                              let-columnIndex="columnIndex"
+                            >
+                              <div
+                                style="text-align: center"
+                                class="justify-content-center"
+                              >
+                                Agrupar
+                              </div>
+                            </ng-template>
+                            <!-- #region Kendo switch -->
+                            <ng-template
+                              kendoGridCellTemplate
+                              let-dataItem
+                              let-rowIndex="rowIndex"
+                            >
+                              <ng-container
+                                [ngTemplateOutlet]="templateSwitch6"
+                                headerClass="justify-content-center"
+                                [ngTemplateOutletContext]="{
+                                  dataItem: dataItem,
+                                  field: 'agruparCategoriaOrigen'
+                                }"
+                              >
+                              </ng-container>
+                            </ng-template>
+                            <!-- #endregion -->
+                          </kendo-grid-column>
+
+                          <kendo-grid-command-column
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                            title="Editar"
+                            [width]="150"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              <div class="w-100 d-flex justify-content-center">
+                                <button
+                                  kendoGridRemoveCommand
+                                  themeColor="error"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  ngbTooltip="Eliminar"
+                                  (click)="
+                                    EliminarConfiguracionCategoriaOrigen(
+                                      dataItem.id
+                                    )
+                                  "
+                                >
+                                  <span
+                                    class="k-icon k-i-delete k-icon-20"
+                                  ></span>
+                                </button>
+                              </div>
+                            </ng-template>
+                          </kendo-grid-command-column>
+                        </kendo-grid>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <ng-template kendoGridFooterTemplate let-dataItem>
+                      {{ dataItem.fieldName.sum }}
+                    </ng-template> -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            themeColor="error"
+            kendoButton
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #modalAsiganarDatos let-modal>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          Asiganar Datos
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row" style="text-align: center">
+          <div class="col-sm-12 col-md-12">
+            <label class="k-label">
+              <span style="text-align: center">
+                <B> Configurar Categoria Origen. </B>
+              </span> </label
+            ><br />
+            <br />
+
+            <div class="">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card-body p-4">
+                    <div class="row">
+                      <div class="col">
+                        <kendo-grid
+                          [kendoGridBinding]="gridOrigenSector.data"
+                          [filterable]="true"
+                          [sortable]="true"
+                          [resizable]="true"
+                          [sort]="gridOrigenSector.gridState.sort"
+                        >
+                          <ng-template kendoGridToolbarTemplate let-dataItem>
+                            <button
+                              kendoButton
+                              icon="reload"
+                              fillMode="flat"
+                              themeColor="secondary"
+                              (click)="
+                                ObtenerCategoriaOrigenPorSectorPorIdDirecto()
+                              "
+                            ></button>
+                            <kendo-grid-spacer></kendo-grid-spacer>
+                          </ng-template>
+
+                          <kendo-grid-column
+                            headerClass="justify-content-center"
+                            [style]="{
+                              'text-align': 'center'
+                            }"
+                            field="nombre"
+                            title="Dato Calidad"
+                            [width]="200"
+                            [filterable]="true"
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                          >
+                          </kendo-grid-column>
+
+                          <kendo-grid-column
+                            [style]="{
+                              'text-align': 'center'
+                            }"
+                            headerClass="justify-content-center"
+                            field="agruparCategoriaOrigen"
+                            title="Agrupar Categoria Origen"
+                            [width]="150"
+                            [filterable]="false"
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                            headerClass="justify-content-center"
+                          >
+                            <ng-template
+                              kendoGridHeaderTemplate
+                              let-column
+                              let-columnIndex="columnIndex"
+                            >
+                              <div
+                                style="text-align: center"
+                                class="justify-content-center"
+                              >
+                                Dato Whatsaap
+                              </div>
+                            </ng-template>
+                            <!-- #region Kendo switch -->
+                            <ng-template
+                              kendoGridCellTemplate
+                              let-dataItem
+                              let-rowIndex="rowIndex"
+                            >
+                              <ng-container
+                                [ngTemplateOutlet]="templateSwitch6"
+                                headerClass="justify-content-center"
+                                [ngTemplateOutletContext]="{
+                                  dataItem: dataItem,
+                                  field: 'agruparCategoriaOrigen'
+                                }"
+                              >
+                              </ng-container>
+                            </ng-template>
+                            <!-- #endregion -->
+                          </kendo-grid-column>
+
+                          <kendo-grid-command-column
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                            title="Mailing"
+                            [width]="150"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              <div class="w-100 d-flex justify-content-center">
+                                <button
+                                  kendoGridRemoveCommand
+                                  themeColor="error"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  ngbTooltip="Eliminar"
+                                  (click)="
+                                    EliminarConfiguracionCategoriaOrigen(
+                                      dataItem.id
+                                    )
+                                  "
+                                >
+                                  <span
+                                    class="k-icon k-i-delete k-icon-20"
+                                  ></span>
+                                </button>
+                              </div>
+                            </ng-template>
+                          </kendo-grid-command-column>
+                        </kendo-grid>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <ng-template kendoGridFooterTemplate let-dataItem>
+                      {{ dataItem.fieldName.sum }}
+                    </ng-template> -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            themeColor="error"
+            kendoButton
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #modalAgregarCategoriaOrigen let-modal>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          Agregar Categoria Origen
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          [style.witdh.px]="400"
+          class="k-form k-form-horizontal"
+          [formGroup]="formAgregarCategoriaOrigen"
+        >
+          <fieldset class="k-form-fieldset">
+            <div class="row">
+              <div class="col-sm-12 col-md-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label">
+                    <span>Categoria Origen</span>
+                  </label>
+                  <kendo-multiselect
+                    #asesores
+                    [data]="ListaComboCategoriaOrigenSector"
+                    [autoClose]="false"
+                    class="d-flex"
+                    size="medium"
+                    formControlName="id"
+                    textField="nombre"
+                    [valuePrimitive]="true"
+                    valueField="id"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-multiselect>
+                  <kendo-formhint></kendo-formhint>
+                  <kendo-formerror>
+                    {{ "" }}
+                  </kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            kendoButton
+            themeColor="primary"
+            (click)="AgregarCategoriaOrigenSector()"
+          >
+            Guardar
+          </button>
+
+          <button
+            themeColor="error"
+            kendoButton
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #modalCrearOrigenSector let-modal>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          {{ isNew ? "Nuevo  Datos Grupo" : "Modificar Datos Grupo " }}
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          [style.witdh.px]="400"
+          class="k-form k-form-horizontal"
+          [formGroup]="formCrearSector"
+        >
+          <fieldset class="k-form-fieldset">
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="nombre" class="k-label">
+                  <span>Nombre <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #nombre
+                  size="medium"
+                  placeholder="Nombre"
+                  formControlName="nombre"
+                  [clearButton]="true"
+                  showErrorIcon="initial"
+                  inputValidSpaceDir
+                  showErrorIcon="initial"
+                >
+                </kendo-textbox>
+                <kendo-formhint>Nombre de grupo Filtro</kendo-formhint>
+                <kendo-formerror>{{ "nombre" }}</kendo-formerror>
+              </kendo-formfield>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12 col-md-12">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="descripcion" class="k-label">
+                    <span
+                      >Descripcion
+                      <span class="text-danger fw-bold">*</span></span
+                    >
+                  </label>
+                  <kendo-textarea
+                    #descripcion
+                    size="medium"
+                    formControlName="descripcion"
+                    [style.width.px]="200"
+                    resizable="auto"
+                    [maxlength]=""
+                  >
+                    <kendo-textarea-suffix class="custom-styling">
+                      <!-- <span class="counter">{{ counter }}</span> -->
+                    </kendo-textarea-suffix>
+                  </kendo-textarea>
+
+                  <kendo-formerror>{{ "descripcion" }}</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            kendoButton
+            *ngIf="isNew"
+            themeColor="primary"
+            (click)="AgregarSector()"
+          >
+            Guardar
+          </button>
+
+          <button
+            kendoButton
+            *ngIf="!isNew"
+            themeColor="tertiary"
+            (click)="ActualizaSector()"
+          >
+            Actualizar
+          </button>
+          <button
+            themeColor="error"
+            kendoButton
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- #region Template DropDownList  -->
+    <ng-template
+      #TemplateDropDownList
+      let-dataItem="dataItem"
+      let-field="field"
+      let-indexGrid="indexGrid"
+      let-disabled="disabled"
+    >
+      <div class="example-wrapper">
+        <kendo-dropdownlist
+          [data]="listItems"
+          [(ngModel)]="dataItem[field]"
+          (valueChange)="OnChangeColumn($event, dataItem)"
+        >
+        </kendo-dropdownlist>
+      </div>
+    </ng-template>
+
+    <!-- #endregion -->
+
+    <ng-template #modalCrearAsesor let-modal>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          {{ isNew ? "Agregar personal" : "Modificar Datos Grupo " }}
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          [style.witdh.px]="400"
+          class="k-form k-form-horizontal"
+          [formGroup]="formAgregarAsesor"
+        >
+          <fieldset class="k-form-fieldset">
+            <div class="row">
+              <div class="col-sm-12 col-md-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label">
+                    <span
+                      >Asesores <span class="text-danger fw-bold">*</span></span
+                    >
+                  </label>
+                  <kendo-multiselect
+                    #asesores
+                    [data]="ListaComboAsesores"
+                    [autoClose]="false"
+                    class="d-flex"
+                    size="medium"
+                    formControlName="id"
+                    textField="asesor"
+                    [valuePrimitive]="true"
+                    valueField="id"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-multiselect>
+                  <kendo-formhint></kendo-formhint>
+                  <kendo-formerror>
+                    {{ "" }}
+                  </kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            kendoButton
+            *ngIf="isNew"
+            themeColor="primary"
+            (click)="crearConfiguracionAsesor()"
+          >
+            Guardar
+          </button>
+
+          <button kendoButton *ngIf="!isNew" themeColor="tertiary">
+            Actualizar
+          </button>
+          <button
+            themeColor="error"
+            kendoButton
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Modal para Configuracion asesor -->
+    <ng-template #modalModificarConfiguracionAsesor let-modal>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          Modificar asignacion de Asesor
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row" style="text-align: center">
+          <div class="col-sm-12 col-md-12">
+            <label class="k-label">
+              <span style="text-align: center">
+                <B> Asesor : </B>
+              </span>
+              {{ ConfiguracionAsesor.asesor }} </label
+            ><br />
+            <label class="k-label">
+              <span style="text-align: center">
+                <B> Coordinador : </B>
+              </span>
+              {{ ConfiguracionAsesor.coordinador }} </label
+            ><br />
+            <label class="k-label">
+              <span style="text-align: center">
+                <B> Estado Asesor : </B>
+              </span>
+              {{ ConfiguracionAsesor.estadoAsesor }} </label
+            ><br />
+            <label class="k-label">
+              <span style="text-align: center">
+                <B> Oportunidades abiertas : </B>
+              </span>
+              {{ ConfiguracionAsesor.oportunidadesAbiertas }} </label
+            ><br />
+            <label class="k-label">
+              <span style="text-align: center">
+                <B> Tope Oportunidad : </B>
+              </span>
+              {{ ConfiguracionAsesor.topeOportunidad }} </label
+            ><br />
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem
+              let-rowIndex="rowIndex"
+            >
+              <ng-container
+                [ngTemplateOutlet]="templateSwitch4"
+                headerClass="justify-content-center"
+                [ngTemplateOutletContext]="{
+                  dataItem: ConfiguracionAsesor.activarAsignacionAutomatica,
+                  field: 'ConfiguracionAsesor.activarAsignacionAutomatica'
+                }"
+              >
+              </ng-container>
+            </ng-template>
+            <br />
+
+            <div class="">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card-body p-4">
+                    <div class="row">
+                      <div class="col">
+                        <kendo-grid
+                          [kendoGridBinding]="gridConfiguracionAsesorAsignacionAutomatica.data"
+                          [filterable]="true"
+                          [sortable]="true"
+                          [resizable]="true"
+                          [sort]="gridConfiguracionAsesorAsignacionAutomatica.gridState.sort"
+                        >
+                          <ng-template kendoGridToolbarTemplate let-dataItem>
+                            <button
+                              kendoButton
+                              icon="reload"
+                              fillMode="flat"
+                              themeColor="secondary"
+                              (click)="RecargarDataModal2()"
+                            ></button>
+                            <kendo-grid-spacer></kendo-grid-spacer>
+                            <button
+                              kendoButton
+                              themeColor="primary"
+                              icon="plus"
+                              (click)="abrirModal3(true, dataItem)"
+                            >
+                              Agregar
+                            </button>
+                          </ng-template>
+
+                          <!-- Column Definitions -->
+
+                          <kendo-grid-column
+                            headerClass="justify-content-center"
+                            [style]="{ 'text-align': 'center' }"
+                            field="codigo"
+                            title="Codigo"
+                            [width]="200"
+                            [filterable]="true"
+                            [locked]="true"
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                          >
+                          </kendo-grid-column>
+
+                          <kendo-grid-column
+                            headerClass="justify-content-center"
+                            [style]="{ 'text-align': 'center' }"
+                            field="cantidadTotal"
+                            title="Cantidad OPO/Programa"
+                            [width]="150"
+                            [locked]="true"
+                            [filterable]="true"
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                          >
+                            <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+                              <div style="text-align: center" class="justify-content-center">
+                                Cantidad<br />OPO/Programa
+                              </div>
+                            </ng-template>
+
+                            <ng-template kendoGridFooterTemplate let-column let-dataItem let-aggregates="aggregates" let-columnIndex="columnIndex">
+                              <div class="text-center">
+                                <!-- Total -->
+                                {{ total["cantidadTotal"].sum }}
+                              </div>
+                            </ng-template>
+                          </kendo-grid-column>
+
+                          <kendo-grid-column
+                            [style]="{ 'text-align': 'center' }"
+                            headerClass="justify-content-center"
+                            field="activarAsignacionPaisConfiguracion"
+                            title="Activar asignacion automática"
+                            [width]="150"
+                            [locked]="true"
+                            [filterable]="false"
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                            headerClass="justify-content-center"
+                          >
+                            <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+                              <div style="text-align: center" class="justify-content-center">
+                                Activar asignacion<br />automática
+                              </div>
+                            </ng-template>
+                            <!-- Kendo switch -->
+                            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                              <ng-container
+                                [ngTemplateOutlet]="templateSwitch5"
+                                headerClass="justify-content-center"
+                                [ngTemplateOutletContext]="{
+                                  dataItem: dataItem,
+                                  field: 'activarAsignacionPaisConfiguracion'
+                                }"
+                              >
+                              </ng-container>
+                            </ng-template>
+                          </kendo-grid-column>
+
+                          <!-- Dynamic Columns for each Country -->
+                          <kendo-grid-column-group *ngFor="let pais of listaPaises" [title]="pais.title" headerClass="justify-content-center k-grid-header" [width]="800">
+                            <kendo-grid-column
+                              headerClass="justify-content-center"
+                              [field]="'cantidadTotal' + pais.field"
+                              [width]="180
+                              "
+                              [filterable]="true"
+                              [headerStyle]="{
+                                'text-align': 'center',
+                                'background-color': '#ECECEC'
+                              }"
+                            >
+                              <!-- <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+                                <div style="text-align: center" class="justify-content-center">
+                                  Cantidad<br />OPO
+                                </div>
+                              </ng-template> -->
+
+                              <ng-template kendoGridFooterTemplate let-column let-dataItem let-aggregates="aggregates" let-columnIndex="columnIndex">
+                                <div class="text-center">
+                                  {{ total["cantidadTotal" + pais.field] ? total["cantidadTotal" + pais.field].sum : 0 }}
+                                </div>
+                              </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column
+                              [style]="{ 'text-align': 'center' }"
+                              headerClass="justify-content-center"
+                              title="Asignar Datos"
+                              [width]="400"
+                              [filterable]="false"
+                              [headerStyle]="{
+                                'text-align': 'center',
+                                'background-color': '#ECECEC'
+                              }"
+                              headerClass="justify-content-center"
+                            >
+                              <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                                <table border="1">
+                                  <tr>
+                                    <td>Dato Calidad</td>
+                                    <td>
+                                      <div class="w-100 justify-content-center">
+                                        <kendo-switch
+                                          [(ngModel)]="dataItem['datoCalidad' + pais.field]"
+                                          size="medium"
+                                          trackRounded="full"
+                                          thumbRounded="full"
+                                          onLabel="SI"
+                                          offLabel="NO"
+                                        >
+                                        </kendo-switch>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Dato Calidad Whatsapp</td>
+                                    <td>
+                                      <div class="w-100 justify-content-center">
+                                        <kendo-switch
+                                          [(ngModel)]="dataItem['datoCalidadWhatsapp' + pais.field]"
+                                          size="medium"
+                                          trackRounded="full"
+                                          thumbRounded="full"
+                                          onLabel="SI"
+                                          offLabel="NO"
+                                        >
+                                        </kendo-switch>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Dato Calidad Mailing</td>
+                                    <td>
+                                      <div class="w-100 justify-content-center">
+                                        <kendo-switch
+                                          [(ngModel)]="dataItem['datoCalidadMailing' + pais.field]"
+                                          size="medium"
+                                          trackRounded="full"
+                                          thumbRounded="full"
+                                          onLabel="SI"
+                                          offLabel="NO"
+                                        >
+                                        </kendo-switch>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column
+                              [field]="'distribucion' + pais.field"
+                              title="Distribucion"
+                              [width]="120"
+                              [filterable]="false"
+                              [headerStyle]="{
+                                'text-align': 'center',
+                                'background-color': '#ECECEC'
+                              }"
+                              [style]="{
+                                'text-align': 'center'
+                              }"
+                              headerClass="justify-content-center"
+                            >
+                              <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                                <kendo-numerictextbox
+                                  [min]="0"
+                                  [spinners]="false"
+                                  [(ngModel)]="dataItem['distribucion' + pais.field]"
+                                >
+                                </kendo-numerictextbox>
+                              </ng-template>
+                            </kendo-grid-column>
+                          </kendo-grid-column-group>
+
+                          <!-- Command Column -->
+                          <kendo-grid-command-column
+                            [headerStyle]="{
+                              'text-align': 'center',
+                              'background-color': '#CBDCED'
+                            }"
+                            title="Editar"
+                            [width]="300"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              <div class="w-100 d-flex justify-content-center">
+                                <button
+                                  kendoButton
+                                  themeColor="error"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  ngbTooltip="Eliminar"
+                                  (click)="EliminarPaisConfiguracionAsignacionRegular(dataItem.id)"
+                                >
+                                  <span class="k-icon k-i-delete k-icon-20"></span>
+                                </button>
+                              </div>
+                            </ng-template>
+                          </kendo-grid-command-column>
+                        </kendo-grid>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- <ng-template kendoGridFooterTemplate let-dataItem>
+                  {{ dataItem.fieldName.sum }}
+                </ng-template> -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            kendoButton
+            themeColor="primary"
+            (click)="
+              ActualizarConfiguracionPorPais(
+                gridConfiguracionAsesorAsignacionAutomatica.data
+              )
+            "
+          >
+            Actualizar
+          </button>
+          <button
+            themeColor="error"
+            kendoButton
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #modalAgregarProgramaGeneral let-modal let-dataItem>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          {{ isNew ? "Agregar Programa General" : "Modificar Datos Grupo " }}
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          [style.witdh.px]="400"
+          class="k-form k-form-horizontal"
+          [formGroup]="formAgregarProgramaGeneral"
+        >
+          <fieldset class="k-form-fieldset">
+            <div class="row">
+              <div class="col-sm-12 col-md-12">
+                <kendo-formfield orientation="horizontal">
+                  <label class="k-label">
+                    <span
+                      >Programas Generales
+                      <span class="text-danger fw-bold">*</span></span
+                    >
+                  </label>
+                  <kendo-multiselect
+                    #asesores
+                    [data]="ListaProgramaGeneral"
+                    [autoClose]="false"
+                    class="d-flex"
+                    size="medium"
+                    formControlName="idProgramaGeneral"
+                    textField="codigo"
+                    [valuePrimitive]="true"
+                    valueField="idProgramaGeneral"
+                    [kendoDropDownFilter]="filterSettings"
+                  ></kendo-multiselect>
+                  <kendo-formhint></kendo-formhint>
+                  <kendo-formerror>
+                    {{ "" }}
+                  </kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            kendoButton
+            *ngIf="isNew"
+            themeColor="primary"
+            (click)="AgregarProgramasGenerales(dataItem)"
+          >
+            Guardar
+          </button>
+
+          <button
+            themeColor="error"
+            kendoButton
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Modal para Configuracion asesor -->
+
+    <!-- #region Template Switch -->
+    <ng-template
+      #templateSwitch
+      let-dataItem="dataItem"
+      let-field="field"
+      let-disabled="disabled"
+    >
+      <!-- let-indexGrid="indexGrid" -->
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem[field]"
+          (valueChange)="OnChangeColumn($event, dataItem)"
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Activo"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+    </ng-template>
+    <!-- #endregion -->
+
+    <ng-template
+      #templateSwitch2
+      let-dataItem="dataItem"
+      let-field="field"
+      let-indexGrid="indexGrid"
+      let-disabled="disabled"
+    >
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem[field]"
+          (valueChange)="OnChangeColumn2(indexGrid)"
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Activo"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+    </ng-template>
+
+    <ng-template
+      #templateSwitch3
+      let-dataItem="dataItem"
+      let-field="field"
+      let-indexGrid="indexGrid"
+      let-disabled="disabled"
+    >
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem[field]"
+          (valueChange)="OnChangeColumnBusqueda($event, dataItem, indexGrid)"
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Activo"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+    </ng-template>
+
+    <ng-template
+      #templateSwitch4
+      let-dataItem="dataItem"
+      let-field="field"
+      let-disabled="disabled"
+    >
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem[field]"
+          (valueChange)="ActivarAsignacionAutomatica($event, dataItem)"
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Activo"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+    </ng-template>
+
+    <ng-template
+      #templateSwitch5
+      let-dataItem="dataItem"
+      let-field="field"
+      let-disabled="disabled"
+    >
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem[field]"
+          (valueChange)="OnChangeColumn($event, dataItem)"
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Activo"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+    </ng-template>
+
+    <ng-template
+      #templateSwitch52
+      let-dataItem="dataItem"
+      let-pais="pais"
+      let-disabled="disabled"
+    >
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem['datoCalidad' + 'pais']"
+
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="DatoCalidad"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem['datoCalidadWhatsapp' + 'pais']"
+
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Datowh"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem['datoCalidadMailing' + 'pais']"
+
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Activo"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+
+    </ng-template>
+
+
+    <ng-template
+      #templateSwitch6
+      let-dataItem="dataItem"
+      let-field="field"
+      let-disabled="disabled"
+    >
+      <div class="w-100 justify-content-center">
+        <kendo-switch
+          [(ngModel)]="dataItem[field]"
+          (valueChange)="AgruparDatos($event, dataItem)"
+          size="medium"
+          trackRounded="full"
+          thumbRounded="full"
+          onLabel="Activo"
+          offLabel="Inactivo"
+          style="width: 85px"
+          [disabled]="disabled"
+        >
+        </kendo-switch>
+      </div>
+    </ng-template>
+
+    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+      <kendo-numerictextbox
+        [min]="0"
+        [max]="200"
+        [spinners]="false"
+        [(ngModel)]="dataItem.topeOportunidad"
+        (valueChange)="AgregarTopeAsesor($event, dataItem)"
+      >
+      </kendo-numerictextbox>
+    </ng-template>
+  </kendo-tabstrip>
+</div>

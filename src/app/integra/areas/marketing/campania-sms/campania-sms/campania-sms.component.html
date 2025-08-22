@@ -1,0 +1,269 @@
+<mat-tab-group>
+  <mat-tab label="CampañaSms">
+    <div class="tituloWhats">Campaña Sms</div>
+
+    <ng-template #modalSms>
+      <div
+        class="modal-header custom-modal-header"
+        style="
+          height: 60px;
+          color: white;
+          background-color: #374441;
+          width: 1200px;
+        "
+      >
+        Agregar Campaña de Sms
+      </div>
+
+      <div class="custom-container" style="padding: 50px">
+        <div class="custom-row justify-content-center">
+          <div class="col-md-6">
+            <div class="form-group custom-row" style="margin-bottom: 30px">
+              <label
+                class="col-md-4 col-form-label text-right custom-label"
+                style="margin-top: 15px"
+              >
+                Nombre de la Campaña General
+              </label>
+              <div class="col-md-8">
+                <mat-form-field appearance="outline" class="w-100">
+                  <input
+                    matInput
+                    placeholder="Nombre de campaña general"
+                    [(ngModel)]="nombreCampaniaG"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="form-group custom-row justify-content-center">
+              <button
+                mat-button
+                class="btn custom-buttonC"
+                (click)="CrearCampaniaSms()"
+              >
+                Crear
+              </button>
+              <button
+                mat-button
+                class="btn custom-buttonCa"
+                (click)="Cancelar()"
+                mat-dialog-close="true"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="agregar">
+      <button
+        mat-flat-button
+        class="botonAgregarW"
+        (click)="abrirModalCrearSms(true, null)"
+      >
+        Crear Nuevo
+      </button>
+    </div>
+
+    <div class="example-full-width w-100">
+      <kendo-grid
+        [kendoGridBinding]="listaCampaniaGeneralSms"
+        kendoGridSelectBy="id"
+        [sortable]="true"
+        [reorderable]="true"
+        [resizable]="true"
+        [filterable]="true"
+        [columnMenu]="{ filter: true }"
+        [class]="'cellCustomClass'"
+        id="my-grid"
+        [headerClass]="'headerPrioridades'"
+        [pageable]="true"
+        [pageSize]="20"
+      >
+        <kendo-grid-column
+          field="nombre"
+          title="Nombre Campaña"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="fechaInicioEnvioSms"
+          title="Fecha de Envío"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaInicioEnvioSms | date : "shortDate" }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="horaEnvio"
+          title="Hora Envio"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="cantidad"
+          title="Cantidad"
+          [width]="100"
+          [headerClass]="'headerPrioridades'"
+        >
+        </kendo-grid-column>
+
+        <kendo-grid-command-column
+          title="Editar"
+          [width]="50"
+          [headerClass]="'headerPrioridades'"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+            <button
+              kendoButton
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1 editW"
+              container="body"
+              placement="top"
+              ngbTooltip="Faccionar"
+              (click)="abrirModalCrearSms(false, dataItem)"
+            >
+              <span class="k-icon k-i-edit"></span>
+            </button>
+            <button
+              kendoButton
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1 deleteW"
+              container="body"
+              placement="top"
+              ngbTooltip="Eliminar"
+              (click)="deleteSms(dataItem.id)"
+              [disabled]="dataItem.cantidad > 0"
+              [ngClass]="{ 'disabled-button': dataItem.cantidad > 0 }"
+            >
+              <span class="k-icon k-i-delete k-icon-20"></span>
+            </button>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </mat-tab>
+  <mat-tab label="PlantillaSms">
+    <div class="tituloWhats">Plantilla Sms</div>
+    <div class="agregar">
+      <button
+        mat-flat-button
+        class="botonAgregarW"
+        (click)="abrirCrearPlantilla(true, null)"
+      >
+        Crear Plantilla
+      </button>
+    </div>
+
+    <div class="example-full-width w-100">
+      <kendo-grid
+        [kendoGridBinding]="listaPlantilla"
+        kendoGridSelectBy="id"
+        [sortable]="true"
+        [reorderable]="true"
+        [resizable]="true"
+        [filterable]="true"
+        [columnMenu]="{ filter: true }"
+        [class]="'cellCustomClass'"
+        id="my-grid"
+        [headerClass]="'headerPrioridades'"
+        [pageable]="true"
+        [pageSize]="20"
+      >
+        <kendo-grid-column
+          field="nombre"
+          title="Nombre Plantilla"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="fechaCreacion"
+          title="Fecha Creacion"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaCreacion | date : "shortDate" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="fechaModificacion"
+          title="Fecha Modificacion"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaModificacion | date : "shortDate" }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="usuarioCreacion"
+          title="Usuario Creacion"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="usuarioModificacion"
+          title="Usuario Modificacion"
+          [width]="200"
+          [headerClass]="'headerPrioridades'"
+        >
+        </kendo-grid-column>
+
+        <kendo-grid-command-column
+          title="Editar"
+          [width]="50"
+          [headerClass]="'headerPrioridades'"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+            <button
+              kendoButton
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1 editW"
+              container="body"
+              placement="top"
+              ngbTooltip="Faccionar"
+              (click)="ModificarPlantilla(dataItem)"
+            >
+              <span class="k-icon k-i-edit"></span>
+            </button>
+            <button
+              kendoButton
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1 deleteW"
+              container="body"
+              placement="top"
+              ngbTooltip="Eliminar"
+              (click)="EliminarPlantilla(dataItem.id)"
+              [disabled]="dataItem.cantidad > 0"
+              [ngClass]="{ 'disabled-button': dataItem.cantidad > 0 }"
+            >
+              <span class="k-icon k-i-delete k-icon-20"></span>
+            </button>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,57 @@
+export interface ComboAsesoresVenta{
+  id: number,
+  nombreCompleto:string,
+  activo: boolean,
+  estado: boolean,
+  idJefe: number
+}
+
+export interface ReporteComisionMatriculaGrilla{
+  alumno:string,
+  asesor:string,
+  asistente:string,
+  codigoMatricula:string,
+  comisionAsesor:number,
+  comisionAsistente:number,
+  comisionCoordinador:number,
+  comisionSupervisor:number,
+  coordinador: string,
+  diferencia:number,
+  fechaEntregaDocumento:string|Date, 
+  fechaMatricula:string|Date,
+  idAsesor:number,
+  idAsistente: number,
+  idCoordinador: number,
+  idEstadoComision: number,
+  idMatriculaCabecera: number,
+  idMonedaTotalPagar: number,
+  idSubEstadoComision: number,
+  idSupervisor: number,
+  monedaMontoPagadoHastaAhora: string,
+  monedaPrecioMatriculaPrograma: string,
+  monedaPrecioPrograma: string,
+  monedaTotalPagar: string,
+  montoPagadoHastaAhora: number,
+  nombreEstadoComision:string,
+  nombrePrograma:string,
+  nombreTieneAsistencia:string,
+  nombreTieneDocumento:string,
+  nombreTieneMatriculaPagada:string,
+  observacion:string,
+  observacionDocumento: string,
+  pais:string,
+  precioMatriculaPrograma:number,
+  precioPrograma: number,
+  siglaDocumento:string,
+  supervisor:string,
+  tieneAsistencia: boolean,
+  tieneDocumento: boolean,
+  tieneMatriculaPagada:boolean,
+  tipoCambio: number,
+  totalPagar:number,
+  totalPagarDolares:number,
+}
+
+
+
+   

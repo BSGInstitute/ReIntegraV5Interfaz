@@ -1,0 +1,209 @@
+<div class="row p-1">
+  <kendo-grid
+    #grid
+    [kendoGridBinding]="gridContentChild.data"
+    (edit)="gridContentChild.editHandler($event)"
+    (cancel)="gridContentChild.cancelHandler($event)"
+    (save)="gridContentChild.saveHandler($event)"
+    (remove)="gridContentChild.removeHandler($event)"
+    (add)="gridContentChild.addHandler($event)"
+    (cellClose)="gridContentChild.cellCloseHandler($event)"
+    [loading]="gridContentChild.loading"
+    [selectable]="true"
+  >
+    <ng-template kendoGridToolbarTemplate>
+      <div class="row col-md-12 bg-color-material text-white">
+        <div class="col-md-7 my-2 py-1">
+          Registro de Materiales
+        </div>
+        <div class="col-md-5 py-2 text-end">
+          <button
+            kendoGridAddCommand
+            themeColor="none"
+            icon="plus"
+            fillMode="flat"
+            class="mx-2">
+            AÑADIR MATERIAL
+          </button>
+          <button
+            kendoButton
+            themeColor="none"
+            icon="reload"
+            fillMode="flat"
+            class="mx-2"
+            (click)="obtenerMaterialesPespecificos()"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+    <kendo-grid-column
+      field="nombreTipoMaterial"
+      title="Tipo de material"
+      [width]="65"
+      [headerClass]="'justify-content-center'"
+      [filterable]="true"
+    >
+      <ng-template kendoGridCellTemplate let-dateItem>
+        <div class="text-center">
+          <ng-container *ngIf="dateItem.nombreTipoMaterial">
+            {{ dateItem.nombreTipoMaterial }}
+          </ng-container>
+        </div>
+      </ng-template>
+      <ng-template kendoGridEditTemplate let-formGroup="formGroup" let-dataItem>
+        <div class="text-center">
+          <kendo-dropdownlist
+            [formControl]="formGroup.get('idMaterialTipo')"
+            placeholder="Seleccione Tipo"
+            [data]="listaTipoMaterial"
+            textField="nombre"
+            valueField="id"
+            [valuePrimitive]="true"
+          >
+          </kendo-dropdownlist>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="grupo"
+      title="Grupo"
+      [width]="40"
+      [headerClass]="'justify-content-center'"
+      [filterable]="true"
+    >
+      <ng-template kendoGridCellTemplate let-dateItem>
+        <div class="text-center">
+          <ng-container *ngIf="dateItem.grupo != null">
+            {{ dateItem.nombreGrupos }}
+          </ng-container>
+        </div>
+      </ng-template>
+      <ng-template kendoGridEditTemplate let-formGroup="formGroup" let-dataItem>
+        <div class="text-center">
+          <kendo-dropdownlist
+            [formControl]="formGroup.get('grupo')"
+            placeholder="Seleccione Tipo"
+            [data]="listaGrupo"
+            textField="nombre"
+            valueField="id"
+            [valuePrimitive]="true"
+          ></kendo-dropdownlist>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="grupoEdicion"
+      title="Grupo edicion"
+      [width]="45"
+      [headerClass]="'justify-content-center'"
+      [filterable]="true"
+    >
+      <ng-template kendoGridCellTemplate let-dateItem>
+        <div class="text-center">
+          <ng-container *ngIf="dateItem.grupoEdicion != null">
+            {{ dateItem.nombreGruposEdicion }}
+          </ng-container>
+        </div>
+      </ng-template>
+      <ng-template kendoGridEditTemplate let-formGroup="formGroup" let-dataItem>
+        <div class="text-center">
+          <kendo-dropdownlist
+            [formControl]="formGroup.get('grupoEdicion')"
+            placeholder="Seleccione Tipo"
+            [data]="listaGrupoEdicion"
+            textField="nombre"
+            valueField="id"
+            [valuePrimitive]="true"
+          ></kendo-dropdownlist>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="grupoEdicionOrden"
+      title="Orden grupo edicion"
+      [width]="55"
+      [headerClass]="'justify-content-center'"
+      [filterable]="true"
+    >
+      <ng-template kendoGridCellTemplate let-dateItem>
+        <ng-container *ngIf="dateItem.grupoEdicionOrden">
+          {{ dateItem.grupoEdicionOrden }}
+        </ng-container>
+      </ng-template>
+      <ng-template kendoGridEditTemplate let-formGroup="formGroup" let-dataItem>
+        <div class="text-center">
+          <kendo-numerictextbox
+            [formControl]="formGroup.get('grupoEdicionOrden')"
+            placeholder="Ingrese un valor"
+            format="n0"
+          >
+          </kendo-numerictextbox>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-command-column
+      title="Acciones"
+      [headerStyle]="{ color: '#5f75bd' }"
+      [width]="43"
+      [headerClass]="'justify-content-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-center">
+          <button
+            kendoGridEditCommand
+            themeColor="warning"
+            fillMode="solid"
+            rounded="large"
+            size="large"
+            class="p-2 me-1 ms-1"
+            container="body"
+            placement="top"
+            ngbTooltip="Editar"
+          >
+            <span class="k-icon k-i-edit k-icon-20"></span>
+          </button>
+          <button
+            kendoGridRemoveCommand
+            themeColor="error"
+            fillMode="solid"
+            rounded="large"
+            size="large"
+            class="p-2 me-1 ms-1"
+            container="body"
+            placement="top"
+            ngbTooltip="Eliminar"
+          >
+            <span class="k-icon k-i-delete k-icon-20"></span>
+          </button>
+          <button
+            kendoGridSaveCommand
+            themeColor="primary"
+            fillMode="solid"
+            rounded="large"
+            size="large"
+            class="p-2 me-1 ms-1"
+            [disabled]="gridContentChild.formGroup.invalid"
+            container="body"
+            placement="top"
+            ngbTooltip="Guardar"
+          >
+            <span class="k-icon k-i-save k-icon-20"></span>
+          </button>
+          <button
+            kendoGridCancelCommand
+            themeColor="secondary"
+            fillMode="solid"
+            rounded="large"
+            size="large"
+            class="p-2 me-1 ms-1"
+            container="body"
+            placement="top"
+            ngbTooltip="Cancelar"
+          >
+            <span class="k-icon k-i-cancel k-icon-20"></span>
+          </button>
+        </div>
+      </ng-template>
+    </kendo-grid-command-column>
+  </kendo-grid>
+</div>

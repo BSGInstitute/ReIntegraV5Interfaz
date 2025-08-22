@@ -1,0 +1,274 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Control de Conexion</h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="row d-flex justify-content-center mb-4">
+            <div class="col-8">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Reporte de Chat</h3>
+                </div>
+                <div class="card-body k-form k-form-horizontal">
+                  <form [formGroup]="formReporteChat">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="areas" class="k-label"> Area: </label>
+                          <kendo-multiselect
+                            #areas
+                            formControlName="areas"
+                            [data]="filtrosGenerales.areaCapacitacion"
+                            [filterable]="true"
+                            textField="nombre"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                            [kendoDropDownFilter]="filterSettings"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="centroCosto" class="k-label">
+                            Centro de Costo
+                          </label>
+                          <kendo-multiselect
+                            #centroCosto
+                            formControlName="centroCosto"
+                            [data]="filtrosGenerales.centroCosto"
+                            textField="nombre"
+                            [filterable]="true"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                            placeholder="Seleccione centro Costo"
+                            [kendoDropDownFilter]="filterSettings"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="asesor" class="k-label">
+                            Asesores:
+                          </label>
+                          <kendo-multiselect
+                            #asesor
+                            formControlName="asesor"
+                            [data]="filtrosGenerales.personal"
+                            [filterable]="true"
+                            textField="nombre"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                            [kendoDropDownFilter]="filterSettings"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="fechaInicio" class="k-label">
+                            Fecha Inicio:
+                          </label>
+
+                          <kendo-datepicker
+                            #fechaInicio
+                            formControlName="fechaInicio"
+                            format="yyyy-MM-dd"
+                          >
+                          </kendo-datepicker>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-6"></div>
+
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="fechaFin" class="k-label">
+                            Fecha Fin:
+                          </label>
+
+                          <kendo-datepicker
+                            #fechaFin
+                            formControlName="fechaFin"
+                            format="yyyy-MM-dd"
+                          >
+                          </kendo-datepicker>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                      <button
+                        (click)="generarReporteCobertura()"
+                        class="btn btn-sm btn-primary"
+                      >
+                        Buscar
+                        <fa-icon
+                          [icon]="['fas', 'search']"
+                          class="fa-lg"
+                        ></fa-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div class="card" >
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Reportes</h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab" style="position: relative;">
+          <!-- <div class="carga" *ngIf="carga">
+            <mat-spinner diameter="20"></mat-spinner>
+          </div> -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <ng-container *ngIf="gridChatLog.data.length > 0">
+
+
+                <kendo-grid
+                  [kendoGridBinding]="gridChatLog.data"
+                  [height]="500"
+                  [loading]="carga"
+                  [selectable]="true"
+                  [resizable]="true"
+                  scrollable="scrollable"
+
+                >
+                  <kendo-grid-column
+                    field="area"
+                    title="Programa General"
+                    [width]="270"
+                    headerClass="headerGridChat"
+                    [locked]="true"
+                    [lockable]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="asesor"
+                    title="Asesor"
+                    [width]="270"
+                    headerClass="headerGridChat"
+                    [locked]="true"
+                    [lockable]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="chats"
+                    title="Nro Chats"
+                    [width]="270"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="promedio" title="TPR" [width]="270">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="errorSignal"
+                    title="ES"
+                    [width]="270"
+                  >
+                    <!-- <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                      errorSignal
+                    </ng-template> -->
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="errorCarga"
+                    title="EC"
+                    [width]="270"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="tiempo" title="TC" [width]="270">
+
+                  </kendo-grid-column>
+
+                  <kendo-grid-column
+                    field="activo"
+                    title="Activo"
+                    [width]="270"
+                  >
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                      <div class="w-100 text-center">
+                        <ng-container
+                          *ngIf="dataItem.activo == 1; else elseTemplate"
+                        >
+                          <fa-icon
+                            [icon]="['fas', 'check']"
+                            style="color: green"
+                          ></fa-icon>
+
+                        </ng-container>
+                        <ng-template #elseTemplate>
+                          <fa-icon
+                            [icon]="['fas', 'close']"
+                            style="color: red"
+                          ></fa-icon>
+                        </ng-template>
+                      </div>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="nroChatsActivos"
+                    title="CA"
+                    [width]="270"
+                  >
+                  </kendo-grid-column>
+                </kendo-grid>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="row">
+          <div class="row d-flex justify-content-center mb-4">
+            <!-- <small class="text-muted"
+              >TPR: Tiempo promedio de respuesta del asesor(Seg)</small
+            >
+            <small class="text-muted"
+              >TPR: Tiempo promedio de respuesta del asesor(Seg)</small
+            >
+            <small class="text-muted"
+              >TPR: Tiempo promedio de respuesta del asesor(Seg)</small
+            > -->
+            <div class="container">
+              <div class="row">
+                <div class="col-6 col-sm-4">TPR:	Tiempo promedio de respuesta del asesor(Seg)</div>
+                <div class="col-0 col-sm-4">ES:	Error Servicio</div>
+
+
+                <div class="w-100 d-none d-md-block"></div>
+
+                <div class="col-6 col-sm-4">EC:	Error carga chat</div>
+                <div class="col-6 col-sm-4">EO:	Error crear Oportunidad</div>
+
+                <div class="w-100 d-none d-md-block"></div>
+
+                <div class="col-6 col-sm-4">TC:	Tiempo Carga del chat</div>
+                <div class="col-6 col-sm-4">CA:	Nro Conversaciones Activas</div>
+
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

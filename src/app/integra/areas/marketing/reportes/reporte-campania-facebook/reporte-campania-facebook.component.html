@@ -1,0 +1,1222 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">(R) Campania Facebook</h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="row d-flex justify-content-center mb-4">
+            <div class="col-8">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Resultados del Reporte</h3>
+                </div>
+                <div class="card-body k-form k-form-horizontal">
+                  <div class="row">
+                    <div class="col-lg-10">
+                      <kendo-formfield orientation="horizontal">
+                        <label [for]="areas" class="k-label"> Area: </label>
+                        <kendo-dropdownlist
+                          #areas
+                          [formControl]="area"
+                          [data]="comboArea"
+                          [filterable]="true"
+                          [defaultItem]="{
+                            nombreGrupoFiltroProgramaCritico: '< Todos >',
+                            idGrupoFiltroProgramaCritico: null
+                          }"
+                          textField="nombreGrupoFiltroProgramaCritico"
+                          valueField="idGrupoFiltroProgramaCritico"
+                          [valuePrimitive]="true"
+                          (selectionChange)="filtroArea($event)"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="k-form-buttons m-0">
+                    <div
+                      class="col-12 d-flex justify-content-end k-form-buttons m-0"
+                    >
+                      <button
+                        kendoButton
+                        role="button"
+                        themeColor="success"
+                        [disabled]=""
+                        (click)="actualizarFacebook()"
+                      >
+                        ACTUALIZAR DATOS
+                      </button>
+                      <button
+                        class="btn btn-sm btn-primary"
+                        (click)="ObtenerCampaniaFacebook()"
+                      >
+                        CONSULTAR
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-6 d-flex justify-content-end"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+
+    <div class="">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header bg-color-material pb-0">
+              <h3 class="text-white mb-2">Reportes</h3>
+            </div>
+            <div class="card-body p-4">
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    [loading]="loader"
+                    [data]="gridCampaniaFacebook.view"
+                    [kendoGridBinding]="gridCampaniaFacebook.data"
+                    [loading]="gridCampaniaFacebook.loading"
+                    [resizable]="true"
+                    [sortable]="true"
+                    filterable="menu"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"
+                    [pageSize]="15"
+                    [groupable]="{ showFooter: true }"
+                    [group]="group"
+                    (groupChange)="onGroupChange($event)"
+                    (dataStateChange)="
+                      gridCampaniaFacebook.onStateChange($event)
+                    "
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridExcelCommand
+                        type="button"
+                        icon="file-excel"
+                      >
+                        Export to Excel
+                      </button>
+                    </ng-template>
+
+                    <kendo-grid-column
+                      field="nombreGrupoFiltroProgramaCritico"
+                      title="Area"
+                      [filterable]="true"
+                      [width]="200"
+                      [locked]="true"
+                      [headerClass]="'justify-content-center k-grid-header'"
+                    >
+                    </kendo-grid-column>
+
+                    <!-- <kendo-grid-column field="nombreGrupoFiltroProgramaCritico"
+                    title="Price" [width]="220">
+                      <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates">
+                        <span>
+                          Total Price in group: {{ aggregates.presupuestoDiarioConjuntoAnuncio.sum.toFixed(2) }}
+                        </span>
+                      </ng-template>
+                    </kendo-grid-column> -->
+                    <kendo-grid-column
+                    field="facebookIdConjuntoAnuncio"
+                    title="Identificador Conjunto Anuncio"
+                    [filterable]="true"
+                    [width]="200"
+                    [locked]="true"
+                    [headerClass]="'justify-content-center k-grid-header'"
+                  >
+                  </kendo-grid-column>
+                    <kendo-grid-column
+                      field="facebookNombreCampania"
+                      title="Campaña Facebook"
+                      [filterable]="true"
+                      [locked]="true"
+                      [width]="200"
+                      [headerClass]="'justify-content-center k-grid-header '"
+                    >
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="facebookNombreConjuntoAnuncio"
+                      title="Nombre del Conjunto de Anuncio"
+                      [filterable]="true"
+                      [locked]="true"
+                      [width]="200"
+                      headerClass="justify-content-center k-grid-header"
+                    >
+                      <ng-template
+                        kendoGridHeaderTemplate
+                        let-column
+                        let-columnIndex="columnIndex"
+                      >
+                        <div
+                          class="w-100 text-center text-overflow-hidden"
+                          [innerHTML]="'Nombre del <br> Conjunto de Anuncio'"
+                        ></div>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="facebookNombreAnuncio"
+                      title="Nombre del Anuncio"
+                      [width]="150"
+                      [locked]="true"
+                      [headerClass]="'justify-content-center k-grid-header '"
+                    ></kendo-grid-column>
+                    <kendo-grid-column
+                      field="presupuestoDiarioConjuntoAnuncio"
+                      title="Presupuesto US$"
+                      [width]="150"
+                      [locked]="true"
+                      [headerClass]="'justify-content-center k-grid-header '"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{
+                          PresupuestoDiarioConjuntoAnuncio(
+                            dataItem.presupuestoDiarioConjuntoAnuncio
+                          )
+                        }}
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column-group
+                      title="DÍA ACTUAL"
+                      headerClass="header-green  justify-content-center k-grid-header  "
+                      [width]="1200"
+                    >
+                      <kendo-grid-column
+                        [width]="10"
+                        [hidden]="true"
+                      ></kendo-grid-column>
+                      <kendo-grid-column-group
+                        [title]="fechahoy + ' (ACTUALIZADO HASTA '+horaActual+':'+ minutoActual +':'+segundoActual+')'"
+                        headerClass="header-green2  justify-content-center k-grid-header "
+                        [width]="1200"
+                      >
+                        <kendo-grid-column
+                          field="gasto"
+                          title="Gasto"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+
+                        >
+                          <!-- <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ gasto(dataItem.actual.gasto) }}
+                          </ng-template> -->
+
+                          <ng-template kendoGridCellTemplate let-dataItem >
+
+                            {{dataItem.actual.gasto}}&nbsp;US$
+
+                        </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="impresiones"
+                          [filterable]="false"
+                          title="Impresiones"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.actual.impresiones }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="costoPorMil"
+                          title="CPM"
+                          [filterable]="false"
+                          [width]="150"
+                          headerClass="justify-content-center k-grid-header"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolvercostoPorMil(
+                                dataItem.actual.impresiones,
+                                dataItem.actual.gasto,
+                                dataItem.actual.impresiones
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="cantidadClics"
+                          title="Clics"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.actual.cantidadClics }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="impresionesPorClic"
+                          title="Imp./Clics"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverimpresionesPorClic(
+                                dataItem.actual.cantidadClics,
+                                dataItem.actual.impresiones,
+                                dataItem.actual.cantidadClics
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="registros"
+                          title="Registros"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="'justify-content-center k-grid-header'"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.actual.registros }}
+                          </ng-template>
+                        </kendo-grid-column>
+
+
+                        <kendo-grid-column
+                          field="clicPorRegistro"
+                          title="Clics por registros"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicPorRegistro(
+                                dataItem.actual.registros,
+                                dataItem.actual.cantidadClics,
+                                dataItem.actual.registros
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="registrosMuyAlta"
+                          title="Registros Muy Alta"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.actual.registrosMuyAlta }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="porcentajeRegistrosMuyAlta"
+                          title="% Registros Muy Alta"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverPorcentajeRegistrosMuyAlta(
+                                dataItem.actual.registros,
+                                dataItem.actual.registrosMuyAlta,
+                                dataItem.actual.registros
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="clicsRegistrosMuyAlta"
+                          title="Clics por registros Muy Alta"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicsRegistrosMuyAlta(
+                                dataItem.actual.registrosMuyAlta,
+                                dataItem.actual.cantidadClics,
+                                dataItem.actual.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template></kendo-grid-column
+                        >
+
+
+                        <kendo-grid-column
+                          field="rangoA"
+                          title="Rango A"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.actual.rangoA ==true?1:0
+                           }}
+                        </ng-template>
+
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="rangoB"
+                          title="Rango B"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.actual.rangoB  ==true?1:0
+                          }}
+                        </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="rangoC"
+                          title="Rango C"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.actual.rangoC ==true?1:0
+                          }}
+                        </ng-template>
+                        </kendo-grid-column>
+
+
+                        <kendo-grid-column
+                          field="gastoPorRegistrosMuyAlta"
+                          title="Costo por registros Muy Alta"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverGastoActual(
+                                dataItem.actual.registrosMuyAlta,
+                                dataItem.actual.gastoPorRegistrosMuyAlta,
+                                dataItem.actual.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+
+
+
+                      </kendo-grid-column-group>
+                    </kendo-grid-column-group>
+
+                    <kendo-grid-column-group
+                      title=" 1 DÍA "
+                      headerClass="header-orange justify-content-center k-grid-header"
+                      [width]="1200"
+                    >
+                      <kendo-grid-column
+                        [width]="10"
+                        [hidden]="true"
+                      ></kendo-grid-column>
+                      <kendo-grid-column-group
+                        title="{{ fechamenos1 }} "
+                        headerClass="header-orange2 justify-content-center k-grid-header"
+                        [width]="1200"
+                      >
+                        <kendo-grid-column
+                          field="gasto1"
+
+                          title="Gasto"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+
+                            {{
+                              gasto(
+                                dataItem.unDia.gasto
+                              )
+                            }}
+
+
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="impresiones1"
+                          [filterable]="false"
+                          title="impresiones"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.unDia.impresiones }}
+                          </ng-template></kendo-grid-column
+                        >
+                        <kendo-grid-column
+                          field="costoPorMil1"
+                          title="CPM"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+
+
+
+
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolvercostoPorMil(
+                                dataItem.unDia.impresiones,
+                                dataItem.unDia.gasto,
+                                dataItem.unDia.impresiones
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="cantidadClics1"
+                          title="Clics"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.unDia.cantidadClics }}
+                          </ng-template></kendo-grid-column
+                        >
+                        <kendo-grid-column
+                          field="impresionesPorClic1"
+                          title="Imp./Clics"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverimpresionesPorClic(
+                                dataItem.unDia.cantidadClics,
+                                dataItem.unDia.impresiones,
+                                dataItem.unDia.cantidadClics
+                              )
+                            }}
+                          </ng-template></kendo-grid-column
+                        >
+                        <kendo-grid-column
+                          field="registros1"
+                          [filterable]="false"
+                          title="registros"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.unDia.registros }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="clicPorRegistro1"
+                          title="Clics por registros"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicPorRegistro(
+                                dataItem.unDia.registros,
+                                dataItem.unDia.cantidadClics,
+                                dataItem.unDia.registros
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="registrosMuyAlta1"
+                          title="Registros Muy Alta"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.unDia.registrosMuyAlta }}
+                          </ng-template></kendo-grid-column
+                        >
+                        <kendo-grid-column
+                          field="porcentajeRegistrosMuyAlta1"
+                          title="% Registros Muy Alta"
+                          [filterable]="false"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverPorcentajeRegistrosMuyAlta(
+                                dataItem.unDia.registros,
+                                dataItem.unDia.registrosMuyAlta,
+                                dataItem.unDia.registros
+                              )
+                            }}
+                          </ng-template></kendo-grid-column
+                        >
+
+                        <kendo-grid-column
+                          field="clicsRegistrosMuyAlta1"
+                          title="Clics por registros Muy Alta"
+                          [width]="150"
+                          [filterable]="false"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicsRegistrosMuyAlta(
+                                dataItem.unDia.registrosMuyAlta,
+                                dataItem.unDia.cantidadClics,
+                                dataItem.unDia.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+
+
+
+                        <kendo-grid-column
+                          field="rangoA1"
+                          [filterable]="false"
+                          title="Rango A"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.unDia.rangoA ?? 0
+                           }}
+                        </ng-template>
+
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="rangoB1"
+                          title="Rango B"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.unDia.rangoB ??0}}
+                        </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="rangoC1"
+                          title="Rango C"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.unDia.rangoC ??0}}
+                        </ng-template>
+                        </kendo-grid-column>
+
+
+                        <kendo-grid-column
+                          field="gastoPorRegistrosMuyAlta1"
+                          title="Costo por registros Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverGastoActual(
+                                dataItem.unDia.registrosMuyAlta,
+                                dataItem.unDia.gasto,
+                                dataItem.unDia.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column
+                        >
+
+                      </kendo-grid-column-group>
+                    </kendo-grid-column-group>
+
+                    <kendo-grid-column-group
+                      title="3 DÍAS"
+                      headerClass="header-red justify-content-center k-grid-header"
+                      [width]="1200"
+                    >
+                      <kendo-grid-column
+                        [width]="10"
+                        [hidden]="true"
+                      ></kendo-grid-column>
+                      <kendo-grid-column-group
+                        title=" {{ fechamenos3 }} HASTA {{ fechamenos1 }}"
+                        headerClass="header-red2 justify-content-center k-grid-header"
+                        [width]="1200"
+                      >
+                        <kendo-grid-column
+                          field="gasto3"
+                          title="Gasto"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.tresDias.gasto }}&nbsp;US$
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="impresiones3"
+                          title="impresiones"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                          ><ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.tresDias.impresiones }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="costoPorMil3"
+                          title="CPM"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolvercostoPorMil(
+                                dataItem.tresDias.impresiones,
+                                dataItem.tresDias.gasto,
+                                dataItem.tresDias.impresiones
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="cantidadClics3"
+                          title="Clics"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.tresDias.cantidadClics }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="impresionesPorClic3"
+                          title="Imp./Clics"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverimpresionesPorClic(
+                                dataItem.tresDias.cantidadClics,
+                                dataItem.tresDias.impresiones,
+                                dataItem.tresDias.cantidadClics
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="registros3"
+                          title="Registros"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.tresDias.registros }}
+                          </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="clicPorRegistro3"
+                          title="Clics por registros"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicPorRegistro(
+                                dataItem.tresDias.registros,
+                                dataItem.tresDias.cantidadClics,
+                                dataItem.tresDias.registros
+                              )
+                            }}
+                          </ng-template></kendo-grid-column
+                        >
+
+                        <kendo-grid-column
+                          field="registrosMuyAlta3"
+                          title="Registros Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.tresDias.registrosMuyAlta }}
+                          </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="porcentajeRegistrosMuyAlta3"
+                          title="% Registros Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header color-black'
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverPorcentajeRegistrosMuyAlta(
+                                dataItem.tresDias.registros,
+                                dataItem.tresDias.registrosMuyAlta,
+                                dataItem.tresDias.registros
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="clicsRegistrosMuyAlta3"
+                          title="Clics por registros Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                          ><ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicsRegistrosMuyAlta(
+                                dataItem.tresDias.registrosMuyAlta,
+                                dataItem.tresDias.cantidadClics,
+                                dataItem.tresDias.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+
+
+                        <kendo-grid-column
+                          field="rangoA3"
+                          title="Rango A"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.tresDias.rangoA ??0}}
+                        </ng-template>
+
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="rangoB3"
+                          title="Rango B"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.tresDias.rangoB ??0}}
+                        </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="rangoC3"
+                          title="Rango C"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.tresDias.rangoC ??0}}
+                        </ng-template>
+                        </kendo-grid-column>
+
+
+                        <kendo-grid-column
+                          field="gastoPorRegistrosMuyAlta3"
+                          title="Costo  Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverGastoActual(
+                                dataItem.tresDias.registrosMuyAlta,
+                                dataItem.tresDias.gasto,
+                                dataItem.tresDias.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template></kendo-grid-column
+                        >
+
+
+
+
+                      </kendo-grid-column-group>
+                    </kendo-grid-column-group>
+
+                    <kendo-grid-column-group
+                      title="7 DÍAS"
+                      headerClass="header-blue  justify-content-center k-grid-header"
+                      [width]="1200"
+                    >
+                      <kendo-grid-column
+                        [width]="10"
+                        [hidden]="true"
+                      ></kendo-grid-column>
+                      <kendo-grid-column-group
+                        title="{{ fechamenos7 }} HASTA {{ fechamenos1 }} "
+                        headerClass="header-blue2  justify-content-center k-grid-header"
+                        [width]="1200"
+                      >
+                        <kendo-grid-column
+                          field="gasto7"
+                          title="Gasto"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.sieteDias.gasto }}&nbsp;US$
+                          </ng-template></kendo-grid-column
+                        >
+                        <kendo-grid-column
+                          field="impresiones7"
+                          title="Impresiones"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.sieteDias.impresiones }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="costoPorMil7"
+                          title="CPM"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolvercostoPorMil(
+                                dataItem.sieteDias.impresiones,
+                                dataItem.sieteDias.gasto,
+                                dataItem.sieteDias.impresiones
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="cantidadClics7"
+                          title="Clics"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.sieteDias.cantidadClics }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="impresionesPorClic7"
+                          title="imp./Clics"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                          ><ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverimpresionesPorClic(
+                                dataItem.sieteDias.cantidadClics,
+                                dataItem.sieteDias.impresiones,
+                                dataItem.sieteDias.cantidadClics
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="registros7"
+                          title="Registros"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.sieteDias.registros }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="clicPorRegistro7"
+                          title="Clics por registros"
+                          [width]="150"
+                          [headerClass]="'justify-content-center k-grid-header'"
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicPorRegistro(
+                                dataItem.sieteDias.registros,
+                                dataItem.sieteDias.cantidadClics,
+                                dataItem.sieteDias.registros
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="registrosMuyAlta7"
+                          title="Registros Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.sieteDias.registrosMuyAlta }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="porcentajeRegistrosMuyAlta7"
+                          title="% Registros Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverPorcentajeRegistrosMuyAlta(
+                                dataItem.sieteDias.registros,
+                                dataItem.sieteDias.registrosMuyAlta,
+                                dataItem.sieteDias.registros
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="clicsRegistrosMuyAlta7"
+                          title="Clics por Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverclicsRegistrosMuyAlta(
+                                dataItem.sieteDias.registrosMuyAlta,
+                                dataItem.sieteDias.cantidadClics,
+                                dataItem.sieteDias.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="rangoA7"
+                          title="Rango A"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{
+                            dataItem.sieteDias.rangoA ??0
+                          }}
+                        </ng-template>
+
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="rangoB7"
+                          title="Rango B"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{
+                            dataItem.sieteDias.rangoB ??0
+                          }}
+                        </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="rangoC7"
+                          title="Rango C"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.sieteDias.rangoC ??0}}
+                        </ng-template>
+                        </kendo-grid-column>
+
+
+                        <kendo-grid-column
+                          field="gastoPorRegistrosMuyAlta7"
+                          title="Costo Muy Alta"
+                          [width]="150"
+                          [headerClass]="
+                            'justify-content-center k-grid-header '
+                          "
+                          [filterable]="false"
+
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{
+                              devolverGastoActual(
+                                dataItem.sieteDias.registrosMuyAlta,
+                                dataItem.sieteDias.gasto,
+                                dataItem.sieteDias.registrosMuyAlta
+                              )
+                            }}
+                          </ng-template>
+                          >
+                        </kendo-grid-column>
+
+
+                      </kendo-grid-column-group>
+                    </kendo-grid-column-group>
+
+                    <kendo-grid-excel
+                      [fetchData]="allData"
+                      [group]="group"
+                      fileName="ReporteFacebook.xlsx"
+                      #excelexport
+                    >
+                    </kendo-grid-excel>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

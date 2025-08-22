@@ -1,0 +1,318 @@
+<div class="w-100 grid-speech" id="gridResumenContactoCliente">
+  <div class="row">
+    <div class="col-12" style="color: red">
+      <h3 *ngIf="textoZonaHoraria != null">
+        {{ textoZonaHoraria }}
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="w-100">
+  <div class="row justify-content-center">
+    <div class="col-sm-6 col-md-4" style="margin-bottom: 5px;">
+      <legend class="legend-3cx">Leyenda Llamadas</legend>
+      <div class="row">
+        <!-- <div class="col-auto px-0 mx-0">
+          <div id="cuadrado2Llamada"></div>
+        </div> -->
+        <div class="col"><span style="color: blue;"><strong><u>(TT:0.0m-TC:0.0m)</u></strong></span> - Llamada 3cx</div>
+      </div>
+      <div class="row">
+        <!-- <div class="col-auto px-0 mx-0">
+          <div id="cuadrado1Llamada"></div>
+        </div> -->
+        <div class="col-auto"><span style="color: black;"><strong><u>(TT:0.0m-TC:0.0m)</u></strong></span> - Llamada Integra</div>
+      </div>
+      <div class="row">
+        <!-- <div class="col-auto px-0 mx-0">
+          <div id="cuadrado1Llamada"></div>
+        </div> -->
+        <div class="col-auto"><span style="color: brown;"><strong><u>(TT:0.0m-TC:0.0m)</u></strong></span> - Llamada Wavix</div>
+      </div>
+      <!-- <div class="row">
+        <div class="col-auto px-0 mx-0">
+          <div id="cuadrado3Llamada"></div>
+        </div>
+        <div class="col-auto">Llamada Ringover</div>
+      </div> -->
+      <!-- <div class="row">
+        <div class="col-auto px-0 mx-0">
+          <div id="cuadrado4Llamada"></div>
+        </div>
+        <div class="col-auto">Llamada Wolkbox</div>
+      </div> -->
+    </div>
+    <div class="col-sm-6 col-md-4" style="margin-bottom: 5px;">
+      <legend class="legend-3cx">Leyenda Tipo Llamadas</legend>
+      <div class="row">
+        <div class="col-auto px-0 mx-0">
+          <fa-icon
+            [icon]="['fas', 'square-phone']"
+            class="fa-lg fs-5 text-success"
+          ></fa-icon>
+        </div>
+        <div class="col-auto">Llamada Saliente</div>
+      </div>
+      <div class="row">
+        <div class="col-auto px-0 mx-0">
+          <fa-icon
+            [icon]="['fas', 'square-phone-flip']"
+            class="fa-lg fs-5 text-primary"
+          ></fa-icon>
+        </div>
+        <div class="col-auto">Llamada Entrante</div>
+      </div>
+    </div>
+  </div>
+  <kendo-grid
+    [kendoGridBinding]="gridHistorialInteraccionesEfectivo.data"
+    class="rounded-3 p-2"
+    [pageable]="true"
+    [pageSize]="5"
+    [selectable]="true"
+    [resizable]="true"
+    filterable="menu"
+  >
+    <kendo-grid-column
+      field="fechaSiguienteLlamada"
+      title="Fecha"
+      [width]="70"
+      [filterable]="false"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="row rc-fecha-programada p-0">
+          <span class="col-12 p-0 ps-2">
+            {{
+              dataItem.fechaSiguienteLlamada == null
+                ? "P: 00000000000000"
+                : "P: " + (dataItem.fechaSiguienteLlamada | date : "dd/MM/yyyy")
+            }}</span
+          >
+        </div>
+        <div class="row rc-fecha-real p-0" style="color: #53bd75">
+          <span class="col-12 p-0 ps-2">
+            {{
+              dataItem.fechaModificacion == null
+                ? "R: -"
+                : "R: " + (dataItem.fechaModificacion | date : "dd/MM/yyyy")
+            }}</span
+          >
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="fechaSiguienteLlamada"
+      title="Hora"
+      [width]="70"
+      [filterable]="false"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="row">
+          <span class="col-12 p-0 ps-2 rc-fecha-programada">
+            {{
+              dataItem.fechaSiguienteLlamada == null
+                ? ""
+                : "P: " + (dataItem.fechaSiguienteLlamada | date : "hh:mm a")
+            }}</span
+          >
+        </div>
+        <div
+          class="row"
+          *ngFor="let item of dataItem.llamadasIntegra3cx; let i = index"
+        >
+          <span class="col-auto p-0 m-0 ps-2">
+            <fa-icon
+              *ngIf="item.origenLlamada.includes('Entrante')"
+              [icon]="['fas', 'square-phone-flip']"
+              class="fa-lg fs-5 text-primary"
+            ></fa-icon>
+            <fa-icon
+              *ngIf="!item.origenLlamada.includes('Entrante')"
+              [icon]="['fas', 'square-phone']"
+              class="fa-lg fs-5 text-success"
+            ></fa-icon>
+          </span>
+          <span
+            class="col p-0 ps-1"
+            [ngClass]="{
+              'esLlamada3cx': item.origenLlamada.includes('3cx'),
+              'esLlamadaRingover': item.origenLlamada.includes('Ringover'),
+              'esLlamadaIntegra': item.origenLlamada.includes('Integra'),
+              'esLlamadaWolkbox': item.origenLlamada.includes('Wolkbox'),
+              'esLlamadaWavix': item.origenLlamada.includes('Wavix')
+            }"
+          >
+            I{{ i + 1 }}: {{ item.fechaInicioLlamada | date : "hh:mm a" }}</span
+          >
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      [filterable]="false"
+      field="llamadasIntegra3cx"
+      title="Duración(mins)"
+      [width]="70"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="row">
+          <div
+            class="col-12 p-0 ps-2"
+            *ngFor="let item of dataItem.llamadasIntegra3cx"
+          >
+            <span class="rc-tt">TT: {{ item.duracionTimbradoMinutos }}</span>
+            <br />
+            <span
+              class="btn-link"
+              [ngClass]="{
+                'esLlamada3cx': item.origenLlamada.includes('3cx'),
+                'esLlamadaRingover': item.origenLlamada.includes('Ringover'),
+                'esLlamadaIntegra': item.origenLlamada.includes('Integra'),
+                'esLlamadaWolkbox': item.origenLlamada.includes('Wolkbox'),
+                'esLlamadaWavix': item.origenLlamada.includes('Wavix')
+              }"
+              (click)="reproducirAudio(modalReproducirAudio, item)"
+              >TC: {{ item.duracionContestoMinutos }}</span
+            >
+          </div>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <!-- <kendo-grid-column
+      field="estado"
+      title="Estado Ocurrencia"
+      [width]="240"
+      [filterable]="true"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <span class="mb-3">{{ dataItem.estado }}</span>
+        <ng-container *ngIf="dataItem.llamadasIntegra3cx">
+          <div *ngFor="let item of dataItem.llamadasIntegra3cx">
+            <span class="fw-bold">Tipo:&nbsp;{{ item.estadoLlamada }}</span>
+            <br />
+            <span>Subtipo:&nbsp;{{ item.subEstadoLlamada }}</span>
+          </div>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column> -->
+    <kendo-grid-column
+      field="faseInicio"
+      title="Fase I."
+      [width]="55"
+      [filterable]="false"
+      headerClass="justify-content-center"
+      class="text-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <span>{{ dataItem.faseInicio ? dataItem.faseInicio : "" }}</span>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="faseDestino"
+      title="Fase D."
+      [width]="55"
+      [filterable]="false"
+      headerClass="justify-content-center"
+      class="text-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <span>{{ dataItem.faseDestino ? dataItem.faseDestino : "" }}</span>
+      </ng-template>
+    </kendo-grid-column>
+    <!-- <kendo-grid-column
+      field="nombreOcurrencia"
+      title="Ocurrencia"
+      [width]="140"
+      [filterable]="true"
+    ></kendo-grid-column>
+    <kendo-grid-column
+      field="comentarioActividad"
+      title="Comentario"
+      [width]="180"
+      [filterable]="false"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <span>{{ dataItem.comentarioActividad ?? "" }}</span>
+      </ng-template>
+    </kendo-grid-column> -->
+    <kendo-grid-column
+      field="comentarioActividad"
+      title="Comentario"
+      [width]="280"
+      [filterable]="false"
+    >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="w-100">
+        <span
+          class="fw-bold"
+          [ngClass]="{
+            'rc-estadoOcurrenciaEjecutado':
+              dataItem.estado == 'EJECUTADO',
+            'rc-estadoOcurrenciaAutomatico':
+              dataItem.estado == 'REPROGRAMADO AUT.'
+          }"
+          >{{ dataItem.estado }}:
+        </span>
+        <span class="fw-bold">{{ dataItem.nombreOcurrencia }}</span>
+      </div>
+      <hr class="my-1" />
+      <div class="row">
+        <span
+          class="col-12"
+          *ngIf="
+            dataItem.comentarioActividad != null &&
+              dataItem.comentarioActividad.trim() != '';
+            else elseComentario
+          "
+          >{{ dataItem.comentarioActividad }}</span
+        >
+        <ng-template #elseComentario>
+          <span class="col-12 text-danger">Sin Comentario</span>
+        </ng-template>
+      </div>
+    </ng-template>
+    </kendo-grid-column>
+
+  </kendo-grid>
+</div>
+<ng-template #modalReproducirAudio let-modal>
+  <div
+    class="modal-header"
+    [ngClass]="{
+      'mra-bg-3cx': origenLlamada.includes('Integra'),
+      'mra-bg-integra': origenLlamada.includes('3cx'),
+      'mra-bg-wolkbox': origenLlamada.includes('Wolkbox'),
+      'mra-bg-ringover': origenLlamada.includes('Ringover'),
+      'mra-bg-wavix': origenLlamada.includes('Wavix')
+    }"
+  >
+    <h2 class="modal-title mb-0 text-white">Grabación {{ origenLlamada }}</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center">
+      <audio controls [src]="urlGrabacion" type="audio/mp3" controls autoplay>
+        Tu navegador no soporta el elemento de <code>audio</code>
+      </audio>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>

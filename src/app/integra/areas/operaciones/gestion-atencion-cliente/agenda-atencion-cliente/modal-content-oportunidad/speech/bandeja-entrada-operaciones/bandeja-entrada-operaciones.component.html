@@ -1,0 +1,211 @@
+<mat-expansion-panel class="mt-2" [expanded]="true">
+  <mat-expansion-panel-header class="enuciadoHeader">
+    <mat-panel-title> Historial de Mensajes </mat-panel-title>
+    <div
+      class="col"
+      style="margin-right: 12px; justify-content: end; display: flex"
+    >
+      <button class="btn-beo-hover-effect"
+        (click)="abrirModalCorreos(modalRedaccionCorreos,$event)"
+        style="
+          background: #0079ff;
+          border-radius: 10px;
+          color: white;
+          border: none;
+          padding: 7px;
+        "
+      >
+        <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+        Redactar Correo
+      </button>
+    </div>
+  </mat-expansion-panel-header>
+  <mat-card>
+    <mat-tab-group #tabgroup>
+      <mat-tab label="Correos Recibidos">
+        <div
+          class="row"
+          style="justify-content: center; align-items: center; display: flex"
+        >
+          <!-- <div
+            *ngIf="gridHistorialCorreoRecibidoTotal.loading"
+            class="loader"
+          ></div> -->
+          <div
+            *ngIf="gridHistorialCorreoRecibidoTotal.loading"
+            style="height: 100px"
+          >
+            <loading [loading]="true"></loading>
+          </div>
+        </div>
+        <h3
+          *ngIf="
+            !gridHistorialCorreoRecibidoTotal.loading &&
+            gridHistorialCorreoRecibidoTotal.data != null &&
+            gridHistorialCorreoRecibidoTotal.data.length == 0
+          "
+          style="text-align: center; font-weight: bold; margin: 25px 0"
+        >
+          - No hay correos recibidos -
+        </h3>
+        <app-bandeja-entrada-recibidos
+          [objetoRedaccionCorreo]="objetoRedaccionCorreo"
+          [agendaService]="agendaService"
+          *ngIf="
+            !gridHistorialCorreoRecibidoTotal.loading &&
+            gridHistorialCorreoRecibidoTotal.data != null &&
+            gridHistorialCorreoRecibidoTotal.data.length > 0
+          "
+          [gridHistorialCorreoRecibidoTotal]="gridHistorialCorreoRecibidoTotal"
+        >
+        </app-bandeja-entrada-recibidos>
+      </mat-tab>
+      <mat-tab label="Correos Enviados">
+        <div
+          class="row"
+          style="justify-content: center; align-items: center; display: flex"
+        >
+          <div
+            *ngIf="gridHistorialCorreoEnviadoTotal.loading"
+            style="height: 100px"
+          >
+            <loading [loading]="true"></loading>
+          </div>
+        </div>
+        <h3
+          *ngIf="
+            !gridHistorialCorreoEnviadoTotal.loading &&
+            gridHistorialCorreoEnviadoTotal.data != null &&
+            gridHistorialCorreoEnviadoTotal.data.length == 0
+          "
+          style="text-align: center; font-weight: bold; margin: 25px 0"
+        >
+          - No hay correos enviados -
+        </h3>
+
+        <app-bandeja-entrada-enviados
+          *ngIf="
+            !gridHistorialCorreoEnviadoTotal.loading &&
+            gridHistorialCorreoEnviadoTotal.data != null &&
+            gridHistorialCorreoEnviadoTotal.data.length > 0
+          "
+          [objetoRedaccionCorreo]="objetoRedaccionCorreo"
+          [agendaService]="agendaService"
+          [gridHistorialCorreoEnviadoTotal]="gridHistorialCorreoEnviadoTotal"
+        >
+        </app-bandeja-entrada-enviados>
+      </mat-tab>
+      <mat-tab label="Correos Masivos">
+        <div
+          class="row"
+          style="justify-content: center; align-items: center; display: flex"
+        >
+
+          <div
+            *ngIf="gridHistorialCorreoMasivoTotal.loading"
+            style="height: 100px"
+          >
+            <loading [loading]="true"></loading>
+          </div>
+        </div>
+        <h3
+          *ngIf="
+            !gridHistorialCorreoMasivoTotal.loading &&
+            gridHistorialCorreoMasivoTotal.data != null &&
+            gridHistorialCorreoMasivoTotal.data.length == 0
+          "
+          style="text-align: center; font-weight: bold; margin: 25px 0"
+        >
+          - No hay correos masivos -
+        </h3>
+
+        <app-bandeja-entrada-masivos
+          [objetoRedaccionCorreo]="objetoRedaccionCorreo"
+          [agendaService]="agendaService"
+          *ngIf="
+            !gridHistorialCorreoMasivoTotal.loading &&
+            gridHistorialCorreoMasivoTotal.data != null &&
+            gridHistorialCorreoMasivoTotal.data.length > 0
+          "
+          [gridHistorialCorreoMasivoTotal]="gridHistorialCorreoMasivoTotal"
+        >
+        </app-bandeja-entrada-masivos>
+      </mat-tab>
+      <mat-tab label="Historial de chat de soporte">
+        <div
+          class="row"
+          style="justify-content: center; align-items: center; display: flex"
+        >
+          <div *ngIf="chatSoporteInformacion.loader" style="height: 100px">
+            <loading [loading]="true"></loading>
+          </div>
+        </div>
+        <h3 *ngIf="!chatSoporteInformacion.loader && chatSoporteInformacion.historialMensajeRecibidosSoporte.length == 0" style="text-align: center; font-weight: bold; margin: 25px 0"> - No hay mensajes - </h3>
+        <app-bandeja-entrada-chat-soporte #entradaChatSoporte
+          *ngIf="!chatSoporteInformacion.loader && !lodearUrl && chatSoporteInformacion.historialMensajeRecibidosSoporte.length > 0"
+          [avatarUrl]="avatarUrl"
+          [chatSoporteInformacion]="chatSoporteInformacion"
+          [agendaService]="agendaService"
+        >
+        </app-bandeja-entrada-chat-soporte>
+      </mat-tab>
+      <mat-tab label="Historial de Whatsapp de Comercial">
+        <div
+          class="row"
+          style="justify-content: center; align-items: center; display: flex"
+        >
+          <div *ngIf="chatSoporteInformacion.loader" style="height: 100px">
+            <loading [loading]="true"></loading>
+          </div>
+        </div>
+        <app-bandeja-whatsapp-ventas #whatsappventas
+          *ngIf="!chatSoporteInformacion.loader && !lodearUrl"
+          [avatarUrl]="avatarUrl"
+          [chatSoporteInformacion]="chatSoporteInformacion"
+          [agendaService]="agendaService"
+        >
+        </app-bandeja-whatsapp-ventas>
+      </mat-tab>
+
+    </mat-tab-group>
+  </mat-card>
+</mat-expansion-panel>
+
+<ng-template #modalRedaccionCorreos let-modal>
+  <div
+    class="modal-header d-flex align-items-center"
+    style="background-color: #11c744; color: white"
+  >
+    <h3
+      class="modal-title m-0 p-0 text-center w-100"
+      id="modal-basic-title"
+      style="font-weight: bold"
+    >
+      Nuevo Correo
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="cerrarModal(modal)"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="loaderSendEmail" class="card" style="height: 13vh">
+      <div
+        class="row"
+        style="justify-content: center; align-items: center; display: flex"
+      >
+        <div class="loader"></div>
+      </div>
+    </div>
+    <app-redaccion-correo
+      [agendaService]="agendaService"
+      *ngIf="!loaderSendEmail"
+      [esNuevo]="true"
+      [objetoRedaccionCorreo]="objetoRedaccionCorreo"
+      (cerraDataEvent)="cerrarModal(modal)"
+      (formDataEvent)="recibirFormData($event, modal)"
+    ></app-redaccion-correo>
+  </div>
+</ng-template>

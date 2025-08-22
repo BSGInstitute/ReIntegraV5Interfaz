@@ -1,0 +1,653 @@
+<ng-template #modalConjunto>
+  <div
+    class="modal-header bg-primary-header-modal"
+    style="height: 60px; padding-left: 10px; overflow-y: auto"
+  >
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nueva Conjunto Lista" : "Modificar Conjunto Lista" }}
+    </h3>
+  </div>
+
+  <div class="modal-body formulario">
+    <div class="contenedor" style="width: 1000px">
+      <form [formGroup]="formulario">
+        <div class="form-row">
+          <div class="form-label">Nivel Filtro</div>
+          <kendo-formfield>
+            <kendo-dropdownlist
+              [data]="nivelSegmentacion"
+              [kendoDropDownFilter]="filterSettings"
+              [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+              textField="nombre"
+              valueField="id"
+              formControlName="nivelFiltro"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>         
+        </div>
+        <div class="form-row">
+          <div class="form-label">Nombre</div>
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" placeholder="Nombre" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Descripción</div>
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Descripción</mat-label>
+            <input
+              matInput
+              formControlName="descripcion"
+              placeholder="Descripción"
+            />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Filtro Segmento</div>
+          <kendo-formfield>
+            <kendo-dropdownlist
+              [data]="listaFiltro"
+              [kendoDropDownFilter]="filterSettings"
+              [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+              textField="nombre"
+              valueField="id"
+              formControlName="filtroSegmento"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Cantidad Repeticiones de contacto</div>
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Cantidad Repeticiones de contacto</mat-label>
+            <input matInput type="number" formControlName="repeticiones" />
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <button mat-button mat-dialog-close>Cerrar</button>
+  <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
+</ng-template>
+
+<ng-template #modalResultado>
+  <div
+    class="modal-header bg-primary-header-modal"
+    style="height: 60px; padding-left: 10px; overflow-y: auto"
+  >
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">Resultados</h3>
+  </div>
+
+  <div class="modal-body formulario">
+    <div class="contenedor" style="width: 1000px">
+      <ng-container *ngIf="loading">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </ng-container>
+      <kendo-grid
+        [kendoGridBinding]="listaResultado"
+        
+        [loading]="loading"
+        [pageSize]="5"
+        [sortable]="true"
+        [reorderable]="true"
+        [resizable]="true"
+        [columnMenu]="{ filter: true }"
+        [pageable]="{
+          buttonCount: 5,
+          info: true,
+          type: 'numeric',
+          pageSizes: true,
+          previousNext: true,
+          position: 'bottom'
+        }"
+      >
+        <kendo-grid-column
+          title="Id Alumno"
+          headerClass="justify-content-center k-grid-header "
+          [width]="200"
+          field="idAlumno"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Nombre Alumno"
+          headerClass="justify-content-center k-grid-header "
+          [width]="200"
+          field="nombreAlumno"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Lista"
+          headerClass="justify-content-center k-grid-header "
+          [width]="150"
+          field="nombreConjuntoListaDetalle"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Emial 1"
+          headerClass="justify-content-center k-grid-header"
+          [width]="150"
+          field="email1"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Emial 2"
+          headerClass="justify-content-center k-grid-header"
+          [width]="150"
+          field="email2"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Telefono"
+          headerClass="justify-content-center k-grid-header"
+          [width]="150"
+          field="telefono"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Celular"
+          headerClass="justify-content-center k-grid-header"
+          [width]="150"
+          field="celular"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Pais"
+          headerClass="justify-content-center k-grid-header"
+          [width]="150"
+          field="nombrePais"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Ciudad"
+          headerClass="justify-content-center k-grid-header"
+          [width]="150"
+          field="nombreCiudad"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Area Formacion"
+          headerClass="justify-content-center k-grid-header"
+          [width]="150"
+          field="nombreAreaFormacion"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          title="Area Trabajo"
+          headerClass="justify-content-center k-grid-header "
+          [width]="150"
+          field="nombreAreaTrabajo"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Industria"
+          headerClass="justify-content-center k-grid-header "
+          [width]="150"
+          field="nombreIndustria"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Cargo"
+          headerClass="justify-content-center k-grid-header "
+          [width]="150"
+          field="nombreCargo"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="En Venta Cruzada"
+          headerClass="justify-content-center k-grid-header "
+          [width]="150"
+          field="esVentaCruzada"
+          [locked]="false"
+          [sticky]="false"
+          [filterable]="true"
+          [hidden]="false"
+        >
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+
+  <button mat-button mat-dialog-close>Cerrar</button>
+</ng-template>
+
+<ng-template #modalContacto>
+  <div
+    class="modal-header bg-primary-header-modal"
+    style="height: 60px; padding-left: 10px; overflow-y: auto"
+  >
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">Alumnos</h3>
+  </div>
+  <div class="modal-body formulario">
+    <div class="contenedor" style="width: 1000px">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <input
+          class="ng-hide"
+          id="input-file-id"
+          multiple
+          type="file"
+          (change)="onFileChange($event)"
+          style="margin-right: 10px"
+        />
+        <button mat-flat-button class="btn3" type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- <div class="modal-body formulario">
+    <div class="contenedor" style="width: 1000px">
+      <form [formGroup]="form" (ngSubmit)="onSubmit2()">
+        <input
+          class="ng-hide"
+          id="input-file-id"
+          multiple
+          type="file"
+          (change)="onFileChange2($event)"
+          style="margin-right: 10px"
+        />
+        <button mat-flat-button class="btn3" type="submit">Enviar</button>
+      </form>
+    </div>
+  </div> -->
+
+  <div class="card-body p-4" id="grillaAgendaTab">
+    <div class="row d-flex justify-content-center mb-4">
+      <div class="mat-elevation-z8">
+        <ng-container *ngIf="loading">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-container>
+
+        <table mat-table [dataSource]="dataSource">
+          <ng-container matColumnDef="id">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 300px; text-align: center"
+            >
+              Id
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nombre1">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 500px; text-align: center"
+            >
+              Nombre1
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.nombre1 }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nombre2">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 200px; text-align: center"
+            >
+              Nombre2
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.nombre2 }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="apellidoMaterno">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 200px; text-align: center"
+            >
+              Apellido Materno
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.apellidoMaterno }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="apellidoPaterno">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 200px; text-align: center"
+            >
+              Spellido Paterno
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.apellidoPaterno }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="celular">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 200px; text-align: center"
+            >
+              Celular
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.celular }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email1">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 200px; text-align: center"
+            >
+              Correo
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.email1 }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <mat-paginator
+          [pageSize]="10"
+          [pageSizeOptions]="[5, 10, 25, 100]"
+          aria-label="Select page"
+        >
+        </mat-paginator>
+      </div>
+    </div>
+    <div class="botones">
+      <button mat-raised-button color="primary" style="margin-right:10px" (click)="crearLista()">
+        Crear Lista Contactos
+      </button>
+      <button mat-flat-button class="delete" mat-dialog-close>
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-color-material pb-0">
+        <h3 class="text-white mb-2">Conjunto de Listas</h3>
+      </div>
+
+      <div class="mat-elevation-z8">
+        <ng-container *ngIf="loading">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-container>
+        <div class="mat-elevation-z8">
+          <ng-container *ngIf="loading">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </ng-container>
+          <kendo-grid
+            [kendoGridBinding]="dataSourceEP"
+            [pageSize]="5"
+            [sortable]="true"
+            [reorderable]="true"
+            [resizable]="true"
+            [columnMenu]="{ filter: true }"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <button
+                kendoButton
+                icon="reload"
+                fillMode="flat"
+                themeColor="secondary"
+                (click)="ObtenerConjuntoLista()"
+              ></button>
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <button
+                kendoButton
+                [themeColor]="'primary'"
+                icon="plus"
+                (click)="abrirModal(true)"
+              >
+                Agregar
+              </button>
+            </ng-template>
+            <kendo-grid-column
+              title="Nombre"
+              headerClass="justify-content-center k-grid-header "
+              [width]="200"
+              field="nombre"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Nivel Filtro"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="nombreCategoriaObjeto"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Nro Repeticiones Contacto"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="nroListasRepeticionContacto"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Fecha Creacion"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="fechaCreacion"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Fecha Modificacion"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="fechaModificacion"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Usuario Creacion"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="usuarioCreacion"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Usuario Modificacion"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="usuarioModificacion"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-command-column
+              [sticky]="true"
+              title="Acciones"
+              [width]="250"
+              headerClass="justify-content-center text-center k-grid-header-command"
+            >
+              <ng-template
+                kendoGridCellTemplate
+                let-isNew="isNew"
+                let-dataItem="dataItem"
+                let-rowIndex="rowIndex"
+              >
+                <div
+                  class="w-100 d-flex justify-content-center"
+                  style="padding: 20px"
+                  kendoTooltip
+                >
+                  <div>
+                    <button
+                      title="Observar"
+                      kendoButton
+                      themeColor="success"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="abrirModalResultado(dataItem)"
+                    >
+                      <span class="k-icon k-i-preview k-i-eye k-icon-20"></span>
+                    </button>
+                    <button
+                      title="Ejecutar"
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="abrirModalContacto(dataItem)"
+                    >
+                      <span class="k-icon k-i-play k-icon-20"></span>
+                    </button>
+
+                    <button
+                      title="Editar"
+                      kendoButton
+                      themeColor="info"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="abrirModal(false, dataItem)"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      title="Eliminar"
+                      kendoButton
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="EliminarConjuntoLista(dataItem)"
+                    >
+                      <span class="k-icon k-i-close k-i-x k-icon-20"></span>
+                    </button>
+                    <button
+                      title="Duplicar"
+                      kendoButton
+                      themeColor="info"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="Duplicar(dataItem)"
+                    >
+                      <i class="material-icons copy">content_copy</i>
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

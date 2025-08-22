@@ -1,0 +1,420 @@
+<div class="card border-primary">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="text-white mb-2">
+      Gestion de Personal
+    </h2>
+  </div>
+  <div class="card-body p-2">
+    <kendo-grid [kendoGridBinding]="gridGestionPersonal.data" [loading]="gridGestionPersonal.loading"
+      (remove)="gridGestionPersonal.removeHandler($event)" [resizable]="true" filterable="menu" [sortable]="true"
+      [selectable]="true" [scrollable]="'scrollable'" [pageSize]="10" [pageable]="{ pageSizes: [5, 10, 20] }">
+      <!-- filterable="menu" -->
+      <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+        <button kendoButton icon="reload" fillMode="flat" themeColor="primary" (click)="obtenerTodo()"></button>
+
+        <kendo-grid-spacer></kendo-grid-spacer>
+
+        <button kendoButton icon="plus" themeColor="primary" (click)="
+              abrirModalInsertarPersonal()">
+          Nuevo
+        </button>
+      </ng-template>
+
+      <kendo-grid-column field="nombres" title="Nombres" [width]="100" headerClass="justify-content-center">
+        <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+          <kendo-grid-string-filter-menu [column]="column" [filter]="filter" [filterService]="filterService"
+            [extra]="false" operator="contains">
+            <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="apellidos" title="Apellidos" [width]="100" headerClass="justify-content-center">
+      </kendo-grid-column>
+      <kendo-grid-column field="area" title="Area" [width]="120" headerClass="justify-content-center">
+      </kendo-grid-column>
+
+      <kendo-grid-column field="asesorCoordinador" title="AsesorCoordinador" [width]="80"
+        headerClass="justify-content-center">
+      </kendo-grid-column>
+      <kendo-grid-column field="dominio" title="Dominio" [width]="100" headerClass="justify-content-center">
+      </kendo-grid-column>
+      <kendo-grid-column field="email" title="Email" [width]="140" headerClass="justify-content-center">
+      </kendo-grid-column>
+      <kendo-grid-column field="usuarioModificacion" title="UsuarioModificacion" [width]="100"
+        headerClass="justify-content-center">
+      </kendo-grid-column>
+      <kendo-grid-column field="usuarioModificacion" title="UsuarioModificacion" [width]="100">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          {{ dataItem.fechaModificacion | date : "dd/MM/yyyy" }}
+        </ng-template>
+        <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+          <kendo-datepicker [formControl]="formGroup.get('fechaModificacion')" format="dd/MM/yyyy"
+            [placeholder]="'Seleccione una fecha...'">
+          </kendo-datepicker>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="anexo" title="Anexo" [width]="80" headerClass="justify-content-center">
+      </kendo-grid-column>
+      <kendo-grid-column field="jefe" title="Jefe" [width]="100" headerClass="justify-content-center">
+      </kendo-grid-column>
+
+
+      <kendo-grid-command-column title="Acciones" [headerStyle]="{ color: '#5f75bd' }" [width]="80"
+        [headerClass]="'justify-content-center'" [resizable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          <button kendoButton fillMode="solid" rounded="large" size="large" class="p-2 me-1 ms-1" container="body"
+            placement="top" themeColor="primary" ngbTooltip="Ver detalle" (click)="abrirModalHorario(dataItem)">
+            <span class="k-icon k-i-calendar-date k-icon-20"></span>
+          </button>
+
+          <button kendoButton fillMode="solid" rounded="large" themeColor="warning" size="large" class="p-2 me-1 ms-1"
+            container="body" placement="top" ngbTooltip="Editar" (click)="
+                abrirModalDetalle(
+                 dataItem
+                )
+              ">
+            <span class="k-icon k-i-pencil k-icon-20"></span>
+          </button>
+          <!-- 
+          <button kendoButton fillMode="solid" rounded="large" themeColor="success" size="large" class="p-2 me-1 ms-1"
+            container="body" placement="top" ngbTooltip="Insertar" (click)="abrirModalInsertar(
+              
+            )">
+            <span class="k-icon k-i-align-left k-icon-20"></span>
+          </button> -->
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+  </div>
+</div>
+<!-- -----------------------Modal Crear Nuevo/Actualizar ---------------------- -->
+<ng-template #modalInsertarPersonal let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h5 class="modal-title m-0 p-0">
+      Crear Nuevo Personal
+    </h5>
+  </div>
+
+  <form [formGroup]="formPersonal" (ngSubmit)="insertar()">
+    <div class="modal-body p-3">
+      <div class="container-fluid">
+        <div class="row g-3">
+          <!-- Nombres -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="nombres" text="Nombres:"></kendo-label>
+              <kendo-textbox #nombres formControlName="nombres" id="nombres">
+              </kendo-textbox>
+              <kendo-formerror>El campo Nombres es obligatorio</kendo-formerror>
+            </kendo-formfield>
+          </div>
+
+          <!-- Apellidos -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="apellidos" text="Apellidos:"></kendo-label>
+              <kendo-textbox #apellidos formControlName="apellidos" id="apellidos"></kendo-textbox>
+              <kendo-formerror>El campo Apellidos es obligatorio</kendo-formerror>
+            </kendo-formfield>
+          </div>
+
+          <!-- Área -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label class="d-flex align-items-end" [style.width.px]="80" [for]="area" text="Area:"
+                [ngStyle]="{'font-weight':'bold'}">
+              </kendo-label>
+              <kendo-dropdownlist #area [data]="listaArea" textField="nombre" valueField="nombre" formControlName="area"
+                [valuePrimitive]="false" [defaultItem]="{ nombre: '<Areas>', id: null }" [filterable]="true"
+                (filterChange)="filtrarAreasBusqueda($event)">
+              </kendo-dropdownlist>
+              <kendo-formerror>Seleccione una Area</kendo-formerror>
+            </kendo-formfield>
+          </div>
+
+          <!-- Tipo: Asesor o Coordinador -->
+          <div class="col-12 col-md-6">
+            <label class="form-label d-block text-start"><b>Tipo:</b></label>
+
+            <div class="d-flex justify-content-center gap-1">
+              <div class="d-flex align-items-center">
+                <input type="radio" formControlName="asesorCoordinador" [value]="'Asesor'" id="radioAsesor"
+                  name="asesorCoordinador" />
+                <label for="radioAsesor" class="ms-2 mb-0">Asesor</label>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <input type="radio" formControlName="asesorCoordinador" [value]="'Coordinador'" id="radioCoordinador"
+                  name="asesorCoordinador" />
+                <label for="radioCoordinador" class="ms-2 mb-0">Coordinador</label>
+              </div>
+              <div class="d-flex align-items-center">
+                <input type="radio" formControlName="asesorCoordinador" [value]="'Otro'" id="radioOtro"
+                  name="asesorCoordinador" />
+                <label for="radioOtro" class="ms-2 mb-0">Otro</label>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Email -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="email" text="E-mail:"></kendo-label>
+              <kendo-textbox #email formControlName="email" id="email"></kendo-textbox>
+
+              <kendo-formerror
+                *ngIf="formPersonal.get('email')?.hasError('required') && formPersonal.get('email')?.touched">
+                El campo email es obligatorio
+              </kendo-formerror>
+
+              <kendo-formerror
+                *ngIf="formPersonal.get('email')?.hasError('email') && formPersonal.get('email')?.touched">
+                El email no tiene un formato válido
+              </kendo-formerror>
+
+            </kendo-formfield>
+            
+          </div>
+
+
+          <!-- Anexo -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="anexo" text="Anexo:"></kendo-label>
+              <kendo-textbox #anexo formControlName="anexo" id="anexo"></kendo-textbox>
+              <kendo-formerror>El campo anexo es obligatorio</kendo-formerror>
+            </kendo-formfield>
+
+          </div>
+
+          <!-- Central Telefónica -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label class="d-flex align-items-end" [style.width.px]="80" [for]="central" text="Central:"
+                [ngStyle]="{'font-weight':'bold'}">
+              </kendo-label>
+              <kendo-dropdownlist #central formControlName="central" [data]="listaCentralLlamada"
+                [defaultItem]="{ id: null, nombre: '-Central telefonica-' }" textField="nombre" valueField="nombre"
+                [valuePrimitive]="false" (filterChange)="filtrarDireccionCentralLlamada($event)" [filterable]="true">
+              </kendo-dropdownlist>
+              <kendo-formerror>Seleccione una central</kendo-formerror>
+            </kendo-formfield>
+          </div>
+
+          <!-- Jefe Inmediato -->
+          <div class="col-12 col-md-6">
+            <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="jefe" text="Jefe:"></kendo-label>
+            <kendo-dropdownlist #jefe formControlName="jefe" [data]="listaPersonal"
+              (filterChange)="FiltrarPersonalBusqueda($event)" textField="nombre" valueField="nombre"
+              [defaultItem]="{ id: null, nombre: '-Jefe Inmediato-' }" [valuePrimitive]="false" [filterable]="true">
+            </kendo-dropdownlist>
+          </div>
+
+          <!-- Dominio -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label class="d-flex align-items-end" [style.width.px]="80" [for]="dominio" text="Dominio:"
+                [ngStyle]="{'font-weight':'bold'}">
+              </kendo-label>
+              <kendo-dropdownlist #dominio [data]="listaDominioPbx" formControlName="dominio"
+                [defaultItem]="{ id: null, nombre: '-DomnioPbx-' }" textField="nombre" valueField="nombre"
+                [valuePrimitive]="false" (filterChange)="FiltroDominioPbx($event)" [filterable]="true" id="dominio">
+              </kendo-dropdownlist>
+              <kendo-formerror>Seleccione un dominio</kendo-formerror>
+            </kendo-formfield>
+          </div>
+
+          <!-- País (DH) -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label class="d-flex align-items-end" [style.width.px]="80" [for]="idPais" text="Pais(DH):"
+                [ngStyle]="{'font-weight':'bold'}">
+              </kendo-label>
+              <kendo-dropdownlist #idPais formControlName="idPais" [data]="listaZonaHorariaActivo"
+                [defaultItem]="{ id: null, nombreExtendido: '-PaisDH-' }" textField="nombreExtendido"
+                valueField="codigo" [valuePrimitive]="false" (filterChange)="FiltroZonaHorarioActivo($event)"
+                [filterable]="true" id="idPais">
+              </kendo-dropdownlist>
+              <kendo-formerror>Seleccione un PaisDH</kendo-formerror>
+            </kendo-formfield>
+          </div>
+
+          <!-- GESTION IP -->
+          <fieldset class="border rounded p-3 mb-3">
+            <legend class="float-none w-auto px-2"><b>Direcciones Ip</b></legend>
+
+            <div class="mb-3 row align-items-center">
+              <div class="col-sm-4 col-form-label text-end">
+                <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="ip1" text="Ip(Principal):"></kendo-label>
+              </div>
+              <div class="col-sm-8">
+                <kendo-textbox #ip1 formControlName="ip1" id="ip1" placeholder="IP 1"></kendo-textbox>
+              </div>
+            </div>
+
+            <div class="mb-3 row align-items-center">
+              <div class="col-sm-4 col-form-label text-end">
+                <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="ip2" text="Ip(Secundario):"></kendo-label>
+              </div>
+              <div class="col-sm-8">
+                <kendo-textbox #ip2 formControlName="ip2" id="ip2" placeholder="IP 2"></kendo-textbox>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button class="btn btn-warning" type="button" (click)="resetIps()">Resetear IPs</button>
+            </div>
+          </fieldset>
+
+          <!-- Checkbox ACTIVO -->
+          <div class="d-flex justify-content-center">
+            <div class="d-flex align-items-center gap-2">
+              <input #activo type="checkbox" class="form-check-input" id="activo" formControlName="activo" />
+              <kendo-label class="k-checkbox-label" [for]="activo" text="Activo" [ngStyle]="{'font-size' : '18px'}">
+              </kendo-label>
+
+            </div>
+          </div>
+
+
+          <!-- ID FOP (DH) -->
+          <div class="col-12 col-md-6">
+            <kendo-formfield>
+              <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="usuarioAsterisk" text="Id FOP:"></kendo-label>
+              <kendo-textbox #usuarioAsterisk formControlName="usuarioAsterisk" id="usuarioAsterisk"></kendo-textbox>
+            </kendo-formfield>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <kendo-formfield orientacion="horizontal">
+              <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="contrasenaAsterisk" text="Password FOP:"
+                class="d-flex align-items-end"></kendo-label>
+
+              <div class="k-textbox-group d-flex gap-1 align-content-center">
+                <input #contrasenaAsterisk [type]="getInputType('contrasenaAsterisk')" kendoTextBox
+                  placeholder="Password FOP" formControlName="contrasenaAsterisk" id="contrasenaAsterisk">
+                <div class="btn btn-secondary" kendoButton (click)="togglePassword('contrasenaAsterisk')">
+                  <fa-icon [icon]="mostrarPassword['contrasenaAsterisk'] ? 'eye-slash' : 'eye'"></fa-icon>
+                </div>
+              </div>
+
+            </kendo-formfield>
+          </div>
+          <div class="border rounded p-3 d-flex">
+            <div class="col-12 col-md-6">
+              <kendo-formfield>
+                <kendo-label [ngStyle]="{'font-weight':'bold'}" [for]="passwordCorreo"
+                  text="Contraseña Aplicacion:"></kendo-label>
+
+                <div class="k-textbox-group d-flex gap-1 align-content-center">
+                  <input [type]="getInputType('passwordCorreo')" #passwordCorreo kendoTextBox
+                    formControlName="passwordCorreo" id="passwordCorreo" placeholder="Password Correo">
+                  <div class="btn btn-secondary" kendoButton (click)="togglePassword('passwordCorreo')">
+                    <fa-icon [icon]="mostrarPassword['passwordCorreo'] ? 'eye-slash' : 'eye'"></fa-icon>
+                  </div>
+
+                </div>
+
+              </kendo-formfield>
+            </div>
+
+            <div class="col-12 col-md-6 d-flex justify-content-center gap-1 align-items-end">
+              <button type="button" class="btn btn-warning d-flex align-items-center gap-2 h-[10px]"
+                (click)="validarClaveApp()" [disabled]="loaderValidacion">
+                <span *ngIf="loaderValidacion" class="spinner-border spinner-border-sm" role="status"
+                  aria-hidden="true"></span>
+                {{ loaderValidacion ? 'Validando…' : 'Validar clave' }}
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer d-flex justify-content-end gap-2">
+      <button *ngIf="esNuevo" type="submit" class="btn btn-primary d-flex align-items-center gap-2"
+        [disabled]="formPersonal.invalid || loader">
+        <span *ngIf="loader" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{loader ? 'Guardando...' : 'Guardar'}}
+      </button>
+
+      <button *ngIf="!esNuevo" type="button" class="btn btn-primary" [disabled]="formPersonal.invalid || loader"
+        (click)="actualizar()">
+        <span *ngIf="loader" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{loader ? 'Actualizando...' : 'Actualizar'}}
+      </button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('Close click')" [disabled]="enProcesoSolicitud">
+        Cancelar
+      </button>
+    </div>
+  </form>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+
+
+<!-- ----------------------Modal Detalle ------------------------>
+
+<ng-template #modalInsertarHorario let-modal>
+
+
+  <!-- Encabezado -->
+  <div class="modal-header bg-primary-header-modal">
+    <h2 class="modal-title">Registro Horario</h2>
+  </div>
+
+  <div class=" w-100 d-flex justify-content-end p-2">
+    <button class="btn btn-primary" (click)="assetHorario()">Usar plantilla</button>
+  </div>
+
+
+  <!-- Cuerpo -->
+  <div class="modal-body p-3">
+    <div class="table-responsive">
+      <form [formGroup]="formHorario">
+        <table class="table table-bordered text-center align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Día</th>
+              <th>Entrada</th>
+              <th>Receso Inicio</th>
+              <th>Receso Fin</th>
+              <th>Salida</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dia of diasSemana" [formGroupName]="dia">
+              <td class="fw-bold">{{ dia }}</td>
+              <td><input type="time" class="form-control form-control-sm" formControlName="entrada" /></td>
+              <td><input type="time" class="form-control form-control-sm" formControlName="recesoInicio" /></td>
+              <td><input type="time" class="form-control form-control-sm" formControlName="recesoRegreso" /></td>
+              <td><input type="time" class="form-control form-control-sm" formControlName="salida" /></td>
+              <td>
+                <button type="button" class="btn btn-warning btn-sm" (click)="limpiarDia(dia)">Limpiar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">Cancelar</button>
+    <!-- <button type="button" class="btn btn-primary" (click)="insertarHorario()">Guardar</button> -->
+
+    <button (click)="insertarHorario()" class="btn btn-primary d-flex align-items-center gap-2">
+      <span *ngIf="loader" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      {{loader ? 'Guardando...' : 'Guardar'}}
+    </button>
+  </div>
+
+
+</ng-template>

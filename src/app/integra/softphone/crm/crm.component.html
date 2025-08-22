@@ -1,0 +1,176 @@
+<div class="m-0">
+  <div class="row w-100 m-0 centralLegend">
+    <div class="col-12 my-2">
+      <div style="padding-left: 15px" class="switch-marcador">
+        <span class="fw-bold fs-6">Central Llamada</span>
+        <button
+          type="button"
+          class="btn btn-sm py-0 px-1 mx-2"
+          style="background: white; height: 34px"
+        >
+          <fa-icon
+            [icon]="['fas', 'square-phone']"
+            class="d-flex"
+            [ngStyle]="{ color: (colorStatusCrm$ | async) }"
+            style="font-size: 30px"
+          ></fa-icon>
+        </button>
+        <span class="fw-bold fs-6"
+          >Estado
+          <fa-icon
+            [icon]="['fas', 'circle']"
+            [ngStyle]="{ color: (colorStatusCrm$ | async) }"
+          ></fa-icon>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-softphone-integra
+  (softphoneEvents)="onSoftphoneEventsEvents($event)"
+></app-softphone-integra>
+
+<kendo-floatingactionbutton
+  *ngIf="this.esWolkbox"
+  class="colgarLlamada"
+  text="Colgar Llamada"
+  title="Colgar Llamada"
+  size="small"
+  rounded="medium"
+  [align]="{ vertical: 'top', horizontal: 'start' }"
+  (click)="colgarLlamada()"
+  [disabled]="enProcesoSolicitud"
+  themeColor="error"
+>
+</kendo-floatingactionbutton>
+
+<kendo-floatingactionbutton
+  *ngIf="!this.esWolkbox && (!(showSoftphone$ | async) && (showBtnMostrarWebphone$ | async))"
+  text="Mostrar"
+  title="Mostrar"
+  class="mostrar"
+  size="small"
+  rounded="medium"
+  [align]="{ vertical: 'top', horizontal: 'start' }"
+  (click)="showSoftphone()"
+  themeColor="success"
+>
+</kendo-floatingactionbutton>
+
+<kendo-floatingactionbutton
+  *ngIf="!this.esWolkbox && (showBtnReiniciarWebphone$ | async)"
+  class="reiniciarTelefono"
+  text="Reiniciar telefono"
+  title="Reiniciar telefono"
+  size="small"
+  rounded="medium"
+  [align]="{ vertical: 'top', horizontal: 'start' }"
+  (click)="reiniciarTelefono()"
+  themeColor="error"
+>
+</kendo-floatingactionbutton>
+
+<!-- <kendo-floatingactionbutton
+  [icon]="!(esMarcadorActivo$ | async) ? 'check' : 'close'"
+  class="marcadorAutomatico"
+  text="Marcador Automatico"
+  size="small"
+  rounded="medium"
+  [align]="{ vertical: 'top', horizontal: 'start' }"
+  (click)="activarMarcador()"
+  [disabled]="(colorStatusCrm$ | async) == '#EC0C0C'"
+  [themeColor]="!(esMarcadorActivo$ | async) ? 'light' : 'warning'"
+>
+</kendo-floatingactionbutton> -->
+
+<kendo-window
+  *ngIf="showConfirmarLlamada$ | async"
+  [top]="100"
+  [left]="100"
+  [width]="360"
+  [height]="200"
+  [resizable]="false"
+>
+  <kendo-window-titlebar> </kendo-window-titlebar>
+  <div class="row mt-2">
+    <h2 class="col-12 text-center">
+      Se conecto tu llamada, parece una contestada real. ¿Es correcto?
+    </h2>
+  </div>
+  <div class="row">
+    <div class="col d-flex justify-content-between">
+      <button
+        kendoButton
+        icon="check"
+        class="mx-1"
+        themeColor="success"
+        (click)="confirmarLlamadaEfectiva()"
+        [disabled]="estadoProcesoMarcador"
+      >
+        SI, Continuar
+      </button>
+      <button
+        kendoButton
+        themeColor="primary"
+        icon="close"
+        class="mx-1"
+        [disabled]="estadoProcesoMarcador"
+        (click)="calcularFechaReprogramacion()"
+      >
+        NO, Reprogramar
+      </button>
+    </div>
+  </div>
+  <div class="row justify-content-center mt-1">
+    <div class="col-auto fs-2 text-danger" [ngClass]="isReloj ? 'reloj' : ''">
+      {{ tiempoContador }}
+    </div>
+  </div>
+</kendo-window>
+<kendo-window
+  *ngIf="showVerFicha$ | async"
+  [top]="100"
+  [left]="100"
+  [width]="400"
+  [height]="200"
+  [resizable]="false"
+>
+  <kendo-window-titlebar> </kendo-window-titlebar>
+  <div class="row mt-2">
+    <div class="col-12">
+      Total Intentos: {{ totalIntentos$ | async }}; C:
+      {{ contestado$ | async }}; NC:
+      {{ noContestado$ | async }}
+    </div>
+  </div>
+  <div class="row">
+    <h2 class="col-12 text-center">
+      El dato llego a los 2 intentos ¿Desea permanecer en la ficha de datos?
+    </h2>
+  </div>
+  <div class="row mt-1">
+    <div class="col d-flex justify-content-between">
+      <button
+        kendoButton
+        icon="check"
+        class="mx-1"
+        themeColor="success"
+        [disabled]="estadoProcesoMarcador"
+        (click)="verFichaDatos()"
+      >
+        SI, Ver Ficha
+      </button>
+      <button
+        kendoButton
+        themeColor="error"
+        icon="cancel"
+        class="mx-1"
+        [disabled]="estadoProcesoMarcador"
+        (click)="guardarActividad()"
+      >
+        NO, Guardar Actividad
+      </button>
+    </div>
+  </div>
+</kendo-window>

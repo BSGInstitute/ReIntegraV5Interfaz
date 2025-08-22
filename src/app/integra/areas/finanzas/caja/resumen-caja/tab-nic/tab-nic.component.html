@@ -1,0 +1,279 @@
+
+<div class="row" >
+  <div class="k-loading-panel" *ngIf="loader">
+    <div class="k-loading-panel-mask"></div>
+    <div class="k-loading-panel-wrapper">
+      <kendo-loader
+        type="converging-spinner"
+        themeColor="primary"
+        size="large"
+      >
+      </kendo-loader>
+      <div class="k-loading-panel-text fs-5 text-primary">Cargando...</div>
+    </div>
+  </div>
+    <div class="col-md-5" style="padding: 0px !important;margin-top: 1.5rem;"> 
+        <kendo-daterange>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-7" 
+                        style="
+                        padding-top: 5px;
+                        padding-right: 0px !important;
+                        padding-left: 0px !important;">
+                            Fecha Inicio :
+                        </div>
+                        <div class="col-md-3" style=" padding:0px;">
+                            <kendo-dateinput
+                                kendoDateRangeStartInput
+                                [formControl]="fechaInicio"
+                                [incompleteDateValidation]="true"
+                                [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                placeholder="dia-mes-año"
+                            ></kendo-dateinput>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-7" style="padding-top: 5px;padding-right: 0px !important;">
+                            Fecha Fin :
+                        </div>
+                        <div class="col-md-3" style=" padding:0px;">
+                            <kendo-dateinput
+                                kendoDateRangeEndInput
+                                [formControl]="fechaFin"
+                                [incompleteDateValidation]="true"
+                                [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                placeholder="dia-mes-año"
+                            ></kendo-dateinput>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                </div>
+            </div>
+        </kendo-daterange>
+    </div>
+    <div class="col-md-2" style="margin-top: 1.5rem;">
+        <button
+            kendoButton 
+            icon="k-icon k-i-search k-icon-20"
+            type="button"
+            themeColor="primary"
+            (click)="GenerarReporteNIC()"
+            >
+            Buscar
+        </button>
+    </div>
+    <div class="card element col-md-3" >
+                          
+        <div class="row" style="padding: 0.5rem;">
+          <div class="col-md-5">
+            Tipo de Moneda :
+          </div>
+          <div class="col-md-7" style="margin-left: -1.5rem;">
+            <kendo-textbox
+            [readonly]="true"
+            [value]="tipoMoneda"
+            class="d-flex"
+            size="small"
+          >
+          </kendo-textbox>
+          </div>
+          
+        </div>
+        <div class="row" style="padding: 0.5rem;">
+          <div class="col-md-5">
+            Total Efectivo :
+          </div>
+          <div class="col-md-7" style="margin-left: -1.5rem;">
+            <kendo-numerictextbox
+            [spinners]="false"
+            [readonly]="true"
+            [value]="total"
+            class="d-flex"
+            size="small"
+          >
+          </kendo-numerictextbox>
+          </div>
+        </div>
+      
+    </div>
+</div>
+<br>
+
+<div class="row">
+    <div class="col-md-12">
+      <div class="card-header bg-color-material col-md-12">
+          <div class="row col-md-12">
+              <div div class="col-md-12" style="text-align: left;">
+                <div class="row">
+                  <div class="col-md-7">
+                    <button
+                      kendoButton 
+                      style="margin-right: 1rem;"
+                      icon="k-icon k-i-file-excel k-icon-20"
+                      type="button"
+                      themeColor="tertiary"
+                      (click)="excelexport.save()"
+                      >
+                      Exportar a Excel
+                    </button>
+                    
+                    <kendo-excelexport 
+                    [data]="listaNIC" 
+                    fileName="ResumenCaja-NIC.xlsx" #excelexport>
+                      <kendo-excelexport-column field="codigoCaja" title="Códogo de Caja">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="codigoNic" title="Código NIC">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="origenIngresoCaja" title="Origen">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="personalEmitido" title="Emitido A">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="monto" title="Monto">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="fechaGiro" title="Fecha de Giro">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="concepto" title="Concepto">
+                      </kendo-excelexport-column>
+                    </kendo-excelexport>
+                    <button
+                      kendoButton 
+                      icon="k-icon k-i-file-pdf k-icon-20"
+                      type="button"
+                      themeColor="error"
+                      (click)="GenerarPDf()"
+                      >
+                      Exportar a Pdf
+                    </button>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+      <kendo-grid
+      [kendoGridBinding]="listaNIC"
+      [pageSize]="5"
+      [sortable]="true"
+      [reorderable]="true"
+      [resizable]="true"
+      [columnMenu]="{ filter: true }"
+      kendoGridSelectBy="id"
+      [(selectedKeys)]="listaSeleccion"
+      (selectedKeysChange)="CalcularTotal()"
+      [selectable]="{ enabled: true, checkboxOnly: true }"
+      (filterChange)="limpiarSeleccion()"
+      [pageable]="true"
+      style="max-height: 700px"
+      >
+        <kendo-grid-checkbox-column
+        [width]="45"
+        [headerClass]="{ 'text-center': true }"
+        [class]="{ 'text-center': true }"
+        [resizable]="false"
+        [columnMenu]="false"
+        [showSelectAll]="true"
+        [sticky]="true"
+        >
+        </kendo-grid-checkbox-column>
+        <kendo-grid-column
+            title="Código de Caja"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="codigoCaja"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Código NIC"
+            headerClass="justify-content-center k-grid-header "
+            [width]="200"
+            field="codigoNic"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Origen"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="origenIngresoCaja"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Emitido A"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="personalEmitido"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Monto"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="monto"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Fecha de Giro"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="fechaGiro"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Concepto"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="concepto"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <ng-template
+            kendoPagerTemplate
+            let-totalPages="totalPages"
+            let-currentPage="currentPage"
+            >
+              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+              <kendo-pager-numeric-buttons
+                [buttonCount]="5"
+              ></kendo-pager-numeric-buttons>
+              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+              <!-- <kendo-pager-input></kendo-pager-input> -->
+              <kendo-pager-info></kendo-pager-info>
+              <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+          </ng-template>
+
+      </kendo-grid>
+      
+    </div>
+</div>

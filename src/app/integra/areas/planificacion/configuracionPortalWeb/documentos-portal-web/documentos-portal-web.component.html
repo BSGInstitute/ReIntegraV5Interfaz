@@ -1,0 +1,736 @@
+<div class="contenedor" #documentospw>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2 text-center">
+            (C) Documentos del Portal Web
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="col-12 bg-color-material pb-0">
+            <kendo-grid
+              [kendoGridBinding]="gridDocumentosPw.data"
+              [loading]="gridDocumentosPw.loading"
+              [selectable]="true"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [cellHeight]="400"
+              [skip]="0"
+              [pageSize]="15"
+              filterable="menu"
+              kendoGridSelectBy="id"
+              [(selectedKeys)]="listaSeleccion"
+            >
+              <ng-template
+                kendoPagerTemplate
+                let-totalPages="totalPages"
+                let-currentPage="currentPage"
+              >
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="5"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="cantidadItems"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="generarReporte()"
+                  ></button>
+                </div>
+              </ng-template>
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoGridAddCommand
+                  themeColor="success"
+                  icon="plus"
+                  (click)="
+                    abrirModalNuevoEditarDocumento(modalNuevoEditarDocumento)
+                  "
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                class="custom-cell"
+                [width]="220"
+                headerClass="justify-content-center"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+                [editable]="false"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idPlantillaPw"
+                title="Plantilla"
+                class="custom-cell"
+                [width]="200"
+                headerClass="justify-content-center"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+                [editable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    {{ obtenerNombrePlantilla(dataItem.idPlantillaPw) }}
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="estadoFlujo"
+                title="Estado Flujo"
+                class="custom-cell"
+                [width]="200"
+                headerClass="justify-content-center"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+                [editable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    {{ dataItem.estadoFlujo }}
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Editar"
+                class="custom-cell"
+                [width]="70"
+                headerClass="justify-content-center"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+                [editable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <div class="text-center">
+                    <button
+                      kendoButton
+                      kendoTooltip
+                      themeColor="warning"
+                      fillMode="solid"
+                      icon="pencil"
+                      class="mx-1"
+                      container="body"
+                      placement="top"
+                      title="Editar Documento"
+                      (click)="
+                        abrirModalNuevoEditarDocumento(
+                          modalNuevoEditarDocumento,
+                          dataItem
+                        )
+                      "
+                    ></button>
+                    <button
+                      kendoButton
+                      kendoTooltip
+                      themeColor="error"
+                      fillMode="solid"
+                      icon="close"
+                      class="mx-1"
+                      container="body"
+                      placement="top"
+                      title="Eliminar Documento"
+                      (click)="eliminarDocumento(dataItem)"
+                    ></button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nuevo Editar Crucigrama -->
+<ng-template #modalNuevoEditarDocumento let-modal>
+  <div class="modal-header py-2 bg-primary-header-modal">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      <strong>Datos del Documento</strong>
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <div class="card">
+      <div class="card-body pt-1">
+        <form [formGroup]="formDatosDocumento" class="k-form">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <kendo-formfield>
+                <label class="k-label" [for]="nombre">
+                  <span>Nombre<span class="fw-bold"> *</span></span>
+                </label>
+                <kendo-textbox #nombre formControlName="nombre"></kendo-textbox>
+                <kendo-formerror
+                  >Error: El Nombre es obligatorio</kendo-formerror
+                >
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-6">
+              <kendo-formfield>
+                <label class="k-label" [for]="plantilla">
+                  <span>Plantilla<span class="fw-bold"> *</span></span>
+                </label>
+                <kendo-dropdownlist
+                  #plantilla
+                  [data]="comboPlantilla"
+                  textField="nombre"
+                  valueField="id"
+                  size="medium"
+                  [defaultItem]="{
+                    id: null,
+                    nombre: '<Seleccione una plantilla>'
+                  }"
+                  [valuePrimitive]="true"
+                  [disabled]="!esNuevo ? true : false"
+                  formControlName="idPlantilla"
+                  [kendoDropDownFilter]="filterSettings"
+                  (valueChange)="obtenerPlantillas($event)"
+                ></kendo-dropdownlist>
+                <kendo-formerror
+                  >Error: La Plantilla es obligotoria</kendo-formerror
+                >
+              </kendo-formfield>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-header bg-color-material">
+        <h2 class="mb-0 w-100 text-center text-white">
+          Lista de Revisiones Nivel
+        </h2>
+      </div>
+      <div class="card-body p-0">
+        <kendo-grid
+          [kendoGridBinding]="gridListaRevisionNivel.data"
+          [loading]="gridListaRevisionNivel.loading"
+        >
+          <kendo-grid-column
+            field="nombre"
+            title="Nombre"
+            [width]="80"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="prioridad"
+            title="Secuencia"
+            [width]="80"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="idTipoRevisionPw"
+            title="Tipo de Revisiones"
+            [width]="100"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="nombreCompleto"
+            title="Nombre Completo"
+            [width]="100"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="email"
+            title="Email"
+            [width]="80"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="rol"
+            title="Rol"
+            [width]="80"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="identificador"
+            title="Identificador"
+            [width]="80"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Asociar Revisor"
+            [width]="80"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="text-center">
+                <button
+                  kendoGridRemoveCommand
+                  kendoTooltip
+                  themeColor="warning"
+                  fillMode="solid"
+                  icon="pencil"
+                  class="mx-1"
+                  container="body"
+                  placement="top"
+                  title="Editar"
+                ></button>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-header">
+        <h2 class="mb-0">Lista de Secciones</h2>
+      </div>
+      <div class="card-body">
+        <div *ngIf="plantillas">
+          <div class="my-3" *ngFor="let item of plantillas">
+            <ng-container *ngIf="item.tipo === 1; else sectionContent">
+              <div class="col-md-12">
+                <legend>
+                  <b>{{ item.nombre }}</b>
+                </legend>
+              </div>
+              <div class="col-md-12">
+                {{ item.contenido }}
+              </div>
+            </ng-container>
+            <ng-template #sectionContent>
+              <div class="card">
+                <div class="card-header">
+                  <h2
+                    class="mb-0 fw-bold w-100 text-start"
+                    style="color: orange"
+                  >
+                    {{ item.nombre }}
+                  </h2>
+                </div>
+                <div class="card-body">
+                  <ng-container
+                    *ngIf="item.idSeccionTipoContenido === 2; else inputSection"
+                  >
+                    <div class="w-100">
+                      <kendo-editor [(ngModel)]="item.contenido">
+                        <kendo-toolbar>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorBoldButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorItalicButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorUnderlineButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorStrikethroughButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorSubscriptButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorSuperscriptButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorAlignLeftButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorAlignCenterButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorAlignRightButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorAlignJustifyButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-dropdownlist
+                            kendoEditorFormat
+                          ></kendo-toolbar-dropdownlist>
+                          <kendo-toolbar-dropdownlist
+                            kendoEditorFontSize
+                          ></kendo-toolbar-dropdownlist>
+                          <kendo-toolbar-dropdownlist
+                            kendoEditorFontFamily
+                          ></kendo-toolbar-dropdownlist>
+                          <kendo-toolbar-colorpicker
+                            kendoEditorForeColor
+                          ></kendo-toolbar-colorpicker>
+                          <kendo-toolbar-colorpicker
+                            kendoEditorBackColor
+                            view="gradient"
+                          ></kendo-toolbar-colorpicker>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorInsertUnorderedListButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorInsertOrderedListButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorIndentButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorOutdentButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorBlockquoteButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorSelectAllButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorUndoButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorRedoButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorCreateLinkButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorUnlinkButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorInsertFileButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorInsertImageButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorViewSourceButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorCleanFormattingButton
+                          ></kendo-toolbar-button>
+                          <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorAddColumnBeforeButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorAddColumnAfterButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorAddRowBeforeButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorAddRowAfterButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorDeleteColumnButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorDeleteRowButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorDeleteTableButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-buttongroup>
+                            <kendo-toolbar-button
+                              kendoEditorMergeCellsButton
+                            ></kendo-toolbar-button>
+                            <kendo-toolbar-button
+                              kendoEditorSplitCellButton
+                            ></kendo-toolbar-button>
+                          </kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorPrintButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar>
+                      </kendo-editor>
+                    </div>
+                  </ng-container>
+                  <ng-template #inputSection>
+                    <ng-container *ngIf="item.idSeccionTipoContenido === 1 && item.nombre!='Prerrequisitos'">
+                      <div class="row mb-3">
+                        <label
+                          class="col-sm-4 col-md-2 fw-bold"
+                          style="text-align: left"
+                          >Introducción</label
+                        >
+                        <div class="col-sm-8 col-md-10">
+                          <kendo-textbox
+                            type="text"
+                            [(ngModel)]="item.cabecera"
+                          >
+                          </kendo-textbox>
+                        </div>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="item.grid">
+                      <kendo-grid
+                        [kendoGridBinding]="item.grid.data"
+                        [pageable]="false"
+                        [resizable]="true"
+                        [selectable]="true"
+                        (cancel)="item.grid.cancelHandler($event)"
+                        (save)="item.grid.saveHandler($event)"
+                        (remove)="item.grid.removeHandler($event)"
+                        (add)="item.grid.addHandler($event)"
+                        (cellClick)="item.grid.cellClickHandler($event)"
+                        (cellClose)="item.grid.cellCloseHandler($event)"
+                      >
+                        <ng-template kendoGridToolbarTemplate>
+                          <button
+                            kendoGridAddCommand
+                            themeColor="info"
+                            icon="plus"
+                          >
+                            Agregar
+                          </button>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                        </ng-template>
+                        <kendo-grid-column
+                          *ngFor="let column of item.listaSubSeccionesPw"
+                          [field]="column.field"
+                          [title]="column.nombreSubSeccion"
+                          [width]="100"
+                          headerClass="justify-content-center"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-command-column
+                          title="Eliminar"
+                          [width]="100"
+                          headerClass="justify-content-center"
+                        >
+                          <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem="dataItem"
+                          >
+                            <div class="row justify-content-center">
+                              <div kendoTooltip class="col-auto p-0 mx-1">
+                                <button
+                                  kendoGridRemoveCommand
+                                  themeColor="error"
+                                  icon="trash"
+                                  title="Eliminar"
+                                ></button>
+                              </div>
+                              <div kendoTooltip class="col-auto p-0 mx-1">
+                                <button
+                                  kendoGridSaveCommand
+                                  themeColor="primary"
+                                  icon="save"
+                                  title="Guardar"
+                                ></button>
+                              </div>
+                              <div kendoTooltip class="col-auto p-0 mx-1">
+                                <button
+                                  kendoGridCancelCommand
+                                  themeColor="secondary"
+                                  icon="cancel"
+                                  title="Cancelar"
+                                ></button>
+                              </div>
+                            </div>
+                          </ng-template>
+                        </kendo-grid-command-column>
+                      </kendo-grid>
+                    </ng-container>
+                    <div class="row mt-3">
+                      <label
+                        class="col-sm-4 col-md-2 fw-bold"
+                        style="text-align: left"
+                        >Pie de Página</label
+                      >
+                      <div class="col-sm-8 col-md-10">
+                        <kendo-textbox [(ngModel)]="item.piePagina">
+                        </kendo-textbox>
+                      </div>
+                    </div>
+                    <br />
+                  </ng-template>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="modal-header bg-primary-header-modal">
+          <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+            Introduccion Beneficios
+          </h1>
+        </div>
+        <div >
+          <!-- CONTENT -->
+          <form
+            class="k-form k-form-horizontal"
+            [formGroup]="formVersionBeneficios"
+            class="k-form"
+          >
+            <div class="row">
+              <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="nombrebeneficioBasico" class="d-flex align-items-end">
+                    <span
+                      ><b>Beneficios Basico</b
+                      ><strong class="text-danger">*</strong>:</span
+                    >
+                  </label>
+                  <kendo-textbox #nombrebeneficioBasico formControlName="Introduccion1">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="nombrebeneficiosProfesional" class="d-flex align-items-end">
+                    <span
+                      ><b>Beneficios Profesional</b
+                      ><strong class="text-danger">*</strong>:</span
+                    >
+                  </label>
+                  <kendo-textbox #nombrebeneficiosProfesional formControlName="Introduccion2">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="nombrebeneficiosGerencial" class="d-flex align-items-end">
+                    <span
+                      ><b>Beneficios Gerencial</b
+                      ><strong class="text-danger">*</strong>:</span
+                    >
+                  </label>
+                  <kendo-textbox #nombrebeneficiosGerencial formControlName="Introduccion3">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        [disabled]="!formDatosDocumento.valid"
+        (click)="esNuevo ? insertarDocumento() : actualizarDocumento()"
+      >
+        {{ esNuevo ? "Nuevo" : "Actualizar" }}
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        icon="close"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+  <app-loader *ngIf="loaderModal"></app-loader>
+</ng-template>

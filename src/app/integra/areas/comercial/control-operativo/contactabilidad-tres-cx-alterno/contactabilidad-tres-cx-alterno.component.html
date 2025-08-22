@@ -1,0 +1,1128 @@
+<div class="card card-reporte border-primary ctc3cx" #reporte>
+    <div class="card-header">
+      <h2>(R) Contactabilidad Integra - 3CX</h2>
+    </div>
+    <div class="card-body">
+      <div class="card card-reporte border-primary">
+        <div class="card-header">
+          <h3 class="mb-2">Control Contactabilidad Integra - 3CX</h3>
+        </div>
+        <div class="panel-body">
+          <div class="container-fluid">
+            <div id="tab_programada_filtro">
+              <form
+                class="k-form k-form-horizontal"
+                [formGroup]="formContactabilidad"
+              >
+                <div class="row">
+                  <div class="col-sm-12 col-md-3 my-2">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-label
+                        [for]="inputAsesor"
+                        text="Asesores"
+                        class="d-flex align-items-start"
+                        [style.width.px]="70"
+                      >
+                      </kendo-label>
+                      <kendo-multiselect
+                        #inputAsesor
+                        [data]="asesoresFiltro"
+                        textField="nombreCompleto"
+                        [loading]="loader"
+                        valueField="id"
+                        [valuePrimitive]="true"
+                        [defaultItem]="{
+                          nombreCompleto: '<Todos>',
+                          id: null
+                        }"
+                        formControlName="asesores"
+                        (filterChange)="filterAsesores($event)"
+                        [filterable]="true"
+                      >
+                      </kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-sm-12 col-md-3 my-2">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-label
+                        text="Estado del Personal"
+                        class="d-flex align-items-start"
+                        [style.width.px]="150"
+                      >
+                      </kendo-label>
+  
+                      <kendo-dropdownlist
+                        [data]="sourceEstadosAsesor"
+                        class="kendo-combo"
+                        textField="clave"
+                        valueField="valor"
+                        [valuePrimitive]="true"
+                        formControlName="estadoAsesor"
+                        [defaultItem]="{
+                          clave: 'Todo el Personal',
+                          valor: null
+                        }"
+                        (valueChange)="cambiarEstadoPersonal($event)"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-sm-12 col-md-3 my-2">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-label
+                        text="Fecha Inicio"
+                        class="d-flex align-items-start"
+                        [style.width.px]="150"
+                      ></kendo-label>
+  
+                      <kendo-datepicker
+                        #fechaInicio
+                        formControlName="fechaInicio"
+                        format="yyyy-MM-dd"
+                        [max]="fechaActual"
+                        [incompleteDateValidation]="true"
+                      ></kendo-datepicker>
+                      <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-sm-12 col-md-3 my-2">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-label
+                        text="Fecha Fin"
+                        class="d-flex align-items-start"
+                        [style.width.px]="150"
+                      ></kendo-label>
+                      <kendo-datepicker
+                        formControlName="fechaFin"
+                        format="yyyy-MM-dd"
+                        [incompleteDateValidation]="true"
+                        [min]="fechaInicio.value"
+                      ></kendo-datepicker>
+                      <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row justify-content-end mb-2">
+                  <div class="col-auto">
+                    <button
+                      kendoButton
+                      icon="search"
+                      themeColor="success"
+                      [disabled]="procesoEnvio"
+                      (click)="generarReporteAlterno()"
+                    >
+                      Buscar
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <br />
+      <div class="card card-reporte border-primary">
+        <div class="card-header">
+          <h3>Reporte Cobertura</h3>
+        </div>
+        <div class="card-body">
+          <div class="row justify-content-center mb-3">
+            <div class="col-sm-4">
+              <legend
+                style="
+                  font-size: 18px;
+                  line-height: inherit;
+                  color: #212121;
+                  margin-bottom: 23px;
+                  border-bottom: 1px solid #e5e5e5;
+                "
+              >
+                Leyenda Colores
+              </legend>
+              <div class="row">
+                <div
+                  class="col-sm-1"
+                  style="padding-top: 3px; padding-right: 0px"
+                >
+                  <div id="cuadradoGeneral"></div>
+                </div>
+                <div class="col-sm-6">General</div>
+              </div>
+              <div class="row">
+                <div
+                  class="col-sm-1"
+                  style="padding-top: 3px; padding-right: 0px"
+                >
+                  <div id="cuadradoIntegra"></div>
+                </div>
+                <div class="col-sm-6">Integra</div>
+              </div>
+              <div class="row">
+                <div
+                  class="col-sm-1"
+                  style="padding-top: 3px; padding-right: 0px"
+                >
+                  <div id="cuadrado3cx"></div>
+                </div>
+                <div class="col-sm-6">3cx</div>
+              </div>
+              <div class="row">
+                <div
+                  class="col-sm-1"
+                  style="padding-top: 3px; padding-right: 0px"
+                >
+                  <div id="cuadradoIntegra3cx"></div>
+                </div>
+                <div class="col-sm-6">Integra 3cx</div>
+              </div>
+              <div class="row">
+                <div
+                  class="col-sm-1"
+                  style="padding-top: 3px; padding-right: 0px"
+                >
+                  <div id="cuadradoSinLlamada"></div>
+                </div>
+                <div class="col-sm-6">Sin Llamada</div>
+              </div>
+            </div>
+          </div>
+          <div class="container-fluid " id="container_fluid_causa">
+            <div
+              id="gridTasasContacto"
+              class="hidden-on-narrow"
+              style="text-align: center"
+            >
+              <kendo-grid
+                [kendoGridBinding]="gridContactabilidad.data"
+                [loading]="gridContactabilidad.loading"
+              >
+                <kendo-grid-column
+                  field="hora"
+                  title="Hora"
+                  [width]="110"
+                  [sticky]="true"
+                  [filterable]="true"
+                  class="text-center"
+                  headerClass="justify-content-center"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <strong>
+                      {{
+                        dataItem.hora == 0
+                          ? "Antes de las 8:00"
+                          : dataItem.hora == 24
+                          ? "Despues de las 20:00"
+                          : dataItem.hora + ":00"
+                      }}</strong
+                    >
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    headerClass="justify-content-center"
+                    class="text-center"
+                  >
+                    Total
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column-group
+                  [title]="columna.title"
+                  *ngFor="let columna of columnasGrid"
+                  headerClass="justify-content-center"
+                >
+                  <kendo-grid-column
+                    [field]="columna.field + 'ATGeneral'"
+                    title="AT"
+                    [width]="130"
+                    headerClass="justify-content-center"
+                    class="text-center"
+                  >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      <div class="row">
+                        <span class="col-12" style="font-size: 16px">{{
+                          dataItem[columna.field + "ATGeneral"]
+                        }}</span>
+                      </div>
+                      <ng-container *ngFor="let sct of clavesColumnTotal">
+                        <div
+                          class="row"
+                          style="font-size: 13px"
+                          [ngStyle]="{ color: sct.color }"
+                        >
+                          <span
+                            class="col-12"
+                            *ngIf="dataItem[columna.field + 'AT' + sct.clave]"
+                          >
+                            <span class="fw-bold">{{ sct.valor }}</span
+                            >:&nbsp;{{
+                              dataItem[columna.field + "AT" + sct.clave]
+                            }}
+                          </span>
+                        </div>
+                      </ng-container>
+                    </ng-template>
+                    <ng-template
+                      kendoGridFooterTemplate
+                      let-column
+                      let-columnIndex="columnIndex"
+                      class="text-center"
+                    >
+                      <ng-container *ngIf="flagfooter && footers[columna.field + 'AT']">
+                        <div [style.height.px]="130">
+                          <div class="row text-center">
+                            <span class="col-12" style="font-size: 16px">{{
+                              footers[columna.field + "AT"].ATGeneral
+                            }}</span>
+                          </div>
+                          <ng-container *ngFor="let sct of clavesColumnTotal">
+                            <div
+                              class="row text-center"
+                              style="font-size: 13px"
+                              [ngStyle]="{ color: sct.color }"
+                            >
+                              <span
+                                class="col-12"
+                                *ngIf="
+                                  footers[columna.field + 'AT']['AT' + sct.clave]
+                                "
+                              >
+                                <span class="fw-bold">{{ sct.valor }}</span
+                                >:
+                                {{
+                                  footers[columna.field + "AT"]["AT" + sct.clave]
+                                }}
+                              </span>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="flagfooter && footers[columna.field + 'AT']">
+                        <ng-container *ngFor="let intento of subClaveIntentos">
+                          <hr />
+                          <div class="" [style.height.px]="96">
+                            <div class="row text-center">
+                              <span class="col-12" style="font-size: 16px">{{
+                                footers[columna.field + "AT"][
+                                  "totalIntento" + intento
+                                ]
+                              }}</span>
+                            </div>
+                            <div
+                              class="row text-center"
+                              style="font-size: 13px; color: #cc2a36"
+                            >
+                              <span
+                                class="col-12"
+                                *ngIf="
+                                  footers[columna.field + 'AT'][
+                                    'totalIntento' + intento + 'Integra'
+                                  ] > 0
+                                "
+                              >
+                                <span class="fw-bold">Integra</span>:
+                                {{
+                                  footers[columna.field + "AT"][
+                                    "totalIntento" + intento + "Integra"
+                                  ]
+                                }}
+                              </span>
+                            </div>
+                            <div
+                              class="row text-center"
+                              style="font-size: 13px; color: blue"
+                            >
+                              <span
+                                class="col-12"
+                                *ngIf="
+                                  footers[columna.field + 'AT'][
+                                    'totalIntento' + intento + '3cx'
+                                  ] > 0
+                                "
+                              >
+                                <span class="fw-bold">3cx</span>:
+                                {{
+                                  footers[columna.field + "AT"][
+                                    "totalIntento" + intento + "3cx"
+                                  ]
+                                }}
+                              </span>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    [field]="columna.field + 'AEGeneral'"
+                    title="AE"
+                    [width]="130"
+                    headerClass="justify-content-center"
+                    class="text-center"
+                  >
+                    <ng-template
+                      kendoGridFooterTemplate
+                      let-column
+                      let-columnIndex="columnIndex"
+                      class="text-center"
+                    >
+                      <ng-container *ngIf="flagfooter && footers[columna.field + 'AE']">
+                        <div [style.height.px]="130">
+                          <div class="row text-center">
+                            <span class="col-12" style="font-size: 16px">{{
+                              footers[columna.field + "AE"].AEGeneral
+                            }}</span>
+                          </div>
+                          <ng-container *ngFor="let sct of clavesColumnTotal">
+                            <div
+                              class="row text-center"
+                              style="font-size: 13px"
+                              [ngStyle]="{ color: sct.color }"
+                            >
+                              <span
+                                class="col-12"
+                                *ngIf="
+                                  footers[columna.field + 'AE']['AE' + sct.clave]
+                                "
+                              >
+                                <span class="fw-bold">{{ sct.valor }}</span
+                                >:
+                                {{
+                                  footers[columna.field + "AE"]["AE" + sct.clave]
+                                }}
+                              </span>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="flagfooter && footers[columna.field + 'AE']">
+                        <ng-container *ngFor="let intento of subClaveIntentos">
+                          <hr />
+                          <div class="" [style.height.px]="96">
+                            <div class="row text-center">
+                              <span class="col-12" style="font-size: 16px">{{
+                                footers[columna.field + "AE"][
+                                  "totalIntento" + intento
+                                ]
+                              }}</span>
+                            </div>
+                            <div
+                              class="row text-center"
+                              style="font-size: 13px; color: #cc2a36"
+                            >
+                              <span
+                                class="col-12"
+                                *ngIf="
+                                  footers[columna.field + 'AE'][
+                                    'totalIntento' + intento + 'Integra'
+                                  ] > 0
+                                "
+                              >
+                                <span class="fw-bold">Integra</span>:
+                                {{
+                                  footers[columna.field + "AE"][
+                                    "totalIntento" + intento + "Integra"
+                                  ]
+                                }}
+                              </span>
+                            </div>
+                            <div
+                              class="row text-center"
+                              style="font-size: 13px; color: blue"
+                            >
+                              <span
+                                class="col-12"
+                                *ngIf="
+                                  footers[columna.field + 'AE'][
+                                    'totalIntento' + intento + '3cx'
+                                  ] > 0
+                                "
+                              >
+                                <span class="fw-bold">3cx</span>:
+                                {{
+                                  footers[columna.field + "AE"][
+                                    "totalIntento" + intento + "3cx"
+                                  ]
+                                }}
+                              </span>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </ng-template>
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      <div class="row">
+                        <span class="col-12" style="font-size: 16px">{{
+                          dataItem[columna.field + "AEGeneral"]
+                        }}</span>
+                      </div>
+                      <ng-container *ngFor="let sct of clavesColumnTotal">
+                        <div
+                          class="row"
+                          style="font-size: 13px"
+                          [ngStyle]="{ color: sct.color }"
+                        >
+                          <span
+                            class="col-12"
+                            *ngIf="dataItem[columna.field + 'AE' + sct.clave]"
+                          >
+                            <span class="fw-bold">{{ sct.valor }}</span
+                            >:&nbsp;{{
+                              dataItem[columna.field + "AE" + sct.clave]
+                            }}
+                          </span>
+                        </div>
+                      </ng-container>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    [field]="columna.field + 'TC'"
+                    title="IND"
+                    [width]="350"
+                    headerClass="justify-content-center"
+                  >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      <div class="row justify-content-center">
+                        <div class="col-auto px-1 py-2 ctc-custom-table">
+                          <table class="text-center w-auto">
+                            <tr>
+                              <th style="width: 50px"></th>
+                              <th style="width: 80px"></th>
+                              <ng-container *ngFor="let sct of clavesColumnTotal">
+                                <th
+                                  style="width: 50px"
+                                  *ngIf="
+                                    dataItem[columna.field + 'TC' + sct.clave] >
+                                      0 ||
+                                    dataItem[columna.field + 'TP' + sct.clave] >
+                                      0 ||
+                                    dataItem[columna.field + 'TU' + sct.clave] >
+                                      0 ||
+                                    dataItem[
+                                      columna.field + 'TUPorcentaje' + sct.clave
+                                    ] > 0
+                                  "
+                                  [ngStyle]="{ 'background-color': sct.color }"
+                                ></th>
+                              </ng-container>
+                            </tr>
+                            <tr>
+                              <td
+                                class="fw-bold"
+                                style="font-size: 11px; width: 50px"
+                              >
+                                TC
+                              </td>
+                              <td style="width: 80px">
+                                {{ dataItem[columna.field + "TCGeneral"] }}%
+                              </td>
+                              <ng-container *ngFor="let sct of clavesColumnTotal">
+                                <td
+                                  *ngIf="
+                                    dataItem[columna.field + 'TC' + sct.clave] > 0
+                                  "
+                                  [ngStyle]="{ color: sct.color }"
+                                  style="font-size: 12px; width: 50px"
+                                >
+                                  {{
+                                    dataItem[columna.field + "TC" + sct.clave]
+                                  }}%
+                                </td>
+                              </ng-container>
+                            </tr>
+                            <tr>
+                              <td
+                                class="fw-bold"
+                                style="font-size: 11px; width: 50px"
+                              >
+                                TP
+                              </td>
+                              <td style="width: 80px">
+                                {{ dataItem[columna.field + "TPGeneral"] }} min
+                              </td>
+                              <ng-container *ngFor="let sct of clavesColumnTotal">
+                                <td
+                                  *ngIf="
+                                    dataItem[columna.field + 'TP' + sct.clave] > 0
+                                  "
+                                  [ngStyle]="{ color: sct.color }"
+                                  style="font-size: 12px; width: 50px"
+                                >
+                                  {{ dataItem[columna.field + "TP" + sct.clave] }}
+                                  min
+                                </td>
+                              </ng-container>
+                            </tr>
+                            <tr>
+                              <td
+                                class="fw-bold"
+                                style="font-size: 11px; width: 50px"
+                              >
+                                TU
+                              </td>
+                              <td style="width: 80px">
+                                {{ dataItem[columna.field + "TUGeneral"] }} min
+                              </td>
+                              <ng-container *ngFor="let sct of clavesColumnTotal">
+                                <td
+                                  *ngIf="
+                                    dataItem[columna.field + 'TU' + sct.clave] > 0
+                                  "
+                                  [ngStyle]="{ color: sct.color }"
+                                  style="font-size: 12px; width: 50px"
+                                >
+                                  {{ dataItem[columna.field + "TU" + sct.clave] }}
+                                  min
+                                </td>
+                              </ng-container>
+                            </tr>
+                            <tr>
+                              <td
+                                class="fw-bold"
+                                style="font-size: 11px; width: 50px"
+                              >
+                                TU(%)
+                              </td>
+                              <td style="width: 80px">
+                                {{
+                                  dataItem[columna.field + "TUPorcentajeGeneral"]
+                                }}%
+                              </td>
+                              <ng-container *ngFor="let sct of clavesColumnTotal">
+                                <td
+                                  *ngIf="
+                                    dataItem[
+                                      columna.field + 'TUPorcentaje' + sct.clave
+                                    ] > 0
+                                  "
+                                  [ngStyle]="{ color: sct.color }"
+                                  style="font-size: 12px; width: 50px"
+                                >
+                                  {{
+                                    dataItem[
+                                      columna.field + "TUPorcentaje" + sct.clave
+                                    ]
+                                  }}%
+                                </td>
+                              </ng-container>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="row justify-content-center" *ngIf="!validacionFases.includes(columna.field)">
+                        <div class="col-auto">
+                        <b>WhatsApp Enviados</b>: {{ dataItem[
+                          columna.field + "WhatsAppEnviado"
+                        ] }}
+
+                        </div>
+                      </div>
+                      <div class="row justify-content-center" *ngIf="!validacionFases.includes(columna.field)">
+                        <div class="col-auto">
+                        <b>WhatsApp Recibidos</b>: {{ dataItem[
+                          columna.field + "WhatsAppRecibido"
+                        ] }}
+
+                        </div>
+                      </div>
+                      
+                    </ng-template>
+                    <ng-template
+                      kendoGridFooterTemplate
+                      let-column
+                      let-columnIndex="columnIndex"
+                    >
+                      <ng-container *ngIf="flagfooter && footers[columna.field + 'IND']">
+                        <div [style.height.px]="130">
+                          <div class="row justify-content-center">
+                            <div class="col-auto px-1 py-2 ctc-custom-table">
+                              <table class="text-center w-auto">
+                                <tr>
+                                  <th style="width: 50px"></th>
+                                  <th style="width: 80px"></th>
+                                  <ng-container
+                                    *ngFor="let sct of clavesColumnTotal"
+                                  >
+                                    <th
+                                      style="width: 80px"
+                                      *ngIf="
+                                        footers[columna.field + 'IND'][
+                                          'TCvalor' + sct.clave
+                                        ] > 0 ||
+                                        footers[columna.field + 'IND'][
+                                          'TPvalor' + sct.clave
+                                        ] > 0 ||
+                                        footers[columna.field + 'IND'][
+                                          'TUvalor' + sct.clave
+                                        ] > 0
+                                      "
+                                      [ngStyle]="{
+                                        'background-color': sct.color
+                                      }"
+                                    ></th>
+                                  </ng-container>
+                                </tr>
+                                <tr>
+                                  <td
+                                    class="fw-bold"
+                                    style="font-size: 11px; width: 50px"
+                                  >
+                                    TC
+                                  </td>
+                                  <td style="width: 80px">
+                                    {{
+                                      footers[columna.field + "IND"][
+                                        "TCvalorGeneral"
+                                      ]
+                                    }}%
+                                  </td>
+                                  <ng-container
+                                    *ngFor="let sct of clavesColumnTotal"
+                                  >
+                                    <td
+                                      *ngIf="
+                                        footers[columna.field + 'IND'][
+                                          'TCvalor' + sct.clave
+                                        ] > 0
+                                      "
+                                      [ngStyle]="{ color: sct.color }"
+                                      style="font-size: 12px; width: 50px"
+                                    >
+                                      {{
+                                        footers[columna.field + "IND"][
+                                          "TCvalor" + sct.clave
+                                        ]
+                                      }}%
+                                    </td>
+                                  </ng-container>
+                                </tr>
+                                <tr>
+                                  <td
+                                    class="fw-bold"
+                                    style="font-size: 11px; width: 50px"
+                                  >
+                                    TP
+                                  </td>
+                                  <td style="width: 80px">
+                                    {{
+                                      footers[columna.field + "IND"][
+                                        "TPvalorGeneral"
+                                      ]
+                                    }}
+                                    min
+                                  </td>
+                                  <ng-container
+                                    *ngFor="let sct of clavesColumnTotal"
+                                  >
+                                    <td
+                                      *ngIf="
+                                        footers[columna.field + 'IND'][
+                                          'TPvalor' + sct.clave
+                                        ] > 0
+                                      "
+                                      [ngStyle]="{ color: sct.color }"
+                                      style="font-size: 12px; width: 50px"
+                                    >
+                                      {{
+                                        footers[columna.field + "IND"][
+                                          "TPvalor" + sct.clave
+                                        ]
+                                      }}
+                                      min
+                                    </td>
+                                  </ng-container>
+                                </tr>
+                                <tr>
+                                  <td
+                                    class="fw-bold"
+                                    style="font-size: 11px; width: 50px"
+                                  >
+                                    TU
+                                  </td>
+                                  <td style="width: 80px">
+                                    {{
+                                      footers[columna.field + "IND"][
+                                        "TUvalorGeneral"
+                                      ]
+                                    }}
+                                    min
+                                  </td>
+                                  <ng-container
+                                    *ngFor="let sct of clavesColumnTotal"
+                                  >
+                                    <td
+                                      *ngIf="
+                                        footers[columna.field + 'IND'][
+                                          'TUvalor' + sct.clave
+                                        ] > 0
+                                      "
+                                      [ngStyle]="{ color: sct.color }"
+                                      style="font-size: 12px; width: 50px"
+                                    >
+                                      {{
+                                        footers[columna.field + "IND"][
+                                          "TUvalor" + sct.clave
+                                        ]
+                                      }}
+                                      min
+                                    </td>
+                                  </ng-container>
+                                </tr>
+                              </table>
+                            </div>
+                          </div>
+                          <div class="row justify-content-center" *ngIf="!validacionFases.includes(columna.field)">
+                            <div class="col-auto">
+                            <b>WhatsApp Enviados</b>: {{ footers[columna.field + "IND"][
+                            "WhatsAppEnviado"] }}
+
+                            </div>
+                          </div>
+                          <div class="row justify-content-center" *ngIf="!validacionFases.includes(columna.field)">
+                            <div class="col-auto">
+                              <b>WhatsApp Recibidos</b>: {{ footers[columna.field + "IND"][
+                            "WhatsAppRecibido"] }}
+
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="flagfooter && footers[columna.field + 'IND']">
+                        <ng-container
+                          *ngFor="let intento of subClaveIntentos; let i = index"
+                        >
+                        <hr />
+                          <div class="" [style.height.px]="96">
+                            <div
+                              class="row justify-content-center"
+                              *ngIf="footers[columna.field + 'IND']"
+                            >
+                              <div class="col-auto px-1 py-2 ctc-custom-table">
+                                <table class="text-center w-auto">
+                                  <tr>
+                                    <th style="width: 50px"></th>
+                                    <th style="width: 80px"></th>
+                                    <ng-container
+                                      *ngFor="let sct of clavesColumnTotal"
+                                    >
+                                      <th
+                                        style="width: 80px"
+                                        *ngIf="
+                                          footers[columna.field + 'IND'][
+                                            'TCvalorIntento' + intento + sct.clave
+                                          ] > 0 ||
+                                          footers[columna.field + 'IND'][
+                                            'TPvalorIntento' + intento + sct.clave
+                                          ] > 0 ||
+                                          footers[columna.field + 'IND'][
+                                            'TUvalorIntento' + intento + sct.clave
+                                          ] > 0
+                                        "
+                                        [ngStyle]="{ 'background-color': sct.color }"
+                                      ></th>
+                                    </ng-container>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      class="fw-bold"
+                                      style="font-size: 11px; width: 50px"
+                                    >
+                                      TC{{ subClaveIntentosV2[i] }}
+                                    </td>
+                                    <td style="width: 80px">
+                                      {{
+                                        footers[columna.field + "IND"][
+                                          "TCvalorIntento" + intento
+                                        ]
+                                      }}%
+                                    </td>
+                                    <ng-container
+                                      *ngFor="let sct of clavesColumnTotal"
+                                    >
+                                      <td
+                                        *ngIf="
+                                          footers[columna.field + 'IND'][
+                                            'TCvalorIntento' + intento + sct.clave
+                                          ] > 0
+                                        "
+                                        [ngStyle]="{ color: sct.color }"
+                                        style="font-size: 12px; width: 50px"
+                                      >
+                                        {{
+                                          footers[columna.field + "IND"][
+                                            "TCvalorIntento" + intento + sct.clave
+                                          ]
+                                        }}%
+                                      </td>
+                                    </ng-container>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      class="fw-bold"
+                                      style="font-size: 11px; width: 50px"
+                                    >
+                                      TP{{ subClaveIntentosV2[i] }}
+                                    </td>
+                                    <td style="width: 80px">
+                                      {{
+                                        footers[columna.field + "IND"][
+                                          "TPvalorIntento" + intento
+                                        ]
+                                      }}
+                                      min
+                                    </td>
+                                    <ng-container
+                                      *ngFor="let sct of clavesColumnTotal"
+                                    >
+                                      <td
+                                        *ngIf="
+                                          footers[columna.field + 'IND'][
+                                            'TPvalorIntento' + intento + sct.clave
+                                          ] > 0
+                                        "
+                                        [ngStyle]="{ color: sct.color }"
+                                        style="font-size: 12px; width: 50px"
+                                      >
+                                        {{
+                                          footers[columna.field + "IND"][
+                                            "TPvalorIntento" + intento + sct.clave
+                                          ]
+                                        }}
+                                        min
+                                      </td>
+                                    </ng-container>
+                                  </tr>
+                                  <tr>
+                                    <td
+                                      class="fw-bold"
+                                      style="font-size: 11px; width: 50px"
+                                    >
+                                      TU{{ subClaveIntentosV2[i] }}
+                                    </td>
+                                    <td style="width: 80px">
+                                      {{
+                                        footers[columna.field + "IND"][
+                                          "TUvalorIntento" + intento
+                                        ]
+                                      }}
+                                      min
+                                    </td>
+                                    <ng-container
+                                      *ngFor="let sct of clavesColumnTotal"
+                                    >
+                                      <td
+                                        *ngIf="
+                                          footers[columna.field + 'IND'][
+                                            'TUvalorIntento' + intento + sct.clave
+                                          ] > 0
+                                        "
+                                        [ngStyle]="{ color: sct.color }"
+                                        style="font-size: 12px; width: 50px"
+                                      >
+                                        {{
+                                          footers[columna.field + "IND"][
+                                            "TUvalorIntento" + intento + sct.clave
+                                          ]
+                                        }}
+                                        min
+                                      </td>
+                                    </ng-container>
+                                  </tr>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                    </ng-template>
+                  </kendo-grid-column>
+                </kendo-grid-column-group>
+              </kendo-grid>
+            </div>
+          </div>
+          <div style="font-weight: bold">
+            <span>AT: Numero Actividades Totales</span> <br />
+            <span>AE: Numero Actividades Ejecutadas Efectivas</span>
+            <br />
+            <span
+              >TP: Tiempo Contacto Promedio por Actividad Ejecutada por Hora en
+              Minutos</span
+            >
+            <br />
+            <span
+              >TU: Tiempo útil (Suma Tiempos Contacto / 60 mins) en Minutos</span
+            >
+            <br />
+            <span>TU(%): Tasa tiempo útil </span> <br />
+          </div>
+        </div>
+        <div class="panel-footer"></div>
+      </div>
+      <!-- <div class="card card-reporte border-primary">
+        <div class="card-header">
+          <h3>Reporte Minutos Llamadas</h3>
+        </div>
+        <div class="panel-body">
+          <div class="container-fluid" Id="Gastos"></div>
+          <div class="container-fluid" id="container_fluid_causa">
+            <div id="gridTasasMinutos" class="hidden-on-narrow">
+              <div>
+                <kendo-grid
+                  [data]="gridTasasMinutos.data"
+                  [loading]="gridTasasMinutos.loading"
+                  [sortable]="true"
+                  [filterable]="gridTasasMinutos.filterable"
+                >
+                  <ng-template kendoGridToolbarTemplate>
+                    <button type="button" kendoGridExcelCommand icon="file-excel">
+                      Export to Excel
+                    </button>
+                  </ng-template>
+                  <kendo-grid-excel
+                    fileName="Reporte Minutos Contactabilidad.xlsx"
+                  ></kendo-grid-excel>
+                  <kendo-grid-column
+                    field="pais"
+                    title="Pais"
+                    [width]="40"
+                    [filterable]="false"
+                    headerClass="header-grid-integra"
+                    headerClass="justify-content-center"
+                  >
+                    <ng-template
+                      kendoGridFilterMenuTemplate
+                      let-filter
+                      let-column="column"
+                      let-filterService="filterService"
+                    >
+                      <kendo-grid-string-filter-menu
+                        [column]="column"
+                        [filter]="filter"
+                        [filterService]="filterService"
+                        [extra]="false"
+                        operator="eq"
+                      >
+                        <kendo-filter-eq-operator
+                          text="Igual a"
+                        ></kendo-filter-eq-operator>
+                      </kendo-grid-string-filter-menu>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="troncal"
+                    title="Troncal"
+                    [width]="150"
+                    [filterable]="true"
+                    headerClass="header-grid-integra"
+                    headerClass="justify-content-center"
+                  >
+                    <ng-template
+                      kendoGridFilterMenuTemplate
+                      let-filter
+                      let-column="column"
+                      let-filterService="filterService"
+                    >
+                      <kendo-grid-string-filter-menu
+                        [column]="column"
+                        [filter]="filter"
+                        [filterService]="filterService"
+                        [extra]="false"
+                        operator="eq"
+                      >
+                        <kendo-filter-eq-operator
+                          text="Igual a"
+                        ></kendo-filter-eq-operator>
+                      </kendo-grid-string-filter-menu>
+                    </ng-template>
+                  </kendo-grid-column>
+  
+                  <kendo-grid-column
+                    field="segundos"
+                    title="Segundos"
+                    [width]="80"
+                    [filterable]="true"
+                    format="{0:dd/MM/yyyy}"
+                    headerClass="header-grid-integra"
+                    headerClass="justify-content-center"
+                  >
+                    <ng-template
+                      kendoGridFilterMenuTemplate
+                      let-filter
+                      let-column="column"
+                      let-filterService="filterService"
+                    >
+                      <kendo-grid-string-filter-menu
+                        [column]="column"
+                        [filter]="filter"
+                        [filterService]="filterService"
+                        [extra]="false"
+                        operator="eq"
+                      >
+                        <kendo-filter-eq-operator
+                          text="Igual a"
+                        ></kendo-filter-eq-operator>
+                      </kendo-grid-string-filter-menu>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="minutos"
+                    title="Minutos"
+                    [width]="40"
+                    [filterable]="false"
+                    headerClass="header-grid-integra"
+                    headerClass="justify-content-center"
+                  >
+                    <ng-template
+                      kendoGridFilterMenuTemplate
+                      let-filter
+                      let-column="column"
+                      let-filterService="filterService"
+                    >
+                      <kendo-grid-string-filter-menu
+                        [column]="column"
+                        [filter]="filter"
+                        [filterService]="filterService"
+                        [extra]="false"
+                        operator="eq"
+                      >
+                        <kendo-filter-eq-operator
+                          text="Igual a"
+                        ></kendo-filter-eq-operator> </kendo-grid-string-filter-menu
+                    ></ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="costoxminuto"
+                    title="costo x minuto"
+                    [width]="40"
+                    [filterable]="false"
+                    headerClass="header-grid-integra"
+                    headerClass="justify-content-center"
+                  >
+                    <ng-template
+                      kendoGridFilterMenuTemplate
+                      let-filter
+                      let-column="column"
+                      let-filterService="filterService"
+                    >
+                      <kendo-grid-string-filter-menu
+                        [column]="column"
+                        [filter]="filter"
+                        [filterService]="filterService"
+                        [extra]="false"
+                        operator="eq"
+                      >
+                        <kendo-filter-eq-operator
+                          text="Igual a"
+                        ></kendo-filter-eq-operator> </kendo-grid-string-filter-menu
+                    ></ng-template>
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+  

@@ -1,0 +1,393 @@
+<!-- #region modal RegistroFur -->
+<div class="modal-header">
+  <h2 class="modal-title w-100 mb-0 fw-bold">Registro de FUR</h2>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body" [formGroup]="formRegistroFur">
+  <div
+    class="alert alert-danger py-2 mb-0"
+    role="alert"
+    *ngIf="showAlertRegistroFur"
+  >
+    Seleccione algunas sesiones
+  </div>
+  <div class="row my-2 justify-content-center">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Empresa<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="sourceEmpresa"
+          [virtual]="true"
+          textField="razonSocial"
+          valueField="id"
+          [defaultItem]="{ id: null, razonSocial: '<Seleccione>' }"
+          formControlName="empresa"
+          [kendoDropDownFilter]="filterSettings"
+          [valuePrimitive]="true"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Empresa es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2 justify-content-center" *ngIf="isNew">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Factor<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="sourceFactor"
+          textField="nombre"
+          valueField="id"
+          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+          formControlName="factor"
+          [valuePrimitive]="true"
+          (valueChange)="generarGridCronogramaSesiones($event)"
+          [kendoDropDownFilter]="filterSettings"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Factor es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2" *ngIf="itemsModalRegistroFur.showGridCronogramaSesion">
+    <div class="col-12">
+      <div class="row mb-3 d-flex justify-content-between">
+        <div class="col-3 k-form k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Nro de Grupo</span>
+            </label>
+            <kendo-dropdownlist
+              [data]="sourceGruposFur"
+              textField="nombre"
+              valueField="id"
+              [formControl]="formControlGrupoFur"
+              [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              (valueChange)="cambiarGrupo($event)"
+            ></kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row my-2">
+        <div class="w-100">
+          <kendo-grid
+            [kendoGridBinding]="gridCronogramaSesion.data"
+            [loading]="gridCronogramaSesion.loading"
+            [selectable]="true"
+            [resizable]="true"
+            kendoGridSelectBy="id"
+            [(selectedKeys)]="idsPespecificoFurSeleccionado"
+            [rowClass]="gridCronogramaSesion.rowCallback"
+          >
+            <kendo-grid-column
+              field="fechaHoraInicio"
+              title="Fecha"
+              [width]="120"
+              headerClass="justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{
+                  dataItem.fechaHoraInicio != null
+                    ? (dataItem.fechaHoraInicio | date : "dd/MM/yyyy")
+                    : "--/--/----"
+                }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="fechaHoraInicio"
+              title="Horario"
+              class="text-center"
+              [width]="120"
+              headerClass="justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{
+                  dataItem.fechaHoraInicio != null
+                    ? (dataItem.fechaHoraInicio | date : "HH:mm")
+                    : "--:--"
+                }}
+                -<br />
+                {{
+                  dataItem.fechaHoraFin != null
+                    ? (dataItem.fechaHoraFin | date : "HH:mm")
+                    : "--:--"
+                }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idCiudad"
+              title="Ciudad"
+              class="text-center"
+              [width]="100"
+              [editable]="false"
+              headerClass="justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{
+                  dataItem.idCiudad != null
+                    ? obtenerNombreCiudad(dataItem.idCiudad)
+                    : "Seleccione una Ciudad"
+                }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="duracion"
+              title="Duracion"
+              [width]="80"
+              [editable]="false"
+              headerClass="justify-content-center"
+            ></kendo-grid-column>
+            <kendo-grid-column
+              field="curso"
+              title="Curso"
+              [width]="300"
+              [editable]="false"
+              headerClass="justify-content-center"
+            ></kendo-grid-column>
+            <kendo-grid-checkbox-column
+              [width]="60"
+              [headerClass]="{ 'text-center': true }"
+              [class]="{ 'text-center': true }"
+              [showSelectAll]="true"
+            ></kendo-grid-checkbox-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+    <loading [loading]="loadingGrid"></loading>
+  </div>
+  <div class="row my-2" *ngIf="itemsModalRegistroFur.showGridSubPgneralFur">
+    <div class="w-100">
+      <kendo-grid
+        [kendoGridBinding]="gridSubPgeneralFur.data"
+        [loading]="gridSubPgeneralFur.loading"
+        [pageable]="{
+          buttonCount: 5,
+          info: true,
+          type: 'numeric',
+          pageSizes: true,
+          previousNext: true,
+          position: 'bottom'
+        }"
+        [pageSize]="20"
+        [sort]="[
+          {
+            field: 'fechaHoraInicio',
+            dir: 'asc'
+          }
+        ]"
+        kendoGridSelectBy="id"
+        [(selectedKeys)]="idsPespecificoSeleccionado"
+      >
+        <kendo-grid-column
+          field="fechaHoraInicio"
+          title="Fecha"
+          class="text-center"
+          [width]="80"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              dataItem.fechaHoraInicio != null
+                ? (dataItem.fechaHoraInicio | date : "dd/MM/yyyy")
+                : "--/--/----"
+            }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="nombre"
+          title="Nombre"
+          class="text-center"
+          [width]="250"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="duracion"
+          title="Duracion"
+          class="text-center"
+          [width]="80"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="ciudad"
+          title="Ciudad"
+          class="text-center"
+          [width]="80"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-checkbox-column
+          [width]="60"
+          [headerClass]="{ 'text-center': true }"
+          [class]="{ 'text-center': true }"
+          [showSelectAll]="true"
+        ></kendo-grid-checkbox-column>
+      </kendo-grid>
+    </div>
+    <loading [loading]="loadingGrid"></loading>
+  </div>
+  <div class="row my-2 justify-content-center">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Producto<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="combosModulo.producto"
+          textField="nombre"
+          valueField="id"
+          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+          formControlName="producto"
+          [kendoDropDownFilter]="filterSettings"
+          [valuePrimitive]="true"
+          (valueChange)="cargarProveedores($event)"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Producto es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2 justify-content-center">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Proveedor<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="filtroProveedor"
+          textField="nombre"
+          valueField="id"
+          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+          formControlName="proveedor"
+          [kendoDropDownFilter]="filterSettings"
+          [valuePrimitive]="true"
+          (valueChange)="cargarProveedorSeleccionado($event)"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Proveedor es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2 justify-content-center">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>&nbsp;</span>
+        </label>
+        <kendo-textbox
+          formControlName="proveedorSeleccionado"
+          placeholder="Proveedor Seleccionado"
+          [readonly]="true"
+        ></kendo-textbox>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2 justify-content-center">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Cantidad<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-numerictextbox formControlName="cantidad" [min]="0" format="n0">
+        </kendo-numerictextbox>
+        <kendo-formerror>Cantidad es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2 justify-content-center">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Area Trabajo<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="combosModulo.personalAreaTrabajo"
+          textField="nombre"
+          valueField="id"
+          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+          formControlName="areaTrabajo"
+          [valuePrimitive]="true"
+          [kendoDropDownFilter]="filterSettings"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Aree de trabajo es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2 justify-content-center">
+    <div class="col-sm-12 col-md-8 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span
+            >Seleccione Ciudad<span class="text-danger fw-bold">*</span></span
+          >
+        </label>
+        <kendo-dropdownlist
+          [data]="combosModulo.ciudad"
+          textField="nombre"
+          valueField="id"
+          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+          formControlName="ciudad"
+          [kendoDropDownFilter]="filterSettings"
+          [virtual]="true"
+          [valuePrimitive]="true"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Ciudad es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <loading [loading]="loadingRegistroFur"></loading>
+</div>
+<div class="modal-footer">
+  <div class="k-form-buttons m-0 justify-content-end">
+    <button
+      *ngIf="isNew"
+      themeColor="success"
+      size="medium"
+      icon="save"
+      kendoButton
+      [disabled]="loadingRegistroFur"
+      (click)="guardarRegistroFur()"
+    >
+      Generar Fur
+    </button>
+    <button
+      *ngIf="!isNew"
+      themeColor="tertiary"
+      size="medium"
+      icon="save"
+      kendoButton
+      [disabled]="loadingRegistroFur"
+      (click)="actualizarFur()"
+    >
+      Actualizar Fur
+    </button>
+    <button
+      themeColor="warning"
+      size="medium"
+      icon="clear"
+      kendoButton
+      [disabled]="loadingRegistroFur"
+      (click)="limpiarFormulario()"
+    >
+      Reestablecer
+    </button>
+    <button
+      themeColor="error"
+      size="medium"
+      icon="cancel"
+      kendoButton
+      [disabled]="loadingRegistroFur"
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>

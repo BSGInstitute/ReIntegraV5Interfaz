@@ -1,0 +1,23 @@
+export interface ReporteSolicitudAlumnos {
+    id: number,
+    codigo: string,
+    nombreAlumno: string,
+    curso: string,
+    tipoSolicitud: string,
+    categoria: string,
+    problema:string,
+    descripcionSolucion: string,
+    areaRevision: string,
+    personalRevision: string,
+    areaSolucion: string,
+    personalSolucion: string,
+    prioridad: string,
+    areaSolicitante:string,
+    solicitante: string,
+    estado: string,
+    fechaRegistro: string | Date,
+    fechaSolucion: string | Date,
+    comentarioSolucion: string,
+    tipoSolucion: string,
+    tiempoAtencion: string
+   }

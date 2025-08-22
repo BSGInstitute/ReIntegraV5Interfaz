@@ -1,0 +1,673 @@
+<div class="chat-whatsapp-c content mt-1 mx-2">
+  <div class="row">
+    <div class="row mb-2 justify-content-center">
+      <div class="col-auto">
+        <div class="row">
+          <div class="col-auto" style="padding-top: 3px; padding-right: 0px">
+            <div id="whatsappautomaticos"></div>
+          </div>
+          <div class="col-auto">Whatsapp enviados automaticos</div>
+        </div>
+        <div class="row">
+          <div class="col-auto" style="padding-top: 3px; padding-right: 0px">
+            <div id="whatsappmanuales"></div>
+          </div>
+          <div class="col-auto">Whatsapp enviados manualmente</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12 px-2">
+      <div class="block-header bg-success fw-bold">
+        <div class="text-white text-center">
+          <div class="row">
+            <div class="col">
+              <div class="flex-row my-2">
+                <fa-icon
+                  [icon]="['fas', 'circle-user']"
+                  [size]="'xl'"
+                ></fa-icon>
+                <span class="px-1 fs-5 fw-bold">{{
+                  nombreCompletoAlumno
+                }}</span>
+              </div>
+            </div>
+            <div class="col-auto">
+              <div class="text-end">
+                <button
+                  class="btn"
+                  (click)="obtenerHistorialMensajeChat()"
+                  [disabled]="bloquearSeleccion"
+                >
+                  <fa-icon [icon]="['fas', 'arrows-rotate']"></fa-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        #chwcBlockMessage
+        class="p-2 px-3 chwc-block-message"
+        style="
+          background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/1089577/background.png);
+        "
+      >
+        <ng-container *ngFor="let mensajes of historialMensajeRecibidosChat">
+          <ng-container *ngIf="mensajes.tipo == 2">
+            <div class="row message">
+              <div class="text-start">
+                <div class="d-flex flex-row">
+                  <div class="text-end pt-1">
+                    <div
+                      class="rounded-circle px-2 pt-1 m-1"
+                      style="
+                        width: 30px;
+                        height: 30px;
+                        background-color: #d3d6db;
+                      "
+                    >
+                      <fa-icon
+                        [icon]="['fas', 'user']"
+                        class="fa-lg text-white"
+                      ></fa-icon>
+                    </div>
+                  </div>
+                  <label
+                    class="w-auto p-2 my-1 rounded chwc-images"
+                    style="max-width: 75%; background-color: #f1f3f4"
+                  >
+                    <span class="px-1" [innerHTML]="mensajes.mensaje"></span>
+                    <span class="d-flex pt-1 chwc-hora-chat">{{
+                      mensajes.fechaCreacion | date : "yyyy/MM/dd hh:mm a"
+                    }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="mensajes.tipo == 1 && mensajes.subTipo == 1">
+            <!-- WHATSAPP AUTOMATICOS -->
+            <div class="row message">
+              <div class="text-end">
+                <label
+                  class="w-auto p-2 m-1 rounded chwc-images"
+                  style="
+                    max-width: 75%;
+                    background-color: #92a1d3;
+                    text-align: left !important;
+                  "
+                >
+                  <span class="px-1 fw-bold" style="font-size: small">
+                    {{ mensajes.nombrePersonal }}
+                  </span>
+                  <span
+                    class="d-flex px-1"
+                    [innerHTML]="mensajes.mensaje"
+                  ></span>
+                  <span
+                    class="d-flex flex-row-reverse px-2 chwc-hora-chat"
+                    style="height: 10px"
+                  >
+                    <p
+                      class="ps-3 estado-mensaje"
+                      *ngIf="
+                        mensajes.estadoMensaje == 1 ||
+                        mensajes.estadoMensaje == null
+                      "
+                    >
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-muted chwc-visto"
+                      ></fa-icon>
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-muted chwc-visto"
+                      ></fa-icon>
+                    </p>
+                    <p
+                      class="ps-3 estado-mensaje"
+                      *ngIf="mensajes.estadoMensaje == 2"
+                    >
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-primary chwc-visto"
+                      ></fa-icon>
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-muted chwc-visto"
+                      ></fa-icon>
+                    </p>
+                    <p
+                      class="ps-3 estado-mensaje"
+                      *ngIf="mensajes.estadoMensaje == 3"
+                    >
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-primary chwc-visto"
+                      ></fa-icon>
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-primary chwc-visto"
+                      ></fa-icon>
+                    </p>
+                    {{ mensajes.fechaCreacion | date : "yyyy/MM/dd hh:mm a" }}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="mensajes.tipo == 1 && mensajes.subTipo != 1">
+            <!-- WHATSAPP MANUALES -->
+            <div class="row message">
+              <div class="text-end">
+                <label
+                  class="w-auto p-2 m-1 rounded chwc-images"
+                  style="
+                    max-width: 75%;
+                    background-color: #d9fdd3;
+                    text-align: left !important;
+                  "
+                >
+                  <span class="px-1 fw-bold" style="font-size: small">
+                    {{ mensajes.nombrePersonal }}
+                  </span>
+                  <span
+                    class="d-flex px-1"
+                    [innerHTML]="mensajes.mensaje"
+                  ></span>
+                  <span
+                    class="d-flex flex-row-reverse px-2 chwc-hora-chat"
+                    style="height: 10px"
+                  >
+                    <p
+                      class="ps-3 estado-mensaje"
+                      *ngIf="
+                        mensajes.estadoMensaje == 1 ||
+                        mensajes.estadoMensaje == null
+                      "
+                    >
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-muted chwc-visto"
+                      ></fa-icon>
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-muted chwc-visto"
+                      ></fa-icon>
+                    </p>
+                    <p
+                      class="ps-3 estado-mensaje"
+                      *ngIf="mensajes.estadoMensaje == 2"
+                    >
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-primary chwc-visto"
+                      ></fa-icon>
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-muted chwc-visto"
+                      ></fa-icon>
+                    </p>
+                    <p
+                      class="ps-3 estado-mensaje"
+                      *ngIf="mensajes.estadoMensaje == 3"
+                    >
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-primary chwc-visto"
+                      ></fa-icon>
+                      <fa-icon
+                        [icon]="['fas', 'check']"
+                        class="text-primary chwc-visto"
+                      ></fa-icon>
+                    </p>
+                    {{ mensajes.fechaCreacion | date : "yyyy/MM/dd hh:mm a" }}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div
+        class="py-2"
+        style="
+          background-color: #e5ddd5;
+          background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/1089577/background.png);
+        "
+      >
+        <div class="container">
+          <div class="row">
+            <div class="col-auto">
+              <div class="row px-3 my-1">
+                <button
+                  kendoButton
+                  themeColor="primary"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Ver plantillas"
+                  class="p-2 me-1 ms-1"
+                  (click)="abrirModalPlantillas()"
+                >
+                  <fa-icon
+                    [icon]="['fas', 'book']"
+                    [size]="'lg'"
+                    class="text-white"
+                  ></fa-icon>
+                </button>
+              </div>
+              <div class="row px-3 my-1">
+                <button
+                  kendoButton
+                  themeColor="warning"
+                  [disabled]="bloquearRedaccion || bloquearSeleccion"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Subir Archivo"
+                  class="p-2 me-1 ms-1"
+                >
+                  <label for="upload-file">
+                    <fa-icon
+                      [icon]="['fas', 'file']"
+                      [size]="'lg'"
+                      class="text-white"
+                    ></fa-icon>
+                  </label>
+                </button>
+                <input
+                  style="display: none"
+                  type="file"
+                  id="upload-file"
+                  [disabled]="bloquearRedaccion || bloquearSeleccion"
+                  (change)="seleccionarArchivo($event)"
+                  accept="application/pdf"
+                />
+              </div>
+              <div class="row px-3 my-1">
+                <button
+                  kendoButton
+                  themeColor="secondary"
+                  container="body"
+                  placement="top"
+                  [disabled]="bloquearRedaccion || bloquearSeleccion"
+                  ngbTooltip="Ver Documentos del Programa"
+                  class="p-2 me-1 ms-1"
+                  (click)="verDocumentosPrograma(modalDocumentosPrograma)"
+                >
+                  <label for="upload-file"> </label>
+                  <fa-icon
+                    [icon]="['fas', 'file']"
+                    [size]="'lg'"
+                    class="text-white"
+                  ></fa-icon>
+                </button>
+              </div>
+              <div class="row px-3 my-1">
+                <button
+                  kendoButton
+                  themeColor="success"
+                  [disabled]="bloquearRedaccion || bloquearSeleccion"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Subir Imagen"
+                  class="p-2 me-1 ms-1"
+                >
+                  <label for="upload-image">
+                    <fa-icon
+                      [icon]="['fas', 'image']"
+                      [size]="'lg'"
+                      class="text-white"
+                    ></fa-icon>
+                  </label>
+                </button>
+                <input
+                  style="display: none"
+                  type="file"
+                  id="upload-image"
+                  [disabled]="bloquearRedaccion || bloquearSeleccion"
+                  (change)="seleccionarArchivo($event)"
+                  accept="image/png, image/jpeg"
+                />
+              </div>
+            </div>
+            <div class="col p-0">
+              <div class="row">
+                <form [formGroup]="formMensaje">
+                  <kendo-textarea
+                    *ngIf="!esPlantillaAlterno"
+                    class="w-100 p-0 m-0"
+                    [readonly]="bloquearRedaccion || bloquearSeleccion"
+                    formControlName="WaCaption"
+                    [flow]="'vertical'"
+                    [rows]="8"
+                    (ngModelChange)="obtenerCaracteres()"
+                  >
+                  </kendo-textarea>
+                  <div
+                    *ngIf="esPlantillaAlterno"
+                    [innerHtml]="valorAlterno"
+                    class="form-control w-100"
+                    style="overflow-y: auto; height: 170px; margin: 0px"
+                  ></div>
+                </form>
+              </div>
+            </div>
+            <div class="col-1">
+              <div class="row px-3 my-1">
+                <button
+                  (click)="enviarTexto()"
+                  kendoButton
+                  themeColor="info"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Enviar Mensaje"
+                  class="p-2 me-1 ms-1"
+                  style="height: 80px"
+                  [disabled]="
+                    !(
+                      formMensaje.get('WaCaption').value &&
+                      formMensaje.get('WaCaption').value.length > 0
+                    )
+                  "
+                >
+                  <fa-icon
+                    [icon]="['fas', 'paper-plane']"
+                    [size]="'lg'"
+                    class="text-white"
+                  ></fa-icon>
+                </button>
+              </div>
+              <div class="row px-3 my-1">
+                <button
+                  kendoButton
+                  themeColor="error"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Limpiar"
+                  class="p-2 me-1 ms-1"
+                  (click)="reestablecer()"
+                  [disabled]="bloquearSeleccion"
+                >
+                  <fa-icon
+                    [icon]="['fas', 'x']"
+                    [size]="'sm'"
+                    class="text-white"
+                  ></fa-icon>
+                </button>
+              </div>
+              <div class="row px-3 my-1">
+                <div
+                  class="text-center rounded border bg-disabled"
+                  style="height: 40px; margin-left: 4px"
+                >
+                  <span class="fw-bold">
+                    {{ cantidadCaracterMensaje }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row justify-content-end">
+            <div class="col-md-2 mt-3 d-flex align-items-start">
+              <button
+                kendoButton
+                themeColor="tertiary"
+                container="body"
+                placement="top"
+                ngbTooltip="Ocultar WhatsApp"
+                class="p-2 me-1 ms-1 w-100"
+                (click)="ocultarOportunidad()"
+              >
+                <fa-icon [icon]="['fas', 'right-from-bracket']"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <loading [loading]="loaderChatAndGridWhatsapp"></loading>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Seleccion Plantillas Predefinidas  -->
+<ng-template #modalPlantillaWhatsapp let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Plantillas para Whatsapp
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <kendo-dropdownlist
+          [data]="listaPlantillas"
+          textField="nombreAlterno"
+          valueField="id"
+          [formControl]="fcPlantilla"
+          [filterable]="true"
+          [virtual]="{ itemHeight: 28 }"
+          [defaultItem]="{ nombreAlterno: 'Seleccione', id: null }"
+          (valueChange)="calcularHtml($event)"
+        >
+          <ng-template kendoDropDownListItemTemplate let-dataItem>
+            <div class="w-100 text-overflow-hidden">
+              <span>{{ dataItem?.nombreAlterno }}</span> -
+              <span>{{ dataItem?.htmlPrevisualizacion }}</span>
+            </div>
+          </ng-template>
+          <ng-template kendoDropDownListValueTemplate let-dataItem>
+            <span>{{ dataItem?.nombreAlterno }}</span> -
+            <span>{{ dataItem?.htmlPrevisualizacion }}</span>
+          </ng-template>
+        </kendo-dropdownlist>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <div class="form-control disabled" style="background-color: #eeeeee">
+          <span [innerHtml]="previsualizacion"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      themeColor="success"
+      kendoButton
+      (click)="generarPlantillaWhatsappComercial()"
+    >
+      Aceptar
+    </button>
+    <button
+      themeColor="error"
+      kendoButton
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+  <loading [loading]="loaderArmandoPlantillaWhatsapp"></loading>
+</ng-template>
+<!-- Modal Seleccion Plantillas Predefinidas  -->
+
+<!-- Modal Seleccion Archivos PDF/Imagenes  -->
+<ng-template #modalSeleccionarArchivo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Archivo seleccionado
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row pt-2 px-2 mt-2">
+      <div class="text-center">
+        <div class="mb-4">
+          <ng-container
+            *ngIf="fileWhatsapp.type == 'application/pdf'; else esImagen"
+          >
+            <fa-icon [icon]="['far', 'file-pdf']" [size]="'10x'"></fa-icon>
+          </ng-container>
+          <ng-template #esImagen>
+            <fa-icon [icon]="['far', 'image']" [size]="'10x'"></fa-icon>
+          </ng-template>
+        </div>
+        <div>{{ fileWhatsapp.name }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="text end">
+        <button class="btn btn-danger" (click)="modal.dismiss()">
+          <fa-icon [icon]="['fas', 'times']"></fa-icon>
+          Cancelar
+        </button>
+        <button
+          class="btn btn-primary mx-2"
+          (click)="adjuntarArchivoWhatsapp()"
+        >
+          <fa-icon [icon]="['fas', 'check']"></fa-icon>
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- End Modal Seleccion Archivos PDF/Imagenes -->
+
+<!-- #region Modal Documentos Programa -->
+<ng-template #modalDocumentosPrograma let-modal>
+  <div class="modal-header py-1 bg-primary-header-modal">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Documentos del Programa
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <kendo-grid
+          [kendoGridBinding]="gridDocumentosPrograma.data"
+          [loading]="gridDocumentosPrograma.loading"
+          scrollable="scrollable"
+        >
+          <kendo-grid-column
+            field="nombre"
+            title="Nombre del Documento"
+            [width]="250"
+            headerClass="text-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="mensaje"
+            title="SI/NO"
+            [width]="60"
+            headerClass="justify-content-center"
+            class="text-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+              <div class="w-100">
+                <div class="col-12">
+                  <ng-container [ngSwitch]="dataItem.mensaje">
+                    <ng-container *ngSwitchCase="'Correcto'">
+                      <span
+                        style="font-size: 20px"
+                        class="text-primary k-icon k-i-check"
+                      ></span>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                      <span
+                        style="font-size: 20px"
+                        class="text-danger k-icon k-i-close"
+                      >
+                      </span>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-command-column
+            title="Enviar"
+            [width]="60"
+            headerClass="justify-content-center"
+            class="text-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+              <div class="w-100">
+                <div class="col-12 d-flex justify-content-center">
+                  <!-- <button
+                    kendoButton
+                    class="mx-1"
+                    container="body"
+                    placement="top"
+                    themeColor="warning"
+                    (click)="descargarDocumentoPrograma(dataItem)"
+                    ngbTooltip="Descargar"
+                    *ngIf="dataItem.mensaje !== 'Incorrecto'"
+                  >
+                    <fa-icon
+                      [icon]="['fas', 'download']"
+                      [size]="'lg'"
+                      class="text-white"
+                    ></fa-icon>
+                  </button> -->
+                  <button
+                    kendoButton
+                    class="mx-1"
+                    container="body"
+                    placement="top"
+                    themeColor="success"
+                    (click)="enviarDocumentoPrograma(dataItem)"
+                    ngbTooltip="Enviar"
+                    *ngIf="dataItem.mensaje !== 'Incorrecto'"
+                  >
+                    <fa-icon
+                      [icon]="['fas', 'paper-plane']"
+                      [size]="'lg'"
+                      class="text-white"
+                    ></fa-icon>
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer py-1 justify-content-between">
+    <button
+      kendoButton
+      icon="reload"
+      fillMode="flat"
+      themeColor="secondary"
+      (click)="obtenerDocumentosPorIdActividadDetalle()"
+    ></button>
+    <button
+      themeColor="error"
+      kendoButton
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+  <loading [loading]="estadoEnviarDocumentoProgram"></loading>
+</ng-template>
+<!-- #endregion Modal Documentos Programa -->

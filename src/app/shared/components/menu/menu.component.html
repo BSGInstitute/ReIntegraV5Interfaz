@@ -1,0 +1,131 @@
+<div class="custom-toolbar d-flex">
+  <div class="row w-100 m-0">
+    <div class="toolbar-menu">
+      <button kendoButton fillMode="flat" size="large" (click)="drawerToggle()">
+        <span class="k-icon k-i-menu" style="font-size: 30px !important"></span>
+      </button>
+      <span class="header" style="font-size: 25px !important">
+        BSG Institute
+      </span>
+    </div>
+    <div class="col d-flex justify-content-center align-items-center">
+      <button
+        *ngIf="!(showBtnRingover$ | async) && (showBtnConectarCrm$ | async)"
+        kendoButton
+        fillMode="solid"
+        rounded="medium"
+        size="medium"
+        class="mx-1"
+        [themeColor]="!(esCrmActivo$ | async) ? 'primary' : 'tertiary'"
+        (click)="toggleCRM()"
+      >
+        {{ !(esCrmActivo$ | async) ? "Conectar CRM" : "Desconectar CRM" }}
+      </button>
+      <button
+        *ngIf="(showBtnRingover$ | async) && !checkStatusRingover"
+        kendoButton
+        fillMode="solid"
+        rounded="medium"
+        size="medium"
+        class="mx-1"
+        themeColor="primary"
+        (click)="iniciarRingover()"
+      >
+        Iniciar Ringover
+      </button>
+      <button
+        *ngIf="(showBtnRingover$ | async) && checkStatusRingover"
+        kendoButton
+        fillMode="solid"
+        rounded="medium"
+        size="medium"
+        class="mx-1"
+        themeColor="primary"
+        (click)="toggleRingover()"
+      >
+        Toggle Ringover
+      </button>
+    </div>
+    <div class="col-3 toolbar-avatar">
+      <img [src]="srcImgAvatar$ | async" alt="" style="width: 3em" />
+      <span class="ms-2" style="font-size: 1.25em">{{
+        nombreAsesor$ | async
+      }}</span>
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="menu"
+        aria-label="Example icon-button with a menu"
+      >
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>
+          <!-- <mat-icon>dialpad</mat-icon> -->
+          <span>Cambiar Clave</span>
+        </button>
+        <button mat-menu-item (click)="cerrarSesion()">
+          <!-- <mat-icon>voicemail</mat-icon> -->
+          <span>Cerrar Sesion</span>
+        </button>
+        <button mat-menu-item>
+          <!-- <mat-icon>notifications_off</mat-icon> -->
+          <span>Mi Avatar</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>
+
+<kendo-drawer-container
+  #contentDrawer
+  id="content-drawer-component"
+  style="height: 92%"
+>
+  <kendo-drawer
+    #drawer
+    [items]="itemsModulos"
+    mode="push"
+    [expanded]="false"
+    [mini]="true"
+    [autoCollapse]="false"
+    (select)="onSelectItem($event)"
+    [(expanded)]="toggle"
+    mode="push"
+    [style]="flexBasis"
+    class="class-main"
+  >
+    <ng-template kendoDrawerItemTemplate let-item>
+      <div class="k-level-{{ item.level }}">
+        <span class="k-icon {{ item.icon }}"></span>
+      </div>
+      <span class="d-flex align-items-center">
+        {{ item.text }}
+      </span>
+
+      <span
+        *ngIf="item.expanded && item.children"
+        class="k-icon k-i-arrow-chevron-down"
+        style="margin-left: auto; line-height: inherit"
+      ></span>
+
+      <span
+        *ngIf="!item.expanded && item.children"
+        class="k-icon k-i-arrow-chevron-right"
+        style="margin-left: auto; line-height: inherit"
+      ></span>
+    </ng-template>
+  </kendo-drawer>
+  <kendo-drawer-content
+    class="container-fluid"
+    style="
+      width: 100%;
+      height: 100%;
+      padding-bottom: 55px;
+      padding-top: 40px;
+      padding-left: 40px;
+      padding-right: 40px;
+    "
+  >
+    <ng-content></ng-content>
+  </kendo-drawer-content>
+</kendo-drawer-container>

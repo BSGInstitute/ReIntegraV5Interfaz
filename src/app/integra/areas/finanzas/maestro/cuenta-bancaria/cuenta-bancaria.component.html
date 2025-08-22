@@ -1,0 +1,181 @@
+<ng-template #modalCuentaBancaria let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModal }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupDataCentaBancaria">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Ciudad :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idCiudad"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="itemsCiudad"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangeCiudad($event)"
+              >
+              </kendo-dropdownlist>
+              </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Banco :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idBanco"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="listItemsEntidadFinanciera"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="text" class="k-label">
+                <span
+                  > Numero de Cuenta :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-textbox
+                #text
+                class="d-flex"
+                size="small"
+                [clearButton]="true"
+                formControlName="numeroCuenta"
+                [required]="true"
+                [showSuccessIcon]="getShowSuccessIcon('numeroCuenta')"
+                [successIcon]="successIcon"
+                [maxlength]="40"
+              >
+              </kendo-textbox>
+              <kendo-formhint>Ingrese el numero de cuenta</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("numeroCuenta") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Moneda :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idMoneda"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="listItemsMoneda"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+
+              >
+              </kendo-dropdownlist>
+              </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="accionModal();"
+    >
+      {{ btnModalNombre }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Cuentas Bancarias</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <ng-template
+                #cellTemplateGridCuentaBan
+                let-dataItem="dataItem"
+                let-field="field"
+                let-itemValue="itemValue"
+              >
+                <ng-container
+                  *ngIf="field == 'fechaModificacion'; else gridTempDefault"
+                >
+                  {{ itemValue | date: "dd-MM-yyyy" }}
+                </ng-container>
+                <ng-template #gridTempDefault>
+                  {{ itemValue }}
+                </ng-template>
+              </ng-template>
+              <k-grid-edit
+                [gridData]="listaCuentaBancaria"
+                [loader]="loader"
+                [columns]="gridCuentaBancaria.columns"
+                [commands]="gridCuentaBancaria.comands"
+                [readOnlyColumns]="gridCuentaBancaria.readOnlyColumns"
+                [gridConfig]="gridCuentaBancaria.gridConfig"
+                [gridState]="gridCuentaBancaria.gridState"
+                [commandAdd]="'external'"
+                [commandEdit]="'external'"
+                [cellTemplateRef]="cellTemplateGridCuentaBan"
+                (OnGridEvents)="gridEventsResponse($event)"
+              >
+              </k-grid-edit>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

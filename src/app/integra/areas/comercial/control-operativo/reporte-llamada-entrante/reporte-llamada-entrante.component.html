@@ -1,0 +1,289 @@
+<div class="card card-reporte border-primary" #reporte>
+  <div class="card-header">
+    <h2>(R) Reporte Llamadas Entrantes</h2>
+  </div>
+  <div class="card-body">
+    <div class="card card-reporte border-primary">
+      <div class="card-header">
+        <h3 class="mb-2">Filtro Reporte</h3>
+      </div>
+      <div class="panel-body">
+        <div class="container-fluid">
+          <div id="tab_programada_filtro">
+            <form class="k-form k-form-horizontal" [formGroup]="formFiltro">
+              <div class="row">
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="inputAsesor"
+                      text="Asesores"
+                      class="d-flex align-items-start"
+                      [style.width.px]="70"
+                    >
+                    </kendo-label>
+                    <kendo-multiselect
+                      #inputAsesor
+                      [data]="asesoresFiltro"
+                      textField="nombreCompleto"
+                      [loading]="loader"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [defaultItem]="{
+                        nombreCompleto: 'Todos los asesores',
+                        id: null
+                      }"
+                      formControlName="asesores"
+                      (filterChange)="onFilterChangeAsesores($event)"
+                      [filterable]="true"
+                    >
+                    </kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Estado del Personal"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+                    <kendo-dropdownlist
+                      [data]="sourceEstadosAsesor"
+                      class="kendo-combo"
+                      textField="clave"
+                      valueField="valor"
+                      [valuePrimitive]="true"
+                      formControlName="estadoAsesor"
+                      [defaultItem]="{
+                        clave: 'Todo el Personal',
+                        valor: null
+                      }"
+                      (valueChange)="onValueChangeEstadoAsesor($event)"
+                    >
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Fecha Inicio"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    ></kendo-label>
+
+                    <kendo-datepicker
+                      #fechaInicio
+                      formControlName="fechaInicio"
+                      format="yyyy-MM-dd"
+                      [max]="fechaActual"
+                      [incompleteDateValidation]="true"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Fecha Fin"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    ></kendo-label>
+                    <kendo-datepicker
+                      formControlName="fechaFin"
+                      format="yyyy-MM-dd"
+                      [incompleteDateValidation]="true"
+                      [min]="fechaInicio.value"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row justify-content-end mb-2">
+                <div class="col-auto">
+                  <button
+                    kendoButton
+                    icon="search"
+                    themeColor="success"
+                    [disabled]="procesoEnvio"
+                    (click)="generarReporte()"
+                  >
+                    Buscar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="card card-reporte border-primary">
+      <div class="card-header">
+        <h3>Reporte Llamadas Entrantes</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="card mb-3">
+              <div class="card-body bg-warning text-dark fw-bold fs-7">
+                <div class="row">
+                  <div class="col-sm-12 col-md-4">
+                    <div class="row">
+                      <div class="col">LTE: LLamadas Totales Entrantes</div>
+                    </div>
+                    <div class="row">
+                      <div class="col">LC: LLamadas Contestadas</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-4">
+                    <div class="row">
+                      <div class="col">
+                        LNCD: LLamadas No Contestada/Asesor Disponible
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        LNCO: Llamadas No Contestadas/Asesor Ocupado
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-4">
+                    <div class="row">
+                      <div class="col">LD: Llamadas Devueltas</div>
+                    </div>
+                    <div class="row">
+                      <div class="col">LF: Llamadas Fallidas</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          id="gridTasasContacto"
+          class="hidden-on-narrow"
+          style="text-align: center"
+        >
+          <kendo-grid
+            [kendoGridBinding]="gridReporteLlamadaEntrante.data"
+            [loading]="gridReporteLlamadaEntrante.loading"
+            [selectable]="true"
+          >
+            <kendo-grid-column
+              field="hora"
+              title="Hora"
+              [width]="110"
+              [sticky]="true"
+              [filterable]="true"
+              class="text-center"
+              headerClass="header-grid-integra justify-content-center text-white"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <strong>
+                  {{
+                    dataItem.hora == 0
+                      ? "Antes de las 8:00"
+                      : dataItem.hora == 24
+                      ? "Despues de las 20:00"
+                      : dataItem.hora + ":00"
+                  }}</strong
+                >
+              </ng-template>
+              <div class="text-center">
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="justify-content-center"
+                >
+                  Total
+                </ng-template>
+              </div>
+            </kendo-grid-column>
+            <kendo-grid-column
+              *ngFor="let columna of columnasGrid"
+              [title]="columna.title"
+              [field]="columna.field"
+              [width]="250"
+              headerClass="header-grid-integra justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="row justify-content-center">
+                  <div class="col-11 px-1 py-2 ctc-custom-table">
+                    <table class="text-center w-auto">
+                      <tr>
+                        <th width="30%"></th>
+                        <th width="auto" *ngFor="let origen of origenReporte">
+                          {{ origen.title }}
+                        </th>
+                      </tr>
+                      <tr *ngFor="let tipo of tipoReporte">
+                        <td>{{ tipo.title }}</td>
+                        <td
+                          *ngFor="let origen of origenReporte"
+                          [ngClass]="{
+                            'fw-bold text-dark':
+                              dataItem[
+                                columna.field +
+                                  '_' +
+                                  origen.field +
+                                  '_' +
+                                  tipo.field
+                              ] != 0
+                          }"
+                        >
+                          {{
+                            dataItem[
+                              columna.field +
+                                "_" +
+                                origen.field +
+                                "_" +
+                                tipo.field
+                            ]
+                          }}
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-template
+                kendoGridFooterTemplate
+                let-column
+                let-columnIndex="columnIndex"
+              >
+                <div *ngIf="flagfooter" class="row justify-content-center">
+                  <div class="col-11 px-1 py-2 ctc-custom-table">
+                    <table class="text-center w-auto">
+                      <tr>
+                        <th width="30%"></th>
+                        <th width="auto" *ngFor="let origen of origenReporte">
+                          {{ origen.title }}
+                        </th>
+                      </tr>
+                      <tr *ngFor="let tipo of tipoReporte">
+                        <td>{{ tipo.title }}</td>
+                        <td *ngFor="let origen of origenReporte">
+                          {{
+                            footerGrid[
+                              columna.field +
+                                "_" +
+                                origen.field +
+                                "_" +
+                                tipo.field
+                            ]
+                          }}
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,338 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">
+            Generacion de Reporte de Egresos por Rubro (Montos Mostrados en
+            Dolares)
+          </h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-md-8 element">
+              <div class="row" style="margin: 2%">
+                <div class="col-md-8 w-100">
+                  <div class="row" style="margin-bottom: 2%">
+                    <div class="col-md-5" style="margin-left: 5%; margin-bottom:3%">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          [for]="sedes"
+                          class="k-label"
+                          style="margin-bottom: 5px"
+                        >
+                          <span>Empresa(s): :</span>
+                        </label>
+
+                        <kendo-multiselect
+                          #sedes
+                          [formControl]="sede"
+                          [data]="itemSede"
+                          class="d-flex"
+                          size="medium"
+                          textField="razonSocial"
+                          [valuePrimitive]="true"
+                          valueField="id"
+                          placeholder="< Todos >"
+                          [filterable]="true"
+                          (filterChange)="Sedes($event)"
+                        >
+                        </kendo-multiselect>
+                      </kendo-formfield>
+                    </div>
+
+                    
+                   <div
+                   class="row"
+                   style="margin-bottom: 2%;"
+                 >
+                   <div class="col-md-5" style="margin-left: 5%">
+                     <kendo-formfield
+                       orientation="horizontal"
+                       style="padding-bottom: 5%"
+                     >
+                       <label class="k-label">
+                         <span>Fecha Inicio: </span>
+                       </label>
+                       <kendo-datepicker
+                       [(ngModel)]="fechaInicio"
+                         culture="es-ES"
+                         calendarType="classic"
+                         [format]="{
+                           displayFormat: 'dd-MM-yyyy',
+                           inputFormat: 'dd-MM-yyyy'
+                         }"
+                         placeholder="dia-mes-año"
+                         (valueChange)="MaximoFecha($event)"
+                       ></kendo-datepicker>
+                     </kendo-formfield>
+                   </div>
+                   <div class="col-md-5" style="margin-left: 5%">
+                     <kendo-formfield
+                       orientation="horizontal"
+                       style="padding-bottom: 5%"
+                     >
+                       <label class="k-label">
+                         <span>Fecha Fin: </span>
+                       </label>
+                       <kendo-datepicker
+                       [(ngModel)]="fechaFin"
+                         culture="es-ES"
+                         calendarType="classic"
+                         [format]="{
+                           displayFormat: 'dd-MM-yyyy',
+                           inputFormat: 'dd-MM-yyyy'
+                         }"
+                         placeholder="dia-mes-año"
+                         [max] = "fechaMaxima"
+                       ></kendo-datepicker>
+                     </kendo-formfield>
+                   </div>
+                 </div>
+                    <div class="col-md-4">
+                      <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-6">
+                          <button
+                            style="margin-top: 1.5rem"
+                            kendoButton
+                            icon="k-icon k-i-search k-icon-20"
+                            type="button"
+                            themeColor="primary"
+                            (click)="GenerarReporte()"
+                          >
+                            Generar Reporte
+                          </button>
+                        </div>
+                        <div class="col-md-4"></div>
+                      </div>
+                    </div>
+                  </div>
+
+              </div>
+              <br />
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-header bg-color-material col-md-12">
+                    <div class="row col-md-12">
+                      <div div class="col-md-12" style="text-align: left">
+                        <div class="row">
+                          <div class="col-md-7">  
+                            <button
+                              kendoButton
+                              style="margin-right: 1rem"
+                              icon="k-icon k-i-file-excel k-icon-20"
+                              type="button"
+                              themeColor="tertiary"
+                              (click)="exportarExcel()"
+                            >
+                              Exportar a Excel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <kendo-grid
+                    [kendoGridBinding]="listaGrilla"
+                    [loading]="loader"
+                    [pageSize]="20"
+                    [sortable]="true"
+                    [reorderable]="true"
+                    [resizable]="true"
+                    [columnMenu]="{ filter: true }"
+                    [selectable]="true" 
+                    (detailExpand)="gridEventsResponse($event)"
+                  >
+
+                    <kendo-grid-column
+                      title="Rubro"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="120"
+                      field="rubro"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                      [class]="'cellCustomClass'"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Enero"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="enero"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Febrero"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="febrero"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Marzo"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="marzo"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Abril"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="abril"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Mayo"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="mayo"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Junio"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="junio"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Julio"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="julio"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Agosto"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="50"
+                      field="agosto"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Septiembre"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="60"
+                      field="septiembre"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Octubre"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="60"
+                      field="octubre"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Noviembre"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="60"
+                      field="noviembre"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true" 
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      title="Diciembre"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="60"
+                      field="diciembre"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                    title="Total"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="50"
+                    field="total"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Exceso"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="50"
+                    field="exceso"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Total Proyectado"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="50"
+                    field="totalProyectado"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <ng-template kendoGridDetailTemplate let-dataItem>
+                    <app-visualizacion-desglose-reporte *ngIf="dataItem.listaDesglose!=undefined" [row]="dataItem"></app-visualizacion-desglose-reporte>
+                  </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

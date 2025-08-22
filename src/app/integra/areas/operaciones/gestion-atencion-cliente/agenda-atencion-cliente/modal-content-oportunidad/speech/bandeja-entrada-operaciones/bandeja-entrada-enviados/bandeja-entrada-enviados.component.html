@@ -1,0 +1,147 @@
+<div class="row m-2" style="display: flex; justify-content: center">
+  <div class="col-6 input-group input-group-sm mb-3">
+    <div class="input-group-prepend">
+      <mat-icon>search</mat-icon>
+    </div>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Asunto"
+      [(ngModel)]="paginacion.inputFiltroAsunto"
+      (input)="
+        filterDataAsunto(
+          paginacion.inputFiltroAsunto,
+          paginacion,
+          gridHistorialCorreoEnviadoTotal
+        )
+      "
+      aria-label="Small"
+      aria-describedby="inputGroup-sizing-sm"
+    />
+  </div>
+  <div class="col-6 input-group input-group-sm mb-3">
+    <div class="input-group-prepend">
+      <mat-icon>filter_list</mat-icon>
+    </div>
+    <kendo-multiselect
+      class="form-control filtro"
+      aria-label="Small"
+      aria-describedby="inputGroup-sizing-sm"
+      placeholder="Filtro"
+      [autoClose]="false"
+      [checkboxes]="true"
+      [data]="filtroLista"
+      [(ngModel)]="paginacion.valueFiltro"
+      (valueChange)="
+        filterDataAreaCorreo(
+          paginacion.valueFiltro,
+          paginacion,
+          gridHistorialCorreoEnviadoTotal
+        )
+      "
+    >
+    </kendo-multiselect>
+  </div>
+</div>
+
+<div class="row centradoElementos">
+  <div style="max-height: 450px; overflow-y: auto;">
+    <table class="tabla-enviados">
+      <thead>
+        <tr>
+          <th>Remitente</th>
+          <th>Asunto</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginacion.paginatedData; trackBy: trackByFn"
+        (click)="obtenerDatosParaVisualizar(modalVisualizacionCorreo, item)"
+        >
+        <td>{{ item.remitente }}</td>
+        <td>
+          <span
+          [ngClass]="{
+            'esfera-verde-fosforecente': item.areaCorreo === 'Comercial',
+            'esfera-celeste': item.areaCorreo === 'Atención al cliente'
+          }"
+            >
+            {{ item.areaCorreo }}
+          </span>
+          {{ item.asunto }}
+        </td>
+        <td>{{ item.fecha | date : "dd/MM/yyyy" }}</td>
+      </tr>
+    </tbody>
+    <loading [loading]="loading"></loading>
+
+  </table>
+
+  </div>
+    <div class="row">
+      <nav>
+        <div style="display:flex; align-items:center; width: 210px">
+          <span style="font-size: 12px;margin-right: 10px;color: rgba(0, 0, 0, .54);">Ítems por página</span>
+          <select class="paginator" [(ngModel)]="paginacion.itemsPerPage" (change)="updatePagination(paginacion, gridHistorialCorreoEnviadoTotal)">
+            <option
+            *ngFor="let item of pages"
+            [value]="item === 'Todos' ? gridHistorialCorreoEnviadoTotal.data.length : item"
+            >
+              {{item}}
+            </option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:baseline;">
+          <span style="font-size: 12px;margin-right: 5px;color: rgba(0, 0, 0, .54);">Página {{paginacion.currentPage}} de {{paginacion.totalPages}}</span>
+          <button mat-icon-button [style.color]="paginacion.currentPage === 1 ? null : '#757575'" [disabled]="paginacion.currentPage === 1" (click)="goToPreviousPage(paginacion, gridHistorialCorreoEnviadoTotal)">
+            <mat-icon style="font-size: 30px">navigate_before</mat-icon>
+          </button>
+          <button mat-icon-button [style.color]="paginacion.currentPage === paginacion.totalPages ?  null : '#757575'" [disabled]="paginacion.currentPage === paginacion.totalPages" (click)="goToNextPage(paginacion, gridHistorialCorreoEnviadoTotal)">
+            <mat-icon style="font-size: 30px">navigate_next</mat-icon>
+          </button>
+        </div>
+      </nav>
+    </div>
+</div>
+
+
+<ng-template #modalVisualizacionCorreo let-modal>
+  <div
+    class="modal-header d-flex align-items-center"
+    style="background-color: #11c744; color: white"
+  >
+    <h3
+      class="modal-title m-0 p-0 text-center w-100"
+      id="modal-basic-title"
+      style="font-weight: bold"
+    >
+      Vizualizar Correo
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="cerrarModal(modal)"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="loaderSendEmail" class="card" style="height: 13vh">
+      <div
+        class="row"
+        style="justify-content: center; align-items: center; display: flex"
+      >
+        <div class="loader"></div>
+      </div>
+    </div>
+    <app-visualizacion-correo
+      *ngIf=" !loaderSendEmail && informacionCorreo != undefined"
+      [agendaService]="agendaService"
+      [datosDescarga] = "datosDescarga"
+      [informacionCorreo]="informacionCorreo"
+      [gridArchivosAdjuntos]="gridArchivosAdjuntos"
+      [objetoRedaccionCorreo]="objetoRedaccionCorreo"
+      (cerraDataEvent)="cerrarModal(modal)"
+      (formDataEvent)="recibirFormData($event, modal)"
+    ></app-visualizacion-correo>
+  </div>
+</ng-template>

@@ -1,0 +1,360 @@
+<div class="contenedor" #pespecificomodule id="pespecificomodule">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header pb-0 pg-card-header">
+          <h2 class="mb-2 text-white text-center">Filtros Programa General</h2>
+        </div>
+        <div
+          class="card-body p-4 k-form k-form-horizontal"
+          id="grillaAgendaTab"
+        >
+          <div class="row mt-1">
+            <div class="col fw-bold fs-6">Búsqueda por</div>
+          </div>
+          <form [formGroup]="formFiltro">
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        class="k-label"
+                      >
+                        Áreas
+                      </label>
+                      <kendo-multiselect
+                        [data]="combosModulo.areaCapacitacion"
+                        textField="nombre"
+                        valueField="id"
+                        formControlName="area"
+                        [valuePrimitive]="true"
+                        (valueChange)="cargarSubAreas($event)"
+                        [kendoDropDownFilter]="filterSettings"
+                        [popupSettings]="{ popupClass: 'pg-popup' }"
+                        class="pg-dropDown"
+                      ></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        class="k-label"
+                      >
+                        Sub Áreas
+                      </label>
+                      <kendo-multiselect
+                        [data]="subAreasCapacitacion"
+                        textField="nombre"
+                        valueField="id"
+                        formControlName="subArea"
+                        [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"
+                        [popupSettings]="{ popupClass: 'pg-popup' }"
+                        class="pg-dropDown"
+                      ></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-6">
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        class="k-label"
+                      >
+                        Programa General
+                      </label>
+                      <kendo-multiselect
+                        [data]="combosModulo.pGeneral"
+                        textField="nombre"
+                        valueField="id"
+                        formControlName="pgeneral"
+                        [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"
+                        [popupSettings]="{ popupClass: 'pg-popup' }"
+                        class="pg-dropDown"
+                      ></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        class="k-label"
+                      >
+                        Partner
+                      </label>
+                      <kendo-multiselect
+                        [data]="combosModulo.partnerPw"
+                        textField="nombre"
+                        valueField="id"
+                        formControlName="partner"
+                        [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"
+                        [popupSettings]="{ popupClass: 'pg-popup' }"
+                        class="pg-dropDown"
+                      ></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer py-3">
+          <div class="k-form-buttons m-0 justify-content-end">
+            <button
+              themeColor="primary"
+              kendoButton
+              icon="search"
+              (click)="obtenerProgramasGenerales()"
+            >
+              Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header pb-0 pg-card-header">
+          <div class="row d-flex justify-content-between">
+            <div class="col">
+              <h2 class="mb-2 text-white text-center">
+                Lista de Programas Generales
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="card-body pg-kgrid">
+          <kendo-grid
+            [kendoGridBinding]="gridProgramaGeneral.data"
+            [loading]="gridProgramaGeneral.loading"
+            [pageSize]="gridProgramaGeneral.pageSize"
+            [sortable]="true"
+            [resizable]="true"
+            [selectable]="true"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+            [skip]="0"
+            [pageSize]="20"
+            filterable="menu"
+            [sort]="[{ field: 'id', dir: 'desc' }]"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <button
+                themeColor="success"
+                kendoButton
+                icon="plus"
+                (click)="abrirModalDatosPgeneral()"
+              >
+                Nuevo
+              </button>
+            </ng-template>
+            <kendo-grid-column
+              field="nombre"
+              title="Nombre Programa General"
+              [width]="300"
+              headerClass="pg-header-grid justify-content-center"
+              [editable]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idArea"
+              title="Área"
+              [width]="100"
+              [filterable]="false"
+              headerClass="pg-header-grid justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombreArea(dataItem.idArea) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idSubArea"
+              title="Sub Área"
+              [width]="100"
+              headerClass="pg-header-grid justify-content-center"
+              [editable]="false"
+              [filterable]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombreSubArea(dataItem.idSubArea) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idPartner"
+              title="Partner"
+              [width]="100"
+              headerClass="pg-header-grid justify-content-center"
+              [editable]="false"
+              [filterable]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombrePartner(dataItem.idPartner) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="estado"
+              title="Estado"
+              [width]="100"
+              headerClass="pg-header-grid justify-content-center"
+              [editable]="false"
+              [filterable]="false"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ dataItem.estado == true ? "Activo" : "Inactivo" }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idTipoPrograma"
+              title="Tipo Programa"
+              [width]="100"
+              headerClass="pg-header-grid justify-content-center"
+              [editable]="false"
+            >
+              <ng-template kendoGridHeaderTemplate>
+                <div class="w-100 text-center text-overflow-hidden">
+                  Tipo Programa<br />General
+                </div>
+              </ng-template>
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombreTipoPrograma(dataItem.idTipoPrograma) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-command-column
+              title="Editar"
+              [width]="150"
+              headerClass="pg-header-grid justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="row px-2">
+                  <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      icon="edit"
+                      themeColor="info"
+                      class="mx-1"
+                      title="Editar"
+                      (click)="abrirModalDatosPgeneral(dataItem)"
+                    ></button>
+                  </div>
+                  <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      class="mx-1"
+                      title="Cursos"
+                      (click)="abrirModalCursosPgeneral(dataItem)"
+                    >
+                      <fa-icon [icon]="['fas', 'bars']"></fa-icon>
+                    </button>
+                  </div>
+                  <!-- <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      icon="user"
+                      themeColor="base"
+                      class="mx-1"
+                      title="Perfil del Contacto"
+                      (click)="abrirModalPerfilContactoPgeneral(dataItem)"
+                    ></button>
+                  </div> -->
+                  <!-- <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      themeColor="base"
+                      class="mx-1"
+                      title="Modelo Predictivo"
+                      (click)="abrirModalModeloPredictivoPgeneral(dataItem)"
+                    >
+                      <fa-icon [icon]="['fas', 'superscript']"></fa-icon>
+                    </button>
+                  </div> -->
+                  <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      themeColor="tertiary"
+                      class="mx-1"
+                      title="Configuracion Cliente"
+                      (click)="abrirModalCongiguracionPgeneral(dataItem)"
+                    >
+                      <fa-icon [icon]="['fab', 'pied-piper-hat']"></fa-icon>
+                    </button>
+                  </div>
+                  <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      themeColor="secondary"
+                      class="mx-1"
+                      title="Anexos"
+                      (click)="
+                        abrirModalAnexoProyectoAplicacionPgeneral(dataItem)
+                      "
+                    >
+                      <fa-icon [icon]="['fas', 'link']"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+            <kendo-grid-command-column
+              title="Documentos"
+              [width]="80"
+              headerClass="pg-header-grid justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="text-center">
+                  <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      themeColor="info"
+                      class="mx-1"
+                      title="Asociar Documentos"
+                      (click)="abrirModalAsociarDocumentoPgeneral(dataItem)"
+                    >
+                      <fa-icon [icon]="['fas', 'paper-plane']"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+            <kendo-grid-command-column
+              title="Programas Asociados"
+              [width]="100"
+              headerClass="pg-header-grid justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="text-center">
+                  <div kendoTooltip class="col-auto p-0 m-1">
+                    <button
+                      kendoButton
+                      themeColor="info"
+                      class="mx-1"
+                      title="Asociar Programa"
+                      (click)="abrirModalAsociarProgramaPgeneral(dataItem)"
+                    >
+                      <fa-icon [icon]="['fas', 'rectangle-list']"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

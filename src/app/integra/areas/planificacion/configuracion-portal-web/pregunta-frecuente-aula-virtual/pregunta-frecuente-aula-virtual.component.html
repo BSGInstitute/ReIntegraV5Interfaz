@@ -1,0 +1,556 @@
+<div class="card">
+  <div class="card-header bg-color-material pb-0">
+    <h3 class="text-white mb-2">Filtro Preguntas</h3>
+  </div>
+  <div class="card-body p-0">
+    <div class="k-form k-form-horizontal">
+      <form [formGroup]="formFiltro">
+        <div class="row mb-2">
+          <div class="row col-sm-12 col-md-12 mx-2">
+            <div class="col-sm-6 col-md-6">
+              <div class="row k-form-horizontal mb-1">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-end"
+                    [style.width.px]="120"
+                    [for]="areasFiltro"
+                    text="Area:"
+                  >
+                  </kendo-label>
+                  <kendo-multiselect
+                    #areasFiltro
+                    [data]="listaAreas"
+                    textField="nombre"
+                    valueField="id"
+                    formControlName="areas"
+                    [style.width.px]="400"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ nombre: '<Areas>', id: 0 }"
+                    [virtual]="false"
+                    [filterable]="true"
+                    (filterChange)="filtrarAreaBusqueda($event)"
+                    (valueChange)="filtrarSubAreasPorAreas($event)"
+                    (removeTag)="removerSubAreasPorAreas($event)"
+                  ></kendo-multiselect>
+                </kendo-formfield>
+              </div>
+              <div class="row k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-end"
+                    [style.width.px]="120"
+                    [for]="subareasFiltro"
+                    text="Sub Area:"
+                  >
+                  </kendo-label>
+                  <kendo-multiselect
+                    #subareasFiltro
+                    [data]="listaSubAreas"
+                    textField="nombre"
+                    valueField="id"
+                    formControlName="subareas"
+                    [style.width.px]="400"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ nombre: '<Sub Area>', id: 0 }"
+                    [virtual]="false"
+                    [filterable]="true"
+                    (filterChange)="filtrarSubAreaBusqueda($event)"
+                    (valueChange)="filtrarPgeneralPorSubAreas($event)"
+                    (removeTag)="removerPgeneralPorSubAreas($event)"
+                  ></kendo-multiselect>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-6 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <kendo-label
+                  class="d-flex align-items-end"
+                  [style.width.px]="120"
+                  [for]="pgeneralFiltro"
+                  text="Programa General:"
+                >
+                </kendo-label>
+                <kendo-multiselect
+                  #pgeneralFiltro
+                  [data]="listaPgeneral"
+                  textField="nombre"
+                  valueField="id"
+                  formControlName="pgenerales"
+                  [style.width.px]="400"
+                  [valuePrimitive]="true"
+                  [defaultItem]="{ nombre: '<Programa General>', id: 0 }"
+                  [virtual]="false"
+                  [filterable]="true"
+                  (filterChange)="filtrarPgeneralBusqueda($event)"
+                ></kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        <div class="row my-3 mx-3">
+          <div class="col-md-12 text-end">
+            <button class="btn btn-primary" (click)="obtenerFiltros()">
+              Buscar
+              <fa-icon [icon]="['fas', 'search']" class="fa-lg"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="card my-3">
+  <div class="card-header bg-color-material pb-0">
+    <h3 class="text-white mb-2">Gestión Preguntas Frecuentes</h3>
+  </div>
+  <div class="card-body">
+    <kendo-grid
+      [kendoGridBinding]="gridPreguntasFrecuentes.data"
+      [loading]="gridPreguntasFrecuentes.loading"
+      [selectable]="true"
+      [sortable]="true"
+      [resizable]="true"
+      [pageable]="{
+        buttonCount: 5,
+        info: true,
+        type: 'numeric',
+        pageSizes: true,
+        previousNext: true,
+        position: 'bottom'
+      }"
+      [skip]="0"
+      [pageSize]="15"
+      filterable="menu"
+    >
+      <ng-template kendoGridToolbarTemplate>
+        <kendo-grid-spacer></kendo-grid-spacer>
+        <button
+          type="button"
+          class="btn btn-success text-white"
+          (click)="abrirModalDetalleInsertar()"
+        >
+          Nuevo
+        </button>
+      </ng-template>
+
+      <ng-template
+        kendoPagerTemplate
+        let-totalPages="totalPages"
+        let-currentPage="currentPage"
+      >
+        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+        <kendo-pager-numeric-buttons
+          [buttonCount]="5"
+        ></kendo-pager-numeric-buttons>
+        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+        <kendo-pager-input></kendo-pager-input>
+        <kendo-pager-info></kendo-pager-info>
+        <kendo-pager-page-sizes
+          [pageSizes]="cantidadItems"
+        ></kendo-pager-page-sizes>
+      </ng-template>
+
+      <kendo-grid-column
+        field="pregunta"
+        title="Pregunta"
+        [width]="200"
+        [headerClass]="'justify-content-start'"
+        [filterable]="true"
+      >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="NombreSeccion"
+        title="Seccion"
+        [width]="100"
+        [headerClass]="'justify-content-start'"
+        [filterable]="false"
+      ></kendo-grid-column>
+
+      <kendo-grid-command-column
+        title="Acciones"
+        [headerStyle]="{ color: '#5f75bd' }"
+        [width]="30"
+        [headerClass]="'justify-content-center'"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          <button
+            kendoGridEditCommand
+            themeColor="warning"
+            fillMode="solid"
+            rounded="large"
+            size="large"
+            class="p-2 me-1 ms-1"
+            container="body"
+            placement="top"
+            ngbTooltip="Editar"
+            (click)="abrirModalDetalleActualizar(dataItem)"
+          >
+            <span class="k-icon k-i-pencil k-icon-20"></span>
+          </button>
+
+          <button
+            kendoGridEditCommand
+            themeColor="error"
+            fillMode="solid"
+            rounded="large"
+            size="large"
+            class="p-2 me-1 ms-1"
+            container="body"
+            placement="top"
+            ngbTooltip="Eliminar"
+            (click)="eliminar(dataItem)"
+          >
+            <span class="k-icon k-i-x k-icon-20"></span>
+          </button>
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+  </div>
+</div>
+<!-- Modal Edicion -->
+<ng-template #modalPreguntasFrecuentes let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Configuracion de Pregunta Frecuente
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="limpiarCamposForm()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formPreguntaFrecuente">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="120"
+              [for]="preguntaModal"
+              text="Pregunta:"
+            >
+            </kendo-label>
+            <kendo-textbox
+              #preguntaModal
+              formControlName="pregunta"
+              placeholder="Nombre archivo"
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="120"
+              [for]="respuestaModal"
+              text="Respuesta:"
+            >
+            </kendo-label>
+            <kendo-editor
+              #respuestaModal
+              formControlName="respuesta"
+              style="height: 250px"
+              [style.width.px]="640"
+              [pasteCleanupSettings]="{
+                removeInvalidHTML: true,
+                convertMsLists: true,
+                removeMsClasses: true,
+                removeMsStyles: true
+              }"
+            >
+              <kendo-toolbar>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorBoldButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorItalicButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorUnderlineButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorStrikethroughButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorAlignLeftButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorAlignCenterButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorAlignRightButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorAlignJustifyButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-dropdownlist
+                  kendoEditorFormat
+                ></kendo-toolbar-dropdownlist>
+                <kendo-toolbar-dropdownlist
+                  kendoEditorFontSize
+                ></kendo-toolbar-dropdownlist>
+                <kendo-toolbar-dropdownlist
+                  kendoEditorFontFamily
+                ></kendo-toolbar-dropdownlist>
+                <kendo-toolbar-colorpicker
+                  kendoEditorForeColor
+                ></kendo-toolbar-colorpicker>
+                <kendo-toolbar-colorpicker
+                  kendoEditorBackColor
+                  view="gradient"
+                ></kendo-toolbar-colorpicker>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorInsertUnorderedListButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorInsertOrderedListButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorIndentButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorOutdentButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorBlockquoteButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorCreateLinkButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorUnlinkButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorViewSourceButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorCleanFormattingButton
+                ></kendo-toolbar-button>
+                <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorAddColumnBeforeButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorAddColumnAfterButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorAddRowBeforeButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorAddRowAfterButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorDeleteColumnButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorDeleteRowButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorDeleteTableButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorPrintButton
+                ></kendo-toolbar-button>
+              </kendo-toolbar>
+            </kendo-editor>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="120"
+              [for]="seccionPreguntasModal"
+              text="Sección Pregunta:"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #seccionPreguntasModal
+              [data]="listaCombosModal.seccionPreguntaFrecuente"
+              textField="nombre"
+              valueField="id"
+              formControlName="seccionPregunta"
+              [style.width.px]="500"
+              [valuePrimitive]="true"
+            ></kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="120"
+              [for]="areasModal"
+              text="Aréa:"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #areasModal
+              [data]="listaAreasModal"
+              textField="nombre"
+              valueField="id"
+              formControlName="area"
+              [style.width.px]="400"
+              [valuePrimitive]="true"
+              [defaultItem]="{ nombre: '<Areas>', id: 0 }"
+              [virtual]="false"
+              placeholder="<Areas>"
+              [filterable]="true"
+              (filterChange)="filtrarAreaBusquedaModal($event)"
+              (valueChange)="filtrarSubAreasPorAreasModal($event)"
+              (removeTag)="removerSubAreasPorAreasModal($event)"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="120"
+              [for]="subareaModal"
+              text="Sub Aréa:"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #subareaModal
+              [data]="listaSubAreasModal"
+              textField="nombre"
+              valueField="id"
+              formControlName="subarea"
+              [style.width.px]="400"
+              [valuePrimitive]="true"
+              [defaultItem]="{ nombre: '<Sub Area>', id: 0 }"
+              [virtual]="false"
+              placeholder="<Sub Areas>"
+              [filterable]="true"
+              (filterChange)="filtrarSubAreaBusquedaModal($event)"
+              (valueChange)="filtrarPgeneralPorSubAreasModal($event)"
+              (removeTag)="removerPgeneralPorSubAreasModal($event)"            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="120"
+              [for]="pgeneralModal"
+              text="Programa General:"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #pgeneralModal
+              [data]="listaPgeneralModal"
+              textField="nombre"
+              valueField="id"
+              formControlName="pgeneral"
+              [style.width.px]="400"
+              [valuePrimitive]="true"
+              [defaultItem]="{ nombre: '<Programa General>', id: 0 }"
+              placeholder="<Programa General>"
+              [virtual]="false"
+              [filterable]="true"
+              (filterChange)="filtrarPgeneralBusquedaModal($event)"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="120"
+              [for]="modalidadModal"
+              text="Modalidad:"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #modalidadModal
+              [data]="listaCombosModal.modalidadCurso"
+              textField="nombre"
+              valueField="id"
+              formControlName="modalidad"
+              [style.width.px]="400"
+              [valuePrimitive]="true"
+              [defaultItem]="{ nombre: '<Modalidad>', id: 0 }"
+              placeholder="<Modalidad>"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+
+    <div class="row my-2" #selector id="selector">
+      <div class="text-end">
+        <button
+          class="btn btn-primary mx-1"
+          [disabled]="formPreguntaFrecuente.invalid"
+          (click)="insertar()"
+          *ngIf="nuevoRegistro"
+        >
+          <span class="px-1">Nuevo</span>
+        </button>
+        <button
+          class="btn btn-primary mx-1"
+          [disabled]="formPreguntaFrecuente.invalid"
+          (click)="actualizar()"
+          *ngIf="!nuevoRegistro"
+        >
+          <span class="px-1">Actualizar</span>
+        </button>
+
+        <button class="btn btn-danger" (click)="limpiarCamposForm()">
+          <span class="px-1">Cancelar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>
+<!-- Modal Edicion -->
+<loading [loading]="loaderModal"></loading>

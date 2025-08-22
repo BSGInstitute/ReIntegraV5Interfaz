@@ -1,0 +1,148 @@
+<div class="d-flex justify-content-center align-items-start gap-3 w-100">
+
+  <!-- Card principal (lista) -->
+  <div class="card border-primary" style="min-width: 60%;">
+    <div class="card-header bg-color-material pb-0">
+      <h2 class="text-white mb-2">
+        Habilitar Examenes
+      </h2>
+    </div>
+    <div class="card-body p-2">
+      <kendo-grid [kendoGridBinding]="gridHabilitarExamenes.data" [loading]="gridHabilitarExamenes.loading"
+        (remove)="gridHabilitarExamenes.removeHandler($event)" [resizable]="true" filterable="menu" [sortable]="true"
+        [selectable]="true" [scrollable]="'scrollable'" [pageSize]="10" [pageable]="{ pageSizes: [5, 10, 20] }">
+
+        <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+          <button kendoButton icon="reload" fillMode="flat" themeColor="primary" (click)="obtenerTodo()"></button>
+          <kendo-grid-spacer></kendo-grid-spacer>
+        </ng-template>
+
+        <kendo-grid-column field="nombrePostulante" title="Nombres" [width]="100" headerClass="justify-content-center">
+          <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+            <kendo-grid-string-filter-menu [column]="column" [filter]="filter" [filterService]="filterService"
+              [extra]="false" operator="contains">
+              <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+            </kendo-grid-string-filter-menu>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="apellidoPaterno" title="Apellido Paterno" [width]="100"
+          headerClass="justify-content-center"></kendo-grid-column>
+        <kendo-grid-column field="apellidoMaterno" title="Apellido Materno" [width]="100"
+          headerClass="justify-content-center"></kendo-grid-column>
+        <kendo-grid-column field="nroDocumento" title="Nro.Documento" [width]="80"
+          headerClass="justify-content-center"></kendo-grid-column>
+        <kendo-grid-column field="email" title="Email" [width]="140"
+          headerClass="justify-content-center"></kendo-grid-column>
+        <kendo-grid-column field="procesoSeleccion" title="ProcesoSeleccion" [width]="100"
+          headerClass="justify-content-center"></kendo-grid-column>
+        <kendo-grid-column field="fechaProcesoSeleccion" title="FechaProcesoSeleccion" [width]="80"
+          headerClass="justify-content-center"></kendo-grid-column>
+        <kendo-grid-column field="nombrePersonal" title="Personal" [width]="100"
+          headerClass="justify-content-center"></kendo-grid-column>
+
+        <kendo-grid-command-column title="Acciones" [headerStyle]="{ color: '#5f75bd' }" [width]="50"
+          [headerClass]="'justify-content-center'" [resizable]="true">
+          <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+            <button kendoButton fillMode="solid" rounded="large" size="large" class="p-2 me-1 ms-1" themeColor="primary"
+              (click)="obtenerExamenesPostulante(dataItem)" ngbTooltip="Ver detalle">
+              <span class="k-icon k-i-pencil k-icon-20"></span>
+            </button>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+
+  <!-- Card secundaria (detalle) -->
+  <div *ngIf="mostrarExamenes" class="card border-primary shadow-sm" style="min-width: 35%;">
+    <div class="card-header bg-color-material d-flex justify-content-between align-items-center">
+      <h4 class="text-white m-0">Detalle del Postulante</h4>
+      <button kendoButton icon="close" fillMode="flat" themeColor="light" (click)="mostrarExamenes = false"></button>
+    </div>
+
+    <div class="card-body p-4">
+      <div class="container-fluid px-0">
+        <kendo-card class="w-100 shadow-sm border rounded p-3 mb-4">
+          <kendo-card-header class="mb-3 border-bottom pb-2">
+            <h5 class="mb-0 d-flex align-items-center gap-2">
+              <kendo-icon name="user" size="medium"></kendo-icon>
+              Datos del Postulante
+            </h5>
+          </kendo-card-header>
+
+          <kendo-card-body>
+            <div class="row mb-3 align-items-center">
+              <div class="col-auto text-primary">
+                <kendo-icon name="user"></kendo-icon>
+              </div>
+              <div class="col-3 fw-bold">Nombre:</div>
+              <div class="col">{{ postulanteSeleccionado?.nombrePostulante }}</div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+              <div class="col-auto text-primary">
+                <kendo-icon name="barcode"></kendo-icon>
+              </div>
+              <div class="col-3 fw-bold">Documento:</div>
+              <div class="col">{{ postulanteSeleccionado?.nroDocumento }}</div>
+            </div>
+
+            <div class="row align-items-center">
+              <div class="col-auto text-primary">
+                <kendo-icon name="barcode"></kendo-icon>
+              </div>
+              <div class="col-3 fw-bold">ID Postulante:</div>
+              <div class="col">{{ postulanteSeleccionado?.idPostulante }}</div>
+            </div>
+          </kendo-card-body>
+        </kendo-card>
+      </div>
+
+
+      <div *ngFor="let item of items; let i = index" class="mb-3">
+        <kendo-expansionpanel [title]="item.nombreEvaluacion" [subtitle]="'Evaluación ID: ' + item.idEvaluacion"
+          [expanded]="true" (action)="onAction(i)">
+
+          <div class="content">
+            <div class="d-flex flex-column gap-2">
+
+              <div *ngIf="item.listaExamenes?.length > 0">
+                <button [themeColor]="estadoProceso(item) ? 'warning':'success'" kendoButton icon="plus"
+                  themeColor="primary" (click)="habilitarPaquete(item)" [disabled]="estadoProceso(item)">
+                  {{ estadoProceso(item) ? 'En desarrollo' : 'Habilitar paquete' }}
+                </button>
+              </div>
+
+
+              <div></div>
+              <div *ngIf="item.idEvaluacion != 55">
+                <div *ngFor="let examen of item.listaExamenes"
+                  class="d-flex justify-content-between align-items-center gap-1 mb-1">
+
+                  <span>{{ examen.nombreExamen }}</span>
+                  <div class=" d-flex align-items-center gap-1 justify-content-center">
+                    <!-- <button kendoButton [icon]="examen.estadoExamen ? 'check' : 'close'"
+                      [themeColor]="examen.estadoExamen ? 'success' : 'error'">
+                      Estado
+                    </button> -->
+                    <button kendoButton [icon]="examen.estadoExamen ? 'check' : 'close'"
+                      [themeColor]="examen.estadoExamen ? 'success' : 'warning'" (click)="habilitarExamen(examen)"
+                      [disabled]="estadoProcesoExamen(examen)">
+                      {{ estadoProcesoExamen(examen) ? 'En desarrollo' : 'Habilitar Examen' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </kendo-expansionpanel>
+      </div>
+
+
+
+    </div>
+  </div>
+
+</div>

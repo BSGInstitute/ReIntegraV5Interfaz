@@ -1,0 +1,423 @@
+<div class="card border-primary" #reporte>
+  <div class="card-header pb-0 bg-color-material">
+    <div class="col text-aling-center">
+      <h2 class="mb-3 text-white">(C) Material Adicional</h2>
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <form class="k-form k-form-horizontal">
+      <div class="row">
+        <div class="col-sm-12 my-2">
+          <kendo-grid
+            [kendoGridBinding]="gridMaterialAdicional.data"
+            [loading]="gridMaterialAdicional.loading"
+            [selectable]="true"
+            [sortable]="true"
+            [resizable]="true"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+            [skip]="0"
+            [pageSize]="15"
+            filterable="menu"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <div class="row col-md-12">
+                <div class="col-md-12 text-end">
+                  <button
+                    type="button"
+                    class="btn btn-success text-white"
+                    (click)="abrirModalDetalleInsertar()"
+                  >
+                    Nuevo
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template
+              kendoPagerTemplate
+              let-totalPages="totalPages"
+              let-currentPage="currentPage"
+            >
+              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+              <kendo-pager-numeric-buttons
+                [buttonCount]="5"
+              ></kendo-pager-numeric-buttons>
+              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+              <kendo-pager-input></kendo-pager-input>
+              <kendo-pager-info></kendo-pager-info>
+              <kendo-pager-page-sizes
+                [pageSizes]="cantidadItems"
+              ></kendo-pager-page-sizes>
+            </ng-template>
+
+            <kendo-grid-column
+              field="nombre"
+              title="Programa General"
+              [width]="150"
+              [headerClass]="'justify-content-start'"
+              [filterable]="true"
+            >
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="contains"
+                >
+                  <kendo-filter-contains-operator
+                    text="Contiene"
+                  ></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-command-column
+              title="Acciones"
+              [headerStyle]="{ color: '#5f75bd' }"
+              [width]="15"
+              [headerClass]="'justify-content-center'"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <div class="text-center">
+                  <button
+                    kendoGridEditCommand
+                    themeColor="warning"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Editar"
+                    (click)="abrirModalDetalleActualizar(dataItem)"
+                  >
+                    <span class="k-icon k-i-pencil k-icon-20"></span>
+                  </button>
+
+                  <button
+                    kendoGridEditCommand
+                    themeColor="error"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Eliminar"
+                    (click)="eliminar(dataItem)"
+                  >
+                    <span class="k-icon k-i-x k-icon-20"></span>
+                  </button>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Modal Edicion -->
+<ng-template #modalMaterialAdicional let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Configuracion de Material Adicional
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="limpiarCamposForm()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formMaterialAdicional">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="150"
+              [for]="pgeneral"
+              text="Programa General:"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #pgeneral
+              [data]="listaCombos.listaPgeneral"
+              textField="nombre"
+              valueField="id"
+              formControlName="idPGeneral"
+              [style.width.px]="500"
+              [valuePrimitive]="true"
+              (valueChange)="filtrarPespecificos($event)"
+              [defaultItem]="{ nombre: '<Programa general>', id: 0 }"
+              [virtual]="false"
+              [filterable]="true"
+              (filterChange)="filtrarPgeneralBusqueda($event)"
+              [disabled]="bloquearPgeneral"
+            ></kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [style.width.px]="150"
+              [for]="idsPespecifico"
+              text="Programa Especifico:"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #idsPespecifico
+              [data]="listaCombos.listaPespecifico"
+              textField="nombre"
+              valueField="id"
+              formControlName="idsPEspecificos"
+              [style.width.px]="500"
+              [valuePrimitive]="true"
+              placeholder="<Programas Especificos>"
+              [virtual]="false"
+              [filterable]="true"
+              (filterChange)="filtrarPespecificoBusqueda($event)"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <div class="card border-primary">
+            <div class="card-body p-0">
+              <div class="row">
+                <div class="col-sm-12 my-2">
+                  <kendo-grid
+                    [kendoGridBinding]="gridConfiguracionMaterialAdicional.data"
+                    [loading]="gridConfiguracionMaterialAdicional.loading"
+                    [selectable]="true"
+                    [resizable]="true"
+                    (cellClick)="
+                      gridConfiguracionMaterialAdicional.cellClickHandler(
+                        $event
+                      )
+                    "
+                    (cellClose)="
+                      gridConfiguracionMaterialAdicional.cellCloseHandler(
+                        $event
+                      )
+                    "
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        themeColor="primary"
+                        icon="plus"
+                        (click)="crearNuevoRegistro()"
+                      >
+                        Nuevo
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="nombreArchivo"
+                      title="Nombre"
+                      [width]="150"
+                      [headerClass]="'justify-content-center'"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="container">
+                          <ng-container
+                            *ngIf="
+                              dataItem.nombreArchivo != null &&
+                                dataItem.nombreArchivo.length > 0;
+                              else elseTemplateNombreArchivo
+                            "
+                          >
+                            <p
+                              *ngIf="
+                                dataItem.nombreArchivo.length > 42;
+                                else elseTemplateTextoMin
+                              "
+                            >
+                              {{ dataItem.nombreArchivo.substring(0, 42) }}....
+                            </p>
+                            <ng-template #elseTemplateTextoMin>
+                              <p>{{ dataItem.nombreArchivo }}</p>
+                            </ng-template>
+                          </ng-container>
+                          <ng-template #elseTemplateNombreArchivo>
+                            <p>Nombre archivo</p>
+                          </ng-template>
+                        </div>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem
+                      >
+                        <kendo-textbox
+                          [formControl]="formGroup.get('nombreArchivo')"
+                          placeholder="Nombre archivo"
+                        >
+                        </kendo-textbox>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="enlaceArchivo"
+                      title="Archivo/Enlace"
+                      [width]="250"
+                      [headerClass]="'justify-content-center'"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="container text-start">
+                          <ng-container
+                            *ngIf="
+                              dataItem.enlaceArchivo != null &&
+                                dataItem.enlaceArchivo.length > 0;
+                              else elseTemplateEnlaceArchivo
+                            "
+                          >
+                            <p
+                              *ngIf="
+                                dataItem.enlaceArchivo.length > 71;
+                                else elseTemplateTextoMin
+                              "
+                            >
+                              {{ dataItem.enlaceArchivo.substring(0, 71) }}....
+                            </p>
+                            <ng-template #elseTemplateTextoMin>
+                              <p>{{ dataItem.enlaceArchivo }}</p>
+                            </ng-template>
+                          </ng-container>
+                          <ng-template #elseTemplateEnlaceArchivo>
+                            <p>Sin ruta de archivo</p>
+                          </ng-template>
+                        </div>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem
+                      >
+                        <kendo-textbox
+                          [formControl]="formGroup.get('enlaceArchivo')"
+                          placeholder="Enlace de archivo"
+                        >
+                        </kendo-textbox>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="esEnlace"
+                      title="Es Enlace"
+                      [width]="45"
+                      [headerClass]="'justify-content-center'"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <ng-container
+                            *ngIf="dataItem.esEnlace; else elseTemplateEsEnlace"
+                          >
+                            <p>Si</p>
+                          </ng-container>
+                          <ng-template #elseTemplateEsEnlace>
+                            <p>No</p>
+                          </ng-template>
+                        </div>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem
+                      >
+                        <div class="text-center">
+                          <input
+                            [formControl]="formGroup.get('esEnlace')"
+                            type="checkbox"
+                            kendoCheckBox
+                          />
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-command-column
+                      title="Eliminar"
+                      [headerStyle]="{ color: '#5f75bd' }"
+                      [width]="45"
+                      [headerClass]="'justify-content-center'"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                            (click)="eliminarConfiguracionMaterial(dataItem)"
+                          >
+                            <span class="k-icon k-i-x k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-command-column>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="row my-2" #selector id="selector">
+      <div class="text-end">
+        <button
+          class="btn btn-primary mx-1"
+          [disabled]="gridConfiguracionMaterialAdicional.statusCelda"
+          (click)="insertar()"
+          *ngIf="nuevoRegistro"
+        >
+          <span class="px-1">Nuevo</span>
+        </button>
+        <button
+          class="btn btn-primary mx-1"
+          [disabled]="gridConfiguracionMaterialAdicional.statusCelda"
+          (click)="actualizar()"
+          *ngIf="!nuevoRegistro"
+        >
+          <span class="px-1">Actualizar</span>
+        </button>
+
+        <button class="btn btn-danger" (click)="limpiarCamposForm()">
+          <span class="px-1">Cancelar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>
+<!-- Modal Edicion -->
+<loading [loading]="loaderModal"></loading>

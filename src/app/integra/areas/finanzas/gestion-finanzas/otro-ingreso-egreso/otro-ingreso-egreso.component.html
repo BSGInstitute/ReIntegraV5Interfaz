@@ -1,0 +1,481 @@
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Otros Ingresos-Egresos</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <kendo-grid
+                 [data]="gridOtroIngresoEgreso.view"
+                [kendoGridBinding]="gridOtroIngresoEgreso.data"
+                [loading]="loader"
+                filterable="menu"
+                [sortable]="true"
+                [resizable]="true"
+                [pageable]="gridOtroIngresoEgreso.pageable"
+                [skip]="gridOtroIngresoEgreso.gridState.skip"
+                [pageSize]="gridOtroIngresoEgreso.gridState.take"
+                [sort]="gridOtroIngresoEgreso.gridState.sort"
+              >
+                <ng-template kendoGridToolbarTemplate>
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="ObtenerOtroIngresoEgreso()"
+                  ></button>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <button
+                    kendoButton
+                    themeColor="primary"
+                    icon="plus"
+                    (click)="abrirModal(true)"
+                  >
+                    Agregar
+                  </button>
+                </ng-template>
+
+                <kendo-grid-command-column
+                  title="Editar"
+                  [width]="150"
+                  [headerClass]="'header-grid-integra'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                    <div class="w-100 d-flex justify-content-center">
+                      <button
+                        kendoButton
+                        themeColor="warning"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+
+                        (click)="abrirModal(false, dataItem)"
+                        ngbTooltip="Editar"
+                      >
+                        <span class="k-icon k-i-edit k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoGridRemoveCommand
+                        themeColor="error"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        (click)="EliminarIngresoEgreso(dataItem)"
+                        ngbTooltip="Eliminar"
+                      >
+                        <span class="k-icon k-i-delete k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+                <kendo-grid-column
+                  field="nombreTipoMovimientoCaja"
+                  title="Tipo"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombreSubTipoMovimientoCaja"
+                  title="Sub-Tipo"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="precio"
+                  title="Precio"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombreMoneda"
+                  title="Moneda"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="fechaPago"
+                  title="Fecha de Pago"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{finanzasService.fechaTemplate(dataItem.fechaPago)}}
+                </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombreCentroCosto"
+                  title="Centro de Costo"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombrePlanContable"
+                  title="Cuenta Contable"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombreCuentaCorriente"
+                  title="Cuenta Bancaria"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombreFormaPago"
+                  title="Forma de Pago"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombreAlumno"
+                  title="Alumno"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="observaciones"
+                  title="Observaciones"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalOtroIngresoEgreso let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{
+        isNew
+          ? "Registrar Otros Ingresos-Egresosle"
+          : "Registrar Otros Ingresos-Egresos"
+      }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formOtroIngresoEgreso">
+      <fieldset class="k-form-fieldset">
+        <div class="row my-2">
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idTipoIngreso" class="k-label">
+                Tipo Movimiento caja
+              </label>
+              <kendo-dropdownlist
+                #idTipoIngreso
+                formControlName="idTipoIngreso"
+                class="d-flex"
+                size="medium"
+                [data]="comboTipoMovimientoCaja"
+                [defaultItem]="{
+                  nombre: '-Seleccione un tipo Movimiento-',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>{{
+                getErrorMessage("idTipoIngreso")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idCentroCosto" class="k-label"> Centro Costo: </label>
+              <kendo-dropdownlist
+                #idCentroCosto
+                formControlName="idCentroCosto"
+                class="d-flex"
+                [data]="comboCentroCosto"
+                [valuePrimitive]="true"
+                [defaultItem]="{
+                  nombreCentroCosto: '-Seleccione un Centro de Costo',
+                  idCentroCosto: null
+                }"
+                textField="nombreCentroCosto"
+
+                valueField="idCentroCosto"
+                (filterChange)="filtroCentroCosto($event)"
+                [style]="'background-color: #FFF4B9'"
+                 [filterable]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row my-2">
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idSubTipoIngreso" class="k-label">
+                Sub-Tipo de Ingreso:
+              </label>
+              <kendo-dropdownlist
+                #idSubTipoIngreso
+                formControlName="idSubTipoMovimientoCaja"
+                class="d-flex"
+                [data]="comboSubTipoMovimientoCaja"
+                [valuePrimitive]="true"
+                [defaultItem]="{
+                  nombre: '-Seleccione un Sub tipo Movimiento-',
+                  idTipoMovimientoCaja: null
+                }"
+                textField="nombre"
+                valueField="id"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>{{
+                getErrorMessage("idSubTipoMovimientoCaja")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idFormaPago" class="k-label"> Forma Pago: </label>
+              <kendo-dropdownlist
+                #idFormaPago
+                formControlName="idFormaPago"
+                [data]="comboFormaPago"
+                [filterable]="true"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row my-2">
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idAlumno" class="k-label"> Alumno: </label>
+
+              <kendo-dropdownlist
+              #idAlumno
+              formControlName="idAlumno"
+              class="d-flex"
+              [data]="comboAlumno"
+              [valuePrimitive]="true"
+              [defaultItem]="{
+                nombreCompleto: '-Seleccione Alumno',
+                id: null
+              }"
+              textField="nombreCompleto"
+
+              valueField="id"
+              (filterChange)="filtroAlumno($event)"
+              [style]="'background-color: #FFF4B9'"
+               [filterable]="true"
+            >
+            </kendo-dropdownlist>
+
+
+
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="fechaPago" class="k-label"> Fecha: </label>
+              <kendo-datepicker
+                format="yyyy-MM-dd"
+                #fechaPago
+                formControlName="fechaPago"
+              ></kendo-datepicker>
+              <kendo-formerror>{{
+                getErrorMessage("fechaPago")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row my-2">
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idNroCuentaBanco" class="k-label"> Nro. Cuenta Banco: </label>
+              <kendo-dropdownlist
+                #idNroCuentaBanco
+                formControlName="idNroCuentaBanco"
+                class="d-flex"
+                size="medium"
+                [data]="comboCuentaCorriente"
+                [defaultItem]="{
+                  entidadNumeroCuenta: '-Seleccione un Nro Cuenta-',
+                  id: null
+                }"
+                textField="entidadNumeroCuenta"
+                valueField="id"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>{{
+                getErrorMessage("idNroCuentaBanco")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="precio" class="k-label"> Precio: </label>
+              <kendo-numerictextbox
+                #precio
+                orientation="horizontal"
+                [style.width.px]="170"
+                formControlName="precio"
+                [min]="0"
+                [autoCorrect]="true"
+                [decimals]="2"
+                [format]="'0'"
+              >
+              </kendo-numerictextbox>
+              <kendo-formerror>{{
+                getErrorMessage("precio")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row my-2">
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idCuentaContable" class="k-label"> Cuenta Contable: </label>
+              <kendo-dropdownlist
+              #idCuentaContable
+              formControlName="idCuentaContable"
+              class="d-flex"
+              [data]="comboCuentaContable"
+              [valuePrimitive]="true"
+              [defaultItem]="{
+                nombre: '-Seleccione un Cuenta Contable',
+                id: null
+              }"
+              textField="nombre"
+
+              valueField="id"
+              (filterChange)="filtroCuentaContable($event)"
+              [style]="'background-color: #FFF4B9'"
+               [filterable]="true"
+            >
+            </kendo-dropdownlist>
+
+              <kendo-formerror>{{
+                getErrorMessage("idCuentaContable")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idMoneda" class="k-label"> Moneda: </label>
+              <kendo-dropdownlist
+                #idMoneda
+                formControlName="idMoneda"
+                class="d-flex"
+                size="medium"
+                [data]="comboMoneda"
+                [defaultItem]="{
+                  text: '-Seleccione un tipo Moneda-',
+                  value: null
+                }"
+                textField="text"
+                valueField="value"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>{{
+                getErrorMessage("idMoneda")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row my-2">
+          <div class="col-sm-12 col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="observaciones" class="k-label">
+                Observaciones:
+              </label>
+              <kendo-textarea
+                #observaciones
+                placeholder="Observaciones"
+                formControlName="observaciones"
+                [rows]="4"
+                class="border border-1"
+                [style]="'background-color: #FFF4B9'"
+              >
+              </kendo-textarea>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="crearIngresoEgreso()"
+      >
+        Guardar
+      </button>
+
+      <button
+        kendoButton
+        *ngIf="!isNew"
+        themeColor="tertiary"
+        (click)="ActualizarIngresoEgreso()"
+      >
+        Actualizar
+      </button>
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,549 @@
+<div class="card border-primary mb-3 rei">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="mb-2 text-white text-center">
+      (R) Reporte de Encuestas Intermedias de Cursos Sincrónicos
+    </h2>
+  </div>
+  <div class="card-body p-4">
+    <form [formGroup]="formFiltro" orientation="horizontal">
+      <div class="row">
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="idsProgramasGenerales" class="k-label">
+                <span>Programa General</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #idsProgramasGenerales
+                formControlName="idsProgramasGenerales"
+                [data]="dataProgramaGeneral"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+                (valueChange)="obtenerCursoPEspecifico($event)">
+              </kendo-multiselect>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="idsProgramasEspecificos" class="k-label">
+                <span>Curso</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #idsProgramasEspecificos
+                formControlName="idsProgramasEspecificos"
+                [data]="dataProgramaEspecifico"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id">
+              </kendo-multiselect>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label for="idsDocentes" class="k-label">
+                <span>Docente</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #idsDocentes
+                formControlName="idsDocentes"
+                [data]="dataDocentes"
+                placeholder="<Todos>"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id">
+              </kendo-multiselect>
+            </div>
+          </div>
+        </div>
+        <!-- Merge -->
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span>Nro. Versión</span>
+            </div>
+            <div class="col-md-8">
+              <kendo-dropdownlist
+                formControlName="version" 
+                [data]="dataVersionesEncuesta"
+                [textField]="'version'" 
+                [valueField]="'version'" 
+                [defaultItem]="{ version: 'Insertar el número de versión' }"
+                [valuePrimitive]="true"
+                placeholder="Seleccione Tipo">
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span>Fecha Inicio</span>
+            </div>
+            <div class="col-md-8">
+              <kendo-datepicker
+                #fechaInicio
+                [incompleteDateValidation]="true"
+                formControlName="fechaInicio"
+                format="yyyy-MM-dd"
+                [max]="obtenerFechaActual">
+              </kendo-datepicker>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span>Fecha Fin</span>
+            </div>
+            <div class="col-md-8">
+              <kendo-datepicker
+                #fechaFin
+                [incompleteDateValidation]="true"
+                formControlName="fechaFin"
+                format="yyyy-MM-dd"
+                [min]="fechaInicio.value">
+              </kendo-datepicker>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-12 d-flex justify-content-end">
+        <button
+          kendoButton
+          class="send-button"
+          icon="search"
+          style="height: 35px"
+          themeColor="success"
+          [disabled]="btnBuscarDisabled"
+          (click)="generarReporte()">
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card-body">
+  <kendo-grid
+    [kendoGridBinding]="gridReporteEncuestaIntermediaSincronico.data"
+    [loading]="gridReporteEncuestaIntermediaSincronico.loading"
+    [pageSize]="10"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: true,
+      previousNext: true,
+      position: 'bottom'
+    }"
+    [sortable]="true"
+    [selectable]="true"
+    [resizable]="true"
+    filterable="menu">
+    <ng-template kendoGridToolbarTemplate>
+      <button
+        class="btn btn-success"
+        type="button"
+        kendoGridExcelCommand
+        icon="file-excel"
+        themeColor="success">
+        Export to Excel
+      </button>
+    </ng-template>
+    <ng-template
+      kendoPagerTemplate
+      let-totalPages="totalPages"
+      let-currentPage="currentPage">
+      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+      <kendo-pager-numeric-buttons
+        [buttonCount]="5">
+      </kendo-pager-numeric-buttons>
+      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+      <kendo-pager-input></kendo-pager-input>
+      <kendo-pager-info></kendo-pager-info>
+      <kendo-pager-page-sizes
+        [pageSizes]="cantidadItems">
+      </kendo-pager-page-sizes>
+    </ng-template>
+
+    <kendo-grid-column
+      field="centroCostoPrograma"
+      title="Centro de costo del programa"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="programaGeneral"
+      title="Programa general"
+      [width]="210"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="programaEspecifico"
+      title="Programa específico"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="centroCostoCurso"
+      title="Centro de costo del curso"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="cursoGeneral"
+      title="Curso General"
+      [width]="210"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="cursoEspecifico"
+      title="Curso Especifico"
+      [width]="210"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="docente"
+      title="Docente"
+      [width]="200"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+        [style]="'justify-content-center'">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="fechaRealizada"
+      title="Fecha de Sesión"
+      [width]="250"
+      headerClass="justify-content-center">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="text-center">
+        {{ dataItem.fechaRealizada | date : "yyyy-MM-dd HH:mm:ss" }}
+      </div>
+    </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="fechaIngreso"
+      title="Fecha Realizada"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="text-center">
+        {{ dataItem.fechaIngreso | date : "yyyy-MM-dd HH:mm:ss" }}
+      </div>
+    </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="codigoMatricula"
+      title="Código del alumno"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="nombreAlumno"
+      title="Nombre del Alumno"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="correo"
+      title="Correo"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    
+    <kendo-grid-column
+      field="comentarioAlumno"
+      title="Comentario Alumno"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="asesoraAcademica"
+      title="Asesora Académica"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      *ngFor="let col of arrayColumnasPreguntas"
+      [field]="col.field"
+      [title]="col.title"
+      [width]="250"
+      headerClass="justify-content-center">
+      <ng-template kendoGridHeaderTemplate let-column>
+        <div
+          class="text-truncate"
+          [attr.title]="column.title"
+          style="
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 250px;">
+          {{ column.title }}
+        </div>
+      </ng-template>
+
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService">
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains">
+          <kendo-filter-contains-operator
+            text="Contiene">
+          </kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-excel
+      fileName="Reporte-Encuesta-Intermedia-Sincronica.xlsx"
+      [fetchData]="allData">
+      <kendo-excelexport-column
+        *ngFor="let item of arrayColumnasExcel"
+        [field]="item.field"
+        [title]="item.title">
+      </kendo-excelexport-column>
+    </kendo-grid-excel>
+  </kendo-grid>
+</div>

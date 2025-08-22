@@ -1,0 +1,287 @@
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="d-flex bd-highlight">
+            <h3 class="text-white mb-2 bd-highlight flex-grow-1">
+              Reporte Adwords Api Volumen Busqueda
+            </h3>
+            <button
+              class="btn btn-white bg-white text-primary float-end bd-highlight mb-2"
+              (click)="ActualiarReporte()"
+              [disabled]="butond"
+            >
+              Actualizar reporte
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col row">
+              <div class="col-md-6">
+                <h4>
+                  Terminos a buscar
+                  <mat-icon
+                    matTooltip="Escribe frases o palabras y sepáralas por comas o presiona enter para crear los elementos los cuales serán usados para las búsquedas por el api de Google Ads  "
+                    aria-label="Button that displays a tooltip when focused or hovered over"
+                    >help</mat-icon
+                  >
+                </h4>
+
+                <mat-form-field class="example-full-width w-100 " appearance="outline" >
+                  <mat-label>Palabras o frases para busqueda</mat-label>
+                  <textarea matInput placeholder="Ingrese al menos una palabra o frase" style="height: 100px;"  (change)="insertar($event)"></textarea>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <div class="row m-0">
+                  <h4>Filtros para busqueda</h4>
+                  <div class="col-12">
+                    <mat-form-field
+                      class="example-chip-list w-100"
+                      appearance="outline"
+                      [disabled]="paisesServer == undefined"
+                    >
+                      <mat-label>Paises</mat-label>
+                      <mat-chip-list #paisChip aria-label="Ingrese paises">
+                        <mat-chip
+                          *ngFor="let pais of Paises"
+                          (removed)="removepais(pais)"
+                          [editable]="false"
+                        >
+                          {{ pais.name }}
+                          <button
+                            matChipRemove
+                            [attr.aria-label]="'remove ' + pais.name"
+                          >
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip>
+                        <input
+                          placeholder="Ingrese un pais..."
+                          [formControl]="areaCtrl"
+                          [matChipInputFor]="paisChip"
+                          [matAutocomplete]="auto3"
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          [matChipInputAddOnBlur]="addOnBlur"
+                        />
+                      </mat-chip-list>
+                      <mat-autocomplete
+                        #auto3="matAutocomplete"
+                        (optionSelected)="selected2($event)"
+                      >
+                      <mat-option
+                      *ngFor="let area2 of filteredareas2 | async"
+                      [value]="area2"
+                     >
+                      {{ area2.nombre }}
+                    </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-md-6 pb-3">
+                  <label for="">Fecha inicio</label>
+                                      <kendo-datepicker
+                                      [size]="'large'"
+                                      (valueChange)="addEvent($event)"
+                                  [bottomView]="'year'"
+                                  [format]="'MMMM yyyy'"
+                                  >
+
+                                </kendo-datepicker>
+                  </div>
+                    <div class="col-md-6 pb-3">
+                      <label for="">Fecha fin</label>
+                                          <kendo-datepicker
+                                          [size]="'large'"
+                                          (valueChange)="addEventEnd($event)"
+                                      [bottomView]="'year'"
+                                      [format]="'MMMM yyyy'"
+                                      ></kendo-datepicker>
+                  </div>
+
+                  <div class="col-12">
+                    <mat-form-field class="w-100" appearance="outline">
+                      <mat-label>Seleccione Un metodo de busqueda</mat-label>
+                      <mat-select
+                        [(value)]="BusquedaPor"
+                        [required]="true"
+                        (selectionChange)="selectOptbusqueda($event)"
+                      >
+                        <mat-option value="1">Texto exacto</mat-option>
+                        <mat-option value="2">Texto similar</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="col-12">
+                    <mat-form-field class="w-100" appearance="outline">
+                      <mat-label>Seleccione un idioma</mat-label>
+                      <mat-select
+                        [(value)]="Idioma"
+                        [required]="true"
+                        (selectionChange)="selectOptidioma($event)"
+                      >
+                        <mat-option value="1003">Espa&ntilde;ol</mat-option>
+                        <mat-option value="1000">Ingles</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button
+            class="btn btn-primary float-end"
+            (click)="GenerarReporte()"
+            [disabled]="butond"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      <!-- Reporte de bsuqueda -->
+      <div class="card mt-3">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Reporte</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col row">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-header bg-color-material col-md-12">
+                    <div class="row col-md-12">
+                      <div div class="col-md-12" style="text-align: left">
+                        <div class="row">
+                          <div class="col-md-7" *ngIf="listaGrilla.length != 0">
+                            <button
+                              kendoButton
+                              style="margin-right: 1rem"
+                              icon="k-icon k-i-file-excel k-icon-20"
+                              type="button"
+                              class="bg-white text-primary"
+                              (click)="excelexport.save()"
+                            >
+                              Exportar a Excel
+                            </button>
+
+                            <kendo-excelexport
+                              [data]="listaGrillaOrder"
+                              fileName="ReporteAdwords.xlsx"
+                              #excelexport
+                            >
+                              <kendo-excelexport-column
+                                field="palabraClave"
+                                title="Palabras clave"
+                              >
+                              </kendo-excelexport-column>
+                              <ng-container
+                                *ngFor="let dts of listaGrilla; let i = index"
+                              >
+                              <kendo-excelexport-column-group
+                              [title]="dts.pais"
+                              [headerCellOptions]="{ textAlign: 'center' }"
+                            >
+
+                                    <ng-container
+                                      *ngFor="
+                                        let dts5 of  dts.detalle[0].promedioPorMes;
+                                        let i8 = index
+                                      "
+                                    >
+                                      <kendo-excelexport-column
+                                        [field]="
+                                          'column' + dts.idPais + '-' + i8
+                                        "
+                                        [title]="dts5.month + '/' + dts5.year"
+                                      >
+                                      </kendo-excelexport-column>
+                                    </ng-container>
+                                </kendo-excelexport-column-group>
+                              </ng-container>
+                            </kendo-excelexport>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="loading">
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                  </ng-container>
+                  <kendo-grid
+                    *ngIf="listaGrilla.length != 0"
+                    [kendoGridBinding]="listaGrillaOrder"
+                    [loading]="loader"
+                    [pageSize]="5"
+                    [sortable]="true"
+                    [reorderable]="true"
+                    [resizable]="true"
+                    [columnMenu]="{ filter: true }"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"
+                  >
+                    <kendo-grid-column
+                      title="Palabras clave"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="150"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                      [class]="'cellCustomClass'"
+                      field="palabraClave"
+                    >
+                    </kendo-grid-column>
+
+                    <ng-container
+                      *ngFor="let dts of listaGrilla; let i = index"
+                    >
+                      <kendo-grid-column-group
+                        [title]="dts.pais"
+                        [headerCellOptions]="{ textAlign: 'center' }"
+                      >
+
+                          <ng-container
+                            *ngFor="
+                              let dts5 of dts.detalle[0].promedioPorMes;
+                              let i8 = index
+                            "
+                          >
+                            <kendo-grid-column
+                              [title]="dts5.month + '/' + dts5.year"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              [field]="'column' + dts.idPais + '-' + i8"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                            >
+                            </kendo-grid-column>
+                        </ng-container>
+                      </kendo-grid-column-group>
+                    </ng-container>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Fin de reporte de busqueda -->
+    </div>
+  </div>
+</div>

@@ -1,0 +1,323 @@
+<div class="card border-primary" #reporte>
+  <div class="card-header pb-0 bg-color-material">
+    <div class="col text-aling-center">
+
+        <h2 class="mb-2 text-white" style="text-align: center ;">(R) Ingresos por Asesor</h2>
+
+    </div>
+  </div>
+
+  <div class="card-body">
+    <form
+      class="k-form k-form-horizontal"
+      [formGroup]="formFiltroIngresoAsesor"
+    >
+      <div
+        class="alert alert-danger py-2 mb-0"
+        role="alert"
+        *ngIf="showAlertFiltro"
+      >
+        Seleccione al menos un Coordinador o un Asesor
+      </div>
+      <div class="row px-5">
+        <div class="col-sm-12 col-md-6 my-2">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-start"
+
+              [for]="coordinadores"
+              text="Coordinador(s)"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #coordinadores
+              [data]="coordinadorFiltro"
+              placeholder="Coordinador(s)"
+              textField="nombreCompleto"
+              valueField="id"
+              [valuePrimitive]="true"
+              formControlName="coordinadores"
+              [filterable]="true"
+              [virtual]="virtual"
+              (filterChange)="filterCoordinador($event)"
+              (valueChange)="changeCoordinador($event)"
+            >
+            </kendo-multiselect>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-6 my-2">
+          <kendo-formfield orientation="horizontal">
+            <label
+              class="d-flex align-items-start"
+
+              [for]="periodoInicio"
+
+            >
+              <span
+                >Periodo Inicio<span class="text-danger fw-bold">*</span></span
+              >
+            </label>
+            <kendo-dropdownlist
+              #periodoInicio
+              [data]="dataPeriodoInicio"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+              [valuePrimitive]="true"
+              formControlName="periodoInicio"
+            >
+              <kendo-formerror>Seleccione un Periodo Inicio</kendo-formerror>
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row px-5">
+        <div class="col-sm-12 col-md-6 my-2">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-start"
+
+              [for]="asesores"
+              text="Asesor(s)"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #asesores
+              [data]="asesorFiltro"
+              textField="nombreCompleto"
+              placeholder="Asesor(s)"
+              valueField="id"
+              [valuePrimitive]="true"
+              [autoClose]="true"
+              [defaultItem]="{
+                nombreCompleto: 'Todos los asesores',
+                id: null
+              }"
+              formControlName="asesores"
+              [virtual]="virtual"
+              (filterChange)="filterAsesores($event)"
+              (valueChange)="changeAsesor($event)"
+              [filterable]="true"
+            >
+            </kendo-multiselect>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-6 my-2">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-start"
+
+              [for]="periodofin"
+
+            >
+              <span>Periodo Fin<span class="text-danger fw-bold">*</span></span>
+            </kendo-label>
+            <kendo-dropdownlist
+              #periodofin
+              [data]="dataPeriodoFin"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+              [valuePrimitive]="true"
+              formControlName="periodoFin"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>Seleccione un Periodo Inicio</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row px-5">
+        <div class="col-sm-12 col-md-6 my-2">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-start"
+
+              text="Estado del Personal"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              [data]="dataEstadoAsesor"
+              class="kendo-combo"
+              textField="clave"
+              valueField="valor"
+              [valuePrimitive]="true"
+              [(ngModel)]="estadoAsesor"
+              [ngModelOptions]="{ standalone: true }"
+              [defaultItem]="{ clave: 'Todo el Personal', valor: null }"
+              (valueChange)="changeEstadoAsesor($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-6 my-2">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-start"
+
+              [for]="tipoPeriodo"
+
+            >
+              <span>Periodo<span class="text-danger fw-bold">*</span></span>
+            </kendo-label>
+            <kendo-dropdownlist
+              #tipoPeriodo
+              [data]="dataTipoPeriodo"
+              class="kendo-combo"
+              textField="clave"
+              valueField="valor"
+              [valuePrimitive]="true"
+              formControlName="tipoPeriodo"
+              [defaultItem]="{
+                clave: 'Seleccione un Periodo...',
+                valor: null
+              }"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>Seleccione un Tipo de Periodo</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row px-5">
+        <div class="col-12 d-flex justify-content-end">
+          <button
+          kendoButton
+          class="send-button"
+          icon="search"
+
+          themeColor="success"
+          (click)="generarReporte()"
+          [disabled]="loading"
+        >
+          Buscar
+        </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="row mt-3">
+      <loading [loading]="loading"></loading>
+      <div class="col" *ngIf="!loading">
+        <ng-container *ngFor="let asesor of asesoresResp; let i = index">
+          <div class="card mt-2" *ngIf="asesor.banderaMostrar">
+            <div class="card-header pb-0">
+              <h3 class="mb-2">{{ asesor.nombreCompleto }}</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-auto">
+                  <kendo-grid
+                    [kendoGridBinding]="asesor.grid?.data"
+                    [style.width.px]="asesor.contadorColum * 150"
+                    [loading]="asesor.loading"
+                  >
+                    <ng-container
+                      *ngFor="let column of asesor.grid?.columns; let j = index"
+                    >
+                      <kendo-grid-column
+                        *ngIf="!column.isColumnGroup"
+                        [field]="column.field"
+                        [title]="column.title"
+                        [width]="column.width"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column-group
+                        *ngIf="column.isColumnGroup"
+                        [field]="column.field"
+                        [title]="column.title"
+                        [columnMenu]="false"
+                      >
+                        <ng-template
+                          kendoGridHeaderTemplate
+                          let-column
+                          let-columnIndex="columnIndex"
+                        >
+                          <kendo-chart style="width: 100%">
+                            <kendo-chart-legend
+                              position="top"
+                              orientation="horizontal"
+                            >
+                            </kendo-chart-legend>
+                            <kendo-chart-title
+                              [text]="asesor.chart[j - 1]?.mesRecuperado"
+                            >
+                            </kendo-chart-title>
+                            <kendo-chart-category-axis>
+                              <kendo-chart-category-axis-item
+                                [categories]="
+                                  asesor.chart[j - 1]?.dataHorizontal
+                                "
+                              >
+                              </kendo-chart-category-axis-item>
+                            </kendo-chart-category-axis>
+                            <kendo-chart-series>
+                              <kendo-chart-series-item
+                                [color]="'#fd7e14'"
+                                [colorField]="'red'"
+                                [data]="asesor.chart[j - 1]?.dataVertical"
+                              >
+                              </kendo-chart-series-item>
+                            </kendo-chart-series>
+                          </kendo-chart>
+
+                          <!-- {{ column.field }}({{ columnIndex }}) -->
+                          <!-- <kendo-chart >
+                      <kendo-chart-series-defaults type="column">
+                        <kendo-chart-series-defaults-labels format="c">
+                        </kendo-chart-series-defaults-labels>
+                      </kendo-chart-series-defaults>
+                      <kendo-chart-area background="#eee" [margin]="30" [width]="0">
+                      </kendo-chart-area>
+                      <kendo-chart-legend
+                        position="top"
+                        orientation="horizontal"
+                      ></kendo-chart-legend>
+                      <kendo-chart-series>
+                        <kendo-chart-series-item
+                          [data]="asesor.chart[j - 1]?.dataVertical"
+                        >
+                        </kendo-chart-series-item>
+                      </kendo-chart-series>
+                      <kendo-chart-category-axis>
+                        <kendo-chart-category-axis-item [categories]="asesor.chart[j - 1]?.dataHorizontal">
+                          <kendo-chart-category-axis-item-labels
+                            position="start"
+                          >
+                          </kendo-chart-category-axis-item-labels>
+                        </kendo-chart-category-axis-item>
+                      </kendo-chart-category-axis>
+
+                      <kendo-chart-value-axis>
+                        <kendo-chart-value-axis-item>
+                          <kendo-chart-value-axis-item-labels position="start">
+                          </kendo-chart-value-axis-item-labels>
+                        </kendo-chart-value-axis-item>
+                      </kendo-chart-value-axis>
+                    </kendo-chart> -->
+                        </ng-template>
+
+                        <kendo-grid-column
+                          *ngFor="
+                            let subColumn of column.columns;
+                            let h = index
+                          "
+                          [field]="subColumn.field"
+                          [title]="subColumn.title"
+                          [width]="subColumn.width"
+                          class="text-center"
+                        >
+                          <!-- <ng-template kendoGridCellTemplate let-dataItem>
+                      {{}}
+                    </ng-template> -->
+                        </kendo-grid-column>
+                      </kendo-grid-column-group>
+                    </ng-container>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

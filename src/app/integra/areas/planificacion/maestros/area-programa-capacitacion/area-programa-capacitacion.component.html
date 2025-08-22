@@ -1,0 +1,424 @@
+<div class="card border-primary" #reporte>
+  <div class="card-header pb-0 bg-color-material">
+    <div class="col text-aling-center">
+      <h2 class="mb-3 text-white">Area Capacitaciones</h2>
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <form class="k-form k-form-horizontal">
+      <div class="row">
+        <div class="col-sm-12 my-2">
+          <kendo-grid [kendoGridBinding]="gridAreaProgramaCapacitacion.data"
+            [loading]="gridAreaProgramaCapacitacion.loading" [selectable]="true" [sortable]="true" [resizable]="true"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }" [skip]="0" [pageSize]="15" filterable="menu">
+            <ng-template kendoGridToolbarTemplate>
+              <div class="row col-md-12">
+                <div class="col-md-12 text-end">
+                  <button type="button" class="btn btn-success text-white" (click)="abrirModalDetalleInsertar()">
+                    Nuevo
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template kendoPagerTemplate let-totalPages="totalPages" let-currentPage="currentPage">
+              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+              <kendo-pager-numeric-buttons [buttonCount]="5"></kendo-pager-numeric-buttons>
+              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+              <kendo-pager-input></kendo-pager-input>
+              <kendo-pager-info></kendo-pager-info>
+              <kendo-pager-page-sizes [pageSizes]="cantidadItems"></kendo-pager-page-sizes>
+            </ng-template>
+
+            <kendo-grid-column field="nombre" title="Nombre" [width]="200" [headerClass]="'header-grid-integra'">
+              <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                <kendo-grid-string-filter-menu [column]="column" [filter]="filter" [filterService]="filterService"
+                  [extra]="false" operator="contains">
+                  <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column field="descripcion" title="Codigo" [width]="200"
+              [headerClass]="'header-grid-integra'">
+              <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                <kendo-grid-string-filter-menu [column]="column" [filter]="filter" [filterService]="filterService"
+                  [extra]="false" operator="contains">
+                  <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="esVisibleWeb" title="Estado" [width]="200"
+              [headerClass]="'header-grid-integra'">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div *ngIf="dataItem.esVisibleWeb">Activo</div>
+                <div *ngIf="!dataItem.esVisibleWeb">Inactivo</div>
+              </ng-template>
+
+              <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                <kendo-grid-string-filter-menu [column]="column" [filter]="filter" [filterService]="filterService"
+                  [extra]="false" operator="contains">
+                  <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-command-column title="Acciones" [width]="200"
+              [headerClass]="'header-grid-integra'">
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <button kendoButton fillMode="solid" rounded="large" size="large" class="p-2 me-1 ms-1" container="body"
+                  placement="top" ngbTooltip="Ver detalle" (click)="abrirModalDetalle(dataItem)">
+                  <span class="k-icon k-i-zoom-in k-icon-20"></span>
+                </button>
+
+                <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="large" class="p-2 me-1 ms-1" container="body"
+                  placement="top" ngbTooltip="Editar" (click)="abrirModalDetalleActualizar(dataItem)">
+                  <span class="k-icon k-i-pencil k-icon-20"></span>
+                </button>
+
+                <button kendoButton themeColor="error" fillMode="solid" rounded="large" size="large" class="p-2 me-1 ms-1" container="body"
+                  placement="top" ngbTooltip="Eliminar" (click)="eliminar(dataItem)">
+                  <span class="k-icon k-i-x k-icon-20"></span>
+                </button>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Edicion -->
+<ng-template #modalAreaCapacitacionEditar let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos de Area Capacitacion
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="limpiarCamposForm()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formAreaEditar">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="nombre" text="Nombre:">
+            </kendo-label>
+            <kendo-textbox #nombre formControlName="nombre" inputValidSpaceDir required>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("nombre")
+              }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="descripcion" text="Codigo:">
+            </kendo-label>
+            <kendo-textbox #descripcion formControlName="descripcion" inputValidSpaceDir required>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("descripcion")
+              }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="descripcionHtml" text="Descripcion:">
+            </kendo-label>
+            <kendo-editor #descripcionHtml formControlName="descripcionHtml" style="height: 250px"
+              [pasteCleanupSettings]="{
+                removeInvalidHTML: true,
+                convertMsLists: true,
+                removeMsClasses: true,
+                removeMsStyles: true
+              }">
+              <kendo-toolbar>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorUnderlineButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorStrikethroughButton></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button kendoEditorAlignLeftButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorAlignCenterButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorAlignRightButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorAlignJustifyButton></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-dropdownlist kendoEditorFormat></kendo-toolbar-dropdownlist>
+                <kendo-toolbar-dropdownlist kendoEditorFontSize></kendo-toolbar-dropdownlist>
+                <kendo-toolbar-dropdownlist kendoEditorFontFamily></kendo-toolbar-dropdownlist>
+                <kendo-toolbar-colorpicker kendoEditorForeColor></kendo-toolbar-colorpicker>
+                <kendo-toolbar-colorpicker kendoEditorBackColor view="gradient"></kendo-toolbar-colorpicker>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button kendoEditorInsertUnorderedListButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorInsertOrderedListButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorIndentButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorOutdentButton></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-button kendoEditorBlockquoteButton></kendo-toolbar-button>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button kendoEditorCreateLinkButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorUnlinkButton></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-button kendoEditorViewSourceButton></kendo-toolbar-button>
+                <kendo-toolbar-button kendoEditorCleanFormattingButton></kendo-toolbar-button>
+                <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button kendoEditorAddColumnBeforeButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorAddColumnAfterButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorAddRowBeforeButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorAddRowAfterButton></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button kendoEditorDeleteColumnButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorDeleteRowButton></kendo-toolbar-button>
+                  <kendo-toolbar-button kendoEditorDeleteTableButton></kendo-toolbar-button>
+                </kendo-toolbar-buttongroup>
+                <kendo-toolbar-button kendoEditorPrintButton></kendo-toolbar-button>
+              </kendo-toolbar>
+            </kendo-editor>
+          </kendo-formfield>
+        </div>
+      </div>
+      <h2>Datos Web</h2>
+      <div class="row mb-3">
+        <div class="col-sm-6 col-md-6 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="imgPortada" text="Img Portada:">
+            </kendo-label>
+            <kendo-textbox #imgPortada formControlName="imgPortada" inputValidSpaceDir>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("imgPortada")
+              }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-6 col-md-6 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="imgPortadaAlt" text="Img Portada Alt:">
+            </kendo-label>
+            <kendo-textbox #imgPortadaAlt formControlName="imgPortadaAlt" inputValidSpaceDir>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("imgPortadaAlt")
+              }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-6 col-md-6 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="imgSecundaria" text="Img Secundaria:">
+            </kendo-label>
+            <kendo-textbox #imgSecundaria formControlName="imgSecundaria" inputValidSpaceDir>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("imgSecundaria")
+              }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-6 col-md-6 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="imgSecundariaAlt" text="Img Secundaria Alt:">
+            </kendo-label>
+            <kendo-textbox #imgSecundariaAlt formControlName="imgSecundariaAlt" inputValidSpaceDir>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("imgSecundariaAlt")
+              }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-6 col-md-6 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [style.width.px]="100" [for]="estado" text="Estado:">
+            </kendo-label>
+            <kendo-dropdownlist #estado [data]="listaEstados" textField="nombre" valueField="id"
+              formControlName="idEstado" [valuePrimitive]="true"></kendo-dropdownlist>
+            <kendo-formerror>{{
+              getErrorMessageEditar("idEstado")
+              }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+
+        <div class="col-sm-6 col-md-6 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [for]="parametroSeo" text="Parametro SEO:">
+            </kendo-label>
+            <kendo-multiselect #parametroSeo textField="nombre" valueField="id" inputValidSpaceDir formControlName="idsParametroSEO"
+              [data]="listaParametroSeo" (valueChange)="insertarParametroSEO($event)"></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+
+    <div *ngIf="gridParametrosSeo.data.length > 0" class="px-3">
+      <kendo-grid [kendoGridBinding]="gridParametrosSeo.data" [loading]="gridParametrosSeo.loading" [selectable]="true"
+        [resizable]="true">
+        <kendo-grid-column field="nombre" title="Nombre" [width]="100" [headerClass]="'justify-content-center'">
+        </kendo-grid-column>
+
+        <kendo-grid-column field="contenido" title="Contenido" [width]="300" [headerClass]="'justify-content-center'">
+        </kendo-grid-column>
+
+        <kendo-grid-command-column title="Editar" [width]="50"
+          [headerClass]="'justify-content-center'">
+          <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+            <button kendoButton fillMode="solid" rounded="large" size="large" class="p-2 me-1 ms-1" container="body"
+              placement="top" ngbTooltip="Modificar" (click)="abrirModalDetalleContenidoActualizar(dataItem)">
+              <span class="k-icon k-i-pencil k-icon-20"></span>
+            </button>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+
+    <div class="row my-2">
+      <div class="text-end">
+        <ng-container *ngIf="nuevoRegistro">
+          <button class="btn btn-primary mx-1" [disabled]="formAreaEditar.invalid" (click)="insertar()">
+            <span class="px-1">Nuevo</span>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!nuevoRegistro">
+          <button class="btn btn-primary mx-1" [disabled]="formAreaEditar.invalid"
+          (click)="actualizar()">
+            <span class="px-1">Actualizar</span>
+          </button>
+        </ng-container>
+
+        <button class="btn btn-danger" (click)="limpiarCamposForm()">
+          <span class="px-1">Cancelar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Modal Edicion -->
+
+<!-- Modal Edicion Contenido -->
+<ng-template #modalAreaCapacitacionEditarContenido let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">Editar Contenido</h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formContenidoModificado">
+      <div class="row mb-3 col-md-12">
+        <div class="col-sm-4 col-md-4 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="d-flex align-items-end" [style.width.px]="100" [for]="contenido" text="Contenido:">
+            </kendo-label>
+            <kendo-textarea inputValidSpaceDir #contenido [style.width.px]="380" resizable="auto"
+              formControlName="contenido"></kendo-textarea>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+
+    <div class="row">
+      <div class="text-end">
+        <button class="btn btn-primary mx-1" (click)="actualizarContenido()">
+          <span class="px-1">Modificar</span>
+        </button>
+        <button class="btn btn-danger" (click)="modal.dismiss()">
+          <span class="px-1">Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Modal Edicion Contenido -->
+
+<!-- Modal Visualizador -->
+<ng-template #modalAreaCapacitacionVisualizador let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos de Sub Area Capacitacion
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">Nombre:</div>
+      <div class="text-center col-md-9">
+        {{ formDataVisual.nombre }}
+      </div>
+    </div>
+
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">Codigo:</div>
+      <div class="text-center col-md-9">
+        {{ formDataVisual.descripcion }}
+      </div>
+    </div>
+
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">Descripcion:</div>
+      <div class="text-center col-md-9">
+        <div *ngIf="formDataVisual.descripcionHtml.length > 400" class="overflow-auto"
+          style="height: 300px; font-size: 12px">
+          <div [innerHTML]="formDataVisual.descripcionHtml"></div>
+        </div>
+        <div *ngIf="formDataVisual.descripcionHtml.length < 400" [innerHTML]="formDataVisual.descripcionHtml"></div>
+      </div>
+    </div>
+
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">ImgPortada:</div>
+      <div class="text-center col-md-9">
+        {{ formDataVisual.imgPortada }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">ImgSecundaria:</div>
+      <div class="text-center col-md-9">
+        {{ formDataVisual.imgSecundaria }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">ImgPortadaAlt:</div>
+      <div class="text-center col-md-9">
+        {{ formDataVisual.imgPortadaAlt }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">ImgSecundariaAlt:</div>
+      <div class="text-center col-md-9">
+        {{ formDataVisual.imgSecundariaAlt }}
+      </div>
+    </div>
+    <div class="row mb-3 col-md-12">
+      <div class="text-end col-md-3">Estado:</div>
+      <div class="text-center col-md-9">
+        {{ formDataVisual.estado }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-end">
+        <button class="btn btn-danger" (click)="modal.dismiss()">
+          <span class="px-1">Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Modal Visualizador -->
+
+<loading [loading]="loaderModal"></loading>

@@ -1,0 +1,209 @@
+
+<ng-template #modalTipoImpuesto let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModal }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupTipoImpuesto">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="text" class="k-label">
+                <span
+                  > Nombre de Impuesto :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-textbox
+                #text
+                class="d-flex"
+                size="small"
+                [clearButton]="true"
+                formControlName="nombre"
+                [required]="true"
+                [showSuccessIcon]="getShowSuccessIcon('nombre')"
+                [successIcon]="successIcon"
+                [maxlength]="40"
+              >
+              </kendo-textbox>
+              <kendo-formhint>Ingrese el nombre del impuesto</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("nombre") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="text" class="k-label">
+                <span
+                  > Descripcion :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-textarea
+                #text
+                class="d-flex"
+                size="small"
+                [clearButton]="true"
+                formControlName="descripcion"
+                [required]="true"
+                [maxlength]="90"
+              >
+              </kendo-textarea>
+              <kendo-formhint>Ingrese la descripcion del impuesto</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("descripcion") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Pais :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idPais"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="listItemsPais"
+                  textField="nombrePais"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombrePais:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="Numeric" class="k-label" >
+                <span
+                  >Valor
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-numerictextbox
+              #Numeric
+              orientation="horizontal"
+              [style.width.px]="170"
+              formControlName="valor"
+              [min]="0"
+              [decimals]="0"
+              [format]="'0'"
+              [autoCorrect]="true"
+              >
+              </kendo-numerictextbox>
+              <kendo-formhint>Elija el valor del Tipo Impuesto</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("valor") }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">&nbsp;</label>
+              <div class="k-checkbox-wrap">
+                <input
+                  class="d-flex"
+                  size="medium"
+                  #acceptNews
+                  type="checkbox"
+                  kendoCheckBox
+                  formControlName="activo"
+                />
+                <kendo-label
+                  [for]="acceptNews"
+                  class="k-checkbox-label mb-0 pt-2"
+                  text="Activo"
+                ></kendo-label>
+              </div>
+            </kendo-formfield>
+          </div>
+        </div>
+
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="accionModal()"
+    >
+      {{ btnModalNombre }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Tipos de Impuesto</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <ng-template
+                #cellTemplateGridTipoImpuesto
+                let-dataItem="dataItem"
+                let-field="field"
+                let-itemValue="itemValue"
+              >
+              <ng-container [ngSwitch]="field">
+                <ng-container *ngSwitchCase="'activo'">
+                  <fa-icon *ngIf="!itemValue" [icon]="['fas', 'toggle-off']" class="fa-lg fs-3 fw-bold" style="color: darkgray"></fa-icon>
+                  <fa-icon *ngIf="itemValue" [icon]="['fas', 'toggle-on']" class="fa-lg fs-3 fw-bold text-success"></fa-icon>
+                </ng-container>
+                <ng-container *ngSwitchCase="'fechaModificacion'">
+                  {{ itemValue | date: "dd-MM-yyyy" }}
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ itemValue }}
+                </ng-container>
+              </ng-container>
+              </ng-template>
+              <k-grid-edit
+                [gridData]="listaTipoImpuesto"
+                [loader]="loader"
+                [columns]="gridTipoImpuesto.columns"
+                [commands]="gridTipoImpuesto.comands"
+                [readOnlyColumns]="gridTipoImpuesto.readOnlyColumns"
+                [gridConfig]="gridTipoImpuesto.gridConfig"
+                [gridState]="gridTipoImpuesto.gridState"
+                [commandAdd]="'external'"
+                [commandEdit]="'external'"
+                [cellTemplateRef]="cellTemplateGridTipoImpuesto"
+                (OnGridEvents)="gridEventsResponse($event)"
+              >
+              </k-grid-edit>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

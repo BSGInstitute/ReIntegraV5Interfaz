@@ -1,0 +1,519 @@
+<ng-template #modalMontosTotales let-modal>
+    <app-loader *ngIf="loaderModalSolicitud"></app-loader>
+    <div class="modal-header">
+        <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+            Montos Totales
+        </h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <kendo-grid
+            [kendoGridBinding]="listaMontosTotales"
+            [loading]="false"
+            [pageSize]="5"
+            [sortable]="true"
+            [reorderable]="true"
+            [resizable]="true"
+            [columnMenu]="{ filter: true }"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"  
+                     
+            >
+
+                <kendo-grid-column
+                  title="Moneda"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="200"
+                  field="nombreMoneda"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  title="Monto Total"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="200"
+                  field="total"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                </kendo-grid-column>
+                <ng-template kendoGridNoRecordsTemplate>
+                    <div>
+                      <kendo-badge-container>
+                        <kendo-icon name="cloud" size="large"></kendo-icon>
+                        <kendo-badge position="inside">
+                          <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                        </kendo-badge>
+                      </kendo-badge-container>
+                    </div>
+                    <p>No hay registros cargados!</p>
+                </ng-template>
+            </kendo-grid>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <div>
+            <button
+            mat-raised-button 
+            color="warn"
+            (click)="modal.close('Close click')"
+            >
+            Salir
+            </button>
+        </div>
+      </div>
+</ng-template>
+
+
+
+<ng-template #modalSolicitud let-modal>
+    <app-loader *ngIf="loaderModalSolicitud"></app-loader>
+    <div class="modal-header">
+        <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+            {{ nombreModal }}
+        </h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form class="k-form" [formGroup]="formSolicitud">
+                    <fieldset class="k-form-fieldset">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                            <kendo-formfield orientation="horizontal">
+                                <label [for]="nombrePersonalSolicitante" class="k-label">
+                                <span
+                                    >Solicitante :</span
+                                >
+                                </label>
+                                <kendo-textbox
+                                [disabled]="true"
+                                formControlName="nombrePersonalSolicitante"
+                                fillMode="outline"
+                                #nombrePersonalSolicitante
+                                class="d-flex"
+                                size="medium"
+                                >
+                                </kendo-textbox>
+                            </kendo-formfield>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                            <kendo-formfield orientation="horizontal">
+                                <label [for]="idPersonalResponsable" class="k-label">
+                                <span
+                                    >Responsable :
+                                    <span class="text-danger fw-bold">*</span></span
+                                >
+                                </label>
+                                <kendo-dropdownlist
+                                #idPersonalResponsable
+                                size="medium"
+                                formControlName="idPersonalResponsable"
+                                class="d-flex center"
+                                [data]="listaResponsable"
+                                textField="nombre"
+                                valueField="id"
+                                [defaultItem]="{id:null,nombre:'< Seleccionar >'}"
+                                [valuePrimitive]="true"                    
+                                >
+                                </kendo-dropdownlist>
+                                <kendo-formerror>
+                                Seleccione un responsable de caja, es necesario!
+                                </kendo-formerror>
+                            </kendo-formfield>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                                <kendo-formfield orientation="horizontal">
+                                <label [for]="fechaEntregaNueva" class="k-label">
+                                    <span
+                                    >Fecha de entrega<br>efectivo:
+                                    <span class="text-danger fw-bold">*</span></span
+                                    >
+                                </label>
+                                <kendo-datepicker
+                                #fechaEntregaNueva
+                                formControlName="fechaEntregaNueva"
+                                [incompleteDateValidation]="true"
+                                calendarType="classic"
+                                [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                placeholder="dia-mes-año"
+                                ></kendo-datepicker>
+                                <kendo-formerror>Seleccione una fecha de entrega de fectivo, es necesario!</kendo-formerror>
+                                </kendo-formfield>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                            <kendo-formfield orientation="horizontal" class="k-label">
+                                <label [for]="idFur">
+                                <span
+                                    >FUR :
+                                    <span class="text-danger fw-bold">*</span></span
+                                >
+                                </label>
+                                <kendo-dropdownlist
+                                    #idFur
+                                    size="medium"
+                                    formControlName="idFur"
+                                    class="d-flex center"
+                                    [data]="listaFur"
+                                    textField="codigo"
+                                    valueField="id"
+                                    [defaultItem]="{id:null,codigo:'< Ingrese el FUR a buscar >'}"
+                                    [valuePrimitive]="true"
+                                    [filterable]="true"
+                                    (filterChange)="BuscarFur($event)" 
+                                    (selectionChange)="ObtenerDatosFUR($event)"                                                
+                                >
+                                </kendo-dropdownlist>
+                                <kendo-formerror>
+                                    Seleccione un FUR, es necesario!
+                                </kendo-formerror>
+                            </kendo-formfield>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                            <kendo-formfield orientation="horizontal" class="k-label">
+                                <label [for]="descripcion">
+                                <span
+                                    >Detalle de la Rendición :
+                                    <span class="text-danger fw-bold">*</span></span
+                                >
+                                </label>
+                                <kendo-textarea
+                                #descripcion
+                                [style.width.%]="100"
+                                resizable="auto"
+                                [maxlength]="maxlength"
+                                formControlName="descripcion"
+                                (valueChange)="onValueChange($event)"
+                                >
+                                    <kendo-textarea-suffix class="custom-styling">
+                                    <span class="counter">{{ counter }}</span>
+                                    </kendo-textarea-suffix>
+                                </kendo-textarea>
+                                
+                                <kendo-formerror>
+                                    Ingrese el detalle, es necesario!
+                                </kendo-formerror>
+                            </kendo-formfield>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="k-form-horizontal col-md-12 ">
+                                <kendo-formfield orientation="horizontal">
+                                    <label [for]="totalEfectivo" class="labelForm-input" style="width:30% !important;">
+                                        <span
+                                        >Monto a Rendir :
+                                        <strong class="text-danger">*</strong></span
+                                        >
+                                    </label>
+                                    <kendo-numerictextbox
+                                    #totalEfectivo
+                                    orientation="horizontal"
+                                    [style.width.px]="170"
+                                    formControlName="totalEfectivo"
+                                    [value]="valueMonto"
+                                    [min]="0"
+                                    [max]="limitFUR"
+                                    [autoCorrect]="true"
+                                    [decimal]="2"
+                                    format="0.00"
+                                    >
+                                    </kendo-numerictextbox>
+                                    <kendo-formerror>Ingrese el monto a rendir, es necesario!</kendo-formerror>
+                                </kendo-formfield>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="k-form-horizontal col-md-12 ">
+                                <kendo-formfield orientation="horizontal">
+                                    <label [for]="idMoneda" class="labelForm-input" style="width:30% !important;">
+                                        <span
+                                        >Moneda :
+                                        <strong class="text-danger">*</strong></span
+                                        >
+                                    </label>
+                                    <kendo-dropdownlist
+                                    class="d-flex"
+                                    size="small"
+                                    [disabled]="true"
+                                    fillMode="outline"
+                                    #idMoneda
+                                    [data]="listaMoneda"
+                                    textField="nombrePlural"
+                                    valueField="id"
+                                    formControlName="idMoneda"
+                                    [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                                    [valuePrimitive]="true"
+                                    >
+                                    </kendo-dropdownlist>
+                                    <kendo-formerror>Seleccione una moneda, es necesario!</kendo-formerror>
+                                </kendo-formfield>
+                            </div>
+                        </div>
+                    </fieldset>   
+                    
+                </form>
+            </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <div style="margin-right: 0.5rem;">
+            <button mat-raised-button 
+            color="primary"
+            (click)="accionModal()"
+            >
+              {{ btnModal }}
+            </button>
+        </div>
+        <div>
+            <button
+            mat-raised-button 
+            color="warn"
+            (click)="modal.close('Close click')"
+            >
+            Cancelar
+            </button>
+        </div>
+        
+
+        
+
+      </div>
+      
+</ng-template>
+
+<div class="">
+    <div class="row">
+        <div class="col-1fa-rotate-270">
+            <div class="card">
+                <div class="card-header bg-color-material">
+                    <h1 class="text-white">Solicitud de Efectivo</h1>
+                </div>
+                <div  class="card-body p-4">
+                    <kendo-grid
+                    [kendoGridBinding]="listaSolicitud"
+                    [loading]="loaderSolicitud"
+                    [pageSize]="5"
+                    [sortable]="true"
+                    [reorderable]="true"
+                    [resizable]="true"
+                    [columnMenu]="{ filter: true }"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"  
+                    kendoGridSelectBy="id"
+                    [(selectedKeys)]="listaSeleccion"
+                    [selectable]="{ enabled: true, checkboxOnly: true }"
+                    (filterChange)="limpiarSeleccion()"                        
+                    >
+                        <ng-template kendoGridToolbarTemplate class="bg-danger">
+                        
+                        <button mat-stroked-button
+                        (click)="ObtenerCajasPorRendirSolitudEfectivo(dataUsuario.id)"
+                        >
+                            <mat-icon>refresh</mat-icon>
+                        </button>
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                        <button mat-raised-button 
+                        style="background-color: rgb(104, 190, 175) !important;"
+                        class="file-select-button"
+                        (click)="abrilModalMontosTotales()"
+                        >
+                        <span class="material-symbols-outlined">
+                            payments
+                        </span>
+                            Ver montos totales
+                        </button> 
+                        <button mat-raised-button 
+                        style="background-color: rgb(222, 193, 45) !important;"
+                        class="file-select-button"
+                        (click)="iniciarEnviarSolicitud()"
+                        >
+                        <mat-icon> monetization_on</mat-icon>Enviar solicitud 
+                        </button>      
+                        <button mat-raised-button color="primary" 
+                        class="file-select-button"
+                        (click)="abrirModalDetallePR(true)"
+                        >
+                            Nuevo
+                        </button>
+                      </ng-template>
+                        
+                        <kendo-grid-checkbox-column
+                        [width]="45"
+                        [headerClass]="{ 'text-center': true }"
+                        [class]="{ 'text-center': true }"
+                        [resizable]="false"
+                        [columnMenu]="false"
+                        [showSelectAll]="true"
+                        [sticky]="true"
+                        >
+                        </kendo-grid-checkbox-column>
+                        <kendo-grid-column
+                          title="FUR"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="codigoFur"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Solicitante"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="200"
+                          field="nombrePersonalSolicitante"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Descripción"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="300"
+                          field="descripcion"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Moneda"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="200"
+                          field="nombreMoneda"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Total Efectivo"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="totalEfectivo"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Fecha de Entrega"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="fechaEntregaEfectivo"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                        >
+                            <ng-template kendoGridCellTemplate let-dataItem >
+                                {{
+                                    fechaTemplate(dataItem.fechaEntregaEfectivo)
+                                }}
+                            </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-command-column
+                        [sticky]="true"
+                        title="Acciones"
+                        [width]="150"
+                        headerClass="justify-content-center text-center k-grid-header-command"
+                        >
+                        <ng-template 
+                        kendoGridCellTemplate 
+                        let-dataItem="dataItem" 
+                        let-rowIndex="rowIndex"
+                        >
+                            <div class="w-100 d-flex justify-content-center" style="padding:20px" kendoTooltip>
+                                <button
+                                title="Editar"
+                                kendoButton
+                                themeColor="warning"
+                                fillMode="solid"
+                                rounded="large"
+                                size="large"
+                                class="p-2 me-1 ms-1"
+                                container="body"
+                                placement="top"
+                                (click)="abrirModalDetallePR(false,dataItem)"
+                                >
+                                <span class="k-icon k-i-pencil k-icon-20"></span>
+                                </button>
+                                <button
+                                title="Eliminar"
+                                kendoButton
+                                themeColor="error"
+                                fillMode="solid"
+                                rounded="large"
+                                size="large"
+                                class="p-2 me-1 ms-1"
+                                container="body"
+                                placement="top"
+                                (click)="msgEliminar(dataItem)"
+                                >
+                                <span class="k-icon k-i-trash k-icon-20"></span>
+                                </button>
+                            </div>
+                        </ng-template>
+                        </kendo-grid-command-column>
+                        <ng-template kendoGridNoRecordsTemplate>
+                            <div>
+                              <kendo-badge-container>
+                                <kendo-icon name="cloud" size="large"></kendo-icon>
+                                <kendo-badge position="inside">
+                                  <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                                </kendo-badge>
+                              </kendo-badge-container>
+                            </div>
+                            <p>No hay registros cargados!</p>
+                        </ng-template>
+                    </kendo-grid>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

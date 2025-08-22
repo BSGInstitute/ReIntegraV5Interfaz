@@ -1,0 +1,1180 @@
+<div
+  id="loader"
+  class="loader"
+  [ngStyle]="{
+    opacity: dispose == true ? 0 : 1,
+    display: dispose2 == true ? 'none' : 'block'
+  }"
+>
+  <!-- <div class="loader-inner">
+		<div class="loader-line-wrap">
+			<div class="loader-line"></div>
+		</div>
+		<div class="loader-line-wrap">
+			<div class="loader-line"></div>
+		</div>
+		<div class="loader-line-wrap">
+			<div class="loader-line"></div>
+		</div>
+		<div class="loader-line-wrap">
+			<div class="loader-line"></div>
+		</div>
+		<div class="loader-line-wrap">
+			<div class="loader-line"></div>
+		</div>
+	</div> -->
+  <div id="page">
+    <div id="container-f">
+      <div id="ring"></div>
+      <div id="ring"></div>
+      <div id="ring"></div>
+      <div id="ring"></div>
+      <div id="h1">BSG</div>
+    </div>
+  </div>
+</div>
+<!-- <button (click)="prueba()">asdasdasdasd!!</button>
+<input [(ngModel)]="idcontacto"/> -->
+<div class="content-integra">
+  <div class="row pb-3" id="title_agenda">
+    <form [formGroup]="formClasificacionTab">
+      <div class="row">
+        <h1 class="card-title titulo-cabecera">Agenda</h1>
+      </div>
+      <div class="row d-flex justify-content-center">
+        <div class="col-auto">
+          <div class="row my-2">
+            <label
+              for="inputCodigoMatricula"
+              class="col-auto text-end"
+              [style.width.px]="160"
+              >Codigo Matricula</label
+            >
+            <div class="col-auto">
+              <input
+                formControlName="codigoMatricula"
+                type="text"
+                class="form-control form-control-sm"
+                id="inputCodigoMatricula"
+                [style.width.px]="240"
+              />
+            </div>
+          </div>
+          <div class="row my-2">
+            <label
+              for="inputNroDocumento"
+              class="col-auto text-end"
+              [style.width.px]="160"
+              >Nro Documento</label
+            >
+            <div class="col-auto">
+              <input
+                formControlName="dni"
+                type="text"
+                class="form-control form-control-sm"
+                id="inputNroDocumento"
+                [style.width.px]="240"
+              />
+            </div>
+            <div class="col-auto">
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                id="btnFiltrarCodigoMatricula"
+                (click)="buscarClasificacionTab()"
+                [style.width.px]="120"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="row"
+        *ngIf="clasificacionTab != null && clasificacionTab?.agendaTab != null"
+      >
+        <div class="col-12 d-flex justify-content-center">
+          <ul>
+            <li class="text-start">
+              {{ clasificacionTab.nombreAlumno }}
+            </li>
+            <li class="text-start">
+              Asignado a: {{ clasificacionTab.nombreAsignado }}
+            </li>
+            <li class="text-start">
+              Clasificacion Tab: {{ clasificacionTab.agendaTab }}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div
+        class="row"
+        *ngIf="clasificacionTab != null && clasificacionTab?.agendaTab == null"
+      >
+        <div class="col-12 my-2 d-flex justify-content-center">
+          No hay una oportunidad con ese Codigo
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="row customTab" id="tabsAgendaOperaciones" style="position: relative">
+    <div
+      class="col d-flex justify-content-end"
+      style="position: static; height: 0px; margin-left: -12px"
+    >
+      <div class="p-4">
+        <button
+          class="btn btn-sm btn-filter-agenda"
+          (click)="toggleFiltroTab()"
+        >
+          <fa-icon [icon]="['fas', 'filter']" class="fa-lg"></fa-icon>
+        </button>
+      </div>
+      <div class="p-4">
+        <button
+          class="btn btn-sm btn-filter-agenda"
+          (click)="notifaciones(modalNotificaciones)"
+        >
+          <fa-icon
+            id="parpadeo"
+            [icon]="['fas', 'bell']"
+            class="fa-lg"
+          ></fa-icon>
+        </button>
+      </div>
+      <!-- <div class="p-4">
+          <button class="btn btn-sm btn-filter-agenda"  [ngStyle]="{'cblinkolor': isConnectedToInternet }" data-toggle="tooltip" title="Estado de la red">
+            <fa-icon [ngStyle]="{'color': isConnectedToInternet == true ? 'green' : 'red'}" [icon]="['fas', 'wifi']" class="fa-lg"></fa-icon>
+          </button>
+        </div> -->
+    </div>
+
+    <kendo-tabstrip
+      class="p-0"
+      [keepTabContent]="true"
+      (tabSelect)="onSelectTabsPadre($event)"
+      [animate]="false"
+    >
+      <kendo-tabstrip-tab [selected]="true" class="bg-danger">
+        <ng-template kendoTabTitle>
+          <fa-icon [icon]="['fas', 'bars']" class="fa-lg me-1"></fa-icon>
+          <span>ACTIVIDADES</span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <div class="content" id="tabsActividadesATC">
+            <kendo-tabstrip
+              [scrollable]="{
+                scrollButtons: buttons,
+                mouseScrollSpeed: 50,
+                buttonScrollSpeed: 400
+              }"
+              [style.width.%]="''"
+              [keepTabContent]="true"
+              (tabSelect)="onSelectTabAgenda($event)"
+              [animate]="false"
+              #tabsAgendaActividades
+            >
+              <!-- Mensajes Recibidos -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[0].selected"
+                [title]="tabsAtencionCliente[0].titleTab"
+                [disabled]="tabsAtencionCliente[0].disabled"
+                *ngIf="tabsAtencionCliente[0].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[0].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[0]"
+                    [toggleFiltro]="tabsAtencionCliente[0].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridMensajesRecibidosWhatsApp
+                    "
+                    [reload]="carga"
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Asignados y Reasignados -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[1].selected"
+                [title]="tabsAtencionCliente[1].titleTab"
+                [disabled]="tabsAtencionCliente[1].disabled"
+                *ngIf="tabsAtencionCliente[1].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[1].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[1]"
+                    [toggleFiltro]="tabsAtencionCliente[1].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridReasignados
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Programacion Manual -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[2].selected"
+                [title]="tabsAtencionCliente[2].titleTab"
+                [disabled]="false"
+                *ngIf="tabsAtencionCliente[2].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[2].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[2]"
+                    [toggleFiltro]="tabsAtencionCliente[2].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridProgramacionManual
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Clases online -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[21].selected"
+                [title]="tabsAtencionCliente[21].titleTab"
+                [disabled]="tabsAtencionCliente[21].disabled"
+                *ngIf="tabsAtencionCliente[21].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[21].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[21]"
+                    [toggleFiltro]="tabsAtencionCliente[21].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridClasesOnline
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Pagos Atrasados -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[3].selected"
+                [title]="tabsAtencionCliente[3].titleTab"
+                [disabled]="tabsAtencionCliente[3].disabled"
+                *ngIf="tabsAtencionCliente[3].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[3].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[3]"
+                    [toggleFiltro]="tabsAtencionCliente[3].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridPagosAtrasados
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- Pagos Atrasados MES ACTUAL Y PREVIO-->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[23].selected"
+                [title]="tabsAtencionCliente[23].titleTab"
+                [disabled]="tabsAtencionCliente[23].disabled"
+                *ngIf="tabsAtencionCliente[23].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[23].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[23]"
+                    [toggleFiltro]="tabsAtencionCliente[23].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridMesActualPrevio
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Compromisos de Pagos -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[4].selected"
+                [title]="tabsAtencionCliente[4].titleTab"
+                [disabled]="tabsAtencionCliente[4].disabled"
+                *ngIf="tabsAtencionCliente[4].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[4].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[4]"
+                    [toggleFiltro]="tabsAtencionCliente[4].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridCompromisoPago
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Pre Reporte CR -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[5].selected"
+                [title]="tabsAtencionCliente[5].titleTab"
+                [disabled]="tabsAtencionCliente[5].disabled"
+                *ngIf="tabsAtencionCliente[5].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[5].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[5]"
+                    [toggleFiltro]="tabsAtencionCliente[5].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridPreReporteCR
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Reportado CR -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[6].selected"
+                [title]="tabsAtencionCliente[6].titleTab"
+                [disabled]="tabsAtencionCliente[6].disabled"
+                *ngIf="tabsAtencionCliente[6].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[6].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[6]"
+                    [toggleFiltro]="tabsAtencionCliente[6].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridReportadoCR
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- Pagos de Día -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[22].selected"
+                [title]="tabsAtencionCliente[22].titleTab"
+                [disabled]="tabsAtencionCliente[22].disabled"
+                *ngIf="tabsAtencionCliente[22].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[22].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[22]"
+                    [toggleFiltro]="tabsAtencionCliente[22].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridPagosDelDia
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Pago al Día -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[7].selected"
+                [title]="tabsAtencionCliente[7].titleTab"
+                [disabled]="tabsAtencionCliente[7].disabled"
+                *ngIf="tabsAtencionCliente[7].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[7].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[7]"
+                    [toggleFiltro]="tabsAtencionCliente[7].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridPagoAlDia
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Seguimiento Academico -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[8].selected"
+                [title]="tabsAtencionCliente[8].titleTab"
+                [disabled]="tabsAtencionCliente[8].disabled"
+                *ngIf="tabsAtencionCliente[8].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[8].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[8]"
+                    [toggleFiltro]="tabsAtencionCliente[8].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridSeguimientoAcademico
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- En Recuperación de Curso -->
+              <!-- <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[9].selected"
+                [title]="tabsAtencionCliente[9].titleTab"
+                [disabled]="tabsAtencionCliente[9].disabled"
+                *ngIf="tabsAtencionCliente[9].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[9].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[9]"
+                    [toggleFiltro]="tabsAtencionCliente[9].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService
+                        .agendaInicializarOperacionesService
+                        .gridRecuperacionCurso"
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab> -->
+
+              <!-- Curso Pendiente-->
+              <!-- <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[10].selected"
+                [title]="tabsAtencionCliente[10].titleTab"
+                [disabled]="tabsAtencionCliente[10].disabled"
+                *ngIf="tabsAtencionCliente[10].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[10].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[10]"
+                    [toggleFiltro]="tabsAtencionCliente[10].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridCursoPendiente
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab> -->
+
+              <!-- Proyecto Aplicación Pendiente -->
+              <!-- <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[11].selected"
+                [title]="tabsAtencionCliente[11].titleTab"
+                [disabled]="tabsAtencionCliente[11].disabled"
+                *ngIf="tabsAtencionCliente[11].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[11].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[11]"
+                    [toggleFiltro]="tabsAtencionCliente[11].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridProyectoPendiente
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab> -->
+
+              <!-- Notas Pendientes -->
+              <!-- <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[12].selected"
+                [title]="tabsAtencionCliente[12].titleTab"
+                [disabled]="tabsAtencionCliente[12].disabled"
+                *ngIf="tabsAtencionCliente[12].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[12].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[12]"
+                    [toggleFiltro]="tabsAtencionCliente[12].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridNotaPendiente
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab> -->
+
+              <!-- Beneficios Pendientes -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[11].selected"
+                [title]="tabsAtencionCliente[11].titleTab"
+                [disabled]="tabsAtencionCliente[11].disabled"
+                *ngIf="tabsAtencionCliente[11].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[11].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[11]"
+                    [toggleFiltro]="tabsAtencionCliente[11].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridBeneficioPendiente
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Culminados -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[9].selected"
+                [title]="tabsAtencionCliente[9].titleTab"
+                [disabled]="tabsAtencionCliente[9].disabled"
+                *ngIf="tabsAtencionCliente[9].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[9].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[9]"
+                    [toggleFiltro]="tabsAtencionCliente[9].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridCulminado
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Culminado Deudor -->
+              <!-- <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[14].selected"
+                [title]="tabsAtencionCliente[14].titleTab"
+                [disabled]="tabsAtencionCliente[14].disabled"
+                *ngIf="tabsAtencionCliente[14].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[14].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[14]"
+                    [toggleFiltro]="tabsAtencionCliente[14].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridCulminadoDeudor
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab> -->
+
+              <!-- Certificado -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[10].selected"
+                [title]="tabsAtencionCliente[10].titleTab"
+                [disabled]="tabsAtencionCliente[10].disabled"
+                *ngIf="tabsAtencionCliente[10].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[10].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[10]"
+                    [toggleFiltro]="tabsAtencionCliente[10].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridCertificado
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Reservados Sin Deuda -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[12].selected"
+                [title]="tabsAtencionCliente[12].titleTab"
+                [disabled]="tabsAtencionCliente[12].disabled"
+                *ngIf="tabsAtencionCliente[12].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[12].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[12]"
+                    [toggleFiltro]="tabsAtencionCliente[12].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridReservadoSinDeuda
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Reservado Con Deuda -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[13].selected"
+                [title]="tabsAtencionCliente[13].titleTab"
+                [disabled]="tabsAtencionCliente[13].disabled"
+                *ngIf="tabsAtencionCliente[13].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[13].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[13]"
+                    [toggleFiltro]="tabsAtencionCliente[13].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridReservadoConDeuda
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Retirado -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[14].selected"
+                [title]="tabsAtencionCliente[14].titleTab"
+                [disabled]="tabsAtencionCliente[14].disabled"
+                *ngIf="tabsAtencionCliente[14].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[14].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[14]"
+                    [toggleFiltro]="tabsAtencionCliente[14].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridRetirado
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Por Abandonar -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[15].selected"
+                [title]="tabsAtencionCliente[15].titleTab"
+                [disabled]="tabsAtencionCliente[15].disabled"
+                *ngIf="tabsAtencionCliente[15].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[15].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[15]"
+                    [toggleFiltro]="tabsAtencionCliente[15].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridPorAbandonar
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Abandonado -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[16].selected"
+                [title]="tabsAtencionCliente[16].titleTab"
+                [disabled]="tabsAtencionCliente[16].disabled"
+                *ngIf="tabsAtencionCliente[16].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[16].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[16]"
+                    [toggleFiltro]="tabsAtencionCliente[16].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridAbandonado
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- En Evaluación -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[17].selected"
+                [title]="tabsAtencionCliente[17].titleTab"
+                [disabled]="tabsAtencionCliente[17].disabled"
+                *ngIf="tabsAtencionCliente[17].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[17].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[17]"
+                    [toggleFiltro]="tabsAtencionCliente[17].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridEnEvaluacion
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Bics COn deuda -->
+
+
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[25].selected"
+                [title]="tabsAtencionCliente[25].titleTab"
+                [disabled]="tabsAtencionCliente[25].disabled"
+                *ngIf="tabsAtencionCliente[25].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[25].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[25]"
+                    [toggleFiltro]="tabsAtencionCliente[25].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridBicDeuda
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Contestan y cortan -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[24].selected"
+                [title]="tabsAtencionCliente[24].titleTab"
+                [disabled]="tabsAtencionCliente[24].disabled"
+                *ngIf="tabsAtencionCliente[24].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[24].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[24]"
+                    [toggleFiltro]="tabsAtencionCliente[24].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridContestanCortan
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Bics-->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[18].selected"
+                [title]="tabsAtencionCliente[18].titleTab"
+                [disabled]="tabsAtencionCliente[18].disabled"
+                *ngIf="tabsAtencionCliente[18].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[18].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[18]"
+                    [toggleFiltro]="tabsAtencionCliente[18].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService.gridBics
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Solicitudes -->
+              <kendo-tabstrip-tab
+                *ngIf="
+                  personal?.tipoPersonal === 'Coordinador' &&
+                  tabsAtencionCliente[0].visible
+                "
+                [selected]="tabsAtencionCliente[19].selected"
+                [title]="tabsAtencionCliente[19].titleTab"
+                [disabled]="tabsAtencionCliente[19].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[19].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[19]"
+                    [toggleFiltro]="tabsAtencionCliente[19].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridSolicitudes
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+
+              <!-- Sin Contacto -->
+              <kendo-tabstrip-tab
+                [selected]="tabsAtencionCliente[20].selected"
+                [title]="tabsAtencionCliente[20].titleTab"
+                [disabled]="tabsAtencionCliente[20].disabled"
+                *ngIf="tabsAtencionCliente[20].visible"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{ tabsAtencionCliente[20].titleTab }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <!-- Grilla aqui -->
+                  <content-tab-agenda
+                    [tab]="tabsAtencionCliente[20]"
+                    [toggleFiltro]="tabsAtencionCliente[20].toggleFiltro"
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarOperacionesService
+                        .gridSinContacto
+                    "
+                  >
+                  </content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+            </kendo-tabstrip>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <kendo-tabstrip-tab>
+        <ng-template kendoTabTitle class="bg-danger">
+          <fa-icon [icon]="['fas', 'envelope']" class="fa-lg me-1"></fa-icon>
+          <span>BANDEJA DE ENTRADA</span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <app-bandeja-entrada
+            [toogleFiltroPadre]="toogleFiltroPadre"
+            [agendaService]="agendaService"
+          >
+          </app-bandeja-entrada>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </div>
+</div>
+
+<ng-template #modalNotificaciones let-modal>
+  <div class="card">
+    <div id="tabsAgendaOperaciones" class="modal-body">
+      <kendo-tabstrip class="p-0" [animate]="false" [keepTabContent]="true">
+        <kendo-tabstrip-tab [selected]="true" class="bg-danger">
+          <ng-template kendoTabTitle>
+            <h4 class="mb-2">Notificaciones Pendientes</h4>
+          </ng-template>
+          <ng-template kendoTabContent>
+            <kendo-grid
+              [kendoGridBinding]="gridPendientes.data"
+              [loading]="gridPendientes.loading"
+              [pageSize]="10"
+              [pageable]="true"
+              [sortable]="true"
+              filterable="menu"
+              [resizable]="true"
+              [sortable]="true"
+            >
+              <kendo-grid-column
+                field="remitente"
+                title="Remitente"
+                [width]="150"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="mensaje"
+                title="Mensaje"
+                [width]="150"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="id"
+                title="Ver"
+                [width]="40"
+                [filterable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <button
+                    class="btn btn-sm btn-primary"
+                    (click)="mostrar(dataItem, modalApertura, true)"
+                  >
+                    <fa-icon [icon]="['fas', 'eye']" class="fa-lg"></fa-icon>
+                  </button>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </ng-template>
+        </kendo-tabstrip-tab>
+        <kendo-tabstrip-tab class="bg-danger">
+          <ng-template kendoTabTitle>
+            <h4 class="mb-2">Notificaciones Leidas</h4>
+          </ng-template>
+          <ng-template kendoTabContent>
+            <kendo-grid
+              [kendoGridBinding]="gridLeidos.data"
+              [loading]="gridLeidos.loading"
+              [pageSize]="10"
+              [pageable]="true"
+              [sortable]="true"
+              filterable="menu"
+              [resizable]="true"
+            >
+              <kendo-grid-column
+                field="remitente"
+                title="Remitente"
+                [width]="150"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="mensaje"
+                title="Mensaje"
+                [width]="150"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="id"
+                title="Ver"
+                [width]="40"
+                [filterable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <button
+                    class="btn btn-sm btn-primary"
+                    (click)="mostrar(dataItem, modalApertura, false)"
+                  >
+                    <fa-icon [icon]="['fas', 'eye']" class="fa-lg"></fa-icon>
+                  </button>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </ng-template>
+        </kendo-tabstrip-tab>
+      </kendo-tabstrip>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="modal.close('Close click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #modalApertura let-modal>
+  <div class="card">
+    <div class="modal-header" style="background-color: #4fa4c0">
+      <h2 class="modal-title text-center" style="color: white">
+        Republicación Certificado
+      </h2>
+    </div>
+    <div class="modal-body">
+      <div class="modal-title">
+        <h2>{{ enunciado }}</h2>
+      </div>
+      <div class="row">
+        <div class="col-6 mb-2">
+          <div class="card">
+            <div class="card-header" style="background-color: #4fa4c0">
+              <strong style="color: white"> Datos Antiguos </strong>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-5">Curso:</div>
+                <div class="col-md-7" id="NombreCursoAnt">
+                  {{ valorAntiguo.NombreCurso }}
+                </div>
+                <div class="col-md-5">Duracion:</div>
+                <div class="col-md-7" id="DuracionCursoAnt">
+                  {{ valorAntiguo.Duracion }}
+                </div>
+                <div class="col-md-5">Fecha inicio:</div>
+                <div class="col-md-7" id="FechaIniCursoAnt">
+                  {{ valorAntiguo.FechaFinal | date : "yyyy-MM-dd" }}
+                </div>
+                <div class="col-md-5">Fecha final:</div>
+                <div class="col-md-7" id="FechaFinCursoAnt">
+                  {{ valorAntiguo.FechaInicio | date : "yyyy-MM-dd" }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-2">
+          <div class="card">
+            <div class="card-header" style="background-color: #4fa4c0">
+              <strong style="color: white"> Datos Nuevos </strong>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-5">Curso:</div>
+                <div class="col-md-7" id="NombreCursoNew">
+                  {{ valorNuevo.NombreCurso }}
+                </div>
+                <div class="col-md-5">Duracion:</div>
+                <div class="col-md-7" id="DuracionCursoNew">
+                  {{ valorNuevo.Duracion }}
+                </div>
+                <div class="col-md-5">Fecha inicio:</div>
+                <div class="col-md-7" id="FechaIniCursoNew">
+                  {{ valorNuevo.FechaFinal | date : "yyyy-MM-dd" }}
+                </div>
+                <div class="col-md-5">Fecha final:</div>
+                <div class="col-md-7" id="FechaFinCursoNew">
+                  {{ valorNuevo.FechaInicio | date : "yyyy-MM-dd" }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf="validador">
+        <div class="col-3">
+          <strong>Comentario:</strong>
+        </div>
+        <div class="col-9">
+          <textarea
+            class="form-control"
+            [(ngModel)]="enunciadoCambio"
+            rows="2"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        *ngIf="validador"
+        class="btn btn-success"
+        (click)="aprobarRepublicacion()"
+      >
+        Aceptar
+      </button>
+      <button
+        type="button"
+        *ngIf="validador"
+        class="btn btn-warning"
+        (click)="rechazarRepublicacion()"
+      >
+        Rechazar
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="modal.close('Close click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>

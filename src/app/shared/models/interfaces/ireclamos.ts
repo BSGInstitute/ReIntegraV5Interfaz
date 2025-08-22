@@ -1,0 +1,9 @@
+export interface ISolicitudes{
+    id: number;
+    nombre: string;
+    idArea: number;
+    idSubArea: number;
+    idCategoria: number;
+    idTipoPrograma: number;
+ }
+ 

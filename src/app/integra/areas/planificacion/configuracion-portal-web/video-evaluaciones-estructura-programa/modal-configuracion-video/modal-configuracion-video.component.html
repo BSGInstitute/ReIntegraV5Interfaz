@@ -1,0 +1,872 @@
+<div class="modal-header bg-primary-header-modal">
+  <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+    Configuracion Videos en Estructura del Programa
+  </h3>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="modalContext.close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <kendo-grid
+    [kendoGridBinding]="gridConfiguracionSecuenciaVideo.data"
+    [loading]="gridConfiguracionSecuenciaVideo.loading"
+    [selectable]="true"
+    [resizable]="true"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: true,
+      previousNext: true,
+      position: 'bottom'
+    }"
+    [skip]="0"
+    [pageSize]="10"
+    filterable="menu"
+    (selectionChange)="obtenerDetalleConfigurarVideo($event)"
+  >
+    <ng-template
+      kendoPagerTemplate
+      let-totalPages="totalPages"
+      let-currentPage="currentPage"
+    >
+      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+      <kendo-pager-numeric-buttons
+        [buttonCount]="5"
+      ></kendo-pager-numeric-buttons>
+      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+      <kendo-pager-input></kendo-pager-input>
+      <kendo-pager-info></kendo-pager-info>
+      <kendo-pager-page-sizes
+        [pageSizes]="cantidadItems"
+      ></kendo-pager-page-sizes>
+    </ng-template>
+
+    <kendo-grid-column
+      field="ordenCapitulo"
+      title="Orden"
+      [width]="25"
+      [headerClass]="'justify-content-start'"
+      [filterable]="true"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-center">{{ dataItem.ordenCapitulo }}</div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="capitulo"
+      title="Capitulo"
+      [width]="100"
+      [headerClass]="'justify-content-start'"
+      [filterable]="false"
+    ></kendo-grid-column>
+
+    <kendo-grid-column
+      field="sesion"
+      title="Sesion"
+      [width]="100"
+      [headerClass]="'justify-content-start'"
+      [filterable]="false"
+    ></kendo-grid-column>
+
+    <kendo-grid-column
+      field="subSesion"
+      title="SubSesion"
+      [width]="100"
+      [headerClass]="'justify-content-start'"
+      [filterable]="false"
+    ></kendo-grid-column>
+  </kendo-grid>
+  <div class="my-3 p-2 border" *ngIf="mostrarConfiguracionVideo">
+    <kendo-tabstrip
+      [scrollable]="{ scrollButtons: 'auto' }"
+      [animate]="false"
+      [keepTabContent]="true"
+    >
+      <kendo-tabstrip-tab title="CONFIGURAR SECUENCIA VIDEO" [selected]="true">
+        <ng-template kendoTabContent *loadOnDemand>
+          <div class="row m-1 mb-2">
+            <div class="col-md-6">
+              <h2>Configuracion de Secuencia de Video</h2>
+            </div>
+            <div class="col-md-6">
+              <button
+                class="btn btn-danger"
+                (click)="eliminarConfiguracionSecuenciaVideo()"
+              >
+                Borrar Configuracion
+              </button>
+              <button
+                class="btn btn-secondary mx-3"
+                (click)="
+                  descargarConfiguracionSecuenciaVideoDetallePlantilla(2)
+                "
+              >
+                Descargar Plantilla
+              </button>
+              <button
+                class="btn btn-success"
+                (click)="abrirModalImportarConfiguracionVideo(1)"
+              >
+                Importar Excel
+              </button>
+            </div>
+          </div>
+          <form [formGroup]="formConfiguracionVideo">
+            <div class="row mb-2">
+              <div class="col-sm-6 col-md-6 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="145"
+                    [for]="totalSegundos"
+                    text="Total Segundos:"
+                  >
+                  </kendo-label>
+                  <kendo-numerictextbox
+                    #totalSegundos
+                    formControlName="totalMinutos"
+                    [fillMode]="'outline'"
+                    [style.width.px]="320"
+                    format="#"
+                  ></kendo-numerictextbox>
+                </kendo-formfield>
+              </div>
+              <div class="col-sm-6 col-md-6 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="135"
+                    [for]="idVideoBrightcove"
+                    text="Id Video Brightcove:"
+                  >
+                  </kendo-label>
+                  <kendo-textbox
+                    #idVideoBrightcove
+                    formControlName="videoIdBrightcove"
+                    [fillMode]="'outline'"
+                    [style.width.px]="320"
+                  ></kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-6 col-md-6 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="145"
+                    [for]="archivoDiapositiva"
+                    text="Archivo de Diapositiva:"
+                  >
+                  </kendo-label>
+                  <kendo-textbox
+                    #archivoDiapositiva
+                    formControlName="archivo"
+                    [fillMode]="'outline'"
+                    [style.width.px]="320"
+                  ></kendo-textbox>
+                </kendo-formfield>
+              </div>
+              <div class="col-sm-6 col-md-6 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="135"
+                    [for]="ndroDiapositivas"
+                    text="Nro de Diapositivas:"
+                  >
+                  </kendo-label>
+                  <kendo-numerictextbox
+                    #ndroDiapositivas
+                    formControlName="nroDiapositivas"
+                    [fillMode]="'outline'"
+                    [style.width.px]="320"
+                    format="#"
+                  ></kendo-numerictextbox>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-6 col-md-6 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="200"
+                    [for]="conImagenVideo"
+                    text="Habilitar Sello en Video:"
+                  >
+                  </kendo-label>
+                  <input
+                    #conImagenVideo
+                    formControlName="conImagenVideo"
+                    [class]="'border border-secondary mt-2'"
+                    type="checkbox"
+                    [size]="'large'"
+                    kendoCheckBox
+                  />
+                </kendo-formfield>
+              </div>
+              <ng-container
+                *ngIf="formConfiguracionVideo.get('conImagenVideo').value"
+              >
+              <div class="row container-child pb-3 pt-1 m-2 border">
+                <div class="col-md-4">
+                  <kendo-floatinglabel text="Nombre Imagen">
+                    <kendo-textbox
+                      formControlName="imagenVideoNombre"
+                      [style.width.px]="300"
+                    ></kendo-textbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Ancho (px)">
+                    <kendo-numerictextbox
+                      formControlName="imagenVideoAncho"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Alto (px)">
+                    <kendo-numerictextbox
+                      formControlName="imagenVideoAlto"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Poscicion X">
+                    <kendo-numerictextbox
+                      formControlName="imagenVideoPosicionX"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Poscicion Y">
+                    <kendo-numerictextbox
+                      formControlName="imagenVideoPosicionY"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+              </div>
+              </ng-container>
+            </div>
+            <div class="row mb-2">
+              <div class="col-sm-6 col-md-6 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="200"
+                    [for]="conImagenDiapositiva"
+                    text="Habilitar Sello en Diapositivas:"
+                  >
+                  </kendo-label>
+                  <input
+                    #conImagenDiapositiva
+                    formControlName="conImagenDiapositiva"
+                    [class]="'border border-secondary mt-2'"
+                    type="checkbox"
+                    [size]="'large'"
+                    kendoCheckBox
+                  />
+                </kendo-formfield>
+              </div>
+              <ng-container
+                *ngIf="formConfiguracionVideo.get('conImagenDiapositiva').value"
+              >
+              <div class="row container-child pb-3 pt-1 m-2 border">
+                <div class="col-md-4">
+                  <kendo-floatinglabel text="Nombre Imagen">
+                    <kendo-textbox
+                      formControlName="imagenDiapositivaNombre"
+                      [style.width.px]="300"
+                    ></kendo-textbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Ancho (px)">
+                    <kendo-numerictextbox
+                      formControlName="imagenDiapositivaAncho"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Alto (px)">
+                    <kendo-numerictextbox
+                      formControlName="imagenDiapositivaAlto"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Poscicion X">
+                    <kendo-numerictextbox
+                      formControlName="imagenDiapositivaPosicionX"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+                <div class="col-md-2">
+                  <kendo-floatinglabel text="Poscicion Y">
+                    <kendo-numerictextbox
+                      formControlName="imagenDiapositivaPosicionY"
+                      format="n0"
+                      [style.width.px]="150"
+                    ></kendo-numerictextbox>
+                  </kendo-floatinglabel>
+                </div>
+              </div>
+              </ng-container>
+            </div>
+            <div class="row mb-2 pt-4">
+              <kendo-grid
+                [kendoGridBinding]="gridConfiguracionSecuenciaVideoDetalle.data"
+                [loading]="gridConfiguracionSecuenciaVideoDetalle.loading"
+                (cellClick)="
+                  gridConfiguracionSecuenciaVideoDetalle.cellClickHandler(
+                    $event
+                  )
+                "
+                (cellClose)="
+                  gridConfiguracionSecuenciaVideoDetalle.cellCloseHandler(
+                    $event
+                  )
+                "
+                [selectable]="true"
+                [resizable]="true"
+                [pageable]="{
+                  buttonCount: 5,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+                [skip]="0"
+                [pageSize]="15"
+                filterable="menu"
+                ngCl
+              >
+                <ng-template kendoGridToolbarTemplate>
+                  <button
+                    kendoGridAddCommand
+                    themeColor="success"
+                    icon="plus"
+                    (click)="agregarFilaConfiguracionSecuenciaVideoDetalle()"
+                  >
+                    Configuracion Video
+                  </button>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <button
+                    kendoGridAddCommand
+                    themeColor="secondary"
+                    (click)="
+                      descargarConfiguracionSecuenciaVideoDetallePlantilla(1)
+                    "
+                  >
+                    Descargar Plantilla
+                  </button>
+                  <button
+                    kendoGridAddCommand
+                    themeColor="success"
+                    (click)="abrirModalImportarConfiguracionVideo(2)"
+                  >
+                    Importar Excel
+                  </button>
+                </ng-template>
+                <kendo-grid-column
+                  field="minuto"
+                  title="Segundo"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                  [filterable]="false"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <ng-container
+                      *ngIf="dataItem.minuto != null; else sinSegundo"
+                    >
+                      <p>{{ dataItem.minuto }}</p>
+                    </ng-container>
+                    <ng-template #sinSegundo>
+                      <p>0</p>
+                    </ng-template>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                    let-dataItem
+                  >
+                    <kendo-numerictextbox
+                      [formControl]="formGroup.get('segundo')"
+                      placeholder="Seleccione las Modalidades"
+                      format="n0"
+                    >
+                    </kendo-numerictextbox>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="idTipoVista"
+                  title="Tipo Vista"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                  [filterable]="false"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <ng-container
+                        *ngIf="dataItem.idTipoVista != 0; else sinTipoVista"
+                      >
+                          <p>{{ obtenerNombreTipoVista(dataItem.idTipoVista) }}</p>
+                      </ng-container>
+                      <ng-template #sinTipoVista>
+                        <p>Seleccione Tipo</p>
+                      </ng-template>
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                    let-dataItem
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('tipoVista')"
+                      placeholder="Seleccione los Critero"
+                      [data]="listaTipoVista"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nroDiapositiva"
+                  title="Nro Diapositiva"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                  [filterable]="false"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <ng-container
+                      *ngIf="
+                        dataItem.nroDiapositiva != null;
+                        else sinNroDiapositivas
+                      "
+                    >
+                      <p>{{ dataItem.nroDiapositiva }}</p>
+                    </ng-container>
+                    <ng-template #sinNroDiapositivas>
+                      <p>0</p>
+                    </ng-template>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                    let-dataItem
+                  >
+                    <kendo-numerictextbox
+                      [formControl]="formGroup.get('nroDiapositiva')"
+                      placeholder="Seleccione las Modalidades"
+                      format="n0"
+                    >
+                    </kendo-numerictextbox>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="conLogoVideo"
+                  title="Logo Video"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                  [filterable]="false"
+                >
+                  <ng-template kendoGridCellTemplate let-dateItem>
+                    <div class="text-center">
+                      <ng-container
+                        *ngIf="dateItem.conLogoVideo; else sinVideo"
+                      >
+                        Si
+                      </ng-container>
+                      <ng-template #sinVideo>No</ng-template>
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                    let-dataItem
+                  >
+                    <div class="text-center">
+                      <input
+                        #habilitarInstrucciones
+                        [formControl]="formGroup.get('logoVideo')"
+                        [class]="'border border-secondary mt-2'"
+                        type="checkbox"
+                        [size]="'large'"
+                        kendoCheckBox
+                      />
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="conLogoDiapositiva"
+                  title="Logo Diapositiva"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                  [filterable]="false"
+                >
+                  <ng-template kendoGridCellTemplate let-dateItem>
+                    <div class="text-center">
+                      <ng-container
+                        *ngIf="dateItem.conLogoDiapositiva; else sinDiapositiva"
+                      >
+                        Si
+                      </ng-container>
+                      <ng-template #sinDiapositiva>No</ng-template>
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                    let-dataItem
+                  >
+                    <div class="text-center">
+                      <input
+                        #habilitarInstrucciones
+                        [formControl]="formGroup.get('logoDiapositiva')"
+                        [class]="'border border-secondary mt-2'"
+                        type="checkbox"
+                        [size]="'large'"
+                        kendoCheckBox
+                      />
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-command-column
+                  title="Acciones"
+                  [width]="50"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                    <div class="text-center">
+                      <button
+                        kendoGridEditCommand
+                        themeColor="error"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Editar"
+                        (click)="
+                          eliminarFilaConfiguracionSecuenciaVideoDetalle(
+                            dataItem
+                          )
+                        "
+                      >
+                        <span class="k-icon k-i-x k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+              <div class="mt-2">
+                <button
+                  *ngIf="gridConfiguracionSecuenciaVideoDetalle.data.length > 0"
+                  class="btn btn-primary"
+                  [disabled]="
+                    gridConfiguracionSecuenciaVideoDetalle.statusCelda
+                  "
+                  (click)="
+                    insertarActualizarConfiguracionSecuenciaVideoDetalle()
+                  "
+                >
+                  Actualizar
+                </button>
+                <button
+                  class="btn btn-danger mx-2"
+                  (click)="this.mostrarConfiguracionVideo = false"
+                  [disabled]="
+                    gridConfiguracionSecuenciaVideoDetalle.statusCelda
+                  "
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </form>
+          <loading [loading]="loaderModalDetalle"></loading>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <kendo-tabstrip-tab title="CONFIGURAR SECUENCIA PREGUNTAS">
+        <ng-template kendoTabContent>
+          <div class="row mb-2">
+            <div class="row m-1 mb-2">
+              <div class="col-md-6">
+                <h2>Configuracion de Secuencia de Preguntas</h2>
+              </div>
+            </div>
+            <kendo-grid
+              [kendoGridBinding]="
+                gridConfiguracionSecuenciaPreguntaDetalle.data
+              "
+              (cellClick)="
+                gridConfiguracionSecuenciaPreguntaDetalle.cellClickHandler(
+                  $event
+                )
+              "
+              (cellClose)="
+                gridConfiguracionSecuenciaPreguntaDetalle.cellCloseHandler(
+                  $event
+                )
+              "
+              [loading]="gridConfiguracionSecuenciaPreguntaDetalle.loading"
+              [selectable]="true"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="0"
+              [pageSize]="15"
+              filterable="menu"
+            >
+              <kendo-grid-column
+                field="grupoPregunta"
+                title="Grupo Pregunta"
+                [width]="200"
+                [headerClass]="'justify-content-start'"
+                [filterable]="false"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="nombreMarcador"
+                title="Tipo Marcador"
+                [width]="80"
+                [headerClass]="'justify-content-start'"
+                [filterable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <p class="my-1">
+                    <ng-container
+                      *ngIf="
+                        dataItem.nombreMarcador != null;
+                        else sinNombreMarcador
+                      "
+                    >
+                      {{ dataItem.nombreMarcador }}
+                    </ng-container>
+                    <ng-template #sinNombreMarcador> Sin Tipo </ng-template>
+                  </p>
+                </ng-template>
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem
+                >
+                  <kendo-dropdownlist
+                    [formControl]="formGroup.get('tipoMarcador')"
+                    placeholder="Seleccione Tipo"
+                    [data]="listaTipoMarcador"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="segundos"
+                title="Valor Marcador"
+                [width]="80"
+                [headerClass]="'justify-content-start'"
+                [filterable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <p class="my-1">
+                    <ng-container
+                      *ngIf="dataItem.segundos != null; else sinSegundos"
+                    >
+                      {{ dataItem.segundos }}
+                    </ng-container>
+                    <ng-template #sinSegundos>0</ng-template>
+                  </p>
+                </ng-template>
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem
+                >
+                  <kendo-numerictextbox
+                    [formControl]="formGroup.get('valorMarcador')"
+                    placeholder="Ingrese un valor"
+                    format="n0"
+                  >
+                  </kendo-numerictextbox>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Visualizar"
+                [width]="50"
+                [headerClass]="'justify-content-center'"
+                [filterable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <div class="text-center">
+                    <button
+                      kendoGridEditCommand
+                      themeColor="primary"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Ver"
+                      (click)="
+                        obtenerDetalleConfigurarPregunta(
+                          dataItem.idPgeneral,
+                          dataItem.grupoPregunta
+                        )
+                      "
+                    >
+                      <span class="k-icon k-i-zoom k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+            <div class="mt-2">
+              <button
+                class="btn btn-primary"
+                [disabled]="gridConfiguracionSecuenciaPreguntaDetalle.statusCelda"
+                (click)="
+                  insertarActualizarConfiguracionSecuenciaPreguntaDetalle()
+                "
+              >
+                Actualizar
+              </button>
+              <button
+                *ngIf="mostrarConfiguracionRespuesta"
+                class="btn btn-danger mx-2"
+                [disabled]="gridConfiguracionSecuenciaPreguntaDetalle.statusCelda"
+                (click)="mostrarConfiguracionRespuesta = false"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+          <div class="mt-2" *ngIf="mostrarConfiguracionRespuesta">
+            <div class="row mt-4 p-2 bg-color-material text-white">
+              Registro de Preguntas
+            </div>
+            <div class="row">
+              <kendo-grid
+                [kendoGridBinding]="
+                  gridConfiguracionSecuenciaPreguntaDetalleRegistro.data
+                "
+                [loading]="
+                  gridConfiguracionSecuenciaPreguntaDetalleRegistro.loading
+                "
+                [selectable]="true"
+                [resizable]="true"
+              >
+                <kendo-grid-column
+                  field="enunciadoPregunta"
+                  title="Pregunta"
+                  [width]="550"
+                ></kendo-grid-column>
+                <ng-template kendoGridDetailTemplate let-dataItem>
+                  <app-grid-child [dataItem]="dataItem.id"></app-grid-child>
+                </ng-template>
+              </kendo-grid>
+            </div>
+          </div>
+          <loading [loading]="loaderModalDetalle"></loading>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </div>
+  <div class="row mt-1 mb-0">
+    <div class="text-end">
+      <button class="btn btn-danger" (click)="modalContext.close()">
+        <span class="px-1">Cerrar</span>
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Modal configuracion Importar -->
+<ng-template #modalConfiguracionVideoImportar let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ (flagImportar == 1) ? 'Importación de Configuracion de Secuencia de Video' : 'Importación de Configuracion de Video' }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="limpiarModalImportacion()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-2">
+      <div class="col-md-3 text-center">Archivo:</div>
+      <div class="col-md-9">
+        <kendo-upload
+          [autoUpload]="false"
+          [multiple]="false"
+          [restrictions]="{ allowedExtensions: ['XLSX'], maxFileSize: 2048000 }"
+          (select)="seleccionarAlmacenarArchivo($event)"
+          (remove)="deseleccionarAlmacenarArchivo()">
+        </kendo-upload>
+      </div>
+    </div>
+    <div class="row" *ngIf="mostrarResultadoImportacion">
+      <hr />
+      <div class="mx-2 my-1">
+        <div class="row">
+          <p class="text-danger fs-5 text-center">Resultado Importación</p>
+        </div>
+        <div class="row">
+          <div class="col-md-4">Filas correctas:</div>
+          <div class="col-md-8 text-start">{{ grupoCantidadFilas.cantidadCorrecto }}</div>
+          <div class="col-md-4">Filas incorrectas:</div>
+          <div class="col-md-8 text-start">{{ grupoCantidadFilas.cantidadIncorrecto }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="text-end">
+        <button
+          [disabled]="archivoImportado.value == null"
+          class="btn btn-primary mx-2"  
+          (click)="importarConfiguracionSecuenciaVideoDetallePlantilla()">
+          <span class="px-1">Importar Configuracion</span>
+        </button>
+        <button class="btn btn-danger" (click)="limpiarModalImportacion()">
+          <span class="px-1">Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <loading [loading]="loaderModalImportacion"></loading>
+</ng-template>
+<!-- Modal configuracion Importar -->
+<loading [loading]="loaderModal"></loading>

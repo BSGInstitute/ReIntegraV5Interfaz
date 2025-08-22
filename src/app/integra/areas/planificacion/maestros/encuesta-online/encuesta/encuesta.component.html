@@ -1,0 +1,483 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Registro de Encuestas</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <!-- <ng-template #cellTemplateGridCategoriaEncuesta let-dataItem="dataItem" let-field="field"
+                  let-itemValue="itemValue">
+                  <ng-container *ngIf="field == 'preguntaObligatoria'; else gridTempDefault">
+                    {{ itemValue ? "Sí" : "No" }}
+                  </ng-container>
+                  <ng-template #gridTempDefault>
+                    {{ itemValue }}
+                  </ng-template>
+                </ng-template> -->
+              <k-grid-edit [gridData]="listaEncuesta" [loader]="loader" [columns]="gridEncuesta.columns"
+                [commands]="gridEncuesta.comands" [readOnlyColumns]="gridEncuesta.readOnlyColumns"
+                [gridConfig]="gridEncuesta.gridConfig" [gridState]="gridEncuesta.gridState" [commandAdd]="'external'"
+                [commandEdit]="'external'" (OnGridEvents)="gridEventsResponse($event)">
+              </k-grid-edit>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalEncuesta let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary text-light">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModal }}
+    </h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formEncuesta">
+      <fieldset class="col k-form-fieldset">
+        <div class="row">
+          <div class="col-6">
+            <div class="row">
+              <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="txtName" class="k-label" style="align-items: flex-start !important;">
+                    <span>Nombre :</span>
+                  </label>
+                  <kendo-textbox #txtName formControlName="nombre" placeholder="Ingrese Nombre"
+                    showSuccessIcon="initial" showErrorIcon="initial">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="txtDescription" class="k-label" style="align-items: flex-start !important;">
+                    <span>Descripción :</span>
+                  </label>
+                  <kendo-textbox #txtDescription formControlName="descripcion" placeholder="Ingrese Descripción"
+                    showSuccessIcon="initial" showErrorIcon="initial">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="txtCodigo" class="k-label" style="align-items: flex-start !important;">
+                    <span>Código :</span>
+                  </label>
+                  <kendo-textbox #txtCodigo formControlName="codigo" placeholder="Ingrese Código"
+                    showSuccessIcon="initial" showErrorIcon="initial">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="row">
+              <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="ddlTipoEncuesta" class="k-label" style="align-items: flex-start !important;">
+                    <span>Tipo de Encuesta :</span>
+                  </label>
+                  <kendo-dropdownlist 
+                    #ddlTipoEncuesta 
+                    formControlName="idTipoEncuesta" 
+                    [data]="tiposEncuesta"
+                    [textField]="'nombre'" 
+                    [valueField]="'id'" 
+                    [defaultItem]="{ id: null, nombre: 'Ingrese el tipo de encuesta' }"
+                    [valuePrimitive]="true"
+                    placeholder="Seleccione Tipo">
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="txtVersion" class="k-label" style="align-items: flex-start !important;">
+                    <span>Nro Versión :</span>
+                  </label>
+                  <kendo-numerictextbox #txtVersion formControlName="version" placeholder="Ingrese el número de versión"
+                    showSuccessIcon="initial" showErrorIcon="initial" format="n0" [decimals]="0" [min]="1">
+                  </kendo-numerictextbox>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="ddlModalidad" class="k-label" style="align-items: flex-start !important;">
+                    <span>Modalidad :</span>
+                  </label>
+                  <kendo-dropdownlist 
+                    #ddlModalidad 
+                    formControlName="idModalidadCurso" 
+                    [data]="tiposModalidad"
+                    [textField]="'nombre'" 
+                    [valueField]="'id'" 
+                    [valuePrimitive]="true"
+                    placeholder="Seleccione Tipo"
+                    >
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>   
+
+    <ng-container  *ngIf="idModalidadCurso == 2">
+      <div class="card mt-4">
+        <div class="card-header bg-primary text-light">
+          <div class="row">
+            <div class="col-md-6 text-center fw-bold">Preguntas Libres</div>
+            <div class="col-md-6 text-center fw-bold">Preguntas Asociadas</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Preguntas Libres Column -->
+            <div class="col-md-5">
+              <div class="row">
+                <div class="col-12 my-4" style="    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                  <div class="col-4">
+                    <label [for]="dropdownlistCategoria" class="k-label">
+                      <span>Categoria :
+                        <strong class="text-danger">*</strong></span>
+                    </label>
+                  </div>
+                  <div class="col-8">
+                    <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                      <kendo-dropdownlist formControlName="idPreguntaEncuestaCategoria" class="d-flex" size="small"
+                        #dropdownlistCategoria [data]="listaCategoria" textField="nombre" valueField="id"
+                        [defaultItem]="{id:null,nombre:'Seleccionar'}" [valuePrimitive]="true"
+                        (valueChange)="onCategoriaChange($event)">
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+              <kendo-grid [kendoGridBinding]="listaPreguntaFiltrada" [loading]="gridPreguntas.loading" [selectable]="true"
+                [resizable]="true" style="height: 200px" filterable="menu" kendoGridSelectBy="idPreguntaEncuesta"
+                [(selectedKeys)]="listaPreguntasAsociar">
+                <kendo-grid-checkbox-column [width]="20" [headerClass]="{ 'text-center': true }"
+                  [class]="{ 'text-center': true }" [resizable]="false" [columnMenu]="false" [showSelectAll]="true">
+                </kendo-grid-checkbox-column>
+                <kendo-grid-column field="pregunta" title="Pregunta" [width]="100"
+                  [headerClass]="'justify-content-center'" [filterable]="true">
+                  <!-- <ng-template kendoGridFilterMenuTemplate let-filter let-column="column"
+                    let-filterService="filterService">
+                    <kendo-grid-string-filter-menu [column]="column" [filter]="filter" [filterService]="filterService"
+                      [extra]="false" operator="contains">
+                      <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template> -->
+                </kendo-grid-column>
+                <kendo-grid-command-column title="Ver" [width]="30">
+                  <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowindex="rowindex">
+                    <div class="d-flex justify-content-center">
+                      <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="small"
+                        class="p-2 me-1 ms-1" container="body" placement="top" ngbTooltip="Ver"
+                        (click)="openModalPregunta(dataItem)">
+                        <span class="k-icon k-i-eye k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+            <!-- Center Buttons Column -->
+            <div class="col-md-1 d-flex flex-column justify-content-center align-items-center">
+              <button class="btn btn-success mb-2" (click)="asociarPreguntas()"
+                [disabled]="!(listaPreguntasAsociar.length > 0)">
+                <span class="k-icon k-i-arrow-60-right k-icon-24"></span>
+              </button>
+              <button class="btn btn-danger mb-2" (click)="desasociarPreguntas()"
+                [disabled]="!(listaPreguntasDesasociar.length > 0)">
+                <span class="k-icon k-i-arrow-60-left k-icon-24"></span>
+              </button>
+              <button class="btn btn-outline-danger" (click)="reestablecer()" [disabled]="
+                    !(
+                      listaPreguntasDesasociar.length > 0 ||
+                      listaPreguntasAsociar.length > 0
+                    )
+                  ">
+                <span class="k-icon k-i-reload k-icon-24"></span>
+              </button>
+            </div>
+            <!-- Preguntas Asociadas Column -->
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-12 my-4" style="    display: flex;
+                      align-items: center;
+                      justify-content: center;
+                  ">
+                  <div class="col-4">
+                    <label [for]="dropdownlistCategoria" class="k-label">
+                      <span>Categoria :
+                        <strong class="text-danger">*</strong></span>
+                    </label>
+                  </div>
+                  <div class="col-8">
+                    <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                      <kendo-dropdownlist formControlName="idPreguntaEncuestaCategoria" class="d-flex" size="small"
+                        #dropdownlistCategoria [data]="listaCategoria" textField="nombre" valueField="id"
+                        [defaultItem]="{id:null,nombre:'Seleccionar'}" [valuePrimitive]="true">
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+              <kendo-grid [kendoGridBinding]="preguntasAsociadas" [loading]="gridPreguntas.loading" [selectable]="true"
+                [resizable]="true" filterable="menu" style="height: 200px" kendoGridSelectBy="idPreguntaEncuesta"
+                [(selectedKeys)]="listaPreguntasDesasociar">
+                <ng-template kendoPagerTemplate let-totalPages="totalPages" let-currentPage="currentPage">
+                  <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                  <kendo-pager-numeric-buttons [buttonCount]="5"></kendo-pager-numeric-buttons>
+                  <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                  <kendo-pager-input></kendo-pager-input>
+                  <kendo-pager-info></kendo-pager-info>
+                  <kendo-pager-page-sizes [pageSizes]="cantidadItems"></kendo-pager-page-sizes>
+                </ng-template>
+                <kendo-grid-checkbox-column [width]="20" [headerClass]="{ 'text-center': true }"
+                  [class]="{ 'text-center': true }" [resizable]="false" [columnMenu]="false" [showSelectAll]="true">
+                </kendo-grid-checkbox-column>
+                <kendo-grid-column field="pregunta" title="Pregunta" [width]="80" [headerClass]="'justify-content-center'"
+                  [filterable]="true">
+                </kendo-grid-column>
+                <kendo-grid-command-column title="Ver" [width]="30">
+                  <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowindex="rowindex">
+                    <div class="d-flex justify-content-center">
+                      <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="small"
+                        class="p-2 me-1 ms-1" container="body" placement="top" ngbTooltip="Ver"
+                        (click)="openModalPregunta(dataItem)">
+                        <span class="k-icon k-i-eye k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="idModalidadCurso == 1">
+      <div class="card mt-4">
+        <div class="card-header bg-primary text-light">
+          <div class="row">
+            <div class="col-md-6 text-center fw-bold">Preguntas Libres</div>
+            <div class="col-md-6 text-center fw-bold">Preguntas Asociadas</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Preguntas Libres Column -->
+            <div class="col-md-5">
+              <div class="row">
+                <div class="col-12 my-4" style="    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                  <div class="col-4">
+                    <label [for]="dropdownlistCategoria" class="k-label">
+                      <span>Categoria :
+                        <strong class="text-danger">*</strong></span>
+                    </label>
+                  </div>
+                  <div class="col-8">
+                    <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                      <kendo-dropdownlist formControlName="idTipoRespuesta" class="d-flex" size="small"
+                        #dropdownlistCategoria [data]="listaCategoriaAsincronica" textField="nombre" valueField="id"
+                        [defaultItem]="{id:null,nombre:'Seleccionar'}" [valuePrimitive]="true"
+                        (valueChange)="onCategoriaChangeAsincronica($event)">
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+              <kendo-grid [kendoGridBinding]="listaPreguntaAsincronicaFiltrada" [loading]="gridPreguntas.loading" [selectable]="true"
+                [resizable]="true" style="height: 200px" filterable="menu" kendoGridSelectBy="idPregunta"
+                [(selectedKeys)]="listaPreguntasAsincronicaAsociar">
+                <kendo-grid-checkbox-column [width]="20" [headerClass]="{ 'text-center': true }"
+                  [class]="{ 'text-center': true }" [resizable]="false" [columnMenu]="false" [showSelectAll]="true">
+                </kendo-grid-checkbox-column>
+                <kendo-grid-column field="enunciadoPregunta" title="Pregunta" [width]="100"
+                  [headerClass]="'justify-content-center'" [filterable]="true">
+                </kendo-grid-column>
+                <kendo-grid-command-column title="Ver" [width]="30">
+                  <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowindex="rowindex">
+                    <div class="d-flex justify-content-center">
+
+                      <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="small"
+                        class="p-2 me-1 ms-1" container="body" placement="top" ngbTooltip="Ver"
+                        (click)="openModalPregunta(dataItem)">
+                        <span class="k-icon k-i-eye k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+            <!-- Center Buttons Column -->
+            <div class="col-md-1 d-flex flex-column justify-content-center align-items-center">
+              <button class="btn btn-success mb-2" (click)="asociarPreguntasAsincronica()"
+                [disabled]="!(listaPreguntasAsincronicaAsociar.length > 0)">
+                <span class="k-icon k-i-arrow-60-right k-icon-24"></span>
+              </button>
+              <button class="btn btn-danger mb-2" (click)="desasociarPreguntasAsincronica()"
+                [disabled]="!(listaPreguntasAsincronicaDesasociar.length > 0)">
+                <span class="k-icon k-i-arrow-60-left k-icon-24"></span>
+              </button>
+              <button class="btn btn-outline-danger" (click)="reestablecer()" [disabled]="
+                    !(
+                      listaPreguntasAsincronicaDesasociar.length > 0 ||
+                      listaPreguntasAsincronicaAsociar.length > 0
+                    )
+                  ">
+                <span class="k-icon k-i-reload k-icon-24"></span>
+              </button>
+            </div>
+            <!-- Preguntas Asociadas Column -->
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-12 my-4" style="    display: flex;
+                      align-items: center;
+                      justify-content: center;
+                  ">
+                  <div class="col-4">
+                    <label [for]="dropdownlistCategoria" class="k-label">
+                      <span>Categoria :
+                        <strong class="text-danger">*</strong></span>
+                    </label>
+                  </div>
+                  <div class="col-8">
+                    <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                      <kendo-dropdownlist formControlName="idTipoRespuesta" class="d-flex" size="small"
+                        #dropdownlistCategoria [data]="listaCategoriaAsincronica" textField="nombre" valueField="id"
+                        [defaultItem]="{id:null,nombre:'Seleccionar'}" [valuePrimitive]="true">
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+              <kendo-grid [kendoGridBinding]="preguntasAsincronicaAsociadas" [loading]="gridPreguntas.loading" [selectable]="true"
+                [resizable]="true" filterable="menu" style="height: 200px" kendoGridSelectBy="idAsignacionPreguntaExamen"
+                [(selectedKeys)]="listaPreguntasAsincronicaDesasociar">
+                <ng-template kendoPagerTemplate let-totalPages="totalPages" let-currentPage="currentPage">
+                  <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                  <kendo-pager-numeric-buttons [buttonCount]="5"></kendo-pager-numeric-buttons>
+                  <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                  <kendo-pager-input></kendo-pager-input>
+                  <kendo-pager-info></kendo-pager-info>
+                  <kendo-pager-page-sizes [pageSizes]="cantidadItems"></kendo-pager-page-sizes>
+                </ng-template>
+                <kendo-grid-checkbox-column [width]="20" [headerClass]="{ 'text-center': true }"
+                  [class]="{ 'text-center': true }" [resizable]="false" [columnMenu]="false" [showSelectAll]="true">
+                </kendo-grid-checkbox-column>
+                <kendo-grid-column field="enunciadoPregunta" title="Pregunta" [width]="80" [headerClass]="'justify-content-center'"
+                  [filterable]="true">
+                </kendo-grid-column>
+                <kendo-grid-command-column title="Ver" [width]="30">
+                  <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowindex="rowindex">
+                    <div class="d-flex justify-content-center">
+                      <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="small"
+                        class="p-2 me-1 ms-1" container="body" placement="top" ngbTooltip="Ver"
+                        (click)="openModalPregunta(dataItem)">
+                        <span class="k-icon k-i-eye k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+  
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="actionModal();">
+      {{ btnModalNombre }}
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+
+
+
+<ng-template #modalDetallePregunta let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3>Detalle Pregunta</h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal w-100">
+      <hr class="my-2">
+      <div class="row align-items-center">
+        <div class="col-4">
+          <label class="k-label mb-0">
+            <span>Categoria:</span>
+          </label>
+        </div>
+        <div class="col-8">
+          <p *ngIf="idModalidadCurso == 2" class="customBorder text-muted mb-0">{{infoPregunta.categoria}}</p>
+          <p *ngIf="idModalidadCurso == 1" class="customBorder text-muted mb-0">{{infoPregunta.tipoRespuesta}}</p>
+        </div>
+        <div class="w-100 my-2"></div> 
+
+        <div class="col-4">
+          <label class="k-label mb-0">
+            <span>Tipo:</span>
+          </label>
+        </div>
+        <div class="col-8">
+          <p *ngIf="idModalidadCurso == 2" class="customBorder text-muted mb-0">{{infoPregunta.tipo}}</p>
+          <p *ngIf="idModalidadCurso == 1" class="customBorder text-muted mb-0">{{infoPregunta.preguntaTipo}}</p>
+        </div>
+
+        <div class="w-100 my-2"></div> 
+
+        <div class="col-4">
+          <label class="k-label mb-0">
+            <span>Pregunta:</span>
+          </label>
+        </div>
+        <div class="col-8">
+          <p *ngIf="idModalidadCurso == 2" class="customBorder text-muted mb-0">{{infoPregunta.pregunta}}</p>
+          <p *ngIf="idModalidadCurso == 1" class="customBorder text-muted mb-0">{{infoPregunta.enunciadoPregunta}}</p>
+        </div>
+      </div>
+      <hr class="my-2">
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton themeColor="error" class="hoverButton" (click)="modal.dismiss('Cross click')">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>

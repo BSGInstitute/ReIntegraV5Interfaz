@@ -1,0 +1,359 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Monitoreo del Chat</h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="row d-flex justify-content-center mb-4">
+            <div class="col-8">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Reporte de Chat</h3>
+                </div>
+                <div class="card-body k-form k-form-horizontal">
+                  <form [formGroup]="formReporteChat">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="areas" class="k-label"> Area: </label>
+                          <kendo-multiselect
+                            #areas
+                            formControlName="areas"
+                            [data]="filtrosGenerales.areaCapacitacion"
+                            [filterable]="true"
+                            textField="nombre"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="desglose" class="k-label">
+                            Desglose:
+                          </label>
+                          <kendo-dropdownlist
+                            #desglose
+                            formControlName="desglose"
+                            [data]="dataDesglose"
+                            [filterable]="true"
+                            textField="nombre"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                          >
+                          </kendo-dropdownlist>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="asesor" class="k-label">
+                            Asesores:
+                          </label>
+                          <kendo-multiselect
+                            #asesor
+                            formControlName="asesor"
+                            [data]="filtrosGenerales.personal"
+                            [filterable]="true"
+                            textField="nombre"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="fechaInicio" class="k-label">
+                            Fecha Inicio:
+                          </label>
+
+                          <kendo-datepicker
+                            #fechaInicio
+                            formControlName="fechaInicio"
+                            format="yyyy-MM-dd"
+                          >
+                          </kendo-datepicker>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="centroCosto" class="k-label">
+                            Centro de Costo
+                          </label>
+                          <kendo-multiselect
+                            #centroCosto
+                            formControlName="centroCosto"
+                            [data]="filtrosGenerales.centroCosto"
+                            textField="nombre"
+                            [filterable]="true"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                            placeholder="Seleccione centro Costo"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="fechaFin" class="k-label">
+                            Fecha Fin:
+                          </label>
+
+                          <kendo-datepicker
+                            #fechaFin
+                            formControlName="fechaFin"
+                            format="yyyy-MM-dd"
+                          >
+                          </kendo-datepicker>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="pais" class="k-label"> pais </label>
+                          <kendo-multiselect
+                            #pais
+                            formControlName="pais"
+                            [data]="filtrosGenerales.pais"
+                            [filterable]="true"
+                            textField="nombre"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                      <button
+                        (click)="generarReporteCobertura()"
+                        class="btn btn-sm btn-primary"
+                      >
+                        Buscar
+                        <fa-icon
+                          [icon]="['fas', 'search']"
+                          class="fa-lg"
+                        ></fa-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Reportes</h3>
+        </div>
+        <div
+          class="card-body p-4"
+          id="grillaAgendaTab"
+          style="position: relative"
+        >
+          <div class="row mb-4">
+            <div class="col-12">
+              <ng-container>
+                <kendo-grid
+                  [kendoGridBinding]="gridChatAsesor.data"
+                  [height]="gridChatAsesor.height"
+                  [loading]="gridChatAsesor.loading"
+                  [selectable]="gridChatAsesor.selectable"
+                  [resizable]="gridChatAsesor.resizable"
+                  [scrollable]="gridChatAsesor.scrollable"
+                  [filterable]="gridChatAsesor.filterable"
+                >
+                  <ng-template kendoGridToolbarTemplate>
+                    <button
+                      kendoGridExcelCommand
+                      type="button"
+                      icon="file-excel"
+                      (click)="excelexport.save()"
+
+                    >
+                      Export to Excel
+                    </button>
+                    <kendo-excelexport
+                    [data]="gridChatAsesor.data"
+                    fileName="ReporteChat.xlsx" #excelexport>
+
+
+                    <ng-container *ngFor="let item of columnasFix; let i = index" >
+                      <kendo-excelexport-column
+
+                      *ngIf="!item?.columns"
+                      [field]="item.field"
+                      [title]="item.title"
+                      >
+                      </kendo-excelexport-column>
+
+                      <kendo-excelexport-column
+
+                      *ngIf="item?.columns != null && item?.columns.length > 0"
+                      [title]="item.title"
+                      [width]="item.width"
+                      >
+                      </kendo-excelexport-column>
+
+
+                    <kendo-excelexport-column-group
+                    *ngIf="item?.columns != null && item?.columns.length > 0"
+                    [title]="item.title">
+                    <kendo-excelexport-column
+
+                    *ngFor="let subItem of item.columns; let j = index"
+                    [field]="subItem.field"
+                    [title]="subItem.title"
+                    >
+                    </kendo-excelexport-column>
+                  </kendo-excelexport-column-group>
+
+                    </ng-container>
+
+                  <kendo-excelexport-column-group
+                  *ngFor="let item of columnasPais; let i = index"
+                  [title]="item.title">
+                  <ng-container
+                  *ngFor="let subItem of item.columns; let j = index"
+                >
+                  <kendo-excelexport-column-group
+                    [title]="subItem.title"
+                  >
+                    <kendo-excelexport-column
+                      *ngFor="
+                        let subItem2 of subItem.columns;
+                        let h = index
+                      "
+                      [field]="subItem2.field"
+                      [title]="subItem2.title">
+                    </kendo-excelexport-column></kendo-excelexport-column-group></ng-container>
+                </kendo-excelexport-column-group>
+
+
+                  </kendo-excelexport>
+                  </ng-template>
+                  <ng-container *ngFor="let item of columnasFix; let i = index">
+                    <kendo-grid-column
+                      *ngIf="!item?.columns"
+                      [field]="item.field"
+                      [title]="item.title"
+                      [width]="item.width"
+                      headerClass="headerGridChat"
+                      [lockable]="item?.lockable"
+                      [locked]="item?.locked"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column-group
+                      *ngIf="item?.columns != null && item?.columns.length > 0"
+                      [title]="item.title"
+                      [width]="item.width"
+                      [columnMenu]="false"
+                    >
+                      <kendo-grid-column
+                        *ngFor="let subItem of item.columns; let j = index"
+                        [field]="subItem.field"
+                        [title]="subItem.title"
+                        [width]="subItem.width"
+                        [format]="subItem?.format"
+                      >
+                      </kendo-grid-column>
+                    </kendo-grid-column-group>
+                  </ng-container>
+
+                  <kendo-grid-column-group
+                    *ngFor="let item of columnasPais; let i = index"
+                    [title]="item.title"
+                    [columnMenu]="false"
+                    [width]="item.width"
+                  >
+                    <ng-container
+                      *ngFor="let subItem of item.columns; let j = index"
+                    >
+                      <kendo-grid-column [width]="item.width" [hidden]="true">
+                      </kendo-grid-column>
+                      <kendo-grid-column-group
+                        [title]="subItem.title"
+                        [width]="300"
+                      >
+                        <kendo-grid-column
+                          *ngFor="
+                            let subItem2 of subItem.columns;
+                            let h = index
+                          "
+                          [field]="subItem2.field"
+                          [title]="subItem2.title"
+                          [width]="subItem2.width"
+                          [format]="subItem2.format"
+                          [hidden]="subItem2?.hidden"
+                        >
+
+                        </kendo-grid-column>
+                      </kendo-grid-column-group>
+                    </ng-container>
+                  </kendo-grid-column-group>
+                </kendo-grid>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="row">
+          <div class="row d-flex justify-content-center mb-4">
+
+            <div class="container">
+              <div class="row">
+                <div class="col-6 col-sm-4">TPR:	Tiempo promedio de respuesta del asesor(Seg)</div>
+                <div class="col-0 col-sm-4">NC:	Número de chats</div>
+
+
+                <div class="w-100 d-none d-md-block"></div>
+
+                <div class="col-6 col-sm-4">NMV:	Número de mensajes del visitante</div>
+                <div class="col-6 col-sm-4">EO:	Error crear Oportunidad</div>
+
+                <div class="w-100 d-none d-md-block"></div>
+
+                <div class="col-6 col-sm-4">NL:	Número de visitantes logueados</div>
+                <div class="col-6 col-sm-4">RO:	Ratio Oportunidades (N° Oportunidades/N° Chats)</div>
+
+                <div class="w-100 d-none d-md-block"></div>
+
+                <div class="col-6 col-sm-4">NCE:	Número de clicks empezar</div>
+                <div class="col-6 col-sm-4">RCA:	Ratio chats atendidos (N° Chats/N° Chats atendidos)</div>
+
+                <div class="w-100 d-none d-md-block"></div>
+
+                <div class="col-6 col-sm-4">NOP:Número de oportunidades	</div>
+                <div class="col-6 col-sm-4">CTE:	Cliente Tiempo Espera</div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,564 @@
+<div class="row">
+  <div class="col-1fa-rotate-270">
+    <div class="card">
+      <div class="card-header bg-color-material">
+        <h1 class="text-white">Reporte Comprobantes</h1>
+      </div>
+      <div class="card-body p-4">
+        <div class="k-loading-panel" *ngIf="loader">
+          <div class="k-loading-panel-mask"></div>
+          <div class="k-loading-panel-wrapper">
+            <kendo-loader
+              type="converging-spinner"
+              themeColor="primary"
+              size="large"
+            >
+            </kendo-loader>
+            <div class="k-loading-panel-text fs-5 text-primary">
+              Cargando...
+            </div>
+          </div>
+        </div>
+        <div class="row conteiner-toolbar-retiros-matricula">
+          <div class="card" style="padding: 0px">
+            <div class="card-header bg-color-material pb-0">
+              <h3 class="text-white mb-2">Comprobantes</h3>
+            </div>
+            <div class="card-body p-4">
+              <div class="col-md-8">
+                <div class="row" style="display: flex; justify-content: center">
+                  <div class="col-md-8">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-dropdownlist
+                        [data]="listTipoAsociado"
+                        [(ngModel)]="tipo"
+                        textField="nombre"
+                        valueField="id"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-2" style="padding-top: 15px">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="generarReporte()"
+                    >
+                      <mat-icon>search</mat-icon>
+                      Buscar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="height: 30px"></div>
+          <kendo-grid
+            #grid
+            [kendoGridBinding]="listaReporte"
+            [pageSize]="10"
+            [sortable]="true"
+            [reorderable]="false"
+            [resizable]="true"
+            filterable="menu"
+            [pageable]="true"
+            style="max-height: 700px; border-top-width: 0px; padding: 0px"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <div
+                class="col-md-7"
+                style="display: flex; justify-content: start"
+              >
+                <button
+                  mat-raised-button
+                  class="btn-export-excel"
+                  (click)="excelexport.save()"
+                >
+                  <span class="k-icon k-i-file-excel k-icon-20"></span>
+                  Exportar a Excel
+                </button>
+                <kendo-excelexport
+                  [data]="listaReporte"
+                  [collapsible]="true"
+                  fileName="Reporte pagos a proveedores.xlsx"
+                  #excelexport
+                >
+                  <!-- <kendo-excelexport-column field="empresa" title="Empresa">
+                    </kendo-excelexport-column> -->
+                  <kendo-excelexport-column
+                    field="empresaFur"
+                    title="Empresa FUR"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="sede" title="Sede">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="area" title="Área">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="tipoPedido"
+                    title="Tipo de Pedido"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="codigoFur"
+                    title="Código FUR"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="productoServicio"
+                    title="Producto/Servicio"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="cantidad" title="Cantidad">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="unidades" title="Unidades">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="precioUnitario"
+                    title="Precio Unitario"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="moneda" title="Moneda">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="descripcion"
+                    title="Descripción"
+                    [width]="300"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="centroCosto"
+                    title="Centro Costo"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="curso" title="Curso">
+                  </kendo-excelexport-column>
+                  <!-- <kendo-excelexport-column field="programa" title="Programa">
+                  </kendo-excelexport-column> -->
+                  <kendo-excelexport-column field="rubro" title="Rubro">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="numCuenta"
+                    title="Nro. Cuenta"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="cuenta" title="Cuenta">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="usuarioCreacion"
+                    title="Usuario Creación"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="usuarioModificacion"
+                    title="Usuario Modificación"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="tipoDocumento"
+                    title="Tipo Documento"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="nroDoc" title="Nro. Doc">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="proveedor" title="Proveedor">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="tipoComprobante"
+                    title="Tipo Comprobante"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="numComprobante"
+                    title="Nro. Comprobante"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="monedaPago"
+                    title="Moneda Comprobante"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="montoPagado"
+                    title="Monto Pagado"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="totalDolares"
+                    title="Total Dolares"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="numRecibo"
+                    title="Nro. Recibo"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="fechaEmision"
+                    title="Fecha Emisión"
+                    [width]="150"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="fechaVencimiento"
+                    title="Fecha Vencimiento"
+                    [width]="150"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="fechaPagoBanco"
+                    title="Fecha Pago Banco"
+                    [width]="150"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="anterior"
+                    title="Anterior"
+                    [width]="150"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="montoProgramado"
+                    title="Monto Programado"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="mesVcto"
+                    title="Mes de Vencimiento"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="anioVcto"
+                    title="Año de Vencimiento"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="usuarioAprobacion"
+                    title="Usuario Aprobacion"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="mesPresupuesto"
+                    title="Mes Presupuesto"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="anioPresupuesto"
+                    title="Año Presupuesto"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="observaciones"
+                    title="Observaciones"
+                  >
+                  </kendo-excelexport-column>
+                </kendo-excelexport>
+              </div>
+            </ng-template>
+            <kendo-grid-column
+              title="Empresa"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+              [width]="150"
+              field="empresa"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+              title="Sede"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="sede"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Área"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="area"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Tipo de Pedido"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="tipoPedido"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Tipo de Documento"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="tipoDocumento"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Nro Doc"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="nroDoc"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Proveedor"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="proveedor"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Tipo Comprobante"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="tipoComprobante"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Numero Comprobante"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="numeroComprobante"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Moneda Comprobante"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="monedaComprobante"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Monto Total Comprobante"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="montoTotalComprobante"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Fecha Emision"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="fechaEmision"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Mes de Eminision"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="mesDeEmision"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Fecha Vencimiento"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="fechaVencimiento"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+              title="Mes de Vencimiento"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="mesDeVenc"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Codigo FUR"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="codigoFUR"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Monto Total Asociado"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="montoTotalAsociado"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Monto Pendiente de Asociacion"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="montoPendienteAsociacion"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+
+            <ng-template kendoGridNoRecordsTemplate>
+              <div>
+                <kendo-badge-container>
+                  <kendo-icon name="cloud" size="large"></kendo-icon>
+                  <kendo-badge position="inside">
+                    <kendo-icon name="close" style="color: red"></kendo-icon>
+                  </kendo-badge>
+                </kendo-badge-container>
+              </div>
+              <p>No hay registros cargados!</p>
+            </ng-template>
+            <ng-template
+              kendoPagerTemplate
+              let-totalPages="totalPages"
+              let-currentPage="currentPage"
+            >
+              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+              <kendo-pager-numeric-buttons
+                [buttonCount]="5"
+              ></kendo-pager-numeric-buttons>
+              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+
+              <kendo-pager-info></kendo-pager-info>
+              <kendo-pager-page-sizes
+                [pageSizes]="pageSizes"
+              ></kendo-pager-page-sizes>
+            </ng-template>
+          </kendo-grid>
+        </div>
+        <br />
+      </div>
+    </div>
+  </div>
+</div>

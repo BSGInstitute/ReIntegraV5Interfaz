@@ -1,0 +1,555 @@
+<div class="">
+    <div class="row">
+        <div class="col-1fa-rotate-270">
+            <div class="card">
+                <div class="card-header bg-color-material">
+                    <h1 class="text-white">Disponibilidad Pago Cuota</h1>
+                </div>
+                <div  class="card-body p-4">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="card" style="padding: 0px;">
+                                <div class="card-header bg-color-material pb-0">
+                                    <h3 class="text-white mb-2">Filtro de Busqueda</h3>
+                                </div>
+                                <div  class="card-body p-4">
+                                    <div class="row">
+                                        <form class="k-form" [formGroup]="formGroupFiltro" >
+                                            <fieldset class="k-form-fieldset">
+                                                <div class="row">
+                                                    <div class="col-md-1"></div>
+                                                    <div class="col-md-4">
+                                                        <div class="row" style="padding: 0px;">
+                                                            <div style="padding: 0px;">
+                                                                <label   class="k-label" style="margin-bottom: 0.5rem;">
+                                                                    <span
+                                                                      >Fecha Proceso Pago (<strong class="text-danger">*</strong>) :</span
+                                                                    >
+                                                                </label>
+                                                                <kendo-daterange
+                                                                    [incompleteDateValidation]="true"
+                                                                    >
+                                                                        <div class="col-md-5">
+                                                                            <kendo-dateinput
+                                                                            kendoDateRangeStartInput
+                                                                            size="medium"
+                                                                            [fillMode]="'outline'"
+                                                                            formControlName="fechaInicioFiltro"
+                                                                            [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                                                            placeholder="Inicio"
+                                                                            [incompleteDateValidation]="true"
+                                                                            ></kendo-dateinput>
+                                                                        </div>
+                                                                        <div class="col-md-2" style="padding: 0%;width: 5%;text-align: center;"><p style="
+                                                                            margin-bottom: 5px;"><strong>—</strong></p></div>
+                                                                        <div class="col-md-5">
+                                                                            <kendo-dateinput
+                                                                            kendoDateRangeEndInput
+                                                                            size="medium"
+                                                                            [fillMode]="'outline'"
+                                                                            placeholder="Fin"
+                                                                            formControlName="fechaFinFiltro"
+                                                                            [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                                                            [incompleteDateValidation]="true"
+                                                                            ></kendo-dateinput>
+                                                                        </div>
+                                                                        
+                                                                        
+                                                                </kendo-daterange>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="row" style="padding-left: 0px;padding-right: 10px;">
+                                                            <div style="padding-left: 0px;padding-right: 10px;">
+                                                                <label   class="k-label" style="margin-bottom: 0.5rem;">
+                                                                    <span
+                                                                      >Tipo de Cambio Fecha :</span
+                                                                    >
+                                                                </label>
+                                                                <kendo-dropdownlist
+                                                                    class="d-flex center"
+                                                                    [data]="listaTipoCambio"
+                                                                    size="medium"
+                                                                    formControlName="idCambio"
+                                                                    [defaultItem]="{id:0,text:'< Seleccionar un Tipo de Cambio Fecha >'}"
+                                                                    textField="text"
+                                                                    valueField="id"
+                                                                    [valuePrimitive]="true"
+                                                                    >
+                                                                </kendo-dropdownlist>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="row">
+                                                            <div >
+                                                                <label   class="k-label" style="margin-bottom: 0.5rem;">
+                                                                    <span
+                                                                      >Código Matrícula:</span
+                                                                    >
+                                                                </label>
+                                                                <kendo-combobox
+                                                                    #codigoMat
+                                                                    class="d-flex center"
+                                                                    [data]="listaMatricula"
+                                                                    size="medium"
+                                                                    formControlName="codigoMat"
+                                                                    [filterable]="true"
+                                                                    (filterChange)="filterCodigoMat($event)"
+                                                                    placeholder="< Ingrese el Código de Matrícula >"
+                                                                    textField="id"
+                                                                    valueField="id"
+                                                                    [valuePrimitive]="true"
+                                                                >
+                                                                </kendo-combobox>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1"></div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="col-md-10"></div>
+                                                    <div class="col-md-1" style="padding-top: 1rem;">
+                                                        <button mat-raised-button color="primary"
+                                                        (click)="ObtenerReporte()"
+                                                        >
+                                                            <mat-icon>search</mat-icon>
+                                                            Buscar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="card" style="padding: 0px;">
+                                <div class="card-header bg-color-material pb-0">
+                                    <h3 class="text-white mb-2">Actualizacion Fechas Cronograma Pago Final</h3>
+                                </div>
+                                <div  class="card-body p-4">
+                                    <div class="row">
+                                        <kendo-grid
+                                        style="padding-left: 0px; max-height: 700px"
+                                        [kendoGridBinding]="listaReporte"
+                                        [loading]="loaderGrid"
+                                        [pageSize]="10"
+                                        [sortable]="true"
+                                        [reorderable]="true"
+                                        [resizable]="true"
+                                        [columnMenu]="{ filter: true }"
+                                        [pageable]="{
+                                          buttonCount: 5,
+                                          info: true,
+                                          type: 'numeric',
+                                          pageSizes: true,
+                                          previousNext: true,
+                                          position: 'bottom'
+                                        }"
+                                        kendoGridSelectBy="idCronogramaPagoDetalleFinal"
+                                        [(selectedKeys)]="listaSeleccion"
+                                        [selectable]="{ enabled: true, checkboxOnly: true }"
+                                        [pageable]="{
+                                            buttonCount: 5,
+                                            info: true,
+                                            type: 'numeric',
+                                            pageSizes: true,
+                                            previousNext: true,
+                                            position: 'bottom'
+                                        }"
+                                        (filterChange)="limpiarSelecctio()"   
+                                        (cellClick)="cellClickHandler($event)"
+                                        (cellClose)="cellCloseHandler($event)" 
+                                      >
+                                        
+                                        <ng-template
+                                          kendoGridToolbarTemplate
+                                          class="bg-danger"
+                                        >
+                                            <button
+                                            mat-raised-button
+                                            style="
+                                              background-color: rgb(59, 109, 105);
+                                              color: white;
+                                            "
+                                            (click)="excelexport.save()"
+                                            >
+                                            <span class="k-icon k-i-file-excel" style="font-size:20px"></span>
+                                            Exportar a Excel
+                                            </button>
+                                            <kendo-excelexport 
+                                                [data]="listaReporte" 
+                                                fileName="ReporteDisponibilidadPago.xlsx" #excelexport>
+                                                <kendo-excelexport-column field="codigoAlumno" title="Código Matrícula" [sticky]="true">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="alumno" title="Alumno" [sticky]="true">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="cuota_SubCuota" title="Cuota-SubCuota">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="monedaCuota" title="Moneda">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="cuota" title="Monto Cuota">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="formaPago" title="Forma Pago">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="fechaCuota" title="Fecha Vencimiento">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="fechaPagoOriginalExcel" title="Fecha Pago">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="fechaProcesoPagoRealExcel" title="Fecha Proceso Pago Real">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="fechaMatriculaExcel" title="Fecha Matrícula">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="fechaDepositaronExcel" title="Fecha Ingreso Cuenta">
+                                                </kendo-excelexport-column>
+                                                <kendo-excelexport-column field="fechaDisponibleExcel" title="Fecha Disponible">
+                                                </kendo-excelexport-column>
+                                            </kendo-excelexport>
+                                            <kendo-datepicker
+                                            [size]="'small'"
+                                            [format]="'dd-MM-yyyy'"
+                                            [formControl]="inputFecha"
+                                            placeholder="dia-mes-año"
+                                            [incompleteDateValidation]="true"
+                                          >
+                                          </kendo-datepicker>
+                                          <button
+                                            mat-raised-button
+                                            style="
+                                              background-color: rgb(2, 118, 2);
+                                              color: white;
+                                            "
+                                            (click)="cambiarFechaVarios(1)"
+                                          >
+                                            Cambiar - Fecha Proceso Pago Real
+                                          </button>
+                                          <button mat-raised-button color="primary" 
+                                          (click)="cambiarFechaVarios(2)">
+                                            Cambiar - Fecha Ingreso Cuenta
+                                          </button>
+                                          <button mat-raised-button 
+                                          style="
+                                              background-color: rgb(199, 143, 22);
+                                              color: white;
+                                            "
+                                            (click)="cambiarFechaVarios(3)">
+                                            Cambiar - Fecha Ingreso Disponible
+                                          </button>
+                                        </ng-template>
+                                        <kendo-grid-checkbox-column
+                                            [width]="45"
+                                            [headerClass]="{ 'text-center': true }"
+                                            [class]="{ 'text-center': true }"
+                                            [resizable]="false"
+                                            [columnMenu]="false"
+                                            [showSelectAll]="true"
+                                            [sticky]="true"
+                                            >
+                                        </kendo-grid-checkbox-column>
+                                        <kendo-grid-column
+                                          title="Código Matrícula"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="codigoAlumno"
+                                          [locked]="false"
+                                          [sticky]="true"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                        </kendo-grid-column>
+            
+                                        <kendo-grid-column
+                                          title="Alumno"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="200"
+                                          field="alumno"
+                                          [locked]="false"
+                                          [sticky]="true"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Cuota-SubCuota"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="120"
+                                          field="cuota_SubCuota"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Moneda"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="monedaCuota"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Monto Cuota"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="140"
+                                          field="cuota"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Forma Pago"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="formaPago"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Fecha Vencimiento"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="fechaCuota"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Fecha Proceso Pago"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="fechaProcesoPago"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                            <ng-template
+                                                kendoGridCellTemplate
+                                                let-dataItem
+                                            >
+                                            {{ finanzasService.fechaTemplate(dataItem.fechaProcesoPago,false) }}
+                                            </ng-template>
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Fecha Pago"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="fechaPagoOriginal"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                            <ng-template
+                                                kendoGridCellTemplate
+                                                let-dataItem
+                                            >
+                                            {{ finanzasService.fechaTemplate(dataItem.fechaPagoOriginal,false) }}
+                                            </ng-template>
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Fecha Proceso Pago Real"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="fechaProcesoPagoReal"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                            <ng-template
+                                            kendoGridEditTemplate
+                                            let-dataItem="dataItem"
+                                            let-formGroup="formGroup"
+                                            >
+                                                <kendo-datepicker
+                                                [size]="'small'"
+                                                [format]="'dd-MM-yyyy'"
+                                                [formControl]="formGroup.get('fechaProcesoPagoReal')"
+                                                placeholder="dia-mes-año"
+                                                [incompleteDateValidation]="true"
+                                                >
+                                                </kendo-datepicker>
+                                            </ng-template>
+                                            <ng-template
+                                                kendoGridCellTemplate
+                                                let-dataItem
+                                            >
+                                            {{ finanzasService.fechaTemplate(dataItem.fechaProcesoPagoReal,false) }}
+                                            </ng-template>
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Fecha Matrícula"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="fechaMatricula"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                            <ng-template
+                                                kendoGridCellTemplate
+                                                let-dataItem
+                                            >
+                                            {{ finanzasService.fechaTemplate(dataItem.fechaMatricula,false) }}
+                                            </ng-template>
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Fecha Ingreso Cuenta"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="fechaDepositaron"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >   
+                                            <ng-template
+                                                kendoGridEditTemplate
+                                                let-dataItem="dataItem"
+                                                let-formGroup="formGroup"
+                                                >
+                                                    <kendo-datepicker
+                                                    [size]="'small'"
+                                                    [format]="'dd-MM-yyyy'"
+                                                    [formControl]="formGroup.get('fechaDepositaron')"
+                                                    placeholder="dia-mes-año"
+                                                    [incompleteDateValidation]="true"
+                                                >
+                                                </kendo-datepicker>
+                                            </ng-template>
+                                            <ng-template
+                                                kendoGridCellTemplate
+                                                let-dataItem
+                                            >
+                                            {{ finanzasService.fechaTemplate(dataItem.fechaDepositaron,false) }}
+                                            </ng-template>
+                                        </kendo-grid-column>
+                                        <kendo-grid-column
+                                          title="Fecha Disponible"
+                                          headerClass="justify-content-center k-grid-header "
+                                          [headerStyle]="{
+                                            'background-color': '#3382a9',
+                                            color: 'white'
+                                          }"
+                                          [width]="150"
+                                          field="fechaDisponible"
+                                          [locked]="false"
+                                          [sticky]="false"
+                                          [filterable]="true"
+                                          [hidden]="false"
+                                        >
+                                            <ng-template
+                                            kendoGridEditTemplate
+                                            let-dataItem="dataItem"
+                                            let-formGroup="formGroup"
+                                            >
+                                                <kendo-datepicker
+                                                [size]="'small'"
+                                                [format]="'dd-MM-yyyy'"
+                                                [formControl]="formGroup.get('fechaDisponible')"
+                                                placeholder="dia-mes-año"
+                                                [incompleteDateValidation]="true"
+                                            >
+                                            </kendo-datepicker>
+                                            </ng-template>
+                                            <ng-template
+                                            kendoGridCellTemplate
+                                            let-dataItem
+                                            >
+                                            {{ finanzasService.fechaTemplate(dataItem.fechaDisponible,false) }}
+                                            </ng-template>
+                                        </kendo-grid-column>
+                                        <ng-template kendoGridNoRecordsTemplate>
+                                          <div>
+                                            <kendo-badge-container>
+                                              <kendo-icon
+                                                name="cloud"
+                                                size="large"
+                                              ></kendo-icon>
+                                              <kendo-badge position="inside">
+                                                <kendo-icon
+                                                  name="close"
+                                                  style="color: red"
+                                                ></kendo-icon>
+                                              </kendo-badge>
+                                            </kendo-badge-container>
+                                          </div>
+                                          <p>No hay registros cargados!</p>
+                                        </ng-template>
+                                      </kendo-grid>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

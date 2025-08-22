@@ -1,0 +1,562 @@
+<div class="card border-primary mb-3">
+    <div class="card-header bg-color-material pb-0">
+      <div class="row">
+        <h2 class="mb-2 text-white" id="titulo">(R) Reporte Solicitud Internas</h2>
+      </div>
+    </div>
+    <div class="card-body p-4">
+      <div class="row mb-4">
+        <div class="col-1"></div>
+        <div class="col-6">
+          <kendo-dropdownlist
+            [data]="tipoBusquedaData"
+            [defaultItem]="{ id: null, nombre: '<Tipo de busqueda>' }"
+            [(ngModel)]="datoTipoBusqueda"
+            (valueChange)="cargarDropDownlist($event)"
+            [valuePrimitive]="true"
+            [virtual]="virtual"
+            valueField="id"
+            textField="nombre"
+          >
+          </kendo-dropdownlist>
+        </div>
+      </div>
+      <div [hidden]="band">
+        <div [hidden]="hiddenInput">
+          <div class="row mb-4">
+            <div class="col-1"></div>
+            <div class="col-6">
+              <input
+                [(ngModel)]="datoContenidoBusqueda"
+                class="form-control"
+                style="width: 100%"
+                type="text"
+                placeholder="<Ingrese>"
+              />
+            </div>
+          </div>
+        </div>
+        <div [hidden]="hiddenDropDownList1">
+          <div class="row mb-4">
+            <div class="col-1"></div>
+            <div class="col-6">
+              <kendo-dropdownlist
+                [data]="itemslistaPersonal"
+                [filterable]="true"
+                [defaultItem]="{ id: null, nombres: '<Seleccionar Personal>' }"
+                valueField="id"
+                [(ngModel)]="datoContenidoBusquedaD1"
+                [virtual]="virtual"
+                [valuePrimitive]="true"
+                textField="nombres"
+                (filterChange)="filterChangePersonal($event)"
+              >
+              </kendo-dropdownlist>
+            </div>
+          </div>
+        </div>
+        <div [hidden]="hiddenDropDownList2">
+          <div class="row mb-4">
+            <div class="col-1"></div>
+            <div class="col-6">
+              <kendo-dropdownlist
+                [data]="itemslistaEstado"
+                [filterable]="true"
+                [defaultItem]="{ id: null, nombre: '<Seleccionar Estado>' }"
+                valueField="id"
+                [(ngModel)]="datoContenidoBusquedaD2"
+                [virtual]="virtual"
+                [valuePrimitive]="true"
+                textField="nombre"
+                (filterChange)="filterChangeEstado($event)"
+              >
+              </kendo-dropdownlist>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="row">
+        <div class="col-md-11"></div>
+        <div class="col-md-1">
+          <button
+            kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="success"
+            (click)="buscarSolicitudesAlumnos()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+      <!-- <a class="btn btn-primary" (click)="_generarReporteCobertura()" role="button" [class.disabled]="buttonDisable ? null: true">Buscar</a> -->
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header bg-color-material pb-0">
+      <h3 class="text-white mb-2">Lista Solicitudes</h3>
+    </div>
+    <div class="card-body">
+      <kendo-grid
+        [data]="gridGestionSolicitudAlumnos.view"
+        [pageSize]="20"
+        [pageable]="true"
+        [sortable]="true"
+        [selectable]="true"
+        [resizable]="true"
+      >
+        <kendo-grid-column title="Id" field="id" [width]="60">
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Prioridad"
+          field="prioridad"
+          [width]="125"
+          headerClass="header-grid-single"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="id"
+          field="idSolicitud"
+          [hidden]="true"
+          headerClass="header-grid-single"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Solicitud"
+          field="nombreSolicitud"
+          headerClass="header-grid-single"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="idAreaSolicitante"
+          field="idAreaSolicitante"
+          [hidden]="true"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Area Solicitante"
+          field="areaSolicitante"
+          headerClass="header-grid-single"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="idSolicitante"
+          field="idSolicitante"
+          [hidden]="true"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Solicitante"
+          field="nombreSolicitante"
+          headerClass="header-grid-single"
+        >
+        </kendo-grid-column>
+        <kendo-grid-command-column
+          title="Información Solicitud"
+          [width]="210"
+          headerClass="header-grid-single"
+        >
+          <ng-template
+            kendoGridCellTemplate
+            let-isNew="isNew"
+            let-dataItem="dataItem"
+            let-rowindex="rowindex"
+          >
+            <div class="w-50 d-flex justify-content-center">
+              <button
+                kendoButton
+                themeColor="warning"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="p-2 me-1 ms-1"
+                container="body"
+                placement="top"
+                ngbTooltip="Editar"
+                (click)="abrirModalDetalleSolicitud(dataItem)"
+              >
+                <span class="k-icon k-i-eye k-icon-20"></span>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+        <kendo-grid-column
+          title="idEstadoSolicitud"
+          field="idEstadoSolicitud"
+          [hidden]="true"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Estado"
+          field="estadoSolicitud"
+          headerClass="header-grid-single"
+        >
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+  
+  <ng-template #modalDetalleSolicitud let-modal>
+    <app-loader *ngIf="loaderModal"></app-loader>
+    <div class="modal-header bg-primary-header-modal">
+      <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+        <h3>Detalle Solicitud</h3>
+      </h3>
+      <button
+        type="button"
+        class="btn-close btn-close-white"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form class="k-form k-form-horizontal" [formGroup]="formCategoria">
+        <fieldset class="k-form-fieldset">
+          <div class="row">
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="Id" class="k-label">
+                  <span>Id <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #Id
+                  size="medium"
+                  formControlName="Id"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="prioridad" class="k-label">
+                  <span
+                    >Prioridad :</span
+                  >
+                </label>
+                <kendo-textbox
+                  #prioridad
+                  size="medium"
+                  formControlName="prioridad"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="tipoReporte" class="k-label">
+                  <span
+                    >TipoReporte :</span
+                  >
+                </label>
+                <kendo-textbox
+                  #tipoReporte
+                  size="medium"
+                  formControlName="tipoReporte"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="categoria" class="k-label">
+                  <span
+                    >Categoria :</span
+                  >
+                </label>
+                <kendo-textbox
+                  #categoria
+                  size="medium"
+                  formControlName="categoria"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="subCategoria" class="k-label">
+                  <span
+                    >Sub-Categoria :
+                    </span
+                  >
+                </label>
+                <kendo-textbox
+                  #subCategoria
+                  size="medium"
+                  formControlName="subCategoria"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="solicitud" class="k-label">
+                  <span
+                    >Solicitud :</span
+                  >
+                </label>
+                <kendo-textbox
+                  #solicitud
+                  size="medium"
+                  formControlName="solicitud"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="areaSolicitante" class="k-label">
+                  <span
+                    >Area solicitante :
+                  </span
+                  >
+                </label>
+                <kendo-textbox
+                  #areaSolicitante
+                  size="medium"
+                  formControlName="areaSolicitante"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="solicitante" class="k-label">
+                  <span
+                    >Solicitante :</span
+                  >
+                </label>
+                <kendo-textbox
+                  #solicitante
+                  size="medium"
+                  formControlName="solicitante"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+            </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="detalleSolicitud" class="k-label">
+                  <span
+                    >Detalle Solicitud :
+                    </span>
+                </label>
+                <kendo-textbox
+                  #detalleSolicitud
+                  size="medium"
+                  formControlName="detalleSolicitud"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <br>
+              <div class="row">
+                <div class="col-auto">
+                  <label class="k-label">
+                    <span>Archivo Solicitud :</span>
+                  </label>
+                </div>
+                <div class="col">
+                  <div
+                  >
+                    <button
+                      kendoButton
+                      (click)="descargarArchivoSolicitud()"
+                      themeColor="tertiary"
+                      icon="download"
+                      title="descargar"
+                    >Abrir Archivo
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="areaRevision" class="k-label">
+                  <span
+                    >Area Revision :
+                    </span
+                  >
+                </label>
+                <kendo-textbox
+                  #areaRevision
+                  size="medium"
+                  formControlName="areaRevision"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="personalRevision" class="k-label">
+                  <span
+                    >Personal revision :
+                    </span
+                  >
+                </label>
+                <kendo-textbox
+                  #personalRevision
+                  size="medium"
+                  formControlName="personalRevision"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="areaSolucion" class="k-label">
+                  <span
+                    >Area Solucion :
+                    </span
+                  >
+                </label>
+                <kendo-textbox
+                  #areaSolucion
+                  size="medium"
+                  formControlName="areaSolucion"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [maxlength]="325"
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="personalSolucion" class="k-label">
+                  <span
+                    >Personal Solucion :
+                    </span
+                  >
+                </label>
+                <kendo-textbox
+                  #personalSolucion
+                  size="medium"
+                  formControlName="personalSolucion"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="fechaRegistro" class="k-label">
+                  <span
+                    >Fecha Registro :
+                    </span
+                  >
+                </label>
+                <kendo-textbox
+                  #fechaRegistro
+                  size="medium"
+                  formControlName="fechaRegistro"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <br>
+              <div class="row">
+                <div class="col-auto">
+                  <label class="k-label">
+                    <span>Archivo Solución :</span>
+                  </label>
+                </div>
+                <div class="col">
+                  <div
+                  >
+                    <button
+                      kendoButton
+                      (click)="descargarArchivoSolucion()"
+                      themeColor="tertiary"
+                      icon="download"
+                      title="descargar"
+                    >Abrir Archivo
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="comentario" class="k-label">
+                  <span
+                    >Comentario :</span
+                  >
+                </label>
+                <kendo-textbox
+                  #comentario
+                  size="medium"
+                  formControlName="comentario"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal">
+                <label [for]="estadoSolicitud" class="k-label">
+                  <span
+                    >Estado Solicitud :
+                    </span
+                  >
+                </label>
+    
+                <kendo-textbox
+                  #estadoSolicitud
+                  size="medium"
+                  formControlName="estadoSolicitud"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                  [disabled]="true"
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <div class="k-form-buttons m-0">
+        <!-- <button
+          kendoButton
+          *ngIf="isNew"
+          themeColor="primary"
+          (click)="registrarSolicitudAlumno()"
+        >
+          Guardar
+        </button> -->
+        <!-- <button kendoButton *ngIf="!isNew" themeColor="tertiary" (click)="actualizarCategoria()">Actualizar</button> -->
+  
+        <button
+          themeColor="error"
+          kendoButton
+          (click)="modal.dismiss('Cross click')"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </ng-template>
+  

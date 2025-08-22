@@ -1,0 +1,430 @@
+<mat-expansion-panel class="mt-2" [expanded]="true">
+  <mat-expansion-panel-header class="enuciadoHeader">
+    <mat-panel-title >Solicitudes, reclamos, quejas y sugerencias</mat-panel-title>
+    <div
+      class="col"
+      style="margin-right: 12px; justify-content: end; display: flex"
+    >
+      <button class="btn-srqs-hover-effect"
+        style="
+          background: #0079ff;
+          border-radius: 10px;
+          color: white;
+          border: none;
+          padding: 7px;
+          "
+        (click)="abrirModalRegistro($event)">
+        <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+        Nueva Solicitud
+      </button>
+    </div>
+  </mat-expansion-panel-header>
+
+  <div *ngIf="loadingGrid" style="height: 100px">
+    <loading [loading]="true"></loading>
+  </div>
+  <h3
+    *ngIf="!loadingGrid && dataSolicitudesAlumno != null && dataSolicitudesAlumno.data.length == 0"
+    style="text-align: center; font-weight: bold; margin: 25px 0"
+  >
+    - No existen registros de Solicitudes, reclamos, quejas ni sugerencias -
+  </h3>
+  <div class="card-body">
+    <div style="max-height: 500px; overflow-y: auto">
+  <table *ngIf="!loadingGrid && dataSolicitudesAlumno != null && dataSolicitudesAlumno.data.length > 0" mat-table [dataSource]="dataSolicitudesAlumno">
+    <ng-container matColumnDef="Detalle">
+      <th mat-header-cell *matHeaderCellDef>Detallle</th>
+      <td mat-cell *matCellDef="let element" class="word-wrap fixed-width">{{ element.detalleSolicitud }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="Curso">
+      <th mat-header-cell *matHeaderCellDef>Curso</th>
+      <td mat-cell *matCellDef="let element">{{ element.nombrePEspecifico }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="Asistente">
+      <th mat-header-cell *matHeaderCellDef>Asistente</th>
+      <td mat-cell *matCellDef="let element">{{ element.nombreSolicitante }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="EstadoSolicitud">
+      <th mat-header-cell *matHeaderCellDef>Estado Solicitud</th>
+      <td mat-cell *matCellDef="let element">{{ element.estadoSolicitud }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="FechaRegistro">
+      <th mat-header-cell *matHeaderCellDef>Fecha Registro</th>
+      <td mat-cell *matCellDef="let element">{{ element.fechaRegistro | date : "dd/MM/yyyy hh:mm"  }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="FechaSolucion">
+      <th mat-header-cell *matHeaderCellDef>Fecha Solución</th>
+      <td mat-cell *matCellDef="let element">{{(element.estadoSolicitud == 'Resuelto por el R' || element.estadoSolicitud == 'Resuelto por el RS' || element.estadoSolicitud == 'Resuelto por A') ? (element.fechaModificacion | date : 'dd/MM/yyyy hh:mm') : 'Pendiente' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="ComentarioSolucion">
+      <th mat-header-cell *matHeaderCellDef>Comentario <br> de Gestión</th>
+      <td mat-cell *matCellDef="let element" class="word-wrap fixed-width">{{element.comentarioSolucion? element.comentarioSolucion:"Pendiente" }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="GestionSolicitud">
+      <th mat-header-cell *matHeaderCellDef>Gestión de Solicitud</th>
+      <td mat-cell *matCellDef="let element"> 
+        <button 
+        mat-button 
+        class="btnSolucion"
+        (click)="abrirModalSolucion(element)"
+        [ngClass]="{'disabled-button': element.idEstadoSolicitud === 8}" 
+        [disabled]="element.idEstadoSolicitud === 8">
+          Solucionar
+        </button>
+    </ng-container>
+    
+    <tr
+      mat-header-row
+      *matHeaderRowDef="[
+        'Detalle',
+        'Curso',
+        'Asistente',
+        'EstadoSolicitud',
+        'FechaRegistro',
+        'FechaSolucion',
+        'ComentarioSolucion',
+        'GestionSolicitud'
+      ]"
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="
+        let myRowData;
+        columns: [
+          'Detalle',
+          'Curso',
+          'Asistente',
+          'EstadoSolicitud',
+          'FechaRegistro',
+          'FechaSolucion',
+          'ComentarioSolucion',
+          'GestionSolicitud'
+        ]
+      "
+    ></tr>
+  </table>
+</div>
+<mat-paginator [hidden]="loadingGrid || dataSolicitudesAlumno == null || dataSolicitudesAlumno.data.length == 0" style="display:flex; justify-content: center;" [pageSizeOptions]="[5,10,20,50,100]" [pageSize]="5"></mat-paginator>
+</div>
+</mat-expansion-panel>
+
+<ng-template #modalDetalleSolicitud let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header" style="background-color: #FF6113">
+    <h3  class="modal-title m-0 px-3" id="modal-basic-title" style="color: #ffffff">
+      Registro Solicitud
+    </h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formCategoriaNew">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="tipoReporte" class="k-label pt-0 d-flex align-items-start text-start">
+              Tipo de Solicitud
+            </label>
+          </div>
+          <div class="col-4">
+            <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-dropdownlist #tipoReporte
+                formControlName="tipoReporte"
+                [data]="dataTipoReporte"
+                class="d-flex" 
+                [value]="selectedTipoReporte"
+                size="medium"
+                placeholder="Tipo Reporte" 
+                [kendoDropDownFilter]="filterSettings2"
+                textField="nombre" 
+                valueField="id"
+                (valueChange)="categoriaByTipoReporte($event)" 
+                [defaultItem]="{id: null, nombre: 'Seleccione'}" 
+                [valuePrimitive]="true"
+                [filterable]="true">
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Ingrese un Tipo de Solicitud" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="categoria" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Categoria</span>
+            </label>
+          </div>
+          <div class="col-4">
+              <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                <kendo-dropdownlist #categoria
+                  formControlName="categoria"
+                  [disabled]="isDisabledCategoria"
+                  [data]="dataCategoriaFiltro" 
+                  [kendoDropDownFilter]="filterSettings2"
+                  [value]="selectedCategoria"
+                  size="medium" 
+                  class="d-flex"
+                  textField="nombre" 
+                  valueField="id" 
+                  [valuePrimitive]="true" 
+                  [autoClose]="true" 
+                  [defaultItem]="{nombre: 'Seleccione', id: null}"
+                  (valueChange)="subCategoriaByCategoria($event)"
+                  [virtual]="virtual"
+                  [filterable]="true">
+                  <ng-template kendoDropDownListNoDataTemplate>
+                    No existen registros configurados
+                  </ng-template>
+                </kendo-dropdownlist>
+                <kendo-formerror>
+                  {{ "Ingrese una Categoria" }}
+                </kendo-formerror>
+              </kendo-formfield>
+          </div>
+            <div class="w-100"></div>
+            <div class="col-2">
+              <label style="margin-top: 1em;" [for]="subCategoria" class="k-label pt-0 d-flex align-items-start text-start">
+                <span>Problema </span>
+              </label>
+            </div>
+            <div class="col-10">
+              <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                <kendo-dropdownlist #subCategoria
+                  formControlName="subCategoria"
+                  [data]="dataSubCategoriaFiltro" 
+                  [value]="selectedSubCategoria"
+                  [disabled]="isDisabledSubCategoria"
+                  [kendoDropDownFilter]="filterSettings2"
+                  textField="nombre" 
+                  valueField="id"
+                  class="d-flex" 
+                  size="medium" 
+                  [valuePrimitive]="true" 
+                  [autoClose]="true"
+                  (valueChange)="SolicitudBySubCategoria($event)"
+                  [defaultItem]="{nombre: 'Seleccione', id: null}"
+                  [virtual]="virtual"
+                  [filterable]="true">
+                  <ng-template kendoDropDownListNoDataTemplate>
+                    No existen registros configurados
+                  </ng-template>
+                </kendo-dropdownlist>
+                <kendo-formerror>
+                  {{ "Seleccione un problema" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+            <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="origenSolicitud" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Origen:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <kendo-dropdownlist #origenSolicitud
+                formControlName="origenSolicitud"
+                [data]="dataOrigen"
+                class="d-flex"
+                size="medium"
+                [kendoDropDownFilter]="filterSettings2"
+                placeholder="Origen"
+                textField="nombre"
+                valueField="id"
+                [autoClose]="true"
+                (valueChange)="obtenerOrigen($event)"
+                [defaultItem]="{id: null, nombre: 'Seleccione'}"
+                [valuePrimitive]="true"
+                [filterable]="true">
+                <ng-template kendoDropDownListNoDataTemplate>
+                  No existen orígenes configurados
+                </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un Origen" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+            <div class="w-100"></div>
+            <div class="col-2">
+              <label style="margin-top: 1em;" [for]="solicitud" class="k-label pt-0 d-flex align-items-start text-start">
+                <span>Descripción de la Solución</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <kendo-formfield class="custom-rqsc-remove-max-width-formfield" class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                <kendo-textarea #solicitud
+                  formControlName="solicitud"
+                  class="textDetalle"
+                  [style.width.%]="100"
+                  placeholder="Seleccione un problema"
+                  resizable="auto"
+                  size="large"
+                  rounded="large"
+                  fillMode="solid"
+                  id="name"
+                  [disabled]="true">
+                <kendo-textarea-suffix class="custom-styling"></kendo-textarea-suffix>
+                </kendo-textarea>
+                <kendo-formerror>
+                  {{ "Ingrese una Solicitud" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-2">
+              <label style="margin-top: 1em;" class="k-label pt-0 d-flex align-items-start text-start">
+                <span>Programa</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <p style="margin-top: 1em;color:darkgray">{{formCategoriaNew.get('programa').value}}</p>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-2">
+              <label style="margin-top: 1em;" [for]="curso" class="k-label pt-0 d-flex align-items-start text-start">
+                <span>Curso</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                <kendo-dropdownlist #curso
+                  formControlName="curso"
+                  [data]="gridAlumno"
+                  textField="nombrePEspecifico"
+                  valueField="idPEspecifico"
+                  [valuePrimitive]="true"
+                  [autoClose]="true"
+                  (valueChange)="obtenerCurso($event)"
+                  [defaultItem]="{nombrePEspecifico: 'Seleccione', idPEspecifico: null}"
+                  class="d-flex"
+                  size="medium"
+                  [filterable]="true">
+                </kendo-dropdownlist>
+                <kendo-formerror>
+                  {{ "Seleccione un Curso" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-2">
+              <label style="margin-top: 1em;" [for]="detalleSolicitud" class="k-label align-items-start">
+                <span>Detalle Solicitud</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                <kendo-textarea #detalleSolicitud
+                  formControlName="detalleSolicitud"
+                  class="textDetalle"
+                  [style.width.%]="100"
+                  resizable="auto"
+                  size="large"
+                  rounded="large"
+                  fillMode="solid"
+                  [maxlength]="1500"
+                  id="name">
+                  <kendo-textarea-suffix class="custom-styling"> </kendo-textarea-suffix>
+                </kendo-textarea>
+              </kendo-formfield>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-2">
+              <label style="margin-top: 1em;" class="k-label align-items-start">
+                <span>Archivo Solicitud</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+                <kendo-fileselect #archivoSolicitante
+                  formControlName="archivoSolicitante"
+                  [multiple]="false">
+                  <kendo-fileselect-messages select="Seleccione" dropFilesHere="Suelta archivos aquí para seleccionar" clearSelectedFiles="Anular la selección">
+                  </kendo-fileselect-messages>
+                </kendo-fileselect>
+              </kendo-formfield>
+            </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer" style="justify-content:center">
+    <div class="k-form-buttons m-0">
+      <button
+        class="btn-srqs-hover-effect"
+        kendoButton style="background: #0079FF 0% 0% no-repeat padding-box;color:white ;border-radius: 9px;padding:9px"
+        (click)="registrarSolicitudAlumno()">
+        Aceptar
+      </button>
+      <button
+        class="btn-srqs-hover-effect"
+        style="background: #FFFFFF 0% 0% no-repeat padding-box;border: 1px solid #0079FF;border-radius: 9px;color: #0079FF;padding:8px"
+        kendoButton (click)="modal.dismiss('Cross click')">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalComentarioSolucion let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header" style="background-color: #FF6113">
+    <h3  class="modal-title m-0 px-3" id="modal-basic-title" style="color: #ffffff">
+      Gestión de Solicitud
+    </h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formSolucion">
+      <div class="row">
+        <div class="col-2">
+          <label style="margin-top: 1em;" [for]="comentarioSolucion" class="k-label pt-0 d-flex align-items-start text-start">
+            <span>Comentario de Solución</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-formfield class="custom-rqsc-remove-max-width-formfield" class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+            <kendo-textarea #comentarioSolucion
+              formControlName="comentarioSolucion"
+              class="textDetalle"
+              [style.width.%]="100"
+              placeholder="Ingrese un comentario"
+              resizable="auto"
+              size="large"
+              rounded="large"
+              fillMode="solid"
+              id="name">
+            <kendo-textarea-suffix class="custom-styling"></kendo-textarea-suffix>
+            </kendo-textarea>
+            <kendo-formerror>
+              {{ "Ingrese un Comentario" }}
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer" style="justify-content:center">
+    <div class="k-form-buttons m-0">
+      <button
+        class="btn-srqs-hover-effect"
+        kendoButton style="background: #0079FF 0% 0% no-repeat padding-box;color:white ;border-radius: 9px;padding:9px"
+        (click)="actualizarDatosSolicitudAlumno()">
+        Aceptar
+      </button>
+      <button
+        class="btn-srqs-hover-effect"
+        style="background: #FFFFFF 0% 0% no-repeat padding-box;border: 1px solid #0079FF;border-radius: 9px;color: #0079FF;padding:8px"
+        kendoButton (click)="modal.dismiss('Cross click')">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,216 @@
+<div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Reporte Ingresos</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="k-loading-panel" *ngIf="loader">
+            <div class="k-loading-panel-mask"></div>
+            <div class="k-loading-panel-wrapper">
+              <kendo-loader
+                type="converging-spinner"
+                themeColor="primary"
+                size="large"
+              >
+              </kendo-loader>
+              <div class="k-loading-panel-text fs-5 text-primary">
+                Cargando...
+              </div>
+            </div>
+          </div>
+          <div class="row conteiner-toolbar-retiros-matricula">
+            <div class="card" style="padding: 0px">
+              <div class="card-header bg-color-material pb-0">
+                <h3 class="text-white mb-2">Filtro</h3>
+              </div>
+              <div class="card-body p-4">
+                <form class="k-form" [formGroup]="formGroupFiltro">
+                  <fieldset class="k-form-fieldset">
+                    <div
+                      class="row"
+                      style="display: flex; justify-content: center"
+                    >
+                      <div class="col-md-10">
+                        <form class="k-form" [formGroup]="formGroupFiltro">
+                          <fieldset class="k-form-fieldset">
+                            <div
+                              class="row"
+                              style="display: flex; justify-content: center"
+                            >
+                              <div class="col-md-4" style="padding:0px;">
+                                <kendo-daterange
+                                  [incompleteDateValidation]="true"
+                                >
+                                  <div class="col-md-5" style=" max-width: 180px; ">
+                                    <label style="width: 100px">
+                                      <span>Fechas :</span>
+                                    </label>
+                                    <kendo-dateinput
+                                      kendoDateRangeStartInput
+                                      [size]="'medium'"
+                                      formControlName="fechaInicio"
+                                      [placeholder]="'Inicio'"
+                                      [format]="{
+                                        displayFormat: 'dd-MM-yyyy',
+                                        inputFormat: 'dd-MM-yyyy'
+                                      }"
+                                      [incompleteDateValidation]="true"
+                                      fillMode="outline"
+                                      style="max-width : fit-content"
+                                    >
+                                    </kendo-dateinput>
+                                  </div>
+                                  <div
+                                    class="col-md-2"
+                                    style="
+                                      padding: 0%;
+                                      width: 5%;
+                                      text-align: center;
+                                    "
+                                  >
+                                    <p style="margin-bottom: 5px">
+                                      <strong>—</strong>
+                                    </p>
+                                  </div>
+                                  <div class="col-md-5" style=" max-width: 180px; ">
+                                    <kendo-dateinput
+                                      kendoDateRangeEndInput
+                                      [size]="'medium'"
+                                      [placeholder]="'fin'"
+                                      formControlName="fechaFin"
+                                      [format]="{
+                                        displayFormat: 'dd-MM-yyyy',
+                                        inputFormat: 'dd-MM-yyyy'
+                                      }"
+                                      [incompleteDateValidation]="true"
+                                      fillMode="outline"
+                                    ></kendo-dateinput>
+                                  </div>
+                                </kendo-daterange>
+                              </div>
+                              <div class="col-md-2" style="padding:0px;padding-top: 15px">
+                                <button mat-raised-button color="primary" (click)="obtenerDataReporteIngresos()">
+                                  <mat-icon>search</mat-icon>
+                                  Buscar
+                                </button>
+                              </div>
+                              <div class="col-md-2" style="padding-top: 15px;    min-width: 180px;">
+                                <button mat-raised-button class="btn-save" (click)="CongelarReporteIngresos()">
+                                  <mat-icon>save</mat-icon>
+                                  Congelar Reporte
+                                </button>
+                              </div>
+                              <div class="col-md-3" style="padding-top: 15px">
+                                <button mat-raised-button class="btn-ver-reportes" (click)="ObtenerReportesCongelados()">
+                                  <mat-icon>library_books</mat-icon>
+                                  Ver Reportes Congelados
+                                </button>
+                              </div>
+                            </div>
+                          </fieldset>
+                        </form>
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+            <div style="height: 30px"></div>
+            <div class="row conteiner-toolbar-retiros-matricula">
+               <kendo-grid
+                  #grid
+                  [kendoGridBinding]="listaReporte"
+                  [pageSize]="undefined"
+                  [sortable]="true"
+                  [reorderable]="false"
+                  [resizable]="true"
+                  filterable="menu"
+                  [pageable]="false"
+                  style="max-height: 700px; border-top-width: 0px; padding: 0px"
+                >
+                  <ng-template kendoGridToolbarTemplate>
+                    <button
+                      kendoGridExcelCommand
+                      mat-raised-button
+                      class="btn-export-excel"
+                    >
+                      <span class="k-icon k-i-file-excel k-icon-20"></span>
+                      Exportar a Excel
+                    </button>
+                    <kendo-grid-spacer></kendo-grid-spacer>
+                  </ng-template>
+                  <kendo-grid-column
+                    title="Detalle"
+                    headerClass="justify-content-center k-grid-header "
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                    [width]="500"
+                    field="tipo"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Total ($)"
+                    headerClass="justify-content-center k-grid-header "
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                    [width]="150"
+                    field="valor"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    class="texto-centrado"
+                  >
+                  <ng-template kendoGridFooterTemplate let-dataItem>
+                    <div style="width: 100%;height: 100%; display: flex; justify-content: center">
+                      <div style="min-width: fit-content;">
+                        {{ 'TOTAL ($): ' + sumaFoter.toString() }}
+                      </div>
+                    </div>
+                  </ng-template>
+                  </kendo-grid-column>
+                  
+                  <ng-template kendoGridNoRecordsTemplate>
+                    <div>
+                      <kendo-badge-container>
+                        <kendo-icon name="cloud" size="large"></kendo-icon>
+                        <kendo-badge position="inside">
+                          <kendo-icon name="close" style="color: red"></kendo-icon>
+                        </kendo-badge>
+                      </kendo-badge-container>
+                    </div>
+                    <p>No hay registros cargados!</p>
+                  </ng-template>
+                  <kendo-grid-excel
+                    [fileName]="
+                      'Reporte ingresos.xlsx'
+                    "
+                  ></kendo-grid-excel>
+                </kendo-grid>
+              </div>
+          </div>
+          <br />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #modalReporteIngresoCongelado let-modal>
+    <app-reporte-ingresos-congelados
+    [listaReporteCongelado]="listaReporteCongelado"
+    [modalRef]="modal"
+    >
+
+    </app-reporte-ingresos-congelados>
+
+  </ng-template>
+  

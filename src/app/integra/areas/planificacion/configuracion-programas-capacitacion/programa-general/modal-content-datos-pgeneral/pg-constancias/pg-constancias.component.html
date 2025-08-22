@@ -1,0 +1,348 @@
+<div class="pg-contenedor-tab">
+  <div class="row mt-2 mb-3">
+    <div class="col-6 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label [style.width.%]="35" class="k-label">
+          <span>Tipo Programa</span>
+        </label>
+        <kendo-dropdownlist
+          [data]="comboTipoPrograma"
+          textField="nombre"
+          valueField="id"
+          [valuePrimitive]="true"
+          [formControl]="tipoPrograma"
+          [style.width.%]="65"
+          [popupSettings]="{ popupClass: 'pg-popup' }"
+          class="pg-dropDown"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Nombre del programa es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-12 pg-kgrid">
+      <kendo-grid
+        [kendoGridBinding]="gridPlantillasAsociadasConstancia.data"
+        (remove)="gridPlantillasAsociadasConstancia.removeHandler($event)"
+        filterable="menu"
+        scrollable="none"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          <h3 class="mb-0 w-auto text-center">Plantillas Asociadas</h3>
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <button
+            kendoButton
+            themeColor="success"
+            type="button"
+            icon="plus"
+            (click)="abrirModalAsociarPlantilla(modalAsociarPlantilla)"
+          >
+            Agregar
+          </button>
+        </ng-template>
+        <kendo-grid-column
+          field="nombrePlantillaFrontal"
+          title="Plantilla Frotal"
+          class="text-center"
+          [width]="200"
+          headerClass="pg-header-grid"
+        >
+          <!-- <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombrePlantillaConstancia(dataItem.idPlantillaFrontal) ??
+                ""
+            }}
+          </ng-template> -->
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="nombrePlantillaPosterior"
+          title="Plantilla Posterior"
+          class="text-center"
+          [width]="200"
+          headerClass="pg-header-grid"
+        >
+          <!-- <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombrePlantillaConstancia(dataItem.idPlantillaPosterior) ??
+                ""
+            }}
+          </ng-template> -->
+        </kendo-grid-column>
+        <kendo-grid-command-column
+          title="Acciones"
+          [width]="70"
+          headerClass="pg-header-grid justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="row justify-content-center">
+              <div kendoTooltip class="col-auto p-0 mx-1">
+                <button
+                  kendoButton
+                  themeColor="warning"
+                  icon="pencil"
+                  title="Editar"
+                  (click)="
+                    abrirModalAsociarPlantilla(modalAsociarPlantilla, dataItem)
+                  "
+                ></button>
+              </div>
+              <div kendoTooltip class="col-auto p-0 mx-1">
+                <button
+                  kendoGridRemoveCommand
+                  themeColor="error"
+                  icon="trash"
+                  title="Eliminar"
+                ></button>
+              </div>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+</div>
+
+<!-- #region modal AsociarPlantilla -->
+<ng-template #modalAsociarPlantilla let-modal>
+  <div
+    class="modal-header py-2 pg-modal-header bg-primary text-center text-white"
+  >
+    <h2 class="modal-title w-100 mb-0 fw-bold">Asociar Plantilla</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body k-form" [formGroup]="formAsociarPlantilla">
+    <div class="card">
+      <div class="card-body">
+        <div class="row mb-2 justify-content-between">
+          <div class="col-sm-12 col-md-6 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">
+                <span>Plantilla Frontal<span class="fw-bold"> *</span></span>
+              </label>
+              <kendo-dropdownlist
+                class="d-flex"
+                formControlName="plantillaFrontal"
+                size="medium"
+                [data]="comboPlantilla"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [defaultItem]="{
+                  id: null,
+                  nombre: '<Seleccione>'
+                }"
+                [kendoDropDownFilter]="filterSettings"
+                [popupSettings]="{ popupClass: 'pg-popup' }"
+                class="pg-dropDown"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>Seleccione una Plantilla</kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-12 col-md-6 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">
+                <span>Plantilla Posterior</span>
+              </label>
+              <kendo-dropdownlist
+                class="d-flex"
+                formControlName="plantillaPosterior"
+                size="medium"
+                [data]="comboPlantilla"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [defaultItem]="{
+                  id: null,
+                  nombre: '<Seleccione>'
+                }"
+                [kendoDropDownFilter]="filterSettings"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-sm-12 col-md-6 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">
+                <span>Modalidades</span>
+              </label>
+              <kendo-multiselect
+                formControlName="modalidades"
+                [data]="comboModalidades"
+                textField="nombre"
+                valueField="id"
+                placeholder="<Modalidades>"
+                [valuePrimitive]="true"
+                [popupSettings]="{ popupClass: 'pg-popup' }"
+                class="pg-dropDown"
+                [kendoDropDownFilter]="filterSettings"
+                (valueChange)="
+                  onValueChangeModalidad($event, kgCriterioConstancia)
+                "
+              >
+              </kendo-multiselect>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mt-2 justify-content-end">
+          <div class="col-auto pg-checkbox">
+            <mat-checkbox
+              formControlName="remplazarCertificadosGenerados"
+              labelPosition="before"
+            >
+              Remplazar Certificados Generados
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="w-100 mt-3 pg-kgrid">
+      <kendo-grid
+        #kgCriterioConstancia
+        [kendoGridBinding]="gridCriterioConstancia.data"
+        (cellClick)="gridCriterioConstancia.cellClickHandler($event)"
+        (cellClose)="gridCriterioConstancia.cellCloseHandler($event)"
+        scrollable="none"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          <h3 class="mb-0 w-auto text-center">Criterios para Constancias</h3>
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <button
+            kendoGridAddCommand
+            icon="eye"
+            themeColor="success"
+            [disabled]="disabledBtnVistaPrevia"
+            (click)="onClickVistaPrevia()"
+          >
+            Vista Previa
+          </button>
+        </ng-template>
+        <kendo-grid-column
+          field="idModalidadCurso"
+          title="Nombre"
+          [width]="150"
+          [editable]="false"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ obtenerNombreModalidad(dataItem.idModalidadCurso) ?? "" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="estadosMatricula"
+          title="Estado Alumno"
+          [width]="250"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container
+              *ngIf="dataItem.estadosMatricula != null; else elseTemplateEstado"
+            >
+              <ul>
+                <li *ngFor="let item of dataItem.estadosMatricula">
+                  {{ obtenerNombreEstado(item) ?? "" }}
+                </li>
+              </ul>
+            </ng-container>
+            <ng-template #elseTemplateEstado>
+              <div class="row">
+                <div class="col-12 text-center">Seleccione los Estados</div>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template
+            kendoGridEditTemplate
+            let-formGroup="formGroup"
+            let-dataItem="dataItem"
+          >
+            <kendo-multiselect
+              [formControl]="formGroup.get('estadosMatricula')"
+              class="d-flex"
+              size="medium"
+              [data]="comboEstados"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [popupSettings]="{ popupClass: 'pg-popup' }"
+              class="pg-dropDown"
+            >
+            </kendo-multiselect>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="subEstadosMatricula"
+          title="Sub Estado Alumno"
+          [width]="250"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container
+              *ngIf="
+                dataItem.subEstadosMatricula != null;
+                else elseTemplateSubEstado
+              "
+            >
+              <ul>
+                <li *ngFor="let item of dataItem.subEstadosMatricula">
+                  {{ obtenerNombreSubEstado(item) ?? "" }}
+                </li>
+              </ul>
+            </ng-container>
+            <ng-template #elseTemplateSubEstado>
+              <div class="row">
+                <div class="col-12 text-center">Seleccione los Sub Estados</div>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-multiselect
+              [formControl]="formGroup.get('subEstadosMatricula')"
+              class="d-flex"
+              size="medium"
+              [data]="comboSubEstados"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [popupSettings]="{ popupClass: 'pg-popup' }"
+              class="pg-dropDown"
+            >
+            </kendo-multiselect>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 w-100 justify-content-end">
+      <button
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="isNew ? insertarConstancia() : actualizarConstancia()"
+      >
+        {{ isNew ? "Insertar" : "Actualizar" }}
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        icon="close"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+<!-- #endregion Modal AsociarPlantilla-->

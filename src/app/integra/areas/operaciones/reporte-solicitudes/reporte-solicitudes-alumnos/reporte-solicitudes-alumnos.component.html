@@ -1,0 +1,525 @@
+<div class="card border-primary mb-3">
+  <div class="card-header bg-color-material pb-0">
+    <div class="row">
+      <h2 class="mb-2 text-white" id="titulo">Reporte Control de Solicitudes</h2>
+    </div>
+  </div>
+  <div class="card-body p-4">
+    <form [formGroup]="formFiltro" class="k-form k-form-horizontal" orientation="horizontal">
+      <div class="row">
+        <div class="col-sm-12 col-md">
+          <div class="card-body my-card-body">
+            <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Datos de alumno</b></h3> 
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="tipoBusqueda" class="k-label">
+                  <span>Tipo de Búsqueda<span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <kendo-dropdownlist #tipoBusqueda
+                  formControlName="tipoBusqueda"
+                  [data]="listaItemsDataBusqueda"
+                  [(ngModel)]="tipoBusquedaSelect"
+                  textField="nombre"
+                  valueField="id"
+                  class="d-flex"
+                  size="medium"
+                  [defaultItem]="{ id: null, nombre: '<Todos>' }"
+                  [valuePrimitive]="true"
+                  (valueChange)="tipoBusquedaChange($event)">
+                  <kendo-formerror>Seleccione un dato</kendo-formerror>
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <div *ngIf="busquedaNombre">
+                <kendo-formfield orientation="horizontal"style="margin: 0px !important">
+                  <kendo-label class="k-checkbox-label" [for]="alumno" text="Apellidos y Nombres">
+                  </kendo-label>
+                  <kendo-dropdownlist #alumno
+                    formControlName="alumno"
+                    [data]="dataContacto"
+                    [defaultItem]="{ nombreCompleto: 'Digite apellidos y nombres', id: null }"
+                    textField="nombreCompleto"
+                    valueField="id"
+                    [virtual]="virtual"
+                    [filterable]="true"
+                    (filterChange)="filterContacto($event)"
+                    (selectionChange)="CargarDataAlumno($event)">
+                    <ng-template kendoDropDownListNoDataTemplate>
+                      No se encontró al alumno
+                    </ng-template>
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+              <div *ngIf="busquedaNombre==false">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="dataBusqueda" class="k-label">
+                    <span>Dato Búsqueda<span class="text-danger fw-bold">*</span></span>
+                  </label>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <kendo-textbox #dataBusqueda
+                    formControlName="dataBusqueda"
+                    [disabled]="disabledDatoBusqueda"
+                    class="d-flex"
+                    size="medium"
+                    placeholder="Dato Alumno"
+                    inputValidSpaceDir [(ngModel)]="datoAlumno"
+                    [maxlength]="325">
+                  </kendo-textbox>
+                  <kendo-formerror *ngIf="disabledDatoBusqueda==false">Ingrese Dato de Alumno</kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="col-sm-12 col-md">
+          <div class="card-body my-card-body">
+            <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Estado de Solicitud y personal solicitante </b></h3>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label class="k-label pt-0 d-flex align-items-start text-start">
+                  Estado
+                </label>
+                <kendo-multiselect #estados
+                  formControlName="estados"
+                  placeholder="<Todos>"
+                  [data]="listaItemsEstados"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="nombre"
+                  [virtual]="true"
+                  [valuePrimitive]="true"
+                  valueField="id">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label class="k-label pt-0 d-flex align-items-start text-start">
+                  Solicitante
+                </label>
+                <kendo-multiselect #solicitantes
+                  formControlName="solicitantes"
+                  placeholder="<Todos>"
+                  [data]="listaItemsSolicitante"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="personal"
+                  [virtual]="true"
+                  [valuePrimitive]="true"
+                  valueField="idPersonal">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label class="k-label pt-0 d-flex align-items-start text-start">
+                  Origen
+                </label>
+                <kendo-multiselect #origenes
+                  formControlName="origenes"
+                  placeholder="<Todos>"
+                  [data]="listaItemsOrigen"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="nombre"
+                  [virtual]="true"
+                  [valuePrimitive]="true"
+                  valueField="id">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="col-sm-12 col-md">
+          <div class="card-body my-card-body">
+            <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Gestión de solución</b></h3>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label class="k-label pt-0 d-flex align-items-start text-start">
+                  Area de Solución
+                </label>
+                <kendo-multiselect #areasSolucion
+                  formControlName="areasSolucion"
+                  placeholder="<Todos>"
+                  [data]="listaItemsAreaSolucion"
+                  [(ngModel)]="selectedArea"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="nombre"
+                  [virtual]="true"
+                  [valuePrimitive]="true"
+                  valueField="id"
+                  (valueChange)="onValueChangeAreaSolucion($event)"
+                  >
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label class="k-label pt-0 d-flex align-items-start text-start">
+                  Personal de solución
+                </label>
+                <kendo-multiselect #personalSolucion
+                  formControlName="personalSolucion"
+                  placeholder="<Todos>"
+                  [data]="listaItemsPersonalSolucion"
+                  [(ngModel)]="selectedPersonal"
+                  [disabled]="disabledPersonalSolucion"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="personal"
+                  [virtual]="true"
+                  [valuePrimitive]="true"
+                  valueField="idPersonal">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="col-sm-12 col-md">
+          <div class="card-body my-card-body">
+            <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Fecha de registro</b></h3>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="fechaInicio" class="k-label pt-0 d-flex align-items-start text-start">
+                  Fecha Inicio
+                </label>
+                <kendo-datepicker #fechaInicio
+                  formControlName="fechaInicio"
+                  [incompleteDateValidation]="true"
+                  format="dd/MM/yyyy"></kendo-datepicker>
+                <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="fechaFin" class="k-label pt-0 d-flex align-items-start text-start">
+                  Fecha Termino
+                </label>
+                <kendo-datepicker #fechaFin
+                  formControlName="fechaFin"
+                  format="dd/MM/yyyy"
+                  [incompleteDateValidation]="true">
+                </kendo-datepicker>
+                <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <div class="row justify-content-end mb-2">
+        <div class="col-auto">
+          <button kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="success"
+            [disabled]="false"
+            (click)="buscarSolicitudesAlumnos()">
+            Buscar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-color-material pb-0">
+    <h3 class="text-white mb-2">Lista Solicitudes</h3>
+  </div>
+  <div class="card-body">
+    <kendo-grid
+      [kendoGridBinding]="gridDataSolicitudAlumno"
+      [filterable]="true"
+      [loading]="loaderGrid"
+      [pageSize]="20"
+      [pageable]="true"
+      [sortable]="true"
+      [selectable]="true"
+      [resizable]="true"
+      [scrollable]="'scrollable'">
+      <ng-template kendoGridToolbarTemplate>
+        <button
+          type="button"
+          kendoGridExcelCommand icon="file-excel"
+          (click)="excelexport.save()"
+          style="color: white; background-color: green; height: 40px;">
+          Exportar <a href=""></a> Excel
+        </button>
+        <kendo-excelexport
+        [data]="listaReporteSolicitudAlumnos"
+        fileName="ReporteSolicitudAlumnos.xlsx" #excelexport>
+          <kendo-excelexport-column field="id" title="Id">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="codigo" title="Código">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="nombreAlumno" title="Nombre Alumno">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="curso" title="Curso">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="tipoSolicitud" title="Tipo Solicitud">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="categoria" title="Categoría">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="problema" title="Problema">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="controlSolicitudOrigen" title="Origen">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="descripcionSolucion" title="Descripción de Solución">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="detalleSolicitud" title="Detalle de Solicitud">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="areaRevision" title="Área Revisión">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="personalRevision" title="Personal Revisión">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="areaSolucion" title="Área Solución">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="personalSolucion" title="Personal Solución">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="prioridad" title="Prioridad">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="areaSolicitante" title="Área Solicitante">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="solicitante" title="Solicitante">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="estado" title="Estado">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="fechaRegistro" title="Fecha Registro">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="fechaSolucion" title="Fecha Solución">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="comentarioSolucion" title="Comentario Solución">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="tipoSolucion" title="Tipo de Solución">
+          </kendo-excelexport-column>
+          <kendo-excelexport-column field="tiempoAtencion" title="Tiempo de Atención (días)">
+          </kendo-excelexport-column>
+        </kendo-excelexport>
+      </ng-template>
+
+      <kendo-grid-column title="Id"
+        field="Id"
+        [width]="50"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Matricula Cabecera"
+        field="idMatriculaCabecera"
+        [width]="170"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Código"
+        field="codigo"
+        [width]="170"
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Nombre Alumno"
+        field="nombreAlumno"
+        [width]="170"
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Curso"
+        field="idCurso"
+        [width]="170"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Curso"
+        field="curso"
+        [width]="170"
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Tipo Solicitud"
+        field="idTipoSolicitud"
+        [width]="170"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Tipo Solicitud"
+        field="tipoSolicitud" 
+        [width]="170" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Categoria"
+        field="idCategoria" 
+        [width]="170" 
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Categoria" 
+        field="categoria"
+        [width]="170" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Problema"
+        field="idProblema"
+        [width]="170"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Problema" 
+        field="problema" 
+        [width]="170" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Origen"
+        field="idcontrolSolicitudOrigen"
+        [width]="170"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Origen" 
+        field="controlSolicitudOrigen" 
+        [width]="170" 
+        headerClass="header-grid-single">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.controlSolicitudOrigen? dataItem.controlSolicitudOrigen : "PENDIENTE"}}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Descripción de Solución"
+        field="descripcionSolucion" 
+        [width]="200" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Detalle de Solicitud"
+        field="detalleSolicitud" 
+        [width]="200" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Area Revisión" 
+        [width]="170" 
+        field="idAreaRevision"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Area Revisión" 
+        [width]="170" 
+        field="areaRevision" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Personal Revisión" 
+        [width]="170" 
+        field="idPersonalRevision"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Personal Revision" 
+        [width]="170" 
+        field="personalRevision" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Area Solución" 
+        [width]="170" 
+        field="idAreaSolucion"
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Area Solución" 
+        [width]="170" 
+        field="areaSolucion" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Personal Solucion" 
+        [width]="170" 
+        field="idPersonalSolucion" 
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Personal Solución" 
+        [width]="200" 
+        field="personalSolucion" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Prioridad" 
+        [width]="170" 
+        field="prioridad" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Area Solicitante" 
+        [width]="170" 
+        field="idAreaSolicitante" 
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Area Solicitante" 
+        [width]="170" 
+        field="areaSolicitante" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Solicitante" 
+        [width]="170" 
+        field="idSolicitante" 
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Solicitante" 
+        [width]="170" 
+        field="solicitante" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Id Estado" 
+        [width]="170" 
+        field="idEstado" 
+        headerClass="header-grid-single"
+        [hidden]="true">
+      </kendo-grid-column>
+      <kendo-grid-column title="Estado" 
+        [width]="170" 
+        field="estado" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Fecha Registro" 
+        [width]="170" 
+        field="fechaRegistro" 
+        headerClass="header-grid-single">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.fechaRegistro | date : "dd-MM-yyyy" }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Fecha Solución" 
+        [width]="170" 
+        field="fechaSolucion" 
+        headerClass="header-grid-single">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.fechaSolucion | date : "dd-MM-yyyy" }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Comentario Solución" 
+        [width]="200" 
+        field="comentarioSolucion" 
+        headerClass="header-grid-single">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.comentarioSolucion? dataItem.comentarioSolucion : "PENDIENTE"}}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Tipo Solución" 
+        [width]="170" 
+        field="tipoSolucion"
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+      <kendo-grid-column title="Tiempo Atención (días)" 
+        [width]="230" 
+        field="tiempoAtencion" 
+        headerClass="header-grid-single">
+      </kendo-grid-column>
+    </kendo-grid>
+  </div>
+</div>

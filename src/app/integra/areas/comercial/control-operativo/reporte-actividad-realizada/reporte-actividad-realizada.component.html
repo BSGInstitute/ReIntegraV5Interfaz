@@ -1,0 +1,977 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-primary" #reporte>
+        <div class="card-header pb-0 bg-color-material">
+          <h2 class="mb-2 text-white" style="text-align: center">
+            (R) Llamadas por día
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="card border-primary">
+            <div class="card-header pb-0 bg-color-material">
+              <h3 class="mb-2 text-white" style="text-align: center">
+                Filtro Actividades
+              </h3>
+            </div>
+            <div class="card-body p-4">
+              <div class="row">
+                <form
+                  [formGroup]="formReporteActividadRealizada"
+                  class="k-form k-form-horizontal"
+                >
+                  <div class="row">
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          [for]="asesor"
+                          text="Asesores"
+                          class="align-left"
+                        >
+                          <span class="text-danger fw-bold"></span>
+                        </kendo-label>
+                        <kendo-dropdownlist
+                          #asesor
+                          [data]="asesorFiltro"
+                          textField="nombres"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          formControlName="asesor"
+                          (filterChange)="filtrarAsesores($event)"
+                          [filterable]="true"
+                          [defaultItem]="{
+                            nombres: '< Seleccion un Asesor>',
+                            id: null
+                          }"
+                        >
+                        </kendo-dropdownlist>
+                        <kendo-formerror>
+                          Selecciona un asesor
+                        </kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          text="Fase Origen"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-multiselect
+                          [data]="fasesOportunidad"
+                          textField="codigo"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          formControlName="faseOrigen"
+                          placeholder="<Todas las fases>"
+                          [kendoDropDownFilter]="filterSettings"
+                        >
+                        </kendo-multiselect>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          [for]="fecha"
+                          text="Fecha"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-datepicker
+                          #fecha
+                          formControlName="fecha"
+                          format="yyyy-MM-dd"
+                          [max]="fechaActual"
+                          [incompleteDateValidation]="true"
+                        ></kendo-datepicker>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          [for]="estado"
+                          text="Estado"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-dropdownlist
+                          #estado
+                          [data]="estadosActividad"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          formControlName="estadoActividad"
+                          [defaultItem]="{
+                            nombre: '<Todos los Estados>',
+                            id: null
+                          }"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          text="Fase Destino"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-multiselect
+                          [data]="fasesOportunidad"
+                          textField="codigo"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          placeholder="<Todas las fases>"
+                          formControlName="faseDestino"
+                          [kendoDropDownFilter]="filterSettings"
+                        >
+                        </kendo-multiselect>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-2">
+                      <kendo-formfield>
+                        <kendo-label
+                          [for]="horaInicio"
+                          text="Hora Inicio"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-timepicker
+                          format="hh:mm a"
+                          [(value)]="horaInicio"
+                          formControlName="horaInicio"
+                        ></kendo-timepicker>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-2">
+                      <kendo-formfield>
+                        <kendo-label
+                          [for]="horaFin"
+                          text="Hora Fin"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-timepicker
+                          format="hh:mm a"
+                          [(value)]="horaFin"
+                          formControlName="horaFin"
+                        ></kendo-timepicker>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          [for]="contacto"
+                          text="Contacto"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-dropdownlist
+                          #contacto
+                          [data]="dataContacto"
+                          [filterable]="true"
+                          [defaultItem]="{
+                            nombreCompleto: '<Todos>',
+                            id: null
+                          }"
+                          [valuePrimitive]="true"
+                          textField="nombreCompleto"
+                          valueField="id"
+                          formControlName="contacto"
+                          (filterChange)="filtroContacto($event)"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          [for]="centroCosto"
+                          text="Centro Costo"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-dropdownlist
+                          #centroCosto
+                          [data]="comboCentroCosto"
+                          [defaultItem]="{
+                            nombre: '<Seleccione un Centro de Costo>',
+                            id: null
+                          }"
+                          [valuePrimitive]="true"
+                          textField="nombre"
+                          valueField="id"
+                          [filterable]="true"
+                          formControlName="centroCosto"
+                          (filterChange)="filtrarCentroCosto($event)"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-2">
+                      <kendo-formfield>
+                        <kendo-label
+                          [for]="filtroPorHora"
+                          text="Filtrar por Horas"
+                          style="text-align: left"
+                        >
+                        </kendo-label>
+                        <kendo-switch
+                          #filtroPorHora
+                          [(ngModel)]="checked"
+                          formControlName="filtroPorHora"
+                        ></kendo-switch>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label
+                          [for]="estadoPersonal"
+                          text="Estado del Personal"
+                        >
+                        </kendo-label>
+                        <kendo-dropdownlist
+                          #estadoPersonal
+                          [data]="estadosPersonal"
+                          class="kendo-combo"
+                          textField="clave"
+                          valueField="valor"
+                          [valuePrimitive]="true"
+                          formControlName="estadoPersonal"
+                          [defaultItem]="{
+                            clave: '<Todo el Personal>',
+                            valor: null
+                          }"
+                          (valueChange)="cambiarEstadoPersonal($event)"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row px-5">
+                    <div class="col-12 d-flex justify-content-end">
+                      <button
+                        kendoButton
+                        icon="search"
+                        role="button"
+                        themeColor="success"
+                        (click)="generarReporte()"
+                        [disabled]="procesoEnvio"
+                      >
+                        Buscar
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-primary">
+            <div class="card-heading pb-0 bg-color-material">
+              <h3 class="mb-2 text-white" style="text-align: center">
+                Reporte Cobertura
+              </h3>
+            </div>
+            <div class="card-body">
+              <div id="gridRealizadasTotales">
+                <div style="padding-top: 10px"></div>
+                <div class="row">
+                  <div class="col-sm-2"></div>
+                  <div class="col-sm-4">
+                    <legend
+                      style="
+                        font-size: 18px;
+                        line-height: inherit;
+                        color: #212121;
+                        margin-bottom: 23px;
+                        border-bottom: 1px solid #e5e5e5;
+                      "
+                    >
+                      Leyenda Colores
+                    </legend>
+                    <div class="row">
+                      <div
+                        class="col-sm-1"
+                        style="padding-top: 3px; padding-right: 0px"
+                      >
+                        <div id="cuadrado1Leyenda"></div>
+                      </div>
+                      <div class="col-sm-6">menor a 2 minutos</div>
+                    </div>
+                    <div class="row">
+                      <div
+                        class="col-sm-1"
+                        style="padding-top: 3px; padding-right: 0px"
+                      >
+                        <div id="cuadrado2Leyenda"></div>
+                      </div>
+                      <div class="col-sm-6">2 a 3 minutos</div>
+                    </div>
+                    <div class="row">
+                      <div
+                        class="col-sm-1"
+                        style="padding-top: 3px; padding-right: 0px"
+                      >
+                        <div id="cuadrado3Leyenda"></div>
+                      </div>
+                      <div class="col-sm-6">3 a 5 minutos</div>
+                    </div>
+                    <div class="row">
+                      <div
+                        class="col-sm-1"
+                        style="padding-top: 3px; padding-right: 0px"
+                      >
+                        <div id="cuadrado4Leyenda"></div>
+                      </div>
+                      <div class="col-sm-6">5 a 8 minutos</div>
+                    </div>
+                    <div class="row">
+                      <div
+                        class="col-sm-1"
+                        style="padding-top: 3px; padding-right: 0px"
+                      >
+                        <div id="cuadrado5Leyenda"></div>
+                      </div>
+                      <div class="col-sm-6">mayor a 8 minutos</div>
+                    </div>
+                    <div class="row">
+                      <div
+                        class="col-sm-1"
+                        style="padding-top: 3px; padding-right: 0px"
+                      >
+                        <div id="cuadrado6Leyenda"></div>
+                      </div>
+                      <div class="col-sm-6">hora Refrigerio</div>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <legend
+                      style="
+                        font-size: 18px;
+                        line-height: inherit;
+                        color: #212121;
+                        margin-bottom: 23px;
+                        border-bottom: 1px solid #e5e5e5;
+                      "
+                    >
+                      Total tiempos
+                    </legend>
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <label
+                          ><strong>
+                            Total Tiempo Perdido(Actividades):
+                          </strong></label
+                        >
+                      </div>
+                      <div class="col-sm-4">{{ totalPerdido }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <label><strong> Total Tiempo Timbrado: </strong></label>
+                      </div>
+                      <div class="col-sm-4">{{ totalTimbrado }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <label><strong> Total Tiempo Contacto: </strong></label>
+                      </div>
+                      <div class="col-sm-4">{{ totalContacto }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <label
+                          ><strong>
+                            Total Tiempo Perdido(Llamadas):
+                          </strong></label
+                        >
+                      </div>
+                      <div class="col-sm-4">
+                        {{ totalTiempoLlamada }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm"></div>
+                </div>
+                <div
+                  class="row"
+                  style="padding-top: 10px; padding-bottom: 10px"
+                ></div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <h3 *ngIf="textoZonaHoraria != null" style="color: red">
+                    {{ textoZonaHoraria }}
+                  </h3>
+                </div>
+              </div>
+              <div class="row my-3">
+                <div class="col-12">
+                  <kendo-grid
+                    [kendoGridBinding]="gridActividadRealizada.data"
+                    [loading]="gridActividadRealizada.loading"
+                    [selectable]="true"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"
+                    [height]="1500"
+                    [skip]="0"
+                    [pageSize]="20"
+                  >
+                    <kendo-grid-column
+                      field="nombreActividadCabecera"
+                      title="Actividad"
+                      headerClass="header-grid-integra justify-content-center"
+                      [width]="100"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center text-center"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <div class="col-12 px-">
+                            {{ dataItem.nombreActividadCabecera }}
+                          </div>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12"></div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="nombreCompletoContacto"
+                      title="Contacto"
+                      headerClass="header-grid-integra justify-content-center"
+                      [width]="100"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center text-center"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <div class="col-12 px-3">
+                            <a
+                              (click)="cargarFichaAlumno(dataItem)"
+                              class="txtAlumno"
+                              >{{ dataItem.nombreCompletoContacto }}</a
+                            >
+                          </div>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12"></div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="nombreCentroCosto"
+                      title="Oportunidad"
+                      headerClass="header-grid-integra justify-content-center"
+                      [width]="250"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <div class="col-12 px-2 py-0">
+                            <div class="row">
+                              <div class="col-12">
+                                <strong class="centro_costo">{{
+                                  dataItem.nombreCentroCosto
+                                }}</strong>
+                              </div>
+                              <div class="col-12">
+                                <span> Fase: </span>
+                                <strong>{{ dataItem.codigoFaseFinal }}</strong>
+                              </div>
+                              <div class="col-12">
+                                <span> Grupo: </span>
+                                <strong>{{
+                                  dataItem.nombreCategoriaOrigen
+                                }}</strong>
+                              </div>
+                              <div class="col-12">
+                                <span> Prob. Actual: </span>
+                                <strong>{{
+                                  dataItem.probabilidadActual
+                                }}</strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12"></div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="estadoOcurrencia"
+                      title="Estado Ocurrencia"
+                      headerClass="header-grid-integra justify-content-center"
+                      [width]="170"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <div class="col-12 py-0 px-3">
+                            <div class="row grid-comentario">
+                              <span class="col-12 fw-bold">
+                                {{ dataItem.estadoOcurrencia }}
+                              </span>
+                              <span
+                                container="body"
+                                triggers="click:blur"
+                                placement="top"
+                                [ngbTooltip]="dataItem.nombreOcurrencia"
+                                class="col-12 text-start text-overflow-hidden"
+                              >
+                                {{ dataItem.nombreOcurrencia }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12"></div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="tiemposDuracionLlamadas"
+                      title="Tiempo Integra"
+                      headerClass="header-grid-integra justify-content-center"
+                      [width]="140"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center text-center"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <div class="col-12 p-0">
+                            <ng-container
+                              *ngIf="
+                                dataItem.tiemposDuracionLlamadas != null &&
+                                  dataItem.tiemposDuracionLlamadas.length > 0;
+                                else elseTemplateDuracionLlamadas
+                              "
+                            >
+                              <div
+                                class="row"
+                                *ngFor="
+                                  let item of dataItem.tiemposDuracionLlamadas
+                                "
+                              >
+                                <div class="col-12 text-center">
+                                  <span class="fw-bold">TT: </span>{{ item.tt
+                                  }}<span class="fw-bold"> - TC:</span
+                                  >{{ item.tc }}
+                                </div>
+                              </div>
+                            </ng-container>
+                            <ng-template #elseTemplateDuracionLlamadas>
+                              <div class="row">
+                                <div class="col-12 text-center">vacio</div>
+                              </div>
+                            </ng-template>
+                          </div>
+                        </div>
+                        <div
+                          *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12">
+                            {{ dataItem.minutosReal }} .m
+                          </div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="nombreGrabacionIntegra"
+                      title="Grabacion"
+                      headerClass="header-grid-integra justify-content-center"
+                      [width]="100"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center text-center"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <div class="col-12 p-0">
+                            <ng-container
+                              *ngIf="
+                                dataItem.nombreGrabacionIntegra != null &&
+                                  dataItem.nombreGrabacionIntegra.length > 0;
+                                else elseTemplateGrabacionIntegra
+                              "
+                            >
+                              <div
+                                class="row"
+                                *ngFor="
+                                  let item of dataItem.nombreGrabacionIntegra
+                                "
+                              >
+                                <div class="col-12 text-center">
+                                  <a
+                                    class="ex1 fw-bold"
+                                    style="cursor: pointer"
+                                    (click)="reproducir(item)"
+                                    >Escuchar</a
+                                  >
+                                </div>
+                              </div>
+                            </ng-container>
+                            <ng-template #elseTemplateGrabacionIntegra>
+                              <div class="row">
+                                <div class="col-12 text-center">vacio</div>
+                              </div>
+                            </ng-template>
+                          </div>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12"></div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field=""
+                      title="Fecha"
+                      [width]="350"
+                      headerClass="header-grid-integra justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <!-- <div [innerHtml]="GraficarOpotunidad(dataItem)"></div> -->
+                        <div
+                          class="row d-flex align-items-center text-center py-2 px-1"
+                          [style.height.px]="
+                          dataItem.heightRow
+                          "
+                        >
+                          <div class="col-12 p-2 custom-table">
+                            <table #customTable>
+                              <tr>
+                                <td class="fw-bold">Fecha Programada:</td>
+                                <td>
+                                  {{
+                                    dataItem.fechaProgramada
+                                      | date : "dd/MM/yyyy"
+                                  }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong> Fecha Real: </strong>
+                                </td>
+                                <td>
+                                  {{ dataItem.fechaReal | date : "dd/MM/yyyy" }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>Hora Programada: </strong>
+                                </td>
+                                <td>
+                                  {{
+                                    dataItem.fechaProgramada | date : "HH:mm"
+                                  }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong> Hora Real: </strong>
+                                </td>
+                                <td>
+                                  <ng-container
+                                    *ngIf="
+                                      dataItem.fechaLlamada != null &&
+                                        dataItem.fechaLlamada.length > 0;
+                                      else elseTemplateFechaLlamada
+                                    "
+                                  >
+                                    <table style="border: none !important">
+                                      <ng-container
+                                        *ngFor="
+                                          let item of dataItem.fechaLlamada
+                                        "
+                                      >
+                                        <tr
+                                          *ngIf="item.minutosPerdidos != null"
+                                        >
+                                          <td
+                                            [ngClass]="
+                                              calcularColor(
+                                                item.minutosPerdidos
+                                              )
+                                            "
+                                          >
+                                            {{
+                                              item.minutosPerdidos
+                                                | number : "1.1-1"
+                                            }}
+                                            m
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>
+                                            <span class="fw-bold">I: </span
+                                            >{{ item.inicio
+                                            }}<span class="fw-bold"> - T: </span
+                                            >{{ item.termino }}
+                                          </td>
+                                        </tr>
+                                      </ng-container>
+                                    </table>
+                                  </ng-container>
+                                  <ng-template #elseTemplateFechaLlamada>
+                                    <div class="row">
+                                      <div class="col-12 text-center">
+                                        vacio
+                                      </div>
+                                    </div>
+                                  </ng-template>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong
+                                    >Hora de Marcado de Ocurrencia:
+                                  </strong>
+                                  &nbsp;
+                                </td>
+                                <td>
+                                  <table style="border: none !important">
+                                    <tr>
+                                      <td
+                                        [ngClass]="
+                                          calcularColor(dataItem.minutosPerdidosOcurrencia)
+                                        "
+                                      >
+                                        {{
+                                          dataItem.minutosPerdidosOcurrencia
+                                            | number : "1.1-1"
+                                        }}
+                                        m
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        {{
+                                          dataItem.fechaReal | date : "HH:mm"
+                                        }}
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12"></div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="comentarioActividad"
+                      title="Comentario"
+                      headerClass="header-grid-integra justify-content-center"
+                      [width]="150"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center text-center grid-comentario"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <span
+                            container="body"
+                            triggers="click:blur"
+                            placement="top"
+                            [ngbTooltip]="dataItem.comentarioActividad"
+                            class="col-12 px-3 text-start text-overflow-hidden"
+                          >
+                            {{ dataItem.comentarioActividad }}
+                          </span>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        ></div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="codigoFaseOrigen"
+                      title="Fase I-D"
+                      [width]="160"
+                      headerClass="header-grid-integra justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div
+                          class="row d-flex align-items-center text-center"
+                          [style.height.px]="dataItem.heightRow ?? 5 * 60"
+                        >
+                          <div class="col-12 py-0 px-1 custom-table">
+                            <table>
+                              <tr>
+                                <td>
+                                  <strong>Fase I:</strong>
+                                </td>
+                                <td>
+                                  {{ dataItem.codigoFaseOrigen }}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>Fase D:</strong>
+                                </td>
+                                <td>
+                                  {{ dataItem.codigoFaseFinal }}
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div
+                        *ngIf="dataItem.tipoRefrigerio != 2"
+                          class="row d-flex align-items-center text-center p-0"
+                          [ngStyle]="{
+                            color: dataItem.colorTexto,
+                            background: dataItem.colorRow
+                          }"
+                          style="height: 2rem"
+                        >
+                          <div class="col-12"></div>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <ng-template kendoPagerTemplate>
+                      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                      <kendo-pager-numeric-buttons
+                        [buttonCount]="10"
+                      ></kendo-pager-numeric-buttons>
+                      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                      <kendo-pager-input></kendo-pager-input>
+                      <kendo-pager-info></kendo-pager-info>
+                      <kendo-pager-page-sizes
+                        [pageSizes]="pageSizes"
+                      ></kendo-pager-page-sizes>
+                      <div class="w-100 text-end">
+                        <button
+                          kendoButton
+                          icon="reload"
+                          fillMode="flat"
+                          themeColor="secondary"
+                          (click)="generarReporte()"
+                        ></button>
+                      </div>
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalReproducirAudio let-modal>
+  <div class="modal-header text-white" style="color: white; background: green">
+    <h2 class="modal-title mb-0" style="color: white">Grabacion Integra</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center">
+      <audio controls [src]="urlGrabacion" type="audio/mp3" controls autoplay>
+        Tu navegador no soporta el elemento de <code>audio</code>
+      </audio>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>

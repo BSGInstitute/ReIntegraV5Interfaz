@@ -1,0 +1,288 @@
+<div class="modal-header py-2 bg-light text-dark text-center">
+  <h2 class="modal-title w-100 mb-0">Anexo proyecto de aplicación</h2>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="card">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-auto pt-1">
+          <label for="">Programa: </label>
+        </div>
+        <div class="col-8">
+          <div class="form-control form-control-sm pg-bg-disabled">
+            {{ programa }}
+          </div>
+        </div>
+      </div>
+      <div class="row my-3" *ngIf="showRegistroAnexo">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header bg-secondary text-white py-1">
+              <h3 class="m-0">Registro de Anexos</h3>
+            </div>
+            <div
+              class="card-body k-form k-form-horizontal pt-1"
+              [formGroup]="formRegistroAnexo"
+            >
+              <div class="row mb-2">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label">
+                      <span>Nombre del Archivo<span class="fw-bold"> *</span></span>
+                    </label>
+                    <kendo-textbox
+                      formControlName="nombreArchivo"
+                      class="pg-kinpunt"
+                      placeholder="<Nombre del Archivo>"
+                      [clearButton]="true"
+                      inputValidSpaceDir
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese un Nombre</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row my-2">
+                <div class="col-12 pg-checkbox">
+                  <mat-checkbox
+                    formControlName="esEnlace"
+                    labelPosition="before"
+                    (change)="onChangeEsEnlace($event)"
+                  >
+                    Es Enlace
+                  </mat-checkbox>
+                </div>
+              </div>
+              <ng-container *ngIf="showSubirArchivo">
+                <div class="row my-2">
+                  <div class="col">
+                    <kendo-fileselect
+                      #file
+                      [restrictions]="myRestrictions"
+                      [multiple]="false"
+                      formControlName="archivo"
+                    >
+                    </kendo-fileselect>
+                  </div>
+                  <div class="col-auto">
+                    <button
+                      themeColor="success"
+                      size="medium"
+                      icon="upload"
+                      kendoButton
+                      (click)="subirArchivo()"
+                    >
+                      Subir Archivo
+                    </button>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <small
+                      >*Los nombres de los archivos no deben tener caracteres
+                      especiales</small
+                    >
+                  </div>
+                </div>
+              </ng-container>
+              <div class="row my-2">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label">
+                      <span
+                        >Archivo/Enlace <span class="fw-bold"> *</span></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      formControlName="rutaArchivo"
+                      class="pg-kinpunt"
+                      placeholder="<Archivo/Enlace>"
+                      [clearButton]="true"
+                      inputValidSpaceDir
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese un Archivo/Enlace</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row my-2">
+                <div class="col-12 pg-checkbox">
+                  <mat-checkbox
+                    formControlName="soloLectura"
+                    labelPosition="before"
+                  >
+                    Solo Lectura
+                  </mat-checkbox>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="k-form-buttons m-0 justify-content-end">
+                <button
+                  *ngIf="esNuevo"
+                  themeColor="tertiary"
+                  size="medium"
+                  icon="save"
+                  kendoButton
+                  (click)="guardarAnexo()"
+                >
+                  Guardar
+                </button>
+                <button
+                  *ngIf="!esNuevo"
+                  themeColor="tertiary"
+                  size="medium"
+                  icon="save"
+                  kendoButton
+                  (click)="actualizarAnexo()"
+                >
+                  Actualizar
+                </button>
+                <button
+                  themeColor="error"
+                  size="medium"
+                  icon="cancel"
+                  kendoButton
+                  (click)="cancelarRegistroAnexo()"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-2 mt-3">
+        <div class="col-12 pg-kgrid">
+          <kendo-grid
+            [kendoGridBinding]="gridProyectoAplicacionAnexo.data"
+            scrollable="scrollable"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+            filterable="menu"
+            [skyp]="0"
+            [pageSize]="20"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <button
+                kendoButton
+                icon="reload"
+                fillMode="flat"
+                themeColor="base"
+                (click)="obtenerListaPgeneralProyectoAplicacionAnexo()"
+              ></button>
+              <h3 class="mb-0 w-auto text-center">
+                Anexos del programa general
+              </h3>
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <button
+                themeColor="success"
+                kendoButton
+                icon="plus"
+                (click)="agregarNuevoAnexo()"
+              >
+                Agregar
+              </button>
+            </ng-template>
+            <kendo-grid-column
+              field="nombreArchivo"
+              title="Nombre Archivo"
+              [width]="150"
+              headerClass="pg-header-grid justify-content-center"
+            ></kendo-grid-column>
+            <kendo-grid-column
+              field="rutaArchivo"
+              title="Ruta Archivo"
+              [width]="200"
+              headerClass="pg-header-grid justify-content-center"
+            ></kendo-grid-column>
+            <kendo-grid-column
+              field="esEnlace"
+              title="Es Enlace"
+              [filterable]="false"
+              [width]="80"
+              headerClass="pg-header-grid justify-content-center"
+              class="text-center fw-bold"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span *ngIf="dataItem.esEnlace" class="text-success">SI</span>
+                <span *ngIf="!dataItem.esEnlace" class="text-danger">NO</span>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="soloLectura"
+              title="Solo Lectura"
+              [width]="80"
+              [filterable]="false"
+              headerClass="pg-header-grid justify-content-center"
+              class="text-center fw-bold"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span *ngIf="dataItem.soloLectura" class="text-success"
+                  >SI</span
+                >
+                <span *ngIf="!dataItem.soloLectura" class="text-danger"
+                  >NO</span
+                >
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Acciones"
+              [width]="80"
+              headerClass="pg-header-grid justify-content-center"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <div class="row justify-content-center">
+                  <div kendoTooltip class="col-auto mx-1 p-0">
+                    <button
+                      kendoGridEditCommand
+                      themeColor="warning"
+                      icon="pencil"
+                      class="mx-1"
+                      title="Editar Anexo"
+                      (click)="editarAnexo(dataItem)"
+                    ></button>
+                  </div>
+                  <div kendoTooltip class="col-auto mx-1 p-0">
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      icon="trash"
+                      class="mx-1"
+                      title="Eliminar Anexo"
+                      (click)="eliminarAnexo(dataItem)"
+                    ></button>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="k-form-buttons m-0">
+    <button
+      themeColor="error"
+      size="medium"
+      icon="close"
+      size="medium"
+      kendoButton
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+</div>

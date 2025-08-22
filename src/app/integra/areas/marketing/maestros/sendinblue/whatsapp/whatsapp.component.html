@@ -1,0 +1,618 @@
+<ng-container *ngIf="loader == true">
+  <div class="loading-indicator">
+    <mat-progress-spinner
+      mode="indeterminate"
+      color="accent"
+    ></mat-progress-spinner>
+  </div>
+</ng-container>
+
+<div class="titulo">Crear Campaña Whatsapp</div>
+<mat-dialog-content>
+  <div class="remitente">
+    <div class="tit">
+      <h3>Nombre:</h3>
+    </div>
+    <div class="contenedor">
+      <div class="inre">
+        <h3>Nombre Campaña Whatssapp</h3>
+        <mat-form-field
+          class="example-full-width w-100"
+          appearance="outline"
+          ng-container
+        >
+          <mat-label>Nombre de la Campaña</mat-label>
+          <input matInput [(ngModel)]="jsonEnvioTotal.nombre" required />
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="remitente">
+    <div class="tit">
+      <h3>Configuracion Fecha:</h3>
+    </div>
+    <div class="contenedor">
+      <div class="inre">
+        <h3>Fecha Inicio de Envio</h3>
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Escoge una fecha</mat-label>
+          <input
+            [(ngModel)]="fecha"
+            matInput
+            [matDatepickerFilter]="myFilter"
+            [matDatepicker]="picker"
+            (dateChange)="CambioFecha()"
+          />
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <!-- <mat-form-field color="accent" appearance="outline" class="example-full-width w-100 flex" >
+          <mat-label>Fecha de inicio </mat-label>
+          <input matInput [matDatepicker]="picker1"  [(ngModel)]="jsonEnvioTotal.fechaDeEnvio">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field> -->
+      </div>
+      <div class="inre">
+        <h3>Fecha Fin de Envio</h3>
+        <mat-form-field class="example-full-width" appearance="outline">
+          <mat-label>Escoge una fecha</mat-label>
+          <input
+            [(ngModel)]="fechafin"
+            matInput
+            [matDatepickerFilter]="myFilter"
+            [matDatepicker]="pickerfin"
+            [min]="fecha"
+            [max]="fecha5dias"
+            (dateChange)="restaDeDias()"
+          />
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="pickerfin"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #pickerfin></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="remitente">
+    <div class="tit">
+      <h3>Complementarios:</h3>
+    </div>
+    <div class="contenedor">
+      <div class="inre">
+        <h3>No haber recibido un Whatsapp en los últimos:</h3>
+        <div class="example-full-width w-100" style="display: flex">
+          <mat-form-field class="example-full-width w-100" appearance="outline">
+            <input
+              type="number"
+              class="form-control"
+              matInput
+              placeholder="Dias"
+              max="365"
+              min="0"
+              required
+              [(ngModel)]="jsonEnvioTotal.tiempoEntreEnvios"
+            />
+          </mat-form-field>
+          <div style="justify-content: center">
+            <h3 style="margin: 15px">Dias</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="inre">
+        <h3>Hora de Envio:</h3>
+        <mat-form-field class="example-full-width w-100" appearance="outline">
+          <mat-label>Hora</mat-label>
+          <mat-select [(ngModel)]="jsonEnvioTotal.horaDeEnvio">
+            <mat-option *ngFor="let hora of listaHora" [value]="hora.id">
+              {{ hora.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="remitente">
+    <div class="tit">
+      <h3>Plantilla:</h3>
+    </div>
+    <div class="contenedor">
+      <div class="inre">
+        <h3>Plantilla:</h3>
+        <div class="agfi w-100" *ngIf="listaPlantilla != undefined">
+          <mat-form-field class="example-full-width w-100" appearance="outline">
+            <mat-label>Seleccione una plantilla</mat-label>
+            <input
+              type="text"
+              placeholder="Pick one"
+              aria-label="Number"
+              matInput
+              [(ngModel)]="autoPlantillaC"
+              (input)="OnChangesAutoPlantilla()"
+              [matAutocomplete]="autoPlantilla"
+            />
+            <mat-autocomplete
+              #autoPlantilla="matAutocomplete"
+              (optionSelected)="pruebasPlantilla($event)"
+            >
+              <mat-option
+                *ngFor="let option of filteredOptionsPlantilla"
+                [value]="option.id"
+              >
+                {{ option.nombre }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="remitente">
+    <div class="tit">
+      <h3>Contactos:</h3>
+    </div>
+    <div class="contenedor">
+      <div class="inre">
+        <h3>Seleccionar Filtro:</h3>
+        <div class="agfi w-100">
+          <mat-form-field class="example-full-width w-100" appearance="outline">
+            <mat-label>Seleccione una Campania General</mat-label>
+            <input
+              type="text"
+              placeholder="Pick one"
+              aria-label="Number"
+              matInput
+              [(ngModel)]="autoC"
+              (input)="OnChangesAuto()"
+              [matAutocomplete]="auto"
+              [disabled]="listaCampaniasPorWhats == undefined"
+            />
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              (optionSelected)="pruebas($event)"
+            >
+              <ng-container *ngFor="let option of listaCampaniasPorWhats">
+                <mat-option
+                  *ngIf="option.incluyeWhatsapp == true"
+                  [value]="option.id"
+                >
+                  {{ option.nombre }}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+          <ng-container *ngIf="listaCampaniasPorWhats == undefined">
+          </ng-container>
+        </div>
+
+        <div class="agfi w-100">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Seleccione una Prioridad</mat-label>
+            <mat-select (selectionChange)="selectPrio($event)">
+              <ng-container *ngFor="let item of listaPrioridades">
+                <mat-option [value]="item">{{ item.nombre }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+          <ng-container *ngIf="listaPrioridades == undefined"> </ng-container>
+        </div>
+        <div class="w-100" style="height: 70px">
+          <button
+            mat-flat-button
+            class="crear btn3"
+            (click)="datosFiltroSegmento()"
+          >
+            Ver datos
+          </button>
+        </div>
+
+        <div class="mat-elevation-z8">
+          <ng-container *ngIf="loading">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </ng-container>
+          <mat-progress-bar
+            *ngIf="ListaFiltroSegmentoPanel != undefined"
+            mode="determinate"
+            [value]="(progres * 100) / ListaFiltroSegmentoPanel.length"
+          ></mat-progress-bar>
+          <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="nombreAlumno">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                style="width: 500px; text-align: center"
+              >
+                Nombre
+              </th>
+              <td mat-cell *matCellDef="let element" style="text-align: center">
+                {{ element.nombre }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="celular">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                style="width: 500px; text-align: center"
+              >
+                Telefono
+              </th>
+              <td mat-cell *matCellDef="let element" style="text-align: center">
+                {{ element.Telefono }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+
+          <mat-paginator
+            [pageSizeOptions]="[20]"
+            pageSize="20"
+            showFirstLastButtons
+          >
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 
+  /*Dias*/ -->
+
+  <ng-container *ngIf="desaparecer == false">
+    <div class="w-100" style="height: 70px">
+      <button mat-flat-button (click)="crearCampaniaWhats()" class="crear btn3">
+        Crear Campaña
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="divisionDias == true">
+    <div class="remitente">
+      <div class="tit">
+        <h3>Cantidad de Contactos:</h3>
+      </div>
+      <div class="contenedor">
+        <div class="inre">
+          <div class="agfi w-100" *ngIf="listaPlantilla != undefined">
+            <mat-form-field
+              class="example-full-width w-100"
+              appearance="outline"
+            >
+              <mat-label>Cantidad de Contactos</mat-label>
+              <input
+                type="text"
+                aria-label="Number"
+                matInput
+                [(ngModel)]="cantidadContactosWhatsapp"
+                readonly
+              />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="remitente">
+      <div class="tit">
+        <h3>Division de dìas:</h3>
+      </div>
+      <div>
+        <div class="w-100" style="height: 70px">
+          <button mat-flat-button (click)="AddNewRow()" class="crear btn3">
+            Añadir
+          </button>
+        </div>
+
+        <!-- <button><mat-icon (click)="AddNewRow()" class="add-button">add_box</mat-icon></button> -->
+        <br />
+        <!-- <mat-form-field style="width: 100%">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+    </mat-form-field> -->
+        <div class="contenedor">
+          <div class="inre">
+            <ng-container *ngIf="loading">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </ng-container>
+            <!-- <form [formGroup]="VOForm" autocomplete="off"> -->
+            <ng-container style="width: 100%">
+              <table
+                #table
+                mat-table
+                [dataSource]="dataSourceDias"
+                style="width: 100%"
+              >
+                <!-- Name Column -->
+                <ng-container matColumnDef="responsable">
+                  <th mat-header-cell *matHeaderCellDef>Responsable</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field
+                      class="example-full-width w-100"
+                      appearance="outline"
+                      [appearance]="element.isEditable ? 'outline' : 'legacy'"
+                    >
+                      <mat-label>Responsable</mat-label>
+                      <input
+                        type="text"
+                        placeholder="Pick one"
+                        aria-label="Number"
+                        matInput
+                        [(ngModel)]="element.responsable"
+                        (input)="OnChangesAutoResponsable(element.responsable)"
+                        [matAutocomplete]="autoResponsable"
+                      />
+                      <mat-autocomplete
+                        #autoResponsable="matAutocomplete"
+                        (optionSelected)="pruebasResponsable($event, i)"
+                      >
+                        <mat-option
+                          *ngFor="let responsable of filteredOptionsResponsable"
+                          [value]="responsable.id"
+                        >
+                          {{ responsable.nombres }}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <!-- <mat-select [(ngModel)]="element.responsable">
+                        <mat-option
+                          *ngFor="let responsable of listaResponsable"
+                          [value]="responsable.id"
+                        >
+                          {{ responsable.nombres }}
+                        </mat-option>
+                      </mat-select> -->
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Weight Column -->
+                <ng-container matColumnDef="dia1">
+                  <th mat-header-cell *matHeaderCellDef>Dia1</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <!-- [appearance]="true ? 'outline': 'fill'" -->
+                    <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
+                    <mat-form-field
+                      style="width: 70px"
+                      [appearance]="
+                        !element.isEditable && resta >= 1 ? 'legacy' : 'outline'
+                      "
+                    >
+                      <input
+                        matInput
+                        type="number"
+                        [(ngModel)]="element.dia1"
+                        [readonly]="element.isEditable || resta < 1"
+                        (input)="Sumita(i)"
+                        min="0"
+                      />
+                    </mat-form-field>
+                    <!-- </span> -->
+                  </td>
+                </ng-container>
+
+                <!-- Symbol Column -->
+                <ng-container matColumnDef="dia2">
+                  <th mat-header-cell *matHeaderCellDef>Dia2</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
+                    <mat-form-field
+                      style="width: 70px"
+                      [appearance]="
+                        !element.isEditable && resta >= 2 ? 'legacy' : 'outline'
+                      "
+                    >
+                      <input
+                        matInput
+                        type="number"
+                        [(ngModel)]="element.dia2"
+                        [readonly]="element.isEditable || resta < 2"
+                        (input)="Sumita(i)"
+                        min="0"
+                      />
+                    </mat-form-field>
+                    <!-- </span> -->
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="dia3">
+                  <th mat-header-cell *matHeaderCellDef>Dia3</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
+                    <mat-form-field
+                      style="width: 70px"
+                      [appearance]="
+                        !element.isEditable && resta >= 3 ? 'legacy' : 'outline'
+                      "
+                    >
+                      <input
+                        matInput
+                        type="number"
+                        [(ngModel)]="element.dia3"
+                        [readonly]="element.isEditable || resta < 3"
+                        (input)="Sumita(i)"
+                        min="0"
+                      />
+                    </mat-form-field>
+                    <!-- </span> -->
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="dia4">
+                  <th mat-header-cell *matHeaderCellDef>Dia4</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
+                    <mat-form-field
+                      style="width: 70px"
+                      [appearance]="
+                        !element.isEditable && resta >= 4 ? 'legacy' : 'outline'
+                      "
+                    >
+                      <input
+                        matInput
+                        type="number"
+                        [(ngModel)]="element.dia4"
+                        [readonly]="element.isEditable || resta < 4"
+                        (input)="Sumita(i)"
+                        min="0"
+                      />
+                    </mat-form-field>
+                    <!-- </span> -->
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="dia5">
+                  <th mat-header-cell *matHeaderCellDef>Dia-5</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
+                    <mat-form-field
+                      style="width: 70px"
+                      [appearance]="
+                        !element.isEditable && resta >= 5 ? 'legacy' : 'outline'
+                      "
+                    >
+                      <input
+                        matInput
+                        type="number"
+                        [(ngModel)]="element.dia5"
+                        [readonly]="element.isEditable || resta < 5"
+                        (input)="Sumita(i)"
+                        min="0"
+                      />
+                    </mat-form-field>
+                    <!-- </span> -->
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="total">
+                  <th mat-header-cell *matHeaderCellDef>Total</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
+                    <mat-form-field style="width: 70px" appearance="outline">
+                      <input
+                        matInput
+                        type="number"
+                        [(ngModel)]="element.total"
+                        [readonly]="true"
+                      />
+                    </mat-form-field>
+                    <!-- </span> -->
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="action">
+                  <th mat-header-cell *matHeaderCellDef>Action</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button
+                      mat-icon-button
+                      class="material-icons app-toolbar-menu save-button"
+                      matTooltip="Save Changes"
+                      (click)="SaveVO(i)"
+                      *ngIf="!element.isEditable"
+                      color="primary"
+                    >
+                      <mat-icon>check_circle</mat-icon>
+                    </button>
+
+                    <button
+                      mat-icon-button
+                      class="material-icons app-toolbar-menu cancel-button"
+                      matTooltip="Cancel Changes"
+                      color="warn"
+                      (click)="CancelSVO(i)"
+                      *ngIf="!element.isEditable"
+                    >
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+
+                    <button
+                      mat-icon-button
+                      class="material-icons app-toolbar-menu save-button"
+                      *ngIf="element.isEditable"
+                      matTooltip="Edit"
+                      color="primary"
+                      (click)="EditSVO(i)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+
+                    <button
+                      mat-icon-button
+                      class="material-icons app-toolbar-menu delete-button"
+                      *ngIf="element.isEditable"
+                      matTooltip="Delete"
+                      color="warn"
+                      (click)="DeleteSVO(i)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsDias"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumnsDias"
+                ></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <!-- <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+          </tr> -->
+              </table>
+            </ng-container>
+            <!-- </form> -->
+            <mat-card
+              *ngIf="isLoading"
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <mat-progress-spinner color="primary" mode="indeterminate">
+              </mat-progress-spinner>
+            </mat-card>
+
+            <!-- <mat-paginator-goto [length]="100" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="paginationChange($event)"></mat-paginator-goto> -->
+            <mat-paginator
+              [pageSizeOptions]="[
+                5,
+                dataSource.data.length > 8 ? dataSource.data.length : ''
+              ]"
+              showFirstLastButtons
+            >
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="botones">
+      <ng-container *ngIf="crearCampania == true">
+        <button mat-flat-button class="crear btn3" (click)="AgregarDias()">
+          Guardar Dias
+        </button>
+      </ng-container>
+      <ng-container *ngIf="crearWhats == true">
+        <button
+          mat-flat-button
+          class="crear2 btn3"
+          (click)="creacionWhatsapp()"
+        >
+          Crear Campaña
+        </button>
+        <button mat-flat-button class="cancelar btn3" mat-dialog-close>
+          Cancelar
+        </button>
+      </ng-container>
+    </div>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions> </mat-dialog-actions>

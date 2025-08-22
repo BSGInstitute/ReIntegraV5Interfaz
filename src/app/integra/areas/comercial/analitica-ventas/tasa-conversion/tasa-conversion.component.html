@@ -1,0 +1,577 @@
+<div class="content">
+
+    <div class="card border-primary mb-3">
+        <div class="card-header bg-color-material pb-0">
+            <div class="row">
+                <div class="col" >
+                  <h2 class="mb-2 text-white" id="titulo">
+                    (R) Tasas de conversión
+                  </h2>
+                </div>
+                <div class="col-auto" >
+                    <button
+                      kendoButton
+                      class="send-button"
+                      icon="search"
+                      style="height: 35px"
+                      themeColor="success"
+                      [disabled]="buttonDisable ? null: true"
+                      (click)="getReporteTazaConversion()"
+                    >
+                      Buscar
+                    </button>
+                  </div>
+              </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body p-4">
+      <form [formGroup]="formFiltro" orientation="horizontal">
+        <div class="row">
+          <div class="col-sm-12 col-md-4">
+            <label [for]="areas" class="k-label">
+              <span>Area:</span>
+            </label>
+            <kendo-multiselect
+              #areas
+              formControlName="areas"
+              [data]="dataAreaFiltro"
+              (filterChange)="filterArea($event)"
+              (valueChange)="_subAreaByArea($event)"
+              (removeTag)="removeArea($event)"
+              [filterable]="true"
+              textField="name"
+              placeholder="Todas Áreas"
+              [valuePrimitive]="true"
+              valueField="id"
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="pespecifico" class="k-label">
+              <span>P.Especifico:</span>
+            </label>
+            <kendo-multiselect
+              #pespecifico
+              formControlName="pespecifico"
+              (filterChange)="filterPEspecifico($event)"
+              [data]="dataPEspecificoFiltro"
+              [filterable]="true"
+              textField="nombre"
+              valueField="id"
+              placeholder="Todas Programas Especificos..."
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="fecha" class="k-label">
+              <span>Fecha:</span>
+            </label>
+            <kendo-dropdownlist
+              #fecha
+              formControlName="fecha"
+              [defaultItem]="{ id: true, nombre: 'Creación oportunidad' }"
+              [data]="dataTipoFecha"
+              [filterable]="true"
+              textField="nombre"
+              [valuePrimitive]="true"
+              valueField="id"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-4">
+            <label [for]="subareas" class="k-label">
+              <span>SubArea:</span>
+            </label>
+            <kendo-multiselect
+              #subareas
+              formControlName="subareas"
+              [data]="dataSubAreaFiltro"
+              (filterChange)="filterSubArea($event)"
+              (valueChange)="_programasGeneralesBySubArea($event)"
+              [filterable]="true"
+              textField="name"
+              valueField="id"
+              placeholder="Todas SubÁreas"
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="modalidades" class="k-label">
+              <span>Modalidad:</span>
+            </label>
+            <kendo-multiselect
+              #modalidades
+              formControlName="modalidades"
+              [data]="dataModalidad"
+              (valueChange)="_modalidadByCidudad($event)"
+              [filterable]="true"
+              placeholder="Todas..."
+              textField="nombre"
+              [valuePrimitive]="true"
+              valueField="id"
+              placeholder="Todas..."
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="FechaInicio" class="k-label">
+              <span>Fecha Inicio:</span>
+            </label>
+            <kendo-datepicker
+              #FechaInicio
+              format="yyyy-MM-dd"
+              formControlName="FechaInicioTemp"
+              [max]="fechaActual"
+              [incompleteDateValidation]="true"
+            ></kendo-datepicker>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-4">
+            <label [for]="pgeneral" class="k-label">
+              <span>PGeneral:</span>
+            </label>
+            <kendo-multiselect
+              #pgeneral
+              formControlName="pgeneral"
+              [data]="dataPGeneralFiltro"
+              (filterChange)="filterPGeneral($event)"
+              (valueChange)="_programasEspecificosByProgramaGeneral($event)"
+              [filterable]="true"
+              textField="name"
+              valueField="id"
+              placeholder="Todos Programas Generales..."
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="ciudades" class="k-label">
+              <span>Ciudad:</span>
+            </label>
+            <kendo-multiselect
+              #ciudades
+              formControlName="ciudades"
+              [data]="dataCiudadesChange"
+              [filterable]="true"
+              textField="nombre"
+              placeholder="Seleccione..."
+              [valuePrimitive]="true"
+              valueField="id"
+              placeholder="Seleccione..."
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="FechaFin" class="k-label">
+              <span>Fecha Fin:</span>
+            </label>
+            <kendo-datepicker
+              #FechaFin
+              format="yyyy-MM-dd"
+              formControlName="FechaFinTemp"
+              [incompleteDateValidation]="true"
+              [min]="FechaInicio.value"
+            ></kendo-datepicker>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-4">
+            <label [for]="coordinadores" class="k-label">
+              <span>Coordinador:</span>
+            </label>
+            <kendo-multiselect
+              #coordinadores
+              formControlName="coordinadores"
+              [data]="dataCoordinadorfiltro"
+              [filterable]="true"
+              textField="nombreCompleto"
+              [valuePrimitive]="true"
+              (filterChange)="filterCoordinador($event)"
+              valueField="id"
+              placeholder="<Todos>"
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="asesores" class="k-label">
+              <span>Asesor:</span>
+            </label>
+            <kendo-multiselect
+              #asesores
+              formControlName="asesores"
+              [data]="dataAsesorfiltro"
+              [filterable]="true"
+              textField="nombreCompleto"
+              (filterChange)="filterAsesor($event)"
+              [valuePrimitive]="true"
+              valueField="id"
+              placeholder="<Todos>"
+            >
+            </kendo-multiselect>
+          </div>
+          <div class="col-sm-12 col-md-4">
+            <label [for]="muestraMinima" class="k-label">
+              <span>Muestra Mínima:</span>
+            </label>
+            <kendo-numerictextbox
+              #muestraMinima
+              formControlName="muestraMinima"
+              [min]="0"
+              [max]="100"
+            >
+            </kendo-numerictextbox>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-4">
+            <label [for]="estadoPersonal" class="k-label">
+              <span>Estado del Personal:</span>
+            </label>
+            <kendo-dropdownlist
+              #estadoPersonal
+              formControlName="estadoPersonal"
+              [data]="dataEstadoAsesores"
+              [defaultItem]="{ id: 1, nombre: 'Todo el personal' }"
+              (valueChange)="cambiarEstadoPersonal($event)"
+              [filterable]="true"
+              textField="nombre"
+              [valuePrimitive]="true"
+              valueField="id"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+<br />
+<div class="card border-primary mb-3">
+    <!-- <div class="card-header bg-color-material pb-2 text-white"></div> -->
+    <div class="card-header bg-color-material pb-0">
+      <h3 class="text-white mb-2 text-center">Categoria Dato Consolidado</h3>
+    </div> 
+    <div class="card-body">
+        <loading [loading]="loader"></loading>
+        <div *ngIf="ejecuto">
+            <div class="card-title">
+                <legend><b> Total </b></legend>
+            </div>
+
+      <div class="row my-3" *ngFor="let item of categoriaDatoTotal">
+        <div class="col-12">
+          <div class="row mt-2">
+            <div class="col-12">
+              <kendo-grid
+                [kendoGridBinding]="item.grid.data"
+                [sortable]="true"
+                [height]="400"
+                scrollable="scrollable"
+              >
+                <ng-template kendoGridToolbarTemplate backgroundColor="red">
+                  <button
+                    class="btn btn-success"
+                    type="button"
+                    kendoGridExcelCommand
+                    icon="file-excel"
+                  >
+                    Export to Excel
+                  </button>
+                </ng-template>
+                <kendo-grid-column
+                  field="nombreCoordinador"
+                  title="nombre Coordinador"
+                  [width]="300"
+                  [headerClass]="'justify-content-center'"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombre"
+                  title="nombre Asesor"
+                  [width]="300"
+                  [headerClass]="'justify-content-center'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column-group
+                  *ngFor="let grupoColumn of item.columnGroup"
+                  [title]="grupoColumn.title"
+                  [width]="grupoColumn.width"
+                  headerClass="text-center"
+                >
+                  <kendo-grid-column
+                    *ngFor="let columnHijo of grupoColumn.columns"
+                    [title]="columnHijo.title"
+                    [width]="columnHijo.width"
+                    [field]="columnHijo.field"
+                    [format]="columnHijo.format"
+                    [headerClass]="'justify-content-center'"
+                  >
+                    <ng-template
+                      *ngIf="columnHijo.field == 'IMCASE'"
+                      kendoGridCellTemplate
+                      let-dataItem
+                      let-column
+                      let-columnIndex="columnIndex"
+                      ><div class="text-center">
+                        {{
+                          this.calcularTCV6(
+                            dataItem.promedioIngresoReal,
+                            dataItem.PPromedio
+                          )
+                        }}
+                      </div>
+                    </ng-template>
+                    <ng-template
+                      *ngIf="columnHijo.field == 'IMCASE2'"
+                      kendoGridCellTemplate
+                      let-dataItem
+                      let-column
+                      let-columnIndex="columnIndex"
+                      ><div class="text-center">
+                        {{
+                          this.calcularTCV7(
+                            dataItem.IngresoRealMES,
+                            dataItem.IngresoRealIS
+                          )
+                        }}
+                      </div>
+                    </ng-template>
+                    <ng-template
+                      *ngIf="columnHijo.field == 'IMetaISByIReal'"
+                      kendoGridCellTemplate
+                      let-dataItem
+                      let-column
+                      let-columnIndex="columnIndex"
+                      ><div class="text-center">
+                        {{ dataItem.IMetaISByIReal + "%" }}
+                      </div>
+                    </ng-template>
+                    <ng-template
+                      kendoGridFooterTemplate
+                      let-column
+                      let-dataItem
+                      let-aggregates="aggregates"
+                      let-columnIndex="columnIndex"
+                      ><div class="text-center">
+                        {{
+                          createAgregates2(
+                            grupoColumn.columns,
+                            item.grid.data,
+                            columnHijo.field
+                          )
+                        }}
+                        <!-- {{ totalDesagregado["CTotalIS"].sum }} -->
+                      </div>
+                    </ng-template>
+                  </kendo-grid-column>
+                </kendo-grid-column-group>
+                <kendo-grid-excel fileName="Tasas.xlsx"></kendo-grid-excel>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <tr>
+          <td><strong>PP IS-M:</strong>Precio promedio inscritos</td>
+        </tr>
+        <tr>
+          <td>
+            <strong>PP OC:</strong>Precio de Lista promedio oportunidades
+            cerradas
+          </td>
+        </tr>
+        <tr>
+          <td><strong>IR:</strong>Ingreso Real</td>
+        </tr>
+        <tr>
+          <td><strong>MES:</strong>Ingreso Mes</td>
+        </tr>
+        <tr>
+          <td><strong>IM:</strong>Ingreso Meta</td>
+        </tr>
+        <tr>
+          <td><strong>IR/IM :</strong>Ingreso Real sobre Ingreso Meta</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="card-body p-4">
+    <loading [loading]="loader"></loading>
+    <div class="row my-3" *ngFor="let item of categoriaDatoConsolidado">
+      <div *ngIf="ejecuto" class="col-12">
+        <div class="row" *ngIf="item.grid.data.length > 0">
+          <h1>{{ item.title }}</h1>
+        </div>
+        <div class="row mt-2">
+          <div class="col-12">
+            <kendo-grid
+              *ngIf="item.grid.data.length > 0"
+              [kendoGridBinding]="item.grid.data"
+              [sortable]="true"
+              [height]="400"
+              scrollable="scrollable"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <button
+                  class="btn btn-success"
+                  type="button"
+                  kendoGridExcelCommand
+                  icon="file-excel"
+                >
+                  Export to Excel
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="nombreCoordinador"
+                title="nombre Coordinador"
+                [width]="300"
+                [headerClass]="'justify-content-center'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="nombre"
+                title="nombre Asesor"
+                [width]="300"
+                [headerClass]="'justify-content-center'"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column-group
+                *ngFor="let grupoColumn of item.columnGroup"
+                [title]="grupoColumn.title"
+                [width]="grupoColumn.width"
+                headerClass="text-center"
+              >
+                <kendo-grid-column
+                  *ngFor="let columnHijo of grupoColumn.columns"
+                  [title]="columnHijo.title"
+                  [width]="columnHijo.width"
+                  [field]="columnHijo.field"
+                  [format]="columnHijo.format"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-dataItem
+                    let-aggregates="aggregates"
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                        createAgregates2(
+                          grupoColumn.columns,
+                          item.grid.data,
+                          columnHijo.field
+                        )
+                      }}
+                      <!-- {{ totalDesagregado["CTotalIS"].sum }} -->
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-excel fileName="Tasas.xlsx"></kendo-grid-excel>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-primary mb-3">
+    
+    <div class="card-header bg-color-material pb-0">
+      <h3 class="text-white mb-2 text-center">Categoria Dato Desagregado</h3>
+    </div> 
+    <div class="card-body">
+        <loading [loading]="loader"></loading>
+        <div class="row my-3" *ngFor="let item of gridComplemento">
+            <div class="col-12">
+              <div class="row">
+                <h1>{{ item.title }}</h1>
+              </div>
+              <div class="row mt-2">
+                <div class="col-12">
+                  <kendo-grid
+                    *ngIf="ejecuto && item.grid.data.length > 0"
+                    [kendoGridBinding]="item.grid.data"
+                    [sortable]="true"
+                    [height]="500"
+                    scrollable="scrollable"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        class="btn btn-success"
+                        type="button"
+                        kendoGridExcelCommand
+                        icon="file-excel"
+                      >
+                        Export to Excel
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="nombreCoordinador"
+                      title="nombre Coordinador"
+                      [width]="300"
+                      [headerClass]="'justify-content-center'"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="nombre"
+                      title="nombre Asesor"
+                      [width]="300"
+                      [headerClass]="'justify-content-center'"
+                    >
+                    </kendo-grid-column>
+                    <ng-container
+                      *ngIf="
+                        item.columnGroup.columns != null &&
+                        item.columnGroup.columns.length > 0
+                      "
+                    >
+                      <kendo-grid-column-group
+                        [title]="item?.columnGroup.title"
+                        [width]="item?.columnGroup.width"
+                        headerClass="text-center"
+                      >
+                        <kendo-grid-column
+                          *ngFor="let columnHijo of item.columnGroup.columns"
+                          [title]="columnHijo.title"
+                          [width]="columnHijo.width"
+                          [field]="columnHijo.field"
+                          [format]="columnHijo.format"
+                          [headerClass]="'justify-content-center'"
+                        >
+                          <ng-template
+                            kendoGridFooterTemplate
+                            let-column
+                            let-dataItem
+                            let-aggregates="aggregates"
+                            let-columnIndex="columnIndex"
+                            ><div class="text-center">
+                              {{
+                                createAgregates(
+                                  item.columnGroup.columns,
+                                  item.grid.data,
+                                  columnHijo.field
+                                )
+                              }}
+                            </div>
+                          </ng-template>
+                        </kendo-grid-column>
+                      </kendo-grid-column-group>
+                    </ng-container>
+  
+                    <kendo-grid-excel
+                      class="bg-color-material pb-0"
+                      fileName="Tasas.xlsx"
+                    ></kendo-grid-excel>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>

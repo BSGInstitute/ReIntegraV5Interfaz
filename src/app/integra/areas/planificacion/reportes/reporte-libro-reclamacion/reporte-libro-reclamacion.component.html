@@ -1,0 +1,533 @@
+<div class="card border-primary mb-3 rlr">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="mb-2 text-white text-center">
+      (R) Reporte Libro de Reclamaciones
+    </h2>
+  </div>
+  <div class="card-body p-4">
+    <form [formGroup]="formFiltro" orientation="horizontal">
+      <div class="row">
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="nombre" class="k-label">
+                <span>Nombre del Reclamante</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-dropdownlist
+                #nombre
+                formControlName="nombre"
+                [data]="nombresReclamante"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="valor"
+                [virtual]="virtual"
+                [valuePrimitive]="true"
+                [defaultItem]="{
+                  id: null,
+                  valor: '<Todos>'
+                }"
+                valueField="valor"
+              >
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="dni" class="k-label">
+                <span>DNI</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-dropdownlist
+                #dni
+                formControlName="dni"
+                [data]="dnisReclamante"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="valor"
+                valueField="valor"
+                [virtual]="virtual"
+                [valuePrimitive]="true"
+                [defaultItem]="{
+                  id: null,
+                  valor: '<Todos>'
+                }"
+              >
+              </kendo-dropdownlist>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span> Fecha Inicio </span>
+            </div>
+            <div class="col-md-8">
+              <kendo-datepicker
+                #fechaInicio
+                formControlName="fechaInicio"
+                format="yyyy-MM-dd"
+                [max]="obtenerFechaActual"
+              ></kendo-datepicker>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span>Fecha Fin</span>
+            </div>
+            <div class="col-md-8">
+              <kendo-datepicker
+                #fechaFin
+                formControlName="fechaFin"
+                format="yyyy-MM-dd"
+                [min]="fechaInicio.value"
+              ></kendo-datepicker>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-12 d-flex justify-content-end">
+        <button
+          kendoButton
+          class="send-button"
+          icon="search"
+          style="height: 35px"
+          themeColor="success"
+          [disabled]="btnBuscarDisabled"
+          (click)="generarReporte()"
+        >
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card-body">
+  <kendo-grid
+    [kendoGridBinding]="gridReporteLibroReclamacion.data"
+    [loading]="gridReporteLibroReclamacion.loading"
+    [pageSize]="20"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: true,
+      previousNext: true,
+      position: 'bottom'
+    }"
+    [sortable]="true"
+    [selectable]="true"
+    [resizable]="true"
+    filterable="menu"
+  >
+    <ng-template kendoGridToolbarTemplate>
+      <button
+        class="btn btn-success"
+        type="button"
+        kendoGridExcelCommand
+        icon="file-excel"
+        themeColor="success"
+      >
+        Export to Excel
+      </button>
+    </ng-template>
+    <kendo-grid-excel 
+      fileName="Reporte-Libro-De-Reclamaciones.xlsx"
+      [fetchData]="allData"
+    >
+    </kendo-grid-excel>
+    <ng-template
+      kendoPagerTemplate
+      let-totalPages="totalPages"
+      let-currentPage="currentPage"
+    >
+      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+      <kendo-pager-numeric-buttons
+        [buttonCount]="5"
+      ></kendo-pager-numeric-buttons>
+      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+      <kendo-pager-input></kendo-pager-input>
+      <kendo-pager-info></kendo-pager-info>
+      <kendo-pager-page-sizes
+        [pageSizes]="cantidadItems"
+      ></kendo-pager-page-sizes>
+    </ng-template>
+    <kendo-grid-column
+      field="fechaRegistro"
+      title="Fecha de registro"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="text-center">
+          {{ dataItem.fechaRegistro | date : "dd-MM-yyyy" }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="fechaResponder"
+      title="Fecha final para responder"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="text-center">
+          {{ dataItem.fechaResponder | date : "dd-MM-yyyy" }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="nombre"
+      title="Nombre del reclamante"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column 
+      field="domicilio" 
+      title="Domicilio" 
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column 
+      field="dni" 
+      title="DNI/CE" 
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="text-center">
+        {{ dataItem.dni }}
+      </div>
+    </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column 
+      field="celular" 
+      title="Celular" 
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <div class="text-center">
+        {{ dataItem.celular }}
+      </div>
+    </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="correoElectronico"
+      title="Correo Electrónico"
+      [width]="150"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="referente"
+      title="Padre, madre o apoderado"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="text-center">
+          {{ dataItem.referente }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column 
+      field="tipoServicio" 
+      title="Bien/Servicio" 
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="text-center">
+          {{ dataItem.tipoServicio }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="bienServicio"
+      title="Indicar Bien/Servicio"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column 
+      field="tipoReclamo" 
+      title="Reclamo/Queja" 
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="text-center">
+          {{ dataItem.tipoReclamo }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column 
+      field="detalleReclamo" 
+      title="Detalle" 
+      [width]="360"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="texto">
+          {{ dataItem.detalleReclamo }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column 
+      field="pedidoReclamo" 
+      title="Pedido" 
+      [width]="300"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="texto">
+          {{ dataItem.pedidoReclamo }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>

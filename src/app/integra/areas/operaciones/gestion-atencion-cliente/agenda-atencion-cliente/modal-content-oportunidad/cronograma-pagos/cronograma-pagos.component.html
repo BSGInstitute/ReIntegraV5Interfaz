@@ -1,0 +1,448 @@
+<div class="p-5" style="background-color: #F7F8FA">
+    <div class="text-center">
+        <strong class="d-inline-block" style="margin-right: 15px;">Seleccione un programa:</strong>
+        <mat-form-field appearance="outline" style="width: 75%">
+            <mat-label>Programa matriculado:</mat-label>
+            <mat-select style="width: 100%" (selectionChange)="CargarNuevoPrograma($event)" [(value)]="programaSeleccionado">
+              <mat-option *ngFor="let programa of listaProgramasMatriculado" [value]="programa">
+                  {{programa.pEspecifico}}
+                </mat-option>
+              </mat-select>
+          </mat-form-field>
+    </div>
+    <!-- Contenedor Estadistica -->
+    <div class="d-flex justify-content-around mb-5">
+        <div class="rounded bg-white px-4 d-flex flex-column justify-content-center" style="width: 45%">
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <span>Monto Abonado:</span>
+                    <div style="text-align: right; font-size: 1.5em; font-weight: bold; color: #FF6113">{{aportado | number: '1.2-2'}} {{monedaSimboloMap.get(moneda?.toLowerCase()) != undefined ? monedaSimboloMap.get(moneda?.toLowerCase()) : ''}}</div>
+                </div>
+                <div>
+                    <span>Pendiente a pagar:</span>
+                    <div style="text-align: right; font-size: 1.5em; font-weight: bold; color: #0079FF">{{((adeudoTotal*100 - aportado*100)/100) | number: '1.2-2'}} {{monedaSimboloMap.get(moneda?.toLowerCase())}}</div>
+                </div>
+            </div>
+            <div>
+                <mat-progress-bar mode="determinate" [value]="aportado / adeudoTotal * 100" class="mb-2 cronograma-pago-progress-bar" style="height: 7px; border-radius: 20px"></mat-progress-bar>
+            </div>
+            
+            <!-- Monto total incluye moras y demas pagos extras. Es decir el adeudo. -->
+            <div style="text-align: right;">Monto Total: <span style="font-size: 1.5em; font-weight: bold;">{{adeudoTotal | number: '1.2-2'}} {{monedaSimboloMap.get(moneda?.toLowerCase()) != undefined ? monedaSimboloMap.get(moneda?.toLowerCase()) : ''}}</span></div>
+        </div>
+        <div class="rounded bg-white px-4 pt-4" style="width: 50%">
+            <div class="d-flex mb-3 justify-content-evenly">
+                <div style="background-color: #CBE4FF; width:40%;" class="p-3 rounded d-flex align-items-center justify-content-evenly">
+                    <div>
+                        <span>Tipo de moneda:</span>
+                        <br>
+                        <span style="font-size: 1.5em; font-weight: bold; color: #0079FF">{{ moneda != null ? moneda?.charAt(0).toUpperCase() + moneda?.slice(1) : 'No definido'}}</span>
+                    </div>
+                </div>
+                <div style="background-color: #D5FFE1; width:40%;" class="p-3 rounded d-flex align-items-center justify-content-evenly">
+                    <img src="assets/img/iconsagendaatc/dollar-green-circle-icon.svg">
+                    <div>
+                        <span>Cuota Mensual:</span>
+                        <br>
+                        <span style="font-size: 1.5em; font-weight: bold; color: #11C744">{{ cuotaMensual != null ? (cuotaMensual | number: '1.2-2') : 'No definido'}} {{moneda != null && monedaSimboloMap.get(moneda.toLowerCase()) != undefined ? monedaSimboloMap.get(moneda.toLowerCase()) : ''}}</span>
+                    </div>
+                </div>
+                <!-- <div style="background-color: #FFD9C7; width:30%;" class="p-3 rounded d-flex align-items-center justify-content-evenly">
+                    <img src="assets/img/iconsagendaatc/orange-circle-star-icon.svg">
+                    <div>
+                        <span>Categoria:</span>
+                        <br>
+                        <span style="font-size: 1.5em; font-weight: bold; color: #FF6113">{{categoriaAlumno}}</span>
+                    </div>
+                </div> -->
+            </div>
+            <div class="text-center">
+                <strong class="d-inline-block" style="margin-right: 15px;">Medio de pago:</strong>
+                <mat-form-field appearance="outline" style="margin-right: 25px;">
+                    <mat-label>Seleccione</mat-label>
+                    <mat-select style="width: 100%" [(value)]="metodoPagoSeleccionado">
+                      <mat-option *ngFor="let metodoPago of listaMetodoPago" [value]="metodoPago">
+                          {{metodoPago.nombre}}
+                        </mat-option>
+                      </mat-select>
+                  </mat-form-field>
+                  <button class="btn-cp-hover-effect"
+                  style="background-color: #0079ff; color: white"
+                  mat-button (click)="ActualizarMetodoPago()">
+                  Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--Estado Cronograma-->
+    <mat-expansion-panel expanded class="my-3 cronogramaPagos-custom-mat-expansion-panel">
+        <mat-expansion-panel-header>
+        <mat-panel-title>
+            Estado de Cronograma
+        </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="d-flex justify-content-around align-items-center">
+            <div>
+                <img style="width: 25px" src="assets/img/iconsagendaatc/Grupo 4558.svg">
+                <span style="margin-left: 15px;font-size:1.2em">Cuotas pagadas: {{nroCuotasPagadas}} de {{nroCuotasTotales}}</span>
+            </div>
+            <div>
+                <img width="25px" src="assets/img/iconsagendaatc/alarma.svg">
+                <span style="margin-left: 15px;font-size:1.2em">Próximo vencimiento: {{proximoVencimiento}}</span>
+            </div>
+            <!-- <div class="rounded d-flex flex-column bg-white p-2" style="border-radius: 20;">
+                <div class="pb-2">
+                    <strong style="margin-right: 25px;">Pago por IVR:</strong>
+                    <img height="20px" src="assets/img/iconsagendaatc/tarjetas-pago.svg">
+                </div>
+                <button
+                  style="background-color: #0079ff; color: white"
+                  mat-button>
+                  Procesar pago &gt;
+                </button>
+            </div> -->
+        </div>
+    </mat-expansion-panel>
+
+    <table mat-table [dataSource]="tableDataCronogramaPagos">
+        <!-- <ng-container matColumnDef="pagar">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Pagar </th>
+            <td mat-cell *matCellDef="let element">
+                <img width="25px" [src]="element.fechaPago != null ? 'assets/img/iconsagendaatc/checked-box.svg' : 'assets/img/unchecked-box.png'">
+            </td>
+          </ng-container> -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Estado </th>
+            <td mat-cell *matCellDef="let element" style="text-align:center" [innerHTML]="GenerarHTMLEstadoCuota(element)"></td>
+          </ng-container>
+          <ng-container matColumnDef="nroCuota">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> N° Cuota </th>
+            <td mat-cell *matCellDef="let element" style="text-align:center"
+            (click)="element.fechaPago != null ? abrirModalTransacciones(element) : mostrarMensajeTransacciones(element)"
+            class = "subrayarTexto"> {{element.nroCuota}} ({{element.tipoCuota.charAt(0)}}) </td>
+          </ng-container>
+      
+          <ng-container matColumnDef="subCuota">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Sub Cuota </th>
+            <td mat-cell *matCellDef="let element" style="text-align:center"> {{element.nroSubCuota}} </td>
+          </ng-container>
+      
+          <ng-container matColumnDef="fechaVencimiento">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Fecha de Vencimiento </th>
+            <td mat-cell *matCellDef="let element" style="text-align:center"> {{element.fechaVencimiento | date: 'dd/MM/yyyy'}} </td>
+          </ng-container>
+          <ng-container matColumnDef="fechaPago">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Fecha de pago </th>
+            <td mat-cell *matCellDef="let element" style="text-align:center"> {{element.fechaPago != null ? (element.fechaPago | date: 'dd/MM/yyyy') : '-'}} </td>
+          </ng-container>
+          <ng-container matColumnDef="monto">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Monto </th>
+            <td mat-cell *matCellDef="let element" style="text-align:center">{{element.cuota | number: '1.2-2'}} {{monedaSimboloMap.get(moneda.toLowerCase()) != undefined ? monedaSimboloMap.get(moneda.toLowerCase()) : ''}}</td>
+          </ng-container>
+          <ng-container matColumnDef="mora">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Mora </th>
+            <td mat-cell *matCellDef="let element">
+                <div class="d-flex align-items-center justify-content-around">
+                    <!-- <span>{{element.mora | number: '1.2-2'}}</span> -->
+                    <!-- <span>{{(obtenerMora(element) | number: '1.2-2')}} {{monedaSimboloMap.get(moneda) != undefined ? monedaSimboloMap.get(moneda) : ''}}</span>
+                    <ng-container *ngIf="(obtenerMora(element) | number: '1.2-2') != '0.00'" >
+                        <button mat-icon-button (click)="SolicitarExoneracionMora(element, modalSolicitarExoneracionMora)" class="text-center">
+                            <img style="width: 35px; border-radius: 50%" src="assets/img/iconsagendaatc/exoneracion-mora-icon.svg">
+                        </button>
+                    </ng-container> -->
+                    <span>{{(element.moraCalculada | number: '1.2-2')}} {{monedaSimboloMap.get(moneda.toLowerCase()) != undefined ? monedaSimboloMap.get(moneda.toLowerCase()) : ''}}</span>
+                    <ng-container *ngIf="(element.moraCalculada | number: '1.2-2') != '0.00'" >
+                        <button mat-icon-button (click)="SolicitarExoneracionMora(element, modalSolicitarExoneracionMora)" class="text-center">
+                            <img style="width: 35px; border-radius: 50%" src="assets/img/iconsagendaatc/exoneracion-mora-icon.svg">
+                        </button>
+                    </ng-container>
+                    <!-- <ng-container *ngIf="(obtenerMora(element) | number: '1.2-2') != '0.00' || (obtenerCostoGestionCobranza(element) | number: '1.2-2') != '0.00'" >
+                        <button mat-icon-button (click)="SolicitarExoneracionMora(element, modalSolicitarExoneracionMora)" class="text-center">
+                            <img style="width: 35px; border-radius: 50%" src="assets/img/iconsagendaatc/exoneracion-mora-icon.svg">
+                        </button>
+                    </ng-container> -->
+                </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="costoCobranza">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Costos de Cobranza </th>
+            <td mat-cell *matCellDef="let element">0.00 {{monedaSimboloMap.get(moneda.toLowerCase()) != undefined ? monedaSimboloMap.get(moneda.toLowerCase()) : ''}}</td>
+          </ng-container>
+          <ng-container matColumnDef="formaPago">
+            <th mat-header-cell *matHeaderCellDef [attr.rowspan]="2"> Forma de Pago </th>
+            <td mat-cell *matCellDef="let element"> {{element.nombreFormaPago}} </td>
+          </ng-container>
+
+          <!-- Compromisos de pago -->
+          <ng-container matColumnDef="agregar">
+            <th mat-header-cell *matHeaderCellDef class="th-orange"> Agregar </th>
+            <td mat-cell *matCellDef="let element">
+                <button *ngIf="element.cancelado === false"
+                mat-button
+                class="text-center"
+                (click)="crearCompromisoPago(element, modalAgregarCompromisoPago)"
+                style="background-color: #FF6113; color: white"
+                >
+                <mat-icon style="color:white">add</mat-icon>
+                </button>
+
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="ver">
+            <th mat-header-cell *matHeaderCellDef class="th-orange"> Ver </th>
+            <td mat-cell *matCellDef="let element"> 
+            <ng-container *ngIf="mapDetallesCompromisosPago.get(element.id) !== undefined && mapDetallesCompromisosPago.get(element.id).length > 0">
+                <div class="d-flex align-items-center justify-content-around">
+                    <ng-container *ngIf="checkCumplioCompromiso2(mapDetallesCompromisosPago.get(element.id)[mapDetallesCompromisosPago.get(element.id).length - 1].fechaCompromiso, element.fechaPago); else verRojo">
+                        <span style="color: #11C744">{{mapDetallesCompromisosPago.get(element.id).length}}</span>
+                        <button mat-icon-button (click)="setHistorialCompromisosPago(modalHistorialCompromiso, element)">
+                            <img src="assets/img/iconsagendaatc/green-eye-icon.svg">
+                        </button>
+                    </ng-container>
+                    <ng-template #verRojo>
+                        <span style="color: red">{{mapDetallesCompromisosPago.get(element.id).length}}</span>
+                        <button mat-icon-button (click)="setHistorialCompromisosPago(modalHistorialCompromiso, element)">
+                        <img src="assets/img/iconsagendaatc/red-eye-icon.svg">
+                        </button>
+                    </ng-template>
+                </div>
+            </ng-container>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="fechaUC">
+            <th mat-header-cell *matHeaderCellDef class="th-orange"> Fecha U.C. </th>
+            <td mat-cell *matCellDef="let element"> {{element.fechaGeneradoCompromiso | date: 'dd/MM/yyyy'}} </td>
+          </ng-container>
+          <ng-container matColumnDef="cumplioUC">
+            <th mat-header-cell *matHeaderCellDef class="th-orange"> Cumplió U.C. </th>
+            <td mat-cell *matCellDef="let element" style="text-align:center">
+                <ng-container *ngIf="mapDetallesCompromisosPago.get(element.id) !== undefined && mapDetallesCompromisosPago.get(element.id).length > 0">
+                    <span *ngIf="checkCumplioCompromiso2(mapDetallesCompromisosPago.get(element.id)[mapDetallesCompromisosPago.get(element.id).length - 1].fechaCompromiso, element.fechaPago); else noCumplio">SI</span> 
+                    <ng-template #noCumplio><span>NO</span></ng-template>
+                </ng-container>
+            </td>
+          </ng-container>
+
+            <!-- Header row second group -->
+            <ng-container matColumnDef="header-row-second-group">
+                <th mat-header-cell *matHeaderCellDef class="th-orange" [attr.colspan]="4"> Compromisos de pagos </th>
+            </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnsToDisplayCronogramaTableFirstGroup.concat(['header-row-second-group'])"></tr>
+          <tr mat-header-row *matHeaderRowDef="columnsToDisplayCronogramaTableSecondGroup"></tr>
+          <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplayCronogramaTableFirstGroup.concat(columnsToDisplayCronogramaTableSecondGroup)"></tr>
+    </table>
+    <div class="rounded d-flex justify-content-around p-2 mt-3" style="width:90%; margin: 0 auto; background-color: #CBE4FF">
+        <strong>(M): Matrícula</strong>
+        <strong>(C): Cuota</strong>
+        <strong>(Fecha U.C.): Fecha del último compromiso</strong>
+        <strong>(Cumplió U.C.): Cumplió con el último compromiso</strong>
+    </div>
+</div>
+
+<ng-template #modalAgregarCompromisoPago let-modal>
+    <div class="modal-content">
+        <div class="modal-header" style=" background-color: #11C744;">
+            <h2 class="modal-title mb-0 text-center" style="color:white ;">Agregar compromiso de pago</h2>
+        </div>
+        <div class="modal-body">
+            <div class="text-center mb-3">Complete todos los campos para agregar el compromiso de pago</div>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <span style="width: 30%">Fecha:</span>
+                <mat-form-field appearance="outline" style="width: 70%">
+                    <mat-label>Elige una fecha</mat-label>
+                    <input matInput [matDatepicker]="picker" [min]="minDate" [(ngModel)]="modalCompromiso_fechaCompromiso">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-hint>día/mes/año</mat-hint>
+                </mat-form-field>
+            </div>
+            <br/>
+            <!-- <div class="d-flex justify-content-between align-items-center">
+                <span style="width: 30%">Hora:</span>
+                <mat-form-field appearance="outline" style="width: 70%">
+                    <mat-label>Hora</mat-label>
+                    <input type="time" matInput [(ngModel)]="modalCompromiso_horaCompromiso" />
+                    <mat-hint>hh:mm</mat-hint>
+                    </mat-form-field>
+            </div> -->
+            <div class="d-flex justify-content-between align-items-center">
+                <span style="width: 30%">Monto:</span>
+                <mat-form-field appearance="outline" style="width: 70%">
+                    <mat-label>Monto</mat-label>
+                    <input type="number" matInput [(ngModel)]="modalCompromiso_montoCompromiso"/>
+                </mat-form-field>
+            </div>
+            
+        </div>
+        <div class="modal-footer justify-content-center">
+            <button
+                mat-button
+                class="text-center btn-cp-hover-effect"
+                (click)="GuardarFechaCompromiso()"
+                style="background-color: #0079FF; color: white;border-radius: 10px">Aceptar</button>
+            <button
+            mat-button
+            class="text-center btn-cp-hover-effect"
+            (click)="CerrarSolicitudFechaCompromiso()"
+            style="border: 1px solid #0079FF; background-color: white; color: #0079FF;border-radius: 10px"
+            >Cancelar</button>
+        </div>
+        <loading [loading]="isGuardarCompromisoLoading"></loading>
+    </div>
+</ng-template>
+
+<ng-template #modalHistorialCompromiso let-modal>
+    <div class="modal-content">
+        <div class="modal-header text-center" style=" background-color:  #0079FF;">
+            <h2 class="modal-title mb-0 text-center" style="color:white;">Historial de Compromiso de Pago
+            </h2>
+        </div>
+        <div class="modal-body">
+            <table class="historialCompromiso" mat-table [dataSource]="tableDataDetalleCompromisoPago">
+                <ng-container matColumnDef="historialCronograma-numero">
+                    <th mat-header-cell *matHeaderCellDef> N° </th>
+                    <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+                  </ng-container>
+              
+                  <ng-container matColumnDef="historialCronograma-fechaRegistro">
+                    <th mat-header-cell *matHeaderCellDef> Fecha de registro </th>
+                    <td mat-cell *matCellDef="let element"> {{element.fechaCreacion | date: 'dd/MM/yyyy'}} </td>
+                  </ng-container>
+              
+                  <ng-container matColumnDef="historialCronograma-fechaCompromiso">
+                    <th mat-header-cell *matHeaderCellDef> Fecha de compromiso </th>
+                    <td mat-cell *matCellDef="let element"> {{element.fechaCompromiso | date: 'dd/MM/yyyy'}} </td>
+                  </ng-container>
+              
+                  <!-- <ng-container matColumnDef="historialCronograma-hora">
+                    <th mat-header-cell *matHeaderCellDef> Hora </th>
+                    <td mat-cell *matCellDef="let element"> {{element.fechaCompromiso | date: 'HH:mm'}} </td>
+                  </ng-container> -->
+                  <ng-container matColumnDef="historialCronograma-monto">
+                    <th mat-header-cell *matHeaderCellDef> Monto </th>
+                    <td mat-cell *matCellDef="let element"> {{element.monto | number: '1.2-2'}} </td>
+                  </ng-container>
+                  <ng-container matColumnDef="historialCronograma-cumplioCompromiso">
+                    <th mat-header-cell *matHeaderCellDef> Cumplió con el compromiso </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="checkCumplioCompromiso(element.fechaCompromiso); else noCumplio">SI</span> 
+                        <ng-template #noCumplio><span>NO</span></ng-template>
+                    </td>
+                  </ng-container>
+                  <!-- <ng-container matColumnDef="historialCronograma-fechaPagoCompromiso">
+                    <th mat-header-cell *matHeaderCellDef> Fecha de pago del compromiso </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="cuotaSeleccionada.fechaPago != null && element == tableDataDetalleCompromisoPago.data[tableDataDetalleCompromisoPago.data.length - 1]">
+                            {{cuotaSeleccionada.fechaPago | date: 'dd/MM/yyyy'}}
+                        </span> 
+                    </td>
+                  </ng-container> -->
+                  
+                  <tr mat-header-row *matHeaderRowDef="columnsToDisplayHistorialCronogramaTable"></tr>
+                  <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplayHistorialCronogramaTable"></tr>
+            </table>
+        </div>
+        <div class="modal-footer justify-content-center">
+            <button tabindex="-1"
+                mat-button
+                class="text-center btn-cp-hover-effect"
+                (click)="modal.close()"
+                style="background-color: white;
+                border: 1px solid #0079ff;
+                border-radius: 9px;
+                color: #0079ff;">Cerrar</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #modalSolicitarExoneracionMora let-modal>
+    <div class="modal-content">
+        <div class="modal-header text-center"  style="background-color:  #FF6113;">
+            <h2 class="mb-0 text-center" style="color:white;">Solicitar exoneración de mora</h2>
+        </div>
+        <div class="modal-body">
+            <div class="text-center mb-2">Debe adjuntar el documento firmado para la exoneración de mora.</div>
+            <div class="d-flex justify-content-between" style="width:100%">
+                <span style="width: 30%">Adjuntar archivo:</span>
+                <div style="width: 70%">
+                    <kendo-fileselect placeholder="Seleccionar archivo" [multiple]="true"
+                        [(ngModel)]="inputAdjuntarComprobante">
+                    </kendo-fileselect>
+                </div>
+            </div>
+            <br>
+            <div class="d-flex justify-content-between" style="width:100%">
+                <span style="width: 30%">Comentario:</span>
+                <mat-form-field appearance="outline" style="width: 70%">
+                    <mat-label>Comentario</mat-label>
+                    <textarea matInput [(ngModel)]="inputComentario"  rows="3" cols="4"></textarea>
+                    </mat-form-field>
+            </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+            <button
+                mat-button
+                (click)="RegistrarSolicitudOperaciones()"
+                class="text-center btn-cp-hover-effect"
+                style="border: 1px solid #0079FF; background-color: #0079FF; color: white">Guardar</button>
+            <button
+            mat-button
+            class="text-center btn-cp-hover-effect"
+            (click)="cerrarSolicitud()"
+            style="border: 1px solid #0079FF; background-color: white; color: #0079FF"
+            >Cancelar</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #modalTransaccionesPagos let-modal>
+    <div class="modal-header bg-primary-header-modal">
+      <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+        Transacciones de pagos
+      </h3>
+      <button type="button" class="btn-close btn-close-white" aria-label="Close"
+        (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <kendo-grid
+        [kendoGridBinding]="grillaModalTransaccionesPagos"
+        [loading]="loaderModalTransPagos">
+        <kendo-grid-column title="Id"
+          field="IdCronogramaPagoDetalleFinal"
+          [width]="50"
+          headerClass="header-grid-single"
+          [hidden]="true">
+        </kendo-grid-column>
+        <kendo-grid-column title="Proveedor"
+          field="proveedor"
+          [width]="170"
+          headerClass="header-grid-single">
+        </kendo-grid-column>
+        <kendo-grid-column title="Descripción de Pago"
+          field="descripcionPago"
+          [width]="170"
+          headerClass="header-grid-single">
+        </kendo-grid-column>
+        <kendo-grid-column title="Estado de Proceso"
+          field="estadoProceso"
+          [width]="170"
+          headerClass="header-grid-single">
+        </kendo-grid-column>
+        <kendo-grid-column title="Código Transacción"
+          field="codigoTransaccion"
+          [width]="170"
+          headerClass="header-grid-single">
+        </kendo-grid-column>
+        <kendo-grid-column title="Fecha Transacción"
+          field="fechaPago"
+          [width]="170"
+          headerClass="header-grid-single">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaPago | date : "dd/MM/yyyy" }}
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </ng-template>

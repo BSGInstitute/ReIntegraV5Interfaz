@@ -1,0 +1,215 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">(M) Tiempo Inactivo</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridMensajeTiempoInactivo
+              [kendoGridBinding]="gridMensajeTiempoInactivo.data"
+              [loading]="gridMensajeTiempoInactivo.loading"
+              [resizable]="true"
+              filterable="menu"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{ pageSizes: [5, 10, 20] }"
+            >
+              <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="
+                    openModalMensajeTiempoInactivo(modalMensajeTiempoInactivo)
+                  "
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="minutoInactivo"
+                title="Tiempo Inactivo (minutos)"
+                [width]="100"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="mensaje"
+                title="Mensaje"
+                [width]="150"
+                headerClass="header-grid-integra"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <!-- <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator> -->
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="100"
+                headerClass="header-grid-integra"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <div class="row justify-content-center">
+                    <div kendoTooltip class="col-auto p-0 mx-1">
+                      <button
+                        kendoButton
+                        themeColor="warning"
+                        title="Editar"
+                        icon="pencil"
+                        (click)="
+                          openModalMensajeTiempoInactivo(
+                            modalMensajeTiempoInactivo,
+                            dataItem
+                          )
+                        "
+                      ></button>
+                    </div>
+                    <div kendoTooltip class="col-auto p-0 mx-1">
+                      <button
+                        kendoButton
+                        themeColor="error"
+                        icon="trash"
+                        title="Eliminar"
+                        (click)="eliminarMensajeTiempoInactivo(dataItem.id)"
+                      ></button>
+                    </div>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+              <ng-template kendoPagerTemplate>
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="10"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="pageSizes"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="obtenerMensajeTiempoInactivo()"
+                  ></button>
+                </div>
+              </ng-template>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- #region ModalMensajeTiempoInactivo -->
+<ng-template #modalMensajeTiempoInactivo let-modal>
+  <div class="modal-header py-2 bg-primary-header-modal text-center">
+    <h2 class="modal-title mb-0 w-100">Registro de Nivel de Potencial</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body p-3">
+    <form [formGroup]="formMensajeTiempoInactivo">
+      <kendo-formfield>
+        <label [for]="mensajeV" class="k-label">
+          <span>Mensaje<span class="fw-bold"> *</span></span>
+        </label>
+        <kendo-textbox
+          #mensajeV
+          formControlName="mensaje"
+          placeholder="<Mensaje>"
+        >
+        </kendo-textbox>
+        <kendo-formerror>
+          <span
+            *ngIf="
+              formMensajeTiempoInactivo.get('mensaje').hasError('required')
+            "
+          >
+            Error: Mensaje es requerido
+          </span>
+          <span
+            *ngIf="
+              formMensajeTiempoInactivo.get('mensaje').hasError('maxlength')
+            "
+          >
+            Error: Maximo 200 caracteres. Escribiste
+            {{
+              formMensajeTiempoInactivo.get("mensaje").value.length
+            }}
+            caracteres
+          </span>
+        </kendo-formerror>
+        <kendo-formhint>200 caracteres como máximo</kendo-formhint>
+      </kendo-formfield>
+      <kendo-formfield>
+        <label [for]="minutoInactivoV" class="k-label">
+          <span><b>Tiempo Inactivo (minutos)</b></span>
+        </label>
+        <kendo-numerictextbox
+          #minutoInactivoV
+          formControlName="minutoInactivo"
+          [min]="1"
+          [max]="10000000"
+          [step]="1"
+          [format]="'n0'"
+        >
+        </kendo-numerictextbox>
+      </kendo-formfield>
+    </form>
+
+    <loading [loading]="enProcesoSolicitud"></loading>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="primary"
+        icon="save"
+        kendoButton
+        (click)="
+          isNew
+            ? insertarMensajeTiempoInactivo()
+            : actualizarMensajeTiempoInactivo()
+        "
+      >
+        {{ isNew ? "Guardar" : "Actualizar" }}
+      </button>
+      <button
+        themeColor="error"
+        icon="cancel"
+        kendoButton
+        [disabled]="enProcesoSolicitud"
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- #endregion -->

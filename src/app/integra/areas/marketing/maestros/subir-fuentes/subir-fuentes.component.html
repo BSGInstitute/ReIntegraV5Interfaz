@@ -1,0 +1,220 @@
+<ng-template #modalFuentes let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nueva Fuente" : "Modificar Fuente" }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formFuentes">
+      <fieldset class="k-form-fieldset">
+        
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombreArchivo" class="k-label">
+                <span>Nombre Archivo <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+                #nombreArchivo
+                size="medium"
+                placeholder="Nombre Archivo"
+                formControlName="nombreArchivo"
+                [clearButton]="true"
+                [maxlength]="100"
+                [showSuccessIcon]="getShowSuccessIcon('nombreArchivo')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+             
+              <kendo-formerror>
+                {{ getErrorMessage("nombreArchivo") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="url" class="k-label">
+                <span>Url </span>
+              </label>
+              <kendo-textbox
+                #url
+                size="medium"
+                placeholder="Url"
+                [maxlength]="500"
+                formControlName="url"
+              >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="crearFuente()"
+      >
+        Guardar
+      </button>
+      <button
+        kendoButton
+        *ngIf="!isNew"
+        themeColor="tertiary"
+        (click)="actualizarFuente()"
+      >
+        Actualizar
+      </button>
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+
+<div class="modal-body">
+    <form class="k-form k-form-horizontal">
+      <fieldset class="k-form-fieldset">
+        <div class="titulo">Fuentes</div>
+        <!-- modal ver -->
+        <div class="">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body p-4">
+                  <div class="row">
+                    <div></div>
+                    <div class="col">
+                      <ng-template
+                        #cellTemplateGrid
+                        let-dataItem="dataItem"
+                        let-field="field"
+                        let-itemValue="itemValue"
+                      >
+                        <ng-template #gridTempDefault>
+                          {{ itemValue }}
+                        </ng-template>
+                      </ng-template>
+  
+                      <kendo-grid
+                        [loading]="gridFuentes.loading"
+                        (dataStateChange)="gridFuentes.onStateChange($event)"
+                        [resizable]="gridFuentes.resizable"
+                       
+                        [filterable]="gridFuentes.filterable"
+                        [pageSize]="gridFuentes.gridState.take"
+                        [skip]="gridFuentes.gridState.skip"
+                        [sort]="gridFuentes.gridState.sort"
+                        [kendoGridBinding]="gridFuentes.data"
+                        [pageable]="gridFuentes.pageable"
+  
+                      >
+                        <ng-template kendoGridToolbarTemplate>
+                          <button
+                            kendoButton
+                            icon="reload"
+                            fillMode="flat"
+                            themeColor="secondary"
+                            (click)="reloadFuente()"
+                          ></button>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                          <button
+                            kendoButton
+                            [themeColor]="'primary'"
+                            icon="plus"
+                            (click)="abrirmodalFuentes(true, null)"
+                          >
+                            Agregar
+                          </button>
+                        </ng-template>
+           
+                        <kendo-grid-column
+                          field="nombreArchivo"
+                          title="NombreArchivo"
+                          [filterable]="true"
+                        >
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="url"
+                          title="Url"
+                          [filterable]="false"
+                        >
+                        </kendo-grid-column>
+                       
+  
+                        <kendo-grid-command-column title="" [width]="150">
+                          <ng-template
+                            kendoGridCellTemplate
+                            let-isNew="isNew"
+                            let-dataItem="dataItem"
+                            let-rowindex="rowindex"
+                          >
+                            <div class="w-100 d-flex justify-content-center">
+                              <button
+                                kendoButton
+                                themeColor="warning"
+                                fillMode="solid"
+                                rounded="large"
+                                size="large"
+                                class="p-2 me-1 ms-1"
+                                container="body"
+                                placement="top"
+                                ngbTooltip="Editar"
+                                (click)="abrirmodalFuentes(false, dataItem)"
+                              >
+                                <span class="k-icon k-i-edit k-icon-20"></span>
+                              </button>
+                              <button
+                                kendoButton
+                                themeColor="error"
+                                fillMode="solid"
+                                rounded="large"
+                                size="large"
+                                s
+                                class="p-2 me-1 ms-1"
+                                container="body"
+                                placement="top"
+                                ngbTooltip="Eliminar"
+                                (click)="eliminarFuente(dataItem, rowindex)"
+                              >
+                                <span class="k-icon k-i-close k-icon-20"></span>
+                              </button>
+                            </div>
+                          </ng-template>
+                        </kendo-grid-command-column>
+                      </kendo-grid>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  

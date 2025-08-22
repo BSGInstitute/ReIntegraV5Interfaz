@@ -1,0 +1,285 @@
+
+
+
+
+<div class="">
+    <div class="row">
+      <div class="col-1fa-rotate-270">
+        <div class="card">
+            <div class="card-header bg-color-material">
+                <h1 class="text-white">Retiros de matrícula</h1>
+            </div>
+            <div  class="card-body p-4">
+              <div class="k-loading-panel" *ngIf="loader">
+                <div class="k-loading-panel-mask"></div>
+                <div class="k-loading-panel-wrapper">
+                  <kendo-loader
+                    type="converging-spinner"
+                    themeColor="primary"
+                    size="large"
+                  >
+                  </kendo-loader>
+                  <div class="k-loading-panel-text fs-5 text-primary">Cargando...</div>
+                </div>
+              </div>
+                <kendo-tabstrip style="background-color: #d3d4dc;" [keepTabContent]="true" > 
+                    <kendo-tabstrip-tab title="REPORTE DE RETIROS DE MATRICULA" [selected]="true" >
+                      <ng-template kendoTabContent >
+                        <app-filtro-reporte 
+                          (loading)="ActividadLoading($event)" 
+                          (resultadoReporte)="GenerarGrillaReporte($event)"
+                        >
+                        </app-filtro-reporte>
+                      </ng-template>
+                    </kendo-tabstrip-tab>
+                    <kendo-tabstrip-tab title="CONGELAMIENTO DE DATOS">
+                      <ng-template kendoTabContent>
+                        <app-congelamiento-dato 
+                        (loading)="ActividadLoading($event)" 
+                        ></app-congelamiento-dato>
+                      </ng-template>
+                    </kendo-tabstrip-tab>
+                </kendo-tabstrip>
+                <br> 
+                <div class="row conteiner-toolbar-retiros-matricula">
+                    <div class="card" style="padding: 0px;">
+                        <div class="card-header bg-color-material pb-0">
+                            <h3 class="text-white mb-2">Reporte Devoluciones</h3>
+                        </div>
+                        <div  class="card-body p-4">
+                          <ng-container *ngIf="reporteGeneral">
+                            <kendo-grid
+                            #grid
+                            [kendoGridBinding]="listaReporte"
+                            [pageSize]="reporteGeneral.cronograma==true?undefined:5"
+                            [sortable]="true"
+                            [reorderable]="false"
+                            [resizable]="true"
+                            filterable="menu"
+                            [pageable]="!reporteGeneral.cronograma"
+                            style="max-height: 700px;border-top-width: 0px;"
+                            >
+                            <ng-template kendoGridToolbarTemplate>
+                              <div class="col-md-7" style="display:flex;justify-content: start;">
+                                <ng-container *ngIf="reporteGeneral.cronograma==false else excelGrid">
+                                  <button
+                                  mat-raised-button
+                                  class="btn-export-excel"
+                                  (click)="excelexport.save()"
+                                >
+                                <span class="k-icon k-i-file-excel k-icon-20"></span>
+                                  Exportar a Excel
+                                </button>
+                                <kendo-excelexport 
+                                [data]="listaReporte" 
+                                fileName="ReporteDevolucionesMatricula.xlsx" #excelexport>
+                                  <kendo-excelexport-column field="tipoRetiro" title="Tipo de Retiro">
+                                  </kendo-excelexport-column>
+                                  <kendo-excelexport-column field="observaciones" title="Observaciones">
+                                  </kendo-excelexport-column>
+                                  <kendo-excelexport-column field="fecha" title="Fecha de Retiro">
+                                  </kendo-excelexport-column>
+                                  <kendo-excelexport-column field="programa" title="Programa">
+                                  </kendo-excelexport-column>
+                                  <kendo-excelexport-column field="codigoMatricula" title="Código Matrícula">
+                                  </kendo-excelexport-column>
+                                  <kendo-excelexport-column field="alumno" title="Alumno">
+                                  </kendo-excelexport-column>
+                                </kendo-excelexport>
+                                </ng-container>
+                                <ng-template #excelGrid>
+                                  <button
+                                  kendoGridExcelCommand 
+                                  mat-raised-button
+                                  class="btn-export-excel"
+                                  >
+                                  <span class="k-icon k-i-file-excel k-icon-20"></span> Exportar a Excel
+                                </button>
+                                </ng-template>
+                                
+                              </div>
+                              
+                            </ng-template>
+                              
+                              
+                            
+                              <kendo-grid-column
+                                  title="Tipo de Retiro"
+                                  headerClass="justify-content-center k-grid-header "
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white'
+                                  }"
+                                  [width]="150"
+                                  field="tipoRetiro"
+                                  [locked]="false"
+                                  [sticky]="false"
+                                  [filterable]="true"
+                                  [hidden]="false"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  title="Observaciones"
+                                  headerClass="justify-content-center k-grid-header "
+                                  [width]="200"
+                                  field="observaciones"
+                                  [locked]="false"
+                                  [sticky]="false"
+                                  [filterable]="true"
+                                  [hidden]="false"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white'
+                                  }"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  title="Fecha de Retiro"
+                                  headerClass="justify-content-center k-grid-header "
+                                  [width]="120"
+                                  field="fecha"
+                                  [locked]="false"
+                                  [sticky]="false"
+                                  [filterable]="true"
+                                  [hidden]="false"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white'
+                                  }"
+                                >
+                                  <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                                    <kendo-grid-date-filter-menu
+                                        [column]="column"
+                                        [format]="'dd-MM-yyyy'"
+                                        [filter]="filter"
+                                        [placeholder]="'dia-mes-año'"
+                                        [filterService]="filterService"
+                                        >
+                                    </kendo-grid-date-filter-menu>
+                                  </ng-template>
+                                  <ng-template  kendoGridCellTemplate let-dataItem>
+                                    {{finanzasService.fechaTemplate(dataItem.fecha,false)}}
+                                  </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  title="Programa"
+                                  headerClass="justify-content-center k-grid-header "
+                                  [width]="150"
+                                  field="programa"
+                                  [locked]="false"
+                                  [sticky]="false"
+                                  [filterable]="true"
+                                  [hidden]="false"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white'
+                                  }"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  title="Código Matrícula"
+                                  headerClass="justify-content-center k-grid-header "
+                                  [width]="150"
+                                  field="codigoMatricula"
+                                  [locked]="false"
+                                  [sticky]="false"
+                                  [filterable]="true"
+                                  [hidden]="false"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white'
+                                  }"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  title="Alumno"
+                                  headerClass="justify-content-center k-grid-header "
+                                  [width]="150"
+                                  field="alumno"
+                                  [locked]="false"
+                                  [sticky]="false"
+                                  [filterable]="true"
+                                  [hidden]="false"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white'
+                                  }"
+                                >
+                                <ng-container *ngIf="reporteGeneral.cronograma==true">
+                                  <ng-template kendoGridFooterTemplate  >
+                                    TOTAL : 
+                                 </ng-template>
+                                </ng-container>
+                                
+                                 
+                                </kendo-grid-column>
+                                <ng-container *ngIf="reporteGeneral.cronograma==true" >
+                                  <ng-container *ngFor="let item of reporteGeneral.reporteDevolucionAgrupado">
+                                    <kendo-grid-column-group 
+                                    [title]="item.g" 
+                                    [columnMenu]="false" 
+                                    headerClass="justify-content-center k-grid-header "
+                                    [headerStyle]="{
+                                      'background-color': '#27ae60',
+                                      color: 'white'
+                                    }"
+                                    >
+                                      <kendo-grid-column
+                                      title="Monto"
+                                      headerClass="justify-content-center k-grid-header "
+                                      [width]="150"
+                                      [field]="item.g"
+                                      [locked]="false"
+                                      [sticky]="false"
+                                      [filterable]="false"
+                                      [hidden]="false"
+                                      [headerStyle]="{
+                                        'background-color': '#27ae60',
+                                        color: 'white'
+                                      }"
+                                    >
+                                      <ng-template kendoGridFooterTemplate  >
+                                          {{obtenerTotalDevolucion(item.l)}}
+                                      </ng-template>
+                                    </kendo-grid-column>
+                                    </kendo-grid-column-group>
+                                  </ng-container>
+                                </ng-container>
+                                <ng-template kendoGridNoRecordsTemplate>
+                                  <div>
+                                    <kendo-badge-container>
+                                      <kendo-icon name="cloud" size="large"></kendo-icon>
+                                      <kendo-badge position="inside">
+                                        <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                                      </kendo-badge>
+                                    </kendo-badge-container>
+                                  </div>
+                                  <p>No hay registros cargados!</p>
+                              </ng-template>
+                                <ng-template
+                                  kendoPagerTemplate
+                                  let-totalPages="totalPages"
+                                  let-currentPage="currentPage"
+                                  >
+                                    <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                                    <kendo-pager-numeric-buttons
+                                      [buttonCount]="5"
+                                    ></kendo-pager-numeric-buttons>
+                                    <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                                    <!-- <kendo-pager-input></kendo-pager-input> -->
+                                    <kendo-pager-info></kendo-pager-info>
+                                    <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                                </ng-template>
+                                <kendo-grid-excel fileName="ReporteDevolucionesMatricula.xlsx"></kendo-grid-excel>
+
+                            </kendo-grid>
+                          </ng-container>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

@@ -1,0 +1,365 @@
+<div class="pg-contenedor-tab">
+  <div class="row mt-3">
+    <div class="col-12 pg-kgrid">
+      <kendo-grid
+        [kendoGridBinding]="gridCodigoPartner.data"
+        (remove)="gridCodigoPartner.removeHandler($event)"
+        (cancel)="gridCodigoPartner.cancelHandler($event)"
+        (save)="gridCodigoPartner.saveHandler($event)"
+        (add)="gridCodigoPartner.addHandler($event)"
+        (cellClick)="gridCodigoPartner.cellClickHandler($event)"
+        (cellClose)="gridCodigoPartner.cellCloseHandler($event)"
+        scrollable="none"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          Codigos Partner
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <button kendoGridAddCommand icon="plus" themeColor="success">
+            Agregar Codigo
+          </button>
+        </ng-template>
+        <kendo-grid-column
+          field="codigo"
+          title="Codigo"
+          [width]="80"
+          headerClass="justify-content-center pg-header-grid"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="versionesPrograma"
+          title="Versiones"
+          [width]="100"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container
+              *ngIf="
+                dataItem.versionesPrograma != null;
+                else elseTemplateVersion
+              "
+            >
+              <ul *ngFor="let item of dataItem.versionesPrograma">
+                <li>
+                  {{ obtenerNombreVersion(item) ?? "-" }}
+                </li>
+              </ul>
+            </ng-container>
+            <ng-template #elseTemplateVersion>
+              <div class="row">
+                <div class="col-12 text-center">Seleccione las Versiones</div>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-multiselect
+              [formControl]="formGroup.get('versionesPrograma')"
+              class="d-flex"
+              size="medium"
+              [data]="comboVersion"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [popupSettings]="{ popupClass: 'pg-popup' }"
+              class="pg-dropDown"
+            >
+            </kendo-multiselect>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="modalidadesCurso"
+          title="Modalidad"
+          [width]="150"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container
+              *ngIf="
+                dataItem.modalidadesCurso != null;
+                else elseTemplateModalidad
+              "
+            >
+              <ul *ngFor="let item of dataItem.modalidadesCurso">
+                <li>
+                  {{ obtenerNombreModalidad(item) ?? "-" }}
+                </li>
+              </ul>
+            </ng-container>
+            <ng-template #elseTemplateModalidad>
+              <div class="row">
+                <div class="col-12 text-center">Seleccione las Modalidades</div>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-multiselect
+              [formControl]="formGroup.get('modalidadesCurso')"
+              class="d-flex"
+              size="medium"
+              [data]="comboModalidades"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [popupSettings]="{ popupClass: 'pg-popup' }"
+              class="pg-dropDown"
+            >
+            </kendo-multiselect>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="pdu"
+          title="Cantidad de los PDU'S"
+          [width]="80"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-numerictextbox
+              [formControl]="formGroup.get('pdu')"
+              [min]="0"
+              [decimals]="0"
+              format="n0"
+            >
+            </kendo-numerictextbox>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-command-column
+          title="Acciones"
+          [width]="30"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-center">
+              <button
+                kendoGridRemoveCommand
+                themeColor="error"
+                icon="trash"
+                container="body"
+                placement="top"
+                ngbTooltip="Eliminar"
+              ></button>
+              <button
+                kendoGridSaveCommand
+                themeColor="primary"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="p-2 me-1 ms-1"
+                [disabled]="gridCodigoPartner.formGroup?.invalid"
+                container="body"
+                placement="top"
+                ngbTooltip="Guardar"
+              >
+                <span class="k-icon k-i-save k-icon-20"></span>
+              </button>
+              <button
+                kendoGridCancelCommand
+                themeColor="secondary"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="p-2 me-1 ms-1"
+                container="body"
+                placement="top"
+                ngbTooltip="Cancelar"
+              >
+                <span class="k-icon k-i-cancel k-icon-20"></span>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+  <br />
+  <div
+    class="row mt-3"
+    *ngIf="[8073, 7671, 8118, 8121, 8119, 8120, 8090].includes(idPGeneral?.id)"
+  >
+    <div class="col-12 text-center">
+      <input type="checkbox" id="mostrarReporte" [(ngModel)]="visibleReporte" />
+      <label for="mostrarReporte">&nbsp;Curso de Especializacion</label>
+    </div>
+  </div>
+  <br />
+  <br />
+  <div class="content" *ngIf="visibleReporte">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-color-material pb-0">
+            <h2 class="text-white mb-3">Reporte</h2>
+          </div>
+          <div class="card-body p-4" id="grillaAgendaTab">
+            <div class="col-12">
+              <kendo-grid
+                #kgridPartnerCodigoPEspecifico
+                [kendoGridBinding]="gridCodigoPartnerPEspecifico.data"
+                [loading]="gridCodigoPartnerPEspecifico.loading"
+                (remove)="gridCodigoPartnerPEspecifico.removeHandler($event)"
+                (save)="gridCodigoPartnerPEspecifico.saveHandler($event)"
+                (add)="gridCodigoPartnerPEspecifico.addHandler($event)"
+                (cellClick)="
+                  gridCodigoPartnerPEspecifico.cellClickHandler($event)
+                "
+                (cellClose)="
+                  gridCodigoPartnerPEspecifico.cellCloseHandler($event)
+                "
+                (cancel)="gridCodigoPartnerPEspecifico.cancelHandler($event)"
+                [resizable]="true"
+                [pageSize]="10"
+                [sortable]="true"
+                filterable="menu"
+                [pageable]="{ pageSizes: [10, 20, 30] }"
+              >
+                <!-- filterable="menu" -->
+                <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <button kendoGridAddCommand icon="plus" themeColor="success">
+                    Agregar
+                  </button>
+                </ng-template>
+                <!-- filterable="menu" -->
+                <kendo-grid-column
+                  field="idPespecifico"
+                  title="PEspecifico"
+                  [width]="100"
+                  headerClass="justify-content-center pg-header-grid"
+                >
+                  <!-- Visualización: Muestra el nombre o un mensaje -->
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <ng-container
+                      *ngIf="
+                        dataItem.idPespecifico !== null;
+                        else elseTemplatePEspecifico
+                      "
+                    >
+                      {{
+                        obtenerNombrePEspecifico(dataItem.idPespecifico) ?? "-"
+                      }}
+                    </ng-container>
+                    <ng-template #elseTemplatePEspecifico>
+                      <div class="row">
+                        <div class="col-12 text-center">
+                          Seleccione el PEspecifico
+                        </div>
+                      </div>
+                    </ng-template>
+                  </ng-template>
+
+                  <!-- Edición: Usamos formControl en el kendo-dropdownlist -->
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                    let-dataItem="dataItem"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idPespecifico')"
+                      [data]="combosPEspecifico"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                      [popupSettings]="{ popupClass: 'pg-popup' }"
+                      class="pg-dropDown"
+                      (valueChange)="
+                        onPEspecificoChange($event, dataItem, formGroup)
+                      "
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="codigo"
+                  title="Codigo"
+                  [width]="80"
+                  headerClass="justify-content-center pg-header-grid"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="pdu"
+                  title="Cantidad de Pdu'S"
+                  [width]="80"
+                  headerClass="justify-content-center pg-header-grid"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-numerictextbox
+                      [formControl]="formGroup.get('pdu')"
+                      [min]="0"
+                      [decimals]="0"
+                      format="n0"
+                    >
+                    </kendo-numerictextbox>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="fechaInicio"
+                  title="Fecha"
+                  [width]="80"
+                  headerClass="justify-content-center pg-header-grid"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    {{
+                      obtenerFechaPEspecifico(dataItem.idPespecifico)
+                        | date : "yyyy-MM-dd"
+                    }}
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-command-column
+                  title="Acciones"
+                  [width]="50"
+                  headerClass="justify-content-center pg-header-grid"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <button
+                        kendoGridRemoveCommand
+                        themeColor="error"
+                        icon="trash"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Eliminar"
+                      ></button>
+                      <button
+                        kendoGridSaveCommand
+                        themeColor="primary"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        [disabled]="
+                          gridCodigoPartnerPEspecifico.formGroup?.invalid
+                        "
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Guardar"
+                      >
+                        <span class="k-icon k-i-save k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoGridCancelCommand
+                        themeColor="secondary"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Cancelar"
+                      >
+                        <span class="k-icon k-i-cancel k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,352 @@
+<div class="contenedor">
+  <!-- <div class="row">
+    <app-calendario-whatsapp></app-calendario-whatsapp>
+  </div> -->
+  <div class="card">
+    <div class="card-header wm-card-header">
+      <h2 class="mb-0">(C) WhatsApp Masivo</h2>
+    </div>
+    <div class="card-body px-4">
+      <div class="row">
+        <kendo-expansionpanel class="p-0 expancionoportunidadhome">
+          <ng-template kendoExpansionPanelTitleDirective>
+            <div class="">
+              <span>Filtros Chat Whatsapp Masivos</span>
+            </div>
+          </ng-template>
+          <div class="content">
+            <div class="row my-3">
+              <div class="col-md-7">
+                <div class="form-group">
+                  <label for="cel">Celular:</label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="cel"
+                    [(ngModel)]="celular"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-3 butons">
+                <button
+                  kendoButton
+                  style="background-color: #008069; color: white"
+                  icon="k-icon k-i-search k-icon-20"
+                  type="button"
+                  (click)="obtenerChatWhatsAppMarketingPorCelular()"
+                >
+                  Buscar Chat
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="content">
+            <ng-container *ngIf="loader == true">
+              <div class="loading-indicator">
+                <mat-progress-spinner
+                  mode="indeterminate"
+                  color="accent"
+                ></mat-progress-spinner>
+              </div>
+            </ng-container>
+            <div class="row my-3">
+              <div class="col-md-7">
+                <div class="form-group">
+                  <label for="cel">Busqueda de datos:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="cel"
+                    [(ngModel)]="celularDatos"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-3 butons">
+                <button
+                  kendoButton
+                  style="background-color: #008069; color: white"
+                  icon="k-icon k-i-search k-icon-20"
+                  type="button"
+                  (click)="buscarDatos()"
+                >
+                  Buscar Datos
+                </button>
+              </div>
+            </div>
+          </div>
+        </kendo-expansionpanel>
+      </div>
+      <div class="row mt-4 ktt-whatsapp-masivo">
+        <kendo-tabstrip class="p-0" [animate]="false" [keepTabContent]="true">
+          <kendo-tabstrip-tab title="Recibidos" [selected]="true">
+            <ng-template kendoTabContent *loadOnDemand>
+              <app-wm-grilla-whatsapp [tab]="3"></app-wm-grilla-whatsapp>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab title="Respondidos">
+            <ng-template kendoTabContent *loadOnDemand>
+              <app-wm-grilla-whatsapp [tab]="4"></app-wm-grilla-whatsapp>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab title="Desuscritos">
+            <ng-template kendoTabContent *loadOnDemand>
+              <app-wm-grilla-whatsapp [tab]="1"></app-wm-grilla-whatsapp>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab title="Archivados">
+            <ng-template kendoTabContent *loadOnDemand>
+              <app-wm-grilla-whatsapp [tab]="2"></app-wm-grilla-whatsapp>
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #dialogBusquedaDatos let-data>
+  <h2 mat-dialog-title class="mb-0 text-center">Datos del contacto</h2>
+  <mat-dialog-content>
+    <ng-container *ngFor="let item of alumnosPorCelular; index as i">
+      <kendo-expansionpanel
+        (expandedChange)="onChange($event, item)"
+        class="expancionoportunidadWhats"
+        (action)="onAction(i)"
+      >
+        <div class="contenedorTotalW">
+          <ng-template kendoExpansionPanelTitleDirective>
+            <div>
+              <span class="fech"> {{ item.idAlumno }}</span>
+              <span style="color: white"> {{ item.email }}</span>
+              <span class="fech">
+                {{ item.fechaCreacion | date : "dd/MM/yyyy" }}</span
+              >
+            </div>
+          </ng-template>
+
+          <ng-container *ngIf="item.idAlumno > 0">
+            <div class="">
+              <div class="" #container>
+                <div class="">
+                  <h1>Datos del Contacto</h1>
+                  <form class="form-container">
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Nombre</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="nombre"
+                        [readonly]="!isEditable"
+                        [(ngModel)]="nombre"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Nombre2</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="nombre2"
+                        [readonly]="!isEditable"
+                        [(ngModel)]="nombre2"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Apellido Paterno</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="apellidoPaterno"
+                        [readonly]="!isEditable"
+                        [(ngModel)]="apellidoPaterno"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Apellido Materno</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="apellidoMaterno"
+                        [readonly]="!isEditable"
+                        [(ngModel)]="apellidoMaterno"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Celular 1</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="celular"
+                        [readonly]="true"
+                        [(ngModel)]="celularAlumno"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Celular 2</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="celular2"
+                        [readonly]="!isEditable"
+                        [(ngModel)]="celular2"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Email1</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="email1"
+                        readonly
+                        [(ngModel)]="email1"
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field
+                      class="example-full-width"
+                      appearance="outline"
+                      style="height: 60px; width: 100%"
+                    >
+                      <mat-label>Email2</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        name="email2"
+                        [readonly]="!isEditable"
+                        [(ngModel)]="email2"
+                      />
+                    </mat-form-field>
+
+                    <div class="input-container">
+                      <span class="input-label">Profesion</span>
+                      <div class="example-wrapper" style="max-width: 100%">
+                        <kendo-dropdownlist
+                          name="profesion"
+                          (selectionChange)="selectionChangeP($event)"
+                          class="d-flex"
+                          size="medium"
+                          [data]="listaAreaFormacion"
+                          [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [disabled]="!editar"
+                          [(ngModel)]="profesion"
+                          [kendoDropDownFilter]="filterSettings"
+                        >
+                        </kendo-dropdownlist>
+                      </div>
+                    </div>
+
+                    <div class="input-container">
+                      <span class="input-label">Cargo</span>
+                      <div class="example-wrapper" style="max-width: 100%">
+                        <kendo-dropdownlist
+                          name="cargo"
+                          (selectionChange)="selectionChangeC($event)"
+                          class="d-flex"
+                          size="medium"
+                          [data]="listaCargo"
+                          [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [disabled]="!editar"
+                          [kendoDropDownFilter]="filterSettings"
+                          [(ngModel)]="cargo"
+                        >
+                        </kendo-dropdownlist>
+                      </div>
+                    </div>
+
+                    <div class="input-container">
+                      <span class="input-label">Area Laboral</span>
+                      <div class="example-wrapper" style="max-width: 100%">
+                        <kendo-dropdownlist
+                          name="areaLaboral"
+                          (selectionChange)="selectionChangeA($event)"
+                          class="d-flex"
+                          size="medium"
+                          [data]="listaAreaTrabajo"
+                          [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [disabled]="!editar"
+                          [kendoDropDownFilter]="filterSettings"
+                          [(ngModel)]="areaLaboral"
+                        >
+                        </kendo-dropdownlist>
+                      </div>
+                    </div>
+
+                    <div class="input-container">
+                      <span class="input-label">Industria</span>
+                      <div class="example-wrapper" style="max-width: 100%">
+                        <kendo-dropdownlist
+                          name="industria"
+                          (selectionChange)="selectionChangeI($event)"
+                          class="d-flex"
+                          size="medium"
+                          [data]="listaIndustria"
+                          [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [disabled]="!editar"
+                          [kendoDropDownFilter]="filterSettings"
+                          [(ngModel)]="industria"
+                        >
+                        </kendo-dropdownlist>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- </ng-container> -->
+            </div>
+          </ng-container>
+        </div>
+      </kendo-expansionpanel>
+    </ng-container>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+</ng-template>

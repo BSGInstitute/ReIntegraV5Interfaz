@@ -1,0 +1,90 @@
+<div>
+  <div class="title">{{ informacionCorreo.asunto }}</div>
+  <div class="mensaje">
+    <div style="text-align: end">{{ fechaCorreo }}</div>
+    <br />
+    <strong style="display: inline-block">{{
+      agendaService.rowActual.contacto
+    }}</strong>
+    <div style="color: #b2b2b2; display: inline-block; margin: 0px 10px">
+      <{{ informacionCorreo.remitente }}>
+    </div>
+    <br />
+    Para: {{ informacionCorreo.destinatarios }}
+    <br />
+    <div [innerHTML]="informacionCorreo.emailBody"></div>
+    <br />
+
+    {{ gridArchivosAdjuntos.length }} Archivos adjuntos:
+    <div *ngIf="gridArchivosAdjuntos.length > 0" class="adjuntos">
+      <ng-container
+       *ngFor="let dataItem of gridArchivosAdjuntos">
+        <button class="botonArchivo" (click)="descargarAdjunto(dataItem)">
+          {{ dataItem.nombreArchivo }}
+          <fa-icon class="iconDownload" [icon]="['fas', 'download']"></fa-icon>
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<div class="row px-2">
+  <div style="padding: 3% 5%; text-align: start">
+    <button
+      class="btn botones mx-1"
+      (click)="responder(modalResponderCorreo, true)"
+    >
+      <fa-icon [icon]="['fas', 'reply']"></fa-icon>
+      <span>Responder</span>
+    </button>
+    <button
+      class="btn botones mx-1"
+      style="margin: 0px 20px"
+      (click)="responder(modalResponderCorreo, false)"
+    >
+      <fa-icon [icon]="['fas', 'share']"></fa-icon>
+      <span>Reenviar</span>
+    </button>
+    <!-- <button class="btn botonCancelar mx-1" (click)="cerrarModal()">
+      Cancelar
+    </button> -->
+  </div>
+</div>
+
+<ng-template #modalResponderCorreo let-modal>
+  <div
+    class="modal-header d-flex align-items-center"
+    style="background-color: #11c744; color: white"
+  >
+    <h3
+      class="modal-title m-0 p-0 text-center w-100"
+      id="modal-basic-title"
+      style="font-weight: bold"
+    >
+      {{ this.esResponder ? "Responder Correo" : "Reenviar Correo" }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="cerrarModal(modal)"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="loaderSendEmail" class="card" style="height: 13vh">
+      <div
+        class="row"
+        style="justify-content: center; align-items: center; display: flex"
+      >
+        <div class="loader"></div>
+      </div>
+    </div>
+    <app-redaccion-correo
+      *ngIf="!loaderSendEmail && informacionCorreo != undefined"
+      [agendaService]="agendaService"
+      [esNuevo]="false"
+      [informacionCorreo]="informacionCorreo"
+      [objetoRedaccionCorreo]="objetoRedaccionCorreo"
+      (cerraDataEvent)="cerrarModal(modal)"
+    ></app-redaccion-correo>
+  </div>
+</ng-template>

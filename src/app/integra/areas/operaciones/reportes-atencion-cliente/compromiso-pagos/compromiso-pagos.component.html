@@ -1,0 +1,961 @@
+<div class="card mb-2">
+    <div class="card-header" style="    background-color: #337ab7; color: white;">
+        <h1>(R) Compromiso de Pago</h1>
+    </div>
+    <div class="card-body">
+        <div class="row m-2">
+            <div class="col-6">
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <h4>Asistente</h4>
+                    </div>
+                    <div class="col-6">
+                        <kendo-multiselect
+                        [data]="comboPersonal"
+                        [(ngModel)]="selectedItemPersonal"
+                        valueField="id"
+                        textField="nombres"
+                        [valuePrimitive]="true"
+                        [virtual]="virtual"
+                        [placeholder]="'<Todos>'"
+                        [kendoDropDownFilter]="filterSettings"
+                        ></kendo-multiselect>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <h4>Alumno</h4>
+                    </div>
+                    <div class="col-6">
+                        <kendo-multiselect
+                        [data]="comboAlumno"
+                        [placeholder]="'<Todos>'"
+                        [(ngModel)]="selectedItemAlumno"
+                        valueField="id"
+                        textField="nombreCompleto"
+                        [valuePrimitive]="true"
+                        [virtual]="virtual"
+                        [(ngModel)]="selectedItemAlumno"
+                        [filterable]="true"
+                        (filterChange)="filterByAlumno($event)"
+                        ></kendo-multiselect>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <h4>Código Matricula</h4>
+                    </div>
+                    <div class="col-6">
+                        <input type="text" [(ngModel)]="selectedItemCodigo" class="form-control" placeholder="<codigo matricula>" style="width: 308px">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                     <div class="col-6">
+                        <h4>Estado de Cuota</h4>
+                    </div>
+                    <div class="col-6">
+                        <kendo-dropdownlist 
+                         [data]="comboEstadoCuota" 
+                         [(ngModel)]="selectedItemEstadoCuota"
+                         valueField="value"
+                         textField="text"
+                         [valuePrimitive]="true"
+                         class="form-control"
+                         [placeholder]="'Seleccione una opción'"
+                        > 
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <h4>Centro Costo</h4>
+                    </div>
+                    <div class="col-6">
+                        <kendo-multiselect
+                        [data]="comboCentroCosto"
+                        [(ngModel)]="selectedItemCentroCosto"
+                        valueField="id"
+                        textField="nombre"
+                        [virtual]="virtual"
+                        [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings2"
+                        [placeholder]="'<Centros de costo>'"
+                        ></kendo-multiselect>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <h4>Fecha Generado</h4>
+                    </div>
+                    <div class="col-6">
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <h4>Fecha Inicio:</h4>
+                            </div>
+                            <div class="col-6">
+                                <kendo-datepicker
+                                [(ngModel)]="selectedItemFechaInicioGenerado"
+                                >
+                                </kendo-datepicker>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <h4>Fecha Fin:</h4>
+                            </div>
+                            <div class="col-6">
+                                <kendo-datepicker
+                                [(ngModel)]="selectedItemFechaFinGenerado"
+                                >
+                                </kendo-datepicker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <h4>Fecha Compromiso</h4>
+                    </div>
+                    <div class="col-6">
+                        <div class="row mb-2">
+                                <div class="col-6">
+                                    <h4>Fecha Inicio:</h4>
+                                </div>
+                                <div class="col-6">
+                                    <kendo-datepicker
+                                    [(ngModel)]="selectedItemFechaInicioCompromiso"
+                                    >
+                                    </kendo-datepicker>
+                                </div>
+                        </div>
+                        <div class="row mb-2">
+                                <div class="col-6">
+                                    <h4>Fecha Fin:</h4>
+                                </div>
+                                <div class="col-6">
+                                    <kendo-datepicker
+                                    [(ngModel)]="selectedItemFechaFinCompromiso"
+                                    >
+                                    </kendo-datepicker>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-11"></div>
+            <div class="col-1">
+                <button class="btn btn-success" [disabled]="gridData.loading" (click)="GenerarReporte()">Buscar<span class="k-icon k-i-zoom"></span><br /></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="    background-color: #337ab7; color: white;">
+        <h2>Reporte Compromiso de Pago del Alumno</h2>
+    </div>
+      
+  
+    <kendo-excelexport
+      [data]="data"
+      [collapsible]="true"
+      fileName="Products.xlsx"
+      #excelexport
+    >
+      <kendo-excelexport-column
+        field="nombreAlumno" title="Nombre Alumno" 
+        [width]="200"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "codigoMatricula" title = "Codigo Matricula"
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "centroCosto" title="Centro Costo"
+        [width]="200"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "estadoMatricula" title = "Estado"
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "nombrePais" title = "Pais de Alumno"
+        [width]="200"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "agendaTab" title = "Tab"
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "coordinadora" title = "Asistente"
+        [width]="200"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "tipoCuota" title = "Tipo de Cuota" 
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "nroCuota" title = "N° Cuota"
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "fechaVencimientoAnio" title = "Año de la cuota vencida" 
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "fechaVencimientoMes" title = "Mes de la cuota vencida"
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "monedaCuota" title = "Moneda de la cuota"
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ dataItem.monedaCuota.charAt(0).toUpperCase() + dataItem.monedaCuota.slice(1)}}
+        </ng-template>
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "montoCuota" title = "Monto de la cuota"
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ dataItem.montoCuota.toFixed(1) }}
+        </ng-template>  
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "montoCuotaDolares" title = "Monto de la cuota (USD)"
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ dataItem.montoCuotaDolares.toFixed(1) }}
+        </ng-template>
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "fechaGeneracionCompromiso" title = "Fecha de Vencimiento" 
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ dataItem.fechaGeneracionCompromiso == null ? "Sin Fecha de Registro de Compromiso" :  dataItem.fechaGeneracionCompromiso | date: 'yyyy/MM/dd' }}
+        </ng-template>
+      </kendo-excelexport-column>
+
+      <kendo-excelexport-column
+        field = "montoCompromisoDolares" title = "Monto comprometido (USD)"
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{dataItem.montoCompromisoDolares.toFixed(1) }}
+        </ng-template>
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "fechaCompromiso" title = "Fecha de pago del compromiso" 
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ dataItem.fechaCompromiso == null ? "Sin Fecha Compromiso" :  dataItem.fechaCompromiso | date: 'yyyy/MM/dd' }}
+        </ng-template>
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "horaCompromiso" title = "Hora de pago de compromiso"
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ dataItem.horaCompromiso == ":" ? "Sin Hora Compromiso" : (dataItem.horaCompromiso.length == 4 ?  dataItem.horaCompromiso+'0' : dataItem.horaCompromiso) }}
+        </ng-template>
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "cantidadCompromisos" title = "Numero de compromisos registrados para la cuota"
+        [width]="350"
+      >
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "fechaPago" title = "Fecha de pago"
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ dataItem.fechaPago == null ? "Pendiente" :  dataItem.fechaPago | date: 'yyyy/MM/dd' }}
+        </ng-template>
+      </kendo-excelexport-column>
+      <kendo-excelexport-column
+        field = "montoPagadoDolares" title = "Monto pagado (USD)" 
+        [width]="350"
+      >
+        <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{dataItem.montoPagadoDolares == null ? 0 : dataItem.montoPagadoDolares.toFixed(1) }}
+        </ng-template>
+      </kendo-excelexport-column>
+    </kendo-excelexport>
+      
+    <div class="card-body">
+        
+        <kendo-grid
+        [data]="gridData.view$ | async" 
+        [loading]="gridData.loading"
+        [pageSize]="gridData.gridState.take"
+        [skip]="gridData.gridState.skip" 
+        [sortable]="true"
+        [sort]="gridData.gridState.sort" 
+        [filter]="gridData.gridState.filter" 
+        [group]="gridData.gridState.group" 
+        [pageable]="{
+            buttonCount: 5,
+            info: true,
+            type: 'numeric',
+            pageSizes: true,
+            previousNext: true,
+            position: 'bottom'
+        }"
+        (dataStateChange)="onStateChange($event)"
+        >
+            <ng-template kendoGridToolbarTemplate class="toolbar-template">
+                <button kendoButton 
+                type="button" 
+                style="color:white; background-color: green;" 
+                icon="file-excel"
+                [disabled]="gridData.view$.value.data.length <= 0 || dataLoad == true"
+                (click)="exportarExcel(excelexport)">
+                    Export To Excel
+                </button>
+            </ng-template>
+
+            <kendo-grid-column field="nombreAlumno" title="Nombre Alumno" [width] = "233"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> --> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "codigoMatricula" title = "Codigo Matricula" [width] = "140"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }" >
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "centroCosto" title="Centro Costo" [width] = "210"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "estadoMatricula" title = "Estado" [width] = "100"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "subEstadoMatricula" title = "Sub Estado" [width] = "100"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "nombrePais" title = "Pais de Alumno" [width] = "100"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                    Pais de<br/>Alumno
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "agendaTab" title = "Tab" [width] = "180"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "coordinadora" title = "Asistente" [width] = "200"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "tipoCuota" title = "Tipo de Cuota" [width] = "136"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "nroCuota" title = "N° Cuota" [width] = "120"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+            </kendo-grid-column>
+            <kendo-grid-column field = "fechaVencimientoAnio" title = "Año de la cuota vencida" [width] = "120"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Año de la<br/>cuota vencida
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "fechaVencimientoMes" title = "Mes de la cuota vencida" [width] = "120"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Mes de la<br/>cuota vencida
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "fechaVencimientoDia" title = "Dia de la cuota vencida" [width] = "120"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Dia de la<br/>cuota vencida
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "monedaCuota" title = "Moneda de la cuota" [width] = "120"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Moneda de<br/>la cuota
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.monedaCuota.charAt(0).toUpperCase() + dataItem.monedaCuota.slice(1)}}
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "montoCuota" title = "Monto de la cuota" [width] = "120"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Monto de<br/>la cuota
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.montoCuota.toFixed(1) }}
+                </ng-template>
+                <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                    Total: {{ total.montoCuota?.sum.toFixed(1) }}
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "montoCuotaDolares" title = "Monto de la cuota (USD)" [width] = "120"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Monto de la<br/>cuota (USD)
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.montoCuotaDolares.toFixed(1)}}
+                </ng-template>
+                <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                    Total: {{ total.montoCuotaDolares?.sum.toFixed(1) }}
+                </ng-template>
+            </kendo-grid-column>
+            <!-- <kendo-grid-column field = "fechaVencimiento" title = "Fecha Generado Compromiso" [width] = "136"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.fechaVencimiento | date: 'yyyy/MM/dd' }}
+                </ng-template>
+            </kendo-grid-column>  -->
+            <kendo-grid-column field = "fechaGeneracionCompromiso" title = "Fecha de Vencimiento" [width] = "136"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Fecha de<br/>Vencimiento
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.fechaGeneracionCompromiso == null ? "Sin Fecha de Registro de Compromiso" :  dataItem.fechaGeneracionCompromiso | date: 'yyyy/MM/dd' }}
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "montoCompromisoDolares" title = "Monto comprometido (USD)" [width] = "136"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Monto<br/>comprometido (USD)
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{dataItem.montoCompromisoDolares.toFixed(1) }}
+                </ng-template>
+                <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                    Total: {{ total.montoCompromisoDolares?.sum.toFixed(1) }}
+                </ng-template>
+            </kendo-grid-column>  
+            <kendo-grid-column field = "fechaCompromiso" title = "Fecha de pago del compromiso" [width] = "136"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Fecha de pago<br/>del compromiso
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.fechaCompromiso == null ? "Sin Fecha Compromiso" :  dataItem.fechaCompromiso | date: 'yyyy/MM/dd' }}
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "horaCompromiso" title = "Hora de pago de compromiso" [width] = "136"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Hora de pago<br>de compromiso
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.horaCompromiso == ":" ? "Sin Hora Compromiso" : (dataItem.horaCompromiso.length == 4 ?  dataItem.horaCompromiso+'0' : dataItem.horaCompromiso) }}
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "cantidadCompromisos" title = "Numero de compromisos registrados para la cuota" [width] = "136"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Numero de compromisos<br/>registrados para<br/>la cuota
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "fechaPago" title = "Fecha de pago" [width] = "146"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.fechaPago == null ? "Pendiente" :  dataItem.fechaPago | date: 'yyyy/MM/dd' }}
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field = "montoPagadoDolares" title = "Monto pagado (USD)" [width] = "146"  [headerStyle]="{ 'background-color': '#4584a7' ,'color':'#ffffff' }">
+                <!-- <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                >
+                    <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                    >
+                    <kendo-filter-contains-operator
+                        text="Contiene"
+                    ></kendo-filter-contains-operator>
+                    </kendo-grid-string-filter-menu>
+                </ng-template> -->
+                <ng-template
+                kendoGridHeaderTemplate
+                let-column
+                let-columnIndex="columnIndex"
+                >
+                Monto pagado<br/>(USD)
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{dataItem.montoPagadoDolares == null ? 0 : dataItem.montoPagadoDolares.toFixed(1) }}
+                </ng-template>
+                <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                    Total: {{ total.montoPagadoDolares?.sum.toFixed(1) }}
+                </ng-template>
+            </kendo-grid-column>  
+            <ng-template kendoPagerTemplate>
+                    <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="10"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <!-- <kendo-pager-input></kendo-pager-input> -->
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="pageSizes"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="GenerarReporte()"
+                  ></button>
+                </div>
+            </ng-template>
+            <!-- <kendo-grid-excel
+            fileName="Products.xlsx"
+            [fetchData]="allData"
+          ></kendo-grid-excel> -->
+        </kendo-grid>
+    </div>
+</div>

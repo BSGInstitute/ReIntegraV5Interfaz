@@ -1,0 +1,91 @@
+<ng-container *ngIf="loader">
+  <div class="k-loading-panel">
+    <div class="k-loading-panel-mask"></div>
+    <div class="k-loading-panel-wrapper">
+      <kendo-loader type="converging-spinner" themeColor="primary" size="large">
+      </kendo-loader>
+    </div>
+  </div>
+</ng-container>
+
+<div class="modal-header">
+  <h2 class="modal-title m-0 p-0" id="modal-basic-title" style="text-align: center;">
+    Resumen de Pago
+  </h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="row" style="padding-bottom: 30px;">
+      <div class="col k-form-horizontal">
+        <kendo-formfield orientation="horizontal">
+          <label [for]="dropdownlist" class="k-label" style="width:150">
+            <span>Medio de Pago:
+              <strong class="text-danger">*</strong></span>
+          </label>
+          <kendo-dropdownlist [formControl]="inputMedioPago" class="d-flex center" size="medium" #dropdownlist
+            [data]="listaMedioPago" textField="medioPago" valueField="medioCodigo"
+            [defaultItem]="{medioCodigo:'null',medioPago:'< Seleccionar >'}">
+          </kendo-dropdownlist>
+        </kendo-formfield>
+      </div>
+    </div>
+    <br>
+
+
+    <div class="row"> 
+      <div class="col-12 mx-2">
+        <table class="w-100">
+          <thead>
+            <tr>
+            <tr class="row-spacing row-divider">
+              <th class="table-header-cell">Concepto</th>
+              <th class="table-header-cell">Cuota</th>
+              <th class="table-header-cell">Mora</th>
+              <th class="table-header-cell">Gestion de Cobranza</th>
+              <th class="table-header-cell">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dataItem of griDetalle.data" class="row-spacing row-divider">
+              <td class="cell-styling">{{ dataItem.nombre }}</td>
+              <td class="cell-styling">{{ dataItem.cuota | number: '1.2-2' }}</td>
+              <td class="cell-styling">{{ dataItem.moraCalculada | number: '1.2-2' }}</td>
+              <td class="cell-styling">{{ dataItem.gestionCobranza | number: '1.2-2' }}</td>
+              <td class="cell-styling">
+                {{ dataItem.cuota + decimalConvert(dataItem.moraCalculada) + dataItem.gestionCobranza | number: '1.2-2'
+                }}
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4" class="cell-styling bold-text  ">
+                Total a pagar en {{ moneda }}
+              </td>
+              <td class="cell-styling bold-text row-divider">
+                {{ total | number: '1.2-2' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+
+    <br>
+    <div class="row" style="display:flex;justify-content: center; padding-top: 30px;padding-bottom: 30px;">
+      <div class="col-md-4 d-flex justify-content-center">
+        <button mat-raised-button class="btn-pagar" color="primary" [disabled]="respuestaTransaction" style="display: flex; 
+            justify-content: center;" (click)="pagarConIVR()"> Confirmar Pre-Proceso <mat-icon
+            style="height: 26px;">keyboard_arrow_right</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-2 d-flex justify-content-center">
+        <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cross click')">
+          CANCELAR
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

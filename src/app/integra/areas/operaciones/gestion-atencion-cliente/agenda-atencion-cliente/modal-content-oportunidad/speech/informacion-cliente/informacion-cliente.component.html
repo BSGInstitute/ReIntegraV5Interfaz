@@ -1,0 +1,1445 @@
+<mat-expansion-panel
+  [expanded]="true"
+  (opened)="panelOpenState = true"
+  (closed)="!(panelOpenState = false)"
+>
+  <mat-expansion-panel-header class="enuciadoHeader">
+    <mat-panel-title> Ficha de resumen </mat-panel-title>
+    <!-- <mat-panel-description>
+      Currently I am {{ panelOpenState ? "open" : "closed" }}
+    </mat-panel-description> -->
+  </mat-expansion-panel-header>
+  <mat-card [ngStyle]="{ 'border-left': '3px solid ' + rankingColor }">
+    <mat-card-actions>
+      <div class="row">
+        <div class="col-2 d-flex justify-content-center align-items-start">
+          <img [src]="avatarUrl" alt="" style="width: 150px" />
+        </div>
+        <div class="col-7">
+          <span class="fs-4" style="color: #5970bb" style="font-weight: bold">
+            {{ nombreCompleto }}
+          </span>
+          <div class="row my-2">
+            <div class="row">
+              <div class="col-12 text-uppercase" style="font-weight: bold">
+                {{ "Cod. Matricula: " + codigoMatricula }}
+              </div>
+            </div>
+          </div>
+          <div class="row my-2">
+            <div class="col-12">
+              <div class="d-flex align-items-center">
+                <div class="content-img-pais mr-1">
+                  <img [src]="alumno?.rutaBandera" class="img-redonda" />
+                </div>
+                <span class="contenedorUbicacion" style="margin-left: 10px">
+                  {{ alumno?.nombrePais + (alumno?.nombreCiudad ? ' - ' + alumno?.nombreCiudad : '') }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row my-2" style="margin-left: 30px">
+            <!-- <div class="col-12 text-uppercase fs-6 ps-5"> -->
+            {{ rowActual?.pEspecifico ? rowActual?.pEspecifico : "Curso" }}
+          </div>
+        </div>
+        <div
+          class="col-3 ms-auto d-flex align-items-center"
+          id="estadoPago"
+          [ngStyle]="{ background: rankingColor }"
+        >
+          <div class="row align-items-center justify-content-center">
+            <div class="col text-center">
+              <img
+                *ngIf="rankingColor !== '#00D807'"
+                src="assets/img/iconsagendaatc/Grupo 4229.svg"
+                alt="Icono"
+                style="vertical-align: middle; margin-right: 5px"
+              />
+              <img
+                *ngIf="rankingColor === '#00D807'"
+                src="assets/img/iconsagendaatc/Grupo 5234.svg"
+                alt="Icono"
+                style="vertical-align: middle; margin-right: 5px"
+              />
+              <span *ngIf="rankingColor !== '#00D807'">Pago Atrasado</span>
+              <span *ngIf="rankingColor === '#00D807'">Cuotas al Día</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+  <div class="row mt-2 mx-5">
+    <div class="col m-2">
+      <div class="row mt-4">
+        <mat-card class="cardContacto">
+          <div class="row">
+            <div class="col-5 my-3">
+              <strong>
+                <h2 class="m-0 full-width">Correo electrónico</h2>
+                <div
+                  class="email-status mx-0"
+                  [ngClass]="{
+                    'message-style': true,
+                    'principal-style': selectedEmail === 1,
+                    'secundario-style': selectedEmail === 2
+                  }"
+                >
+                  {{ selectedEmail === 1 ? "PRINCIPAL" : "SECUNDARIO" }}
+                </div>
+              </strong>
+            </div>
+            <div class="col-7 d-flex align-items-center">
+              <mat-form-field class="matFormField" style="width: 100%">
+                <div>
+                  <mat-select
+                    class="mattrigger"
+                    placeholder="Correo"
+                    [(value)]="selectedEmail"
+                    (selectionChange)="onEmailSelectionChange()"
+                    panelClass="custom-select-panel-ic453"
+                  >
+                    <mat-option *ngIf="email1" [value]="1">{{
+                      email1
+                    }}</mat-option>
+                    <mat-option [value]="2">{{ email2 }}</mat-option>
+                  </mat-select>
+                </div>
+              </mat-form-field>
+              <div *ngIf="btnEmail1.show" id="btnCorreo">
+                <button
+                  type="button"
+                  class="btn btn-hover-effect"
+                  id="enviarDatosMoodle"
+                  style="
+                    color: white;
+                    background-color: #0079ff;
+                    border-radius: 15px;
+                    width: 45px;
+                  "
+                  (click)="
+                    abrirModalPlantilla(
+                      modalPlantillaMensaje,
+                      selectedEmail
+                    )
+                  "
+                >
+                  <img
+                    src="assets/img/iconsagendaatc/Grupo 4159.svg"
+                    alt="Icono"
+                    class="tamano-icono"
+                    style="vertical-align: middle"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+      <div class="row mt-4" style="height: 311px">
+        <mat-card>
+          <div class="row">
+            <div class="col-1">
+              <img
+                src="assets/img/iconsagendaatc/Grupo 4551.svg"
+                alt="Icono"
+                style="vertical-align: middle"
+              />
+            </div>
+            <div class="col-10">
+              <h2 style="color: #ff6113">Información de Matricula</h2>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-1">
+              <button
+                type="button"
+                class="btn botonSolicitud"
+                style="background-color: #ffa114; border-radius: 70%"
+                id="btn_SolicitarCambioCentroCosto"
+                (click)="abrirModalSolicitudCambio(1)"
+                title="Solicitar Cambio"
+              >
+                <img
+                  src="assets/img/iconsagendaatc/Grupo 17.svg"
+                  alt="Icono"
+                  style="vertical-align: middle"
+                />
+              </button>
+            </div>
+            <div
+              class="col-10"
+              style="
+                align-items: center;
+                display: flex;
+                justify-content: flex-start;
+                margin-left: 7px;
+              "
+            >
+              {{ centroCosto }}
+            </div>
+          </div>
+          <!-- <div class="row mt-1">
+            <div class="col-1">
+              <button type="button" class="btn botonSolicitud" style="
+                                    background-color: #ffa114;
+                                    border-radius: 70%;
+                                  " id="btn_SolicitarCambioCentroCosto" (click)="mostrarModalEsquemasEvaluacion()"
+                title="Solicitar Cambio">
+                <img src="assets/img/iconsagendaatc/Grupo 17.svg" alt="Icono" style="vertical-align: middle;">
+              </button>
+            </div>
+            <div class="col-10">{{solicitudEsquemasEvaluacion
+              ? solicitudEsquemasEvaluacion
+              : "Esquema"}}</div>
+          </div> -->
+          <div class="row mt-2">
+            <div class="col-1">
+              <button
+                type="button"
+                class="btn botonSolicitud"
+                style="background-color: #ffa114; border-radius: 70%"
+                id="btn_SolicitarCambioVersion"
+                (click)="abrirModalSolicitudCambio(3)"
+                title="Solicitar Cambio"
+              >
+                <img
+                  src="assets/img/iconsagendaatc/Grupo 17.svg"
+                  alt="Icono"
+                  style="vertical-align: middle"
+                />
+              </button>
+            </div>
+            <div
+              class="col-10"
+              style="
+                align-items: center;
+                display: flex;
+                justify-content: flex-start;
+                margin-left: 7px;
+              "
+            >
+              {{ "Versión: " + version?.toUpperCase() }}
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-1">
+              <button
+                type="button"
+                class="btn botonSolicitud"
+                style="background-color: #ffa114; border-radius: 70%"
+                id="btn_SolicitarCambioCentroCosto"
+                (click)="abrirModalSolicitudCambio(4)"
+                title="Solicitar Cambio"
+              >
+                <img
+                  src="assets/img/iconsagendaatc/Grupo 17.svg"
+                  alt="Icono"
+                  style="vertical-align: middle"
+                />
+              </button>
+            </div>
+            <div
+              class="col-10"
+              style="
+                align-items: center;
+                display: flex;
+                justify-content: flex-start;
+                margin-left: 7px;
+              "
+            >
+              {{ "Estado: " + rowActual?.estadoMatricula?.toUpperCase() }}
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-1">
+              <button
+                type="button"
+                class="btn botonSolicitud"
+                style="background-color: #ffa114; border-radius: 70%"
+                id="btn_SolicitarCambioCentroCosto"
+                (click)="abrirModalSolicitudCambio(5)"
+                title="Solicitar Cambio"
+              >
+                <img
+                  src="assets/img/iconsagendaatc/Grupo 17.svg"
+                  alt="Icono"
+                  style="vertical-align: middle"
+                />
+              </button>
+            </div>
+            <div
+              class="col-10"
+              style="
+                align-items: center;
+                display: flex;
+                justify-content: flex-start;
+                margin-left: 7px;
+              "
+            >
+              {{ "Sub-Estado: " + rowActual?.subEstadoMatricula?.toUpperCase() }}
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-1">
+              <button
+                type="button"
+                class="btn botonSolicitud"
+                style="background-color: #ffa114; border-radius: 70%"
+                id="btn_SolicitarCambioCentroCosto"
+                title="Solicitar Cambio"
+                (click)="abrirModalMatriculas()"
+              >
+                <img
+                  src="assets/img/iconsagendaatc/Grupo 5438.svg"
+                  alt="Icono"
+                  style="vertical-align: middle"
+                />
+              </button>
+            </div>
+            <div
+              class="col-10"
+              style="
+                align-items: center;
+                display: flex;
+                justify-content: flex-start;
+                margin-left: 7px;
+              "
+            >
+              Matriculas Adicionales ({{ matriculasAlumno?.length }})
+            </div>
+          </div>
+        </mat-card>
+      </div>
+      <div class="row mt-4 btnAula">
+        <button
+          class="buttonAula"
+          [disabled]="botonAulaVirtualDisabled"
+          (click)="CrearLoginGuid()"
+        >
+          Ingresar aula virtual >
+        </button>
+      </div>
+    </div>
+    <div class="col m-2">
+      <div class="row mt-4">
+        <mat-card class="cardContacto">
+          <div class="row">
+            <div class="col-5 my-3">
+              <strong>
+                <h2 class="m-0 full-width">Número de teléfono</h2>
+                <div
+                  class="email-status mx-0"
+                  [ngClass]="{
+                    'message-style': true,
+                    'principal-style': selectedPhone === 1,
+                    'secundario-style': selectedPhone === 2
+                  }"
+                >
+                  {{ selectedPhone === 1 ? "PRINCIPAL" : "SECUNDARIO" }}
+                </div>
+              </strong>
+            </div>
+            <div class="col-7 d-flex align-items-center">
+              <mat-form-field class="matFormField" style="width: 80%">
+                <mat-select
+                  class="mattrigger"
+                  panelClass="custom-select-panel-ic453"
+                  placeholder="Celular"
+                  [(value)]="selectedPhone"
+                  (selectionChange)="onPhoneSelectionChange()"
+                >
+                  <mat-option *ngIf="celular1" [value]="1">{{
+                    esRingover ? celular1Temp : celular1
+                  }}</mat-option>
+                  <mat-option *ngIf="celular2" [value]="2">{{
+                    esRingover ? celular2Temp : celular2
+                  }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div *ngIf="btnCelular1.show" id="btnCelular">
+                <spam
+                [ngbTooltip]="btnCelular1.disabled ? 'Activar CRM' : ''"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-hover-effect btn-custom"
+                    [ngClass]="btnCelular1.class"
+                    id="enviarDatosMoodle"
+                    style="
+                      color: white;
+                      background-color: #11c744;
+                      border-radius: 15px;
+                      width: 45px;
+                    "
+                    [disabled]="btnCelular1.disabled"
+                    (click)="
+                      realizarLlamada(
+                        celularSeleccionado.celular,
+                        celularSeleccionado.telefonoSalida
+                      )
+                    "
+                    type="button"
+                  >
+                    <img
+                      src="assets/img/iconsagendaatc/phone_white.svg"
+                      alt="Icono"
+                      style="vertical-align: middle"
+                      class="tamano-icono"
+                    />
+                  </button>
+                </spam>
+              </div>
+              <div *ngIf="btnCelular1Ringover.show" id="btnCelular">
+                <spam
+                [ngbTooltip]="!checkStatusRingover ? 'Activar Ringover' : ''"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-hover-effect btn-custom"
+                    [ngClass]="btnCelular1Ringover.class"
+                    id="enviarDatosMoodle"
+                    style="
+                      color: white;
+                      background-color: #11c744;
+                      border-radius: 15px;
+                      width: 45px;
+                    "
+                    [disabled]="!checkStatusRingover"
+                    (click)="
+                      realizarLlamada(
+                        celularSeleccionado.celular,
+                        celularSeleccionado.telefonoSalida
+                      )
+                    "
+                    type="button"
+                  >
+                    <img
+                      src="assets/img/iconsagendaatc/phone_white.svg"
+                      alt="Icono"
+                      style="vertical-align: middle"
+                      class="tamano-icono"
+                    />
+                  </button>
+                </spam>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+      <div class="row mt-4">
+        <mat-card class="compromisosInfo">
+          <div class="row">
+            <div class="col-1">
+              <img
+                src="assets/img/iconsagendaatc/Grupo 5444.svg"
+                alt="Icono"
+                style="vertical-align: middle"
+              />
+            </div>
+            <div class="col-10">
+              <h2 style="color: #11c744">Información de Compromisos</h2>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Número de compromisos incumplidos :</div>
+            <div class="col-4">
+              {{ cOmpromisosVencidos ? cOmpromisosVencidos : "0" }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Fecha de último compromiso vencido :</div>
+            <div class="col-4">
+              {{ fechaUltimoCompromiso ? fechaUltimoCompromiso : "No Aplica" }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Monto de último compromiso :</div>
+            <div class="col-4">
+              {{
+                ultimoCompromisoMOntoDolares
+                  ? ultimoCompromisoMOntoDolares
+                  : "0"
+              }}
+              USD
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Estado de útimo compromiso :</div>
+            <div class="col-4">
+              {{ estadoCompromiso ? estadoCompromiso : "No Aplica" }}
+            </div>
+          </div>
+        </mat-card>
+      </div>
+      <div class="row mt-4">
+        <mat-card class="cuotasInfo">
+          <div class="row">
+            <div class="col-1">
+              <img
+                src="assets/img/iconsagendaatc/Grupo 4558.svg"
+                alt="Icono"
+                style="vertical-align: middle"
+              />
+            </div>
+            <div class="col-10">
+              <h2 style="color: #6ec5ff">Información de Cuotas</h2>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Número de cuotas Atrasadas :</div>
+            <div class="col-4">
+              {{ cuotasAtrasadas ? cuotasAtrasadas : "0" }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Monto Atrasado a la fecha :</div>
+            <div class="col-4">{{ totalDolares ? totalDolares : "0" }} USD</div>
+          </div>
+          <div class="row">
+            <div class="col-8">Proxima cuota por vencer :</div>
+            <div class="col-4">{{ proximaFechaVencimiento }}</div>
+          </div>
+        </mat-card>
+      </div>
+      <div class="row mt-4">
+        <mat-card class="encuestasInfo">
+          <div class="row">
+            <div class="col-1">
+              <img src="assets/img/iconsagendaatc/informacion-encuesta.svg" alt="encuesta-icono" style="vertical-align: middle;height: 26px;"/>
+            </div>
+            <div class="col-11">
+              <h2 style="color: red">Información de Encuestas</h2>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Encuesta Pendientes :</div>
+            <div class="col-4">
+              {{encuestasPendiente}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">Encuesta Resueltas :</div>
+            <div class="col-4">
+              {{encuestasResuelto}}
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+  <loading [loading]="isLoading"></loading>
+</mat-expansion-panel>
+
+<!-- Modal de Seleccion de plantillas -->
+<ng-template #modalPlantillaMensaje let-modal>
+  <div class="modal-header modal-header-ficha">
+    <h2 class="modal-title mb-0">Generar correo - Seleccione plantilla</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row d-flex justify-content-center my-2">
+      <div class="col-sm-12 col-md-9">
+        <kendo-dropdownlist
+          #dropDownListPlantilla
+          class="d-flex"
+          size="medium"
+          [filterable]="true"
+          [loading]="loadingPlantilla"
+          (filterChange)="filterPlantillas($event)"
+          [data]="plantillaMensajeFiltro"
+          [(ngModel)]="controlPlantillaMensaje"
+          [defaultItem]="{
+            nombre: 'Seleccione una plantilla...',
+            id: null
+          }"
+          textField="nombre"
+          valueField="id"
+        >
+        </kendo-dropdownlist>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer justify-content-center">
+    
+      <!-- <span class="text-danger" *ngIf="!(flagValorEtiqueta$| async)">Cargando valores etiquetas...</span> -->
+      <button
+        class="btn-ic-hover-effect"
+        mat-button
+        themeColor="primary"
+        (click)="generarPlantillaCorreo(modalRedactarMensaje)"
+        style="border: 1px solid #0079FF;background-color: #0079FF; color: white;border-radius: 9px"
+      >
+        Aceptar
+      </button>
+      <button
+        class="btn-ic-hover-effect"
+        mat-button
+        (click)="modal.dismiss('Cross click')"
+        style="border: 1px solid #0079FF; background-color: white; color: #0079FF;border-radius: 9px"
+      >
+        Cancelar
+      </button>
+    
+  </div>
+</ng-template>
+<!-- End Modal de Seleccion de plantillas -->
+
+<!-- Modal Redactar Mensaje -->
+<ng-template #modalRedactarMensaje let-modal>
+  <div class="modal-header modal-header-correos" style="background-color: #11c744; color: white">
+    <h2 class="modal-title m-0 px-3" id="modal-basic-title ">
+      Redactar Correo
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body ps-4 pe-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formRedactarMensaje">
+      <div class="row">
+        <div class="col-12 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="asunto"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Asunto:
+            </label>
+            <kendo-textbox
+              #asunto
+              class="custom-fill-mode"
+              formControlName="asunto"
+              placeholder="Asunto"
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="de"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              De:
+            </label>
+            <kendo-textbox
+              #de
+              class="custom-fill-mode idisabled"
+              formControlName="de"
+              placeholder="De"
+              [readonly]="true"
+            ></kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="para"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Para:
+            </label>
+            <kendo-textbox
+              #para
+              class="custom-fill-mode"
+              formControlName="para"
+              placeholder="Para"
+            ></kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="conCopia"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              CC:
+            </label>
+            <kendo-textbox
+              #conCopia
+              class="custom-fill-mode"
+              formControlName="conCopia"
+              placeholder="CC"
+            >
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="plantilla"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Plantilla:
+            </label>
+
+            <kendo-dropdownlist
+              #plantilla
+              [data]="plantillaMensajeFiltro"
+              class="custom-fill-mode"
+              formControlName="plantilla"
+              [defaultItem]="{ id: null, nombre: '-Seleccione Plantilla-' }"
+              valueField="id"
+              textField="nombre"
+              [valuePrimitive]="true"
+              (valueChange)="changePlantilla($event)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <!-- <div class="row">
+        <div class="col-9 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="grupo"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Grupo:
+            </label>
+            <kendo-dropdownlist
+              #grupo
+              [data]="comboCentroCosto"
+              class="custom-fill-mode"
+              formControlName="grupo"
+              [defaultItem]="{
+                id: null,
+                nombre: 'Seleccione Centro de Costo...'
+              }"
+              valueField="id"
+              textField="nombre"
+              [valuePrimitive]="true"
+              [filterable]="true"
+              [virtual]="true"
+              (valueChange)="changeCentroCosto($event)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-3" style="margin-top: 15px">Total Correos: {{ nroCorreosGrupo }}</div>
+      </div>
+      <div class="row">
+        <div class="col-9 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="versiones"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Versiones:
+            </label>
+            <kendo-multiselect
+              #versiones
+              [data]="dataVersiones"
+              class="custom-fill-mode"
+              placeholder="Version(es)"
+              valueField="idPaquete"
+              textField="paquete"
+              [valuePrimitive]="true"
+              formControlName="versiones"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-9 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="estado"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Estado:
+            </label>
+
+            <kendo-multiselect
+              #estado
+              [data]="dataEstados"
+              class="custom-fill-mode"
+              placeholder="Estado(s)"
+              textField="estadoMatricula"
+              valueField="id"
+              [valuePrimitive]="true"
+              formControlName="estados"
+              [filterable]="true"
+              (valueChange)="changeEstado($event)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-9 my-1">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="subestado"
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Sub Estado:
+            </label>
+            <kendo-multiselect
+              #subestado
+              [data]="dataSubEstados"
+              class="custom-fill-mode"
+              placeholder="Sub Estado(s)"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              formControlName="subEstados"
+              [filterable]="true"
+              (valueChange)="changeEstado($event)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div> -->
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label
+              
+              class="k-label pt-0 d-flex align-items-start text-start"
+              [style.width.px]="150"
+            >
+              Adjuntar:
+            </label>
+            <kendo-fileselect
+              placeholder="adjuntar archivo"
+              formControlName="adjuntar"
+            >
+            <kendo-fileselect-messages select="Seleccione" dropFilesHere="Suelta archivos aquí para seleccionar" clearSelectedFiles="Anular la selección">
+            </kendo-fileselect-messages>
+            </kendo-fileselect>
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <kendo-editor
+            formControlName="mensaje"
+            [pasteCleanupSettings]="pasteCleanupSettings"
+            style="height: 300px"
+          >
+          </kendo-editor>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer justify-content-center">
+    
+      <button 
+        class="btn-ic-hover-effect"
+        mat-button
+        (click)="sendMessageAcrossMandrill()"
+        [disabled]="btnEnviarMensajeDisabled"
+        style="border: 1px solid #0079FF;background-color: #0079FF; color: white;border-radius: 9px"
+      >
+        Enviar
+      </button>
+      <button 
+        class="btn-ic-hover-effect"
+        mat-button
+        style="border: 1px solid #0079FF; background-color: white; color: #0079FF;border-radius: 9px"
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+    <loading [loading]="isMessageSending"></loading>
+</ng-template>
+<!-- End Modal Redactar Mensaje -->
+
+<!-- Modal solicitud Cambios -->
+<ng-template #modalSolicitudCambio let-modal>
+  <div class="modal-header" style="background-color: #ff6113">
+    <h2
+      class="modal-title m-0 px-3"
+      id="modal-basic-title"
+      style="color: #ffffff"
+    >
+      {{ tituloModalSolicitudCambio }}
+    </h2>
+  </div>
+  <div class="modal-body ps-4 pe-4">
+    <form [formGroup]="formSolicitudes">
+      <div class="row">
+        <div class="col-md-12">
+          <div
+            class="form-group row"
+            id="seccionCambioGeneral"
+            *ngIf="verCambioGeneral"
+          >
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria">
+                <strong><label id="lblValorNuevo"></label> </strong>
+              </h3>
+            </div>
+            <div class="col-8">
+              <input
+                type="text"
+                class="form-control input-sm"
+                id="inputValor"
+                name="inputValor"
+                placeholder="Valor Nuevo"
+                required
+                data-required-msg="Ingrese Categoria"
+                style="width: 100%"
+              />
+            </div>
+          </div>
+          <div
+            class="form-group row"
+            id="seccionFechaFinalizacion"
+            *ngIf="verFechaFinalizacion"
+          >
+            <div class="col-4" style="text-align: right">
+              <h3 id="Categoria"><strong>Nueva Fecha Finalizacion</strong></h3>
+            </div>
+            <div class="col-8">
+              <kendo-datepicker
+                #FechaFinalizacion
+                formControlName="nuevaFechaFinalizacion"
+              ></kendo-datepicker>
+            </div>
+          </div>
+          <div
+            class="form-group row"
+            id="seccionCambioVersion"
+            *ngIf="verCambioVersion"
+          >
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Versiones Disponibles</strong></h3>
+            </div>
+            <div class="col-8">
+              <kendo-dropdownlist
+                #nuevaVersion
+                formControlName="idVersion"
+                [data]="listaVersion"
+                textField="nombre"
+                valueField="idVersion"
+                [defaultItem]="{ nombre: 'Seleccione', idVersion: null }"
+              >
+                <ng-template kendoDropDownListNoDataTemplate>
+                  Sin versiones disponibles
+                </ng-template>
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div
+            class="form-group row"
+            id="seccionCambioEstado"
+            *ngIf="verEstado"
+          >
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Nuevo Estado</strong></h3>
+            </div>
+            <div class="col-8">
+              <kendo-dropdownlist
+                #nuevoEstado
+                [data]="dataEstadoMatricula"
+                textField="estadoMatricula"
+                valueField="id"
+                [defaultItem]="{
+                  id: null,
+                  estadoMatricula: 'Seleccione'
+                }"
+                formControlName="idEstadoMatricula"
+                [filterable]="true"
+                [kendoDropDownFilter]="filterSettings_estados"
+                (valueChange)="generarDataSubEstado($event)"
+              >
+                <kendo-formerror
+                  >Seleccione un Estado Matricula</kendo-formerror
+                >
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div
+            class="form-group row"
+            id="seccionCambioCategoria"
+            *ngIf="verCategoriaAlumno"
+          >
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Nueva Categoria</strong></h3>
+            </div>
+            <div class="col-8">
+              <kendo-dropdownlist
+                #nuevaCategoria
+                [data]="objetoCategoriaAlumno"
+                textField="nombre"
+                valueField="id"
+                [defaultItem]="{ id: null, nombre: 'Seleccione Categoria' }"
+                formControlName="idCategoriaAlumno"
+              >
+                <kendo-formerror>Seleccione una Categoria</kendo-formerror>
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div
+            class="form-group row"
+            id="seccionCambioSubEstado"
+            *ngIf="verSubEstado"
+          >
+            <div class="col-1"></div>
+            <div class="col-3" id="lblSubEstado">
+              <h3 id="Categoria"><strong>Nuevo Sub Estado</strong></h3>
+            </div>
+            <div class="col-8" id="SeccionConSubEstado" *ngIf="conSubEstado">
+              <kendo-dropdownlist
+                #nuevoSubEstadoMatricula
+                [data]="dataComboSubEstadoMatricula"
+                textField="nombre"
+                valueField="id"
+                [filterable]="true"
+                [kendoDropDownFilter]="filterSettings_subEstado"
+                [defaultItem]="{ id: null, nombre: 'Seleccione' }"
+                formControlName="idSubEstadoMatricula"
+              >
+                <kendo-formerror>Seleccione un Sub Estado</kendo-formerror>
+              </kendo-dropdownlist>
+            </div>
+            <div class="col-8" id="SeccionSinSubEstado" *ngIf="!conSubEstado">
+              <input
+                type="text"
+                class="form-control input-sm"
+                id="inputValorSubEstadoSin"
+                name="inputValorSubEstadoSin"
+                placeholder="Valor Nuevo"
+                required
+                data-required-msg="Ingrese Categoria"
+                style="width: 100%"
+                disabled
+                value="{{ textoSubEstado }}"
+              />
+            </div>
+          </div>
+          <div
+            class="form-group row"
+            id="seccionCambioCentroCosto"
+            *ngIf="verCentroCosto"
+          >
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Nuevo Centro de Costo</strong></h3>
+            </div>
+            <div class="col-8">
+              <kendo-dropdownlist
+                #multiselectPerAsignado
+                [data]="dataCentroCosto"
+                [defaultItem]="{
+                  id: null,
+                  nombre: 'Seleccione'
+                }"
+                textField="nombre"
+                valueField="id"
+                [filterable]="true"
+                formControlName="idCentroCosto"
+                [kendoDropDownFilter]="filterSettings"
+                [virtual]="true"
+              >
+                <ng-template kendoDropDownListNoDataTemplate>
+                  Centro de costo no disponible
+                </ng-template>
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div
+            class="form-group row"
+            id="seccionCambioAdjuntar"
+            *ngIf="verAdjuntarComprobante"
+          >
+            <div class="col-1"></div>
+            <div class="col-sm-10 demo-section k-content">
+              <input
+                name="inputAdjuntarComprobante"
+                id="inputAdjuntarComprobante"
+                type="file"
+                aria-label="files"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row" id="SeccionComentario">
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Comentario"><strong>Comentario: </strong></h3>
+            </div>
+
+            <div class="col-sm-8">
+              <textarea
+                rows="3"
+                cols="4"
+                type="text"
+                class="form-control myeditablediv1"
+                id="inputComentarioSolicitante"
+                name="inputComentarioSolicitante"
+                placeholder="Comentario"
+                style="width: 100%"
+                formControlName="comentarioSolicitud"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer" style="justify-content: center">
+    <div class="k-form-buttons mt-0 mb-0">
+      <button class="btn-ic-hover-effect"
+        kendoButton
+        size="large"
+        style="
+          border: 1px solid #0079FF;
+          background: #0079ff 0% 0% no-repeat padding-box;
+          color: white;
+          border-radius: 9px;
+        "
+        [disabled]="buttonSolicitud"
+        (click)="registrarSolicitudOperaciones()"
+      >
+        Aceptar
+      </button>
+    </div>
+    <div class="k-form-buttons mt-0 mb-0">
+      <button class="btn-ic-hover-effect"
+        style="
+          background: #ffffff 0% 0% no-repeat padding-box;
+          border: 1px solid #0079ff;
+          border-radius: 9px;
+          color: #0079ff;
+        "
+        kendoButton
+        size="large"
+        (click)="limpiarModalSolicitudCambio()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- End Modal solicitud cambios -->
+
+<!-- modal Matriculas Adicionales -->
+<ng-template #modalMatriculas let-modal>
+  <div class="modal-header m-0" style="background-color: #0079ff">
+    <h2
+      class="modal-title m-0 px-3"
+      id="modal-basic-title"
+      style="color: #ffffff"
+    >
+      Matriculas Adicionales
+    </h2>
+  </div>
+  <div class="modal-body p-0">
+    <table
+      class="table table-striped table-bordered"
+      style="border-spacing: 10px 5px"
+    >
+      <thead style="background-color: #cbe4ff; color: black">
+        <tr>
+          <td >
+            <p style="margin-left: 30px; margin-right: 8px">N°</p>
+          </td>
+          <td>
+            <p style="margin-left: 15px; margin-right: 15px">
+              Código de <br />
+              Matrícula
+            </p>
+          </td>
+          <td>
+            <p style="margin-left: 15px; margin-right: 15px">Programa</p>
+          </td>
+          <!-- <td>
+            <p style="margin-left: 15px; margin-right: 15px">
+              Estado <br />
+              Financiero
+            </p>
+          </td> -->
+          <td>
+            <p style="margin-left: 15px; margin-right: 15px">Centro de Costo</p>
+          </td>
+          <td>
+            <p style="margin-left: 15px; margin-right: 15px">Versión</p>
+          </td>
+          <!-- <td >
+            <p style="margin-left:15px;margin-right:15px">Documento</p>
+          </td> -->
+          <td >
+            <p style="margin-left: 15px; margin-right: 15px"></p>
+          </td>
+        </tr>
+      </thead>
+      <tbody style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)">
+        <tr *ngFor="let item of matriculasAlumno; let i = index">
+          <td
+            style="
+              margin-left: 10px !important;
+              border-right: solid 1px #dee2e6;
+            "
+          >
+            <p style="margin-left: 30px; margin-right: 8px">{{ cont + i }}</p>
+          </td>
+          <td style="border-right: solid 1px #dee2e6">
+            <p style="margin-left: 15px; margin-right: 15px">
+              {{ item.codigoMatricula }}
+            </p>
+          </td>
+          <td style="border-right: solid 1px #dee2e6">
+            <p style="margin-left: 15px; margin-right: 15px">
+              {{ item.nombreProgramaGeneral }}
+            </p>
+          </td>
+          <!-- <td style="border-right: solid 1px #dee2e6">
+            <p style="margin-left: 15px; margin-right: 15px">
+              {{ item.estadoFinanciero }}
+            </p>
+          </td> -->
+          <td style="border-right: solid 1px #dee2e6">
+            <p style="margin-left: 15px; margin-right: 15px">
+              {{ item.centroCosto }}
+            </p>
+          </td>
+          <td style="border-right: solid 1px #dee2e6">
+            <div class="text-center">
+              {{
+                item.versionPrograma === 1
+                  ? "Básica"
+                  : item.versionPrograma === 2
+                  ? "Profesional"
+                  : item.versionPrograma === 3
+                  ? "Gerencial"
+                  : item.versionPrograma === 4
+                  ? "Sin Versión"
+                  : "Sin Versión"
+              }}
+            </div>
+          </td>
+          <td style="border-right: solid 1px #dee2e6">
+            <button
+              type="button"
+              class="btn"
+              id="copiarCodigo"
+              (click)="copiarCodigo(item.codigoMatricula)"
+            >
+              <img
+                src="assets/img/iconsagendaatc/Grupo 5447.svg"
+                alt="Icono"
+                style="vertical-align: middle"
+              />
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer" style="justify-content: center">
+    <!-- <div class="k-form-buttons mt-0 mb-0">
+      <button kendoButton size="large"
+        style="background: #0079FF 0% 0% no-repeat padding-box;color:white ;border-radius: 9px;"
+        [disabled]="buttonSolicitud" (click)="registrarSolicitudOperaciones()">
+        Guardar
+      </button>
+    </div> -->
+    <div class="k-form-buttons mt-0 mb-0">
+      <button class="btn-ic-hover-effect"
+        style="
+          background: #ffffff 0% 0% no-repeat padding-box;
+          border: 1px solid #0079ff;
+          border-radius: 9px;
+          color: #0079ff;
+        "
+        kendoButton
+        size="large"
+        (click)="limpiarModalSolicitudCambio()"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- END modal Matriculas Adicionales -->
+
+<ng-template #modalEsquemaEvaluacion let-modal>
+  <div class="modal-header">
+    <h2
+      class="modal-title m-0 px-3"
+      id="modal-basic-title"
+      style="color: #2e6ea6"
+    >
+      Esquema Evaluacion
+    </h2>
+    <button
+      type="button"
+      class="btn-close btn-close-grey"
+      aria-label="Close"
+      (click)="cerrarDetalleEsquemaEvaluacion()"
+    ></button>
+  </div>
+  <div class="modal-body ps-4 pe-4">
+    <div class="card">
+      <div
+        class="card-header"
+        style="background: #4584a7; color: #fff; font-size: 15px"
+      >
+        <span class="panel-title">Cursos hijos</span>
+      </div>
+      <div class="card-body">
+        <kendo-grid
+          [kendoGridBinding]="gridEsquemaEvaluacion.data"
+          [pageable]="gridEsquemaEvaluacion.pageable"
+          [pageSize]="gridEsquemaEvaluacion.pageSize"
+          [selectable]="gridEsquemaEvaluacion.selectable"
+          [sortable]="gridEsquemaEvaluacion.sortable"
+          [resizable]="gridEsquemaEvaluacion.resizable"
+          [loading]="gridEsquemaEvaluacion.loading"
+          (cellClick)="verEditarEsquemaEvaluacion($event)"
+        >
+          <kendo-grid-column field="nombre" title="Programa Especifico">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div>
+                <span>{{ dataItem.nombre }}</span>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+    <br />
+    <div *ngIf="verContenedorEsquemasPorPEspecifico">
+      <div class="card">
+        <div
+          class="card-header"
+          style="background: #4584a7; color: #fff; font-size: 15px"
+        >
+          <span class="panel-title">Detalle Esquema Evaluacion</span>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="formEsquemaEvaluacion">
+            <div class="row">
+              <div class="col-5">
+                <h4 id="FechaNueva"><strong>Esquema Evaluacion: </strong></h4>
+              </div>
+              <div class="col-7">
+                <kendo-dropdownlist
+                  #inputEsquemaEvaluacion
+                  [data]="dataEsquemaEvalueacion"
+                  textField="nombreEsquema"
+                  valueField="id"
+                  [defaultItem]="{
+                    id: null,
+                    nombreEsquema: 'Seleccione Esquema'
+                  }"
+                  formControlName="esquemaEvaluacion"
+                  [valuePrimitive]="true"
+                  (valueChange)="cambiarEsquemaEvaluacion($event)"
+                >
+                </kendo-dropdownlist>
+              </div>
+            </div>
+          </form>
+          <br />
+          <div class="row">
+            <div class="col-5">
+              <h4 id="FechaNueva"><strong>Forma Calculo Nota: </strong></h4>
+            </div>
+            <div class="col-7">
+              <input
+                type="text"
+                class="form-control input-group-lg"
+                id="inputFormaCalculoNota"
+                name="inputFormaCalculoNota"
+                value="{{ inputFormaCalculoNota }}"
+                disabled
+              />
+            </div>
+          </div>
+          <br />
+          <div>
+            <kendo-grid
+              [kendoGridBinding]="gridEsquemaEvaluacionAlumno.data"
+              [pageable]="gridEsquemaEvaluacionAlumno.pageable"
+              [pageSize]="gridEsquemaEvaluacionAlumno.pageSize"
+              [selectable]="gridEsquemaEvaluacionAlumno.selectable"
+              [sortable]="gridEsquemaEvaluacionAlumno.sortable"
+              [resizable]="gridEsquemaEvaluacionAlumno.resizable"
+              [loading]="gridEsquemaEvaluacionAlumno.loading"
+            >
+              <kendo-grid-column
+                field="nombreEsquemaDetalle"
+                title="Criterio Evaluacion"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div>
+                    <span>{{ dataItem.nombreEsquemaDetalle }}</span>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="ponderacion" title="Ponderacion">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div>
+                    <span>{{ dataItem.ponderacion }}</span>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+        <div class="card-footer" style="text-align: right">
+          <button
+            class="btn btn-danger"
+            id="buttonCancelarAnexo"
+            (click)="cerrarDetalleEsquemaEvaluacion()"
+          >
+            <i class="icon-print icon-white"></i> Cancelar
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            style="margin-left: 5px"
+            id="btnActualizarEsquema"
+            onclick="ActualizarEsquema()"
+          >
+            Actualizar Esquema
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

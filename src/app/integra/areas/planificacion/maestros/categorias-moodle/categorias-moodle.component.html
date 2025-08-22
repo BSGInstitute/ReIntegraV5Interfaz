@@ -1,0 +1,220 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Categorias de programas Moddle</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              kendoGrid
+              [kendoGridBinding]="gridCategoriaMoodle.data"
+              [loading]="gridCategoriaMoodle.loading"
+              (cancel)="gridCategoriaMoodle.cancelHandler($event)"
+              (save)="gridCategoriaMoodle.saveHandler($event)"
+              (remove)="gridCategoriaMoodle.removeHandler($event)"
+              (add)="gridCategoriaMoodle.addHandler($event)"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="gridCategoriaMoodle.gridState.skip"
+              [pageSize]="gridCategoriaMoodle.gridState.take"
+              filterable="menu"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  [themeColor]="'primary'"
+                  icon="plus"
+                  (click)="abrirModalCategoriaMoodle(modalCategoriaMoodle, true)"
+                >
+                  Agregar
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="idCategoriaMoodle"
+                title="Id Categoria"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="nombreCategoria"
+                title="Nombre Categoria"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="moodleCategoriaTipo"
+                title="Tipo Categoría"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- kendoGridEditCommand -->
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      (click)="
+                          abrirModalCategoriaMoodle(
+                          modalCategoriaMoodle,
+                          false,
+                          dataItem
+                        )
+                      "
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-delete k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalCategoriaMoodle let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{
+        isNew ? "Registro de Categoría Moodle" : "Actualizar Categoría Moodle"
+      }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formCategoriaMoodle">
+      <div class="row">
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="idCategoriaMoodle"
+              [style.width.px]="220"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Id Categoria Moodle
+            </label>
+            <kendo-numerictextbox
+              format="n0"
+              #idCategoriaMoodle
+              formControlName="idCategoriaMoodle"
+              [min]="0"
+            >
+            </kendo-numerictextbox>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="nombreCategoria"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span>
+                Nombre Categoría<strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <kendo-textbox
+              #nombreCategoria
+              formControlName="nombreCategoria"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+            <kendo-formerror>{{ getErrorMessage("nombreCategoria") }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="tipoCategoria"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Tipo Categoria:
+            </label>
+            <kendo-dropdownlist
+              #tipoCategoria
+              formControlName="tipoCategoria"
+              [data]="dataTipoCategoria"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccionar...'}"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>{{ getErrorMessage("nombreCategoria") }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="guardarCategoriaMoodle()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizarCategoriaMoodle()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>

@@ -1,0 +1,327 @@
+<form [formGroup]="formModalCorreo" class="k-form k-form-horizontal">
+  <!-- asunto -->
+  <div class="row px-2 mb-2">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Asunto:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-textbox formControlName="asunto" placeholder="Asunto">
+      </kendo-textbox>
+    </div>
+  </div>
+  <!-- correo remitente -->
+  <div class="row px-2 mb-2">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">De:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-textbox
+        formControlName="asesor"
+        placeholder="Asesor"
+        [disabled]="true"
+        [ngStyle]="{ 'background-color': '#e9ecef' }"
+      >
+      </kendo-textbox>
+    </div>
+  </div>
+  <!-- correo de destion -->
+  <div class="row px-2 mb-2">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Para:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-textbox
+        formControlName="destinatario"
+        placeholder="Destinatario"
+        [disabled]="edicionCampos ? false : true"
+      >
+      </kendo-textbox>
+    </div>
+  </div>
+  <!-- email en copia -->
+  <div class="row px-2 mb-2">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Cc:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-textbox formControlName="conCopia2" placeholder="Cc">
+      </kendo-textbox>
+    </div>
+  </div>
+  <!-- plantillas -->
+  <div class="row px-2 mb-2" *ngIf="esNuevo">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Plantilla:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-dropdownlist
+        [data]="objetoRedaccionCorreo.listaPlantillas"
+        formControlName="plantilla"
+        textField="nombre"
+        valueField="id"
+        [valuePrimitive]="true"
+        [filterable]="true"
+        [defaultItem]="{
+          id: null,
+          nombre: 'Seleccione'
+        }"
+        [kendoDropDownFilter]="filterSettings"
+        (valueChange)="seleccionarContenidoPlantillaCorreo($event)"
+        [virtual]="{ itemHeight: 28 }"
+      ></kendo-dropdownlist>
+    </div>
+  </div>
+  <!-- centros de costos -->
+  <div class="row px-2 mb-2" *ngIf="esNuevo">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Grupo:</div>
+    </div>
+    <div class="col-md-8">
+      <kendo-dropdownlist
+        [data]="objetoRedaccionCorreo.listaCentroCostos"
+        formControlName="centroCosto"
+        textField="nombre"
+        valueField="id"
+        [valuePrimitive]="true"
+        [filterable]="true"
+        [kendoDropDownFilter]="filterSettings"
+        (valueChange)="cargarVersionesCentroCosto($event)"
+        [virtual]="{ itemHeight: 28 }"
+        [defaultItem]="{ nombre: '<Seleccione Centro de Costo>', id: null }"
+      ></kendo-dropdownlist>
+    </div>
+    <div class="col-md-2">
+      <div class="row">
+        <div class="circle">
+          <mat-icon class="m-1"> email </mat-icon>
+          {{ totalCorreos }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- versiones -->
+  <div class="row px-2 mb-2" *ngIf="esNuevo">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Versiones:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-multiselect
+        [data]="listaVersion"
+        formControlName="versiones"
+        [kendoDropDownFilter]="filterSettings"
+        textField="paquete"
+        valueField="idPaquete"
+        (valueChange)="obtenerGrupoCentroCostoConVersion()"
+        [valuePrimitive]="true"
+      ></kendo-multiselect>
+    </div>
+  </div>
+  <!-- estados -->
+  <div class="row px-2 mb-2" *ngIf="esNuevo">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Estado:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-multiselect
+        [data]="objetoRedaccionCorreo.listaEstado"
+        formControlName="estado"
+        valueField="id"
+        textField="estadoMatricula"
+        (valueChange)="cargarCentroCostoEstadoSubEstado($event)"
+        [valuePrimitive]="true"
+        [kendoDropDownFilter]="filterSettings"
+      ></kendo-multiselect>
+    </div>
+  </div>
+  <!-- subestados -->
+  <div class="row px-2 mb-2" *ngIf="esNuevo">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">SubEstado:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-multiselect
+        [data]="listaSubEstado"
+        formControlName="subestado"
+        valueField="id"
+        textField="nombre"
+        (valueChange)="cargarCentroCostoEstadoSubEstadoIndependiente($event)"
+        [valuePrimitive]="true"
+        [kendoDropDownFilter]="filterSettings"
+      ></kendo-multiselect>
+    </div>
+  </div>
+  <!-- documentos adjuntos -->
+  <div class="row px-2 mb-2">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Adjuntar:</div>
+    </div>
+    <div class="col-md-10">
+      <input
+        (change)="cambiarArchivo($event)"
+        type="file"
+        name="adjuntar"
+        id="adjuntar"
+        multiple
+      />
+    </div>
+  </div>
+  <!-- mensaje -->
+  <div class="row px-2 mb-2">
+    <!-- <div class="col-md-2 align-self-center">
+      <div class="text-start">Mensaje:</div>
+    </div> -->
+    <div class="col-md-15">
+      <kendo-editor
+        [pasteCleanupSettings]="pasteCleanupSettings"
+        formControlName="mensaje"
+        name="content"
+        style="height: 500px"
+      >
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button kendoEditorUndoButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorRedoButton></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorUnderlineButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorStrikethroughButton
+          ></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <!-- <kendo-toolbar-buttongroup>
+            <kendo-toolbar-button
+              kendoEditorSubscriptButton
+            ></kendo-toolbar-button>
+            <kendo-toolbar-button
+              kendoEditorSuperscriptButton
+            ></kendo-toolbar-button>
+          </kendo-toolbar-buttongroup> -->
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button
+            kendoEditorAlignLeftButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorAlignCenterButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorAlignRightButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorAlignJustifyButton
+          ></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-dropdownlist
+          kendoEditorFormat
+        >
+        </kendo-toolbar-dropdownlist>
+        <kendo-toolbar-dropdownlist
+          kendoEditorFontSize
+        ></kendo-toolbar-dropdownlist>
+        <kendo-toolbar-dropdownlist
+          kendoEditorFontFamily
+        ></kendo-toolbar-dropdownlist>
+        <kendo-toolbar-colorpicker
+          kendoEditorForeColor
+        ></kendo-toolbar-colorpicker>
+        <kendo-toolbar-colorpicker
+          kendoEditorBackColor
+          view="gradient"
+        ></kendo-toolbar-colorpicker>
+        <kendo-toolbar-buttongroup>
+          <kendo-toolbar-button
+            kendoEditorInsertUnorderedListButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorInsertOrderedListButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorIndentButton></kendo-toolbar-button>
+          <kendo-toolbar-button kendoEditorOutdentButton></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <!-- <kendo-toolbar-button
+            kendoEditorBlockquoteButton
+          ></kendo-toolbar-button>
+          <kendo-toolbar-button
+            kendoEditorSelectAllButton
+          ></kendo-toolbar-button> -->
+
+        <!-- <kendo-toolbar-buttongroup>
+            <kendo-toolbar-button kendoEditorCreateLinkButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorUnlinkButton></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-button kendoEditorInsertFileButton></kendo-toolbar-button>
+        <kendo-toolbar-button kendoEditorInsertImageButton></kendo-toolbar-button>
+        <kendo-toolbar-button kendoEditorViewSourceButton></kendo-toolbar-button>
+        <kendo-toolbar-button kendoEditorCleanFormattingButton></kendo-toolbar-button>
+        <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+        <kendo-toolbar-buttongroup>
+            <kendo-toolbar-button kendoEditorAddColumnBeforeButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorAddColumnAfterButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorAddRowBeforeButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorAddRowAfterButton></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-buttongroup>
+            <kendo-toolbar-button kendoEditorDeleteColumnButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorDeleteRowButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorDeleteTableButton></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-buttongroup>
+            <kendo-toolbar-button kendoEditorMergeCellsButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorSplitCellButton></kendo-toolbar-button>
+        </kendo-toolbar-buttongroup>
+        <kendo-toolbar-button kendoEditorPrintButton></kendo-toolbar-button> -->
+      </kendo-editor>
+    </div>
+  </div>
+  <!-- adjuntos -->
+  <!-- <div class="row px-2 mb-2">
+    <div class="col-md-2 align-self-center">
+      <div class="text-start">Adjuntos:</div>
+    </div>
+    <div class="col-md-10">
+      <kendo-grid
+        [kendoGridBinding]="gridArchivosAdjuntos?.data"
+        [loading]="gridArchivosAdjuntos.loading">
+        <ng-template kendoGridNoRecordsTemplate>
+          No se encontraron archivos adjuntos.
+       </ng-template>
+        <kendo-grid-column
+          field="nombreArchivo"
+          title="Nombre Archivo"
+          [headerClass]="'text-center'"
+          [width]="350"
+        ></kendo-grid-column>
+        <kendo-grid-command-column
+          title="Descargar"
+          [width]="50">
+          <ng-template
+            kendoGridCellTemplate
+            let-dataItem="dataItem">
+            <div class="d-flex justify-content-center">
+              <button class="btn btn-light px-4" (click)="descargarAdjunto(dataItem)">
+                <fa-icon [icon]="['fas','download']"></fa-icon>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div> -->
+  <!-- botones -->
+  <div class="row px-2">
+    <div class="text-center">
+      <button
+        class="btn botonEnvio mx-1 btn-rc-hover-effect"
+        [disabled]="isButtonDisabled"
+        (click)="sendMessageAcrossMandrill()"
+      >
+        Enviar
+      </button>
+      <button class="btn botonCancelar mx-1 btn-rc-hover-effect" (click)="cerrarModal()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</form>

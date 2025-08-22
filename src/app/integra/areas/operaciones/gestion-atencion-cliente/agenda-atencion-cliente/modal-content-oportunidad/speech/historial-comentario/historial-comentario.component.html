@@ -1,0 +1,301 @@
+<mat-expansion-panel
+  class="mt-2"
+  style="background-color: #f5f5f5; padding-top: 30px; border: transparent"
+  [expanded]="flag"
+>
+<mat-expansion-panel-header class="enuciadoHeader">
+  <mat-panel-title >Historial de Comentarios
+
+  </mat-panel-title>
+  <div class="col" style=" margin-right: 12px;  justify-content: end;
+display: flex;">
+<button (click)="openModalComentario(modalCreacionComentario)" style="background: #0079FF;
+border-radius: 10px; color: white; border: none; padding: 10px;" >
+<fa-icon [icon]="['fas', 'plus']"></fa-icon>
+  Añadir comentario</button>
+</div>
+</mat-expansion-panel-header>
+
+<table mat-table *ngIf="dataSourceComentariosPagoAcademico != null && dataSourceComentariosPagoAcademico.data.length > 0" [dataSource]="dataSourceComentariosPagoAcademico" style="width:100%">
+  <ng-container matColumnDef="tableComentariosPagoAcademico-fecha">
+      <th mat-header-cell *matHeaderCellDef style="width: 15%"> Fecha </th>
+      <td mat-cell *matCellDef="let element" style="vertical-align: top; text-align: center;"> {{element.fechaCreacion}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tableComentariosPagoAcademico-tipo">
+      <th mat-header-cell *matHeaderCellDef style="width: 70%"> Comentario </th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngFor="let items of element.categorias">
+          <span class="estilocatpago" style="background-color: {{ items.idTipoSeguimientoAlumnoCategoria === 1 ? '#D5FFE1' : items.idTipoSeguimientoAlumnoCategoria === 2 ? '#C8E0FF' : 'transparent' }}">
+            {{ items.idTipoSeguimientoAlumnoCategoria === 1 ? 'Pagos' : items.idTipoSeguimientoAlumnoCategoria === 2 ? 'Académico' : 'Otro' }}
+          </span>
+          <span class="estilocategoria" style="font-weight: bold; font: normal normal bold 14px/17px Roboto;"> Categoría: </span> <span class="estilocategoria"> {{items.tipoCategoria}} </span>
+          <br>
+          <p style="margin-top:10px">{{items.comentario}}</p>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tableComentariosPagoAcademico-usuario">
+      <th mat-header-cell *matHeaderCellDef> Usuario Creación </th>
+      <td mat-cell *matCellDef="let element" style="vertical-align: top;"> {{element.usuarioCreacion}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['tableComentariosPagoAcademico-fecha','tableComentariosPagoAcademico-tipo','tableComentariosPagoAcademico-usuario']"></tr>
+    <tr mat-row *matRowDef="let myRowData; columns: ['tableComentariosPagoAcademico-fecha','tableComentariosPagoAcademico-tipo','tableComentariosPagoAcademico-usuario']"></tr>
+</table>
+<mat-paginator appCustomPaginator [ngStyle]="{'display': (dataSourceComentariosPagoAcademico.data.length > 0) ? 'block' : 'none'}" [pageSizeOptions]="[5,10,15,20]" [pageSize]="5"></mat-paginator>
+
+
+  <!-- <table class="table" style="max-height: 500px; padding-top: 10px; margin-top: 15px;">
+  <thead style=" color: white;">
+    <tr>
+      <th style="
+      text-align: center;background-color: #FF6113; border-radius: 10px 0 0 0 ;
+  ">Fecha</th>
+      <th style="
+      text-align: center; background-color: #FF6113;
+  ">Comentario</th>
+      <th style="
+      text-align: center; background-color: #FF6113; border-radius: 0 10px 0 0 ;
+  ">Usuario Creación</th>
+    </tr>
+  </thead>
+  <tbody style="background-color:#ffffff ;">
+    <tr *ngFor="let item of paginacion.paginatedData; trackBy: trackByFn ">
+      <td style="text-align: center; border-right: 1px solid lightgray !important; border-bottom: none !important;">{{item.fechaCreacion}}</td>
+      <td style="border-right: 1px solid lightgray !important; border-bottom: none !important;">
+        <tr *ngFor="let items of item.categorias">
+          <td>
+
+            <span class="estilocatpago" style="background-color: {{ items.idTipoSeguimientoAlumnoCategoria === 1 ? '#D5FFE1' : items.idTipoSeguimientoAlumnoCategoria === 2 ? '#C8E0FF' : 'transparent' }}">
+              {{ items.idTipoSeguimientoAlumnoCategoria === 1 ? 'Pagos' : items.idTipoSeguimientoAlumnoCategoria === 2 ? 'Académico' : 'otro' }}
+            </span>
+            <span class="estilocategoria" style="font-weight: bold; font: normal normal bold 14px/17px Roboto;"> Categoría: </span> <span class="estilocategoria"> {{items.tipoCategoria}} </span>
+
+            <br><p>{{items.comentario}}</p>
+          </td>
+
+        </tr>
+      </td>
+      <td style="border-right: 1px solid lightgray !important; border-bottom: none !important;">
+        {{item.usuarioCreacion}}
+      </td>
+
+    </tr>
+  </tbody>
+</table>
+
+
+<div class="row">
+  <nav>
+    <ul class="pagination">
+      <li
+        class="page-item"
+        [ngClass]="{ disabled: paginacion.currentPage === 1 }"
+      >
+        <a
+          class="page-link"
+          (click)="goToPreviousPage(paginacion, convertedData)"
+          aria-label="Go to previous page"
+        >
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      <li
+        *ngFor="let pageNumber of paginacion.pageNumbers; let i = index"
+        class="page-item"
+        [ngClass]="{ active: paginacion.currentPage === i + 1 }"
+      >
+        <a
+          class="page-link"
+          (click)="goToPage(pageNumber, paginacion, convertedData)"
+          [attr.aria-label]="'Página ' + (i + 1)"
+        >
+          {{ pageNumber }}
+        </a>
+      </li>
+
+      <li
+        class="page-item"
+        [ngClass]="{
+          disabled: paginacion.currentPage === paginacion.totalPages
+        }"
+      >
+        <a
+          class="page-link"
+          (click)="goToNextPage(paginacion, convertedData)"
+          aria-label="Go to next page"
+        >
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+    <div style="align-items: center;">
+      <select [(ngModel)]="paginacion.itemsPerPage" (change)="updatePagination(paginacion, convertedData)">
+        <option
+        *ngFor="let item of pages"
+        [value]="item === 'Todos' ? convertedData.length : item"
+        >
+          {{item}}
+        </option>
+      </select>
+      <span style="font-size: 12px;">
+        Ítems por página
+      </span>
+    </div>
+  </nav>
+</div> -->
+
+  <loading [loading]="loadingGuardar"></loading>
+</mat-expansion-panel>
+
+<!-- Modal creacion-->
+
+<ng-template #modalCreacionComentario let-modal>
+  <div class="modal-content">
+    <div class="modal-header" style="background-color: #ff6113">
+      <h2
+        (click)="openModalComentario(modalCreacionComentario)"
+        class="modal-title mb-0"
+        style="color: #ffffff"
+      >
+        Añadir Comentario
+      </h2>
+    </div>
+    <div class="modal-body">
+      <div class="row" style="padding-bottom: 50px">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #d5ffe1;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Pagos
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaPago"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaPago"
+              [valueField]="'id'"
+              [filterable]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioPago"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo:</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #cbe4ff;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Académico
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaAcademico"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaAcademico"
+              [valueField]="'id'"
+              [kendoDropDownFilter]="filterSettings"
+              [filterable]="true"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioAcademico"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 30px">
+      <div class="col" style="display: flex; justify-content: end">
+        <button
+          class="botonModalcomentario"
+          style="
+            background-color: #0079ff;
+            color: white;
+            border-radius: 8px;
+            width: 100px;
+            height: 40px;
+            border: none;
+          "
+          (click)="guardarComentarios()"
+        >
+          Guardar
+        </button>
+      </div>
+      <div class="col" style="display: flex; justify-content: initial">
+        <button
+          class="botonModalcomentario"
+          style="
+            color: #0079ff;
+            border: solid 2px #0079ff;
+            border-radius: 8px;
+            background-color: white;
+            width: 100px;
+            height: 40px; /* Add the hover effect styles here */
+            transition: background-color 0.2s ease-in-out,
+              color 0.2s ease-in-out;
+            /* Adjust transition properties as desired */
+            cursor: pointer; /* Optional: Set cursor to indicate interactivity */
+          "
+          (click)="modal.close()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

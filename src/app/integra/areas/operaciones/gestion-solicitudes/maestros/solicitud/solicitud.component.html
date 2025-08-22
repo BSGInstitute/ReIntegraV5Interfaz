@@ -1,0 +1,576 @@
+<div class="card border-primary" #reporte>
+  <div class="card-header pb-0 bg-color-material">
+    <div class="col text-aling-center">
+      <h2 class="mb-2 text-white" style="text-align: center">
+        (M) Solución
+      </h2>
+    </div>
+  </div>
+
+  <div class="card-body p-4">
+    <ng-template #modalTipoReporte let-modal>
+        <app-loader *ngIf="loaderModal"></app-loader>
+        <div class="modal-header bg-primary-header-modal">
+          <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+            {{ isNew ? "Nueva Solución" : "Modificar Solución" }}
+          </h3>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form class="k-form k-form-horizontal" [formGroup]="formCategoria">
+            <fieldset class="k-form-fieldset">
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                      <label [for]="nombreTipoReporte" class="k-label">
+                        <span
+                          >Tipo de Solicitud <span class="text-danger fw-bold">*</span></span
+                        >
+                      </label>
+        
+                      <kendo-dropdownlist
+                        #nombreTipoReporte
+                        formControlName="nombreTipoReporte"
+                        [kendoDropDownFilter]="filterSettings2"
+                        class="d-flex"
+                        size="medium"
+                        [data]="dataTipoReporte"
+                        [value]="selectedTipoReporte"
+                        (valueChange)="categoriaByTipoReporte($event)"
+                        [defaultItem]="{
+                          id: 0,
+                          nombre: 'Seleccione un Tipo de Solicitud'
+                        }"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [valuePrimitive]="true"
+      
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                      <label [for]="nombreCategoria" class="k-label">
+                        <span
+                          >Categoría <span class="text-danger fw-bold">*</span></span
+                        >
+                      </label>
+        
+                      <kendo-dropdownlist
+                        #nombreCategoria
+                        [disabled]="isDisabledCategoria"
+                        [value]="selectedCategoria"
+                        formControlName="nombreCategoria"
+                        class="d-flex"
+                        size="medium"
+                        [kendoDropDownFilter]="filterSettings2"
+                        [data]="dataCategoriaFiltro"
+                        (valueChange)="subCategoriaByCategoria($event)"
+                        [defaultItem]="{
+                          id: 0,
+                          nombre: 'Seleccione una Categoria'
+                        }"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                 
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="nombreSubCategoria" class="k-label">
+                      <span>Sub Categoria <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-dropdownlist
+                        #nombreSubCategoria
+                        [disabled]="isDisabledSubCategoria"
+                        [value]="selectedSubCategoria"
+                        formControlName="nombreSubCategoria"
+                        class="d-flex"
+                        size="medium"
+                        [kendoDropDownFilter]="filterSettings2"
+                        [data]="dataSubCategoriaFiltro"
+                        (valueChange)="obtenerCategoriaValue($event)"
+                        [defaultItem]="{
+                          id: null,
+                          nombre: 'Seleccione una SubCategoria'
+                        }"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="nombreSolicitud" class="k-label">
+                      <span>Descripción de la Solución <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-textbox
+                      #nombreSolicitud
+                      size="medium"
+                      placeholder="Descripción"
+                      formControlName="nombreSolicitud"
+                      [clearButton]="true"
+                      inputValidSpaceDir
+                      [maxlength]="325"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="prioridad" class="k-label">
+                      <span>Prioridad <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-dropdownlist
+                        #prioridad
+                        formControlName="prioridad"
+                        class="d-flex"
+                        size="medium"
+                        [data]="dataPrioridad"
+                        [kendoDropDownFilter]="filterSettings2"
+                        [defaultItem]="{
+                          id: null,
+                          nombre: 'Seleccione una Prioridad'
+                        }"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="nombreAreaRevision" class="k-label">
+                      <span>Area Revision <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-dropdownlist
+                        #nombreAreaRevision
+                        formControlName="nombreAreaRevision"
+                        class="d-flex"
+                        size="medium"
+                        [kendoDropDownFilter]="filterSettings2"
+                        [data]="dataPersonalArea"
+                        (valueChange)="personalByArea($event)"
+                        [defaultItem]="{
+                          id: 0,
+                          nombre: 'Seleccione área'
+                        }"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="nombrePersonalRevision" class="k-label">
+                      <span>Personal Revision <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-dropdownlist
+                        #nombrePersonalRevision
+                        formControlName="nombrePersonalRevision"
+                        class="d-flex"
+                        size="medium"
+                        [kendoDropDownFilter]="filterSettings2"
+                        [data]="dataPersonalRevisionFiltro"
+                        [defaultItem]="{
+                          id: 0,
+                          nombres: 'Seleccione personal'
+                        }"
+                        textField="nombres"
+                        valueField="id"
+                        [valuePrimitive]="true"
+                      >
+                     
+                      </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="nombreAreaSolucion" class="k-label">
+                      <span>Area Solucion <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-dropdownlist
+                        #nombreAreaSolucion
+                        formControlName="nombreAreaSolucion"
+                        class="d-flex"
+                        size="medium"
+                        [data]="dataPersonalArea"
+                        [kendoDropDownFilter]="filterSettings2"
+                        (valueChange)="personalByAreaSolucion($event)"
+                        [defaultItem]="{
+                          id: 0,
+                          nombre: 'Seleccione área'
+                        }"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="nombrePersonalSolucion" class="k-label">
+                      <span>Personal Solución <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-dropdownlist
+                        #nombrePersonalSolucion
+                        formControlName="nombrePersonalSolucion"
+                        class="d-flex"
+                        [kendoDropDownFilter]="filterSettings2"
+                        size="medium"
+                        [data]="dataPersonalSolucionFiltro"
+                        [defaultItem]="{
+                          id: 0,
+                          nombres: 'Seleccione personal'
+                        }"
+                        [textField]="'nombres'"
+                        [valueField]="'id'"
+                        [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="k-form-buttons m-0">
+            <button
+              kendoButton
+              *ngIf="isNew"
+              themeColor="primary"
+              (click)="crearSubCategoria()"
+            >
+              Guardar
+            </button>
+            <button
+              kendoButton
+              *ngIf="!isNew"
+              themeColor="tertiary"
+              (click)="actualizarSubCategoria()"
+            >
+              Actualizar
+            </button>
+      
+            <button
+              themeColor="error"
+              kendoButton
+              (click)="modal.dismiss('Cross click')"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </ng-template>
+      
+      <ng-template #modalVerTipoReporte let-modal>
+        <div class="modal-body">
+          <div class="modal-header bg-primary-header-modal">
+            <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+              URL para campañas
+            </h3>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              aria-label="Close"
+              (click)="modal.dismiss('Cross click')"
+            ></button>
+          </div>
+          <form class="k-form k-form-horizontal">
+            <fieldset class="k-form-fieldset">
+              <div class="row">
+                <div class="col-sm-12 col-md-12">
+                  <kendo-formfield style="padding: 16px" orientation="horizontal">
+                    <label class="k-label">
+                      <span>Programa <span class="text-danger fw-bold">*</span></span>
+                    </label>
+                    <kendo-grid-spacer></kendo-grid-spacer>
+                    <kendo-dropdownlist
+                      class="d-flex"
+                      size="medium"
+                      [data]=""
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccione un Programa'
+                      }"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                    >
+                    </kendo-dropdownlist>
+      
+                    <div class="col-sm-12">
+                      <label id="inputModal1" class="control-label">
+                        {{ "lb" }}
+                      </label>
+                    </div>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </ng-template>
+      <!-- modal ver -->
+      <div class="">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body p-4">
+                <div class="row">
+                  <div></div>
+                  <div class="col">
+                    <ng-template
+                      #cellTemplateGrid
+                      let-dataItem="dataItem"
+                      let-field="field"
+                      let-itemValue="itemValue"
+                    >
+                      <ng-container
+                        *ngIf="field == 'fechaCreacionCampania'; else gridTempDefault"
+                      >
+                        {{ itemValue | date : "dd-MM-yyyy" }}
+                      </ng-container>
+                      <ng-template #gridTempDefault>
+                        {{ itemValue }}
+                      </ng-template>
+                    </ng-template>
+      
+                    <kendo-grid
+                      [kendoGridBinding]="gridTipoSubCategoria.data"
+                      [loading]="gridTipoSubCategoria.loading"
+                      (dataStateChange)="gridTipoSubCategoria.onStateChange($event)"
+                      [pageable]="true"
+                      [filterable]="true"
+                      [pageSize]="15"
+                      [skip]="gridTipoSubCategoria.gridState.skip"
+                      [sort]="gridTipoSubCategoria.gridState.sort"
+                    >
+                      <ng-template kendoGridToolbarTemplate>
+                        <button
+                          kendoButton
+                          icon="reload"
+                          fillMode="flat"
+                          themeColor="secondary"
+                          (click)="reloadSolicitudes()"
+                        ></button>
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                        <button
+                          kendoButton
+                          [themeColor]="'primary'"
+                          icon="plus"
+                          (click)="abrirModalTipoReporte(true, null)"
+                        >
+                          Agregar
+                        </button>
+                      </ng-template>
+                      <!-- <kendo-grid-column field="id" title="Id" [filterable]="false">
+                        </kendo-grid-column> -->
+                      <kendo-grid-column
+                        field="idTipoReporte"
+                        title="Tipo de Solicitud"
+                        headerClass="header-grid-single"
+                        [filterable]="false"
+                        [width]="250"
+                        [hidden]="true"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="nombreReporte"
+                        title="Tipo de Solicitud"
+                        headerClass="header-grid-single"
+                        [width]="250"
+                      ></kendo-grid-column>
+                      <kendo-grid-column
+                        field="idCategoria"
+                        title="Nombre"
+                        
+                        [filterable]="false"
+                        [width]="250"
+                        [hidden]="true"
+                      ></kendo-grid-column>
+                      <kendo-grid-column
+                        field="nombreCategoria"
+                        title="Categoria"
+                        headerClass="header-grid-single"
+                        [width]="250"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="idSubCategoria"
+                        title="Nombre"
+                        [filterable]="false"
+                        [width]="250"
+                        [hidden]="true"
+                      ></kendo-grid-column>
+                      <kendo-grid-column
+                        field="nombreSubCategoria"
+                        title="SubCategoria"
+                        headerClass="header-grid-single"
+                        [width]="250"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="idSolicitud"
+                        title="idSolicitud"
+                        [filterable]="false"
+                        [width]="250"
+                        [hidden]="true"
+                      ></kendo-grid-column>
+                      <kendo-grid-column
+                        field="nombreSolicitud"
+                        title="Descripción Solución"
+                        headerClass="header-grid-single"
+                        [width]="250"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="prioridad"
+                        title="Prioridad"
+                        headerClass="header-grid-single"
+                        [width]="250"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="idAreaRevision"
+                        title="Area"
+                        [filterable]="false"
+                        [width]="250"
+                        [hidden]="true"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="areaRevisión"
+                        title="Area Responsable Revisión"
+                        headerClass="header-grid-single"
+                        [width]="250"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="idPersonalRevision"
+                        title="Nombre"
+                        [filterable]="true"
+                        [width]="250"
+                        [hidden]="true"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="personalRevision"
+                        title="Responsable Revision"
+                        headerClass="header-grid-single"
+                        [width]="250"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                      field="idAreaSolucion"
+                      title="idAreaSolucion"
+                      [filterable]="true"
+                      [width]="250"
+                      [hidden]="true"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="areaSolucion"
+                      title="Area Responsable Solucion"
+                      headerClass="header-grid-single"
+                      [width]="250"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idPersonalSolucion"
+                      title="idPersonalSolucion"
+                      [filterable]="false"
+                      [width]="250"
+                      [hidden]="true"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="personalSolución"
+                      title="Responsable Solucion"
+                      headerClass="header-grid-single"
+                      [width]="250"
+                    >
+                    </kendo-grid-column>
+                      <kendo-grid-command-column title="Opciones" headerClass="header-grid-single" [width]="250">
+                        <ng-template
+                          kendoGridCellTemplate
+                          let-isNew="isNew"
+                          let-dataItem="dataItem"
+                          let-rowindex="rowindex"
+                        >
+                          <div class="w-100 d-flex justify-content-center">
+                            <button
+                              kendoButton
+                              themeColor="warning"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Editar"
+                              (click)="abrirModalTipoReporte(false, dataItem)"
+                            >
+                              <span class="k-icon k-i-edit k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoButton
+                              themeColor="error"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Eliminar"
+                              (click)="mostrarMensajeEliminar(dataItem, rowindex)"
+                            >
+                              <span class="k-icon k-i-delete k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-command-column>
+                    </kendo-grid>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+  </div>
+</div>
+

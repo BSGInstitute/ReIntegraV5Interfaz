@@ -1,0 +1,312 @@
+<div class="card border-primary">
+  <div class="card-header pb-0 bg-color-#2b89b3"style="background-color:#2b89b3">
+    <div class="row">
+      <div class="col">
+        <h2 class="mb-2 text-white">
+          (R) Reporte Indicadores Operativos
+        </h2>
+      </div>
+      <div class="col d-flex justify-content-end">
+        <button
+          kendoButton
+          themeColor="success"
+          icon="search"
+          role="button"
+          (click)="generarReporte()"
+          [disabled]="procesoEnvio"
+        >
+          Buscar
+        </button>
+        <!-- <button
+          kendoButton
+          themeColor="success"
+          icon="search"
+          role="button"
+          (click)="generarReporteRPruebas()"
+          [disabled]="procesoEnvio"
+        >
+          Buscar Prueba
+        </button> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <form [formGroup]="formFiltroIndicadores" orientation="horizontal">
+      <div class="row">
+        <div class="col">
+          <label [for]="asesores" class="k-label">
+            <span>Asesores</span>
+          </label>
+        </div>
+        <div class="col">
+          <kendo-multiselect
+            #asesores
+            formControlName="asesores"
+            [data]="dataAsesoresFiltro"
+            placeholder="<Todos>"
+            (filterChange)="filterAsesores($event)"
+            [kendoDropDownFilter]="filterSettings"
+            [filterable]="true"
+            textField="nombres"
+            [virtual]="virtual"
+            [valuePrimitive]="true"
+            valueField="id"
+            [autoWidth]="false"
+            style="width: 300px;">
+          >
+          </kendo-multiselect>
+        </div>
+
+        <div class="col">
+          <label [for]="fechaInicio" class="k-label">
+            <span>Fecha Inicio</span>
+          </label>
+        </div>
+        <div class="col">
+          <kendo-datepicker
+            #fechaInicio
+            formControlName="fechaInicio"
+            format="dd-MM-yyyy"
+            [formatPlaceholder]="{
+              year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'
+            }"
+          ></kendo-datepicker>
+        </div>
+
+        <div class="col">
+          <label [for]="estadoPersonal" class="k-label">
+            <span>Estado del Personal</span>
+          </label>
+        </div>
+        <div class="col">
+          <kendo-dropdownlist
+            #estadoPersonal
+            [data]="estadoAsesores"
+            [defaultItem]="{ id: 1, nombre: 'Todo el personal' }"
+            (filterChange)="filterEstadosAsesores($event)"
+            textField="nombre"
+            [valuePrimitive]="true"
+            valueField="id"
+          >
+          </kendo-dropdownlist>
+        </div>
+      </div>
+    </form>
+  </div>
+  <loading [loading]="procesoEnvio"></loading>
+</div>
+<div class="card border-primary mb-3">
+  <div class="card-header">Indicadores Operativos</div>
+  <div class="card-body">
+    <div class="row my-3">
+      <div class="col-12">
+
+        <kendo-grid
+          [kendoGridBinding]="gridIndicadoresOperativos.data"
+          [rowClass]="rowCallback"
+          class="my-grid"
+        >
+
+          <ng-template kendoGridToolbarTemplate >
+            <button
+              type="button"
+              kendoGridExcelCommand
+              icon="file-excel"
+              style="color: white; background-color: green"
+            >
+              Export to Excel
+            </button>
+          </ng-template>
+        
+          <kendo-grid-column
+            field="Estado"
+            title="-"
+            [width]="250"
+            [sortable]="true"
+            [locked]="true"
+            [minResizableWidth]="30"
+            [headerStyle]="{
+              'background-color': '#ED912A',
+              color: 'white',
+              'text-aling': 'center',
+              
+              'justify-content': 'center'
+            }"
+            
+          ></kendo-grid-column>
+          <kendo-grid-column-group
+            [title]="colum.title"
+            [width]="120"
+            [minResizableWidth]="30"
+            *ngFor="let colum of columnas"
+            [headerStyle]="{
+              'background-color': 'green',
+              color: 'white',
+              'text-aling': 'center',
+              
+              'justify-content': 'center'
+            }"
+            class="text-center"
+          >
+            <kendo-grid-column
+              [field]="colum.columns[0].field"
+              title="Cantidad"
+              [width]="150"
+              [sortable]="true"
+              [minResizableWidth]="30"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'text-aling': 'center',
+                 
+                'justify-content': 'center'
+              }"
+              class="text-center"
+            ></kendo-grid-column>
+          </kendo-grid-column-group>
+          <kendo-grid-column
+            field="Total"
+            title="Total"
+            [width]="150"
+            [sortable]="true"
+            [headerStyle]="{
+              'background-color': '#ED912A',
+              color: 'white',
+              'text-aling': 'center',
+               
+              'justify-content': 'center'
+            }"
+            class="text-center"
+          ></kendo-grid-column>
+          <kendo-grid-excel fileName="Indicadores Operativos.xlsx"></kendo-grid-excel>
+        </kendo-grid>
+      </div>
+    </div>
+    <ng-container *ngFor="let itenCoordinador of grillasPorCoordinadores">
+      <div class="row my-3" style="color: #f90">
+        <h1>{{ itenCoordinador.titulo }}</h1>
+        <div class="col-12">
+          <kendo-grid
+            [kendoGridBinding]="itenCoordinador.grid.data"
+            [rowClass]="rowCallback"
+            class="my-grid"
+            [headerStyle]="{
+              'background-color': '#ED912A',
+              color: 'white',
+              'text-aling': 'center',
+               
+              'justify-content': 'center'
+            }"
+          >
+            <ng-template kendoGridToolbarTemplate class="toolbar-template">
+              <button
+                style="color: white; background-color: green"
+                type="button"
+                kendoGridExcelCommand
+                icon="file-excel"
+                themeColor="success"
+              >
+                Export to Excel
+              </button>
+            </ng-template>
+
+            <kendo-grid-column
+              field="Estado"
+              title="Indicadores Operativos"
+              [width]="250"
+              [sortable]="true"
+              [headerStyle]="{
+                'background-color': '#ED912A',
+                color: 'white',
+                'text-aling': 'center',
+                 
+                'justify-content': 'center'
+              }"
+              
+            ></kendo-grid-column>
+            <kendo-grid-column-group
+              [title]="columna.title"
+              [width]="120"
+              *ngFor="let columna of itenCoordinador.columnasGrilla"
+              [headerStyle]="{
+                'background-color': 'green',
+                color: 'white',
+                'text-aling': 'center',
+                 
+                'justify-content': 'center'
+              }"
+            >
+              <kendo-grid-column
+                [field]="columna.columns[0].field"
+                title="Cantidad"
+                [width]="150"
+                [sortable]="true"
+                [headerStyle]="{
+                  'background-color': '#27ae60',
+                  color: 'white',
+                  'text-aling': 'center',
+                   
+                  'justify-content': 'center'
+                }"
+                class="text-center"
+              ></kendo-grid-column>
+            </kendo-grid-column-group>
+            <kendo-grid-column
+              field="Total"
+              title="Total"
+              [width]="150"
+              [sortable]="true"
+              [headerStyle]="{
+                'background-color': '#ED912A',
+                color: 'white',
+                'text-aling': 'center',
+                 
+                'justify-content': 'center'
+              }"
+              class="text-center"
+            ></kendo-grid-column>
+            <kendo-grid-excel
+                                        fileName="Reporte Indicadores de {{
+                                          itenCoordinador.titulo 
+                                        }}.xlsx"
+                                      ></kendo-grid-excel>
+          </kendo-grid>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <loading [loading]="procesoEnvio"></loading>
+</div>
+
+<!-- <div class="card border-primary mb-3">
+  <div class="card-header">aqui va el nombre del asesor</div>
+  <div class="card-body">
+    <kendo-grid
+      [kendoGridBinding]="gridIndicadoresOperativosIndividual.data"
+      style="height: 600px"
+    >
+      <ng-template kendoGridToolbarTemplate>
+        <button kendoGridPdfCommand>
+          <span class="k-icon k-i-file-pdf"></span>Exportar a PDF
+        </button>
+      </ng-template>
+      <kendo-grid-column-group title="Asesoras">
+        <kendo-grid-column
+          field="nameF"
+          [title]="''"
+          [width]="150"
+          [minResizableWidth]="30"
+        ></kendo-grid-column>
+
+        <kendo-grid-column
+          *ngFor="let col of datosAsesoresGrup"
+          [field]="col.fecha"
+          [title]="col.formatofecha"
+          [width]="150"
+          [sortable]="col.orden"
+        ></kendo-grid-column>
+      </kendo-grid-column-group>
+    </kendo-grid>
+  </div>
+</div> -->

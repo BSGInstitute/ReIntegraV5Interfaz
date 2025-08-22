@@ -1,0 +1,568 @@
+<div class="card mt-3">
+    <div class="card-body k-form k-form-horizontal">
+        <div class="row" style="text-align:center">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-8" style="margin-left: -41px;">
+                <div class="row">
+                    <h4 class="col-sm-3"> Programa Matriculado </h4>
+                    <div class="col-sm-8">
+                        <kendo-dropdownlist
+                            [data]="programasMatriculados"
+                            [ngModel]="programasMatriculados?.length > 0 ? matricualSeleccionada : null"
+                            (valueChange)="valueChangePrograma($event)"
+                            [valuePrimitive]="true"
+                            [valueField]="'idMatriculaCabecera'"
+                            [textField]="'pEspecifico'"
+                            [style.width.px]="500">
+                        >
+                        </kendo-dropdownlist>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="card border-primary mx-3">
+        <div class="card-header pb-0" style="background-color: #2b89b3;">
+            <h2 class="mb-2 text-white text-center">
+                Cronograma de AutoEvaluaciones:
+            </h2>
+        </div>
+        <div class="card-body">
+            <kendo-tabstrip
+            [keepTabContent]="true"
+            [animate]="false"
+            [tabAlignment]="'center'"
+            >
+            <kendo-tabstrip-tab
+            class="justify-content-center"
+            title="Cronograma Actual"
+            [selected]="true"
+            >
+            <ng-template kendoTabContent>
+                <div class="card mt-1">
+                    <div class="card-body k-form k-form-horizontal">
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-8">
+                                <div class="row">
+                                    <h4 class="col-sm-2">Curso:</h4>
+                                    <div class="col-sm-10">
+                                        <kendo-dropdownlist
+                                            [data]="cursoCronogramaMoodle"
+                                            [ngModel]="cursoCronogramaMoodleSeleccionado"
+                                            [defaultItem]="{idCursoMoodle: 0, nombreCurso: '<Todos los cursos>'}"
+                                            (valueChange)="valueChangeCurso($event)"
+                                            [valuePrimitive]="true"
+                                            [valueField]="'idCursoMoodle'"
+                                            [textField]="'nombreCurso'"
+                                            placeholder="Seleccione un curso"
+                                            [style.width.px]="500">
+                                        >
+                                        </kendo-dropdownlist>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row px-2 d-flex justify-content-center" style="padding: 17px;">
+                            <div class="d-flex justify-content-center" *ngIf="cursoCronogramaMoodle?.length > 0">
+                                <a class="col-3 px-1" target="_blank" href="{{enlaceVerAulaVirtual}}">Ver Aula</a>
+                                <a class="col-3 px-1" target="_blank" href="{{enlaceListaActividades}}">Lista de Actividades</a>
+                                <a class="col-3 px-1" target="_blank" href="{{enlaceEntrarAulaComo}}">Entrar al Aula como</a>
+                                <a class="col-3 px-1" target="_blank" href="{{enlaceLibroCalificaciones}}">Libro de Calificaciones</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <kendo-grid
+                            [kendoGridBinding]="gridCronogramaEvaluaciones.data"
+                            [loading]="gridCronogramaEvaluaciones.loading"
+                            [resizable]="true"
+                            >
+                                <kendo-grid-column
+                                field="id"
+                                title="Id"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="idMatriculaCabecera"
+                                title="IdMatriculaCabecera"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="idCursoMoodle"
+                                title="IdCursoMoodle"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="idEvaluacionMoodle"
+                                title="IdEvaluacionMoodle"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="fechaRendicion"
+                                title="Evaluacion Rendida"
+                                >
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <div class="text-center">
+                                            <span
+                                            [ngClass]="dataItem.fechaRendicion != null ? 'k-icon k-i-success k-icon-md' : 'k-icon k-i-error k-icon-md' "
+                                            [ngStyle]="dataItem.fechaRendicion != null ? {color: 'green'} : {color: 'red'}"
+                                            >
+                                            </span>
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="fechaCronograma"
+                                title="Fecha Cronograma"
+                                >
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <div class="text-center">
+                                            {{dataItem.fechaCronograma !== null ?  (dataItem.fechaCronograma | date: 'dd/MM/yyyy') : ""}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="fechaRendicion"
+                                title="Fecha Rendicion"
+                                >
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <div class="text-center">
+                                            {{dataItem.fechaRendicion !== null ?  (dataItem.fechaRendicion | date: 'dd/MM/yyyy') : "Pendiente"}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="nombreEvaluacion"
+                                title="Evaluacion"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="nombreCurso"
+                                title="Curso"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="nota"
+                                title="Nota"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="id"
+                                title="Acciones"
+                                >
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <button type="button" class="btn btn-success" [disabled]="dataItem.nota == null ? false : true " (click)="abrirReprogramacionEvaluacion(modalReprogramarEvaluacion,dataItem)">Reprogramar</button>
+                                    </ng-template>
+
+                                </kendo-grid-column>
+                            </kendo-grid>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            </kendo-tabstrip-tab>
+            <kendo-tabstrip-tab
+            class="justify-content-center"
+            title="Todas las Versiones">
+            <ng-template kendoTabContent>
+                <div class="card mt-3">
+                    <div class="card-body k-form k-form-horizontal">
+                        <div class="row">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-8">
+                                <div class="row">
+                                    <h4 class="col-sm-2">Version:</h4>
+                                    <div class="col-sm-10">
+                                        <kendo-dropdownlist
+                                            [data]="versionCronograma"
+                                            [defaultItem]="{idMatriculaCabecera: 0, version: '<Versiones>'}"
+                                            (valueChange)="valueChangeVersion($event)"
+                                            [valuePrimitive]="true"
+                                            [valueField]="'idMatriculaCabecera'"
+                                            [textField]="'version'"
+                                            placeholder="Seleccione un curso"
+                                            [style.width.px]="100">
+                                        >
+                                        <!-- [(ngModel)]="versionCronograma[0].idMatriculaCabecera" -->
+
+                                        </kendo-dropdownlist>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <kendo-grid
+                            [kendoGridBinding]="gridCronogramaEvaluacionVersionEspecifica.data"
+                            [resizable]="true"
+                            >
+                                <kendo-grid-column
+                                field="id"
+                                title="Id"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="idMatriculaCabecera"
+                                title="IdMatriculaCabecera"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="idCursoMoodle"
+                                title="IdCursoMoodle"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="idEvaluacionMoodle"
+                                title="IdEvaluacionMoodle"
+                                [hidden]="true"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="fechaRendicion"
+                                title="Evaluacion Rendida"
+                                >
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <div class="text-center">
+                                            <span
+                                            [ngClass]="dataItem.fechaRendicion != null ? 'k-icon k-i-success k-icon-md' : 'k-icon k-i-error k-icon-md' "
+                                            [ngStyle]="dataItem.fechaRendicion != null ? {color: 'green'} : {color: 'red'}"
+                                            >
+                                            </span>
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="fechaCronograma"
+                                title="Fecha Cronograma"
+                                >
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <div class="text-center">
+                                            {{dataItem.fechaCronograma !== null ?  (dataItem.fechaCronograma | date: 'dd/MM/yyyy') : ""}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="fechaRendicion"
+                                title="Fecha Rendicion"
+                                >
+                                    <ng-template kendoGridCellTemplate let-dataItem>
+                                        <div class="text-center">
+                                            {{dataItem.fechaRendicion !== null ?  (dataItem.fechaRendicion | date: 'dd/MM/yyyy') : "Pendiente"}}
+                                        </div>
+                                    </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="nombreEvaluacion"
+                                title="Evaluacion"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="nombreCurso"
+                                title="Curso"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                field="version"
+                                title="Version"
+                                >
+                                </kendo-grid-column>
+                            </kendo-grid>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            </kendo-tabstrip-tab>
+            </kendo-tabstrip>
+
+        </div>
+    </div>
+    <div class="card border-primary m-3">
+        <div class="card-header pb-0" style="background-color: #2b89b3;">
+            <h2 class="mb-2 text-white text-center">
+                Cursos Inscritos
+            </h2>
+        </div>
+        <div class="card-body">
+            <kendo-grid
+            [kendoGridBinding]="gridPespecificoMatriculaAlumno.data"
+            [loading]="gridPespecificoMatriculaAlumno.loading"
+            [resizable]="true"
+            (detailExpand)="onExpandHandler($event)"
+            >
+                <kendo-grid-column
+                field="nombre"
+                title="Curso"
+                [width]="320"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                field="fechaInicio"
+                title="Fecha Inicio"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                field="fechaFin"
+                title="Fecha Termino"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                field="tipoMatricula"
+                title="Tipo Matricula"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                field="tipo"
+                title="Modalidad"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                field="promedio"
+                title="Promedio"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                field="tipoMatricula"
+                title="Opciones"
+                >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                            <br>
+                            <button class="btn btn-sm btn-warning mb-3"  *ngIf="dataItem.tipoMatricula == 'Regular' && !dataItem.nombre.toUpperCase().includes('IRCA')" (click)="recuperacionCurso(modalRecuperacion,dataItem)">
+                                <span style="color: rgb(255, 255, 255);">
+                                    RECUPERACIÓN
+                                </span>
+                            </button>
+
+                            <button class="btn btn-sm btn-info mb-3" *ngIf="dataItem.tipoMatricula == 'Regular' && !dataItem.nombre.toUpperCase().includes('IRCA')" (click)="recuperacionSesion(modalRecuperacionSesion,dataItem)">
+                                <span style="color: rgb(255, 255, 255);">
+                                    RECUPERACIÓN <br> SESIÓN
+                                </span>
+                            </button>
+                            <button class="btn btn-sm btn-primary mb-3" *ngIf="dataItem.nombre.toUpperCase().includes('IRCA')" (click)="cambiarCursoIrca(modalCambiarCurso,dataItem)">
+                                <span style="color: rgb(255, 255, 255);">
+                                    CAMBIAR <br> CURSO
+                                </span>
+                            </button>
+                        </div>
+                    </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoGridDetailTemplate let-dataItem>
+                    <kendo-grid
+                    [kendoGridBinding]="dataItem.grid.data"
+                    [loading]="dataItem.grid.loading"
+                    [resizable]="true"
+                    [pageable]="true"
+                    [pageSize]="10"
+                    >
+                    <kendo-grid-column
+                    field="nombrePEspecifico"
+                    title="Criterio"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                    field="porcentaje"
+                    title="Porcentaje"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                    field="nota"
+                    title="Nota"
+                    >
+                    </kendo-grid-column>
+                    </kendo-grid>
+                </ng-template>
+            </kendo-grid>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalReprogramarEvaluacion let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title mb-0" style="color: #2e6ea6;">Reprogramar Evaluación
+            </h2>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-5">
+                            <h4 id="Evaluacion"><strong>Evaluación: </strong></h4>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" class="form-control" id="nombreEvaluacion" [(ngModel)]="objReprogramarEvaluacion.nombreEvaluacion" required data-required-msg="Ingrese Nombre" disabled />
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-5">
+                            <h4 id="FechaEstimada"><strong>Fecha Cronograma: </strong></h4>
+                        </div>
+                        <div class="col-7">
+                            <input type="date" class="form-control"[ngModel]="objReprogramarEvaluacion.fechaCronograma | date:'yyyy-MM-dd' : 'UTC' " required data-required-msg="Ingrese Nombre" disabled style="width: 100%;" />
+                            <!-- <kendo-datepicker [(value)]="fechaCronograma"></kendo-datepicker> -->
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-5">
+                            <h4 id="Dias"><strong>Días a Recorrer desde Hoy:</strong></h4>
+                        </div>
+                        <div class="col-7">
+                            <kendo-dropdownlist 
+                            [data]="listaDias" 
+                            [(ngModel)]="objReprogramarEvaluacion.dias"
+                            (valueChange)="valueChangeDias($event)"
+                            [valuePrimitive]="true"
+                            [valueField]="'value'"
+                            [textField]="'text'"> </kendo-dropdownlist>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5">
+                            <h4 id="FechaNueva"><strong>Fecha Nueva: </strong></h4>
+                        </div>
+                        <div class="col-7">
+                            <input type="date" class="form-control input-group-lg" [ngModel]="fechaActual | date:'yyyy-MM-dd' " required data-required-msg="Seleccione un valor" disabled />
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-5">
+                            <h4><strong>Recorre todo el Cronograma: </strong></h4>
+                        </div>
+                        <div class="col-7">
+                            <input type="checkbox" class="form-check-input" [(ngModel)]="objReprogramarEvaluacion.recorreCronograma"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="reprogramarEvaluacion()">Reprogramar</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close()">Cerrar</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #modalRecuperacion let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title mb-0" style="color: #2e6ea6;">RECUPERACIÓN PARA: {{objRecuperacion.curso}}
+            </h3>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-4">
+                <h4 id="Evaluacion"><strong>Cursos Relacionados</strong></h4>
+            </div>
+            <div class="col-8">
+                <kendo-dropdownlist
+                [data]="inputPEspecificoRelacionado" 
+                [(ngModel)]="objRecuperacion.idPEspecifico"
+                [valuePrimitive]="true"
+                [filterable]="true"
+                (filterChange)="filterRecuperacionCurso($event)"
+                [valueField]="'idPEspecifico'"
+                [textField]="'nombre'"
+                >
+                </kendo-dropdownlist>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="guardarRecuperarCurso()">Recuperar</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close()">Cerrar</button>
+    </div>
+</ng-template>
+
+<ng-template #modalRecuperacionSesion let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title mb-0" style="color: #2e6ea6;">RECUPERACIÓN SESIÓN PARA: {{objRecuperacion.curso}}
+            </h3>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-4">
+                <h4><strong>Cursos Disponibles</strong></h4>
+            </div>
+            <div class="col-8">
+                <kendo-dropdownlist
+                [data]="inputPEspecificoRelacionadoDisponible" 
+                (valueChange)="mostrarsesiones($event)"
+                [valuePrimitive]="true"
+                [filterable]="true"
+                (filterChange)="filterRecuperacionSesion($event)"
+                [valueField]="'idPEspecifico'"
+                [textField]="'nombre'"
+                >
+                </kendo-dropdownlist>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <h4><strong>Listado Sesiones:</strong></h4>
+            </div>
+            <div class="col-8">
+                <ol>
+                <ng-container *ngFor="let item of sesiones; let i = index">
+                    <div class=" row">
+                        
+                            <li> 
+                                <input type="checkbox" class="form-check-input" [(ngModel)]="item.check"  />
+                                {{item.fechaInicio | date:'dd/MM/yyyy h:mm a' }}
+                            </li>
+                    </div>
+                </ng-container>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="guardarRecuperarSesion()">Recuperar</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close()">Cerrar</button>
+    </div>
+</ng-template>
+
+<ng-template  #modalCambiarCurso let-modal>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title mb-0" style="color: #2e6ea6;">CAMBIAR CURSO PARA: {{objCambiarCurso.curso}}
+            </h3>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-4">
+                    <h4 id="Evaluacion"><strong>Cursos Relacionados</strong></h4>
+                </div>
+                <div class="col-8">
+                    <kendo-dropdownlist
+                    [data]="inputPEspecificoRelacionadoIrca" 
+                    [(ngModel)]="objCambiarCurso.idPEspecificoRelacionado"
+                    [valuePrimitive]="true"
+                    [filterable]="true"
+                    (filterChange)="filterRecuperacionCursoIrca($event)"
+                    [valueField]="'idPEspecifico'"
+                    [textField]="'nombre'"
+                    >
+                    </kendo-dropdownlist>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" (click)="guardarCambiarCursoIrca()">Guardar</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close()">Cerrar</button>
+        </div>
+    </div>
+</ng-template>

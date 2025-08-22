@@ -1,0 +1,101 @@
+<div class="contenedor general">
+  <div class="titulo">
+    <h2>Catálogo de uso de comprobantes</h2>
+  </div>
+
+  <div class="acciones">
+    <button mat-stroked-button color="primary" (click)="ObtenerUsoComprobante()">
+      <mat-icon>refresh</mat-icon> Actualizar
+    </button>
+
+    <button mat-flat-button color="primary" class="botonAgregar" (click)="abrirModal(false)">
+      <mat-icon>add</mat-icon> Agregar
+    </button>
+  </div>
+
+  <kendo-grid
+    [kendoGridBinding]="listaListaUsoComprobante"
+    [loading]="loading"
+    [pageSize]="5"
+    [sortable]="true"
+    [reorderable]="true"
+    [resizable]="true"
+    [columnMenu]="{ filter: true }"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: true,
+      previousNext: true,
+      position: 'bottom'
+    }"
+  >
+    <kendo-grid-column   headerClass="justify-content-center k-grid-header " field="cfdiUse" title="Codigo" [width]="120" [filterable]="true"></kendo-grid-column>
+    <kendo-grid-column   headerClass="justify-content-center k-grid-header " field="descripcion" title="Descripción" [width]="200" [filterable]="true"></kendo-grid-column>
+
+    <kendo-grid-command-column     title="Acciones" [width]="150"  headerClass="justify-content-center text-center k-grid-header-command">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 8px">
+          <button mat-icon-button color="accent" (click)="editar(dataItem)" style="color: #ffcc00">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="eliminarUsoComprobante(dataItem)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </ng-template>
+    </kendo-grid-command-column>*
+  </kendo-grid>
+</div>
+
+
+<!-- Modal para agregar o editar -->
+<div class="modal-overlay" *ngIf="modalVisible">
+  <mat-spinner *ngIf="loading" class="spinner-superpuesto" diameter="60"></mat-spinner>
+  <div *ngIf="loading" class="overlay-bloqueo-modal"></div>
+
+
+  <div
+    class="modal-centered"
+    [@modalAnimado]="animacionEstado"
+    (@modalAnimado.done)="cuandoTerminaAnimacion($event)"
+  >
+
+
+    <div class="modal-header">
+      <h3>{{ esEditar ? 'Editar Registro' : 'Agregar Nuevo Registro' }}</h3>
+      <button mat-icon-button (click)="cancelar()" class="close-btn">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+     <mat-form-field appearance="outline" class="w-full" class="w-full" [class.mat-form-field-invalid]="errorCodigo">
+      <mat-label>Código</mat-label>
+      <input matInput [(ngModel)]="nuevoCodigo">
+      <mat-error *ngIf="errorCodigo">{{ errorCodigo }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full" class="w-full" [class.mat-form-field-invalid]="errorDescripcion">
+      <mat-label>Descripción</mat-label>
+      <input matInput [(ngModel)]="nuevaDescripcion">
+      <mat-error *ngIf="errorDescripcion">{{ errorDescripcion }}</mat-error>
+    </mat-form-field>
+
+    <div class="botones">
+      <button mat-stroked-button color="basic" class="btn btn-lg" (click)="cancelar()">Cancelar</button>
+      <button *ngIf="!esEditar" mat-flat-button color="primary" class="btn btn-lg"
+      (click)="insertarUsoComprobante()" [disabled]="loading">
+      Guardar
+      </button>
+
+      <button *ngIf="esEditar" mat-flat-button color="accent" class="btn btn-lg"
+            (click)="actualizarUsoComprobante()" [disabled]="loading">
+      Actualizar
+      </button>
+
+
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,678 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Lista de Partners</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridPartner
+              [kendoGridBinding]="gridPartners.data"
+              [loading]="gridPartners.loading"
+              (remove)="gridPartners.removeHandler($event)"
+              [resizable]="true"
+              [pageSize]="10"
+              [sortable]="true"
+              filterable="menu"
+              [pageable]="{ pageSizes: [10, 20, 30] }"
+            >
+              <!-- filterable="menu" -->
+              <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+                <button
+                  kendoButton
+                  icon="reload"
+                  fillMode="flat"
+                  themeColor="primary"
+                  (click)="obtener()"
+                ></button>
+
+                <kendo-grid-spacer></kendo-grid-spacer>
+
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="abrirModalPartner(modalPartners, true)"
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Editar"
+                [width]="60"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- Editar -->
+                    <button
+                      kendoButton
+                      fillMode="solid"
+                      rounded="large"
+                      themeColor="warning"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="
+                        abrirModalPartner(modalPartners, false, dataItem)
+                      "
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <!-- Eliminar -->
+                    <button
+                      kendoButton
+                      themeColor="error"
+                      icon="trash"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="eliminar(dataItem.id)"
+                    ></button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header bg-color-material pb-0">
+            <h2 class="text-white mb-2">Lista de Partners</h2>
+          </div>
+          <div class="card-body p-4" id="grillaAgendaTab"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Actualizar Datos Partners -->
+<ng-template #modalPartners let-modal>
+  <div>
+    <h1
+      class="mi-titulo"
+      style="font-size: 30px; margin-left: 20px; margin-top: 15px"
+    >
+      Datos del Partner
+    </h1>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12" id="tabpartnerPw">
+        <kendo-tabstrip [keepTabContent]="true">
+          <kendo-tabstrip-tab [selected]="true">
+            <ng-template kendoTabTitle>
+              <span>Datos del Partner</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <!-- CONTENT -->
+              <form
+                class="k-form k-form-horizontal"
+                [formGroup]="formDatosPartners"
+                class="k-form"
+              >
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="nombre"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Nombre </b>
+                      </label>
+                      <kendo-textbox #nombre formControlName="nombre">
+                      </kendo-textbox>
+                      <div
+                        class="error-message"
+                        *ngIf="
+                          formDatosPartners.get('nombre').invalid &&
+                          formDatosPartners.get('nombre').touched
+                        "
+                      >
+                        Ingrese Nombre
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                  <div
+                    class="col-sm-12 col-md-5"
+                    style="display: flex; align-items: center"
+                  >
+                    <kendo-label
+                      class="k-checkbox-label"
+                      [for]="checked"
+                      style="font-weight: bold"
+                      text="Visualizar Portal Web"
+                    >
+                      <input
+                        type="checkbox"
+                        #checked
+                        formControlName="checked"
+                        kendoCheckBox
+                      />
+                    </kendo-label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="nombre"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Logo Principal</b>
+                      </label>
+                      <kendo-textbox
+                        #imgPrincipal
+                        formControlName="imgPrincipal"
+                      >
+                      </kendo-textbox>
+
+                      <div
+                        class="error-message"
+                        *ngIf="
+                          formDatosPartners.get('imgPrincipal').invalid &&
+                          formDatosPartners.get('imgPrincipal').touched
+                        "
+                      >
+                        Ingrese Logo Principal
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-sm-12 col-md-6">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="nombre"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Descripcion Alt</b>
+                      </label>
+                      <kendo-textbox
+                        #imgPrincipalAlf
+                        formControlName="imgPrincipalAlf"
+                      >
+                      </kendo-textbox>
+                      <div
+                        class="error-message"
+                        *ngIf="
+                          formDatosPartners.get('imgPrincipalAlf').invalid &&
+                          formDatosPartners.get('imgPrincipalAlf').touched
+                        "
+                      >
+                        Ingrese Logo Alterno
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12 col-md-10">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="nombre"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Descripcion General</b>
+                      </label>
+                      <kendo-textarea
+                        #descripcionCorta
+                        formControlName="descripcionCorta"
+                        resizable="none"
+                        [rows]="5"
+                      >
+                      </kendo-textarea>
+                      <div
+                        class="error-message"
+                        *ngIf="
+                          formDatosPartners.get('descripcionCorta').invalid &&
+                          formDatosPartners.get('descripcionCorta').touched
+                        "
+                      >
+                        Ingrese Descripcion Breve
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12 col-md-10">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="nombre"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Descripcion Breve</b>
+                      </label>
+                      <kendo-textarea
+                        #descripcion
+                        formControlName="descripcion"
+                        resizable="none"
+                        [rows]="5"
+                      >
+                      </kendo-textarea>
+                      <div
+                        class="error-message"
+                        *ngIf="
+                          formDatosPartners.get('descripcion').invalid &&
+                          formDatosPartners.get('descripcion').touched
+                        "
+                      >
+                        Ingrese una descripción corta.
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </form>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Contactos</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <!-- CONTENT -->
+              <div>
+                <h1>Registro de Contactos</h1>
+              </div>
+              <div class="content">
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-grid
+                      #kgridContactos
+                      [kendoGridBinding]="gridContactos.data"
+                      [loading]="gridContactos.loading"
+                      (remove)="gridContactos.removeHandler($event)"
+                      (cancel)="gridContactos.cancelHandler($event)"
+                      (save)="gridContactos.saveHandler($event)"
+                      (edit)="gridContactos.editHandler($event)"
+                      (add)="gridContactos.addHandler($event)"
+                      [selectable]="true"
+                      [pageSize]="10"
+                      [pageable]="true"
+                      [resizable]="true"
+                    >
+                      <ng-template kendoGridToolbarTemplate>
+                        <button
+                          kendoGridAddCommand
+                          fillMode="flat"
+                          themeColor="primary"
+                          icon="plus"
+                        >
+                          Agregar Contacto
+                        </button>
+                      </ng-template>
+
+                      <kendo-grid-column
+                        field="nombres"
+                        title="Nombres"
+                        [width]="90"
+                        headerClass="justify-content-center"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.nombres }}
+                        </ng-template>
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-dataItem="dataItem"
+                          let-formGroup="formGroup"
+                        >
+                          <input
+                            kendoGridFocusable
+                            [formControl]="formGroup.get('nombres')"
+                            class="k-textbox"
+                          />
+                          <!-- Mensaje de error para campo requerido -->
+                          <div
+                            class="error-message"
+                            *ngIf="
+                              formGroup.get('nombres').hasError('required') &&
+                              formGroup.get('nombres').touched
+                            "
+                          >
+                            Este campo es requerido.
+                          </div>
+                          <!-- Mensaje de error para solo letras -->
+                          <div
+                            class="error-message"
+                            *ngIf="
+                              formGroup.get('nombres').hasError('pattern') &&
+                              formGroup.get('nombres').touched
+                            "
+                          >
+                            Solo se permiten letras.
+                          </div>
+                        </ng-template>
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        field="apellidos"
+                        title="Apellidos"
+                        [width]="90"
+                        headerClass="justify-content-center"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="email1"
+                        title="Correo 1"
+                        [width]="120"
+                        headerClass="justify-content-center"
+                      >
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-formGroup="formGroup"
+                          let-dataItem
+                        >
+                          <kendo-textbox
+                            [formControl]="formGroup.get('email1')"
+                            placeholder=""
+                          ></kendo-textbox>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="email2"
+                        title="Correo 2"
+                        [width]="120"
+                        headerClass="justify-content-center"
+                      >
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-formGroup="formGroup"
+                          let-dataItem
+                        >
+                          <kendo-textbox
+                            [formControl]="formGroup.get('email2')"
+                            placeholder=""
+                          ></kendo-textbox>
+                        </ng-template>
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        field="telefono1"
+                        title="Telefono 1"
+                        [width]="90"
+                        [headerClass]="'justify-content-center'"
+                        [filterable]="false"
+                      >
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-formGroup="formGroup"
+                          let-dataItem
+                        >
+                          <kendo-textbox
+                            [formControl]="formGroup.get('telefono1')"
+                            placeholder=""
+                            (keydown)="numericValidator($event)"
+                          ></kendo-textbox>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="telefono2"
+                        title="Telefono 2"
+                        [width]="90"
+                        [headerClass]="'justify-content-center'"
+                        [filterable]="false"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <ng-container>
+                            <p>{{ dataItem.telefono2 }}</p>
+                          </ng-container>
+                        </ng-template>
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-formGroup="formGroup"
+                          let-dataItem
+                        >
+                          <kendo-textbox
+                            [formControl]="formGroup.get('telefono2')"
+                            placeholder=""
+                            (keydown)="numericValidator($event)"
+                          >
+                          </kendo-textbox>
+                        </ng-template>
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        title="Comando"
+                        [width]="110"
+                        headerClass="justify-content-center"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <div class="text-center">
+                            <button
+                              kendoGridEditCommand
+                              rounded="large"
+                              themeColor="warning"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Editar"
+                            >
+                              <span class="k-icon k-i-edit k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoGridRemoveCommand
+                              themeColor="error"
+                              fillMode="solid"
+                              rounded="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Eliminar"
+                            >
+                              <span class="k-icon k-i-trash k-icon-20"></span>
+                            </button>
+
+                            <button
+                              kendoGridSaveCommand
+                              themeColor="primary"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              [disabled]="gridContactos.formGroup?.invalid"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Guardar"
+                            >
+                              <span class="k-icon k-i-save k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoGridCancelCommand
+                              themeColor="secondary"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Cancelar"
+                            >
+                              <span class="k-icon k-i-cancel k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-column>
+                    </kendo-grid>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CONTENT -->
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Beneficios</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <!-- CONTENT -->
+              <div>
+                <h1>Registro de Beneficios</h1>
+              </div>
+              <div class="content">
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-grid
+                      #kgridCronograma
+                      [kendoGridBinding]="gridBeneficios.data"
+                      [loading]="gridBeneficios.loading"
+                      (remove)="gridBeneficios.removeHandler($event)"
+                      (cancel)="gridBeneficios.cancelHandler($event)"
+                      (save)="gridBeneficios.saveHandler($event)"
+                      (add)="gridBeneficios.addHandler($event)"
+                      (edit)="gridBeneficios.editHandler($event)"
+                      [pageSize]="10"
+                      [pageable]="true"
+                      [resizable]="true"
+                    >
+                      <ng-template kendoGridToolbarTemplate>
+                        <button
+                          kendoGridAddCommand
+                          fillMode="flat"
+                          themeColor="primary"
+                          icon="plus"
+                        >
+                          <!-- (click)="ObternerContactos()" -->
+                          Agregar Beneficio
+                        </button>
+                      </ng-template>
+
+                      <kendo-grid-column
+                        field="descripcion"
+                        title="Beneficio"
+                        [width]="90"
+                        headerClass="justify-content-center"
+                        [editable]="true"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Comando"
+                        [width]="90"
+                        headerClass="justify-content-center"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <div class="text-center">
+                            <button
+                              kendoGridEditCommand
+                              rounded="large"
+                              themeColor="warning"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Editar"
+                            >
+                              <span class="k-icon k-i-edit k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoGridRemoveCommand
+                              themeColor="error"
+                              fillMode="solid"
+                              rounded="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Eliminar"
+                            >
+                              <span class="k-icon k-i-trash k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoGridSaveCommand
+                              themeColor="primary"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              [disabled]="gridBeneficios.formGroup?.invalid"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Guardar"
+                            >
+                              <span class="k-icon k-i-save k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoGridCancelCommand
+                              themeColor="secondary"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Cancelar"
+                            >
+                              <span class="k-icon k-i-cancel k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-column>
+                    </kendo-grid>
+                  </div>
+                </div>
+              </div>
+              <!-- CONTENT -->
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      (click)="guardarPartner()"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizar()"
+      [disabled]="enProcesoSolicitud"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>

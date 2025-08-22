@@ -1,0 +1,543 @@
+<!-- Grilla -->
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Asignación de programas críticos</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <kendo-grid
+                [kendoGridBinding]="gridGrupoFiltroPrograma.data"
+                [filterable]="gridGrupoFiltroPrograma.filterable"
+                [sortable]="gridGrupoFiltroPrograma.sortable"
+                [resizable]="gridGrupoFiltroPrograma.resizable"
+                [pageable]="gridGrupoFiltroPrograma.pageable"
+                [skip]="gridGrupoFiltroPrograma.gridState.skip"
+                [pageSize]="gridGrupoFiltroPrograma.gridState.take"
+                [sort]="gridGrupoFiltroPrograma.gridState.sort"
+                [loading]="loaderGrid"
+              >
+                <ng-template kendoGridToolbarTemplate>
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="ObtenerGrupoFIltroProgramaCritico()"
+                  ></button>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <button
+                    kendoButton
+                    themeColor="primary"
+                    icon="plus"
+                    (click)="abrirModal(true)"
+                  >
+                    Agregar
+                  </button>
+                </ng-template>
+
+                <kendo-grid-column
+                  field="nombre"
+                  title="Nombre"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="descripcion"
+                  title="Descripcion"
+                  [filterable]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-command-column
+                  title="Editar"
+                  [width]="150"
+                  [headerClass]="'header-grid-integra'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                    <div class="w-100 d-flex justify-content-center">
+                      <button
+                        kendoButton
+                        themeColor="warning"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        (click)="abrirModal(false, dataItem)"
+                        placement="top"
+                        ngbTooltip="Editar"
+                      >
+                        <span class="k-icon k-i-edit k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoGridRemoveCommand
+                        themeColor="error"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        (click)="eliminarGrupo(dataItem)"
+                        ngbTooltip="Eliminar"
+                      >
+                        <span class="k-icon k-i-delete k-icon-20"></span>
+                      </button>
+
+                      <button
+                        kendoButton
+                        themeColor="secondary"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        (click)="abrirModal2(false, dataItem)"
+                        placement="top"
+                        ngbTooltip="Editar"
+                      >
+                        <span class="k-icon k-i-rows k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<!-- Modal -->
+
+<ng-template #modalGrupoFiltroFormulario let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nuevo  Datos Grupo" : "Modificar Datos Grupo " }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form
+      class="k-form k-form-horizontal"
+      [formGroup]="formGrupoFiltroPrograma"
+    >
+      <fieldset class="k-form-fieldset">
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="nombre" class="k-label">
+              <span>Nombre <span class="text-danger fw-bold">*</span></span>
+            </label>
+            <kendo-textbox
+              #nombre
+              size="medium"
+              placeholder="Nombre"
+              formControlName="nombre"
+              [clearButton]="true"
+              showErrorIcon="initial"
+              inputValidSpaceDir
+              showErrorIcon="initial"
+            >
+            </kendo-textbox>
+            <kendo-formhint>Nombre de grupo Filtro</kendo-formhint>
+            <kendo-formerror>{{ "nombre" }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="descripcion" class="k-label">
+                <span
+                  >Descripcion <span class="text-danger fw-bold">*</span></span
+                >
+              </label>
+              <kendo-textarea
+                #descripcion
+                size="medium"
+                formControlName="descripcion"
+                [style.width.px]="200"
+                resizable="auto"
+                [maxlength]=""
+              >
+                <kendo-textarea-suffix class="custom-styling">
+                  <!-- <span class="counter">{{ counter }}</span> -->
+                </kendo-textarea-suffix>
+              </kendo-textarea>
+
+              <kendo-formerror>{{ "descripcion" }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="asesores" class="k-label">
+                <span>Asesores <span class="text-danger fw-bold"></span></span>
+              </label>
+              <kendo-multiselect
+                #asesores
+                [data]="comboPersonal"
+                class="d-flex"
+                size="medium"
+                formControlName="asesores"
+                textField="nombreCompleto"
+                [valuePrimitive]="true"
+                valueField="id"
+              ></kendo-multiselect>
+
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="crearGrupoFiltro()"
+      >
+        Guardar
+      </button>
+
+      <button
+        kendoButton
+        *ngIf="!isNew"
+        themeColor="tertiary"
+        (click)="ActualizarGrupoFiltro()"
+      >
+        Actualizar
+      </button>
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- modal detalle -->
+<ng-template #detallemodalGrupoFiltroFormulario let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Asociar programa general: K. (A) Cursos Construcción
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body p-4" id="grillaAgendaTab">
+    <div class="k-loading-panel" *ngIf="loaderGeneral">
+      <div class="k-loading-panel-mask"></div>
+      <div class="k-loading-panel-wrapper">
+        <!-- tamano de loading -->
+        <mat-spinner diameter="50"></mat-spinner>
+        <div class="k-loading-panel-text fs-5 text-primary"></div>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-center mb-4">
+      <div class="col-12">
+        <div class="card-body k-form k-form-horizontal">
+          <form [formGroup]="formAsociar">
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="area" class="k-label"> Area: </label>
+                  <kendo-dropdownlist
+                    #area
+                    formControlName="area"
+                    [data]="comboArea"
+                    class="d-flex"
+                    size="medium"
+                    textField="nombre"
+                    [defaultItem]="{ nombre: 'Todas Areas...', id: null}"
+                    valueField="id"
+                    (valueChange)="changeFiltroForm($event, true)"
+                  >
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+
+              <div class="col-sm-12 col-md-6">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="estadoPrograma" class="k-label">Estado de Programa </label>
+                  <kendo-dropdownlist
+                    #estadoPrograma
+                    class="d-flex"
+                    size="medium"
+                    [data]="dataEstadoPrograma"
+                    formControlName="estadoPrograma"
+                    [defaultItem]="{ nombre: 'Todas...', id: null}"
+                    textField="nombre"
+                    (valueChange)="changeFiltroForm($event, false)"
+                    valueField="id"
+                  >
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="subArea" class="k-label"> SubArea </label>
+                  <kendo-dropdownlist
+                    #subArea
+                    formControlName="subArea"
+                    [data]="comboSubArea"
+                    class="d-flex"
+                    size="medium"
+                    textField="nombre"
+                    valueField="id"
+                    (valueChange)="changeFiltroForm($event, false)"
+                    [defaultItem]="{ nombre: 'Todas Sub Areas...', id: null}"
+                  >
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+            </div>
+          </form>
+
+          <div class="row my-4">
+            <div class="col-sm-12 col-md-6">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">No Asociados</h3>
+                </div>
+                <div class="card-body p-0">
+                  <div class="w-100">
+                    <kendo-grid
+                      [kendoGridBinding]="gridNoAsociado.data"
+                      [filterable]="'menu'"
+                      [sortable]="true"
+                      [resizable]="true"
+                      [pageable]="true"
+                      [pageSize]="10"
+                      style="max-height: 1000px"
+                      [filter]="gridNoAsociado.filter"
+                    >
+                      <kendo-grid-column
+                        field="nombreAreaCapacitacion"
+                        title="Area"
+                        [filterable]="true"
+                        [width]="80"
+                        [headerClass]="'header-grid-integra'"
+                      >
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        field="nombreSubAreaCapacitacion"
+                        title="SubArea"
+                        [filterable]="true"
+                        [width]="80"
+                        [headerClass]="'header-grid-integra'"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="nombre"
+                        title="Nombre"
+                        [width]="80"
+                        [filterable]="true"
+                        [headerClass]="'header-grid-integra'"
+                      >
+                      </kendo-grid-column>
+
+                      <kendo-grid-command-column
+                        title="Editar"
+                        [width]="50"
+                        [headerClass]="'header-grid-integra'"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                          <div class="w-100 d-flex justify-content-center">
+                            <button
+                              kendoGridRemoveCommand
+                              themeColor="base"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              (click)="agregarAsociado(dataItem)"
+                              ngbTooltip="Agregar"
+                            >
+                              <span class="k-icon k-i-check k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-command-column>
+                      <ng-template
+                      kendoPagerTemplate
+                      let-totalPages="totalPages"
+                      let-currentPage="currentPage"
+                      >
+                        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                        <kendo-pager-numeric-buttons
+                          [buttonCount]="5"
+                        ></kendo-pager-numeric-buttons>
+                        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                        <!-- <kendo-pager-input></kendo-pager-input> -->
+                        <kendo-pager-info></kendo-pager-info>
+                        <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                    </ng-template>
+
+                    </kendo-grid>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Asociados</h3>
+                </div>
+                <div class="card-body p-0">
+                  <div class="w-100">
+                    <kendo-grid
+                      [kendoGridBinding]="gridAsociado.data"
+                      [pageSize]="10"
+                      [filterable]="gridAsociado.filterable"
+                      [sortable]="gridAsociado.sortable"
+                      [resizable]="gridAsociado.resizable"
+                      [pageable]="true"
+                      style="max-height: 1000px"
+                    >
+                      <kendo-grid-column
+                        field="nombre"
+                        title="Nombre"
+                        [filterable]="true"
+                        [headerClass]="'header-grid-integra'"
+                        [width]="80"
+
+                      >
+                      </kendo-grid-column>
+
+                      <kendo-grid-command-column
+                        title="Editar"
+                        [width]="30"
+                        [headerClass]="'header-grid-integra'"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                          <div class="w-100 d-flex justify-content-center">
+                            <button
+                              kendoButton
+                              themeColor="base"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              (click)="removerAsociado(dataItem)"
+                              placement="top"
+                              ngbTooltip="Editar"
+                            >
+                              <span class="k-icon k-i-close k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-command-column>
+
+
+
+
+                      <kendo-grid-column
+                        title="Asignar Venta"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'small'
+                        }"
+                        [width]="20"
+                        field="estado"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <input
+                            type="checkbox"
+                            #select
+                            [(ngModel)]="dataItem.asignaVenta"
+                            kendoCheckBox
+                          />
+                        </ng-template>
+                      </kendo-grid-column>
+                      <ng-template
+                      kendoPagerTemplate
+                      let-totalPages="totalPages"
+                      let-currentPage="currentPage"
+                      >
+                        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                        <kendo-pager-numeric-buttons
+                          [buttonCount]="5"
+                        ></kendo-pager-numeric-buttons>
+                        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                        <!-- <kendo-pager-input></kendo-pager-input> -->
+                        <kendo-pager-info></kendo-pager-info>
+                        <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                    </ng-template>
+
+                    </kendo-grid>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        themeColor="tertiary"
+        (click)="guardarAsociacion()"
+      >
+        Asociar
+      </button>
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+</ng-template>

@@ -1,0 +1,1043 @@
+<div class="card border-primary mb-3 rpav">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="mb-2 text-white text-center">
+      (R) Reporte de programas Criticos
+    </h2>
+  </div>
+
+  <div class="card-body p-4">
+    <form [formGroup]="formFiltroProgramasCritcos" orientation="horizontal">
+      <div class="row">
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="reporte" class="k-label">
+                <span>Reporte</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-dropdownlist
+                #reporte
+                [data]="DataSourceReporte"
+                formControlName="reporte"
+                placeholder="<Todos>"
+                textField="clave"
+                [valuePrimitive]="true"
+                valueField="valor"
+                [defaultItem]="{
+                  clave: 'Seleccione un Reporte...',
+                  valor: null
+                }"
+                 (valueChange)="accion($event)"
+
+              >
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="pais" class="k-label">
+                <span>Pais</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #pais
+                formControlName="pais"
+                [data]="dataPais"
+                placeholder="<Todos>"
+                textField="nombrePais"
+                valueField="id"
+                [defaultItem]="{id:null,nombrePais:'Seleccionar'}"
+                [valuePrimitive]="true"
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="area" class="k-label">
+                <span>Area</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #area
+                formControlName="area"
+                [data]="filtros.filtroAreaCapacitacion"
+                [filterable]="true"
+                (valueChange)="valueChangeArea($event)"
+                (filterChange)="
+                  filterChangeForm($event, 'filtroAreaCapacitacion')
+                "
+                [valuePrimitive]="true"
+                textField="nombre"
+                valueField="id"
+                [autoClose]="false"
+
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+
+        </div>
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="grupo" class="k-label">
+                <span>Grupo</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #grupo
+                formControlName="grupos"
+                [data]="dataGrupos"
+                placeholder="<Todos>"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="estadoPrograma" class="k-label">
+                <span>Estado Programa </span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #estadoPrograma
+                formControlName="estadoPrograma"
+                [data]="dataEstado"
+                placeholder="<Todos>"
+                [filterable]="true"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="subarea" class="k-label">
+                <span>Sub Area </span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #subarea
+                formControlName="subarea"
+                [data]="filtros.filtroSubAreaCapacitacion"
+                [filterable]="true"
+                (filterChange)="
+                  filterChangeForm(
+                    $event,
+                    'filtroSubAreaCapacitacion'
+                  )
+                "
+                [valuePrimitive]="true"
+                textField="nombre"
+                valueField="id"
+                [autoClose]="false"
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span> Periodo </span>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+
+                [data]="dataPeriodo"
+                textField="nombre"
+                valueField="id"
+               [valuePrimitive]="true"
+                formControlName="periodo"
+
+
+              > </kendo-multiselect>
+            </div>
+          </div>
+
+        </div>
+
+
+      </div>
+    </form>
+  </div>
+
+
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-12 d-flex justify-content-end">
+        <button
+          kendoButton
+          class="send-button"
+          icon="search"
+          style="height: 35px"
+          themeColor="success"
+          (click)="GenerarReportes()"
+
+        >
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card ">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Reportes</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-12">
+              <div *ngIf="mostrarGrillaAsignacion">
+              <kendo-grid
+                [loading]=""
+                [kendoGridBinding]="gridReporteAsignacion.data"
+                [loading]="gridReporteAsignacion.loading"
+
+
+                [sortable]="true"
+                [height]="600"
+               filterable="menu"
+
+                [groupable]="{ showFooter: true }"
+
+                [group]="state.group"
+                (groupChange)="onGroupChange($event)"
+                (dataStateChange)="
+                gridReporteAsignacion.onStateChange($event)
+
+              "
+              [rowClass]="rowCallback"
+              id="my-grid"
+
+
+              >
+                <ng-template kendoGridToolbarTemplate>
+                  <button
+                    kendoGridExcelCommand
+                    type="button"
+                    icon="file-excel"
+                  >
+                    Export to Excel
+                  </button>
+                </ng-template>
+
+                <kendo-grid-column
+                  field="nombreGrupoFiltroProgramaCritico"
+                  title="GRUPOS"
+                  [filterable]="true"
+                  [width]="200"
+                  [locked]="true"
+                  [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+
+                >
+
+
+                </kendo-grid-column>
+
+                <!-- <kendo-grid-column field="nombreGrupoFiltroProgramaCritico"
+                title="Price" [width]="220">
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates">
+                    <span>
+                      Total Price in group: {{ aggregates.presupuestoDiarioConjuntoAnuncio.sum.toFixed(2) }}
+                    </span>
+                  </ng-template>
+                </kendo-grid-column> -->
+                <kendo-grid-column
+                field="asignacionPais"
+                title="PAISES A LOS CUALES SE LE ASIGNA
+                DATOS"
+                [filterable]="true"
+                [width]="200"
+                [locked]="true"
+                [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+              >
+
+              </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombrePersonal"
+                  title="ASESOR"
+                  [filterable]="true"
+                  [locked]="true"
+                  [width]="200"
+                  [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombrePaisPersonal"
+                  title="PAÍS DEL ASESOR"
+                  [filterable]="true"
+                  [locked]="true"
+                  [width]="200"
+                  [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+                >
+
+
+                </kendo-grid-column>
+
+
+                  <kendo-grid-column
+                    field="bnC_MuyAlta"
+                    title="BNC LAN MUY ALTA"
+                    [filterable]="false"
+                    [width]="80"
+                    headerClass="header-yellowColunm justify-content-center k-grid-header "
+
+                  >
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSumaPorGrupo(group).toFixed(0) }}
+                    </span>
+                  </ng-template>
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["bnC_MuyAlta"]?.sum}}
+                   </ng-template>
+
+                  </kendo-grid-column>
+
+                  <kendo-grid-column
+                    field="bnC_AltaMediaRemarketing"
+                    [filterable]="false"
+                    title="BNC MEDIA Y ALTA REMARKETING"
+                    [width]="80"
+                    headerClass="header-yellowColunm  justify-content-center k-grid-header "
+                  > <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSumaPorGrupo2(group).toFixed(0) }}
+                    </span>
+                  </ng-template>
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["bnC_AltaMediaRemarketing"]?.sum}}
+                   </ng-template>
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="bnC_Historico"
+                    title="BNC HIS"
+                    [filterable]="false"
+                    [width]="80"
+                    headerClass="header-yellowColunm  justify-content-center k-grid-header "
+                  >
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSumaPorGrupo3(group).toFixed(0) }}
+                    </span>
+                  </ng-template>
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["bnC_Historico"]?.sum}}
+                   </ng-template>
+
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="bnC_TotalDatos"
+                    title="TOTAL BNC"
+                    [width]="80"
+                    [filterable]="false"
+                    headerClass="header-yellowColunm  justify-content-center k-grid-header "
+                  >
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSumaPorGrupo4(group).toFixed(0) }}
+                    </span>
+                  </ng-template>
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["bnC_TotalDatos"]?.sum}}
+                   </ng-template>
+                  </kendo-grid-column>
+
+
+                <kendo-grid-column-group
+                title="SEGUIMIENTO"
+                headerClass="header-orangeColunm  justify-content-center k-grid-header "
+                [width]="1200"
+              >
+                <kendo-grid-column
+                  [width]="10"
+                  [hidden]="true"
+                ></kendo-grid-column>
+                <kendo-grid-column-group
+                  headerClass="header-orangeColunm   justify-content-center k-grid-header "
+                  [width]="1200"
+                >
+                  <kendo-grid-column
+                    field="rn"
+                    title="RN"
+                    [filterable]="false"
+                    [width]="65"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+
+                  >
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSeguimientoRN(group).toFixed(0) }}
+                    </span>
+                  </ng-template>
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["rn"]?.sum}}
+                   </ng-template>
+
+                  </kendo-grid-column>
+
+                  <kendo-grid-column
+                    field="it"
+                    [filterable]="false"
+                    title="IT"
+                    [width]="65"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                  >
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSeguimientoIT(group).toFixed(0) }}
+                    </span>
+                  </ng-template>
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["it"]?.sum}}
+                   </ng-template>
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="ip"
+                    title="IP"
+                    [filterable]="false"
+                    [width]="85"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  ">
+                    <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                      <span>
+                        {{ calcularSeguimientoIP(group).toFixed(0) }}
+                      </span>
+                    </ng-template>
+                    <ng-template kendoGridFooterTemplate>
+                      {{totalAsig["ip"]?.sum}}
+                     </ng-template>
+
+
+
+
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="pf"
+                    title="PF"
+                    [width]="65"
+                    [filterable]="false"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                  >
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSeguimientoPF(group).toFixed(0) }}
+                    </span>
+                  </ng-template>
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["pf"]?.sum}}
+                   </ng-template>
+
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="ic"
+                    title="IC"
+                    [filterable]="false"
+                    [width]="65"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                  >
+                  <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                    <span>
+                      {{ calcularSeguimientoIC(group).toFixed(0) }}
+                    </span>
+                  </ng-template>\
+                  <ng-template kendoGridFooterTemplate>
+                    {{totalAsig["ic"]?.sum}}
+                   </ng-template>
+
+
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                  field="seguimiento"
+                  title="TOTAL"
+                  [filterable]="false"
+                  [width]="65"
+                  headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                >
+                <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                  <span>
+                    {{ calcularSeguimientoTOTAL(group).toFixed(0) }}
+                  </span>
+                </ng-template>
+                <ng-template kendoGridFooterTemplate>
+                  {{totalAsig["seguimiento"]?.sum}}
+                 </ng-template>
+
+                </kendo-grid-column>
+
+                </kendo-grid-column-group>
+
+
+
+              </kendo-grid-column-group>
+              <kendo-grid-column
+              field="totalDatos"
+              title="TOTAL DATOS"
+              [width]="100"
+              [filterable]="false"
+              headerClass="header-blueColunm justify-content-center k-grid-header "
+            >
+            <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+              <span>
+                {{ calcularSeguimientoTOTALDATOS(group).toFixed(0) }}
+              </span>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate>
+              {{totalAsig["totalDatos"]?.sum}}
+             </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="iS_M"
+              title="IS / M"
+              [width]="100"
+              [filterable]="false"
+              headerClass="header-redColunm  justify-content-center k-grid-header "
+            >
+            <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+              <span>
+                {{ calcularIS_M(group).toFixed(0) }}
+              </span>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate>
+              {{totalAsig["iS_M"]?.sum}}
+             </ng-template>
+
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="cantidadOtrosGrupos"
+              title="DATOS DE OTROS GRUPOS"
+              [width]="100"
+              [filterable]="false"
+              headerClass="header-blueColunm  justify-content-center k-grid-header "
+            >
+            <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+              <span>
+                {{ calcularCantidadOtrosGrupos(group).toFixed(0) }}
+              </span>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate>
+              {{totalAsig["cantidadOtrosGrupos"]?.sum}}
+             </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="cantidadGrupoActual"
+              title="TOTAL DATOS CORRESPONDIENTES DEL GRUPO"
+              [width]="100"
+              [filterable]="false"
+              headerClass="header-blueColunm  justify-content-center k-grid-header "
+            >
+            <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+              <span>
+                {{ calcularCantidadGrupoActual(group).toFixed(0) }}
+              </span>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate>
+              {{totalAsig["cantidadGrupoActual"]?.sum}}
+             </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column-group
+            title="DATOS POR PAIS"
+            headerClass="header-skyblueColunm justify-content-center k-grid-header "
+            [width]="1200"
+          >
+            <kendo-grid-column
+              [width]="10"
+              [hidden]="true"
+            ></kendo-grid-column>
+            <kendo-grid-column-group
+              headerClass="header-skyblueColunm   justify-content-center k-grid-header "
+              [width]="1200"
+            >
+              <kendo-grid-column
+                field="paises.cantidadPeru"
+                title="Peru"
+                [filterable]="false"
+                [width]="65"
+                headerClass="header-skyblueColunm  justify-content-center k-grid-header  "
+
+              >
+              <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                <span>
+                  {{ calcularCantidadPeru(group).toFixed(0) }}
+                </span>
+              </ng-template>
+              <ng-template kendoGridFooterTemplate>
+                {{totalAsig["paises.cantidadPeru"]?.sum}}
+               </ng-template>
+
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="paises.cantidadColombia"
+                [filterable]="false"
+                title="Colombia"
+                [width]="65"
+                headerClass="header-skyblueColunm  justify-content-center k-grid-header  "
+              >
+              <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                <span>
+                  {{ calcularCantidadColombia(group).toFixed(0) }}
+                </span>
+              </ng-template>
+              <ng-template kendoGridFooterTemplate>
+                {{totalAsig["paises.cantidadColombia"]?.sum}}
+               </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="paises.cantidadChile"
+                title="Chile"
+                [filterable]="false"
+                [width]="65"
+                headerClass="header-skyblueColunm  justify-content-center k-grid-header  ">
+                <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                  <span>
+                    {{ calcularCantidadChile(group).toFixed(0) }}
+                  </span>
+                </ng-template>
+                <ng-template kendoGridFooterTemplate>
+                  {{totalAsig["paises.cantidadChile"]?.sum}}
+                 </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="paises.cantidadMexico"
+                title="Mexico"
+                [width]="65"
+                [filterable]="false"
+                headerClass="header-skyblueColunm justify-content-center k-grid-header  "
+              >
+              <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                <span>
+                  {{ calcularCantidadMexico(group).toFixed(0) }}
+                </span>
+              </ng-template>
+              <ng-template kendoGridFooterTemplate>
+                {{totalAsig["paises.cantidadMexico"]?.sum}}
+               </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+              field="paises.cantidadOtros"
+                title="Otros Paises"
+                [filterable]="false"
+                [width]="65"
+                headerClass="header-skyblueColunm  justify-content-center k-grid-header  "
+              >
+              <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+                <span>
+                  {{ calcularCantidadOtrosPaises(group).toFixed(0) }}
+                </span>
+              </ng-template>
+              <ng-template kendoGridFooterTemplate>
+                {{totalAsig["paises.cantidadOtros"]?.sum}}
+               </ng-template>
+            </kendo-grid-column>
+            </kendo-grid-column-group>
+          </kendo-grid-column-group>
+          <kendo-grid-column
+          field="iS_M_Acumulado"
+          title="IS / M ACUMULADO"
+          [filterable]="false"
+          [width]="65"
+          headerClass="header-redColunm  justify-content-center k-grid-header  "
+        > <ng-template kendoGridGroupFooterTemplate let-aggregates="aggregates" let-group="group">
+          <span>
+            {{ calcularAcumulado(group).toFixed(0) }}
+          </span>
+        </ng-template>
+        <ng-template kendoGridFooterTemplate>
+          {{totalAsig["iS_M_Acumulado"]?.sum}}
+         </ng-template>
+
+        </kendo-grid-column>
+                <kendo-grid-excel
+                  [fetchData]="allData"
+                  [group]="group"
+                  fileName="ReporteProgramasCriticos.xlsx"
+                  #excelexport
+                >
+                </kendo-grid-excel>
+              </kendo-grid>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INDICADORES DE VENTAS -->
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div *ngIf="mostrarCard">
+      <div class="card ">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Indicadores de Venta</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-12">
+              <div *ngIf="mostrarGrillaVenta">
+              <kendo-grid
+
+
+                [kendoGridBinding]="gridIndicadorVenta.data"
+                [loading]="gridIndicadorVenta.loading"
+                [sortable]="true"
+                 [height]="700"
+                filterable="menu"
+                [groupable]="{ showFooter: true }"
+                scrollable="virtual"
+                [group]="state2.group"
+
+                (groupChange)="onGroupChange($event)"
+
+
+              [rowClass]="rowCallback"
+              id="my-grid"
+
+
+              >
+                <ng-template kendoGridToolbarTemplate>
+                  <button
+                    kendoGridExcelCommand
+                    type="button"
+                    icon="file-excel"
+                  >
+                    Export to Excel
+                  </button>
+                </ng-template>
+
+                <kendo-grid-column
+                  field="programaGeneral"
+                  title="PROGRAMA GENERAL"
+                  [filterable]="true"
+                  [width]="150"
+                  [locked]="true"
+                  [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+
+                >
+
+                </kendo-grid-column>
+
+
+                <kendo-grid-column
+                field="grupo"
+                title="GRUPO"
+                [filterable]="true"
+                [width]="150"
+                [locked]="true"
+                [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+              >
+
+              </kendo-grid-column>
+              <kendo-grid-column
+              field="padre"
+              title="PADRE"
+              [filterable]="true"
+              [width]="150"
+              [locked]="true"
+              [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+            >
+
+            </kendo-grid-column>
+                <kendo-grid-column
+                field="programa"
+                title="CENTRO DE COSTO"
+                [filterable]="true"
+                [width]="150"
+                [locked]="true"
+                [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+              >
+
+              </kendo-grid-column>
+                <kendo-grid-column
+                  field="fechaInicio"
+                  title="FECHA DE <br> INICIO"
+                  [filterable]="true"
+                  [locked]="true"
+                  [width]="100"
+                  [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+                ><ng-template kendoGridCellTemplate let-dataItem>
+                  {{ mostrarFechaInicio(dataItem.fechaInicio) }}
+                </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoGridFooterTemplate>
+                  TOTAL
+                </ng-template>
+
+                <kendo-grid-column
+                  field="pais"
+                  title="PAÍS DEL ASESOR"
+                  [filterable]="true"
+                  [locked]="true"
+                  [width]="100"
+                  [headerClass]="'header-grupogreen  justify-content-center k-grid-header'"
+                >
+
+
+                </kendo-grid-column>
+
+
+                  <kendo-grid-column
+                    field="area"
+                    title="AREA"
+                    [filterable]="false"
+                    [width]="100"
+                    headerClass="header-grupogreen  justify-content-center k-grid-header "
+
+                  >
+
+                  </kendo-grid-column>
+
+                  <kendo-grid-column
+                    field="subArea"
+                    [filterable]="false"
+                    title="SUBAREA"
+                    [width]="100"
+                    headerClass="header-grupogreen   justify-content-center k-grid-header "
+                  >
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="modalidad"
+                    title="MODALIDAD"
+                    [filterable]="false"
+                    [width]="100"
+                    headerClass="header-grupogreen   justify-content-center k-grid-header "
+                  >
+
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="precioPromedio"
+                    title="Precio Promedio"
+                    [width]="80"
+                    [filterable]="false"
+                    headerClass="header-grupogreen   justify-content-center k-grid-header  "
+                  >
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                  field="precioPromedio10Descuento"
+                  title="Precio  10 % Desc. (USD)"
+                  [width]="80"
+                  [filterable]="false"
+                  headerClass="header-redColunm  justify-content-center k-grid-header  "
+                >
+
+                </kendo-grid-column>
+                <kendo-grid-column
+                field="costoPrograma"
+                title="Costo por Programa (USD) "
+                [width]="80"
+                [filterable]="false"
+                headerClass="header-redColunm  justify-content-center k-grid-header  "
+              >
+
+              </kendo-grid-column>
+              <kendo-grid-column
+              field="puntoEquilibrio"
+              title="Punto Equilibrio "
+              [width]="80"
+              [filterable]="false"
+              headerClass="header-redColunm  justify-content-center k-grid-header  "
+            >
+
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            field="ingresoPromedioIS"
+            title="Ingreso IS Promedio (USD)"
+            [width]="80"
+            [filterable]="false"
+            headerClass="header-redColunm  justify-content-center k-grid-header  "
+          >
+          <ng-template kendoGridFooterTemplate>
+            Total
+          </ng-template>
+
+          </kendo-grid-column>
+
+
+          <kendo-grid-column
+          field="iS_M_Acumulado"
+          title="IS acumulado"
+          [width]="120"
+          [filterable]="false"
+          headerClass="header-redColunm justify-content-center k-grid-header"
+        >
+        <ng-template kendoGridFooterTemplate>
+         {{total["iS_M_Acumulado"]?.sum}}
+        </ng-template>
+
+
+
+        </kendo-grid-column>
+
+                <kendo-grid-column-group
+                title="SEGUIMIENTO"
+                headerClass="header-orangeColunm  justify-content-center k-grid-header "
+                [width]="1200"
+              >
+                <kendo-grid-column
+                  [width]="10"
+                  [hidden]="true"
+                ></kendo-grid-column>
+                <kendo-grid-column-group
+                  headerClass="header-orangeColunm   justify-content-center k-grid-header "
+                  [width]="1200"
+                >
+
+
+                  <kendo-grid-column
+                    field="it"
+                    [filterable]="false"
+                    title="IT"
+                    [width]="65"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                  >
+                  <ng-template kendoGridFooterTemplate>
+                    {{total["it"]?.sum}}
+                   </ng-template>
+
+
+
+
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="ip"
+                    title="IP"
+                    [filterable]="false"
+                    [width]="85"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  ">
+                    <ng-template kendoGridFooterTemplate>
+                      {{total["ip"]?.sum}}
+                     </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="pf"
+                    title="PF"
+                    [width]="65"
+                    [filterable]="false"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                  >
+                  <ng-template kendoGridFooterTemplate>
+                    {{total["pf"]?.sum}}
+                   </ng-template>
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="ic"
+                    title="IC"
+                    [filterable]="false"
+                    [width]="65"
+                    headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                  >
+                  <ng-template kendoGridFooterTemplate>
+                    {{total["ic"]?.sum}}
+                   </ng-template>
+
+
+
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                  field="seguimiento"
+                  title="TOTAL"
+                  [filterable]="false"
+                  [width]="65"
+                  headerClass="header-orangeColunm  justify-content-center k-grid-header  "
+                >
+                <ng-template kendoGridFooterTemplate>
+                  {{total["seguimiento"]?.sum}}
+                 </ng-template>
+
+
+                </kendo-grid-column>
+
+                </kendo-grid-column-group>
+
+
+
+              </kendo-grid-column-group>
+
+              <kendo-grid-column
+              field="bnc"
+              title="BNC LAM/ MUY ALTA"
+              [width]="100"
+              [filterable]="false"
+              headerClass="header-yellowColunm  justify-content-center k-grid-header "
+            >
+            <ng-template kendoGridFooterTemplate>
+              {{total["bnc"]?.sum}}
+             </ng-template>
+
+
+            </kendo-grid-column>
+
+
+              <kendo-grid-column
+              field="totalDatos"
+              title="TOTAL DATOS"
+              [width]="100"
+              [filterable]="false"
+              headerClass="header-blueColunm justify-content-center k-grid-header "
+            > <ng-template kendoGridFooterTemplate>
+              {{total["totalDatos"]?.sum}}
+             </ng-template>
+
+
+            </kendo-grid-column>
+
+
+
+            <kendo-grid-excel
+            [fetchData]="allData2"
+            [group]="group"
+            fileName="ReporteVenta.xlsx"
+            #excelexport
+          >
+          </kendo-grid-excel>
+
+              >
+              </kendo-grid>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+

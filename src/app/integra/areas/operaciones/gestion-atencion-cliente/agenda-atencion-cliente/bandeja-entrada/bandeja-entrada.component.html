@@ -1,0 +1,1220 @@
+<!-- <button type="button" (click)="descargarDocumento()">Descargar</button> -->
+<div class="content">
+  <div class="row d-flex justify-content-center">
+    <div class="col-10 mt-3" *ngIf="toogleFiltroPadre">
+      <div class="row">
+        <div class="col-sm-8 col-md-8 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="idAsesor"
+              text="Asesor"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #idAsesor
+              size="medium"
+              [data]="dataPersonalAsignado"
+              textField="nombres"
+              valueField="id"
+              [valuePrimitive]="true"
+              [(ngModel)]="idPersonalFiltro"
+              [disabled]="esCordinador"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+
+        <div class="col-sm-4 col-md-4">
+          <button
+            kendoButton
+            class="send-button"
+            icon="search"
+            themeColor="primary"
+            (click)="buscarAsesor()"
+            [disabled]="esCordinador"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content" id="tabsBandejaEntrada">
+    <kendo-tabstrip
+      [scrollable]="{ scrollButtons: buttons }"
+      [keepTabContent]="true"
+      [animate]="false"
+      (tabSelect)="onTabSelect($event)"
+    >
+      <!-- REDACTAR -->
+      <kendo-tabstrip-tab
+        *ngIf="this.idPersonal == this.idPersonalFiltro"
+        [selected]="tabsBandejaEntrada[0].selected"
+        [title]="tabsBandejaEntrada[0].titleTab"
+      >
+        <ng-template kendoTabTitle>
+          <span> {{ tabsBandejaEntrada[0].titleTab }} </span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <form [formGroup]="formRedactar">
+            <div class="contentTab w-100 ps-2 pe-2">
+              <div class="row">
+                <h3>REDACTAR</h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-textbox
+                      #asunto
+                      placeholder="Asunto:"
+                      formControlName="asunto"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-textbox
+                      #destinatario
+                      placeholder="Destinatario(s):"
+                      formControlName="destinatario"
+                    >
+                    </kendo-textbox>
+                    <kendo-formerror>Ingrese un correo valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-textbox #cc placeholder="Cc:" formControlName="cc">
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-textbox
+                      #cco
+                      placeholder="Cco:"
+                      formControlName="cco"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-dropdownlist
+                      #centroCosto
+                      [data]="comboCentroCosto"
+                      [defaultItem]="{
+                        nombre: 'Seleccione un Centro de Costo...',
+                        id: null
+                      }"
+                      [valuePrimitive]="true"
+                      textField="nombre"
+                      valueField="id"
+                      [filterable]="true"
+                      formControlName="centroCosto"
+                      (filterChange)="filterCentroCosto($event)"
+                    >
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-dropdownlist
+                      [data]="dataPlantillaMailing"
+                      [defaultItem]="{
+                        nombre: 'Seleccione una Plantilla..',
+                        id: null
+                      }"
+                      [valuePrimitive]="true"
+                      [filterable]="true"
+                      textField="nombre"
+                      valueField="idPlantilla"
+                      formControlName="plantillaMailing"
+                      (valueChange)="obtenerCuerpoCorreo($event)"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col">
+                  <input
+                    (change)="changeArchivo($event)"
+                    type="file"
+                    name="adjuntar"
+                    id="adjuntar"
+                    formControlName="adjuntar"
+                    multiple
+                  />
+                  <!-- <kendo-formfield orientation="horizontal">
+                    <kendo-fileselect
+                      formControlName="adjuntar"
+                      name="adjuntar"
+                    ></kendo-fileselect>
+                  </kendo-formfield> -->
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <kendo-formfield>
+                    <kendo-editor
+                      [pasteCleanupSettings]="pasteCleanupSettings"
+                      formControlName="mensaje"
+                      name="content"
+                      style="height: 500px"
+                      style="height: 500px"
+                    >
+                      <kendo-toolbar>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorBoldButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorItalicButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorUnderlineButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorStrikethroughButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorSubscriptButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorSuperscriptButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorAlignLeftButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAlignCenterButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAlignRightButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAlignJustifyButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-dropdownlist
+                          kendoEditorFormat
+                        ></kendo-toolbar-dropdownlist>
+                        <kendo-toolbar-dropdownlist
+                          kendoEditorFontSize
+                        ></kendo-toolbar-dropdownlist>
+                        <kendo-toolbar-dropdownlist
+                          kendoEditorFontFamily
+                        ></kendo-toolbar-dropdownlist>
+                        <kendo-toolbar-colorpicker
+                          kendoEditorForeColor
+                        ></kendo-toolbar-colorpicker>
+                        <kendo-toolbar-colorpicker
+                          kendoEditorBackColor
+                          view="gradient"
+                        ></kendo-toolbar-colorpicker>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorInsertUnorderedListButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorInsertOrderedListButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorIndentButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorOutdentButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-button
+                          kendoEditorBlockquoteButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorSelectAllButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorUndoButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorRedoButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorCreateLinkButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorUnlinkButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-button
+                          kendoEditorInsertFileButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorInsertImageButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorViewSourceButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorCleanFormattingButton
+                        ></kendo-toolbar-button>
+                        <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorAddColumnBeforeButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAddColumnAfterButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAddRowBeforeButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAddRowAfterButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorDeleteColumnButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorDeleteRowButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorDeleteTableButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorMergeCellsButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorSplitCellButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-button
+                          kendoEditorPrintButton
+                        ></kendo-toolbar-button>
+                      </kendo-toolbar>
+                    </kendo-editor>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12 d-flex justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    aria-label="Enviar"
+                    (click)="enviarCorreo()"
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </div>
+            </div>
+            <loading [loading]="loadingEnviar"></loading>
+          </form>
+        </ng-template>
+        <loading [loading]="loadingEnviar"></loading>
+      </kendo-tabstrip-tab>
+      <!-- END REDACTAR -->
+      <!-- RECIBIDOS -->
+      <kendo-tabstrip-tab
+        [selected]="tabsBandejaEntrada[1].selected"
+        [title]="tabsBandejaEntrada[1].titleTab"
+      >
+        <ng-template kendoTabTitle>
+          <span> {{ tabsBandejaEntrada[1].titleTab }} </span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <div class="contentTab w-100 ps-2 pe-2">
+            <div class="row">
+              <h3>RECIBIDOS</h3>
+            </div>
+
+            <div>
+              <kendo-grid
+                [data]="gridBandejaRecibidos.view$ | async"
+                [loading]="gridBandejaRecibidos.loading"
+                [resizable]="true"
+                [pageable]="{
+                  buttonCount: 10,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+                [pageSize]="gridBandejaRecibidos.gridState.take"
+                [skip]="gridBandejaRecibidos.gridState.skip"
+                [filter]="gridBandejaRecibidos.gridState.filter"
+                (dataStateChange)="gridBandejaRecibidos.onStateChange($event)"
+                (cellClick)="gridBandejaRecibidos.cellClick($event)"
+                filterable="menu"
+              >
+                <kendo-grid-column
+                  field="seen"
+                  title="Leido"
+                  [width]="40"
+                  [filterable]="false"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="w-100">
+                      <fa-icon
+                        *ngIf="!dataItem.seen"
+                        [icon]="['far', 'square']"
+                        class="fa-lg fs-5 fw-bold text-muted"
+                        style="cursor: pointer;"
+                      ></fa-icon>
+                      <fa-icon
+                        *ngIf="dataItem.seen"
+                        [icon]="['far', 'check-square']"
+                        class="fa-lg fs-5 fw-bold text-danger"
+                      ></fa-icon>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="remitente"
+                  title="Remitente"
+                  [width]="150"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                  >
+                    <kendo-grid-string-filter-menu
+                      [column]="column"
+                      [filter]="filter"
+                      [filterService]="filterService"
+                      [extra]="false"
+                      operator="eq"
+                    >
+                      <kendo-filter-eq-operator
+                        text="Igual a"
+                      ></kendo-filter-eq-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="asunto"
+                  title="Asunto"
+                  [width]="150"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                  >
+                    <kendo-grid-string-filter-menu
+                      [column]="column"
+                      [filter]="filter"
+                      [filterService]="filterService"
+                      [extra]="false"
+                      operator="eq"
+                    >
+                      <kendo-filter-eq-operator
+                        text="Igual a"
+                      ></kendo-filter-eq-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="fecha"
+                  title="Fecha"
+                  [width]="80"
+                  [filterable]="true"
+                  format="{0:dd/MM/yyyy}"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <p>{{ dataItem.fecha | date : "dd/MM/yyyy hh:mm a" }}</p>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoPagerTemplate>
+                  <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                  <kendo-pager-numeric-buttons
+                    [buttonCount]="10"
+                  ></kendo-pager-numeric-buttons>
+                  <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                  <kendo-pager-input></kendo-pager-input>
+                  <kendo-pager-info></kendo-pager-info>
+                  <kendo-pager-page-sizes
+                    [pageSizes]="pageSizes"
+                  ></kendo-pager-page-sizes>
+                  <div class="w-100 text-end">
+                    <button
+                      kendoButton
+                      icon="reload"
+                      fillMode="flat"
+                      themeColor="secondary"
+                      (click)="cargarRecibidos()"
+                    ></button>
+                  </div>
+                </ng-template>
+              </kendo-grid>
+            </div>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <!-- END RECIBIDOS -->
+      <!-- ENVIADOS -->
+      <kendo-tabstrip-tab
+        [selected]="tabsBandejaEntrada[2].selected"
+        [title]="tabsBandejaEntrada[2].titleTab"
+      >
+        <ng-template kendoTabTitle>
+          <span> {{ tabsBandejaEntrada[2].titleTab }} </span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <div class="contentTab w-100 ps-2 pe-2">
+            <div class="row">
+              <h3>ENVIADOS</h3>
+            </div>
+            <div>
+              <kendo-grid
+                [data]="gridBandejaEnviados.view$ | async"
+                [loading]="gridBandejaEnviados.loading"
+                [resizable]="true"
+                [pageable]="{
+                  buttonCount: 5,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+                [pageSize]="gridBandejaEnviados.gridState.take"
+                [skip]="gridBandejaEnviados.gridState.skip"
+                [filter]="gridBandejaEnviados.gridState.filter"
+                (dataStateChange)="gridBandejaEnviados.onStateChange($event)"
+                (cellClick)="gridBandejaEnviados.cellClick($event)"
+                filterable="menu"
+              >
+                <kendo-grid-column
+                  field="seen"
+                  title="Leido"
+                  [width]="40"
+                  [filterable]="false"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="w-100">
+                      <fa-icon
+                        *ngIf="!dataItem.seen"
+                        [icon]="['far', 'square']"
+                        class="fa-lg fs-5 fw-bold text-muted"
+                        style="cursor: pointer;"
+                      ></fa-icon>
+                      <fa-icon
+                        *ngIf="dataItem.seen"
+                        [icon]="['far', 'check-square']"
+                        style="cursor: pointer;"
+                        class="fa-lg fs-5 fw-bold text-danger"
+                      ></fa-icon>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="remitente"
+                  title="Remitente"
+                  [width]="100"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                  >
+                    <kendo-grid-string-filter-menu
+                      [column]="column"
+                      [filter]="filter"
+                      [filterService]="filterService"
+                      [extra]="false"
+                      operator="eq"
+                    >
+                      <kendo-filter-eq-operator
+                        text="Igual a"
+                      ></kendo-filter-eq-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="destinatarios"
+                  title="Destinatarios"
+                  [width]="100"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                  >
+                    <kendo-grid-string-filter-menu
+                      [column]="column"
+                      [filter]="filter"
+                      [filterService]="filterService"
+                      [extra]="false"
+                      operator="eq"
+                    >
+                      <kendo-filter-eq-operator
+                        text="Igual a"
+                      ></kendo-filter-eq-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="asunto"
+                  title="Asunto"
+                  [width]="200"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                  >
+                    <kendo-grid-string-filter-menu
+                      [column]="column"
+                      [filter]="filter"
+                      [filterService]="filterService"
+                      [extra]="false"
+                      operator="eq"
+                    >
+                      <kendo-filter-eq-operator
+                        text="Igual a"
+                      ></kendo-filter-eq-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="fecha"
+                  title="Fecha"
+                  [width]="80"
+                  [filterable]="false"
+                  format="{0:dd/MM/yyyy}"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <p>{{ dataItem.fecha | date : "dd/MM/yyyy hh:mm a" }}</p>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoPagerTemplate>
+                  <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                  <kendo-pager-numeric-buttons
+                    [buttonCount]="10"
+                  ></kendo-pager-numeric-buttons>
+                  <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                  <kendo-pager-input></kendo-pager-input>
+                  <kendo-pager-info></kendo-pager-info>
+                  <kendo-pager-page-sizes
+                    [pageSizes]="pageSizes"
+                  ></kendo-pager-page-sizes>
+                  <div class="w-100 text-end">
+                    <button
+                      kendoButton
+                      icon="reload"
+                      fillMode="flat"
+                      themeColor="secondary"
+                      (click)="cargarEnviados()"
+                    ></button>
+                  </div>
+                </ng-template>
+              </kendo-grid>
+            </div>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <!-- END ENVIADOS -->
+      <!-- SPAN -->
+      <kendo-tabstrip-tab
+        [selected]="tabsBandejaEntrada[3].selected"
+        [title]="tabsBandejaEntrada[3].titleTab"
+      >
+        <ng-template kendoTabTitle>
+          <span> {{ tabsBandejaEntrada[3].titleTab }} </span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <div class="contentTab w-100 ps-2 pe-2">
+            <div class="row">
+              <h3>SPAM</h3>
+            </div>
+            <div>
+              <kendo-grid
+                [data]="gridBandejaSpam.view$ | async"
+                [loading]="gridBandejaSpam.loading"
+                [resizable]="true"
+                [pageable]="{
+                  buttonCount: 5,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+                [pageSize]="gridBandejaSpam.gridState.take"
+                [skip]="gridBandejaSpam.gridState.skip"
+                [filter]="gridBandejaSpam.gridState.filter"
+                [height]="gridBandejaSpam.height"
+                (dataStateChange)="gridBandejaSpam.onStateChange($event)"
+                (cellClick)="gridBandejaSpam.cellClick($event)"
+                filterable="menu"
+              >
+                <kendo-grid-column
+                  field="seen"
+                  title="Leido"
+                  [width]="40"
+                  [filterable]="false"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="w-100">
+                      <fa-icon
+                        *ngIf="!dataItem.seen"
+                        [icon]="['far', 'square']"
+                        class="fa-lg fs-5 fw-bold text-muted"
+                        style="cursor: pointer;"
+                      ></fa-icon>
+                      <fa-icon
+                        *ngIf="dataItem.seen"
+                        [icon]="['far', 'check-square']"
+                        class="fa-lg fs-5 fw-bold text-danger"
+                      ></fa-icon>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="remitente"
+                  title="Remitente"
+                  [width]="150"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                  >
+                    <kendo-grid-string-filter-menu
+                      [column]="column"
+                      [filter]="filter"
+                      [filterService]="filterService"
+                      [extra]="false"
+                      operator="eq"
+                    >
+                      <kendo-filter-eq-operator
+                        text="Igual a"
+                      ></kendo-filter-eq-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="asunto"
+                  title="Asunto"
+                  [width]="150"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridFilterMenuTemplate
+                    let-filter
+                    let-column="column"
+                    let-filterService="filterService"
+                  >
+                    <kendo-grid-string-filter-menu
+                      [column]="column"
+                      [filter]="filter"
+                      [filterService]="filterService"
+                      [extra]="false"
+                      operator="eq"
+                    >
+                      <kendo-filter-eq-operator
+                        text="Igual a"
+                      ></kendo-filter-eq-operator>
+                    </kendo-grid-string-filter-menu>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="fecha"
+                  title="Fecha"
+                  [width]="80"
+                  [filterable]="false"
+                  format="{0:dd/MM/yyyy}"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <p>{{ dataItem.fecha | date : "dd/MM/yyyy hh:mm a" }}</p>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <ng-template kendoPagerTemplate>
+                  <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                  <kendo-pager-numeric-buttons
+                    [buttonCount]="10"
+                  ></kendo-pager-numeric-buttons>
+                  <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                  <kendo-pager-input></kendo-pager-input>
+                  <kendo-pager-info></kendo-pager-info>
+                  <kendo-pager-page-sizes
+                    [pageSizes]="pageSizes"
+                  ></kendo-pager-page-sizes>
+                  <div class="w-100 text-end">
+                    <button
+                      kendoButton
+                      icon="reload"
+                      fillMode="flat"
+                      themeColor="secondary"
+                      (click)="cargarSpam()"
+                    ></button>
+                  </div>
+                </ng-template>
+              </kendo-grid>
+            </div>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <!-- END SPAN -->
+    </kendo-tabstrip>
+  </div>
+</div>
+
+<ng-template #modalMesajesRecibidos let-modal>
+  <div class="modal-header">
+    <h3 class="modal-title" id="modal-basic-title">Visualización de mensaje</h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form
+      class="k-form k-form-horizontal"
+      [formGroup]="formularioBandejaentrada"
+    >
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="remitente" class="k-label">
+              <span>Remitente <span class="text-danger fw-bold">*</span></span>
+            </label>
+            <kendo-textbox
+              #remitente
+              size="medium"
+              placeholder="remitente"
+              formControlName="remitente"
+            >
+            </kendo-textbox>
+            <kendo-formerror> ERROR </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="destinatarios" class="k-label">
+              <span
+                >Destinatarios <span class="text-danger fw-bold">*</span></span
+              >
+            </label>
+            <kendo-textbox
+              #destinatarios
+              size="medium"
+              placeholder="destinatarios"
+              formControlName="destinatarios"
+            >
+            </kendo-textbox>
+            <kendo-formerror> ERROR </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="destinatarios" class="k-label">
+              <span>Asunto <span class="text-danger fw-bold">*</span></span>
+            </label>
+            <kendo-textbox
+              #remitente
+              size="medium"
+              placeholder="asunto"
+              formControlName="asunto"
+            >
+            </kendo-textbox>
+            <kendo-formerror> ERROR </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="" class="k-label">
+              <span>Adjuntar <span class="text-danger fw-bold">*</span></span>
+            </label>
+            <kendo-fileselect
+              placeholder="adjuntar archivo"
+              formControlName="adjuntar"
+            ></kendo-fileselect>
+            <kendo-formerror> ERROR </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="" class="k-label">
+              <span>Mensaje <span class="text-danger fw-bold">*</span></span>
+            </label>
+
+            <kendo-editor
+              [pasteCleanupSettings]="pasteCleanupSettings"
+              style="height: 500px"
+              formControlName="mensaje"
+            >
+            <kendo-toolbar>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+                <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorUnderlineButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorStrikethroughButton
+                ></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorSubscriptButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorSuperscriptButton
+                ></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorAlignLeftButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorAlignCenterButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorAlignRightButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorAlignJustifyButton
+                ></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-dropdownlist
+                kendoEditorFormat
+              ></kendo-toolbar-dropdownlist>
+              <kendo-toolbar-dropdownlist
+                kendoEditorFontSize
+              ></kendo-toolbar-dropdownlist>
+              <kendo-toolbar-dropdownlist
+                kendoEditorFontFamily
+              ></kendo-toolbar-dropdownlist>
+              <kendo-toolbar-colorpicker
+                kendoEditorForeColor
+              ></kendo-toolbar-colorpicker>
+              <kendo-toolbar-colorpicker
+                kendoEditorBackColor
+                view="gradient"
+              ></kendo-toolbar-colorpicker>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorInsertUnorderedListButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorInsertOrderedListButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button kendoEditorIndentButton></kendo-toolbar-button>
+                <kendo-toolbar-button kendoEditorOutdentButton></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-button
+                kendoEditorBlockquoteButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorSelectAllButton></kendo-toolbar-button>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button kendoEditorUndoButton></kendo-toolbar-button>
+                <kendo-toolbar-button kendoEditorRedoButton></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorCreateLinkButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button kendoEditorUnlinkButton></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-button
+                kendoEditorInsertFileButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorInsertImageButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorViewSourceButton
+              ></kendo-toolbar-button>
+              <kendo-toolbar-button
+                kendoEditorCleanFormattingButton
+              ></kendo-toolbar-button>
+              <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorAddColumnBeforeButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorAddColumnAfterButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorAddRowBeforeButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorAddRowAfterButton
+                ></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorDeleteColumnButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorDeleteRowButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorDeleteTableButton
+                ></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-buttongroup>
+                <kendo-toolbar-button
+                  kendoEditorMergeCellsButton
+                ></kendo-toolbar-button>
+                <kendo-toolbar-button
+                  kendoEditorSplitCellButton
+                ></kendo-toolbar-button>
+              </kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorPrintButton></kendo-toolbar-button>
+            </kendo-toolbar>
+          </kendo-editor>
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label class="k-label">
+            <span>Adjuntos <span class="text-danger fw-bold">*</span></span>
+          </label>
+          <div class="card-body">
+            <div>
+              <kendo-grid
+                [kendoGridBinding]="gridModalCorreos.data"
+                [loading]="gridModalCorreos.loading"
+                [resizable]="gridModalCorreos.resizable"
+                [pageable]="gridModalCorreos.pageable"
+                [height]="gridModalCorreos.height"
+                reload="true"
+              >
+                <kendo-grid-column
+                  field="nombreArchivo"
+                  title="Nombre Archivo"
+                  [width]="150"
+                  [filterable]="true"
+                  headerClass="header-grid-integra"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-command-column
+                  title="Descargar"
+                  [width]="70"
+                  headerClass="grid-documento-legal"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-isNew=" isNew"
+                    let-dataItem="dataItem"
+                  >
+                    <div class="w-100 d-flex justify-content-center">
+                      <button
+                        kendoButton
+                        themeColor="secondary"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        (click)="descargarDocumento(dataItem)"
+                        ngbTooltip="Descargar"
+                      >
+                        <span class="k-icon k-i-download k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <ng-container *ngIf="tabSeleccionado != 2">
+      <button [disabled]="btnResponderDisabled" class="btn btn-info" type="button" (click)="responderCorreo()">
+        Responder
+      </button>
+    </ng-container>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+  <loading [loading]="loading"></loading>
+</ng-template>
+
+<ng-template #modalMesajesEnviados let-modal>
+  <div class="modal-header">
+    <h3 class="modal-title" id="modal-basic-title">Visualización de mensaje</h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form
+      class="k-form k-form-horizontal"
+      [formGroup]="formularioBandejaentrada"
+    >
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="remitente" class="k-label">
+              <span>Remitente <span class="text-danger fw-bold">*</span></span>
+            </label>
+            <kendo-textbox
+              #remitente
+              size="medium"
+              placeholder="remitente"
+              formControlName="remitente"
+            >
+            </kendo-textbox>
+            <kendo-formerror> ERROR </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="destinatarios" class="k-label">
+              <span
+                >Destinatarios <span class="text-danger fw-bold">*</span></span
+              >
+            </label>
+            <kendo-textbox
+              #destinatarios
+              size="medium"
+              placeholder="destinatarios"
+              formControlName="destinatarios"
+            >
+            </kendo-textbox>
+            <kendo-formerror> ERROR </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="destinatarios" class="k-label">
+              <span>Asunto <span class="text-danger fw-bold">*</span></span>
+            </label>
+            <kendo-textbox
+              #remitente
+              size="medium"
+              placeholder="asunto"
+              formControlName="asunto"
+            >
+            </kendo-textbox>
+            <kendo-formerror> ERROR </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="" class="k-label">
+              <span>Mensaje <span class="text-danger fw-bold">*</span></span>
+            </label>
+
+            <div
+              class="overflow-auto"
+              style="height: 400px"
+              [innerHtml]="formularioBandejaentrada.get('mensaje').value"
+            ></div>
+          </kendo-formfield>
+        </div>
+        <loading [loading]="loading"></loading>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <ng-container *ngIf="tabSeleccionado != 2"> </ng-container>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+</ng-template>

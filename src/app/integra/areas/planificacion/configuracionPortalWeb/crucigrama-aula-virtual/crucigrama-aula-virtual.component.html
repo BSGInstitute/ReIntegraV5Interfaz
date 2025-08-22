@@ -1,0 +1,1045 @@
+<div class="contenedor" #crucigramaaulavirtual>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2 text-center">
+            (C) Crucigrama del Aula Virtual
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="col-12 bg-color-material pb-0">
+            <kendo-grid
+              [kendoGridBinding]="gridCrucigramaAulaVirtual.data"
+              [loading]="gridCrucigramaAulaVirtual.loading"
+              [selectable]="true"
+              [resizable]="true"
+              [sort]="sort"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="0" 
+              [pageSize]="5"
+              filterable="menu"
+              kendoGridSelectBy="id"
+              [(selectedKeys)]="listaSeleccion"
+              [selectable]="{ enabled: true, checkboxOnly: true }"
+            >
+              <ng-template
+                kendoPagerTemplate
+                let-totalPages="totalPages"
+                let-currentPage="currentPage"
+              >
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="5"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="cantidadItems"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="generarReporte()"
+                  ></button>
+                </div>
+              </ng-template>
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoGridRemoveCommand
+                  themeColor="error"
+                  icon="delete"
+                  (click)="eliminarCrucigramaSeleccionados()"
+                >
+                  Eliminar Seleccionado
+                </button>
+                <button
+                  kendoButton
+                  themeColor="tertiary"
+                  icon="import"
+                  (click)="abrirModalImportarExcel(modalImportarExcel)"
+                >
+                  Importar Excel
+                </button>
+                <button 
+                  kendoButton
+                  themeColor="info" 
+                  icon="export"
+                  (click)="crearExcelExport(excelexport)"
+                >
+                  Exportar Excel
+                </button>
+                <kendo-excelexport
+                  fileName="ReporteCrucigrama.xlsx"
+                  #excelexport
+                >
+                  <kendo-excelexport-column
+                    field="idPGeneral"
+                    title="IdPGeneral"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="idPEspecifico"
+                    title="IdPEspecifico"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="ordenFilaCapitulo"
+                    title="OrdenFilaCapitulo"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="sesion"
+                    title="Sesion"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="subSesion"
+                    title="SubSesion"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="idTipoMarcador"
+                    title="IdTipoMarcador"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="valorMarcador"
+                    title="ValorMarcador"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="codigoCrucigrama"
+                    title="CodigoCrucigrama"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="cantidadFila"
+                    title="CantidadFila"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="cantidadColumna"
+                    title="CantidadColumna"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="filaInicio"
+                    title="FilaInicio"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="numeroPalabra"
+                    title="NumeroPalabra"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="tipo"
+                    title="Tipo"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="definicion"
+                    title="Definicion"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="palabra"
+                    title="Palabra"
+                  >
+                  </kendo-excelexport-column>
+
+                </kendo-excelexport>
+                <button
+                  kendoGridAddCommand
+                  themeColor="success"
+                  icon="plus"
+                  (click)="abrirModalNuevoEditarCrucigrama(modalNuevoEditarCrucigrama)"
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-checkbox-column
+                [showSelectAll]="true"
+                [width]="50"
+                [headerClass]="{ 'text-center': true }"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+                [class]="{ 'text-center': true }"
+                [resizable]="false"
+                [columnMenu]="false"
+              >
+              </kendo-grid-checkbox-column>
+              <kendo-grid-column
+                field="codigoCrucigrama"
+                title="Código"
+                [width]="200"
+                headerClass="justify-content-center"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="pGeneral"
+                title="Programa General"
+                [width]="200"
+                headerClass="justify-content-center"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+                [editable]="false"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="80"
+                headerClass="justify-content-center"
+                [headerStyle]="{
+                  'background-color': '#4584a7',
+                  color: 'white'
+                }"
+                [editable]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <div class="text-center">
+                    <button
+                      kendoButton
+                      kendoTooltip
+                      themeColor="warning"
+                      fillMode="solid"
+                      icon="align-justify"
+                      class="mx-1"
+                      container="body"
+                      placement="top"
+                      title="Editar Crucigrama"
+                      (click)="abrirModalNuevoEditarCrucigrama(modalNuevoEditarCrucigrama, dataItem)"
+                    ></button>
+                    <button
+                      kendoButton
+                      kendoTooltip
+                      themeColor="error"
+                      fillMode="solid"
+                      icon="close"
+                      class="mx-1"
+                      container="body"
+                      placement="top"
+                      title="Eliminar Crucigrama"
+                      (click)="eliminarCrucigrama(dataItem)"
+                    ></button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Importar Excel -->
+<ng-template #modalImportarExcel let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Importación de Crucigrama por Excel
+    </h1>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal">
+      <div class="row">
+        <div class="col-sm col-md m-6">
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <kendo-fileselect
+                #file
+                [autoUpload]="false"
+                [multiple]="false"
+                [restrictions]="{
+                  allowedExtensions: ['CSV'],
+                  maxFileSize: 2048000
+                }"
+                (select)="seleccionarAlmacenarArchivo($event)"
+                (remove)="deseleccionarAlmacenarArchivo()"
+              >
+              </kendo-fileselect>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn btn-primary"
+      style="color: white"
+      [disabled]=""
+      (click)="importarExcel()"
+    >
+      Cargar
+    </button>
+    <button class="btn btn-danger" style="color: white" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<!-- Modal Nuevo Editar Crucigrama -->
+<ng-template #modalNuevoEditarCrucigrama let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      <strong>Registro Crucigrama</strong>
+    </h1>
+  </div>
+  <div class="modal-body px-4">
+    <!-- TAB -->
+    <form [formGroup]="formDatosCrucigrama" class="k-form k-form-horizontal">
+      <div class="row">
+        <div class="col-md-12" id="tabCrucigrama">
+          <kendo-tabstrip [keepTabContent]="true">
+            <kendo-tabstrip-tab [selected]="true">
+              <ng-template kendoTabTitle>
+                PROGRAMA DE CAPACITACIÓN
+              </ng-template>
+              <ng-template kendoTabContent *loadOnDemand>
+                <div class="col-sm col-md m-6">
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 align-items-start text-start"
+                        >
+                          Programa General (*):
+                        </label>
+                        <kendo-dropdownlist
+                          formControlName="pGeneral"
+                          [data]="dataPGeneral"
+                          [defaultItem]="{
+                            id: null,
+                            nombre: '-Seleccione Programa General-'
+                          }"
+                          valueField="id"
+                          textField="nombre"
+                          size="small"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          (valueChange)="cargarPEspecifico($event)"
+                        ></kendo-dropdownlist>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                          [for]="programaEspecifico"
+                        >
+                          Programa Específico (*):
+                        </label>
+                        <kendo-dropdownlist
+                          #programaEspecifico
+                          formControlName="programaEspecifico"
+                          [data]="dataPEspecifico"
+                          [defaultItem]="{
+                            id: null,
+                            nombre: '-Seleccione Programa Específico-'
+                          }"
+                          valueField="id"
+                          textField="nombre"
+                          size="small"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          [disabled]="!formDatosCrucigrama.get('pGeneral').valid"
+                        ></kendo-dropdownlist>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                          [for]="capitulo"
+                        >
+                          Capítulo (*):
+                        </label>
+                        <kendo-dropdownlist
+                          #capitulo
+                          formControlName="capitulo"
+                          [data]="listaCapituloSesion"
+                          [defaultItem]="{
+                            idCapituloProgramaCapacitacion: null,
+                            capituloProgramaCapacitacion: '-Seleccione Capítulo-'
+                          }"
+                          valueField="idCapituloProgramaCapacitacion"
+                          textField="capituloProgramaCapacitacion"
+                          size="small"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          (valueChange)="cargarSesiones($event)"
+                          [disabled]="!formDatosCrucigrama.get('pGeneral').valid"
+                        ></kendo-dropdownlist>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                          [for]="sesion"
+                        >
+                          Sesión (*):
+                        </label>
+                        <kendo-dropdownlist
+                          #sesion
+                          formControlName="sesion"
+                          [data]="listaSesion"
+                          [defaultItem]="{
+                            idSesionProgramaCapacitacion: null,
+                            sesionProgramaCapacitacion: '-Seleccione Sesión-'
+                          }"
+                          valueField="idSesionProgramaCapacitacion"
+                          textField="sesionProgramaCapacitacion"
+                          size="small"
+                          [valuePrimitive]="true"
+                          [disabled]="!formDatosCrucigrama.get('capitulo').valid"
+                          [kendoDropDownFilter]="filterSettings"
+                          (valueChange)="cargarSubsesiones($event)"
+                        ></kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                          [for]="subsesion"
+                        >
+                          Subsesión:
+                        </label>
+                        <kendo-dropdownlist
+                          #subsesion
+                          formControlName="subsesion"
+                          [data]="listaSubSesion"
+                          [defaultItem]="{
+                            idSesionProgramaCapacitacion: null,
+                            subSeccionProgramaCapacitacion: '-Seleccione Subsesión-'
+                          }"
+                          valueField="idSesionProgramaCapacitacion"
+                          textField="subSeccionProgramaCapacitacion"
+                          size="small"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          [disabled]="!formDatosCrucigrama.get('sesion').valid"
+                        ></kendo-dropdownlist>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                          [for]="tipoMarcador"
+                        >
+                          Tipo Marcador (*):
+                        </label>
+                        <kendo-dropdownlist
+                          #tipoMarcador
+                          formControlName="tipoMarcador"
+                          [data]="dataTipoMarcador"
+                          [defaultItem]="{
+                            id: null,
+                            nombre: '-Seleccione Tipo Marcador-'
+                          }"
+                          valueField="id"
+                          textField="nombre"
+                          size="small"
+                          [valuePrimitive]="true"
+                        ></kendo-dropdownlist>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                          [for]="valorMarcador"
+                        >
+                          Valor Marcador (*):
+                        </label>
+                        <kendo-numerictextbox
+                          #valorMarcador
+                          formControlName="valorMarcador"
+                          [data]="dataTipoMarcador"
+                          placeholder="<Ingrese Valor Marcador>"
+                          [value]="0"
+                          size="small"
+                          format="##"
+                          [step]="1"
+                          [min]="1"
+                        ></kendo-numerictextbox>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-tabstrip-tab>
+            <kendo-tabstrip-tab>
+              <ng-template kendoTabTitle> CRUCIGRAMA </ng-template>
+              <ng-template kendoTabContent *loadOnDemand>
+                <div class="col-sm col-md m-6">
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                        >
+                          Código Crucigrama (*):
+                        </label>
+                        <kendo-textbox
+                          formControlName="codigoCrucigrama"
+                          [data]="dataPEspecifico"
+                          [virtual]="virtual"
+                          placeholder="-Ingrese Código Crucigrama-"
+                          valueField="id"
+                          textField="nombre"
+                          size="small"
+                          [valuePrimitive]="true"
+                        ></kendo-textbox>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                        >
+                          Nro. Filas (*):
+                        </label>
+                        <kendo-numerictextbox
+                          formControlName="nroFilas"
+                          [data]="dataTipoMarcador"
+                          placeholder="<Ingrese Nro. Filas>"
+                          [value]="0"
+                          size="small"
+                          format="##"
+                          [step]="1"
+                          [min]="1"
+                        ></kendo-numerictextbox>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label
+                          class="k-label pt-0 d-flex align-items-start text-start"
+                        >
+                          Nro. Columnas (*):
+                        </label>
+                        <kendo-numerictextbox
+                          formControlName="nroColumnas"
+                          [data]="dataTipoMarcador"
+                          placeholder="<Ingrese Nro. Columnas>"
+                          [value]="0"
+                          size="small"
+                          format="##"
+                          [step]="1"
+                          [min]="1"
+                        ></kendo-numerictextbox>
+                        <kendo-formerror>(*) Campo Oblgatorio.</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                </div>
+                <br />
+                <div style="background-color: orange; padding-left: 120px;">
+                  <div style="background-color: orange; color: white">
+                    <div class="col-sm-12 container">
+                      <div class="col-sm-10">
+                        <div class="row">
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 2px; padding-right: 0px"
+                          >
+                            N.C.
+                          </div>
+                          <div class="col-sm-3" style="padding-top: 2px">
+                            Número Concepto
+                          </div>
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 2px; padding-right: 0px"
+                          >
+                            F.I.
+                          </div>
+                          <div class="col-sm-3" style="padding-top: 2px">
+                            Fila Inicio
+                          </div>
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 2px; padding-right: 0px"
+                          >
+                            C.I.
+                          </div>
+                          <div class="col-sm-3" style="padding-top: 2px">
+                            Columna Inicio
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br />
+
+                <div class="card-body">
+                  <div class="col-12 bg-color-material pb-0">
+                    <kendo-grid
+                      [kendoGridBinding]="gridRespuestaCrucigrama.data"
+                      [loading]="gridRespuestaCrucigrama.loading"
+                      [resizable]="true"
+                      (edit)="gridRespuestaCrucigrama.editHandler($event)"
+                      (cancel)="gridRespuestaCrucigrama.cancelHandler($event)"
+                      (save)="gridRespuestaCrucigrama.saveHandler($event)"
+                      (remove)="gridRespuestaCrucigrama.removeHandler($event)"
+                      (add)="gridRespuestaCrucigrama.addHandler($event)"
+                      (cellClick)="gridRespuestaCrucigrama.cellClickHandler($event)"
+                      (cellClose)="gridRespuestaCrucigrama.cellCloseHandler($event)"
+                      [pageable]="{
+                        buttonCount: 5,
+                        info: true,
+                        type: 'numeric',
+                        pageSizes: true,
+                        previousNext: true,
+                        position: 'bottom'
+                      }"
+                      [skip]="0"
+                      [pageSize]="5"
+                      filterable="menu"
+                    >
+                      <ng-template
+                        kendoPagerTemplate
+                        let-totalPages="totalPages"
+                        let-currentPage="currentPage"
+                      >
+                        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                        <kendo-pager-numeric-buttons
+                          [buttonCount]="5"
+                        ></kendo-pager-numeric-buttons>
+                        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                        <kendo-pager-input></kendo-pager-input>
+                        <kendo-pager-info></kendo-pager-info>
+                        <kendo-pager-page-sizes
+                          [pageSizes]="cantidadItems"
+                        ></kendo-pager-page-sizes>
+                      </ng-template>
+                      <ng-template kendoGridToolbarTemplate>
+                        <button
+                          kendoGridAddCommand
+                          themeColor="info"
+                          icon="plus"
+                        >
+                          Añadir
+                        </button>
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                      </ng-template>
+                      <kendo-grid-column
+                        field="numeroPalabra"
+                        title="N.C."
+                        [width]="80"
+                        headerClass="justify-content-center"
+                        [headerStyle]="{
+                          'background-color': '#4584a7',
+                          color: 'white'
+                        }"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <div class="text-center">
+                            {{ dataItem.numeroPalabra }}
+                          </div>
+                        </ng-template>
+                        <ng-template
+                          kendoGridFilterMenuTemplate
+                          let-filter
+                          let-column="column"
+                          let-filterService="filterService"
+                        >
+                          <kendo-grid-string-filter-menu
+                            [column]="column"
+                            [filter]="filter"
+                            [filterService]="filterService"
+                            [extra]="false"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator
+                              text="Contiene"
+                            ></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-menu>
+                        </ng-template>
+                        <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-numerictextbox
+                            [formControl]="formGroup.get('numeroPalabra')"
+                            size="medium"
+                            [value]="0"
+                            format="##"
+                            [step]="1"
+                            [min]="1"
+                          >
+                          </kendo-numerictextbox>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="palabra"
+                        title="Concepto"
+                        [width]="120"
+                        headerClass="justify-content-center"
+                        [headerStyle]="{
+                          'background-color': '#4584a7',
+                          color: 'white'
+                        }"
+                      >
+                        <ng-template
+                          kendoGridFilterMenuTemplate
+                          let-filter
+                          let-column="column"
+                          let-filterService="filterService"
+                        >
+                          <kendo-grid-string-filter-menu
+                            [column]="column"
+                            [filter]="filter"
+                            [filterService]="filterService"
+                            [extra]="false"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator
+                              text="Contiene"
+                            ></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-menu>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                        <kendo-textbox
+                          [formControl]="formGroup.get('palabra')"
+                          size="medium"
+                          placeholder="Ingrese la palabra"
+                        >
+                        </kendo-textbox>
+                      </ng-template>
+                      <kendo-grid-column
+                        field="definicion"
+                        title="Definición Concepto"
+                        [width]="180"
+                        headerClass="justify-content-center"
+                        [headerStyle]="{
+                          'background-color': '#4584a7',
+                          color: 'white'
+                        }"
+                      >
+                        <ng-template
+                          kendoGridFilterMenuTemplate
+                          let-filter
+                          let-column="column"
+                          let-filterService="filterService"
+                        >
+                          <kendo-grid-string-filter-menu
+                            [column]="column"
+                            [filter]="filter"
+                            [filterService]="filterService"
+                            [extra]="false"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator
+                              text="Contiene"
+                            ></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-menu>
+                        </ng-template>
+                        <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-textarea
+                            [formControl]="formGroup.get('definicion')"
+                            size="medium"
+                            placeholder="Ingrese la definición"
+                          >
+                          </kendo-textarea>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="tipo"
+                        title="Tipo"
+                        [width]="150"
+                        headerClass="justify-content-center"
+                        [headerStyle]="{
+                          'background-color': '#4584a7',
+                          color: 'white'
+                        }"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <div class="text-center">
+                            {{ obtenerNombreTipo(dataItem.tipo) }}
+                          </div>
+                        </ng-template>
+                        <ng-template
+                          kendoGridFilterMenuTemplate
+                          let-filter
+                          let-column="column"
+                          let-filterService="filterService"
+                        >
+                          <kendo-grid-string-filter-menu
+                            [column]="column"
+                            [filter]="filter"
+                            [filterService]="filterService"
+                            [extra]="false"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator
+                              text="Contiene"
+                            ></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-menu>
+                        </ng-template>
+                        <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-dropdownlist
+                            [formControl]="formGroup.get('tipo')"
+                            class="d-flex"
+                            size="medium"
+                            [data]="tipoOrientacion"
+                            textField="nombre"
+                            valueField="id"
+                            [valuePrimitive]="true"
+                          ></kendo-dropdownlist>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="filaInicio"
+                        title="F.I."
+                        [width]="80"
+                        headerClass="justify-content-center"
+                        [headerStyle]="{
+                          'background-color': '#4584a7',
+                          color: 'white'
+                        }"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <div class="text-center">
+                            {{ dataItem.filaInicio }}
+                          </div>
+                        </ng-template>
+                        <ng-template
+                          kendoGridFilterMenuTemplate
+                          let-filter
+                          let-column="column"
+                          let-filterService="filterService"
+                        >
+                          <kendo-grid-string-filter-menu
+                            [column]="column"
+                            [filter]="filter"
+                            [filterService]="filterService"
+                            [extra]="false"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator
+                              text="Contiene"
+                            ></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-menu>
+                        </ng-template>
+                        <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-numerictextbox
+                            [formControl]="formGroup.get('filaInicio')"
+                            size="medium"
+                            [value]="0"
+                            format="##"
+                            [step]="1"
+                            [min]="1"
+                          >
+                          </kendo-numerictextbox>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="columnaInicio"
+                        title="C.I."
+                        [width]="80"
+                        headerClass="justify-content-center"
+                        [headerStyle]="{
+                          'background-color': '#4584a7',
+                          color: 'white'
+                        }"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          <div class="text-center">
+                            {{ dataItem.columnaInicio }}
+                          </div>
+                        </ng-template>
+                        <ng-template
+                          kendoGridFilterMenuTemplate
+                          let-filter
+                          let-column="column"
+                          let-filterService="filterService"
+                        >
+                          <kendo-grid-string-filter-menu
+                            [column]="column"
+                            [filter]="filter"
+                            [filterService]="filterService"
+                            [extra]="false"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator
+                              text="Contiene"
+                            ></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-menu>
+                        </ng-template>
+                        <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-numerictextbox
+                            [formControl]="formGroup.get('columnaInicio')"
+                            size="medium"
+                            [value]="0"
+                            format="##"
+                            [step]="1"
+                            [min]="1"
+                          >
+                          </kendo-numerictextbox>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Eliminar"
+                        [width]="130"
+                        headerClass="justify-content-center"
+                        [headerStyle]="{
+                          'background-color': '#4584a7',
+                          color: 'white'
+                        }"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                          <div class="text-center">
+                            <button
+                              kendoGridRemoveCommand
+                              kendoTooltip
+                              themeColor="error"
+                              fillMode="solid"
+                              icon="close"
+                              class="mx-1"
+                              container="body"
+                              placement="top"
+                              title="Eliminar Crucigrama"
+                            ></button>
+                            <button
+                              kendoGridSaveCommand
+                              themeColor="primary"
+                              fillMode="solid"
+                              rounded="large"
+                              icon="save"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              [disabled]="gridRespuestaCrucigrama.formGroup?.invalid"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Guardar"
+                            >
+                            </button>
+                            <button
+                              kendoGridCancelCommand
+                              themeColor="secondary"
+                              fillMode="solid"
+                              icon="cancel"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Cancelar"
+                            >
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-column>
+                    </kendo-grid>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-tabstrip-tab>
+          </kendo-tabstrip>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn btn-primary"
+      style="color: white"
+      [disabled]="!formDatosCrucigrama.valid"
+      (click)="esNuevo ? insertarCrucigrama() : actualizarCrucigrama()"
+    >
+      {{ esNuevo ? "Nuevo" : "Actualizar" }}
+    </button>
+    <button class="btn btn-danger" style="color: white" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

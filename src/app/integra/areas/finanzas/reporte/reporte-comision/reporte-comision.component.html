@@ -1,0 +1,306 @@
+<div class="row">
+  <div class="col-1fa-rotate-270">
+    <div class="card">
+      <div class="card-header bg-color-material">
+        <h1 class="text-white">Reporte comisiones de ventas</h1>
+      </div>
+      <div class="card-body p-4">
+        <div class="k-loading-panel" *ngIf="loader">
+          <div class="k-loading-panel-mask"></div>
+          <div class="k-loading-panel-wrapper">
+            <kendo-loader
+              type="converging-spinner"
+              themeColor="primary"
+              size="large"
+            >
+            </kendo-loader>
+            <div class="k-loading-panel-text fs-5 text-primary">
+              Cargando...
+            </div>
+          </div>
+        </div>
+        <div class="row conteiner-toolbar-retiros-matricula">
+          <div class="card" style="padding: 0px">
+            <div class="card-header bg-color-material pb-0">
+              <h3 class="text-white mb-2">Filtro</h3>
+            </div>
+            <div class="card-body p-4">
+              <form class="k-form" [formGroup]="formGroupFiltro">
+                <fieldset class="k-form-fieldset">
+                  <div class="row">
+                    <div class="col-md-4" style="padding: 0px">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="margin-top: 0px !important;padding-left: 30px;"
+                      >
+                        <label
+                          [for]="idsAsesores"
+                          class="k-label"
+                          [style.width.px]="100"
+                          [style.padding.px]="5"
+                        >
+                          Persona(s):
+                        </label>
+                        <kendo-multiselect
+                          #idsAsesores
+                          class="d-flex"
+                          [data]="itemslistaAsesores"
+                          size="medium"
+                          formControlName="idsAsesores"
+                          [style.width.%]="90"
+                          textField="nombreCompleto"
+                          [valuePrimitive]="true"
+                          valueField="id"
+                          placeholder="< Todos >"
+                          [filterable]="true"
+                          (filterChange)="filtrarAsesores($event)"
+                        >
+                        </kendo-multiselect>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4" style="padding: 0px">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="margin-top: 0px !important"
+                      >
+                        <label
+                          [for]="idSubEstado"
+                          class="k-label"
+                          [style.width.px]="100"
+                          [style.padding.px]="5"
+                        >
+                          Sub-Estado:
+                        </label>
+                        <kendo-dropdownlist
+                          #idSubEstado
+                          class="d-flex"
+                          [data]="listaSubestado"
+                          size="medium"
+                          formControlName="idSubEstado"
+                          placeholder="< Ingrese el Nombre del Coordinador >"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [style.width.%]="90"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4" style="padding: 0px">
+                      <div class="row">
+                        <kendo-daterange [incompleteDateValidation]="true">
+                          <div class="col-md-5">
+                            <label style="width: 250px" [style.padding.px]="5">
+                              <span>Fechas de Matrícula:</span>
+                            </label>
+                            <kendo-dateinput
+                              kendoDateRangeStartInput
+                              [size]="'medium'"
+                              formControlName="fechaInicio"
+                              [placeholder]="'Inicio'"
+                              [format]="{
+                                displayFormat: 'dd-MM-yyyy',
+                                inputFormat: 'dd-MM-yyyy'
+                              }"
+                              [incompleteDateValidation]="true"
+                              fillMode="outline"
+                              style="width: 100%"
+                            >
+                            </kendo-dateinput>
+                          </div>
+                          <div
+                            class="col-md-2"
+                            style="padding: 0%; width: 5%; text-align: center"
+                          >
+                            <p style="margin-bottom: 5px"><strong>—</strong></p>
+                          </div>
+                          <div class="col-md-5">
+                            <kendo-dateinput
+                              kendoDateRangeEndInput
+                              [size]="'medium'"
+                              [placeholder]="'fin'"
+                              formControlName="fechaFin"
+                              [format]="{
+                                displayFormat: 'dd-MM-yyyy',
+                                inputFormat: 'dd-MM-yyyy'
+                              }"
+                              [incompleteDateValidation]="true"
+                              fillMode="outline"
+                              style="width: 100%"
+                            ></kendo-dateinput>
+                          </div>
+                        </kendo-daterange>
+                      </div>
+                      <div
+                        class="row"
+                        style="
+                          display: flex;
+                          flex-wrap: wrap;
+                          justify-content: center;
+                          padding-top: 30px;
+                        "
+                      >
+                        <div
+                          class="col-md-5"
+                          style="flex-basis: 174px; padding-bottom: 5px"
+                        >
+                          <button
+                            mat-raised-button
+                            style="
+                              background-color: rgb(39, 174, 96);
+                              color: whitesmoke;
+                            "
+                            (click)="generarCierre()"
+                          >
+                            <mat-icon>money_off</mat-icon>
+                            Generar Cierre
+                          </button>
+                        </div>
+                        <div class="col-md-6" style="flex-basis: 174px">
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="generarReporte()"
+                          >
+                            <mat-icon>search</mat-icon>
+                            Generar Reporte
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+          <div style="height: 20px"></div>
+          <kendo-grid
+            [kendoGridBinding]="listaReporteComisiones"
+            [pageSize]="5"
+            [sortable]="true"
+            [reorderable]="false"
+            [resizable]="true"
+            filterable="menu"
+            [pageable]="true"
+            style="max-height: 700px; border-top-width: 0px; padding: 0%"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <div
+                class="col-md-7"
+                style="display: flex; justify-content: start"
+              >
+              <button
+              mat-raised-button
+              class="btn-export-excel"
+              (click)="excelexport.save()"
+            >
+            <span class="k-icon k-i-file-excel k-icon-20"></span>
+              Exportar a Excel
+            </button>
+                <kendo-excelexport
+                  [data]="listaReporteComisiones"
+                  fileName="ReporteDevolucionesMatricula.xlsx"
+                  #excelexport
+                >
+                  <kendo-excelexport-column
+                    field="nombre"
+                    title="Apellidos y Nombres"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="montoComisionSoles"
+                    title="Monto Comisiones (Soles)"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="montoComisionDolares"
+                    title="Monto Comisiones (Dolares)"
+                  >
+                  </kendo-excelexport-column>
+                </kendo-excelexport>
+              </div>
+            </ng-template>
+
+            <kendo-grid-column
+              title="Apellidos y Nombres"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="nombre"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Monto Comisiones (Soles)"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="montoComisionSoles"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Monto Comisiones (Dolares)"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="montoComisionDolares"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white'
+              }"
+            >
+            </kendo-grid-column>
+
+            <ng-template kendoGridNoRecordsTemplate>
+              <div>
+                <kendo-badge-container>
+                  <kendo-icon name="cloud" size="large"></kendo-icon>
+                  <kendo-badge position="inside">
+                    <kendo-icon name="close" style="color: red"></kendo-icon>
+                  </kendo-badge>
+                </kendo-badge-container>
+              </div>
+              <p>No hay registros cargados!</p>
+            </ng-template>
+            <ng-template
+              kendoPagerTemplate
+              let-totalPages="totalPages"
+              let-currentPage="currentPage"
+            >
+              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+              <kendo-pager-numeric-buttons
+                [buttonCount]="5"
+              ></kendo-pager-numeric-buttons>
+              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+              <!-- <kendo-pager-input></kendo-pager-input> -->
+              <kendo-pager-info></kendo-pager-info>
+              <kendo-pager-page-sizes
+                [pageSizes]="pageSizes"
+              ></kendo-pager-page-sizes>
+            </ng-template>
+            <kendo-grid-excel
+              fileName="ReporteDevolucionesMatricula.xlsx"
+            ></kendo-grid-excel>
+          </kendo-grid>
+        </div>
+        <br />
+      </div>
+    </div>
+  </div>
+</div>

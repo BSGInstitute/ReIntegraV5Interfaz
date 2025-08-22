@@ -1,0 +1,125 @@
+<div class="pg-contenedor-tab">
+  <div class="row mt-3">
+    <div class="col-12 pg-kgrid">
+      <kendo-grid
+        [kendoGridBinding]="gridConsultasForo.data"
+        (remove)="gridConsultasForo.removeHandler($event)"
+        (cancel)="gridConsultasForo.cancelHandler($event)"
+        (save)="gridConsultasForo.saveHandler($event)"
+        (add)="gridConsultasForo.addHandler($event)"
+        (cellClick)="gridConsultasForo.cellClickHandler($event)"
+        (cellClose)="gridConsultasForo.cellCloseHandler($event)"
+        scrollable="none"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          <h3 class="mb-0 w-auto text-center">Consultas Foro</h3>
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <button kendoGridAddCommand icon="plus" themeColor="success">
+            Agregar Configuración
+          </button>
+        </ng-template>
+        <kendo-grid-column
+          field="idModalidadCurso"
+          title="Modalidad"
+          [width]="100"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombreModalidad(dataItem.idModalidadCurso) ??
+                "Seleccione la Modalidad"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idModalidadCurso')"
+              class="d-flex"
+              size="medium"
+              [data]="comboModalidades"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [popupSettings]="{ popupClass: 'pg-popup' }"
+              class="pg-dropDown"
+            ></kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="proveedores"
+          title="Docentes"
+          [width]="150"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container
+              *ngIf="dataItem.proveedores != null; else elseTemplateProveedor"
+            >
+              <ul *ngFor="let item of dataItem.proveedores">
+                <li>
+                  {{ obtenerNombreProveedor(item) ?? "" }}
+                </li>
+              </ul>
+            </ng-container>
+            <ng-template #elseTemplateProveedor>
+              <div class="row">
+                <div class="col-12 text-center">Seleccione los Proveedores</div>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-multiselect
+              [formControl]="formGroup.get('proveedores')"
+              class="d-flex"
+              size="medium"
+              [data]="comboProveedor"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [popupSettings]="{ popupClass: 'pg-popup' }"
+              class="pg-dropDown"
+            >
+            </kendo-multiselect>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-command-column
+          title="Acciones"
+          [width]="30"
+          headerClass="justify-content-center pg-header-grid"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="row justify-content-center">
+              <div kendoTooltip class="col-auto p-0 mx-1">
+                <button
+                  kendoGridRemoveCommand
+                  themeColor="error"
+                  icon="trash"
+                  title="Eliminar"
+                ></button>
+              </div>
+              <div kendoTooltip class="col-auto p-0 mx-1">
+                <button
+                  kendoGridSaveCommand
+                  themeColor="primary"
+                  icon="save"
+                  [disabled]="gridConsultasForo.formGroup?.invalid"
+                  title="Guardar"
+                >
+                </button>
+              </div>
+              <div kendoTooltip class="col-auto p-0 mx-1">
+                <button
+                  kendoGridCancelCommand
+                  themeColor="secondary"
+                  icon="cancel"
+                  title="Cancelar"
+                ></button>
+              </div>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+</div>

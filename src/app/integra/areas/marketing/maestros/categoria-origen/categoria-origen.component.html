@@ -1,0 +1,349 @@
+<div class="">
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-color-material pb-0">
+        <h3 class="text-white mb-2">Tipo Categoria Origen</h3>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col">
+            <ng-template
+              #cellTemplateGridCatOrigen
+              let-dataItem="dataItem"
+              let-field="field"
+              let-itemValue="itemValue"
+            >
+              <!-- <ng-container [ngSwitch]="field">
+                <ng-container *ngSwitchCase="'idTipoDato'">
+                  <span class="text-danger fw-bold">
+                    {{ obtenerNombrePorIdFiltro(itemValue, field) }}
+                  </span>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ itemValue }}
+                </ng-container>
+              </ng-container> -->
+
+              <ng-container *ngIf="['idTipoDato','idTipoCategoriaOrigen','idProveedorCampaniaIntegra'].includes(field); else elseTemplate">
+                {{ obtenerNombrePorIdFiltro(itemValue, field) }}
+              </ng-container>
+              <ng-template #elseTemplate>
+                {{ itemValue }}
+              </ng-template>
+
+
+
+            </ng-template>
+
+            <k-grid-edit
+              [gridData]="listaCategoriaOrigen"
+              [loader]="loaderGrid"
+              [columns]="gridCategoriaOrigen.columns"
+              [commands]="gridCategoriaOrigen.comands"
+              [gridConfig]="gridCategoriaOrigen.gridConfig"
+              [gridState]="gridCategoriaOrigen.gridState"
+              [commandAdd]="'external'"
+              [commandEdit]="'external'"
+              [cellTemplateRef]="cellTemplateGridCatOrigen"
+              (OnGridEvents)="gridEventsCategoriaOrigen($event)"
+            >
+            </k-grid-edit>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<ng-template #modalCategoriaOrigen let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{
+        isNew
+          ? "Nuevo Tipo Categoria Origen"
+          : "Modificar Tipo Categoria Origen"
+      }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formCategoriaOrigen">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombre" class="k-label">
+                <span>Nombre <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+                #nombre
+                size="medium"
+                placeholder="Nombre"
+                formControlName="nombre"
+                [clearButton]="true"
+                [showSuccessIcon]="getShowSuccessIcon('nombre')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+              <kendo-formhint>Nombre de Tipo Categoria Origen</kendo-formhint>
+              <kendo-formerror>
+                {{ getErrorMessage("nombre") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="descripcion" class="k-label">
+                <span
+                  >Descripcion <span class="text-danger fw-bold">*</span></span
+                >
+              </label>
+              <kendo-textbox
+                #descripcion
+                size="medium"
+                placeholder="Descripcion"
+                formControlName="descripcion"
+                [clearButton]="true"
+                [showSuccessIcon]="getShowSuccessIcon('descripcion')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+              <kendo-formhint
+                >Descripcion de Tipo Categoria Origen</kendo-formhint
+              >
+              <kendo-formerror>
+                {{ getErrorMessage("descripcion") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="meta" class="k-label">
+                <span>Meta <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-numerictextbox
+                #meta
+                orientation="horizontal"
+                [style.width.px]="170"
+                formControlName="meta"
+                [min]="0"
+                [autoCorrect]="true"
+                [decimals]="0"
+                [format]="'0'"
+              >
+              </kendo-numerictextbox>
+              <kendo-formhint>Meta de Tipo Categoria Origen</kendo-formhint>
+              <kendo-formerror> {{ getErrorMessage("meta") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="monedaRecord" class="k-label">
+              <span
+                >Tipo de Dato <span class="text-danger fw-bold">*</span></span
+              >
+            </label>
+            <kendo-dropdownlist
+              #monedaRecord
+              formControlName="idTipoDato"
+              class="d-flex"
+              size="medium"
+              [data]="filtrosCategoriaOrigen.filtroTipoDato"
+              [defaultItem]="{
+                nombre: 'Seleccione un Tipo de Dato...',
+                id: null
+              }"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>
+              {{ getErrorMessage("idTipoDato") }}
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="monedaRecord" class="k-label">
+              <span
+                >Tipo de Categoria Origen
+                <span class="text-danger fw-bold">*</span></span
+              >
+            </label>
+            <kendo-dropdownlist
+              #monedaRecord
+              formControlName="idTipoCategoriaOrigen"
+              class="d-flex"
+              size="medium"
+              [data]="filtrosCategoriaOrigen.filtroTipoCategoriaOrigen"
+              [defaultItem]="{
+                nombre: 'Seleccione un Tipo de Categoria Origen...',
+                id: null
+              }"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>
+              {{ getErrorMessage("idTipoCategoriaOrigen") }}
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="idProveedorCampaniaIntegra" class="k-label">
+              <span>Proveedor <span class="text-danger fw-bold">*</span></span>
+            </label>
+            <kendo-dropdownlist
+              #idProveedorCampaniaIntegra
+              formControlName="idProveedorCampaniaIntegra"
+              class="d-flex"
+              size="medium"
+              [data]="filtrosCategoriaOrigen.filtroProveedorCampania"
+              [defaultItem]="{ nombre: 'Seleccione un Proveedor...', id: null }"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>
+              {{ getErrorMessage("idProveedorCampaniaIntegra") }}
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12 checkbox-align-center">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="considerar"
+                text="Considerar Codigo de Origen"
+              ></kendo-label>
+              <div class="h-100 d-flex align-items-center">
+                <input
+                  #considerar
+                  formControlName="considerar"
+                  type="checkbox"
+                  size="medium"
+                  rounded="medium"
+                  kendoCheckBox
+                />
+              </div>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="codigoOrigen" class="k-label">
+                <span
+                  >Codigo Origen
+                  <span class="text-danger fw-bold">*</span></span
+                >
+              </label>
+              <kendo-textbox
+                #codigoOrigen
+                size="medium"
+                placeholder="Codigo Origen"
+                formControlName="codigoOrigen"
+                [clearButton]="true"
+                [showSuccessIcon]="getShowSuccessIcon('codigoOrigen')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+              <kendo-formhint>Nombre de Codigo Origen</kendo-formhint>
+              <kendo-formerror>
+                {{ getErrorMessage("codigoOrigen") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="formulario" class="k-label">
+              <span
+                >Tipo de Formulario
+                <span class="text-danger fw-bold">*</span></span
+              >
+            </label>
+            <kendo-dropdownlist
+              #formulario
+              formControlName="idFormularioProcedencia"
+              class="d-flex"
+              size="medium"
+              [data]="filtrosCategoriaOrigen.filtroProcedenciaformulario"
+              [defaultItem]="{
+                nombre: 'Seleccione un Tipo de Formulario...',
+                id: null
+              }"
+              textField="nombre"
+              valueField="id"
+              (valueChange)="cargarTipoInteraccion($event)"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>
+              {{ getErrorMessage("idFormularioProcedencia") }}
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="row mt-3">
+          <div class="col ps-3 pe-3">
+            <ul class="list-group">
+              <li class="list-group-item bg-primary text-white h6" > Nombre</li>
+              <li class="list-group-item" *ngFor="let item of tipoInteraccionPorFormulario; let i=index"> {{ item.nombre }}</li>
+            </ul>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="crearCategoriaOrigen()"
+      >
+        Guardar
+      </button>
+      <button
+        kendoButton
+        *ngIf="!isNew"
+        themeColor="tertiary"
+        (click)="actualizarCategoriaOrigen()"
+      >
+        Actualizar
+      </button>
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

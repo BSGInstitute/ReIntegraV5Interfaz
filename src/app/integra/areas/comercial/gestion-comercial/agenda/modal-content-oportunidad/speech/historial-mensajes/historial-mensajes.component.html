@@ -1,0 +1,405 @@
+<kendo-tabstrip
+  class="p-0 rounded-3"
+  [scrollable]="{ scrollButtons: buttons }"
+  [keepTabContent]="true"
+  [animate]="false"
+  (tabSelect)="onSelectedChat($event)"
+>
+  >
+  <!-- CORREOS RECIBIDOS -->
+  <kendo-tabstrip-tab [selected]="true">
+    <ng-template kendoTabTitle>
+      <span>Correos Recibidos</span>
+    </ng-template>
+    <ng-template kendoTabContent *loadOnDemand>
+      <div class="row grid-speech">
+        <kendo-grid
+          [kendoGridBinding]="gridHistorialMensajes?.data"
+          scrollable="none"
+          [pageable]="true"
+          [pageSize]="5"
+        >
+          <kendo-grid-column field="fecha" title="Fecha" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fecha | date: "dd/MM/yyyy" }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="fecha" title="Hora" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fecha | date: "h:mm a" }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="tipo" title="Tipo" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.tipo }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="asunto"
+            title="Asunto"
+            [width]="600"
+          ></kendo-grid-column>
+          <kendo-grid-command-column title="Acciones" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div
+                class="btn-group"
+                role="group"
+                aria-label="Basic outlined example"
+              >
+                <button
+                  kendoGridEditCommand
+                  class="btn btn-light m-1 border"
+                  (click)="verHistorialInbox(dataItem)"
+                >
+                  <span class="k-icon k-i-eye text-dark"></span>
+                </button>
+                <button
+                  kendoGridEditCommand
+                  class="btn btn-light m-1 border"
+                  (click)="
+                    verInteraccionesCorreo(dataItem, modalInteraccionesCorreo)
+                  "
+                >
+                  <span class="k-icon k-i-refresh text-dark"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <!-- END CORREOS RECIBIDOS -->
+  <!-- CHAT WHATSAPP -->
+  <kendo-tabstrip-tab>
+    <ng-template kendoTabTitle>
+      <span>Chat WhatsApp</span>
+    </ng-template>
+    <ng-template kendoTabContent *loadOnDemand>
+      <ng-container *ngIf="historialMensajeRecibidosChat?.length > 0; else elseTemplateChatWhatsApp">
+        <div class="content m-3">
+          <div
+            class="block-header bg-success fw-bold"
+            style="border-radius: 5px 5px 0 0"
+          >
+            <div class="p-2 px-3 text-white">
+              <div class="flex-row">
+                <span class="k-icon k-i-envelop"></span>
+                <span class="mt-3 mb-2 mx-1">{{ nombreCompletoAlumno }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="p-2 px-3 block-message"
+            style="
+              background-color: #e5ddd5;
+              overflow-y: scroll;
+              background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/1089577/background.png);
+              height: 400px;
+            "
+          >
+            <ng-container *ngFor="let mensajes of historialMensajeRecibidosChat">
+              <ng-container *ngIf="mensajes.tipo == 2">
+                <div class="row">
+                  <div class="text-start">
+                    <div class="d-flex flex-row">
+                      <div class="text-end pt-1">
+                        <div
+                          class="rounded-circle px-2 pt-1 m-1"
+                          style="
+                            width: 30px;
+                            height: 30px;
+                            background-color: #d3d6db;
+                          "
+                        >
+                          <fa-icon
+                            [icon]="['fas', 'user']"
+                            class="fa-lg text-white"
+                          ></fa-icon>
+                        </div>
+                      </div>
+                      <div
+                        class="w-auto p-2 my-1 rounded"
+                        style="max-width: 75%; background-color: #f1f3f4"
+                      >
+                        <label [innerHTML]="mensajes.mensaje"></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="mensajes.tipo == 1">
+                <div class="row">
+                  <div class="text-end">
+                    <label
+                      class="w-auto p-2 m-1 rounded"
+                      style="
+                        max-width: 75%;
+                        background-color: #d9fdd3;
+                        text-align: left !important;
+                      "
+                    >
+                      <div class="row">
+                        <span class="fw-bold" style="font-size: smaller;">{{mensajes.nombrePersonal}}</span>
+                      </div>
+                      <div class="row">
+                        <label [innerHTML]="mensajes.mensaje"></label>
+                      </div>
+                  </label>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #elseTemplateChatWhatsApp>
+        <div class="w-100 text-center m-2 p-2">
+          No se encontro historial de chat(Whatsapp).
+        </div>
+      </ng-template>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <!-- END CHAT WHATSAPP -->
+  <kendo-tabstrip-tab>
+    <ng-template kendoTabTitle>
+      <span>Chat Portal Web</span>
+    </ng-template>
+    <ng-template kendoTabContent *loadOnDemand>
+      <ng-container *ngIf="mensajesPortal != null">
+        <div class="content m-3">
+          <div
+            class="block-header bg-warning fw-bold"
+            style="border-radius: 5px 5px 0 0"
+          >
+            <div class="p-2 px-3 text-white">
+              <div class="flex-row">
+                <span class="k-icon k-i-envelop"></span>
+                {{ nombreCompletoAlumno }}
+              </div>
+            </div>
+          </div>
+          <div
+            class="p-2 px-3 block-message"
+            style="
+              background-color: #e5ddd5;
+              overflow-y: scroll;
+              background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/1089577/background.png);
+              height: 400px;
+            "
+          >
+            <ng-container *ngFor="let mensajes of mensajesPortal">
+              <ng-container
+                *ngIf="
+                  mensajes.idRemitente == 'visitante' && mensajes.mensaje != ''
+                "
+              >
+                <div class="row">
+                  <div class="text-start">
+                    <div class="d-flex flex-row">
+                      <div class="text-end pt-1">
+                        <div
+                          class="rounded-circle px-2 pt-1 m-1"
+                          style="
+                            width: 30px;
+                            height: 30px;
+                            background-color: #d3d6db;
+                          "
+                        >
+                          <ng-container
+                            *ngIf="
+                              mensajes.idRemitente != 'visitante';
+                              else isVisit
+                            "
+                          >
+                            <fa-icon
+                              [icon]="['fas', 'user']"
+                              class="fa-lg text-white"
+                            ></fa-icon>
+                          </ng-container>
+                          <ng-template #isVisit>
+                            <fa-icon
+                              [icon]="['fas', 'car']"
+                              class="fa-lg text-white"
+                            ></fa-icon>
+                          </ng-template>
+                        </div>
+                      </div>
+                      <div
+                        class="w-auto p-2 my-1 rounded"
+                        style="max-width: 75%; background-color: #f1f3f4"
+                      >
+                        <label [innerHTML]="mensajes.mensaje"></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container
+                *ngIf="
+                  mensajes.idRemitente == 'asesor' && mensajes.mensaje != ''
+                "
+              >
+                <div class="row">
+                  <div class="text-end">
+                    <label
+                      class="w-auto p-2 m-1 rounded"
+                      style="
+                        max-width: 75%;
+                        background-color: #d9fdd3;
+                        text-align: left !important;
+                      "
+                      [innerHTML]="mensajes.mensaje"
+                    ></label>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="mensajesPortal == null">
+        <div class="w-100 text-center m-2 p-2">
+          No se encontro historial de chat(Portal).
+        </div>
+      </ng-container>
+    </ng-template>
+  </kendo-tabstrip-tab>
+</kendo-tabstrip>
+
+<ng-template #modalVerCorreoAlternoSpeech let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Visualización de correo
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-3 px-3">
+      No se encuentra informacion de este correo porque es de tipo ENVIO
+      AUTOMATICO
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      themeColor="error"
+      kendoButton
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalPreviaVistaCorreos let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Visualización de correo
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-3 px-3">
+      <div class="col-md-2"><label class="my-1">Remitente:</label></div>
+      <div class="col-md-10">
+        <div
+          class="form-control form-control-sm form-radius-15 nowrapText div-disabled"
+        >
+          {{ correoEnviado.remitente }}
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3 px-3">
+      <div class="col-md-2"><label class="my-1">Destinatario(s):</label></div>
+      <div class="col-md-10">
+        <div
+          class="form-control form-control-sm form-radius-15 nowrapText div-disabled"
+        >
+          {{ destinatarioEncode }}
+        </div>
+        <!-- <input type="password" class="form-control form-control-sm form-radius-15 nowrapText div-disabled" [value]="correoEnviado.destinatarios"> -->
+      </div>
+    </div>
+    <div class="row mb-3 px-3">
+      <div class="col-md-2"><label class="my-1">Asunto:</label></div>
+      <div class="col-md-10">
+        <div
+          class="form-control form-control-sm form-radius-15 nowrapText div-disabled"
+        >
+          {{ correoEnviado.asunto }}
+        </div>
+      </div>
+    </div>
+    <div class="row px-3">
+      <div class="col-md-2"><label class="my-1">Mensaje:</label></div>
+      <div class="col-md-10">
+        <kendo-editor
+          [value]="correoEnviado.emailBody"
+          style="height: 420px"
+        ></kendo-editor>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      themeColor="error"
+      kendoButton
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalInteraccionesCorreo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Interacciones del Correo
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row grid-speech">
+      <kendo-grid
+        [kendoGridBinding]="gridHistorialCorreo?.data"
+        scrollable="none"
+        [sortable]="true"
+      >
+        <kendo-grid-column field="fechaCreacion" title="Fecha" [width]="150">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem?.fechaCreacion | date: "dd/MM/yyyy" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="programa" title="Hora" [width]="150">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem?.fechaCreacion | date: "hh:mm a" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="estado"
+          title="Tipo"
+          [width]="200"
+        ></kendo-grid-column>
+        <ng-template kendoGridNoRecordsTemplate>
+          No se encontraron correos.
+        </ng-template>
+      </kendo-grid>
+    </div>
+  </div>
+</ng-template>

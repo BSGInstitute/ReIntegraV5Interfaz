@@ -1,0 +1,1095 @@
+<div class="content-agenda">
+  <div class="row agenda-tituloPrincipal" style="position: relative">
+    <span class="card-title mt-2"
+      >{{ esTresCx ? "(O) Agenda 3CX" : "(O) Agenda" }}
+    </span>
+    <div class="w-100 d-flex justify-content-center">
+      <div class="content-busqueda">
+        <div class="row k-form k-form-horizontal">
+          <div class="col">
+            <kendo-formfield orientation="horizontal" class="mt-0">
+              <label
+                [for]="celular"
+                class="k-label text-white align-items-start"
+              >
+                Número:
+              </label>
+              <kendo-textbox
+                #celular
+                [(ngModel)]="celularAlumno"
+                [clearButton]="true"
+                placeholder="Ingrese número"
+              >
+              <ng-template kendoTextBoxPrefixTemplate>
+                  <kendo-icon name="search"></kendo-icon>
+                </ng-template>
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+          <div class="col-auto">
+            <button
+              kendoButton
+              themeColor="tertiary"
+              (click)="buscarFichaPorCelular()"
+            >
+            <kendo-loader *ngIf="loadingBusqueda" size="small" class="text-white"></kendo-loader>
+            {{loadingBusqueda ? 'Buscando' : 'Buscar'}}
+            </button>
+          </div>
+        </div>
+        <div class="content-resultado">
+          <div class="row mt-1" *ngIf="showResultadoVacio">
+            {{textResultadoPrincipal}}
+          </div>
+          <div class="row text-start mt-1" *ngIf="showResultado">
+            <div class="col-12" *ngIf="showResultadoPrincipal; else elseResultadoTemplate">
+              <ul class="m-0">
+                <li style="cursor: auto">
+                  {{ resultadoPrincipal.alumno }}
+                </li>
+                <li style="cursor: auto">Tab: {{ resultadoPrincipal.tabAgenda }} - {{ resultadoPrincipal.faseOportunidad }}</li>
+                <li style="cursor: auto">Asignado a: {{ resultadoPrincipal.personalAsignado }}</li>
+              </ul>
+            </div>
+            <ng-template #elseResultadoTemplate>
+              {{ textResultadoPrincipal }}
+            </ng-template>
+          </div>
+          <div class="row justify-content-between" *ngIf="showResultado || otrosResultados.length > 0">
+            <div class="col-auto">
+              <button
+                *ngIf="otrosResultados.length > 0"
+                kendoButton
+                fillMode="link"
+                size="small"
+                class="text-white"
+                (click)="verOtrosResultados(modalVerOtros)"
+              >Ver otros resultados</button>
+            </div>
+            <div class="col-auto" *ngIf="showResultadoPrincipal">
+              <button
+                kendoButton
+                icon="login"
+                themeColor="success"
+                size="small"
+                (click)="abrirFicha(resultadoPrincipal)"
+              >Abrir Ficha</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="col d-flex justify-content-end"
+      style="position: static; height: 0px"
+      *ngIf="showBtnFiltro"
+    >
+      <button
+        class="btn btn-sm agenda-filtroControlActividades"
+        (click)="showFiltroControlActividades = !showFiltroControlActividades"
+      >
+        <fa-icon [icon]="['fas', 'filter']" class="fa-lg"></fa-icon>
+      </button>
+    </div>
+  </div>
+  <div class="row agenda-tituloPrincipal" style="position: relative;padding-left: 10px;font-size: 14px;" >
+    <!-- <span><strong>ALRA:</strong>  Actividades con Llamada Real Asociada     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     <strong>ASLRA:</strong>  Actividades sin Llamada Real Asociada  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <strong>ARPOM:</strong>  Actividades reportadas por otro medio    </span>   -->
+  <span>(*) Considera : Actividades con Llamada Real Asociada  +  Actividades Reportadas como Respuestas Telefonicas sin Llamada Real Asociada +  Actividades Reportadas por Otro Medio </span>
+  </div>
+  <div
+    *ngIf="showFiltroControlActividades"
+    class="row row pt-2 pb-1 pe-2 agenda-filtroReporteActividad"
+  >
+    <div class="col-sm-4 col-md-6 text-end">
+      <kendo-label class="k-checkbox-label" text="Asesor"> </kendo-label>
+    </div>
+    <div class="col">
+      <kendo-dropdownlist
+        #idAsesorReporte
+        [data]="dataPersonalAsignado"
+        textField="nombres"
+        valueField="id"
+        [valuePrimitive]="true"
+        [defaultItem]="{
+          nombres: '<Seleccione>',
+          id: null
+        }"
+        [(ngModel)]="idPersonalFiltro"
+        [kendoDropDownFilter]="filterSettings"
+        [disabled]="btnFiltroDisabled"
+      >
+      </kendo-dropdownlist>
+    </div>
+    <div class="col-auto">
+      <button
+        kendoButton
+        class="send-button"
+        icon="search"
+        themeColor="primary"
+        (click)="generarReporteActividades()"
+        [disabled]="btnFiltroDisabled"
+      >
+        Buscar
+      </button>
+    </div>
+  </div>
+
+  <!-- CON LLAMADA REAL ASOCIADA  -->
+  <div class="row py-2 agenda-reporteActividad text-center agenda-spinner">
+    <div class="col">
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <fa-icon [icon]="['fas', 'phone']"></fa-icon>
+          (*) Actividades Totales:
+        </div>
+        <div class="col-auto ps-0">
+          <mat-progress-spinner
+            *ngIf="btnFiltroDisabled"
+            mode="indeterminate"
+            [diameter]="25"
+          >
+          </mat-progress-spinner>
+          <span *ngIf="!btnFiltroDisabled">{{
+            controlActividades.totales
+          }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <fa-icon [icon]="['fas', 'phone']"></fa-icon>
+          (*) Actividades Ejecutadas:
+        </div>
+        <div class="col-auto ps-0">
+          <mat-progress-spinner
+            *ngIf="btnFiltroDisabled"
+            mode="indeterminate"
+            [diameter]="25"
+          >
+          </mat-progress-spinner>
+          <span *ngIf="!btnFiltroDisabled">{{
+            controlActividades.ejecutadas
+          }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <fa-icon [icon]="['fas', 'user']"></fa-icon>
+          (*) ITs Generados:
+        </div>
+        <div class="col-auto ps-0">
+          <mat-progress-spinner
+            *ngIf="btnFiltroDisabled"
+            mode="indeterminate"
+            [diameter]="25"
+          >
+          </mat-progress-spinner>
+          <span *ngIf="!btnFiltroDisabled">{{
+            controlActividades.itsGenerados
+          }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <fa-icon [icon]="['fas', 'user-check']"></fa-icon>
+          (*) IPs Generados:
+        </div>
+        <div class="col-auto ps-0">
+          <mat-progress-spinner
+            *ngIf="btnFiltroDisabled"
+            mode="indeterminate"
+            [diameter]="20"
+          >
+          </mat-progress-spinner>
+          <span *ngIf="!btnFiltroDisabled">{{
+            controlActividades.ipsGenerados
+          }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto">
+      <button
+        kendoButton
+        icon="reload"
+        themeColor="primary"
+        container="body"
+        size="small"
+        placement="top"
+        ngbTooltip="Actualizar Cambios"
+        (click)="actualizarCambios()"
+      ></button>
+    </div>
+  </div>
+
+<!-- SIN LLAMADA REAL ASOCIADA  -->
+<!-- <div class="row py-2 agenda-reporteActividad text-center agenda-spinner" style="border-bottom: unset;">
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'phone']"></fa-icon>
+        (ASLRA) Actividades Totales:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="25"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.totales
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'phone']"></fa-icon>
+        (ASLRA) Actividades Ejecutadas:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="25"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.ejecutadas
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'user']"></fa-icon>
+        (ASLRA) ITs Generados:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="25"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.itsGenerados
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'user-check']"></fa-icon>
+        (ASLRA) IPs Generados:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="20"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.ipsGenerados
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-auto">
+    <button
+      kendoButton
+      icon="reload"
+      themeColor="primary"
+      container="body"
+      size="small"
+      placement="top"
+      ngbTooltip="Actualizar Cambios"
+      (click)="actualizarCambios()"
+    ></button>
+  </div>
+</div> -->
+
+<!-- REPORTADAS POR OTRO medio -->
+<!-- <div class="row py-2 agenda-reporteActividad text-center agenda-spinner" style="border-bottom: unset;">
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'phone']"></fa-icon>
+        (ARPOM) Actividades Totales:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="25"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.totales
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'phone']"></fa-icon>
+        (ARPOM) Actividades Ejecutadas:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="25"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.ejecutadas
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'user']"></fa-icon>
+        (ARPOM) ITs Generados:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="25"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.itsGenerados
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <fa-icon [icon]="['fas', 'user-check']"></fa-icon>
+        (ARPOM) IPs Generados:
+      </div>
+      <div class="col-auto ps-0">
+        <mat-progress-spinner
+          *ngIf="btnFiltroDisabled"
+          mode="indeterminate"
+          [diameter]="20"
+        >
+        </mat-progress-spinner>
+        <span *ngIf="!btnFiltroDisabled">{{
+          controlActividades.ipsGenerados
+        }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-auto">
+    <button
+      kendoButton
+      icon="reload"
+      themeColor="primary"
+      container="body"
+      size="small"
+      placement="top"
+      ngbTooltip="Actualizar Cambios"
+      (click)="actualizarCambios()"
+    ></button>
+  </div>
+</div> -->
+
+
+
+  <div class="row" id="tabsAgenda" style="position: relative">
+    <div
+      class="col d-flex justify-content-end"
+      style="position: static; height: 0px"
+    >
+      <button class="btn btn-sm btn-filter-agenda" (click)="toggleFiltroTab()">
+        <fa-icon [icon]="['fas', 'filter']" class="fa-lg"></fa-icon>
+      </button>
+    </div>
+    <kendo-tabstrip
+      class="p-0"
+      [keepTabContent]="true"
+      (tabSelect)="onSelectTabsPadre($event)"
+      [animate]="false"
+    >
+      <kendo-tabstrip-tab [selected]="true" class="bg-danger">
+        <ng-template kendoTabTitle>
+          <fa-icon [icon]="['fas', 'bars']" class="fa-lg me-1"></fa-icon>
+          <span>ACTIVIDADES</span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <div
+            class="content"
+            id="tabsActividades"
+            *ngIf="estadoCargarTabs$ | async"
+          >
+            <kendo-tabstrip
+              [scrollable]="{ scrollButtons: buttons }"
+              [keepTabContent]="true"
+              (tabSelect)="onSelectTabAgenda($event)"
+              [animate]="false"
+              #tabsAgendaActividades
+            >
+              <!-- Whatsapp -->
+              <kendo-tabstrip-tab
+                *ngIf="esWhatsappCorreos"
+                [selected]="tabsComercial[agendaService.Whatsapp].selected"
+                [title]="tabsComercial[agendaService.Whatsapp].titleTab"
+                [disabled]="tabsComercial[agendaService.Whatsapp].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span
+                    >{{ tabsComercial[agendaService.Whatsapp].titleTab }}
+                    <span class="fs-6"
+                      >({{ cantidadMensajesWhatsapp }})</span
+                    ></span
+                  >
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.Whatsapp]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.Whatsapp].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridWhatsapp
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END Whatsapp -->
+              <!-- Correos -->
+              <kendo-tabstrip-tab
+                *ngIf="esWhatsappCorreos"
+                [selected]="tabsComercial[agendaService.Correos].selected"
+                [title]="tabsComercial[agendaService.Correos].titleTab"
+                [disabled]="tabsComercial[agendaService.Correos].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span
+                    >{{ tabsComercial[agendaService.Correos].titleTab }}
+                    <span class="fs-6"
+                      >({{
+                        agendaService.agendaInicializarService.gridCorreos.data
+                          .length
+                      }})</span
+                    >
+                  </span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.Correos]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.Correos].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridCorreos
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END Correos -->
+
+              <!-- PROGRAMACION AUTOMATICA -->
+              <kendo-tabstrip-tab
+                [selected]="
+                  tabsComercial[agendaService.ProgramacionAutomatica].selected
+                "
+                [title]="
+                  tabsComercial[agendaService.ProgramacionAutomatica].titleTab
+                "
+                [disabled]="
+                  tabsComercial[agendaService.ProgramacionAutomatica].disabled
+                "
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.ProgramacionAutomatica].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.ProgramacionAutomatica]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.ProgramacionAutomatica]
+                        .toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService
+                        .gridProgramacionAutomatica
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END PROGRAMACION AUTOMATICA -->
+              <!-- PROGRAMACION MANUAL -->
+              <kendo-tabstrip-tab
+                [selected]="
+                  tabsComercial[agendaService.ProgramacionManual].selected
+                "
+                [title]="
+                  tabsComercial[agendaService.ProgramacionManual].titleTab
+                "
+                [disabled]="
+                  tabsComercial[agendaService.ProgramacionManual].disabled
+                "
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.ProgramacionManual].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.ProgramacionManual]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.ProgramacionManual]
+                        .toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService
+                        .gridProgramacionManual
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END PROGRAMACION MANUAL -->
+              <!-- NO PROG 1 SOLICITUD -->
+              <kendo-tabstrip-tab
+                [selected]="
+                  tabsComercial[agendaService.NoProg1Solicitud].selected
+                "
+                [title]="tabsComercial[agendaService.NoProg1Solicitud].titleTab"
+                [disabled]="
+                  tabsComercial[agendaService.NoProg1Solicitud].disabled
+                "
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.NoProg1Solicitud].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.NoProg1Solicitud]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.NoProg1Solicitud].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService
+                        .gridNoProg1Solicitud
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END NO PROG 1 SOLICITUD -->
+              <!-- NO PROG +1 SOLICITUD -->
+              <kendo-tabstrip-tab
+                [selected]="
+                  tabsComercial[agendaService.NoProgMas1Solicitud].selected
+                "
+                [title]="
+                  tabsComercial[agendaService.NoProgMas1Solicitud].titleTab
+                "
+                [disabled]="
+                  tabsComercial[agendaService.NoProgMas1Solicitud].disabled
+                "
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.NoProgMas1Solicitud].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.NoProgMas1Solicitud]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.NoProgMas1Solicitud]
+                        .toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService
+                        .gridNoProgMas1Solicitud
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END NO PROG +1 SOLICITUD -->
+              <!-- WORKSHOP -->
+              <kendo-tabstrip-tab
+                [selected]="tabsComercial[agendaService.Workshop].selected"
+                [title]="tabsComercial[agendaService.Workshop].titleTab"
+                [disabled]="tabsComercial[agendaService.Workshop].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.Workshop].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.Workshop]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.Workshop].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridWorkshop
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END WORKSHOP -->
+              <!-- NO PROG ALTAS Y MEDIAS -->
+              <kendo-tabstrip-tab
+                [selected]="
+                  tabsComercial[agendaService.NoProgAltasMedias].selected
+                "
+                [title]="
+                  tabsComercial[agendaService.NoProgAltasMedias].titleTab
+                "
+                [disabled]="
+                  tabsComercial[agendaService.NoProgAltasMedias].disabled
+                "
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.NoProgAltasMedias].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.NoProgAltasMedias]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.NoProgAltasMedias]
+                        .toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService
+                        .gridNoProgAltasMedias
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END NO PROG ALTAS Y MEDIAS -->
+              <!-- VENCIDAS IP IC PF -->
+              <kendo-tabstrip-tab
+                [selected]="
+                  tabsComercial[agendaService.VencidasIpIcPf].selected
+                "
+                [title]="tabsComercial[agendaService.VencidasIpIcPf].titleTab"
+                [disabled]="
+                  tabsComercial[agendaService.VencidasIpIcPf].disabled
+                "
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.VencidasIpIcPf].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.VencidasIpIcPf]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.VencidasIpIcPf].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridVencidasIpIcPf
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END VENCIDAS IP IC PF -->
+              <!-- VENCIDAS IS M -->
+              <kendo-tabstrip-tab
+                [selected]="tabsComercial[agendaService.VencidasIsM].selected"
+                [title]="tabsComercial[agendaService.VencidasIsM].titleTab"
+                [disabled]="tabsComercial[agendaService.VencidasIsM].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.VencidasIsM].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.VencidasIsM]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.VencidasIsM].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridVencidasIsM
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END VENCIDAS IS M -->
+              <!-- PRE LANZAMIENTO -->
+              <kendo-tabstrip-tab
+                [selected]="
+                  tabsComercial[agendaService.PreLanzamiento].selected
+                "
+                [title]="tabsComercial[agendaService.PreLanzamiento].titleTab"
+                [disabled]="
+                  tabsComercial[agendaService.PreLanzamiento].disabled
+                "
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.PreLanzamiento].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.PreLanzamiento]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.PreLanzamiento].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridPreLanzamiento
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END PRE LANZAMIENTO -->
+              <!-- RN2-B -->
+              <kendo-tabstrip-tab
+                [selected]="tabsComercial[agendaService['RN2_B']].selected"
+                [title]="tabsComercial[agendaService['RN2_B']].titleTab"
+                [disabled]="tabsComercial[agendaService['RN2_B']].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService["RN2_B"]].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService['RN2_B']]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService['RN2_B']].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridRN2
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END RN2-B -->
+              <!-- RN2-A -->
+              <kendo-tabstrip-tab
+                [selected]="tabsComercial[agendaService['RN2_A']].selected"
+                [title]="tabsComercial[agendaService['RN2_A']].titleTab"
+                [disabled]="tabsComercial[agendaService['RN2_A']].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService["RN2_A"]].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService['RN2_A']]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService['RN2_A']].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridRN2A
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END RN2-A -->
+              <!-- VENTA CRUZADA -->
+              <kendo-tabstrip-tab
+                [selected]="tabsComercial[agendaService.VentaCruzada].selected"
+                [title]="tabsComercial[agendaService.VentaCruzada].titleTab"
+                [disabled]="tabsComercial[agendaService.VentaCruzada].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.VentaCruzada].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.VentaCruzada]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.VentaCruzada].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridVentaCruzada
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END VENTA CRUZADA -->
+              <!-- REALIZADAS -->
+              <kendo-tabstrip-tab
+                [selected]="tabsComercial[agendaService.Realizadas].selected"
+                [title]="tabsComercial[agendaService.Realizadas].titleTab"
+                [disabled]="tabsComercial[agendaService.Realizadas].disabled"
+              >
+                <ng-template kendoTabTitle>
+                  <span>{{
+                    tabsComercial[agendaService.Realizadas].titleTab
+                  }}</span>
+                </ng-template>
+                <ng-template kendoTabContent *loadOnDemand>
+                  <div class="card">
+                    <div style="padding-top: 10px"></div>
+                    <div class="row">
+                      <div class="col-sm-2"></div>
+                      <div class="col-sm-4">
+                        <legend
+                          style="
+                            font-size: 18px;
+                            line-height: inherit;
+                            color: #212121;
+                            margin-bottom: 23px;
+                            border-bottom: 1px solid #e5e5e5;
+                          "
+                        >
+                          Leyenda Colores
+                        </legend>
+                        <div class="row">
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 3px; padding-right: 0px"
+                          >
+                            <div id="cuadrado1Leyenda"></div>
+                          </div>
+                          <div class="col-sm-6">menor a 2 minutos</div>
+                        </div>
+                        <div class="row">
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 3px; padding-right: 0px"
+                          >
+                            <div id="cuadrado2Leyenda"></div>
+                          </div>
+                          <div class="col-sm-6">2 a 3 minutos</div>
+                        </div>
+                        <div class="row">
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 3px; padding-right: 0px"
+                          >
+                            <div id="cuadrado3Leyenda"></div>
+                          </div>
+                          <div class="col-sm-6">4 a 5 minutos</div>
+                        </div>
+                        <div class="row">
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 3px; padding-right: 0px"
+                          >
+                            <div id="cuadrado4Leyenda"></div>
+                          </div>
+                          <div class="col-sm-6">6 a 8 minutos</div>
+                        </div>
+                        <div class="row">
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 3px; padding-right: 0px"
+                          >
+                            <div id="cuadrado5Leyenda"></div>
+                          </div>
+                          <div class="col-sm-6">mayor a 8 minutos</div>
+                        </div>
+                        <div class="row">
+                          <div
+                            class="col-sm-1"
+                            style="padding-top: 3px; padding-right: 0px"
+                          >
+                            <div id="cuadrado6Leyenda"></div>
+                          </div>
+                          <div class="col-sm-6">hora Refrigerio</div>
+                        </div>
+                      </div>
+                      <div class="col-sm-5">
+                        <legend
+                          style="
+                            font-size: 18px;
+                            line-height: inherit;
+                            color: #212121;
+                            margin-bottom: 23px;
+                            border-bottom: 1px solid #e5e5e5;
+                          "
+                        >
+                          Total tiempos
+                        </legend>
+                        <div class="row">
+                          <div class="col-sm-4">
+                            <label
+                              ><strong> Total Tiempo Perdido: </strong></label
+                            >
+                          </div>
+                          <div class="col-sm-5" id="totalPerdido">0</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-4">
+                            <label
+                              ><strong> Total Tiempo Timbrado: </strong></label
+                            >
+                          </div>
+                          <div class="col-sm-5" id="totalTimbrado">0</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-4">
+                            <label
+                              ><strong> Total Tiempo Contacto: </strong></label
+                            >
+                          </div>
+                          <div class="col-sm-5" id="totalContacto">0</div>
+                        </div>
+                      </div>
+                      <div class="col-sm"></div>
+                    </div>
+                    <div
+                      class="row"
+                      style="padding-top: 10px; padding-bottom: 10px"
+                    ></div>
+                  </div>
+                  <content-tab-agenda
+                    [tab]="tabsComercial[agendaService.Realizadas]"
+                    [toggleFiltro]="
+                      tabsComercial[agendaService.Realizadas].toggleFiltro
+                    "
+                    [agendaService]="agendaService"
+                    [gridAgenda]="
+                      agendaService.agendaInicializarService.gridRealizadas
+                    "
+                  ></content-tab-agenda>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <!-- END REALIZADAS -->
+            </kendo-tabstrip>
+          </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <kendo-tabstrip-tab>
+        <ng-template kendoTabTitle class="bg-danger">
+          <fa-icon [icon]="['fas', 'envelope']" class="fa-lg me-1"></fa-icon>
+          <span>BANDEJA DE ENTRADA</span>
+        </ng-template>
+        <ng-template kendoTabContent *loadOnDemand>
+          <app-bandeja-entrada
+            [toogleFiltroPadre]="toogleFiltroPadre"
+            [agendaService]="agendaService"
+          >
+          </app-bandeja-entrada>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </div>
+</div>
+
+<!-- #region modalVerOtros -->
+<ng-template #modalVerOtros let-modal>
+  <div class="modal-header bg-primary py-2">
+    <h2 class="modal-title text-white w-100 text-center mb-0">
+      Otros Resultados
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <kendo-grid
+        [kendoGridBinding]="dataOtrosResultados"
+        [selectable]="true"
+        scrollable="scrollable"
+      >
+        <kendo-grid-column
+          field="tabAgenda"
+          title="Tab"
+          [width]="100"
+        >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.tabAgenda ?? 'Ninguno' }}
+        </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="alumno"
+          title="Alumno"
+          [width]="200"
+        ></kendo-grid-column>
+        <kendo-grid-column
+          field="faseOportunidad"
+          title="Fase"
+          [width]="60"
+        ></kendo-grid-column>
+        <kendo-grid-column
+          field="personalAsignado"
+          title="Personal Asignado"
+          [width]="200"
+        ></kendo-grid-column>
+        <kendo-grid-command-column
+          title="Ver Ficha"
+          [width]="80"
+          headerClass="justify-content-center"
+          [hidden]="!esCoordinadora"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-center" *ngIf="dataItem.flagShowFicha">
+              <button
+                kendoButton
+                icon="login"
+                themeColor="success"
+                size="small"
+                (click)="abrirFicha(dataItem)"
+              ></button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons w-100 m-0 justify-content-end">
+      <button
+        themeColor="error"
+        icon="cancel"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+  <loading [loading]="false"></loading>
+</ng-template>
+<!-- #endregion Modal Ver otros-->

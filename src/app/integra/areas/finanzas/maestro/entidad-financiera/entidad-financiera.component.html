@@ -1,0 +1,158 @@
+<ng-template #modalEntidadFinanciera let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModal }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupEntidadFinanciera">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="text" class="k-label">
+                <span
+                  > Nombre :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-textbox
+                #text
+                class="d-flex"
+                size="small"
+                [clearButton]="true"
+                formControlName="nombre"
+                [required]="true"
+                [showSuccessIcon]="getShowSuccessIcon('nombre')"
+                [successIcon]="successIcon"
+                [maxlength]="90"
+              >
+              </kendo-textbox>
+              <kendo-formhint>Ingrese el nombre de la entidad financiera</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("nombre") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="text" class="k-label">
+                <span
+                  > Descripción :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-textarea
+                #text
+                class="d-flex"
+                size="small"
+                [clearButton]="true"
+                formControlName="descripcion"
+                [required]="true"
+                [maxlength]="90"
+              >
+              </kendo-textarea>
+              <kendo-formhint>Ingrese la descripción de la entidad financiera</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("descripcion") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Moneda :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idMoneda"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="listItemsMoneda"
+                  textField="nombrePlural"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div> 
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="accionModal();"
+    >
+      {{ btnModalNombre }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Entidades Financieras</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <ng-template
+                #cellTemplateGridEntidadFin
+                let-dataItem="dataItem"
+                let-field="field"
+                let-itemValue="itemValue"
+              >
+                <ng-container
+                  *ngIf="field == 'fechaModificacion'; else gridEntFinDefault"
+                >
+                  {{ itemValue | date: "dd-MM-yyyy" }}
+                </ng-container>
+                <ng-template #gridEntFinDefault>
+                  {{ itemValue }}
+                </ng-template>
+              </ng-template>
+
+              <k-grid-edit
+                [gridData]="listaEntidadFinanciera"
+                [loader]="loader"
+                [columns]="gridEntidadFinanciera.columns"
+                [commands]="gridEntidadFinanciera.comands"
+                [readOnlyColumns]="gridEntidadFinanciera.readOnlyColumns"
+                [gridConfig]="gridEntidadFinanciera.gridConfig"
+                [gridState]="gridEntidadFinanciera.gridState"
+                [commandAdd]="'external'"
+                [commandEdit]="'external'"
+                [cellTemplateRef]="cellTemplateGridEntidadFin"
+                (OnGridEvents)="gridEventsResponse($event)"
+              >
+              </k-grid-edit>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

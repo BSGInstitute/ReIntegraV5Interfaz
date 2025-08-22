@@ -1,0 +1,249 @@
+<div class="contendor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <div class="col">
+              <h2 class="text-white mb-2 text-center">
+                (R) Estados y Subestados - Certificado
+              </h2>
+            </div>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="search"
+                themeColor="success"
+                (click)="obtenerConfiguracionPlantillas()"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <div class="row my-2">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="multiselectPerAsignado"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span>Programa General:</span>
+                    </label>
+                    <kendo-dropdownlist
+                      #multiselectPerAsignado
+                      [data]="comboPgeneral"
+                      [kendoDropDownFilter]="filterSettings2"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{
+                        nombre: '<Seleccione>',
+                        id: null
+                      }"
+                      [formControl]="fcProgramaGeneral"
+                      [valuePrimitive]="true"
+                      [virtual]="true"
+                    ></kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="contendor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <div class="col">
+              <h2 class="text-white mb-2" id="titulo">Plantillas Asociadas</h2>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <kendo-grid
+            [resizable]="true"
+            [kendoGridBinding]="dataGrid"
+            [loading]="loading"
+            [sortable]="true"
+            [style.maxHeight.px]="800"
+            scrollable="scrollable"
+          >
+            <kendo-grid-column
+              field="idPlantillaFrontal"
+              title="Plantilla Frontal"
+              [width]="200"
+              headerClass="header-grid-ec"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombrePlantilla(dataItem.idPlantillaFrontal) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idPlantillaPosterior"
+              title="Plantilla Posterior"
+              [width]="200"
+              headerClass="header-grid-ec"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ getNombrePlantilla(dataItem.idPlantillaPosterior) }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-command-column
+              title="Configuración"
+              [width]="100"
+              headerClass="header-grid-ec"
+            >
+              <ng-template
+                kendoGridCellTemplate
+                let-dataItem="dataItem"
+                let-rowindex="rowindex"
+              >
+                <div class="w-100 d-flex justify-content-center">
+                  <button
+                    kendoButton
+                    themeColor="warning"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Ver"
+                    (click)="verConfiguracion(dataItem)"
+                  >
+                    <span class="k-icon k-i-eye k-icon-20"></span>
+                  </button>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalConfiguracionPlantilla let-modal>
+  <div class="modal-header bg-color-material">
+    <h3 class="modal-title m-0 p-0 text-white">Configuración Plantilla</h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <kendo-grid
+          [kendoGridBinding]="gridConfiguracion.data"
+          [loading]="gridConfiguracion.loading"
+          [resizable]="true"
+          [filterable]="false"
+        >
+          <kendo-grid-column
+            field="idModalidadCurso"
+            title="Modalidad"
+            headerClass="header-grid-single"
+            [width]="80"
+            headerClass="header-grid-ec"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ getNombreModalidad(dataItem.idModalidadCurso) }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="idEstadoMatricula"
+            title="Estado"
+            [width]="100"
+            headerClass="header-grid-ec"
+            ><ng-template kendoGridCellTemplate let-dataItem>
+              <ng-container
+                *ngIf="
+                  dataItem.estadosMatricula != null &&
+                  dataItem.estadosMatricula.length > 0
+                "
+              >
+                <ul>
+                  <li *ngFor="let item of dataItem.estadosMatricula">
+                    {{ getNombreEstadoMatricula(item) }}
+                  </li>
+                </ul>
+              </ng-container>
+            </ng-template></kendo-grid-column
+          >
+          <kendo-grid-column
+            field="idSubEstadoMatricula"
+            title="SubEstado"
+            [width]="150"
+            headerClass="header-grid-ec"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <ng-container
+                *ngIf="
+                  dataItem.subEstadosMatricula != null &&
+                  dataItem.subEstadosMatricula.length > 0
+                "
+              >
+                <ul>
+                  <li *ngFor="let item of dataItem.subEstadosMatricula">
+                    {{ getNombreSubEstadoMatricula(item) }}
+                  </li>
+                </ul>
+              </ng-container>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="idOperadorComparacion"
+            title="Criterio"
+            [width]="50"
+            headerClass="header-grid-ec"
+            ><ng-template kendoGridCellTemplate let-dataItem>
+              {{ getNombreOperadorComparacion(dataItem.idOperadorComparacion) }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="notaAprobatoria"
+            title="Nota"
+            [width]="50"
+            headerClass="header-grid-ec"
+            class="text-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="deudaPendiente"
+            title="Tiene Deuda"
+            [width]="50"
+            headerClass="header-grid-ec"
+            class="text-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.deudaPendiente === true ? "SI" : "NO" }}
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>

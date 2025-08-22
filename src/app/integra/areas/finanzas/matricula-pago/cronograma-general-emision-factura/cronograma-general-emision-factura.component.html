@@ -1,0 +1,2244 @@
+
+<div class="main-container">
+  <!-- Cabecera -->
+  <div class="header">
+    <h1>(O)Cronograma General Emisión Factura</h1>
+  </div>
+
+  <!-- Card de Filtros -->
+  <div class="card filtros-card">
+    <div class="card-header">
+      <h2>Filtros de búsqueda</h2>
+    </div>
+    <div class="card-body">
+      <div class="filtros-grid">
+        <div class="filtro-item">
+          <label>Fecha Inicio</label>
+          <div class="input-container date-container">
+            <input matInput [matDatepicker]="pickerInicio"
+                  [formControl]="getControl('fechaInicio')"
+                  placeholder="DD/MM/AAAA" readonly>
+            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+          </div>
+        </div>
+
+        <div class="filtro-item">
+          <label>Fecha Fin</label>
+          <div class="input-container date-container">
+            <input matInput [matDatepicker]="pickerFin"
+                  [formControl]="getControl('fechaFin')"
+                  placeholder="DD/MM/AAAA" readonly>
+            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+          </div>
+        </div>
+
+        <div class="filtro-item">
+          <label>Código Matrícula</label>
+          <input type="text" [formControl]="getControl('codigoMatricula')" placeholder="Ingrese código">
+        </div>
+
+        <div class="filtro-item">
+          <label>País</label>
+          <select [formControl]="getControl('idCodigoPais')">
+            <option [ngValue]="null">&lt;Todos&gt;</option>
+            <option [ngValue]="52">México</option>
+            <option [ngValue]="57">Colombia</option>
+            <option [ngValue]="51">Perú</option>
+          </select>
+        </div>
+
+        <!-- <div class="filtro-item">
+          <label>Centro de Costo</label>
+          <select [formControl]="getControl('centroCosto')">
+            <option value="<Todos>">&lt;Todos&gt;</option>
+            <option value="centro1">Centro 1</option>
+            <option value="centro2">Centro 2</option>
+          </select>
+        </div> -->
+
+        <div class="filtro-item botones">
+          <button class="btn-primary" (click)="buscar()">
+            <i class="search-icon"></i>
+            Buscar
+          </button>
+
+          <button class="btn-secondary" (click)="abrirModalFacturacionMasiva()">
+            <i class="document-icon"></i>
+            Facturación Masiva Facturama ({{estudiantesConfigurados.length}})
+          </button>
+
+          <button class="btn-secondary" (click)="abrirModalFacturacionMasivaSiigo()">
+            <i class="document-icon"></i>
+            Facturación Masiva Siigo ({{estudiantesConfigurados.length}})
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card de Grilla Principal -->
+  <div class="card grid-card">
+    <div class="card-header">
+      <h2>Listado de estudiantes</h2>
+      <div class="card-actions">
+        <span class="results-count">{{listaGrilla.length}} resultados</span>
+      </div>
+    </div>
+    <div class="card-body"style="position: relative; min-height: 600px;">
+      <div *ngIf="loader" class="overlay-loader">
+    <div class="spinner-circular"></div>
+    <span>Cargando información de la grilla...</span>
+  </div>
+      <div class="table-responsive">
+        <table class="main-grid">
+          <thead>
+            <tr>
+              <th class="th-icon"></th>
+              <th>Código Matrícula</th>
+              <th>Alumno</th>
+              <th>País</th>
+              <th>Estado</th>
+              <th>Config. Factura</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of listaGrilla">
+              <tr [ngClass]="{'expanded-row': expandedRowCodigo === item.codigoMatricula}">
+                <td class="td-icon">
+                  <button class="btn-expand" (click)="toggleRow(item.codigoMatricula)">
+                    <i [class]="expandedRowCodigo === item.codigoMatricula ? 'icon-collapse' : 'icon-expand'"></i>
+                  </button>
+                </td>
+                <td>{{item.codigoMatricula}}</td>
+                <td>{{item.alumno}}</td>
+                <td>
+                  <span class="pais-badge">
+                    {{item.nombrePais}}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="item.estado === 'matriculado' ? 'status-success' : 'status-warning'">
+                    {{item.estado === 'matriculado' ? 'Matriculado' : 'Por Matricular'}}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="item.configuradoParaFactura ? 'status-success' : 'status-neutral'">
+                    {{item.configuradoParaFactura ? 'Configurado' : 'No configurado'}}
+                  </span>
+                </td>
+              </tr>
+
+              <!-- Detalle expandible -->
+              <tr *ngIf="expandedRowCodigo === item.codigoMatricula" class="detail-row">
+                <td colspan="6" class="detail-cell">
+                  <div class="detail-container">
+                    <div *ngIf="loadingDetalle[item.codigoMatricula]" class="loading-detalle">
+                      <div class="spinner"></div>
+                      <span>Cargando detalles...</span>
+                    </div>
+
+                    <div *ngIf="!loadingDetalle[item.codigoMatricula] && cronogramasPorAlumno[item.codigoMatricula]" class="detail-content">
+                      <h3 class="detail-title">Detalle de pagos</h3>
+                      <div class="table-responsive">
+                        <table class="detail-grid">
+                          <thead>
+                            <tr>
+                              <th>Cancelado</th>
+                              <th>facturamaEnvio</th>
+                              <th>siigoEnvio</th>
+                              <th>Cuota</th>
+                              <th>Tipo de Cuota</th>
+                              <th>Fecha Vencimiento</th>
+                              <th>Total</th>
+                              <th>Monto</th>
+                              <th>Mora</th>
+                              <th>Saldo</th>
+                              <th>Moneda</th>
+                              <th>Forma de Pago</th>
+                              <th>Fecha Pago</th>
+                              <th class="th-actions">Acciones</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let detalle of cronogramasPorAlumno[item.codigoMatricula]">
+                              <td class="td-cancelado">
+                                <ng-container *ngIf="detalle.cancelado">
+                                  <span class="k-icon k-i-check-outline icon-check"></span>
+                                </ng-container>
+                                <ng-container *ngIf="!detalle.cancelado">
+                                  <span class="k-icon k-i-x-outline icon-close"></span>
+                                </ng-container>
+                              </td>
+
+                              <td class="td-facturmaEnvio">
+                                <ng-container *ngIf="detalle.facturamaEnvio">
+                                  <span class="k-icon k-i-check-outline icon-check"></span>
+                                </ng-container>
+                                <ng-container *ngIf="!detalle.facturamaEnvio">
+                                  <span class="k-icon k-i-x-outline icon-close"></span>
+                                </ng-container>
+                              </td>
+                               <td class="td-facturmaEnvio">
+                                <ng-container *ngIf="detalle.enviadoSiigo">
+                                  <span class="k-icon k-i-check-outline icon-check"></span>
+                                </ng-container>
+                                <ng-container *ngIf="!detalle.enviadoSiigo">
+                                  <span class="k-icon k-i-x-outline icon-close"></span>
+                                </ng-container>
+                              </td>
+                              <td>{{detalle.cuota}}</td>
+                              <td>{{detalle.tipoCuota}}</td>
+                              <td>{{detalle.fechaVencimiento}}</td>
+                              <td>{{detalle.totalPagar}}</td>
+                              <td>{{detalle.monto}}</td>
+                              <td>{{detalle.mora}}</td>
+                              <td>{{detalle.saldo}}</td>
+                              <td>{{detalle.moneda}}</td>
+                              <td>{{formaPagoTemplate(detalle.idFormaPago)}}</td>
+
+                              <td>{{ finanzasService.fechaTemplate(detalle.fechaPago, true) }}</td>
+
+                              <td class="td-actions">
+                                <div class="acciones-container">
+                                  <button class="btn-action btn-factura" (click)="abrirModalFactura(item, detalle.id)" title="Emitir Factura">
+                                    <span class="k-icon k-i-file-txt"></span>
+                                  </button>
+                                  <button class="btn-action btn-cloud" title="Subir a la nube">
+                                    <span class="k-icon k-i-upload"></span>
+                                  </button>
+                                  <button class="btn-action btn-document" title="Factura Siigo" (click)="abrirFacturaSiigo(item,detalle)">
+                                    <span class="k-icon k-i-paste"></span>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Selección de Tipo de Factura -->
+<ng-template #modalFactura>
+  <div class="modal-header">
+    <h2>Emisión de Factura</h2>
+    <button class="btn-close" (click)="cerrarModalFactura()">×</button>
+  </div>
+
+  <div class="modal-body">
+    <p>Seleccione el tipo de factura que desea emitir para el estudiante {{estudianteSeleccionado?.alumno}}</p>
+
+    <div class="datos-estudiante">
+      <h3>Datos del estudiante:</h3>
+      <p><strong>Código:</strong> {{estudianteSeleccionado?.codigoMatricula}}</p>
+      <p><strong>Nombre:</strong> {{estudianteSeleccionado?.alumno}}</p>
+      <p><strong>Monto:</strong> {{estudianteSeleccionado?.monto}}</p>
+    </div>
+
+    <div class="radio-group">
+      <div class="radio-option">
+        <input type="radio" id="normal" name="tipoFactura" [(ngModel)]="tipoFactura" value="normal">
+        <label for="normal">
+          <div class="radio-content">
+            <span class="radio-title">Factura Normal</span>
+            <span class="radio-description">Emisión de factura estándar para el estudiante</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="radio-option">
+        <input type="radio" id="global" name="tipoFactura" [(ngModel)]="tipoFactura" value="global">
+        <label for="global">
+          <div class="radio-content">
+            <span class="radio-title">Factura Global</span>
+            <span class="radio-description">Emisión de factura global que incluye todos los conceptos</span>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-secondary" (click)="cerrarModalFactura()">Cancelar</button>
+    <button class="btn-primary" (click)="continuarADetalles()">Continuar</button>
+  </div>
+</ng-template>
+
+<!-- Modal de Detalles de Factura -->
+
+
+<!-- Modal de Detalles de Factura -->
+<ng-template #modalDetallesFactura>
+  <div class="modal-header modal-header-cfdi">
+    <h2><i class="k-icon k-i-file-txt"></i> Datos de la Factura Normal: CFDI 4.0</h2>
+    <button class="btn-close" (click)="cerrarModalDetalles()">×</button>
+  </div>
+
+  <div class="modal-body modal-body-cfdi">
+    <form [formGroup]="formCrearFacturaFacturama">
+
+      <div class="cfdi-section">
+        <div class="cfdi-grid">
+          <div class="cfdi-field">
+            <kendo-formfield>
+              <label>Nombre Emisor:</label>
+              <kendo-textbox formControlName="nombreEmisor" [readonly]="true" placeholder="Nombre del emisor"></kendo-textbox>
+            </kendo-formfield>
+          </div>
+
+          <div class="cfdi-field">
+            <kendo-formfield>
+              <label>Código Postal:</label>
+              <kendo-textbox formControlName="TaxZipCode"  placeholder="Código postal"></kendo-textbox>
+            </kendo-formfield>
+          </div>
+<!--
+          <div class="cfdi-field">
+            <kendo-formfield>
+              <label>Uso de Decimales:</label>
+              <kendo-combobox formControlName="usoDecimales"
+                              [data]="['2', '3', '4']"
+                              [filterable]="false"
+                              size="medium"
+                              [valuePrimitive]="true">
+              </kendo-combobox>
+            </kendo-formfield>
+          </div> -->
+
+          <div class="cfdi-field">
+            <label>Razón Social:</label>
+            <div class="input-with-icon">
+              <kendo-formfield orientation="horizontal">
+                <kendo-textbox formControlName="ReceiverName" size="medium"></kendo-textbox>
+              </kendo-formfield>
+              <button class="btn-icon-small btn-add" title="Agregar cliente" (click)="abrirModalNuevoCliente()">
+                <span class="k-icon k-i-plus"></span>
+              </button>
+              <button class="btn-icon-small" title="Editar cliente" (click)="abrirModalEditarCliente()">
+                <span class="k-icon k-i-edit"></span>
+              </button>
+            </div>
+          </div>
+          <div class="cfdi-field">
+            <kendo-formfield>
+              <label>RFC:</label>
+              <kendo-textbox formControlName="ReceiverRfc" placeholder="Ingrese RFC"></kendo-textbox>
+            </kendo-formfield>
+          </div>
+
+          <div class="cfdi-field">
+            <kendo-formfield>
+              <label>Correo Electrónico:</label>
+              <kendo-textbox formControlName="Email" placeholder="Ingrese Email"></kendo-textbox>
+            </kendo-formfield>
+          </div>
+
+
+          <div class="cfdi-field">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">Régimen Fiscal:</label>
+            <kendo-combobox
+              formControlName="FiscalRegime"
+              [data]="listaFacturmaRegimenFiscal"
+              textField="descripcion"
+              valueField="fiscalRegime"
+              [filterable]="true"
+              [valuePrimitive]="true"
+              size="medium">
+            </kendo-combobox>
+          </kendo-formfield>
+        </div>
+
+
+        <div class="cfdi-field">
+          <kendo-formfield>
+            <label>Uso de CFDI:</label>
+            <kendo-combobox formControlName="CfdiUse"
+                            [data]="listaFacturmaUsoCfdi"
+                            textField="descripcion"
+                            valueField="cfdiUse"
+                            [filterable]="true"
+                            size="medium"
+                            [valuePrimitive]="true">
+            </kendo-combobox>
+          </kendo-formfield>
+        </div>
+        </div>
+
+      </div>
+   <!--Datos Receptor -->
+   <div class="cfdi-section">
+    <h3 class="section-title"><i class="k-icon k-i-user"></i>Dirección del Cliente</h3>
+    <div class="cfdi-grid cfdi-grid-3">
+      <div class="cfdi-field">
+        <label>Calle:</label>
+        <kendo-formfield orientation="horizontal">
+          <kendo-textbox formControlName="Street" size="medium"></kendo-textbox>
+        </kendo-formfield>
+      </div>
+      <div class="cfdi-field">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label">Número Exterior:</label>
+        <kendo-formfield orientation="horizontal">
+          <kendo-textbox formControlName="ExteriorNumber" size="medium"></kendo-textbox>
+        </kendo-formfield>
+      </kendo-formfield>
+    </div>
+
+      <div class="cfdi-field">
+        <label>Número Interior:</label>
+        <kendo-formfield orientation="horizontal">
+
+          <kendo-textbox formControlName="InteriorNumber" size="medium"></kendo-textbox>
+        </kendo-formfield>
+      </div>
+
+      <div class="cfdi-field">
+        <label>Colonia:</label>
+        <kendo-formfield orientation="horizontal">
+
+          <kendo-textbox formControlName="Neighborhood" size="medium"></kendo-textbox>
+        </kendo-formfield>
+      </div>
+
+      <div class="cfdi-field">
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label">Municipio:</label>
+          <kendo-textbox formControlName="Municipality" size="medium"></kendo-textbox>
+        </kendo-formfield>
+      </div>
+
+
+      <div class="cfdi-field">
+        <label>Estado:</label>
+        <kendo-formfield orientation="horizontal">
+
+          <kendo-textbox formControlName="State" size="medium"></kendo-textbox>
+        </kendo-formfield>
+      </div>
+
+
+      <div class="cfdi-field">
+        <label>País:</label>
+        <kendo-formfield orientation="horizontal">
+
+          <kendo-textbox formControlName="Country" [readonly]="true" size="medium"></kendo-textbox>
+        </kendo-formfield>
+      </div>
+
+    </div>
+  </div>
+
+
+
+      <!-- Segunda sección: Información de Pago -->
+      <div class="cfdi-section">
+        <h3 class="section-title"><i class="k-icon k-i-dollar"></i> Información de Pago</h3>
+        <div class="cfdi-grid cfdi-grid-3">
+          <div class="cfdi-field">
+            <label>Método de Pago:</label>
+            <kendo-formfield orientation="horizontal">
+
+              <kendo-combobox formControlName="PaymentMethod" [data]="listaMetodoPagoFacturama" valueField="clave" textField="nombre" [valuePrimitive]="true" size="medium" style="background-color: rgb(240, 240, 240);"></kendo-combobox>
+            </kendo-formfield>
+          </div>
+          <div class="cfdi-field">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">Forma de Pago:</label>
+            <kendo-combobox
+              formControlName="PaymentForm"
+              [data]="listaFacturamaFormaPago"
+              textField="descripcion"
+              valueField="paymentForm"
+              [filterable]="true"
+              [valuePrimitive]="true"
+              size="medium">
+            </kendo-combobox>
+          </kendo-formfield>
+        </div>
+
+          <div class="cfdi-field">
+            <label>Lugar de expedición:</label>
+            <select formControlName="ExpeditionPlace" class="form-control">
+              <option value="03800">Principal (03800)</option>
+              <option value="Sucursal 1">Sucursal 1</option>
+              <option value="Sucursal 2">Sucursal 2</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tercera sección: Productos -->
+      <div class="cfdi-section">
+        <div class="productos-header">
+          <h3 class="section-title">
+            <i class="k-icon k-i-cart"></i> Seleccionar producto o servicio:
+          </h3>
+          <div class="productos-actions">
+            <div class="producto-selector">
+              <select formControlName="productoSeleccionado" class="form-control" (change)="onProductoSeleccionado()">
+                <option value="">Selecciona un producto</option>
+                <option value="Producto Generico">Producto Genérico</option>
+                <option value="Servicio Educativo">Servicio Educativo</option>
+                <option value="Material Didáctico">Material Didáctico</option>
+              </select>
+            </div>
+            <button class="btn-icon-add" title="Agregar producto" (click)="agregarProducto()">
+              <span class="k-icon k-i-plus"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+  <table class="productos-grid">
+    <thead>
+      <tr>
+        <th class="th-icon"></th>
+        <th>Cant.</th>
+        <th>Claves</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Subtotal</th>
+        <th>Descuento</th>
+        <th>Impuestos</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let producto of productosAgregados; let i = index">
+        <tr>
+          <td class="td-actions">
+            <button class="btn-icon-small btn-delete" title="Eliminar" (click)="eliminarProducto(i)">
+              <span class="k-icon k-i-delete"></span>
+            </button>
+            <button class="btn-icon-small" title="Editar" (click)="editarProducto(i)">
+              <span class="k-icon k-i-edit"></span>
+            </button>
+          </td>
+          <td>
+            <input type="number" [(ngModel)]="producto.cantidad" [ngModelOptions]="{standalone: true}" class="form-control-sm">
+          </td>
+          <td>
+            <div class="claves-container">
+              <div class="clave-item">
+                <span class="clave-label">Clave Producto</span>
+                <input type="text" [(ngModel)]="producto.claveProducto" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="01010101">
+              </div>
+              <div class="clave-item">
+                <span class="clave-label">Clave Unidad</span>
+                <input type="text" [(ngModel)]="producto.claveUnidad" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="H87">
+              </div>
+              <div class="clave-item">
+                <span class="clave-label">Unidad</span>
+                <input type="text" [(ngModel)]="producto.unit" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="Pieza">
+              </div>
+            </div>
+          </td>
+          <td>
+
+
+            <textarea
+            [(ngModel)]="producto.descripcion"
+            [ngModelOptions]="{standalone: true}"
+            class="form-control-sm descripcion-expandible"
+            rows="6"
+            readonly></textarea>
+
+            <div *ngIf="producto.esGenerico" class="descripcion-adicional">
+              <input type="text" [(ngModel)]="producto.descripcionAdicional" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="Descripción adicional">
+            </div>
+          </td>
+          <td>
+            <input type="number" [(ngModel)]="producto.precio" [ngModelOptions]="{standalone: true}" class="form-control-sm" (change)="calcularTotales(i)"[readonly]="producto.esCalculadoDesdeCronograma"  [ngClass]="{ 'input-readonly': producto.esCalculadoDesdeCronograma }">
+          </td>
+          <td>
+            <input type="text" [value]="producto.subtotal | number:'1.2-2'" class="form-control-sm" readonly>
+          </td>
+          <td>
+            <div class="descuento-container">
+              <select [(ngModel)]="producto.tipoDescuento" [ngModelOptions]="{standalone: true}" class="form-control-sm" (change)="calcularTotales(i)">
+                <option value="-">-</option>
+                <option value="%">%</option>
+                <option value="$">$</option>
+              </select>
+              <input type="number" [(ngModel)]="producto.valorDescuento" [ngModelOptions]="{standalone: true}" class="form-control-sm" (change)="calcularTotales(i)">
+            </div>
+          </td>
+          <td>
+
+            <div class="clave-item">
+              <span class="clave-label">ObjetoImp</span>
+              <div class="form-control-sm">{{ producto.taxObject }}</div>
+            </div>
+            <div class="clave-item">
+              <span class="clave-label">IVA</span>
+              <div class="form-control-sm">0.16</div>
+            </div>
+            <div class="clave-item">
+              <span class="clave-label">Monto</span>
+              <div class="form-control-sm">{{ producto.iva | number:'1.2-2' }}</div>
+            </div>
+          <td>
+            <input type="text" [value]="producto.total | number:'1.2-2'" class="form-control-sm" readonly>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+
+        <div class="totales-container">
+          <div class="totales-grid">
+            <div class="total-item">
+              <span class="total-label">Subtotal</span>
+              <span class="total-value">${{subtotalGeneral | number:'1.2-2'}}</span>
+            </div>
+            <div class="total-item">
+              <span class="total-label">Total</span>
+              <span class="total-value">${{totalGeneral | number:'1.2-2'}}</span>
+            </div>
+          </div>
+          <div class="acciones-factura">
+            <button class="btn-secondary" (click)="cerrarModalDetalles()">Cancelar</button>
+            <button class="btn-secondary" (click)="validarYGuardar()">
+              <i class="k-icon k-i-save"></i> Guardar Datos Factura
+            </button>
+            <button class="btn-primary" (click)="enviarFacturaDesdeBD()">
+              <i class="k-icon k-i-check"></i> Emitir Factura
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<!-- Modal de Facturación Masiva -->
+
+<ng-template #modalFacturacionMasiva>
+  <div class="facturacion-masiva-modal">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-file-invoice"></i>
+        Facturación Masiva
+      </h2>
+      <button class="btn-close" (click)="cerrarModalFacturacionMasiva()">×</button>
+    </div>
+
+    <div class="modal-body" style="position: relative;">
+      <div *ngIf="loader" class="overlay-loader">
+    <div class="spinner-circular"></div>
+    <span>Procesando facturación masiva...</span>
+  </div>
+      <div class="modal-description">
+        <p>Seleccione los estudiantes para los que desea emitir facturas. Solo se muestran estudiantes con configuración previa.</p>
+      </div>
+
+    <!-- Agrega esto a tu template HTML -->
+    <div class="filtro-pais-container">
+      <label for="filtroPais" class="filtro-pais-label">Filtrar por país:</label>
+      <div class="select-container">
+        <select
+          id="filtroPais"
+          class="filtro-pais-select"
+          [(ngModel)]="paisSeleccionado"
+          (change)="filtrarPorPais(paisSeleccionado)"
+        >
+          <option value="">Todos</option>
+          <option *ngFor="let pais of paises" [value]="pais">{{pais}}</option>
+        </select>
+        <div class="select-arrow">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+    </div>
+
+        <!-- Información de API si hay país seleccionado -->
+        <!-- <div class="fm-api-info" *ngIf="paisSeleccionado">
+          <span class="api-badge" [ngClass]="{'api-mexico': paisSeleccionado === 'Mexico', 'api-colombia': paisSeleccionado === 'Colombia'}">
+            API {{paisSeleccionado}}
+          </span>
+        </div>
+      </div> -->
+      <div class="fm-selection-controls">
+        <div class="checkbox-container">
+          <input
+            type="checkbox"
+            id="selectAll"
+            [checked]="estudiantesSeleccionadosMasivos.length === estudiantesConfigurados.length && estudiantesConfigurados.length > 0"
+            [indeterminate]="estudiantesSeleccionadosMasivos.length > 0 && estudiantesSeleccionadosMasivos.length < estudiantesConfigurados.length"
+            (change)="toggleSeleccionarTodos(obtenerChecked($event))"
+          >
+          <label for="selectAll">Seleccionar todos ({{estudiantesConfigurados.length}})</label>
+        </div>
+        <div class="fm-selection-counter">
+          <span>{{estudiantesSeleccionadosMasivos.length}} estudiantes seleccionados</span>
+        </div>
+      </div>
+
+      <div class="fm-table-container">
+        <table class="fm-data-table">
+          <thead>
+            <tr>
+              <th class="fm-checkbox-column"></th>
+              <th class="fm-codigo-column">Código</th>
+              <th class="fm-nombre-column">Nombre</th>
+              <th class="fm-pais-column">País</th>
+              <th class="fm-tipo-column">Tipo Factura</th>
+              <th class="fm-rfc-column">Identificador</th>
+              <th class="fm-monto-column">Monto</th>
+              <th class="fm-api-column">API Destino</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of estudiantesConfigurados; let i = index">
+              <td class="fm-checkbox-column">
+                <div class="checkbox-container">
+                  <input
+                     type="checkbox"
+                    [id]="'check_' + i"
+                    [checked]="estudiantesSeleccionadosMasivos.includes(item.codigoMatricula + '_' + i)"
+                    (change)="toggleSeleccionIndividual(item.codigoMatricula + '_' + i, getCheckedValue($event))"
+                  >
+                  <label [for]="'estudiante' + i"></label>
+                </div>
+              </td>
+              <td class="fm-codigo-column">{{item.codigoMatricula}}</td>
+              <td class="fm-nombre-column">{{item.alumno}}</td>
+              <td class="fm-pais-column">
+                <span class="pais-badge">{{item.nombrePais}}</span>
+              </td>
+              <td class="fm-tipo-column">{{item.datosFacturacion?.tipoFactura === 'normal' ? 'Normal' : 'Global'}}</td>
+              <td class="fm-rfc-column">{{item.datosFacturacion?.rfc || '-'}}</td>
+              <td class="fm-monto-column">{{item.monto | currency}}</td>
+
+        <td class="fm-api-column">{{item.api}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="fm-info-box">
+        <i class="fas fa-info-circle"></i>
+        <div class="fm-info-content">
+          <h4>Información importante:</h4>
+          <p>Debido a limitaciones del servicio de facturación, se procesarán máximo 4 facturas por sesión. El sistema gestionará automáticamente los lotes necesarios.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cerrarModalFacturacionMasiva()">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button
+        class="btn-primary"
+        [disabled]="estudiantesSeleccionadosMasivos.length === 0"
+        (click)="emitirFacturasMasivas()"
+      >
+        <i class="fas fa-file-invoice"></i> Emitir Facturas ({{estudiantesSeleccionadosMasivos.length}})
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalFacturacionMasivaSiigo>
+  <div class="facturacion-masiva-modal">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-file-invoice"></i>
+        Facturación Masiva
+      </h2>
+      <button class="btn-close" (click)="cerrarModalFacturacionMasiva()">×</button>
+    </div>
+
+    <div class="modal-body" style="position: relative;">
+      <div *ngIf="loader" class="overlay-loader">
+    <div class="spinner-circular"></div>
+    <span>Procesando facturación masiva...</span>
+  </div>
+      <div class="modal-description">
+        <p>Seleccione los estudiantes para los que desea emitir facturas. Solo se muestran estudiantes con configuración previa.</p>
+      </div>
+
+    <!-- Agrega esto a tu template HTML -->
+    <div class="filtro-pais-container">
+      <label for="filtroPais" class="filtro-pais-label">Filtrar por país:</label>
+      <div class="select-container">
+        <select
+          id="filtroPais"
+          class="filtro-pais-select"
+          [(ngModel)]="paisSeleccionado"
+          (change)="filtrarPorPais(paisSeleccionado)"
+        >
+          <option value="">Todos</option>
+          <option *ngFor="let pais of paises" [value]="pais">{{pais}}</option>
+        </select>
+        <div class="select-arrow">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+    </div>
+
+        <!-- Información de API si hay país seleccionado -->
+        <!-- <div class="fm-api-info" *ngIf="paisSeleccionado">
+          <span class="api-badge" [ngClass]="{'api-mexico': paisSeleccionado === 'Mexico', 'api-colombia': paisSeleccionado === 'Colombia'}">
+            API {{paisSeleccionado}}
+          </span>
+        </div>
+      </div> -->
+      <div class="fm-selection-controls">
+        <div class="checkbox-container">
+          <input
+            type="checkbox"
+            id="selectAll"
+            [checked]="estudiantesSeleccionadosMasivos.length === estudiantesConfigurados.length && estudiantesConfigurados.length > 0"
+            [indeterminate]="estudiantesSeleccionadosMasivos.length > 0 && estudiantesSeleccionadosMasivos.length < estudiantesConfigurados.length"
+            (change)="toggleSeleccionarTodos(obtenerChecked($event))"
+          >
+          <label for="selectAll">Seleccionar todos ({{estudiantesConfigurados.length}})</label>
+        </div>
+        <div class="fm-selection-counter">
+          <span>{{estudiantesSeleccionadosMasivos.length}} estudiantes seleccionados</span>
+        </div>
+      </div>
+
+      <div class="fm-table-container">
+        <table class="fm-data-table">
+          <thead>
+            <tr>
+              <th class="fm-checkbox-column"></th>
+              <th class="fm-codigo-column">Código</th>
+              <th class="fm-nombre-column">Nombre</th>
+              <th class="fm-pais-column">País</th>
+              <th class="fm-rfc-column">Identificador</th>
+              <th class="fm-monto-column">Monto</th>
+              <th class="fm-api-column">API Destino</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of estudiantesConfigurados; let i = index">
+              <td class="fm-checkbox-column">
+                <div class="checkbox-container">
+                  <input
+                     type="checkbox"
+                    [id]="'check_' + i"
+                    [checked]="estudiantesSeleccionadosMasivos.includes(item.codigoMatricula + '_' + i)"
+                    (change)="toggleSeleccionIndividual(item.codigoMatricula + '_' + i, getCheckedValue($event))"
+                  >
+                  <label [for]="'estudiante' + i"></label>
+                </div>
+              </td>
+              <td class="fm-codigo-column">{{item.codigoMatricula}}</td>
+              <td class="fm-nombre-column">{{item.alumno}}</td>
+              <td class="fm-pais-column">
+                <span class="pais-badge">{{item.nombrePais}}</span>
+              </td>
+
+              <td class="fm-rfc-column">{{item.datosFacturacion?.rfc || '-'}}</td>
+              <td class="fm-monto-column">{{item.monto | currency}}</td>
+
+        <td class="fm-api-column">{{item.api}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="fm-info-box">
+        <i class="fas fa-info-circle"></i>
+        <div class="fm-info-content">
+          <h4>Información importante:</h4>
+          <p>Debido a limitaciones del servicio de facturación, se procesarán máximo 4 facturas por sesión. El sistema gestionará automáticamente los lotes necesarios.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cerrarModalFacturacionMasiva()">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <button
+        class="btn-primary"
+        [disabled]="estudiantesSeleccionadosMasivos.length === 0"
+        (click)="emitirFacturasMasivasSiigo()"
+      >
+        <i class="fas fa-file-invoice"></i> Emitir Facturas ({{estudiantesSeleccionadosMasivos.length}})
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Modal de Factura Global CFDI 4.0 -->
+
+  <ng-template #modalFacturaGlobal>
+    <div class="modal-header modal-header-cfdi">
+      <h2><i class="k-icon k-i-file-txt"></i> Datos de la Factura GLobal: CFDI 4.0</h2>
+      <button class="btn-close" (click)="cerrarModalDetalles()">×</button>
+    </div>
+
+    <div class="modal-body modal-body-cfdi">
+      <form [formGroup]="formFacturaGlobal">
+
+        <div class="cfdi-section">
+          <div class="cfdi-grid">
+            <div class="cfdi-field">
+              <kendo-formfield>
+                <label>Nombre Emisor:</label>
+                <kendo-textbox formControlName="nombreEmisor" [readonly]="true" placeholder="Nombre del emisor"></kendo-textbox>
+              </kendo-formfield>
+            </div>
+
+            <div class="cfdi-field">
+            <kendo-formfield>
+              <label>Código Postal:</label>
+              <kendo-textbox formControlName="TaxZipCode"  placeholder="Código postal"></kendo-textbox>
+            </kendo-formfield>
+          </div>
+
+
+
+
+
+            <div class="cfdi-field">
+              <label>Razón Social:</label>
+              <div class="input-with-icon">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-textbox formControlName="ReceiverName" size="medium"></kendo-textbox>
+                </kendo-formfield>
+                <button class="btn-icon-small btn-add" title="Agregar cliente" (click)="abrirModalNuevoCliente()">
+                  <span class="k-icon k-i-plus"></span>
+                </button>
+                <button class="btn-icon-small" title="Editar cliente" (click)="abrirModalEditarCliente()">
+                  <span class="k-icon k-i-edit"></span>
+                </button>
+              </div>
+            </div>
+            <div class="cfdi-field">
+              <kendo-formfield>
+                <label>RFC:</label>
+                <kendo-textbox formControlName="ReceiverRfc" placeholder="Ingrese RFC"></kendo-textbox>
+              </kendo-formfield>
+            </div>
+
+            <div class="cfdi-field">
+              <kendo-formfield>
+                <label>Correo Electrónico:</label>
+                <kendo-textbox formControlName="Email" placeholder="Ingrese Email"></kendo-textbox>
+              </kendo-formfield>
+            </div>
+
+
+            <div class="cfdi-field">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">Régimen Fiscal:</label>
+              <kendo-combobox
+                formControlName="FiscalRegime"
+                [data]="listaFacturmaRegimenFiscal"
+                textField="descripcion"
+                valueField="fiscalRegime"
+                [filterable]="true"
+                [valuePrimitive]="true"
+                size="medium">
+              </kendo-combobox>
+            </kendo-formfield>
+          </div>
+
+
+          <div class="cfdi-field">
+            <kendo-formfield>
+              <label>Uso de CFDI:</label>
+              <kendo-combobox formControlName="CfdiUse"
+                              [data]="listaFacturmaUsoCfdi"
+                              textField="descripcion"
+                              valueField="cfdiUse"
+                              [filterable]="true"
+                              size="medium"
+                              [valuePrimitive]="true">
+              </kendo-combobox>
+            </kendo-formfield>
+          </div>
+          </div>
+
+        </div>
+     <!--Datos Receptor -->
+     <div class="cfdi-section">
+      <h3 class="section-title"><i class="k-icon k-i-user"></i>Dirección del Cliente</h3>
+      <div class="cfdi-grid cfdi-grid-3">
+        <div class="cfdi-field">
+          <label>Calle:</label>
+          <kendo-formfield orientation="horizontal">
+            <kendo-textbox formControlName="Street" size="medium"></kendo-textbox>
+          </kendo-formfield>
+        </div>
+        <div class="cfdi-field">
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label">Número Exterior:</label>
+          <kendo-formfield orientation="horizontal">
+            <kendo-textbox formControlName="ExteriorNumber" size="medium"></kendo-textbox>
+          </kendo-formfield>
+        </kendo-formfield>
+      </div>
+
+        <div class="cfdi-field">
+          <label>Número Interior:</label>
+          <kendo-formfield orientation="horizontal">
+
+            <kendo-textbox formControlName="InteriorNumber" size="medium"></kendo-textbox>
+          </kendo-formfield>
+        </div>
+
+        <div class="cfdi-field">
+          <label>Colonia:</label>
+          <kendo-formfield orientation="horizontal">
+
+            <kendo-textbox formControlName="Neighborhood" size="medium"></kendo-textbox>
+          </kendo-formfield>
+        </div>
+
+        <div class="cfdi-field">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">Municipio:</label>
+            <kendo-textbox formControlName="Municipality" size="medium"></kendo-textbox>
+          </kendo-formfield>
+        </div>
+
+
+        <div class="cfdi-field">
+          <label>Estado:</label>
+          <kendo-formfield orientation="horizontal">
+
+            <kendo-textbox formControlName="State" size="medium"></kendo-textbox>
+          </kendo-formfield>
+        </div>
+
+
+        <div class="cfdi-field">
+          <label>País:</label>
+          <kendo-formfield orientation="horizontal">
+
+            <kendo-textbox formControlName="Country" [readonly]="true" size="medium"></kendo-textbox>
+          </kendo-formfield>
+        </div>
+
+      </div>
+    </div>
+
+
+
+        <!-- Segunda sección: Información de Pago -->
+        <div class="cfdi-section">
+          <h3 class="section-title"><i class="k-icon k-i-dollar"></i> Información de Pago</h3>
+          <div class="cfdi-grid cfdi-grid-3">
+            <div class="cfdi-field">
+              <label>Método de Pago:</label>
+              <kendo-formfield orientation="horizontal">
+
+                <kendo-combobox formControlName="PaymentMethod" [data]="listaMetodoPagoFacturama" valueField="clave" textField="nombre" [valuePrimitive]="true" size="medium" style="background-color: rgb(240, 240, 240);"></kendo-combobox>
+              </kendo-formfield>
+            </div>
+            <div class="cfdi-field">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">Forma de Pago:</label>
+              <kendo-combobox
+                formControlName="PaymentForm"
+                [data]="listaFacturamaFormaPago"
+                textField="descripcion"
+                valueField="paymentForm"
+                [filterable]="true"
+                [valuePrimitive]="true"
+                size="medium">
+              </kendo-combobox>
+            </kendo-formfield>
+          </div>
+
+            <div class="cfdi-field">
+              <label>Lugar de expedición:</label>
+              <select formControlName="ExpeditionPlace" class="form-control">
+                <option value="03800">Principal (03800)</option>
+                <option value="Sucursal 1">Sucursal 1</option>
+                <option value="Sucursal 2">Sucursal 2</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+         <!-- Segunda sección: Información Global -->
+<div class="cfdi-section">
+  <h3 class="section-title">
+    <i class="k-icon k-i-globe-outline"></i> Información Global
+  </h3>
+  <div class="cfdi-grid cfdi-grid-3">
+
+    <div class="cfdi-field">
+      <kendo-formfield>
+        <label for="periodicity">Periodicidad:</label>
+        <kendo-combobox
+          formControlName="Periodicity"
+          [data]="listaPeriodicidad"
+          valueField="clave"
+          textField="nombre"
+          [filterable]="true"
+          [valuePrimitive]="true"
+          size="medium"
+          id="periodicity">
+        </kendo-combobox>
+      </kendo-formfield>
+    </div>
+
+    <div class="cfdi-field">
+      <kendo-formfield>
+        <label for="months">Mes:</label>
+        <kendo-combobox
+          formControlName="Months"
+          [data]="listaMeses"
+          valueField="clave"
+          textField="nombre"
+          [filterable]="true"
+          [valuePrimitive]="true"
+          size="medium"
+          id="months">
+        </kendo-combobox>
+      </kendo-formfield>
+    </div>
+
+
+    <div class="cfdi-field">
+      <kendo-formfield>
+        <label for="year">Año:</label>
+        <kendo-textbox
+          formControlName="Year"
+          type="number"
+          id="year">
+        </kendo-textbox>
+
+      </kendo-formfield>
+  </div>
+  </div>
+</div>
+
+
+
+
+
+        <!-- Tercera sección: Productos -->
+        <div class="cfdi-section">
+          <div class="productos-header">
+            <h3 class="section-title">
+              <i class="k-icon k-i-cart"></i> Seleccionar producto o servicio:
+            </h3>
+            <div class="productos-actions">
+              <div class="producto-selector">
+                <select formControlName="productoSeleccionado" class="form-control" (change)="onProductoSeleccionado()">
+                  <option value="">Selecciona un producto</option>
+                  <option value="Producto Generico">Producto Genérico</option>
+                  <option value="Servicio Educativo">Servicio Educativo</option>
+                  <option value="Material Didáctico">Material Didáctico</option>
+                </select>
+              </div>
+              <button class="btn-icon-add" title="Agregar producto" (click)="agregarProducto()">
+                <span class="k-icon k-i-plus"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+    <table class="productos-grid">
+      <thead>
+        <tr>
+          <th class="th-icon"></th>
+          <th>Cant.</th>
+          <th>Claves</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Subtotal</th>
+          <th>Descuento</th>
+          <th>Impuestos</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let producto of productosAgregados; let i = index">
+          <tr>
+            <td class="td-actions">
+              <button class="btn-icon-small btn-delete" title="Eliminar" (click)="eliminarProducto(i)">
+                <span class="k-icon k-i-delete"></span>
+              </button>
+              <button class="btn-icon-small" title="Editar" (click)="editarProducto(i)">
+                <span class="k-icon k-i-edit"></span>
+              </button>
+            </td>
+            <td>
+              <input type="number" [(ngModel)]="producto.cantidad" [ngModelOptions]="{standalone: true}" class="form-control-sm">
+            </td>
+            <td>
+              <div class="claves-container">
+                <div class="clave-item">
+                  <span class="clave-label">Clave Producto</span>
+                  <input type="text" [(ngModel)]="producto.claveProducto" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="01010101">
+                </div>
+                <div class="clave-item">
+                  <span class="clave-label">Clave Unidad</span>
+                  <input type="text" [(ngModel)]="producto.claveUnidad" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="H87">
+                </div>
+                <div class="clave-item">
+                  <span class="clave-label">Unidad</span>
+                  <input type="text" [(ngModel)]="producto.unit" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="Pieza">
+                </div>
+              </div>
+            </td>
+            <td>
+                 <textarea
+            [(ngModel)]="producto.descripcion"
+            [ngModelOptions]="{standalone: true}"
+            class="form-control-sm descripcion-expandible"
+            rows="6"
+            readonly></textarea>
+
+
+
+              <div *ngIf="producto.esGenerico" class="descripcion-adicional">
+                <input type="text" [(ngModel)]="producto.descripcionAdicional" [ngModelOptions]="{standalone: true}" class="form-control-sm" placeholder="Descripción adicional">
+              </div>
+            </td>
+            <td>
+              <input type="number" [(ngModel)]="producto.precio" [ngModelOptions]="{standalone: true}" class="form-control-sm" (change)="calcularTotales(i)">
+            </td>
+            <td>
+              <input type="text" [value]="producto.subtotal | number:'1.2-2'" class="form-control-sm" readonly>
+            </td>
+            <td>
+              <div class="descuento-container">
+                <select [(ngModel)]="producto.tipoDescuento" [ngModelOptions]="{standalone: true}" class="form-control-sm" (change)="calcularTotales(i)">
+                  <option value="-">-</option>
+                  <option value="%">%</option>
+                  <option value="$">$</option>
+                </select>
+                <input type="number" [(ngModel)]="producto.valorDescuento" [ngModelOptions]="{standalone: true}" class="form-control-sm" (change)="calcularTotales(i)">
+              </div>
+            </td>
+            <td>
+
+              <div class="clave-item">
+                <span class="clave-label">ObjetoImp</span>
+                <div class="form-control-sm">{{ producto.taxObject }}</div>
+              </div>
+              <div class="clave-item">
+                <span class="clave-label">IVA</span>
+                <div class="form-control-sm">0.16</div>
+              </div>
+              <div class="clave-item">
+                <span class="clave-label">Monto</span>
+                <div class="form-control-sm">{{ producto.iva | number:'1.2-2' }}</div>
+              </div>
+            <td>
+              <input type="text" [value]="producto.total | number:'1.2-2'" class="form-control-sm" readonly>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+          <div class="totales-container">
+            <div class="totales-grid">
+              <div class="total-item">
+                <span class="total-label">Subtotal</span>
+                <span class="total-value">${{subtotalGeneral | number:'1.2-2'}}</span>
+              </div>
+              <div class="total-item">
+                <span class="total-label">Total</span>
+                <span class="total-value">${{totalGeneral | number:'1.2-2'}}</span>
+              </div>
+            </div>
+            <div class="acciones-factura">
+              <button class="btn-secondary" (click)="cerrarModalDetalles()">Cancelar</button>
+              <button class="btn-secondary" (click)="validarYGuardarFacturaGlobal()">
+                <i class="k-icon k-i-save"></i> Guardar Datos Factura
+              </button>
+              <button class="btn-primary" (click)="enviarFacturaDesdeBD()">
+                <i class="k-icon k-i-check"></i> Emitir Factura
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
+<!-- Modal de Resultado de Factura -->
+<ng-template #modalResultadoFactura>
+  <div class="modal-header">
+    <h2>Resultado de Emisión de Factura</h2>
+    <button class="btn-close" (click)="cerrarModalResultado()">×</button>
+  </div>
+
+  <div class="modal-body">
+    <div *ngIf="emitiendo" class="loading-factura">
+      <div class="spinner"></div>
+      <p>Emitiendo factura, por favor espere...</p>
+    </div>
+
+    <div *ngIf="!emitiendo && resultadoFactura" class="resultado-exito">
+      <div class="exito-icon">
+        <span class="k-icon k-i-check-circle"></span>
+      </div>
+      <h3>¡Factura emitida correctamente!</h3>
+      <div class="datos-factura">
+        <p><strong>Folio:</strong> {{resultadoFactura?.folio || 'G002'}}</p>
+        <p><strong>Serie:</strong> {{resultadoFactura?.serie || 'A'}}</p>
+        <p><strong>UUID:</strong> {{resultadoFactura?.uuid || '12345678-1234-1234-1234-123456789012'}}</p>
+        <p><strong>Fecha:</strong> {{ formatearFechaFactura() }}</p>
+
+      </div>
+    </div>
+
+    <div *ngIf="!emitiendo && errorFactura" class="resultado-error">
+      <div class="error-icon">
+        <span class="k-icon k-i-close-circle"></span>
+      </div>
+      <h3>Error al emitir la factura</h3>
+      <p>{{errorFactura}}</p>S
+      <p>Por favor, intente nuevamente o contacte al administrador del sistema.</p>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-secondary" (click)="cerrarModalResultado()">Cerrar</button>
+    <button *ngIf="resultadoFactura" class="btn-primary" (click)="descargarFactura()">
+      <i class="k-icon k-i-download"></i> Descargar PDF
+    </button>
+  </div>
+</ng-template>
+
+
+
+<!-- Modal de Nuevo Cliente -->
+<ng-template #modalNuevoCliente>
+  <div class="modal-header">
+    <h2>Nuevo Cliente</h2>
+    <button class="btn-close" (click)="cerrarModalCliente()">×</button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="formCliente" class="cliente-form">
+      <div class="form-group">
+        <label>Nombre / Razón Social:</label>
+        <input type="text" formControlName="nombreRazonSocial" class="form-control" placeholder="Ingrese nombre o razón social">
+        <div *ngIf="formCliente.get('nombreRazonSocial')?.invalid && formCliente.get('nombreRazonSocial')?.touched" class="error-message">
+          Nombre o razón social es requerido
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>RFC:</label>
+          <input type="text" formControlName="rfc" class="form-control" placeholder="Ingrese RFC">
+          <div *ngIf="formCliente.get('rfc')?.invalid && formCliente.get('rfc')?.touched" class="error-message">
+            RFC inválido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Uso de la factura:</label>
+          <select formControlName="usoCfdi" class="form-control">
+            <option value="">Seleccionar Uso de la factura</option>
+            <option value="G01">G01 - Adquisición de mercancías</option>
+            <option value="G03">G03 - Gastos en general</option>
+            <option value="P01">P01 - Por definir</option>
+            <option value="S01">S01 - Sin efectos fiscales</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Régimen fiscal: <i class="info-icon k-icon k-i-info"></i></label>
+        <select formControlName="regimenFiscal" class="form-control">
+          <option value="">Selecciona el Régimen fiscal</option>
+          <option value="601">601 - General de Ley Personas Morales</option>
+          <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+          <option value="605">605 - Sueldos y Salarios</option>
+          <option value="612">612 - Personas Físicas con Actividades Empresariales</option>
+          <option value="616">616 - Sin obligaciones fiscales</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>E-Mail:</label>
+          <input type="email" formControlName="email" class="form-control" placeholder="Ingrese correo electrónico">
+          <div *ngIf="formCliente.get('email')?.invalid && formCliente.get('email')?.touched" class="error-message">
+            Correo electrónico inválido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>E-Mail opcional No.1:</label>
+          <input type="email" formControlName="emailOpcional1" class="form-control" placeholder="Ingrese correo electrónico opcional">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>E-Mail opcional No.2:</label>
+          <input type="email" formControlName="emailOpcional2" class="form-control" placeholder="Ingrese correo electrónico opcional">
+        </div>
+
+        <div class="form-group">
+          <label>C.P.: <i class="info-icon k-icon k-i-info"></i></label>
+          <input type="text" formControlName="codigoPostal" class="form-control" placeholder="Ingrese código postal">
+        </div>
+      </div>
+
+      <div class="datos-opcionales">
+        <button type="button" class="btn-link" (click)="toggleDatosOpcionales()">
+          <span class="text-primary">Agregar datos opcionales <i class="k-icon" [ngClass]="mostrarDatosOpcionales ? 'k-i-chevron-up' : 'k-i-chevron-down'"></i></span>
+        </button>
+
+        <div *ngIf="mostrarDatosOpcionales" class="datos-opcionales-content">
+          <div class="form-group">
+            <label>Calle:</label>
+            <input type="text" formControlName="calle" class="form-control" placeholder="Ingrese calle">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>No. Exterior:</label>
+              <input type="text" formControlName="noExterior" class="form-control" placeholder="Número exterior">
+            </div>
+
+            <div class="form-group">
+              <label>No. Interior:</label>
+              <input type="text" formControlName="noInterior" class="form-control" placeholder="Número interior">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Colonia:</label>
+            <input type="text" formControlName="colonia" class="form-control" placeholder="Ingrese colonia">
+          </div>
+
+          <div class="form-group">
+            <label>Localidad:</label>
+            <input type="text" formControlName="localidad" class="form-control" placeholder="Ingrese localidad">
+          </div>
+
+          <div class="form-group">
+            <label>Municipio:</label>
+            <input type="text" formControlName="municipio" class="form-control" placeholder="Ingrese municipio">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Estado:</label>
+              <select formControlName="estado" class="form-control">
+                <option value="">Seleccione estado</option>
+                <option value="AGUASCALIENTES">AGUASCALIENTES</option>
+                <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
+                <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
+                <option value="CAMPECHE">CAMPECHE</option>
+                <option value="CHIAPAS">CHIAPAS</option>
+                <option value="CHIHUAHUA">CHIHUAHUA</option>
+                <option value="CIUDAD DE MÉXICO">CIUDAD DE MÉXICO</option>
+                <option value="COAHUILA">COAHUILA</option>
+                <option value="COLIMA">COLIMA</option>
+                <option value="DURANGO">DURANGO</option>
+                <option value="ESTADO DE MÉXICO">ESTADO DE MÉXICO</option>
+                <option value="GUANAJUATO">GUANAJUATO</option>
+                <option value="GUERRERO">GUERRERO</option>
+                <option value="HIDALGO">HIDALGO</option>
+                <option value="JALISCO">JALISCO</option>
+                <option value="MICHOACÁN">MICHOACÁN</option>
+                <option value="MORELOS">MORELOS</option>
+                <option value="NAYARIT">NAYARIT</option>
+                <option value="NUEVO LEÓN">NUEVO LEÓN</option>
+                <option value="OAXACA">OAXACA</option>
+                <option value="PUEBLA">PUEBLA</option>
+                <option value="QUERÉTARO">QUERÉTARO</option>
+                <option value="QUINTANA ROO">QUINTANA ROO</option>
+                <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
+                <option value="SINALOA">SINALOA</option>
+                <option value="SONORA">SONORA</option>
+                <option value="TABASCO">TABASCO</option>
+                <option value="TAMAULIPAS">TAMAULIPAS</option>
+                <option value="TLAXCALA">TLAXCALA</option>
+                <option value="VERACRUZ">VERACRUZ</option>
+                <option value="YUCATÁN">YUCATÁN</option>
+                <option value="ZACATECAS">ZACATECAS</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>País:</label>
+              <select formControlName="pais" class="form-control">
+                <option value="MEXICO">MEXICO</option>
+                <option value="ESTADOS UNIDOS">ESTADOS UNIDOS</option>
+                <option value="CANADA">CANADA</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-secondary" (click)="cerrarModalCliente()">Cerrar</button>
+    <button class="btn-primary" (click)="guardarCliente()">Guardar</button>
+  </div>
+</ng-template>
+
+<!-- Modal de Editar Cliente -->
+<ng-template #modalEditarCliente>
+  <div class="modal-header">
+    <h2>Editar Cliente</h2>
+    <button class="btn-close" (click)="cerrarModalCliente()">×</button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="formCliente" class="cliente-form">
+      <div class="form-group">
+        <label>Nombre / Razón Social:</label>
+        <input type="text" formControlName="nombreRazonSocial" class="form-control" placeholder="Ingrese nombre o razón social">
+        <div *ngIf="formCliente.get('nombreRazonSocial')?.invalid && formCliente.get('nombreRazonSocial')?.touched" class="error-message">
+          Nombre o razón social es requerido
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>RFC:</label>
+          <input type="text" formControlName="rfc" class="form-control" placeholder="Ingrese RFC">
+          <div *ngIf="formCliente.get('rfc')?.invalid && formCliente.get('rfc')?.touched" class="error-message">
+            RFC inválido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Uso de la factura:</label>
+          <select formControlName="usoCfdi" class="form-control">
+            <option value="">Seleccionar Uso de la factura</option>
+            <option value="G01">G01 - Adquisición de mercancías</option>
+            <option value="G03">G03 - Gastos en general</option>
+            <option value="P01">P01 - Por definir</option>
+            <option value="S01">S01 - Sin efectos fiscales</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Régimen fiscal: <i class="info-icon k-icon k-i-info"></i></label>
+        <select formControlName="regimenFiscal" class="form-control">
+          <option value="">Selecciona el Régimen fiscal</option>
+          <option value="601">601 - General de Ley Personas Morales</option>
+          <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+          <option value="605">605 - Sueldos y Salarios</option>
+          <option value="612">612 - Personas Físicas con Actividades Empresariales</option>
+          <option value="616">616 - Sin obligaciones fiscales</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>E-Mail:</label>
+          <input type="email" formControlName="email" class="form-control" placeholder="Ingrese correo electrónico">
+          <div *ngIf="formCliente.get('email')?.invalid && formCliente.get('email')?.touched" class="error-message">
+            Correo electrónico inválido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>E-Mail opcional No.1:</label>
+          <input type="email" formControlName="emailOpcional1" class="form-control" placeholder="Ingrese correo electrónico opcional">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>E-Mail opcional No.2:</label>
+          <input type="email" formControlName="emailOpcional2" class="form-control" placeholder="Ingrese correo electrónico opcional">
+        </div>
+
+        <div class="form-group">
+          <label>C.P.: <i class="info-icon k-icon k-i-info"></i></label>
+          <input type="text" formControlName="codigoPostal" class="form-control" placeholder="Ingrese código postal">
+        </div>
+      </div>
+
+      <div class="datos-opcionales">
+        <button type="button" class="btn-link" (click)="toggleDatosOpcionales()">
+          <span class="text-primary">Agregar datos opcionales <i class="k-icon" [ngClass]="mostrarDatosOpcionales ? 'k-i-chevron-up' : 'k-i-chevron-down'"></i></span>
+        </button>
+
+        <div *ngIf="mostrarDatosOpcionales" class="datos-opcionales-content">
+          <div class="form-group">
+            <label>Calle:</label>
+            <input type="text" formControlName="calle" class="form-control" placeholder="Ingrese calle">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>No. Exterior:</label>
+              <input type="text" formControlName="noExterior" class="form-control" placeholder="Número exterior">
+            </div>
+
+            <div class="form-group">
+              <label>No. Interior:</label>
+              <input type="text" formControlName="noInterior" class="form-control" placeholder="Número interior">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Colonia:</label>
+            <input type="text" formControlName="colonia" class="form-control" placeholder="Ingrese colonia">
+          </div>
+
+          <div class="form-group">
+            <label>Localidad:</label>
+            <input type="text" formControlName="localidad" class="form-control" placeholder="Ingrese localidad">
+          </div>
+
+          <div class="form-group">
+            <label>Municipio:</label>
+            <input type="text" formControlName="municipio" class="form-control" placeholder="Ingrese municipio">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Estado:</label>
+              <select formControlName="estado" class="form-control">
+                <option value="">Seleccione estado</option>
+                <option value="AGUASCALIENTES">AGUASCALIENTES</option>
+                <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
+                <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
+                <option value="CAMPECHE">CAMPECHE</option>
+                <option value="CHIAPAS">CHIAPAS</option>
+                <option value="CHIHUAHUA">CHIHUAHUA</option>
+                <option value="CIUDAD DE MÉXICO">CIUDAD DE MÉXICO</option>
+                <option value="COAHUILA">COAHUILA</option>
+                <option value="COLIMA">COLIMA</option>
+                <option value="DURANGO">DURANGO</option>
+                <option value="ESTADO DE MÉXICO">ESTADO DE MÉXICO</option>
+                <option value="GUANAJUATO">GUANAJUATO</option>
+                <option value="GUERRERO">GUERRERO</option>
+                <option value="HIDALGO">HIDALGO</option>
+                <option value="JALISCO">JALISCO</option>
+                <option value="MICHOACÁN">MICHOACÁN</option>
+                <option value="MORELOS">MORELOS</option>
+                <option value="NAYARIT">NAYARIT</option>
+                <option value="NUEVO LEÓN">NUEVO LEÓN</option>
+                <option value="OAXACA">OAXACA</option>
+                <option value="PUEBLA">PUEBLA</option>
+                <option value="QUERÉTARO">QUERÉTARO</option>
+                <option value="QUINTANA ROO">QUINTANA ROO</option>
+                <option value="SAN LUIS POTOSÍ">SAN LUIS POTOSÍ</option>
+                <option value="SINALOA">SINALOA</option>
+                <option value="SONORA">SONORA</option>
+                <option value="TABASCO">TABASCO</option>
+                <option value="TAMAULIPAS">TAMAULIPAS</option>
+                <option value="TLAXCALA">TLAXCALA</option>
+                <option value="VERACRUZ">VERACRUZ</option>
+                <option value="YUCATÁN">YUCATÁN</option>
+                <option value="ZACATECAS">ZACATECAS</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>País:</label>
+              <select formControlName="pais" class="form-control">
+                <option value="MEXICO">MEXICO</option>
+                <option value="ESTADOS UNIDOS">ESTADOS UNIDOS</option>
+                <option value="CANADA">CANADA</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-secondary" (click)="cerrarModalCliente()">Cerrar</button>
+    <button class="btn-primary" (click)="guardarCliente()">Guardar</button>
+  </div>
+</ng-template>
+
+
+<!-- SIIGO -->
+
+<ng-template #modalCrearFactSiigo let-modal>
+  <app-loader *ngIf="loaderCrearFactSiigo"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">Enviar Factura a Siigo</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formCrearFactSiigo">
+      <fieldset class="k-form-fieldset">
+        <h3 class="row" style="padding-left: 10px;">Datos del Alumno</h3>
+        <div class="row" style="padding-left: 30px;">
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="tipoCliente" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Tipo Cliente: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #tipoCliente
+                  formControlName="tipoCliente"
+                  [data]="dataTipoCliente"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+                <kendo-formerror>
+                  {{ "Seleccione Tipo de Cliente" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="tipoPersona" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Tipo Persona: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #tipoPersona
+                  formControlName="tipoPersona"
+                  [data]="dataTipoPersona"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+                <kendo-formerror>
+                  {{ "Seleccione Tipo de Persona" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="tipoIdentificacion" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Tipo Identificación: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #tipoIdentificacion
+                  formControlName="tipoIdentificacion"
+                  [data]="dataTipoIdentificacion"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+                <kendo-formerror>
+                  {{ "Seleccione Tipo de Identificación" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="nroIdentificacion" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Nro. Identificación: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #nroIdentificacion
+                  formControlName="nroIdentificacion"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+                <kendo-formerror>
+                  {{ "Ingrese Número de Identificación (Máximo 10 caracteres)" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="nombresAlumno" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Nombres: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #nombresAlumno
+                  formControlName="nombresAlumno"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="apellidosAlumno" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Apellidos: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #apellidosAlumno
+                  formControlName="apellidosAlumno"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="direccionAlumno" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Dirección: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #direccionAlumno
+                  formControlName="direccionAlumno"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="pais" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>País: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #pais
+                  formControlName="pais"
+                  [data]="dataPais"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="departamento" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Departamento: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #departamento
+                  formControlName="departamento"
+                  [data]="dataDepartamentos"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  (valueChange)="FiltraCiudadesPorPais($event)"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+                <kendo-formerror>
+                  {{ "Seleccione un Departamento" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="ciudad" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Ciudad: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #ciudad
+                  formControlName="ciudad"
+                  [data]="dataCiudades"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  (valueChange)="ObtenerCodigoCiudad($event)"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+                <kendo-formerror>
+                  {{ "Seleccione una Ciudad" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="responsabilidadFiscal" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Responsabilidad Fiscal: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #responsabilidadFiscal
+                  formControlName="responsabilidadFiscal"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="indicativoTelefono" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Indicativo Teléfono: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #indicativoTelefono
+                  formControlName="indicativoTelefono"
+                  (keydown)="onKeyDownNumero($event)"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+                <kendo-formerror>
+                  {{ "Ingrese Indicativo de Teléfono" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="numeroTelefono" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Número Teléfono: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #numeroTelefono
+                  formControlName="numeroTelefono"
+                  (keydown)="onKeyDownNumero($event)"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+                <kendo-formerror>
+                  {{ "Ingrese Número de Teléfono" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="extensionTelefono" class="k-label pt-0 d-flex align-items-start text-start">
+                  Extensión Teléfono:
+                </label>
+                <kendo-textbox
+                  #extensionTelefono
+                  formControlName="extensionTelefono"
+                  (keydown)="onKeyDownNumero($event)"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        <h3 class="row pt-5" style="padding-left: 10px;">Datos del Contacto</h3>
+        <div class="row" style="padding-left: 30px;">
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="nombresContacto" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Nombres: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #nombresContacto
+                  formControlName="nombresContacto"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="apellidosContacto" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Apellidos: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #apellidosContacto
+                  formControlName="apellidosContacto"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="correoContacto" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Correo Electrónico: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #correoContacto
+                  formControlName="correoContacto"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        <h3 class="row pt-5" style="padding-left: 10px;">Datos del Documento</h3>
+        <div class="row" style="padding-left: 30px;">
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="tipoDocumento" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Tipo: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #tipoDocumento
+                  formControlName="tipoDocumento"
+                  [data]="dataTipoDocumento"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+                <kendo-formerror>
+                  {{ "Seleccione Tipo de Documento" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="medioPago" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Medio Pago: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-combobox
+                  #medioPago
+                  formControlName="medioPago"
+                  [data]="dataMedioPago"
+                  valueField="id"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-combobox>
+                <kendo-formerror>
+                  {{ "Seleccione un  Medio de Pago" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="fechaDocumento" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Fecha: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-datepicker
+                  #fechaDocumento
+                  format="yyyy-MM-dd"
+                  formControlName="fechaDocumento"
+                  [incompleteDateValidation]="true">
+                </kendo-datepicker>
+                <kendo-formerror>
+                  {{ "Ingrese una Fecha Válida" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="fechaVencimiento" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Fecha Vencimiento: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-datepicker
+                  #fechaVencimiento
+                  formControlName="fechaVencimiento"
+                  format="yyyy-MM-dd"
+                  [incompleteDateValidation]="true">
+                </kendo-datepicker>
+                <kendo-formerror>
+                  {{ "Ingrese una Fecha Válida" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="valorTotal" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Valor Total: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #valorTotal
+                  formControlName="valorTotal"
+                  (keydown)="onKeyDownMonto($event)"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+                <kendo-formerror>
+                  {{ "Ingrese Valor Total" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="observaciones" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Observaciones: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textarea
+                  #observaciones
+                  formControlName="observaciones"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240);">
+                </kendo-textarea>
+                <kendo-formerror>
+                  {{ "Ingrese Observaciones" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        <h3 class="row pt-5" style="padding-left: 10px;">Datos del Item</h3>
+        <div class="row" style="padding-left: 30px;">
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="codigoItem" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Código: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #codigoItem
+                  formControlName="codigoItem"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="descripcionItem" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Descripción: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #descripcionItem
+                  formControlName="descripcionItem"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+                <kendo-formerror>
+                  {{ "Ingrese Descripción" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="cantidadItem" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Cantidad: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #cantidadItem
+                  formControlName="cantidadItem"
+                  [readonly]="true"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-md-11">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label style="margin-top: 1em;" [for]="precioItem" class="k-label pt-0 d-flex align-items-start text-start">
+                  <span>Precio: <span class="text-danger fw-bold">*</span></span>
+                </label>
+                <kendo-textbox
+                  #precioItem
+                  formControlName="precioItem"
+                  (keydown)="onKeyDownMonto($event)"
+                  size="medium"
+                  class="d-flex center"
+                  style="background-color: rgb(240, 240, 240)">
+                </kendo-textbox>
+                <kendo-formerror>
+                  {{ "Ingrese Precio" }}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="guardarFacturaInternaSiigo()">
+      Guardar
+    </button>
+     <button type="button" class="btn btn-primary" (click)="enviarFacturaSiigoDesdeBD()">
+      Enviar
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

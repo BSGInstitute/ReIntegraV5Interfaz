@@ -1,0 +1,307 @@
+<div class="row">
+  <div class="col-1fa-rotate-270">
+    <div class="card">
+      <div class="card-header bg-color-material">
+        <h1 class="text-white">Reporte Cambios, Codigos y Cuotas</h1>
+      </div>
+      <div class="card-body p-4">
+        <div class="k-loading-panel" *ngIf="loader">
+          <div class="k-loading-panel-mask"></div>
+          <div class="k-loading-panel-wrapper">
+            <kendo-loader
+              type="converging-spinner"
+              themeColor="primary"
+              size="large"
+            >
+            </kendo-loader>
+            <div class="k-loading-panel-text fs-5 text-primary">
+              Cargando...
+            </div>
+          </div>
+        </div>
+        <div class="row conteiner-toolbar-retiros-matricula">
+          <div class="card" style="padding: 0px">
+            <div class="card-header bg-color-material pb-0">
+              <h3 class="text-white mb-2">Filtro</h3>
+            </div>
+            <div class="card-body p-4">
+              <form class="k-form" [formGroup]="formGroupFiltro">
+                <fieldset class="k-form-fieldset">
+                  <div
+                    class="row"
+                    style="display: flex; justify-content: center"
+                  >
+                    <div class="col-md-5">
+                      <kendo-daterange [incompleteDateValidation]="true">
+                        <div class="col-md-5">
+                          <label style="width: 250px">
+                            <span>Fechas :</span>
+                          </label>
+                          <kendo-dateinput
+                            kendoDateRangeStartInput
+                            [size]="'medium'"
+                            formControlName="fechaInicio"
+                            [placeholder]="'Inicio'"
+                            [format]="{
+                              displayFormat: 'dd-MM-yyyy',
+                              inputFormat: 'dd-MM-yyyy'
+                            }"
+                            [incompleteDateValidation]="true"
+                            fillMode="outline"
+                            style="min-width: 95px;"
+                          >
+                          </kendo-dateinput>
+                        </div>
+                        <div
+                          class="col-md-2"
+                          style="padding: 0%; width: 5%; text-align: center"
+                        >
+                          <p style="margin-bottom: 5px">
+                            <strong>—</strong>
+                          </p>
+                        </div>
+                        <div class="col-md-5">
+                          <kendo-dateinput
+                            kendoDateRangeEndInput
+                            [size]="'medium'"
+                            [placeholder]="'fin'"
+                            formControlName="fechaFin"
+                            [format]="{
+                              displayFormat: 'dd-MM-yyyy',
+                              inputFormat: 'dd-MM-yyyy'
+                            }"
+                            [incompleteDateValidation]="true"
+                            fillMode="outline"
+                            style="min-width: 95px;"
+                          ></kendo-dateinput>
+                        </div>
+                      </kendo-daterange>
+                    </div>
+                    <div class="col-md-5">
+                        <label
+                        [for]="idCentroCosto"
+                        class="k-label"
+                        style="padding-bottom: 2px;"
+                        >
+                        Programa(CentroCostos):
+                        </label>
+                        <kendo-combobox
+                        #idCentroCosto
+                        class="d-flex"
+                        [data]="listaPrograma"
+                        size="medium"
+                        formControlName="idCentroCosto"
+                        [filterable]="true"
+                        placeholder="< Ingrese el Centro de Costo >"
+                        textField="nombre"
+                        valueField="id"
+                        [valuePrimitive]="true"
+                        [style.width.%]="92"
+                        (filterChange)="filterPrograma($event)"
+                        >
+                        </kendo-combobox>
+                    </div>
+                  </div>
+                  <br>
+                  <div
+                    class="row"
+                    style="display: flex; justify-content: center"
+                  >
+                    <div class="col-md-5">
+                        <label
+                        [for]="idAlumno"
+                        class="k-label"
+                        style="padding-bottom: 2px;"
+                      >
+                      Alumno :
+                      </label>
+                      <kendo-combobox
+                      #idAlumno
+                      class="d-flex"
+                      [data]="listaAlumno"
+                      size="medium"
+                      formControlName="idAlumno"
+                      [filterable]="true"
+                      placeholder="< Ingrese el Nombre del Alumno >"
+                      textField="nombreCompleto"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [style.width.%]="92"
+                      (filterChange)="filterAlumno($event)"
+                      >
+                    </kendo-combobox>
+                    </div>
+                    <div class="col-md-5">
+                        <label
+                        [for]="idMatricula"
+                        class="k-label"
+                        style="padding-bottom: 2px;"
+
+                      >
+                      Código Matrícula :
+                      </label>
+                      <kendo-combobox
+                      #idMatricula
+                      class="d-flex"
+                      [data]="listaMatricula"
+                      size="medium"
+                      formControlName="idMatricula"
+                      [filterable]="true"
+                      placeholder="< Ingrese el Código de Matrícula >"
+                      textField="codigoMatricula"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [style.width.%]="92"
+                      (filterChange)="filterCodigoMat($event)"
+
+                    >
+                    </kendo-combobox>
+                    </div>
+                  </div>
+                </fieldset>
+              </form>
+              <br>
+              <div class="row" style="display:flex;justify-content: center;">
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-3 centro" >
+                            <input 
+                            [(ngModel)]="chekedReportes.rCambios"
+                            type="checkbox" 
+                            class="input-Chek-report" 
+                            #rCambios 
+                            kendoCheckBox />
+                            <kendo-label
+                            class="k-checkbox-label"
+                            [for]="rCambios"
+                            text="Reporte Cambios"
+                            (onChange)="validarTabSelect()"
+                            ></kendo-label>
+                          
+                        </div>
+                        <div class="col-md-3 centro"><input 
+                            (onChange)="validarTabSelect()"
+                            [(ngModel)]="chekedReportes.rCodigos"
+                            type="checkbox" 
+                            class="input-Chek-report" 
+                            #rCodigos 
+                            kendoCheckBox />
+                            <kendo-label
+                            class="k-checkbox-label"
+                            [for]="rCodigos"
+                            text="Reporte Códigos"
+                            ></kendo-label></div>
+        
+                        <div class="col-md-3 centro"><input 
+                            (onChange)="validarTabSelect()"
+                            [(ngModel)]="chekedReportes.rCuotas"
+                            type="checkbox" 
+                            class="input-Chek-report" 
+                            #rCuotas 
+                            kendoCheckBox />
+                            <kendo-label
+                            class="k-checkbox-label"
+                            [for]="rCuotas"
+                            text="Reporte Cuotas"
+                            ></kendo-label></div>
+        
+                        <div class="col-md-3"><input 
+                            (onChange)="validarTabSelect()"
+                            [(ngModel)]="chekedReportes.rTraslados"
+                            type="checkbox" 
+                            class="input-Chek-reportV2" 
+                            #rTraslados 
+                            kendoCheckBox />
+                            <kendo-label
+                            class="k-checkbox-label"
+                            [for]="rTraslados"
+                            text="Reporte Traslados"
+                            ></kendo-label></div>
+                    </div>
+                </div>
+                
+
+              </div>
+              <br>
+              <div class="row centro" >
+                <div class="col-md-10">
+                    <div class="row"  style="display:flex;justify-content: end;">
+                        <ng-container *ngIf="chekedReportes.rCambios">
+                            <div class="col-md-6 k-form-horizontal" style="padding-top: 5px;">
+                                <kendo-formfield orientation="horizontal">
+                                  <label [for]="fechaCong" class="k-label" style="width: 225px;">
+                                      <span
+                                      >Fecha de Congelamiento:</span
+                                    >
+                                  </label>
+                                  <kendo-datepicker
+                                    #fechaCong
+                                    [formControl]="fechaCongelamiento"
+                                    [incompleteDateValidation]="true"
+                                    calendarType="classic"
+                                    [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                    placeholder="dia-mes-año"
+                                    ></kendo-datepicker>
+                                </kendo-formfield>
+                            </div>
+                            <div class="col-md-3">
+                                <button
+                                mat-raised-button
+                                class="btn-congelar"
+                                (click)="generarCongelamiento()"
+                              >
+                                <mat-icon>save</mat-icon>
+                                 Congelar
+                              </button>
+                            </div>
+                        </ng-container>
+                        
+                        <div class="col-md-2 centro">
+                            <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="generarReporte()"
+                            style="min-width: 72px;"
+                          >
+                            <mat-icon>search</mat-icon>
+                             Buscar
+                          </button>
+                        </div>
+                        <div class="col-md-1"></div>
+
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="height: 30px"></div>
+          <kendo-tabstrip
+            style="background-color: #d3d4dc; padding: 0%"
+            [keepTabContent]="true"
+          >
+            <kendo-tabstrip-tab title="REPORTE DE CAMBIOS" [selected]="tab1" *ngIf="tab1S">
+              <ng-template kendoTabContent> 
+                <app-grid-tabs [tipo]="1" [listaCambios]="listaCambios"></app-grid-tabs>
+              </ng-template>
+            </kendo-tabstrip-tab>
+            <kendo-tabstrip-tab title="REPORTE DE CODIGOS" [selected]="tab2" *ngIf="tab2S">
+              <ng-template kendoTabContent>
+                <app-grid-tabs [tipo]="2" [listaCodigos]="listaCodigos"></app-grid-tabs> </ng-template>
+            </kendo-tabstrip-tab>
+            <kendo-tabstrip-tab title="REPORTE DE CUOTAS" [selected]="tab3" *ngIf="tab3S">
+              <ng-template kendoTabContent> 
+                <app-grid-tabs [tipo]="3" [listaCuotas]="listaCuotas"></app-grid-tabs>
+              </ng-template>
+            </kendo-tabstrip-tab>
+            <kendo-tabstrip-tab title="REPORTE DE TRASLADOS" [selected]="tab4"  *ngIf="tab4S">
+              <ng-template kendoTabContent> 
+                <app-grid-tabs [tipo]="4" [listaTraslados]="listaTraslados"></app-grid-tabs>
+              </ng-template>
+            </kendo-tabstrip-tab>
+          </kendo-tabstrip>
+        </div>
+        <br />
+      </div>
+    </div>
+  </div>
+</div>

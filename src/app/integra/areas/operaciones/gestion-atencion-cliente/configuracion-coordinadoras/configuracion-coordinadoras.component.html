@@ -1,0 +1,591 @@
+<div class="card border-primary"  id="panelAsignado">
+
+  <div class="card-header pb-0 "  style="background-color: #337ab7;">
+    <h2 class="mb-2 text-white" style="text-align: center ;">
+      Lista de configuracion de coordinadores - Operaciones
+    </h2>
+
+  </div>
+  <br>
+  <div class="col-12 d-flex justify-content-end px-5">
+    <button
+    type="button"
+    class="btn btn-success"
+    name="button"
+    id="btnNuevo"
+    title="Agregar configuracion"
+    (click)="_newNuevo()"
+    [disabled]="loading"
+  >
+    Agregar Nuevo
+  </button>
+  </div>
+
+  <div class="card-body">
+    <div class="container-fluid" id="container_fluid_causa">
+      <div id="grid">
+        <kendo-grid
+          [kendoGridBinding]="gridConfiguracionCoordinadoras.data"
+          [loading]="gridConfiguracionCoordinadoras.loading"
+          [sortable]="true"
+          [selectable]="true"
+
+          [pageable]="gridConfiguracionCoordinadoras.pageable"
+          filterable="menu"
+          [pageSize]="gridConfiguracionCoordinadoras.gridState.take"
+          [skip]="gridConfiguracionCoordinadoras?.gridState.skip"
+        >
+          <kendo-grid-column
+            field="personal"
+            title="Coordinador"
+            [width]="100"
+            class="text-center"
+            [filterable]="true"
+            [headerClass]="'justify-content-center'"
+            [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"
+
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ul class="my-0 px-0">
+                  <li>
+                    {{ dataItem.personal }}
+                  </li>
+                </ul>
+              </div>
+            </ng-template>
+            <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="detalleCentroCosto"
+            title="Centro de Costo"
+            [width]="100"
+            class="text-center"
+            [filterable]="false"
+            [headerClass]="'justify-content-center'"
+            [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ng-container>
+                  <ul class="my-0 px-0">
+                    <li *ngFor="let element of dataItem.detalleCentroCosto">
+                      {{ element.centroCosto }}
+                    </li>
+                  </ul>
+                </ng-container>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="detalleEstadoMatricula"
+            title="Estado Matricula"
+            [width]="100"
+            class="text-center"
+            [filterable]="false"
+            [headerClass]="'justify-content-center'"
+            [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ng-container
+                  *ngIf="
+                    dataItem.detalleEstadoMatricula != null &&
+                    dataItem.detalleEstadoMatricula?.length > 0
+                  "
+                >
+                  <ul class="my-0 px-0">
+                    <li *ngFor="let element of dataItem.detalleEstadoMatricula ">
+                      {{
+                        element?.estadoMatricula != 0
+                          ? element.estadoMatricula
+                          : "Todos"
+                      }}
+                    </li>
+                  </ul>
+                </ng-container>
+
+                <ng-template #templateElse> Todos </ng-template>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="listaSubEstadoMatricula"
+            title="SubEstado Matricula"
+            [width]="100"
+            class="text-center"
+            [filterable]="false"
+            [headerClass]="'justify-content-center'"
+            [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ng-container
+                  *ngIf="
+                    dataItem.detalleSubEstadoMatricula != null &&
+                      dataItem.detalleSubEstadoMatricula?.length > 0;
+                    else templateElse
+                  "
+                >
+                  <ul class="my-0 px-0">
+                    <li *ngFor="let element of dataItem.detalleSubEstadoMatricula">
+                      {{ element.subEstadoMatricula}}
+                    </li>
+                  </ul>
+                </ng-container>
+
+                <ng-template #templateElse> Todos85 </ng-template>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-command-column title="Cambiar" [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"[width]="40">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="text-center">
+
+
+                <a class="btn btn-warning"
+                role="button"
+                (click)="editar(dataItem)">
+                  <a
+                    class="k-icon k-i-pencil"
+                    style="color: white"
+                  >
+                  </a>
+              </a>
+
+              <a class="btn btn-danger" role="button" (click)="newEliminar(dataItem)">
+                  <a class="k-icon k-i-delete" style="color: white"> </a>
+              </a>
+
+
+
+<!--
+                <button
+                  class=" "
+                  (click)="editar(dataItem)"
+                >
+                  <span class="k-icon k-i-pencil"
+                  style="color: white"></span>
+                </button>
+                <button
+                  class=" btn-sm btn-info"
+                  (click)="newEliminar(dataItem)"
+                >
+                  <span class="k-icon k-i-delete "></span>
+                </button> -->
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </div>
+    <loading [loading]="loading"></loading>
+  </div>
+</div>
+<br>
+<div class="card border-primary" id="panelSinAsignar">
+  <div class="card-header pb-0 "  style="background-color: #337ab7;">
+    <div class="col text-aling-center">
+    <h2 class="mb-2 text-white" style="text-align: center ;">Lista de Centros de Costo sin asignar</h2>
+  </div>
+</div>
+  <div class="card-body">
+    <div class="container-fluid" id="container_fluid_causa">
+      <div id="gridCentroCostoSinAsignar">
+        <kendo-grid
+          [kendoGridBinding]="gridCentroCostoSinAsignar.data"
+          [loading]="gridCentroCostoSinAsignar.loading"
+          [sortable]="true"
+          [selectable]="true"
+          [pageable]="gridCentroCostoSinAsignar.pageable"
+          filterable="menu"
+          [pageSize]="gridCentroCostoSinAsignar.gridState.take"
+          [skip]="gridCentroCostoSinAsignar?.gridState.skip"
+        >
+          <kendo-grid-column
+            field="centroCosto"
+            title="Centro de Costo"
+            [width]="100"
+            class="text-center"
+            [filterable]="true"
+            [headerClass]="'justify-content-center'"
+            [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"
+          >
+          <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="estadoProgramaEspecifico"
+            title="Estado Programa Especifico"
+            [width]="100"
+            class="text-center"
+            [filterable]="true"
+            [headerClass]="'justify-content-center'"
+            [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"
+
+          >
+          <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="tipo"
+            title="Tipo"
+            [width]="100"
+            class="text-center"
+            [filterable]="true"
+            [headerClass]="'justify-content-center'"
+            [headerStyle]="{ backgroundColor: '#27ae60',color:'#ffffff' }"
+          >
+          <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+    <loading [loading]="loading"></loading>
+  </div>
+</div>
+
+<!-- MODAL PARA CREAR UN NUEVO ELEMENTO -->
+<ng-template #modalConfiguracion let-modal>
+  <div class="modal-header" >
+    <h2 class="modal-title">
+      Añadir configuracion coordinador por Centro de Costo
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="card">
+      <div class="card-header bg-color-material">
+        <button
+          type="button"
+          class="btn btn-success"
+          name="button"
+          id="btnNuevo"
+          (click)="agregarDato()"
+          [disabled]="loading"
+        >
+          Agregar
+        </button>
+      </div>
+      <div class="card-body">
+        <kendo-grid
+          #listaIdPaises
+          [kendoGridBinding]="gridAgregarConfiguracion.data"
+          [sortable]="true"
+          (remove)="gridAgregarConfiguracion.removeHandler($event)"
+          (cellClick)="gridAgregarConfiguracion.cellClickHandler($event)"
+          (cellClose)="gridAgregarConfiguracion.cellCloseHandler($event)"
+          [resizable]="true"
+          [columnMenu]="{ filter: true }"
+          [pageable]="gridAgregarConfiguracion.pageable"
+          filterable="menu"
+          [pageSize]="gridAgregarConfiguracion.gridState.take"
+          [skip]="gridAgregarConfiguracion?.gridState.skip"
+        >
+          <kendo-grid-column
+            title="Coordinador"
+            field="listaPersonal"
+            [headerStyle]="{
+              'background-color': '#4584a7',
+              color: 'white'
+            }"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ng-container>
+                  <ul class="my-0 px-0">
+                    <li *ngFor="let element of dataItem.listaPersonal">
+                      {{ obtenerCoordinador(element) }}
+                    </li>
+                  </ul>
+                </ng-container>
+              </div>
+            </ng-template>
+            <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+              <kendo-multiselect
+                [data]="coordinadorasData"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                placeholder="ingrese Personal"
+                (filterChange)="filterAsesores($event)"
+                [filterable]="true"
+                [formControl]="formGroup.get('listaPersonal')"
+              ></kendo-multiselect>
+            </ng-template>
+            <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <kendo-grid-string-filter-menu
+              [column]="column"
+              [filter]="filter"
+              [filterService]="filterService"
+              [extra]="false"
+              operator="contains"
+            >
+              <kendo-filter-contains-operator
+                text="Contiene"
+              ></kendo-filter-contains-operator>
+            </kendo-grid-string-filter-menu>
+          </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Centro de Costo"
+            field="listaCentroCosto"
+            [headerStyle]="{
+              'background-color': '#4584a7',
+              color: 'white'
+            }"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ng-container>
+                  <ul class="my-0 px-0">
+                    <li *ngFor="let element of dataItem.listaCentroCosto">
+                      {{ obtenerCentroCosto(element) }}
+                    </li>
+                  </ul>
+                </ng-container>
+              </div>
+            </ng-template>
+            <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+              <kendo-multiselect
+                [data]="centroCostosData"
+                textField="centroCosto"
+                valueField="idCentroCosto"
+                placeholder="ingrese Centro de costo"
+                [valuePrimitive]="true"
+                [formControl]="formGroup.get('listaCentroCosto')"
+                (filterChange)="filterCentroCosto($event)"
+                [filterable]="true"
+
+              ></kendo-multiselect>
+            </ng-template>
+            <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <kendo-grid-string-filter-menu
+              [column]="column"
+              [filter]="filter"
+              [filterService]="filterService"
+              [extra]="false"
+              operator="contains"
+            >
+              <kendo-filter-contains-operator
+                text="Contiene"
+              ></kendo-filter-contains-operator>
+            </kendo-grid-string-filter-menu>
+          </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Estado Matricula"
+            field="listaEstadoMatricula"
+            [headerStyle]="{
+              'background-color': '#4584a7',
+              color: 'white'
+            }"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ng-container>
+                  <ul class="my-0 px-0">
+                    <li *ngFor="let element of dataItem.listaEstadoMatricula">
+                      {{ obtenerEstado(element) }}
+                    </li>
+                  </ul>
+                </ng-container>
+              </div>
+            </ng-template>
+            <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+              <kendo-multiselect
+                [data]="estadoData"
+                textField="estadoMatricula"
+                valueField="idEstadoMatricula"
+                placeholder="ingrese Estado"
+                [valuePrimitive]="true"
+                [formControl]="formGroup.get('listaEstadoMatricula')"
+                (valueChange)="onEstadoMatriculaSelectionChange($event)"
+              ></kendo-multiselect>
+            </ng-template>
+            <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <kendo-grid-string-filter-menu
+              [column]="column"
+              [filter]="filter"
+              [filterService]="filterService"
+              [extra]="false"
+              operator="contains"
+            >
+              <kendo-filter-contains-operator
+                text="Contiene"
+              ></kendo-filter-contains-operator>
+            </kendo-grid-string-filter-menu>
+          </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="SubEstado Matricula"
+            field="listaSubEstadoMatricula"
+            [headerStyle]="{
+              'background-color': '#4584a7',
+              color: 'white'
+            }"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="px-3 w-100">
+                <ng-container>
+                  <ul class="my-0 px-0">
+                    <li
+                      *ngFor="let element of dataItem.listaSubEstadoMatricula"
+                    >
+                      {{ obtenerSubEstado(element) }}
+                    </li>
+                  </ul>
+                </ng-container>
+              </div>
+            </ng-template>
+            <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+              <kendo-multiselect
+                [data]="subEstadoData"
+                textField="subEstadoMatricula"
+                valueField="idSubEstadoMatricula"
+                [valuePrimitive]="true"
+                placeholder="ingrese subestados"
+                [formControl]="formGroup.get('listaSubEstadoMatricula')"
+              ></kendo-multiselect>
+            </ng-template>
+            <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <kendo-grid-string-filter-menu
+              [column]="column"
+              [filter]="filter"
+              [filterService]="filterService"
+              [extra]="false"
+              operator="contains"
+            >
+              <kendo-filter-contains-operator
+                text="Contiene"
+              ></kendo-filter-contains-operator>
+            </kendo-grid-string-filter-menu>
+          </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-command-column
+            title="Eliminar"
+            [headerStyle]="{
+              'background-color': '#4584a7',
+              color: 'white'
+            }"
+            [headerClass]="{ 'text-center': true }"
+          >
+            <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem>
+              <button kendoGridRemoveCommand>
+                <a
+                  class="k-icon k-i-close-circle"
+                  style="color: rgb(209, 5, 5)"
+                ></a>
+              </button>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a class="btn btn-primary" id="buttonNew" (click)="newInsert()">
+        <i class="icon-print icon-white"></i> Nuevo
+      </a>
+
+      <a class="btn btn-primary " id="buttonUpdate" (click)="newUpdate()">
+        <i class="icon-print icon-white"></i> Actualizar
+      </a>
+
+      <a class="btn btn-danger" id="buttonCancelar" (click)="clearFieldsForm()">
+        <i class="icon-print icon-white"></i> Cancelar
+      </a>
+    </div>
+  </div>
+  <loading [loading]="loading"></loading>
+</ng-template>

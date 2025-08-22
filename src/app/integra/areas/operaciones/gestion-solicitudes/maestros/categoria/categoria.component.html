@@ -1,0 +1,319 @@
+<div class="card border-primary" #reporte>
+  <div class="card-header pb-0 bg-color-material">
+    <div class="col text-aling-center">
+      <h2 class="mb-2 text-white" style="text-align: center">(M) Categoria</h2>
+    </div>
+  </div>
+
+  <div class="card-body p-4">
+    <ng-template #modalTipoReporte let-modal>
+      <app-loader *ngIf="loaderModal"></app-loader>
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          {{ isNew ? "Nueva Categoria" : "Modificar Categoria" }}
+        </h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form class="k-form k-form-horizontal" [formGroup]="formCategoria">
+          <fieldset class="k-form-fieldset">
+            <div class="row">
+              
+              <div class="col-sm-12 col-md-12">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="nombreTipoReporte" class="k-label">
+                    <span
+                      >Tipo de Solicitud
+                      <span class="text-danger fw-bold">*</span></span
+                    >
+                  </label>
+  
+                  <kendo-dropdownlist
+                    #nombreTipoReporte
+                    formControlName="nombreTipoReporte"
+                    class="d-flex"
+                    size="medium"
+                    [kendoDropDownFilter]="filterSettings2"
+                    [data]="dataTipoReporte"
+                    [defaultItem]="{
+                      id: null,
+                      nombre: 'Seleccione un tipo de solicitud...'
+                    }"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                  >
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 col-md-12">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="nombreCategoria" class="k-label">
+                    <span
+                      >Categoria <span class="text-danger fw-bold">*</span></span
+                    >
+                  </label>
+                  <kendo-textbox
+                    #nombreCategoria
+                    size="medium"
+                    placeholder="Nombre"
+                    formControlName="nombreCategoria"
+                    [clearButton]="true"
+                    inputValidSpaceDir
+                    [maxlength]="325"
+                  >
+                  </kendo-textbox>
+
+                  <kendo-formerror>
+                    {{ getErrorMessage("nombreCategoria") }}
+                  </kendo-formerror>
+                </kendo-formfield>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="k-form-buttons m-0">
+          <button
+            kendoButton
+            class="hoverButton"
+            *ngIf="isNew"
+            themeColor="primary"
+            (click)="crearCategoria()"
+          >
+            Guardar
+          </button>
+          <button
+            kendoButton
+            *ngIf="!isNew"
+            class="hoverButton"
+            themeColor="tertiary"
+            (click)="actualizarCategoria()"
+          >
+            Actualizar
+          </button>
+
+          <button
+            themeColor="error"
+            kendoButton
+            class="hoverButton"
+            (click)="modal.dismiss('Cross click')"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #modalVerTipoReporte let-modal>
+      <div class="modal-body">
+        <div class="modal-header bg-primary-header-modal">
+          <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+            URL para campañas
+          </h3>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            aria-label="Close"
+            (click)="modal.dismiss('Cross click')"
+          ></button>
+        </div>
+        <form class="k-form k-form-horizontal">
+          <fieldset class="k-form-fieldset">
+            <div class="row">
+              <div class="col-sm-12 col-md-12">
+                <kendo-formfield style="padding: 16px" orientation="horizontal">
+                  <label class="k-label">
+                    <span
+                      >Programa <span class="text-danger fw-bold">*</span></span
+                    >
+                  </label>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <kendo-dropdownlist
+                    class="d-flex"
+                    size="medium"
+                    [data]=""
+                    [defaultItem]="{
+                      id: null,
+                      nombre: 'Seleccione un Programa'
+                    }"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                  >
+                  </kendo-dropdownlist>
+
+                  <div class="col-sm-12">
+                    <label id="inputModal1" class="control-label">
+                      {{ "lb" }}
+                    </label>
+                  </div>
+                </kendo-formfield>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </ng-template>
+
+    <!-- modal ver -->
+    <div class="">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="row">
+                <div></div>
+                <div class="col">
+                  <ng-template
+                    #cellTemplateGrid
+                    let-dataItem="dataItem"
+                    let-field="field"
+                    let-itemValue="itemValue"
+                  >
+                    <ng-container
+                      *ngIf="
+                        field == 'fechaCreacionCampania';
+                        else gridTempDefault
+                      "
+                    >
+                      {{ itemValue | date : "dd-MM-yyyy" }}
+                    </ng-container>
+                    <ng-template #gridTempDefault>
+                      {{ itemValue }}
+                    </ng-template>
+                  </ng-template>
+
+                  <kendo-grid
+                    [kendoGridBinding]="gridCategoria.data"
+                    [loading]="gridCategoria.loading"
+                    (dataStateChange)="gridCategoria.onStateChange($event)"
+                    [resizable]="true"
+                    [pageable]="true"
+                    [filterable]="true"
+                    [pageSize]="15"
+                    [sortable]="true"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoButton
+                        icon="reload"
+                        fillMode="flat"
+                        themeColor="secondary"
+                        (click)="reloadTipoReporte()"
+                      ></button>
+                      <kendo-grid-spacer></kendo-grid-spacer>
+                      <button
+                        kendoButton
+                        [themeColor]="'primary'"
+                        class="hoverButton"
+                        (click)="abrirModalTipoReporte(true, null)"
+                      >
+                       + Agregar
+                      </button>
+                    </ng-template>
+                    <!-- <kendo-grid-column field="id" title="Id" [filterable]="false">
+                      </kendo-grid-column> -->
+                    <kendo-grid-column
+                      field="idCategoria"
+                      title="Nombre"
+                      [filterable]="true"
+                      [width]="250"
+                      [hidden]="true"
+                    ></kendo-grid-column>
+                    <kendo-grid-column
+                      field="nombreCategoria"
+                      title="Categoria"
+                      [filterable]="true"
+                      [width]="250"
+                    > <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                      <kendo-grid-string-filter-cell
+                        [column]="column"
+                        [filter]="filter"
+                        operator="contains"
+                      >
+                        <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                      </kendo-grid-string-filter-cell>
+                    </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="idTipoReporte"
+                      title="Tipo de Solicitud"
+                      [filterable]="true"
+                      [width]="250"
+                      [hidden]="true"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="nombreReporte"
+                      title="Tipo de Solicitud"
+                      [filterable]="true"
+                      [width]="250"
+                    > <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                      <kendo-grid-string-filter-cell
+                        [column]="column"
+                        [filter]="filter"
+                        operator="contains"
+                      >
+                        <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                      </kendo-grid-string-filter-cell>
+                    </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-command-column title="" [width]="250">
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-isNew="isNew"
+                        let-dataItem="dataItem"
+                        let-rowindex="rowindex"
+                      >
+                        <div class="w-100 d-flex justify-content-center">
+                          <button
+                            kendoButton
+                            themeColor="warning"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                            (click)="abrirModalTipoReporte(false, dataItem)"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoButton
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                            (click)="mostrarMensajeEliminar(dataItem, rowindex)"
+                          >
+                            <span class="k-icon k-i-delete k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-command-column>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

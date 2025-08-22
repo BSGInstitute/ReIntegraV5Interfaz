@@ -1,0 +1,556 @@
+<div class="card card-reporte border-primary" #reporte>
+  <div class="card-header">
+    <h2>(R) Contactabilidad 3CX - Integra</h2>
+  </div>
+  <div class="card-body">
+    <div class="card card-reporte border-primary">
+      <div class="card-header">
+        <h3 class="mb-2">Control Contactabilidad 3CX - Integra</h3>
+      </div>
+      <div class="panel-body">
+        <div class="container-fluid">
+          <div id="tab_programada_filtro">
+            <form
+              class="k-form k-form-horizontal"
+              [formGroup]="formContactabilidad"
+            >
+              <div class="row">
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="inputAsesor"
+                      text="Asesores"
+                      class="d-flex align-items-start"
+                      [style.width.px]="70"
+                    >
+                    </kendo-label>
+                    <kendo-multiselect
+                      #inputAsesor
+                      [data]="asesoresFiltro"
+                      textField="nombreCompleto"
+                      [loading]="loader"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [defaultItem]="{
+                        nombreCompleto: 'Todos los asesores',
+                        id: null
+                      }"
+                      formControlName="asesores"
+                      (filterChange)="onFilterChangeAsesores($event)"
+                      [filterable]="true"
+                    >
+                    </kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Estado del Personal"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+
+                    <kendo-dropdownlist
+                      [data]="sourceEstadosAsesor"
+                      class="kendo-combo"
+                      textField="clave"
+                      valueField="valor"
+                      [valuePrimitive]="true"
+                      formControlName="estadoAsesor"
+                      [defaultItem]="{
+                        clave: 'Todo el Personal',
+                        valor: null
+                      }"
+                      (valueChange)="onValueChangeEstadoAsesor($event)"
+                    >
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Fecha Inicio"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    ></kendo-label>
+
+                    <kendo-datepicker
+                      #fechaInicio
+                      formControlName="fechaInicio"
+                      format="yyyy-MM-dd"
+                      [max]="fechaActual"
+                      [incompleteDateValidation]="true"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Fecha Fin"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    ></kendo-label>
+                    <kendo-datepicker
+                      formControlName="fechaFin"
+                      format="yyyy-MM-dd"
+                      [incompleteDateValidation]="true"
+                      [min]="fechaInicio.value"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row justify-content-end mb-2">
+                <div class="col-auto">
+                  <button
+                    kendoButton
+                    icon="search"
+                    themeColor="success"
+                    [disabled]="procesoEnvio"
+                    (click)="generarReporte()"
+                  >
+                    Buscar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="card card-reporte border-primary">
+      <div class="card-header">
+        <h3>Reporte Cobertura</h3>
+      </div>
+      <div class="card-body">
+        <div
+          id="gridTasasContacto"
+          class="hidden-on-narrow"
+          style="text-align: center"
+        >
+          <kendo-grid
+            [kendoGridBinding]="gridContactabilidad.data"
+            [loading]="gridContactabilidad.loading"
+            [selectable]="true"
+          >
+            <kendo-grid-column
+              field="hora"
+              title="Hora"
+              [width]="100"
+              [sticky]="true"
+              [filterable]="true"
+              class="text-center"
+              [headerClass]="'text-center'"
+              [headerClass]="'justify-content-center'"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <strong>
+                  {{
+                    dataItem.hora == 0
+                      ? "Antes de las 8:00"
+                      : dataItem.hora == 24
+                      ? "Despues de las 20:00"
+                      : dataItem.hora + ":00"
+                  }}</strong
+                >
+              </ng-template>
+              <div class="text-center">
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="justify-content-center"
+                >
+                  Total
+                </ng-template>
+              </div>
+            </kendo-grid-column>
+            <kendo-grid-column-group
+              [title]="columna.title"
+              *ngFor="let columna of columnasGrid"
+              headerClass="justify-content-center"
+            >
+              <kendo-grid-column
+                [field]="columna.field + 'AT'"
+                title="AT"
+                [width]="100"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="row">
+                    <span class="col-12" style="font-size: 16px">{{
+                      dataItem[columna.field + "AT"]
+                    }}</span>
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="text-center"
+                >
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'AT']"
+                  >
+                    <div [style.height.px]="135">
+                      <div class="row text-center h-100 
+                      align-items-center">
+                        <span class="col-12" style="font-size: 16px">{{
+                          footers[columna.field + "AT"]['AT']
+                        }}</span>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'AT']"
+                  >
+                    <ng-container *ngFor="let intento of subClaveIntentos">
+                      <div class="" [style.height.px]="95">
+                        <div class="row text-center h-100 
+                        align-items-center">
+                          <span class="col-12" style="font-size: 16px">{{
+                            footers[columna.field + "AT"][
+                              "totalIntento" + intento
+                            ]
+                          }}</span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                [field]="columna.field + 'AE'"
+                title="AE"
+                [width]="100"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="text-center"
+                >
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'AE']"
+                  >
+                    <div [style.height.px]="135">
+                      <div class="row text-center h-100 
+                      align-items-center">
+                        <span class="col-12" style="font-size: 16px">{{
+                          footers[columna.field + "AE"]['AE']
+                        }}</span>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'AE']"
+                  >
+                    <ng-container *ngFor="let intento of subClaveIntentos">
+                      <div class="" [style.height.px]="95">
+                        <div class="row text-center h-100 
+                        align-items-center">
+                          <span class="col-12" style="font-size: 16px">{{
+                            footers[columna.field + "AE"][
+                              "totalIntento" + intento
+                            ]
+                          }}</span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="row h-100 
+                  align-items-center">
+                    <span class="col-12" style="font-size: 16px">{{
+                      dataItem[columna.field + "AE"]
+                    }}</span>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                [field]="columna.field + 'ARM'"
+                title="ARM"
+                [width]="100"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="text-center"
+                >
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'ARM']"
+                  >
+                    <div [style.height.px]="135">
+                      <div class="row text-center h-100 
+                      align-items-center">
+                        <span class="col-12" style="font-size: 16px">{{
+                          footers[columna.field + "ARM"]['ARM']
+                        }}</span>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'ARM']"
+                  >
+                    <ng-container *ngFor="let intento of subClaveIntentos">
+                      <div class="" [style.height.px]="95">
+                        <div class="row text-center h-100 
+                        align-items-center">
+                          <span class="col-12" style="font-size: 16px">{{
+                            footers[columna.field + "ARM"][
+                              "totalIntento" + intento
+                            ]
+                          }}</span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="row h-100 
+                  align-items-center">
+                    <span class="col-12" style="font-size: 16px">{{
+                      dataItem[columna.field + "ARM"]
+                    }}</span>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                [field]="columna.field + 'TC'"
+                title="IND"
+                [width]="200"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="row justify-content-center">
+                    <div class="col-11 px-1 py-2 ctc-custom-table">
+                      <table class="text-center w-auto">
+                        <tr>
+                          <td
+                          >
+                            TC : {{ dataItem[columna.field + "TC"] }}%
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                          >
+                            TP : {{ dataItem[columna.field + "TP"] }} min
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                          >
+                            TU : {{ dataItem[columna.field + "TU"] }} min
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                          >
+                            TU(%) : {{
+                              dataItem[columna.field + "TUPorcentaje"]
+                            }}%
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                  <div
+                    class="row justify-content-center"
+                    *ngIf="!validacionFases.includes(columna.field)"
+                  >
+                    <div class="col-auto">
+                      <b>WhatsApp Enviados</b>:
+                      {{ dataItem[columna.field + "WhatsAppEnviado"] }}
+                      <br>
+                      <sup>(Nro de clientes)</sup>
+                    </div>
+                  </div>
+                  <div
+                    class="row justify-content-center"
+                    *ngIf="!validacionFases.includes(columna.field)"
+                  >
+                    <div class="col-auto">
+                      <b>WhatsApp Recibidos</b>:
+                      {{ dataItem[columna.field + "WhatsAppRecibido"] }}
+                      <br>
+                      <sup>(Nro de clientes)</sup>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'IND']"
+                  >
+                    <div [style.height.px]="135">
+                      <div class="row justify-content-center">
+                        <div class="col-11 px-1 py-2 ctc-custom-table">
+                          <table class="text-center w-auto">
+                            <tr>
+                              <td
+                              >
+                                TC : {{
+                                  footers[columna.field + "IND"][
+                                    "TCvalor"
+                                  ]
+                                }}%
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                              >
+                                TP : {{
+                                  footers[columna.field + "IND"][
+                                    "TPvalor"
+                                  ]
+                                }}
+                                min
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                              >
+                                TU : {{
+                                  footers[columna.field + "IND"][
+                                    "TUvalor"
+                                  ]
+                                }}
+                                min
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
+                      <div
+                        class="row justify-content-center"
+                        *ngIf="!validacionFases.includes(columna.field)"
+                      >
+                        <div class="col-auto">
+                          <b>WhatsApp Enviados</b>:
+                          {{
+                            footers[columna.field + "IND"]["WhatsAppEnviado"]
+                          }}
+                          <br>
+                          <sup>(Nro de clientes)</sup>
+                        </div>
+                      </div>
+                      <div
+                        class="row justify-content-center"
+                        *ngIf="!validacionFases.includes(columna.field)"
+                      >
+                        <div class="col-auto">
+                          <b>WhatsApp Recibidos</b>:
+                          {{
+                            footers[columna.field + "IND"]["WhatsAppRecibido"]
+                          }}
+                          <br>
+                          <sup>(Nro de clientes)</sup>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <br>
+                  <br>
+                  <ng-container
+                    *ngIf="flagfooter && footers[columna.field + 'IND']"
+                  >
+                    <ng-container
+                      *ngFor="let intento of subClaveIntentos; let i = index"
+                    >
+                      <div class="" [style.height.px]="95">
+                        <div
+                          class="row justify-content-center"
+                          *ngIf="footers[columna.field + 'IND']"
+                        >
+                          <div class="col-11 px-1 py-2 ctc-custom-table">
+                            <table class="text-center w-auto">
+                              <tr>
+                                <td
+                                >
+                                  TC {{ subClaveIntentosV2[i] }} : {{
+                                    footers[columna.field + "IND"][
+                                      "TCvalorIntento" + intento
+                                    ]
+                                  }}%
+                                </td>
+                              </tr>
+                              <tr>
+                                <td
+                                >
+                                  TP {{ subClaveIntentosV2[i] }} : {{
+                                    footers[columna.field + "IND"][
+                                      "TPvalorIntento" + intento
+                                    ]
+                                  }}
+                                  min
+                                </td>
+                              </tr>
+                              <tr>
+                                <td
+                                >
+                                  TU {{ subClaveIntentosV2[i] }} : {{
+                                    footers[columna.field + "IND"][
+                                      "TUvalorIntento" + intento
+                                    ]
+                                  }}
+                                  min
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid-column-group>
+          </kendo-grid>
+        </div>
+        <div class="card mt-3" style="border: none">
+          <div class="card-body">
+            <div class="row my-1">
+              <div class="col-12 fw-bold">AT: Numero Actividades Totales</div>
+            </div>
+            <div class="row my-1">
+              <div class="col-12 fw-bold">AE: Numero Actividades Ejecutadas Efectivas</div>
+            </div>
+            <div class="row my-1">
+              <div class="col-12 fw-bold">ARM: Numero Actividades Reprogramadas Manualmente</div>
+            </div>
+            <div class="row my-1">
+              <div class="col-12 fw-bold">TC: Tasa de Contacto (AE + ARM) / AT</div>
+            </div>
+            <div class="row my-1">
+              <div class="col-12 fw-bold">TP: Tiempo Contacto Promedio por Actividad Ejecutada y Reprogramada Manualmente por Hora en
+                Minutos</div>
+            </div>
+            <div class="row my-1">
+              <div class="col-12 fw-bold">TU: Tiempo útil (Suma Tiempos Contacto / 60 mins) en Minutos</div>
+            </div>
+            <div class="row my-1">
+              <div class="col-12 fw-bold">TU(%): Tasa tiempo útil</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

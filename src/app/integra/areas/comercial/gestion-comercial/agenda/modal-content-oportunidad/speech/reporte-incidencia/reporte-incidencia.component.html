@@ -1,0 +1,742 @@
+<div class="row" *ngIf="showOcurrencias$ | async">
+  <div class="col-12">
+    <ul class="list-group w-100">
+      <ng-container *ngFor="let item of arbolOcurrencia">
+        <a
+          (click)="onClickItemOcurrencia(item, 1)"
+          class="list-group-item item_ocurrencia nivel-0"
+          style="font-weight: 500"
+          [ngStyle]="
+            item.toggle
+              ? {
+                  color: item.tieneOcurrencias ? '#73b35e' : '#26589f',
+                  'text-decoration': 'underline'
+                }
+              : { color: item.color }
+          "
+        >
+          <fa-icon
+            [icon]="['fas', item.toggle ? 'folder-open' : 'folder']"
+            class="fa-lg"
+            style="color: '#5A79E1'"
+            *ngIf="item.tieneOcurrencias"
+          ></fa-icon>
+          <fa-icon
+            [icon]="['fas', 'file-text']"
+            class="fa-lg"
+            style="color: '#00dee9'"
+            *ngIf="!item.tieneOcurrencias"
+          ></fa-icon>
+          <span class="ms-2">
+            {{ item.nombreOcurrencia.trim() }}
+          </span>
+        </a>
+        <ng-container
+          *ngIf="
+            item.toggle &&
+            item?.ocurrenciasHijos != null &&
+            item?.ocurrenciasHijos.length > 0
+          "
+        >
+          <ul class="list-group ps-4">
+            <ng-container *ngFor="let hijo1 of item?.ocurrenciasHijos">
+              <a
+                (click)="onClickItemOcurrencia(hijo1, 2)"
+                class="list-group-item"
+                style="font-weight: 500"
+                [ngStyle]="
+                  hijo1.toggle
+                    ? {
+                        color: hijo1.tieneOcurrencias ? '#73b35e' : '#26589f',
+                        'text-decoration': 'underline'
+                      }
+                    : { color: hijo1.color }
+                "
+              >
+                <fa-icon
+                  [icon]="['fas', hijo1.toggle ? 'folder-open' : 'folder']"
+                  class="fa-lg"
+                  style="color: '#5A79E1'"
+                  *ngIf="hijo1.tieneOcurrencias"
+                ></fa-icon>
+                <fa-icon
+                  [icon]="['fas', 'file-text']"
+                  class="fa-lg"
+                  style="color: '#00dee9'"
+                  *ngIf="!hijo1.tieneOcurrencias"
+                ></fa-icon>
+                <span class="ms-2">
+                  {{ hijo1.nombreOcurrencia.trim() }}
+                </span>
+              </a>
+              <ng-container *ngIf="hijo1.toggle && hijo1.plantilla != null">
+                <div class="row m-2">
+                  <div class="card col-12 cardBodyPlantilla">
+                    <div class="card-body">
+                      <div class="row">
+                        <div
+                          class="col-12"
+                          [innerHtml]="hijo1.plantilla.contenido"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container
+                *ngIf="
+                  hijo1.toggle &&
+                  hijo1.ocurrenciasHijos != null &&
+                  hijo1.ocurrenciasHijos.length > 0
+                "
+              >
+                <ul class="list-group ps-4">
+                  <ng-container *ngFor="let hijo2 of hijo1?.ocurrenciasHijos">
+                    <a
+                      (click)="onClickItemOcurrencia(hijo2, 3)"
+                      class="list-group-item"
+                      style="font-weight: 500"
+                      [ngStyle]="
+                        hijo2.toggle
+                          ? {
+                              color: hijo2.tieneOcurrencias
+                                ? '#73b35e'
+                                : '#26589f',
+                              'text-decoration': 'underline'
+                            }
+                          : { color: hijo2.color }
+                      "
+                    >
+                      <fa-icon
+                        [icon]="[
+                          'fas',
+                          hijo2.toggle ? 'folder-open' : 'folder'
+                        ]"
+                        class="fa-lg"
+                        style="color: '#5A79E1'"
+                        *ngIf="hijo2.tieneOcurrencias"
+                      ></fa-icon>
+                      <fa-icon
+                        [icon]="['fas', 'file-text']"
+                        class="fa-lg"
+                        style="color: '#00dee9'"
+                        *ngIf="!hijo2.tieneOcurrencias"
+                      ></fa-icon>
+                      <span class="ms-2">
+                        {{ hijo2.nombreOcurrencia.trim() }}
+                      </span>
+                    </a>
+                    <ng-container
+                      *ngIf="hijo2.toggle && hijo2.plantilla != null"
+                    >
+                      <div class="row m-2">
+                        <div class="card col-12 cardBodyPlantilla">
+                          <div class="card-body">
+                            <div class="row">
+                              <div
+                                class="col-12"
+                                [innerHtml]="hijo2.plantilla.contenido"
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ul>
+              </ng-container>
+            </ng-container>
+          </ul>
+        </ng-container>
+      </ng-container>
+    </ul>
+  </div>
+</div>
+<!-- <div class="row my-2" *ngIf="btnProgramarActividad.show && !flagTabCorreos">
+  <div class="block">
+    <button
+      class="btn btn-primary text-white w-100"
+      (click)="programarActividad(false, true)"
+    >
+      Programar Actividad
+    </button>
+  </div>
+</div> -->
+<div class="row my-2" *ngIf="btnProgramarActividad.show">
+  <div class="block">
+    <button
+      class="btn btn-primary text-white w-100"
+      (click)="programarActividad(false, true)"
+    >
+      {{ esWhatsappCorreos ? ' Seguimiento por Llamada ': 'Programar Actividad'}}
+    </button>
+  </div>
+</div>
+<div class="row my-2" *ngIf="esWhatsappCorreos && btnProgramarActividad.show">
+  <div class="block">
+    <button
+      class="btn btn-success text-white w-100"
+      (click)="programarActividad(true, false)"
+    >
+      Seguimiento por WhatsApp
+    </button>
+  </div>
+</div>
+<div class="row my-2" *ngIf="btnCerrarOportunidad.show">
+  <div class="block">
+    <button
+      (click)="cerrarOportunidad()"
+      class="btn btn-danger text-white w-100"
+    >
+      Cerrar Oportunidad
+    </button>
+  </div>
+</div>
+<div class="row my-2" *ngIf="btnCrearOportunidad.show">
+  <div class="block">
+    <button
+      (click)="crearOportunidad()"
+      class="btn btn-success text-white w-100"
+    >
+      Crear Oportunidad
+    </button>
+  </div>
+</div>
+
+<!-- Modal Reprogramacion Actividades -->
+<ng-template #modalProgramacionActividades let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title mb-0">Programar Actividad</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <kendo-grid
+          [data]="gridProgramarActividad.data"
+          [selectable]="true"
+          [scrollable]="'none'"
+        >
+          <kendo-grid-column field="id" title="Id" [hidden]="true">
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="tipoActividad"
+            title="Tipo Actividad"
+            [width]="100"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+              {{ flagSeguimientoWhatsapp ? 'WHATSAPP' : dataItem.tipoActividad }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="actividad" title="Actividad" [width]="200">
+          </kendo-grid-column>
+          <kendo-grid-command-column title="Programar" [width]="60">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+              <div class="w-100 d-flex justify-content-center">
+                <button
+                  kendoButton
+                  themeColor="base"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  (click)="abrirFormProgramarActividad('manual')"
+                  ngbTooltip="Programar"
+                >
+                  <!-- <span class="k-icon k-i-send k-icon-20"></span> -->
+                  <fa-icon
+                    [icon]="['fas', 'paper-plane']"
+                    class="fa-lg"
+                  ></fa-icon>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- END Modal Reprogramacion Actividades -->
+
+<!-- Modal Form Programa -->
+<ng-template #modalFormPrograma let-modal>
+  <div class="modal-header">
+    <h3 class="modal-title w-100 mb-0 text-color-integra text-center">
+      ¿Que ocurrio en esta Actividad?
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="cerrarModalFormProgramar()"
+    ></button>
+  </div>
+  <div class="modal-body px-5">
+    <form [formGroup]="formProgramarActividad">
+      <div
+        class="alert alert-danger py-2 mb-3"
+        role="alert"
+        *ngIf="
+          showAlertModalProgramacion && flagError != null && flagError != ''
+        "
+      >
+        <ul class="mb-0">
+          <li  *ngIf="flagError != null && flagError != ''">
+            {{ flagError }}
+          </li>
+          <li *ngIf="flagErrorAlumno.length > 0">
+            Datos Personales Incompletos : 
+            <ul>
+              <li *ngFor="let item of flagErrorAlumno">
+                {{ item }}
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <kendo-formfield>
+            <kendo-textarea
+              [rows]="4"
+              formControlName="comentario"
+              placeholder="Ingrese un comentario"
+              (valueChange)="onValueChangeComentario($event)"
+              [maxlength]="500"
+            >
+              <kendo-textarea-suffix class="custom-styling">
+                <span class="counter">{{ counter }}</span>
+              </kendo-textarea-suffix>
+            </kendo-textarea>
+          </kendo-formfield>
+        </div>
+      </div>
+      <ng-container *ngIf="showGrupoFecha">
+        <div class="row my-2">
+          <div class="col-12">
+            <kendo-formfield>
+              <h3 class="m-0 k-label text-color-integra text-center">
+                Ingrese la fecha para la siguiente actividad
+              </h3>
+              <kendo-datetimepicker
+                formControlName="fechaProgramada"
+                placeholder="Fecha Programada"
+                [min]="dateTimeConfig.min"
+                [max]="dateTimeConfig.max"
+                [readonly]="dateTimeConfig.readonly"
+                style="color: red"
+                [format]="dateTimeConfig.format"
+                (open)="onOpenFechaReprogramacion()"
+                [focusedDate]="focusedDate"
+                [steps]="steps"
+              >
+              </kendo-datetimepicker>
+              <kendo-formerror>
+                {{ getErrorMessage("fechaProgramada") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-12">
+            <kendo-formfield>
+              <h3 class="m-0 k-label text-color-integra text-center">
+                Seleccione una opción respecto a la llamada
+              </h3>
+              <kendo-dropdownlist
+                [data]="dataProblemaLlamada"
+                formControlName="problemaLlamada"
+                valueField="id"
+                textField="nombre"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-12">
+            <kendo-formfield>
+              <h3 class="m-0 k-label text-color-integra text-center">
+                Califique la calidad de la llamada
+              </h3>
+              <kendo-dropdownlist
+                [data]="dataCalidadLlamada"
+                [defaultItem]="{ id: 0, nombre: 'Seleccione...' }"
+                formControlName="calidadLlamada"
+                (focus)="onFocusCalidadLlamada()"
+                valueField="id"
+                textField="nombre"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="comprobantePagoIS">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="m-0 k-label text-color-integra text-center">
+              Elija Comprobante de Pago
+            </h3>
+            <div class="row my-2">
+              <div class="col-12 k-form k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    [for]="fechaInicioPrograma"
+                    text="Fecha Inicio Programa"
+                    [style.width.px]="150"
+                  >
+                  </kendo-label>
+                  <kendo-datetimepicker
+                    #fechaInicioPrograma
+                    formControlName="fechaInicioPrograma"
+                    [min]="dateTimeConfigIS.min"
+                    style="color: red"
+                    [format]="dateTimeConfigIS.format"
+                  >
+                  </kendo-datetimepicker>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row my-2">
+              <div class="col-6 d-flex justify-content-end">
+                <input
+                  type="radio"
+                  #boleta
+                  kendoRadioButton
+                  (change)="changeTipoComprobante($event)"
+                  name="tipoComprobante"
+                  value="0"
+                  formControlName="tipoComprobante"
+                />
+                <kendo-label
+                  class="k-radio-label"
+                  [for]="boleta"
+                  text="Boleta"
+                ></kendo-label>
+              </div>
+              <div class="col-6 d-flex justify-content-start">
+                <input
+                  type="radio"
+                  #factura
+                  kendoRadioButton
+                  (change)="changeTipoComprobante($event)"
+                  name="tipoComprobante"
+                  value="1"
+                  formControlName="tipoComprobante"
+                />
+                <kendo-label
+                  class="k-radio-label"
+                  [for]="factura"
+                  text="Factura"
+                ></kendo-label>
+              </div>
+            </div>
+            <!-- <div class="row my-2">
+              <div class="col-12 k-form k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    [for]="rutFactura"
+                    text="RUT"
+                    [style.width.px]="150"
+                  >
+                  </kendo-label>
+                  <kendo-textbox #rutFactura formControlName="rutFactura">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div> -->
+            <ng-container *ngIf="dfProgramarActividad.tipoComprobante">
+              <div class="row my-2">
+                <div
+                  class="col-12 k-form k-form-horizontal"
+                  *ngIf="showInputFacturaPeru"
+                >
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="rucFactura"
+                      text="RUC"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+                    <kendo-textbox
+                      (focus)="onFocusFactura()"
+                      #rucFactura
+                      formControlName="rucFactura"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+
+              <div class="row my-2">
+                <div
+                  class="col-12 k-form k-form-horizontal"
+                  *ngIf="showInputFacturaOtro"
+                >
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="rutFactura"
+                      text="RUT"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+                    <kendo-textbox
+                      (focus)="onFocusFactura()"
+                      #rutFactura
+                      formControlName="rutFactura"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+
+              <div class="row my-2" *ngIf="showInputFactura">
+                <div class="col-12 k-form k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="razonSocialFactura"
+                      text="Razon Social"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+                    <kendo-textbox
+                      #razonSocialFactura
+                      (focus)="onFocusFactura()"
+                      formControlName="razonSocialFactura"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div
+                class="row my-2"
+                *ngIf="showInputFacturaOtro || showBoletaOtro"
+              >
+                <div class="col-12 k-form k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="direccionFactura"
+                      text="Direccion"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+                    <kendo-textbox
+                      #direccionFactura
+                      (focus)="onFocusFactura()"
+                      formControlName="direccionFactura"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row my-2">
+                <div class="col-12 k-form k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="comentarioComprobante"
+                      text="Especificaciones"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+                    <kendo-textarea
+                      #comentarioComprobante
+                      [rows]="3"
+                      formControlName="comentarioComprobante"
+                      placeholder="Ingrese un comentario"
+                    >
+                    </kendo-textarea>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="faseOportunidadIP">
+        <div class="row my-2">
+          <div class="col-12 k-form k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="estadoFaseIP"
+                text="Estado Fase IP"
+                [style.width.px]="150"
+              >
+              </kendo-label>
+              <kendo-dropdownlist
+                #estadoFaseIP
+                [data]="dataEstadoFase"
+                formControlName="estadoFaseIP"
+                [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                valueField="id"
+                textField="nombre"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="faseOportunidadPF">
+        <div class="row my-2">
+          <div class="col-12 k-form k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="estadoFasePF"
+                text="Estado Fase PF"
+                [style.width.px]="150"
+              >
+              </kendo-label>
+              <kendo-dropdownlist
+                #estadoFasePF
+                [data]="dataEstadoFase"
+                formControlName="estadoFasePF"
+                [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                valueField="id"
+                textField="nombre"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-12 k-form k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="fechaEnvioFichaPF"
+                text="Fecha de Envio Ficha"
+                [style.width.px]="150"
+              >
+              </kendo-label>
+              <kendo-datepicker
+                format="yyyy-MM-dd"
+                style="color: red"
+                #fechaEnvioFichaPF
+                formControlName="fechaEnvioFichaPF"
+              ></kendo-datepicker>
+              <!-- <kendo-textbox
+                #fechaEnvioFichaPF
+                formControlName="fechaEnvioFichaPF"
+              >
+              </kendo-textbox> -->
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-12 k-form k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="fechaPagoPF"
+                text="Fecha de Pago"
+                [style.width.px]="150"
+              >
+              </kendo-label>
+              <kendo-datepicker
+                format="yyyy-MM-dd"
+                #fechaPagoPF
+                style="color: red"
+                formControlName="fechaPagoPF"
+              ></kendo-datepicker>
+              <!-- <kendo-textbox #fechaPagoPF formControlName="fechaPagoPF"> -->
+              <!-- </kendo-textbox> -->
+            </kendo-formfield>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="faseOportunidadIC">
+        <div class="row my-2">
+          <div class="col-12 k-form k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="estadoFaseIC"
+                text="Estado Fase IC"
+                [style.width.px]="150"
+              >
+              </kendo-label>
+              <kendo-dropdownlist
+                #estadoFaseIC
+                [data]="dataEstadoFase"
+                formControlName="estadoFaseIC"
+                [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                valueField="id"
+                textField="nombre"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-12 k-form k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="fechaPagoIC"
+                text="Fecha de Pago"
+                [style.width.px]="150"
+              >
+              </kendo-label>
+              <kendo-datepicker
+                format="yyyy-MM-dd"
+                #fechaPagoIC
+                style="color: red"
+                formControlName="fechaPagoIC"
+              ></kendo-datepicker>
+              <!-- <kendo-textbox #fechaPagoIC formControlName="fechaPagoIC"> -->
+              <!-- </kendo-textbox> -->
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2">
+          <div class="col-12 k-form k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="codigoPagoIC"
+                text="Codigo de Pago"
+                [style.width.px]="150"
+              >
+              </kendo-label>
+              <kendo-textbox #codigoPagoIC formControlName="codigoPagoIC">
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+      </ng-container>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      (click)="guardarProgramacion2()"
+      *ngIf="formBtnProgramarActividad.show"
+      [disabled]="btnModalProgramarDisabled"
+      themeColor="success"
+      size="large"
+      class="w-100"
+      kendoButton
+    >
+      Programar Actividad
+    </button>
+    <button
+      (click)="cerrarActividad()"
+      *ngIf="formBtnCerrarActividad.show"
+      [disabled]="btnModalCerrarActividad"
+      themeColor="error"
+      size="large"
+      class="w-100"
+      kendoButton
+    >
+      Cerrar Actividad
+    </button>
+  </div>
+</ng-template>
+<!-- END Modal Form Programa  -->

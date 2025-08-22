@@ -1,0 +1,123 @@
+<ng-template
+  #cellTemplateHtmml
+  let-dataItem="dataItem"
+  let-field="field"
+  let-itemValue="itemValue"
+>
+  <ng-container [ngSwitch]="field">
+    <ng-container *ngSwitchCase="'inversion'">
+      <div class="col-sm-4" [innerHTML]="itemValue"></div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'certificacion'">
+      <div class="col-sm-4" [innerHTML]="itemValue"></div>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+      {{ itemValue }}
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<div class="row k-form-horizontal my-4" [formGroup]="formResumenProgramas">
+  <div class="col-sm-6 col-md-4">
+    <kendo-formfield orientation="horizontal">
+      <kendo-label [for]="inputArea" text="Area"></kendo-label>
+      <kendo-multiselect
+        #inputArea
+        [data]="areasCapacitacionFiltro"
+        textField="nombre"
+        [loading]="loader"
+        valueField="id"
+        [valuePrimitive]="true"
+        formControlName="idArea"
+        (filterChange)="filterAreas($event)"
+        [filterable]="true"
+        (valueChange)="changeAreaResumenPrograma($event)"
+        (removeTag)="removeAreaResumenPrograma($event)"
+      >
+      </kendo-multiselect>
+    </kendo-formfield>
+  </div>
+
+  <div class="col-sm-6 col-md-4">
+    <kendo-formfield orientation="horizontal">
+      <kendo-label [for]="inputIdSubArea" text="Sub Area"></kendo-label>
+
+      <kendo-multiselect
+        #inputIdSubArea
+        [data]="subAreasCapacitacionFiltro"
+        textField="nombre"
+        valueField="id"
+        [loading]="loader"
+        (filterChange)="filtroSubAreaResumen($event)"
+        [filterable]="true"
+        formControlName="idSubArea"
+      >
+      </kendo-multiselect>
+    </kendo-formfield>
+  </div>
+  <div class="col-sm-12 col-md-4 d-flex justify-content-center">
+    <button class="btn btn-success" (click)="_generarResumen()">Buscar</button>
+  </div>
+</div>
+
+<div class="content p-3 ps-5 pe-5">
+  <kendo-grid
+    [kendoGridBinding]="gridResumenPrograma.data"
+    [loading]="gridResumenPrograma.loading"
+    [resizable]="gridResumenPrograma.resizable"
+    [pageSize]="gridResumenPrograma.gridState.take"
+    [skip]="gridResumenPrograma.gridState.skip"
+    [height]="gridResumenPrograma.height"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: true,
+      previousNext: true,
+      position: 'bottom'
+    }"
+    filterable="menu"
+  >
+    <kendo-grid-column
+      field="nombrePrograma"
+      title="Nombre Programa"
+      [width]="100"
+      [filterable]="true"
+      headerClass="header-grid-integra"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="duracion"
+      title="Duracion"
+      [width]="50"
+      [filterable]="true"
+      headerClass="header-grid-integra"
+    >
+      >
+    </kendo-grid-column>
+    <kendo-grid-column
+      #_generarResumen2
+      field="inversion"
+      title="Precio"
+      [width]="150"
+      [filterable]="true"
+      headerClass="header-grid-integra"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="w-100" [innerHtml]="dataItem.inversion"></div>
+      </ng-template>
+      >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="certificacion"
+      title="Certificacion"
+      [width]="150"
+      [filterable]="true"
+      headerClass="header-grid-integra"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="w-100" [innerHtml]="dataItem.certificacion"></div>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>

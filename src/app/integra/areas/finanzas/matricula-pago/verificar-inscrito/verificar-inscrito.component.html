@@ -1,0 +1,360 @@
+
+  <div class="row">
+    <div class="k-loading-panel" *ngIf="loaderGeneral">
+      <div class="k-loading-panel-mask"></div>
+      <div class="k-loading-panel-wrapper">
+        <mat-spinner></mat-spinner>
+        <div class="k-loading-panel-text fs-5 text-primary"></div>
+      </div>
+    </div>
+    <div class="card" style="padding: 0px">
+      <div class="card-header bg-color-material pb-0">
+        <h3 class="text-white mb-2">
+          Solicitudes Cambios de Cronograma
+        </h3>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <kendo-grid
+            style="padding-left: 0px; max-height: 500px"
+            [loading]="loaderGrid"
+            [columnMenu]="{ filter: true }"
+            [kendoGridBinding]="gridVerificarInscrito.data"
+            [sortable]="true"
+                    [resizable]="true"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"
+                    [pageSize]="10"
+
+          >
+              <ng-template
+                kendoGridToolbarTemplate
+                class="bg-danger"
+              >
+             
+                <button mat-stroked-button
+                (click)="refrescarGrilla()">
+                    <mat-icon>refresh</mat-icon>
+                </button>
+              </ng-template>
+          
+            <kendo-grid-column
+              title="Nombre Asesor"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="100"
+              field="asesor"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Nombre Alumno"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="130"
+              field="alumno"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Centro de Costo"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="130"
+              field="centroCosto"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+
+            <kendo-grid-column
+              title="Fase"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="100"
+              field="codigoFaseOportunidad"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Matricula"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="100"
+              field="codigoMatricula"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            title="Fecha"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#27ae60',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="100"
+            field="fechaCambioIs"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          ><ng-template kendoGridCellTemplate let-dataItem>
+            {{ fechaTemplate(dataItem.fechaCambioIs) }}
+          </ng-template>
+
+
+          </kendo-grid-column>
+            <kendo-grid-command-column
+              [sticky]="true"
+              title="Verificar"
+              [width]="70"
+              headerClass="justify-content-center text-center k-grid-header-command"
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+            >
+              <ng-template
+                kendoGridCellTemplate
+                let-dataItem="dataItem"
+                let-rowIndex="rowIndex"
+              >
+                <div
+                  class="w-100 d-flex justify-content-center"
+                  style="padding: 5px"
+                  kendoTooltip
+                >
+                  <button
+                    title="Verificar"
+                    kendoButton
+                    style="
+                      background-color:#ffbe46;
+                      color: whitesmoke;
+                    "
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+
+                    (click)="verificar(dataItem)"
+                  >
+                    <span
+
+
+                      class="k-icon  k-i-check  k-icon-20"
+
+                    ></span>
+                  </button>
+
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+            <ng-template kendoGridNoRecordsTemplate>
+              <div>
+                <kendo-badge-container>
+                  <kendo-icon
+                    name="cloud"
+                    size="large"
+                  ></kendo-icon>
+                  <kendo-badge position="inside">
+                    <kendo-icon
+                      name="close"
+                      style="color: red"
+                    ></kendo-icon>
+                  </kendo-badge>
+                </kendo-badge-container>
+              </div>
+              <p>No hay registros cargados!</p>
+            </ng-template>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="card" style="padding: 0px">
+      <div class="card-header bg-color-material pb-0">
+        <h3 class="text-white mb-2">
+          Verificar Oportunidades IS/M
+        </h3>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <kendo-grid
+            style="padding-left: 0px; max-height: 500px"
+            
+            [loading]="loaderGridfinal"
+            [columnMenu]="{ filter: true }"
+            [kendoGridBinding]="gridOportunidadesVerificadas.data"
+            [sortable]="true"
+                    [resizable]="true"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"
+                    [pageSize]="10"
+
+          >
+
+            <kendo-grid-column
+              title="Nombre Asesor"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="100"
+              field="coordinador"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Nombre Alumno"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="130"
+              field="alumno"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Centro de Costo"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="130"
+              field="centroCosto"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+
+            <kendo-grid-column
+              title="Fase"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="100"
+              field="faseOportunidad"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Matricula"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#27ae60',
+                color: 'white',
+                'font-size': 'small'
+              }"
+              [width]="100"
+              field="codigoMatricula"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+
+            </kendo-grid-column>
+
+
+            <ng-template kendoGridNoRecordsTemplate>
+              <div>
+                <kendo-badge-container>
+                  <kendo-icon
+                    name="cloud"
+                    size="large"
+                  ></kendo-icon>
+                  <kendo-badge position="inside">
+                    <kendo-icon
+                      name="close"
+                      style="color: red"
+                    ></kendo-icon>
+                  </kendo-badge>
+                </kendo-badge-container>
+              </div>
+              <p>No hay registros cargados!</p>
+            </ng-template>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>

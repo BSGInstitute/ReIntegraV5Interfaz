@@ -1,0 +1,485 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Subida de Archivos</h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="row d-flex justify-content-center mb-4">
+            <div class="col-8">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Filtro de Busqueda</h3>
+                </div>
+                <div class="card-body k-form k-form-horizontal">
+                  <form [formGroup]="formFiltroBusqueda">
+                    <div class="row">
+                      <div class="col-12">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="nombreArchivo" class="k-label">
+                            Nombre de Archivo:
+                          </label>
+                          <kendo-textbox
+                            #nombreArchivo
+                            size="medium"
+                            placeholder="Ingrese el nombre del archivo"
+                            formControlName="nombreArchivo"
+                            (keyUp.enter)="obtenerTodoPorPermisosArchivoStorage(
+                              idPersonal,
+                              idContenedor.value,
+                              nombreArchivo.value
+                            )"
+                          >
+                          </kendo-textbox>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="idContenedor" class="k-label">
+                            Contenedor
+                          </label>
+                          <kendo-dropdownlist
+                            #idContenedor
+                            formControlName="idContenedor"
+                            class="d-flex"
+                            size="medium"
+                            [data]="
+                              this.registroArchivoCombos.listadoContenedores
+                            "
+                            textField="contenedor"
+                            valueField="idContenedor"
+                            [valuePrimitive]="true"
+                          >
+                          </kendo-dropdownlist>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                      <button
+                        class="btn btn-sm btn-primary"
+                        (click)="
+                          obtenerTodoPorPermisosArchivoStorage(
+                            idPersonal,
+                            idContenedor.value,
+                            nombreArchivo.value
+                          )
+                        "
+                      >
+                        Buscar
+                        <fa-icon
+                          [icon]="['fas', 'search']"
+                          class="fa-lg"
+                        ></fa-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Historial de Archivos</h3>
+                </div>
+                <div class="card-body p-4">
+                  <div class="row">
+                    <div class="col">
+                      <k-grid
+                        [gridData]="listaRegistroArchivoStorage"
+                        [loader]="loaderGrid"
+                        [kendoGrid]="gridRegistroArchivoStorage"
+                        [gridState]="gridRegistroArchivoStorage.gridState"
+                        (OnGridEvents)="gridEventsArchivos($event)"
+                      >
+                      </k-grid>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalValidacion let-modal>
+  <div class="modal-header -header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title" style="color:green; font-size: 25px">
+      ¡Se ha encontrado coincidencia!
+    </h3>
+    <button
+      type="button"
+      class="btn-close "
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <div class="card" >
+            <p  style="padding:10px">El siguiente archivo se reemplazará</p>
+          <div class="card-body">
+            <p class="card-text">
+              {{ urlArchivo }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <!-- <div class="k-form-buttons m-0">
+      <button kendoButton themeColor="primary" ngxClipboard [cbContent]="archivoModalTemp.ruta">COPIAR URL ARCHIVO</button>
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        CERRAR
+      </button>
+    </div> -->
+  </div>
+</ng-template>
+
+<ng-template #modaDetalleArchivo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Detalle de Archivo
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-color-material text-white">
+            Nombre del archivo
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              {{ archivoModalTemp.nombreArchivo }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-6 mt-3">
+        <div class="card">
+          <div class="card-header bg-color-material text-white">Usuario</div>
+          <div class="card-body">
+            <p class="card-text">{{ archivoModalTemp.usuarioModificacion }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-6 mt-3">
+        <div class="card">
+          <div class="card-header bg-color-material text-white">
+            Fecha de subida
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              {{
+                archivoModalTemp.fechaModificacion | date: "yyyy/MM/dd hh:mm:ss"
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-sm-12 col-md-12">
+        <div class="card">
+          <div class="card-header bg-color-material text-white">
+            Previsualización del archivo
+          </div>
+          <div class="card-body d-flex justify-content-center">
+            <img
+              class="img-fluid img-thumbnail w-25"
+              [src]="archivoModalTemp.ruta"
+              alt=""
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-sm-12 col-md-12">
+        <div class="card">
+          <div class="card-header bg-color-material text-white">
+            Ruta del archivo
+          </div>
+          <div class="card-body">
+            <a [href]="archivoModalTemp.ruta" target="_blank"
+              >{{ archivoModalTemp.ruta }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <!-- <div class="k-form-buttons m-0">
+      <button kendoButton themeColor="primary" ngxClipboard [cbContent]="archivoModalTemp.ruta">COPIAR URL ARCHIVO</button>
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        CERRAR
+      </button>
+    </div> -->
+  </div>
+</ng-template>
+
+<ng-template #modalRegistroArchivoStorage let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nuevo Registro de Archivo" : " " }}
+      Subir Archivo
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form
+      class="k-form k-form-horizontal"
+      [formGroup]="formRegistroArchivoStorage"
+    >
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idContenedor" class="k-label"> Contenedor </label>
+              <kendo-dropdownlist
+                #idContenedor
+                formControlName="idContenedor"
+                class="d-flex"
+                size="medium"
+                [data]="this.registroArchivoCombos.listadoContenedores"
+                textField="contenedor"
+                (valueChange)="changeValueContenedor($event)"
+                valueField="idContenedor"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row" *ngIf="aplicaSubcontenedor">
+          <div class="col-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="area" class="k-label"> Area </label>
+              <kendo-dropdownlist
+                #area
+                formControlName="idSubContenedor"
+                class="d-flex"
+                size="medium"
+                [data]="listadoSubContenedores"
+                (valueChange)="changeValueSubContenedor($event)"
+                textField="subcontenedor"
+                valueField="idSubcontenedor"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row" *ngIf="aplicaValidacion">
+          <div class="col-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="tipo" class="k-label"> Tipo </label>
+              <kendo-dropdownlist
+                #tipo
+                formControlName="tipoArchivo"
+                class="d-flex"
+                size="medium"
+                [data]="listadoTipoSubContenedores"
+                textField="tipo"
+                valueField="id"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombreArchivo" class="k-label">
+                <span>Nombre Archivo</span>
+              </label>
+              <kendo-textbox
+                #nombreArchivo
+                size="medium"
+                placeholder="Nombre "
+                formControlName="nombreArchivo"
+                [clearButton]="true"
+                [showSuccessIcon]="getShowSuccessIcon('nombreArchivo')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+              <kendo-formhint>Nombre Archivo</kendo-formhint>
+              <!-- <kendo-formerror> {{ getErrorMessage("nombreArchivo") }} </kendo-formerror> -->
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">
+                <span>Archivo</span>
+              </label>
+              <kendo-fileselect
+                #archivo
+                [restrictions]="myRestrictions"
+                [multiple]="false"
+                formControlName="archivos"
+                (select)="cargarNombrearchivo($event)"
+              ></kendo-fileselect>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mt-3" *ngIf="aplicaSubidaMultiple">
+          <div class="card">
+            <div class="card-header bg-color-material">
+              <h3 class="text-white mb-2">Variaciones</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label">
+                      <span>Bolivia</span>
+                    </label>
+                    <kendo-fileselect
+                      #archivoBol
+                      [restrictions]="myRestrictions"
+                      [multiple]="false"
+                      formControlName="archivoBol"
+                    ></kendo-fileselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label">
+                      <span>Colombia</span>
+                    </label>
+                    <kendo-fileselect
+                      #archivoCol
+                      [restrictions]="myRestrictions"
+                      [multiple]="false"
+                      formControlName="archivoCol"
+                    ></kendo-fileselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label">
+                      <span>Internacional</span>
+                    </label>
+                    <kendo-fileselect
+                      #archivoInt
+                      [restrictions]="myRestrictions"
+                      [multiple]="false"
+                      formControlName="archivoInt"
+                    ></kendo-fileselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label">
+                      <span>Peru Lima</span>
+                    </label>
+                    <kendo-fileselect
+                      #archivoPeLima
+                      [restrictions]="myRestrictions"
+                      [multiple]="false"
+                      formControlName="archivoPeLima"
+                    ></kendo-fileselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label">
+                      <span>Peru Arequipa</span>
+                    </label>
+                    <kendo-fileselect
+                      #archivoPeAqp
+                      [restrictions]="myRestrictions"
+                      [multiple]="false"
+                      formControlName="archivoPeAqp"
+                    ></kendo-fileselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        *ngIf="aplicaValidacion"
+        kendoButton
+        themeColor="warning"
+        (click)="validarArchivo()"
+      >
+        Validar
+      </button>
+
+      <button
+        kendoButton
+        themeColor="primary"
+        (click)="guardarRegistroArchivo()"
+        [disabled]="btnGuardarDisable"
+      >
+        Guardar
+      </button>
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

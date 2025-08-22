@@ -1,0 +1,971 @@
+<div class="contendor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0" style="position: relative">
+          <h3 class="text-white mb-2">(G) Registro de Solicitudes</h3>
+          <loading [loading]="loading"></loading>
+          <button kendoButton class="hoverButton" type="button" style="
+              position: absolute;
+              top: 0;
+              right: 0;
+              background-color: #03ff18;
+              color: #ffffff;
+              border: 0;
+              border-radius: 50%;
+              padding: 0 15px;
+            ">
+            <span class="fa fa-plus" style="font-size: 30px"></span>
+          </button>
+        </div>
+        <div class="card-body p-4" id="tabs">
+          <loading [loading]="loadingGrid"></loading>
+          <kendo-tabstrip id="tabsN" [animate]="true" [keepTabContent]="true">
+
+            <kendo-tabstrip-tab [title]="'SOLICITUD ALUMNO'" [selected]="true">
+              <ng-template kendoTabContent>
+                <div class="card border-primary" #reporte>
+                  <div class="card-header pb-0 bg-color-material">
+                    <div class="col text-aling-center">
+                      <h2 class="mb-2 text-white" style="text-align: center">
+                        (R) Registrar Solicitud Alumno
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+                <div class="card card-reporte border-primary">
+                  <div class="panel-body">
+                    <div class="container-fluid">
+                      <div id="tab_programada_filtro">
+                        <form class="k-form k-form-horizontal" [formGroup]="formSolicitudAlumno">
+                          <div class="row">
+                            <div class="col-sm-12 col-md-4 my-2">
+                              <div class="card-body my-card-body">
+                                <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Buscar Alumno</b></h3>
+                                <div class="row my-2">
+                                  <div class="col-12">
+                                    <kendo-formfield orientation="horizontal">
+                                      <label [for]="tipoBusqueda" class="k-label">
+                                        <span>Tipo de Busqueda<span class="text-danger fw-bold">*</span></span>
+                                      </label>
+
+                                      <kendo-grid-spacer></kendo-grid-spacer>
+                                      <kendo-dropdownlist #tipoBusqueda
+                                        formControlName="tipoBusqueda"
+                                        [data]="dataBusqueda"
+                                        [(ngModel)]="tipoBusquedaSelect"
+                                        textField="nombre"
+                                        valueField="id"
+                                        class="d-flex"
+                                        size="medium"
+                                        [defaultItem]="{ id: null, nombre: 'Seleccione' }"
+                                        [valuePrimitive]="true"
+                                        (valueChange)="tipoBusquedaChangue($event)">
+                                        <kendo-formerror>Seleccione un dato</kendo-formerror>
+                                      </kendo-dropdownlist>
+                                    </kendo-formfield>
+                                  </div>
+                                </div>
+                                <div class="row my-2">
+                                  <div class="col-12">
+                                    <div *ngIf="busquedaNombre">
+                                      <kendo-formfield orientation="horizontal" style="margin: 0px !important">
+                                        <kendo-label class="k-checkbox-label" [for]="alumno" text="Apellidos y Nombres">
+                                        </kendo-label>
+                                        <kendo-dropdownlist #alumno
+                                          formControlName="alumno"
+                                          [data]="dataContacto"
+                                          [defaultItem]="{ nombreCompleto: 'Digite apellidos y nombres', id: null }"
+                                          textField="nombreCompleto"
+                                          valueField="id"
+                                          [virtual]="virtual"
+                                          [filterable]="true"
+                                          (filterChange)="filterContacto($event)"
+                                          (selectionChange)="CargarDataAlumno($event)">
+                                          <ng-template kendoDropDownListNoDataTemplate>
+                                            No se encontró al alumno
+                                          </ng-template>
+                                        </kendo-dropdownlist>
+                                      </kendo-formfield>
+                                    </div>
+                                    <div *ngIf="busquedaNombre==false">
+                                      <kendo-formfield orientation="horizontal">
+                                        <label [for]="dataBusqueda" class="k-label">
+                                          <span>Dato Busqueda<span class="text-danger fw-bold">*</span></span>
+                                        </label>
+                                        <kendo-grid-spacer></kendo-grid-spacer>
+                                        <kendo-textbox #dataBusqueda
+                                          formControlName="dataBusqueda"
+                                          [disabled]="disabled"
+                                          class="d-flex"
+                                          size="medium"
+                                          placeholder="Dato Alumno"
+                                          inputValidSpaceDir
+                                          [(ngModel)]="datoAlumno"
+                                          [maxlength]="325">
+                                        </kendo-textbox>
+                                        <kendo-formerror>Ingrese Dato de Alumno</kendo-formerror>
+                                      </kendo-formfield>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="row my-2">
+                                  <div class="col-12 d-flex justify-content-end">
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm-12 col-md-4 my-2">
+                              <div class="card-body my-card-body">
+                                <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Estado de Solicitud</b></h3>
+                                <kendo-formfield orientation="horizontal">
+                                  <kendo-label text="Estado" class="d-flex align-items-start" [style.width.px]="150">
+                                  </kendo-label>
+
+                                  <kendo-multiselect #estados
+                                    formControlName="estados"
+                                    [data]="listaItemsEstados"
+                                    class="kendo-combo"
+                                    textField="nombre"
+                                    valueField="id"
+                                    [valuePrimitive]="true" 
+                                    [placeholder]="' Todos '"
+                                    [multi]="true">
+                                  </kendo-multiselect>
+                                </kendo-formfield>
+                              </div>
+
+                            </div>
+                            <div class="col-sm-12 col-md-4 my-2">
+                              <div class="card-body my-card-body">
+                                <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Fecha Registro</b></h3>
+                                <div class="row my-2">
+                                  <div class="col-12">
+                                    <kendo-formfield orientation="horizontal">
+                                      <kendo-label text="Fecha Inicio" class="d-flex align-items-start"
+                                        [style.width.px]="150"></kendo-label>
+
+                                      <kendo-datepicker #fechaInicio
+                                        formControlName="fechaInicio"
+                                        format="dd-MM-yyyy"
+                                        [max]="fechaActual"
+                                        [placeholder]="'día/mes/año'"
+                                        [incompleteDateValidation]="true"></kendo-datepicker>
+                                      <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                                    </kendo-formfield>
+                                  </div>
+                                </div>
+                                <div class="row my-2">
+                                  <div class="col-12">
+                                    <kendo-formfield orientation="horizontal">
+                                      <kendo-label text="Fecha Termino" class="d-flex align-items-start"
+                                        [style.width.px]="150">
+                                      </kendo-label>
+                                      <kendo-datepicker format="dd-MM-yyyy" formControlName="fechaFin"
+                                        [placeholder]="'día/mes/año'">
+                                      </kendo-datepicker>
+                                      <kendo-formerror>Fecha Termino no valido</kendo-formerror>
+                                    </kendo-formfield>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row justify-content-end mb-2">
+                            <div class="col-auto">
+                              <button kendoButton class="hoverButton" themeColor="success" (click)="buscarAlumno()"
+                                [disabled]="false">
+                                Buscar
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card mt-2">
+                  <div class="card-header bg-color-material pb-0">
+                    <h3 class="text-white mb-2">Lista Solicitudes</h3>
+                    <button kendoButton  [disabled]="idMatriculaCabecera === 0" type="button" themeColor="success"
+                      (click)="abrirModalRegistro(idMatriculaCabecera)"
+                      class="hoverButton position-absolute top-0 end-0 me-2 my-1">
+                      + Agregar
+                    </button>
+                  </div>
+                  <div class="card-body">
+                    <kendo-grid [kendoGridBinding]="dataSolicitudesAlumno" [pageSize]="15" [pageable]="true"
+                      [sortable]="true" [scrollable]="'scrollable'" [filterable]="true" [selectable]="true"
+                      [loading]="loadingGrid">
+                      <kendo-grid-column title="Id" [filterable]="false" field="id" [width]="40" headerClass="header-grid-single"
+                        [filterable]="false">
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Codigo" field="codigoMatricula" [width]="125"
+                        headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Nombre" field="nombreAlumno" headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Prioridad"  [filterable]="false"  field="prioridad" [class]="{ 'text-center': true }"
+                        headerClass="header-grid-single">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ dataItem.prioridad === 'ALTA' ? 'A' : (dataItem.prioridad === 'BAJA' ? 'B' : (dataItem.prioridad === 'MEDIA' ? 'M' : dataItem.prioridad)) }}
+                        </ng-template>
+                      </kendo-grid-column>
+
+                      <kendo-grid-column title="idAreaSolicitante" field="idAreaSolicitante" [hidden]="true">
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Programa" field="pGeneral" headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Curso" field="nombrePEspecifico" headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Tipo" [filterable]="false" field="tipo" [class]="{ 'text-center': true }"
+                        headerClass="header-grid-single">
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ 
+                                dataItem.tipo === 'Solicitud de Alumno' ? 'SA' : 
+                                (dataItem.tipo === 'Solicitud Interna' ? 'SI' : 
+                                (dataItem.tipo === 'Reporte de Problema' ? 'RP' : 
+                                (dataItem.tipo === 'Queja/Reclamo' ? 'QR' : dataItem.tipo))) 
+                            }}
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Categoria" field="nombreSolicitudCategoria"
+                        headerClass="header-grid-single">
+                      
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template></kendo-grid-column>
+                      <kendo-grid-column title="Problema" field="nombreSubCategoria"
+                        headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Estado" field="estadoSolicitud" headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Solicitante" field="nombreSolicitante" headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Revisor" field="personalRevision" headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column title="Gestor" field="personalSolucion" headerClass="header-grid-single">
+                        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                          <kendo-grid-string-filter-cell
+                            [column]="column"
+                            [filter]="filter"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-cell>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-command-column title="Editar" headerClass="header-grid-single">
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowindex="rowindex">
+                          <div class="d-flex justify-content-center">
+                            <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="large"
+                              class="p-2 me-1 ms-1" container="body" placement="top" ngbTooltip="Editar"
+                              (click)="abrirModalDetalleSolicitud(dataItem)">
+                              <span class="k-icon k-i-pencil k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-command-column>
+                    </kendo-grid>
+                  </div>
+
+                 <div class="card bg-info mt-4 mb-2 mx-auto" style="width: 600px;">
+                    <div class="card-body justify-content-center text-center">
+                      <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-3">
+                          <div class="row text-white justify-content-center"><strong>PRIORIDAD</strong></div>
+                          <div class="row text-white pl-2">A: Alta</div>
+                          <div class="row text-white pl-2">M: Media</div>
+                          <div class="row text-white pl-2">B: Baja</div>
+                        </div>
+                        <div class="col-sm-4">
+                          <div class="row text-white justify-content-center"><strong>TIPO</strong></div>
+                          <div class="row text-white pl-2">SA: Solicitud Alumno</div>
+                          <div class="row text-white pl-2">SI: Solicitud Interna</div>
+                          <div class="row text-white pl-2">RP: Reporte del Problema</div>
+                          <div class="row text-white pl-2">QR: Queja/Reclamo</div>
+                        </div>
+                        <div class="col-sm-4">
+                          <div class="row text-white justify-content-center"><strong>ESTADO</strong></div>
+                          <div class="row text-white pl-2">Revisor: Responsable Revisor</div>
+                          <div class="row text-white pl-2">RS: Responsable Solución</div>
+                          <div class="row text-white pl-2">A: Asistente</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </ng-template>
+            </kendo-tabstrip-tab>
+          </kendo-tabstrip>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br />
+
+<ng-template #modalDetalleSolicitudEditar let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Editar Solicitud
+    </h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formCategoria">
+      <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal" [hidden]="true">
+        <label [for]="Id" class="k-label">
+          <span>Id <span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-textbox #Id
+          formControlName="Id"
+          size="medium"
+          [clearButton]="true"
+          inputValidSpaceDir
+          [maxlength]="325"
+          [disabled]="true">
+        </kendo-textbox>
+        </kendo-formfield>  
+        <div class="row">
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="tipoReporte" class="k-label" >
+              <span>Tipo:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-dropdownlist #tipoReporte
+                formControlName="tipoReporte"
+                [data]="dataTipoReporte"
+                class="d-flex"
+                [value]="selectedTipoReporte"
+                size="medium"
+                placeholder="Tipo de Solicitud"
+                textField="nombre" valueField="id"
+                (valueChange)="categoriaByTipoReporte($event)"
+                [defaultItem]="{id: null, nombre: 'Tipo'}"
+                [valuePrimitive]="true"
+                [filterable]="true">
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un tipo de solicitud" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="categoria" class="k-label">
+              <span>Categoria:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-dropdownlist #categoria
+                formControlName="categoria"
+                [disabled]="isDisabledCategoria"
+                [data]="dataCategoriaFiltro"
+                [value]="selectedCategoria"
+                size="medium"
+                class="d-flex"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [autoClose]="true"
+                [defaultItem]="{nombre: 'Categoria', id: null}"
+                (valueChange)="subCategoriaByCategoria2($event)"
+                [virtual]="virtual"
+                [filterable]="true">
+                <ng-template kendoDropDownListNoDataTemplate>
+                  No existen registros configurados
+                </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione una Categoria" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="subCategoria" class="k-label">
+              <span>Problema:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-dropdownlist #subCategoria
+                formControlName="subCategoria"
+                [data]="dataSubCategoriaFiltro"
+                [value]="selectedSubCategoria"
+                [disabled]="isDisabledSubCategoria"
+                textField="nombre"
+                valueField="id"
+                class="d-flex"
+                size="medium"
+                [valuePrimitive]="true"
+                [autoClose]="true"
+                (valueChange)="SolicitudBySubCategoria2($event)"
+                [defaultItem]="{nombre: 'Seleccione', id: null}"
+                [virtual]="virtual"
+                [filterable]="true">
+                <ng-template kendoDropDownListNoDataTemplate>
+                  No existen registros configurados
+                </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un problema" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="origenSolicitud" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Origen:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <kendo-dropdownlist #origenSolicitud
+                formControlName="origenSolicitud"
+                [data]="dataOrigen"
+                class="d-flex"
+                size="medium"
+                [kendoDropDownFilter]="filterSettings2"
+                placeholder="Origen"
+                textField="nombre"
+                valueField="id"
+                [autoClose]="true"
+                (valueChange)="obtenerOrigen($event)"
+                [defaultItem]="{id: null, nombre: 'Seleccione'}"
+                [valuePrimitive]="true"
+                [filterable]="true">
+                <ng-template kendoDropDownListNoDataTemplate>
+                  No existen orígenes configurados
+                </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un Origen" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="programa" class="k-label">
+              <span>Programa:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-textarea #programa
+                formControlName="programa"
+                size="none"
+                [style.width.%]="100"
+                rounded="large"
+                fillMode="solid"
+                [disabled]="true"
+                resizable="none">
+              <kendo-textarea-suffix class="custom-styling"></kendo-textarea-suffix>
+              </kendo-textarea>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="curso" class="k-label">
+              <span>Curso:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-dropdownlist #curso
+                formControlName="curso"
+                [data]="gridAlumno.view"
+                textField="nombrePEspecifico"
+                valueField="idPEspecifico"
+                [valuePrimitive]="true"
+                [autoClose]="true"
+                [defaultItem]="{nombrePEspecifico: 'Seleccione', idPEspecifico: 0}"
+                class="d-flex"
+                size="medium"
+                [filterable]="true">
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un curso" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="detalleSolicitud" class="k-label">
+              <span>Detalle:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-textarea #detalleSolicitud 
+                formControlName="detalleSolicitud"
+                class="textArea"
+                [style.width.%]="100"
+                resizable="auto"
+                size="large"
+                rounded="large"
+                fillMode="solid"
+                [maxlength]="1500">
+                <kendo-textarea-suffix class="custom-styling"> </kendo-textarea-suffix>
+              </kendo-textarea>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="estadoSolicitud" class="k-label">
+              <span>Estado Solicitud:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-dropdownlist #estadoSolicitud
+                formControlName="estadoSolicitud"
+                [data]="listaItemsEstados"
+                textField="nombre"
+                placeholder="Estado..."
+                valueField="id"
+                [valuePrimitive]="true"
+                [autoClose]="true" 
+                class="d-flex"
+                size="medium"
+                [filterable]="true"
+                [defaultItem]="{nombrePEspecifico: 'Seleccione', idPEspecifico: 0}">
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Ingrese una Solicitud" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <ng-container *ngIf="nombreArchivoSolicitado !== null && nombreArchivoSolicitado !== undefined && nombreArchivoSolicitado !=='' ">
+            <div class="col-2">
+              <label style="margin-top: 1em;" [for]="archivoSolicitud" class="k-label">
+                <span>Archivo Solicitud:</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+                <button kendoButton
+                  formControlName="archivoSolicitud"
+                  class="hoverButton"
+                  #archivoSolicitud
+                  (click)="descargarArchivoSolicitud()"
+                  themeColor="tertiary"
+                  icon="download"
+                  title="descargar">
+                  Abrir Archivo
+                </button>
+              </kendo-formfield>
+            </div>
+            <div class="w-100"></div>
+          </ng-container>
+          <ng-container *ngIf="nombreArchivoSolucion !== null && nombreArchivoSolucion !== undefined && nombreArchivoSolucion !=='' ">
+            <div class="col-2">
+              <label style="margin-top: 1em;" [for]="archivoSolucion" class="k-label">
+                <span>Archivo Solución :</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+                <button kendoButton
+                  formControlName="archivoSolucion"
+                  class="hoverButton"
+                  #archivoSolucion
+                  (click)="descargarArchivoSolucion()"
+                  themeColor="tertiary"
+                  icon="download"
+                  title="descargar">
+                  Abrir Archivo
+                </button>
+              </kendo-formfield>
+            </div>
+            <div class="w-100"></div>
+          </ng-container>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Nuevo Archivo Solicitud:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-fileselect #archivoSolicitante
+                formControlName="archivoSolicitante"
+                [multiple]="false">
+                <kendo-fileselect-messages select="Seleccione" dropFilesHere="Suelta archivos aquí para seleccionar" clearSelectedFiles="Anular la selección">
+                </kendo-fileselect-messages>
+              </kendo-fileselect>
+            </kendo-formfield>
+          </div>
+        </div>
+          <br />
+          <br />
+          <div class="row mb-1">
+            <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Historial de Cambios</b></h3>
+          </div>
+          <div class="row mx-3">
+            <kendo-grid [kendoGridBinding]="dataLogSolicitud" [pageSize]="5" [pageable]="true" [sortable]="true"
+              [resizable]="true" [loading]="loaderGridHistorial" class="gridLog">
+              <kendo-grid-column title="Campo" field="campo">
+              </kendo-grid-column>
+              <kendo-grid-column title="Valor Anterior" field="valorAnterior">
+              </kendo-grid-column>
+              <kendo-grid-column title="Valor Nuevo" field="valorNuevo">
+              </kendo-grid-column>
+              <kendo-grid-column title="Fecha" field="fechaModificacion">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{ dataItem.fechaModificacion | date:'yyyy-MM-dd HH:mm:ss' }}
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column title="Usuario" field="usuarioModificacion">
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton
+        class="hoverButton"
+        themeColor="primary"
+        (click)="actualizarSolicitudAlumno()">
+          Guardar
+      </button>
+      <button kendoButton
+        class="hoverButton"
+        themeColor="error"
+        (click)="modal.close('Cross click')">
+          Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalDetalleSolicitud let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registro Solicitud
+    </h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formCategoriaNew">
+        <div class="row">
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="tipoReporte" class="k-label pt-0 d-flex align-items-start text-start">
+              Tipo:
+            </label>
+          </div>
+          <div class="col-4">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <kendo-dropdownlist #tipoReporte
+                formControlName="tipoReporte"
+                [data]="dataTipoReporte"
+                class="d-flex"
+                [value]="selectedTipoReporte"
+                size="medium"
+                [kendoDropDownFilter]="filterSettings2"
+                placeholder="Tipo"
+                textField="nombre"
+                valueField="id"
+                (valueChange)="categoriaByTipoReporte($event)"
+                [defaultItem]="{id: null, nombre: 'Seleccione'}"
+                [valuePrimitive]="true"
+                [filterable]="true">
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un Tipo de Solicitud"}}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="categoria" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Categoria:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <kendo-dropdownlist #categoria
+                formControlName="categoria"
+                [disabled]="isDisabledCategoria"
+                [data]="dataCategoriaFiltro"
+                [value]="selectedCategoria"
+                [kendoDropDownFilter]="filterSettings2"
+                size="medium"
+                class="d-flex"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [autoClose]="true"
+                [defaultItem]="{nombre: 'Seleccione', id: null}"
+                (valueChange)="subCategoriaByCategoria($event)"
+                [virtual]="virtual"
+                [filterable]="true">
+                <ng-template kendoDropDownListNoDataTemplate>
+                  No existen registros configurados
+                </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione una Categoria" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="subCategoria" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Problema:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <kendo-dropdownlist #subCategoria
+                formControlName="subCategoria"
+                [data]="dataSubCategoriaFiltro"
+                [value]="selectedSubCategoria"
+                [disabled]="isDisabledSubCategoria"
+                [kendoDropDownFilter]="filterSettings2"
+                textField="nombre"
+                valueField="id"
+                class="d-flex"
+                size="medium"
+                [valuePrimitive]="true"
+                [autoClose]="true"
+                (valueChange)="SolicitudBySubCategoria($event)"
+                [defaultItem]="{nombre: 'Seleccione', id: null}"
+                [virtual]="virtual"
+                [filterable]="true">
+                <ng-template kendoDropDownListNoDataTemplate>
+                  No existen registros configurados
+                </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un Problema" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="origenSolicitud" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Origen:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <kendo-dropdownlist #origenSolicitud
+                formControlName="origenSolicitud"
+                [data]="dataOrigen"
+                class="d-flex"
+                size="medium"
+                [kendoDropDownFilter]="filterSettings2"
+                placeholder="Origen"
+                textField="nombre"
+                valueField="id"
+                [autoClose]="true"
+                (valueChange)="obtenerOrigen($event)"
+                [defaultItem]="{id: null, nombre: 'Seleccione'}"
+                [valuePrimitive]="true"
+                [filterable]="true">
+                <ng-template kendoDropDownListNoDataTemplate>
+                  No existen orígenes configurados
+                </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un Origen" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="programa" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Programa:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-textarea #programa
+                formControlName="programa"
+                size="none"
+                [style.width.%]="100"
+                rounded="large"
+                fillMode="solid"
+                [disabled]="true"
+                resizable="none">
+              <kendo-textarea-suffix class="custom-styling"></kendo-textarea-suffix>
+              </kendo-textarea>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="curso" class="k-label pt-0 d-flex align-items-start text-start">
+              <span>Curso:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-dropdownlist #curso
+                formControlName="curso"
+                [data]="gridAlumno.view"
+                textField="nombrePEspecifico"
+                valueField="idPEspecifico"
+                [valuePrimitive]="true"
+                [autoClose]="true"
+                (valueChange)="obtenerCurso($event)"
+                [defaultItem]="{nombrePEspecifico: 'Seleccione', idPEspecifico: null}"
+                class="d-flex"
+                size="medium"
+                [filterable]="true">
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ "Seleccione un curso" }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" [for]="detalleSolicitud" class="k-label">
+              <span>Detalle Solicitud:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-formfield class="custom-grc-remove-max-width-formfield" orientation="horizontal">
+              <kendo-textarea #detalleSolicitud
+                formControlName="detalleSolicitud"
+                class="textArea"
+                [style.width.%]="100"
+                resizable="auto"
+                size="large"
+                rounded="large"
+                fillMode="solid"
+                [maxlength]="1500"
+                id="name">
+                <kendo-textarea-suffix class="custom-styling"> </kendo-textarea-suffix>
+              </kendo-textarea>
+            </kendo-formfield>
+          </div>
+          <div class="w-100"></div>
+          <br>
+          <div class="col-2">
+            <label class="k-label">
+              <span>Archivo Solicitud:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <kendo-fileselect #archivoSolicitante
+              formControlName="archivoSolicitante"
+              [multiple]="false">
+              <kendo-fileselect-messages select="Seleccione" dropFilesHere="Suelta archivos aquí para seleccionar" clearSelectedFiles="Anular la selección">
+              </kendo-fileselect-messages>
+            </kendo-fileselect>
+          </div>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton
+        class="hoverButton"
+        themeColor="primary"
+        (click)="registrarSolicitudAlumno()">
+          Guardar
+      </button>
+      <button kendoButton
+        class="hoverButton"
+        themeColor="error"
+        (click)="modal.dismiss('Cross click')">
+          Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

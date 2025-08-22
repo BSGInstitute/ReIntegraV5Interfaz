@@ -1,0 +1,60 @@
+export interface AsignacionAutomatica{
+
+}
+export interface AsignacionAutomaticaFiltro{
+  IdCentroCosto:string,
+  IdCategoriaDato:string,
+  IdPais: string,
+  IdProbabilidad: string,
+  IdIndustria: string,
+  IdCargo: string,
+  IdAreaTrabajo: string,
+  IdAreaFormacion: string,
+  FechaInicio:string,
+  FechaFin:string,
+}
+export interface AsignacionAutomaticaCorregirErrorEnvio{
+  id:number,
+  nombre1:string,
+  nombre2:string,
+  apellidoMaterno:string,
+  apellidoPaterno:string,
+  telefono:string,
+  celular:string,
+  email:string,
+  idCentroCosto:number,
+  nombrePrograma:string,
+  idAreaFormacion:number,
+  idAreaTrabajo:number,
+  idIndustria:number,
+  idCargo:number,
+  idPais:number,
+  idCiudad:number,
+  idCategoriaDato:number,
+  usuario:string
+}
+export interface AsignacionManualDatosEnvio{
+  idAlumno:number,
+  nombre1:string,
+  nombre2:string,
+  apellidoMaterno:string,
+  apellidoPaterno:string,
+  telefono:string,
+  celular:string,
+  email:string,
+  idCentroCosto:number,
+  nombrePrograma:string,
+  idAreaFormacion:number,
+  idAreaTrabajo:number,
+  idIndustria:number,
+  idCargo:number,
+  idPais:number,
+  idCiudad:number,
+  idCategoriaDato:number,
+  idCategoriaOrigen:number,
+  origenCampania:string,
+  idTipoDato: number,
+  idFaseOportunidad: number,
+  idOrigen:number,
+  usuario:string
+}

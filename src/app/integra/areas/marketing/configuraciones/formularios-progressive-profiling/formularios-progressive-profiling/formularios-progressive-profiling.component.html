@@ -1,0 +1,931 @@
+<div class="card border-primary" #reporte>
+    <div class="card-header pb-0 bg-color-material">
+        <div class="col text-aling-center">
+            <h2 class="mb-3 text-white">Configuración Formularios Progressive Profiling</h2>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <form class="k-form k-form-horizontal">
+            <div class="row">
+                <div class="col-sm-12 my-2">
+                    <kendo-grid
+                        [kendoGridBinding]="gridFormularios.data"
+                        [loading]="gridFormularios.loading"
+                        [selectable]="true"
+                        [sortable]="true"
+                        [resizable]="true"
+                        [pageable]="{buttonCount: 5, info: true, type: 'numeric', pageSizes: true, previousNext: true, position: 'bottom'}"
+                        [skip]="0"
+                        [pageSize]="15"
+                        filterable="menu">
+                        
+                        <ng-template kendoGridToolbarTemplate>
+                            <div class="row col-md-12">
+                                <div class="col-md-12 text-end">
+                                    <button
+                                    type="button"
+                                    class="hoverButton btn btn-success text-white"
+                                    (click)="abrirModalCrearActualizar(true, modalEditar, null)">
+                                    Nuevo
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <kendo-grid-column
+                        field="nombre"
+                        title="Nombre"
+                        [width]="200"
+                        [headerClass]="'justify-content-center'">
+                            <ng-template
+                                kendoGridFilterMenuTemplate
+                                let-filter
+                                let-column="column"
+                                let-filterService="filterService">
+                                <kendo-grid-string-filter-menu
+                                    [column]="column"
+                                    [filter]="filter"
+                                    [filterService]="filterService"
+                                    [extra]="false"
+                                    operator="contains">
+                                    <kendo-filter-contains-operator
+                                        text="Contiene">
+                                    </kendo-filter-contains-operator>
+                                </kendo-grid-string-filter-menu>
+                            </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                            field="descripcion"
+                            title="Descripción"
+                            [width]="200"
+                            [headerClass]="'justify-content-center'">
+                            <ng-template
+                                kendoGridFilterMenuTemplate
+                                let-filter
+                                let-column="column"
+                                let-filterService="filterService">
+                                <kendo-grid-string-filter-menu
+                                    [column]="column"
+                                    [filter]="filter"
+                                    [filterService]="filterService"
+                                    [extra]="false"
+                                    operator="contains">
+                                    <kendo-filter-contains-operator
+                                        text="Contiene">
+                                    </kendo-filter-contains-operator>
+                                </kendo-grid-string-filter-menu>
+                            </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                            field="tipo"
+                            title="Tipo"
+                            [width]="200"
+                            [headerClass]="'justify-content-center'">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                {{ diccionarioTipoOpciones[dataItem.tipo] || 'No indica' }}
+                            </ng-template>
+                            <ng-template
+                                kendoGridFilterMenuTemplate
+                                let-filter
+                                let-column="column"
+                                let-filterService="filterService">
+                                <kendo-grid-string-filter-menu
+                                    [column]="column"
+                                    [filter]="filter"
+                                    [filterService]="filterService"
+                                    [extra]="false"
+                                    operator="contains">
+                                    <kendo-filter-contains-operator
+                                        text="Contiene">
+                                    </kendo-filter-contains-operator>
+                                </kendo-grid-string-filter-menu>
+                            </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                            field="idFormularioProgresivoInicial"
+                            title="Formulario Inicial"
+                            [width]="200"
+                            [headerClass]="'justify-content-center'">
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                                {{ diccionarioFormularioInicial[dataItem.idFormularioProgresivoInicial] || 'NINGUNO' }}
+                            </ng-template>
+                            <ng-template
+                                kendoGridFilterMenuTemplate
+                                let-filter
+                                let-column="column"
+                                let-filterService="filterService">
+                                <kendo-grid-string-filter-menu
+                                    [column]="column"
+                                    [filter]="filter"
+                                    [filterService]="filterService"
+                                    [extra]="false"
+                                    operator="contains">
+                                    <kendo-filter-contains-operator
+                                        text="Contiene">
+                                    </kendo-filter-contains-operator>
+                                </kendo-grid-string-filter-menu>
+                            </ng-template>
+                        </kendo-grid-column>
+
+                        <kendo-grid-command-column
+                            title="Acciones"
+                            [headerStyle]="{ color: '#5f75bd' }"
+                            [width]="200"
+                            [headerClass]="'justify-content-center'">
+                            <ng-template
+                                kendoGridCellTemplate
+                                let-dataItem="dataItem"
+                                let-rowindex="rowindex">
+                                <div class="w-100 d-flex justify-content-center">
+
+                                    <mat-slide-toggle
+                                        formControlName="activado"
+                                        [checked]="dataItem.activado"
+                                        (change)="actualizarEstadoPorRegistro(dataItem, $event.checked)">
+                                    </mat-slide-toggle>
+
+                                    <button
+                                        kendoButton
+                                        themeColor="warning"
+                                        fillMode="solid"
+                                        rounded="large"
+                                        size="large"
+                                        class="p-2 me-1 ms-1"
+                                        container="body"
+                                        placement="top"
+                                        ngbTooltip="Editar"
+                                        (click)="abrirModalCrearActualizar(false, modalEditar, dataItem)">
+                                        <span class="k-icon k-i-pencil k-icon-20"></span>
+                                    </button>
+
+                                    <button
+                                        kendoButton
+                                        themeColor="error"
+                                        fillMode="solid"
+                                        rounded="large"
+                                        size="large"
+                                        class="p-2 me-1 ms-1"
+                                        container="body"
+                                        placement="top"
+                                        ngbTooltip="Eliminar"
+                                        (click)="mostrarMensajeEliminar(dataItem, rowindex)">
+                                        <span class="k-icon k-i-delete k-icon-40"></span>
+                                    </button>
+                                </div>
+                            </ng-template>
+                        </kendo-grid-command-column>
+                    </kendo-grid>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Crear - Actualizar -->
+<ng-template #modalEditar let-modal>
+    <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+            {{ isNew ? "Crear Formulario Progressive Profiling" : "Actualizar Formulario Progressive Profiling" }}
+        </h3>
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="limpiarCamposForm()">
+        </button>
+    </div>
+  
+    <div class="modal-body px-4">
+        <form [formGroup]="formCrearActualizar">
+            <div class="bloque">
+                <h2>Datos Generales de Formulario</h2>
+                <div class="row">
+                    <div class="col-12">
+                        <label style="width: 15%">Nombre<span class="text-danger fw-bold">*</span></label>
+                        <mat-form-field appearance="outline" style="width: 84%">
+                            <input matInput formControlName="nombre" type="text" placeholder="Ingrese nombre de formulario">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label style="width: 15%">Descripción</label>
+                        <mat-form-field appearance="outline" style="width: 84%">
+                            <textarea matInput formControlName="descripcion" placeholder="Ingrese descripción de formulario"></textarea>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center justify-content-between">
+                        <label style="width: 15%">Tipo<span class="text-danger fw-bold">*</span></label>
+                        <mat-form-field appearance="outline" style="width: 30%">
+                            <mat-select formControlName="tipo" placeholder="Seleccione tipo de formulario" (selectionChange)="cambiaTipo($event.value)">
+                                <mat-option *ngFor="let option of tipoOpciones" [value]="option.value">
+                                    {{ option.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <div class="d-flex align-items-center" style="margin-left: auto; margin-right: 16px;">
+                            <label style="margin-right: 100px;">Activado</label>
+                            <mat-slide-toggle formControlName="activado"></mat-slide-toggle>
+                        </div>
+                    </div>
+                </div>
+                <ng-container *ngIf="tipoSeleccionado === 2">
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <label style="width: 15%">Formulario Inicial<span class="text-danger fw-bold">*</span></label>
+                            <mat-form-field appearance="outline" style="width: 30%">
+                                <mat-select formControlName="idFormularioProgresivoInicial" placeholder="Seleccione formulario inicial">
+                                    <mat-option *ngFor="let option of formularioInicialOpciones" [value]="option.value">
+                                        {{ option.viewValue }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="tipoSeleccionado != 2">
+                    <div class="row">
+                        <div class="col-12">
+                            <label style="width: 15%">Condición para mostrar<span class="text-danger fw-bold">*</span></label>
+                            <mat-form-field appearance="outline" style="width: 30%">
+                                <mat-select formControlName="condicionMostrar" placeholder="Seleccione condición para mostrar formulario">
+                                    <mat-option *ngFor="let option of condicionOpciones" [value]="option.value">
+                                        {{ option.viewValue }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label style="width: 31%">Tiempo programas publicidad (seg.)<span class="text-danger fw-bold">*</span></label>
+                            <mat-form-field appearance="outline" style="width: 61%">
+                                <input matInput formControlName="tiempoProgramasPublicidad" type="number" placeholder="Ingrese tiempo de sesión" step="1" min="0"
+                                (blur)="validaNroOrdenSinRepetir($event)">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <label style="width: 31%">Tiempo programas orgánico (seg.)<span class="text-danger fw-bold">*</span></label>
+                            <mat-form-field appearance="outline" style="width: 61%">
+                                <input matInput formControlName="tiempoProgramasOrganico" type="number" placeholder="Ingrese tiempo de sesión" step="1" min="0"
+                                (blur)="validaNroOrdenSinRepetir($event)">
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label style="width: 31%">Tiempo blogs/whitepapers (seg.)<span class="text-danger fw-bold">*</span></label>
+                            <mat-form-field appearance="outline" style="width: 61%">
+                                <input matInput formControlName="tiempoBlogsWhite" type="number" placeholder="Ingrese tiempo de sesión" step="1" min="0"
+                                (blur)="validaNroOrdenSinRepetir($event)">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <label style="width: 31%">Tiempo index/tags (seg.)<span class="text-danger fw-bold">*</span></label>
+                            <mat-form-field appearance="outline" style="width: 61%">
+                                <input matInput formControlName="tiempoIndexTags" type="number" placeholder="Ingrese tiempo de sesión" step="1" min="0"
+                                (blur)="validaNroOrdenSinRepetir($event)">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+
+            <div class="bloque">
+                <h2>Título</h2>
+                <div class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                            <label style="width: 150px; margin-right: 15px;">Mensaje</label>
+                            <mat-checkbox formControlName="titulo" (change)="habilitaDeshabilitaControles(false, $event, true, ['tituloTexto'])"></mat-checkbox>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto</label>
+                            <mat-form-field appearance="outline" style="width: 85%">
+                                <input matInput formControlName="tituloTexto" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bloque">
+                <h2>Cabecera</h2>
+                <div *ngIf="tipoSeleccionado === 2" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                            <label style="width: 150px; margin-right: 15px;">Mensaje superior</label>
+                            <mat-checkbox formControlName="cabeceraMensajeSup" (change)="habilitaDeshabilitaControles(false, $event, true, ['cabeceraMensajeSupTexto', 'cabeceraMensajeSupIndexCurso', 'cabeceraMensajeSupTextoCurso', 'cabeceraMensajeSupTextoWhitepaper'])"></mat-checkbox>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">{{ textoLabelCabeceraMensajeSuperior }}</label>
+                            <mat-form-field appearance="outline" style="width: 60%">
+                                <input matInput formControlName="cabeceraMensajeSupTexto" placeholder="Ingrese texto">
+                            </mat-form-field>
+                            <div class="d-flex align-items-center" style="margin-left: auto;">
+                                <label style="width: 155px;">Index/Curso/Whitepaper</label>
+                                <mat-checkbox formControlName="cabeceraMensajeSupIndexCurso" (change)="muestraOcultaControles($event, ['cabeceraMensajeSupTextoCurso', 'cabeceraMensajeSupTextoWhitepaper'])"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCabeceraMensajeSupIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Curso</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cabeceraMensajeSupTextoCurso" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCabeceraMensajeSupIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Whitepaper</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cabeceraMensajeSupTextoWhitepaper" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                            <label style="width: 150px; margin-right: 15px;">Mensaje</label>
+                            <mat-checkbox formControlName="cabeceraMensaje" (change)="habilitaDeshabilitaControles(false, $event, true, ['cabeceraMensajeTexto', 'cabeceraMensajeBordes', 'cabeceraMensajeIndexCurso', 'cabeceraMensajeTextoCurso', 'cabeceraMensajeTextoWhitepaper'])"></mat-checkbox>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label [ngStyle]="{ 'width': tipoSeleccionado === 2 ? '18%' : '15%', 'margin-right': '8px' }">{{ textoLabelCabeceraMensaje }}</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cabeceraMensajeTexto" placeholder="Ingrese texto">
+                            </mat-form-field>
+                            <div *ngIf="tipoSeleccionado === 2" class="d-flex align-items-center" [ngStyle]="{ 'margin-right': '10px' }">
+                                <label style="width: 60px; padding-left: 10px;">Bordes</label>
+                                <mat-checkbox formControlName="cabeceraMensajeBordes"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="margin-left: auto;">
+                                <label style="width: 155px;">Index/Curso/Whitepaper</label>
+                                <mat-checkbox formControlName="cabeceraMensajeIndexCurso" (change)="muestraOcultaControles($event, ['cabeceraMensajeTextoCurso', 'cabeceraMensajeTextoWhitepaper'])"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCabeceraMensajeIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Curso</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cabeceraMensajeTextoCurso" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCabeceraMensajeIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Whitepaper</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cabeceraMensajeTextoWhitepaper" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                            <label style="width: 150px; margin-right: 15px;">Mensaje inferior</label>
+                            <mat-checkbox formControlName="cabeceraMensajeInf" (change)="habilitaDeshabilitaControles(false, $event, true, ['cabeceraMensajeInfTexto', 'cabeceraMensajeInfIndexCurso', 'cabeceraMensajeInfTextoCurso', 'cabeceraMensajeInfTextoWhitepaper'])"></mat-checkbox>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">{{ textoLabelCabeceraMensajeInferior }}</label>
+                            <mat-form-field appearance="outline" style="width: 60%">
+                                <input matInput formControlName="cabeceraMensajeInfTexto" placeholder="Ingrese texto">
+                            </mat-form-field>
+                            <div class="d-flex align-items-center" style="margin-left: auto;">
+                                <label style="width: 155px;">Index/Curso/Whitepaper</label>
+                                <mat-checkbox formControlName="cabeceraMensajeInfIndexCurso" (change)="muestraOcultaControles($event, ['cabeceraMensajeInfTextoCurso', 'cabeceraMensajeInfTextoWhitepaper'])"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCabeceraMensajeInfIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Curso</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cabeceraMensajeInfTextoCurso" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCabeceraMensajeInfIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Whitepaper</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cabeceraMensajeInfTextoWhitepaper" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                
+                <div *ngIf="tipoSeleccionado === 2" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                            <label style="width: 150px; margin-right: 15px;">Botón</label>
+                            <mat-checkbox formControlName="cabeceraBoton" (change)="habilitaDeshabilitaControles(false, $event, true, ['cabeceraBotonTexto', 'cabeceraBotonAccion'])"></mat-checkbox>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto</label>
+                            <mat-form-field appearance="outline" style="width: 85%">
+                                <input matInput formControlName="cabeceraBotonTexto" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="tipoSeleccionado === 2" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 70%; margin-left: auto;">
+                            <label style="width: 15%; margin-right: 8px;">Acción</label>
+                            <mat-form-field appearance="outline" style="width: 85%;">
+                                <mat-select formControlName="cabeceraBotonAccion">
+                                    <mat-option *ngFor="let option of accionBotonOpciones" [value]="option.value">
+                                        {{ option.viewValue }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bloque">
+                <h2>Cuerpo / Campos a Solicitar</h2>
+                <div class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                            <label style="width: 150px; margin-right: 15px;">Mensaje superior</label>
+                            <mat-checkbox formControlName="cuerpoMensajeSup" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoMensajeSupTexto', 'cuerpoMensajeSupIndexCurso', 'cuerpoMensajeSupTextoCurso', 'cuerpoMensajeSupTextoWhitepaper'])"></mat-checkbox>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">{{ textoLabelCuerpoMensajeSuperior }}</label>
+                            <mat-form-field appearance="outline" style="width: 60%">
+                                <input matInput formControlName="cuerpoMensajeSupTexto" placeholder="Ingrese texto">
+                            </mat-form-field>
+                            <div class="d-flex align-items-center" style="margin-left: auto;">
+                                <label style="width: 155px;">Index/Curso/Whitepaper</label>
+                                <mat-checkbox formControlName="cuerpoMensajeSupIndexCurso" (change)="muestraOcultaControles($event, ['cuerpoMensajeSupTextoCurso', 'cuerpoMensajeSupTextoWhitepaper'])"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCuerpoMensajeSupIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Curso</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cuerpoMensajeSupTextoCurso" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="condCuerpoMensajeSupIndexCurso" class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 70%;">
+                            <label style="width: 15%; margin-right: 8px;">Texto Whitepaper</label>
+                            <mat-form-field appearance="outline" [style.width]="'60%'">
+                                <input matInput formControlName="cuerpoMensajeSupTextoWhitepaper" placeholder="Ingrese texto">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="tipoSeleccionado != 2">
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex">
+                            <div class="d-flex flex-column" style="width: 50%;">
+                                <label class="bold-label text-center" style="width: 150px;">Campos</label>
+                            </div>
+                            <div class="d-flex flex-column align-items-center" style="width: 45%;">
+                                <div class="d-flex" style="width: 100%;">
+                                    <label class="bold-label text-center" style="width: 25%; margin-right: 175px;">Orden</label>
+                                    <label class="bold-label">Obligatorio</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Correo</label>
+                                <mat-checkbox formControlName="cuerpoCorreo" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoCorreoOrden', 'cuerpoCorreoObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoCorreoOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoCorreoObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Nombres</label>
+                                <mat-checkbox formControlName="cuerpoNombres" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoNombresOrden', 'cuerpoNombresObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoNombresOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoNombresObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Apellidos</label>
+                                <mat-checkbox formControlName="cuerpoApellidos" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoApellidosOrden', 'cuerpoApellidosObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoApellidosOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoApellidosObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">País</label>
+                                <mat-checkbox formControlName="cuerpoPais" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoPaisOrden', 'cuerpoPaisObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoPaisOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoPaisObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Teléfono</label>
+                                <mat-checkbox formControlName="cuerpoTelefono" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoTelefonoOrden', 'cuerpoTelefonoObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoTelefonoOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoTelefonoObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Cargo</label>
+                                <mat-checkbox formControlName="cuerpoCargo" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoCargoOrden', 'cuerpoCargoObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoCargoOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoCargoObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Área de Formación</label>
+                                <mat-checkbox formControlName="cuerpoAreaFormacion" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoAreaFormacionOrden', 'cuerpoAreaFormacionObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoAreaFormacionOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoAreaFormacionObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Área de Trabajo</label>
+                                <mat-checkbox formControlName="cuerpoAreaTrabajo" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoAreaTrabajoOrden', 'cuerpoAreaTrabajoObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoAreaTrabajoOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoAreaTrabajoObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="d-flex align-items-center" style="width: 50%;">
+                                <label style="width: 150px; margin-right: 15px;">Industria</label>
+                                <mat-checkbox formControlName="cuerpoIndustria" (change)="habilitaDeshabilitaControles(false, $event, true, ['cuerpoIndustriaOrden', 'cuerpoIndustriaObl'])"></mat-checkbox>
+                            </div>
+                            <div class="d-flex align-items-center" style="width: 45%;">
+                                <mat-form-field appearance="outline" style="width: 25%; margin-right: 200px;">
+                                    <input matInput formControlName="cuerpoIndustriaOrden" type="number" step="1" min="1" (keypress)="restriccionDecimal($event)" (blur)="validaNroOrdenSinRepetir($event)"
+                                    placeholder="Ingrese Nro" style="text-align: center;">
+                                </mat-form-field>
+                                <mat-checkbox formControlName="cuerpoIndustriaObl"></mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="tipoSeleccionado != 2" class="bloque">
+                <div class="row align-items-center">
+                    <h2>Configuración Botón</h2>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="d-flex align-items-center" style="width: 30%;">
+                            <label style="width: 150px; margin-right: 15px;">Habilitar</label>
+                            <mat-checkbox formControlName="boton" (change)="habilitaDeshabilitaConfiguracionBoton()"></mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+                <div [ngClass]="{'disabled-div': !gridConfiguracionBotones.habilitarEstadoNewRow}">
+                    <div>
+                        <kendo-grid
+                            [kendoGridBinding]="gridConfiguracionBotones.data"
+                            [loading]="gridConfiguracionBotones.loading"
+                            (save)="gridConfiguracionBotones.saveHandler($event)"
+                            (add)="gridConfiguracionBotones.addHandler($event)"
+                            (edit)="gridConfiguracionBotones.editHandler($event)"
+                            (cancel)="gridConfiguracionBotones.cancelHandler($event)"
+                            (remove)="gridConfiguracionBotones.removeHandler($event)"
+                            [selectable]="true"
+                            [resizable]="true">
+                            <ng-template kendoGridToolbarTemplate>
+                                <button
+                                    kendoGridAddCommand
+                                    fillMode="flat"
+                                    themeColor="primary"
+                                    icon="plus">
+                                    Agregar Acción
+                                </button>
+                            </ng-template>
+
+                            <kendo-grid-column
+                                field="id"
+                                title="Id"
+                                [width]="50"
+                                [filterable]="true"
+                                [hidden]="true"
+                                headerClass="header-grid-integra">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{ dataItem.id }}
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column
+                                field="tipo"
+                                title="Tipo"
+                                [width]="80"
+                                [filterable]="true"
+                                headerClass="header-grid-integra">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{ getViewValueTipo(dataItem.tipo) }}
+                                </ng-template>
+                                <ng-template
+                                    kendoGridEditTemplate
+                                    let-dataItem="dataItem"
+                                    let-formGroup="formGroup">
+                                    <kendo-dropdownlist
+                                        [formControl]="formGroup.get('tipo')"
+                                        class="d-flex"
+                                        size="medium"
+                                        [data]="seccionPortalOpciones"
+                                        textField="viewValue"
+                                        valueField="value"
+                                        [valuePrimitive]="true">
+                                    </kendo-dropdownlist>
+                                    <div
+                                        class="error-message"
+                                        *ngIf="formGroup.get('tipo').hasError('required') && formGroup.get('tipo').touched">
+                                        Este campo es requerido.
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column
+                                field="textoBoton"
+                                title="Texto Botón"
+                                [width]="120"
+                                [filterable]="true"
+                                headerClass="header-grid-integra">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{ dataItem.textoBoton }}
+                                </ng-template>
+                                <ng-template kendoGridEditTemplate let-dataItem="dataItem" let-formGroup="formGroup">
+                                    <div class="d-flex flex-column">
+                                        <input
+                                            kendoTextBox
+                                            [formControl]="formGroup.get('textoBoton')"
+                                            class="d-flex"/>
+                                        <div
+                                            class="error-message text-danger mt-1"
+                                            *ngIf="formGroup.get('textoBoton')?.hasError('required') && formGroup.get('textoBoton')?.touched">
+                                            Este campo es requerido.
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column
+                                field="accion"
+                                title="Acción"
+                                [width]="120"
+                                [filterable]="true"
+                                headerClass="header-grid-integra">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{ getViewValueAccion(dataItem.accion) }}
+                                </ng-template>
+                                <ng-template
+                                    kendoGridEditTemplate
+                                    let-formGroup="formGroup">
+                                    <kendo-dropdownlist
+                                        [formControl]="formGroup.get('accion')"
+                                        class="d-flex"
+                                        size="medium"
+                                        [data]="accionBotonOpciones"
+                                        textField="viewValue"
+                                        valueField="value"
+                                        [valuePrimitive]="true">
+                                    </kendo-dropdownlist>
+                                    <div
+                                        class="error-message"
+                                        *ngIf="formGroup.get('accion').hasError('required') && formGroup.get('accion').touched">
+                                        Este campo es requerido.
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                            <kendo-grid-column
+                                field="archivo"
+                                title="Archivo"
+                                [width]="120"
+                                [filterable]="true"
+                                headerClass="header-grid-integra">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    {{ dataItem.accion !== 5 ? 'No Aplica' : getViewValueArchivo(dataItem.archivo) }}
+                                </ng-template>
+                                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                                    <ng-container *ngIf="formGroup.get('accion')?.value !== 5; else dropdownTemplate">
+                                        <input kendoTextBox class="d-flex" [value]="'No Aplica'" disabled />
+                                        <input type="hidden" [formControl]="formGroup.get('archivo')" [value]="0" />
+                                    </ng-container>
+                                    <ng-template #dropdownTemplate>
+                                        <kendo-dropdownlist
+                                            [formControl]="formGroup.get('archivo')"
+                                            class="d-flex"
+                                            size="medium"
+                                            [data]="archivoOpciones"
+                                            textField="viewValue"
+                                            valueField="value"
+                                            [valuePrimitive]="true">
+                                        </kendo-dropdownlist>
+                                        <div
+                                            class="error-message"
+                                            *ngIf="formGroup.get('archivo').hasError('required') && formGroup.get('archivo').touched">
+                                            Este campo es requerido.
+                                        </div>
+                                    </ng-template>
+                                </ng-template>
+                            </kendo-grid-column>
+                        
+                            <kendo-grid-column
+                                title="Opciones"
+                                [width]="80"
+                                headerClass="justify-content-center">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <div class="text-center">
+                                        <button
+                                            kendoGridEditCommand
+                                            rounded="large"
+                                            themeColor="warning"
+                                            size="large"
+                                            class="p-2 me-1 ms-1"
+                                            container="body"
+                                            placement="top"
+                                            ngbTooltip="Editar">
+                                            <span class="k-icon k-i-edit k-icon-20"></span>
+                                        </button>
+                                        <button
+                                            kendoGridRemoveCommand
+                                            themeColor="error"
+                                            fillMode="solid"
+                                            rounded="large"
+                                            class="p-2 me-1 ms-1"
+                                            container="body"
+                                            placement="top"
+                                            ngbTooltip="Eliminar">
+                                            <span class="k-icon k-i-trash k-icon-20"></span>
+                                        </button>
+                                        <button
+                                            kendoGridSaveCommand
+                                            themeColor="primary"
+                                            fillMode="solid"
+                                            rounded="large"
+                                            size="large"
+                                            class="p-2 me-1 ms-1"
+                                            [disabled]="gridConfiguracionBotones.formGroup?.invalid"
+                                            container="body"
+                                            placement="top"
+                                            ngbTooltip="Guardar">
+                                            <span class="k-icon k-i-save k-icon-20"></span>
+                                        </button>
+                                        <button
+                                            kendoGridCancelCommand
+                                            themeColor="secondary"
+                                            fillMode="solid"
+                                            rounded="large"
+                                            size="large"
+                                            class="p-2 me-1 ms-1"
+                                            container="body"
+                                            placement="top"
+                                            ngbTooltip="Cancelar">
+                                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                                        </button>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+
+                        </kendo-grid>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row my-2">
+            <div class="text-end">
+            <ng-container *ngIf="isNew">
+                <button
+                class="btn btn-primary mx-1"
+                [disabled]="formCrearActualizar.invalid"
+                (click)="insertarFormulario()">
+                <span class="px-1">Nuevo</span>
+                </button>
+            </ng-container>
+            <ng-container *ngIf="!isNew">
+                <button
+                class="btn btn-primary mx-1"
+                [disabled]="formCrearActualizar.invalid"
+                (click)="actualizarFormulario()">
+                <span class="px-1">Actualizar</span>
+                </button>
+            </ng-container>
+    
+            <button class="btn btn-danger" (click)="limpiarCamposForm()">
+                <span class="px-1">Cancelar</span>
+            </button>
+            </div>
+        </div>
+        <loading [loading]="loading"></loading>
+    </div>
+</ng-template>

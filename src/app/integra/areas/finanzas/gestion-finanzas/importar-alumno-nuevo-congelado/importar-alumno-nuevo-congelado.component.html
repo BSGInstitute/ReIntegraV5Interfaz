@@ -1,0 +1,952 @@
+<ng-template #modalAlumnoCongelado let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+    <div class="modal-header">
+      <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+        {{ nombreModal }}
+      </h2>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+  
+      <form class="k-form" [formGroup]="formGroupAlumnoCongelado">
+        <fieldset class="k-form-fieldset">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="codigoMatricula" class="k-label">
+                  <span
+                    >Cód. Matrícula:
+                    <span class="text-danger fw-bold">*</span></span
+                  >
+                </label>
+                <kendo-dropdownlist
+                  #codigoMatricula
+                  size="medium"
+                  formControlName="idMatriculaCabecera"
+                  class="d-flex center"
+                  [data]="listaMatricula"
+                  textField="codigoMatricula"
+                  valueField="id"
+                  [defaultItem]="{id:null,codigoMatricula:'< Seleccionar >'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="BuscarMatricula($event)"                         
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint> Seleccione un código de matrícula</kendo-formhint>
+                <kendo-formerror>
+                  {{getErrorMessage('idMatriculaCabecera')}}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+                <div class="col-sm-12 col-md-12 k-form-horizontal">
+                    <kendo-formfield orientation="horizontal">
+                      <label [for]="nroCuota" class="k-label">
+                          <span
+                            >Nro. Cuota:
+                            <span class="text-danger fw-bold">*</span></span
+                          >
+                        </label>
+                        <kendo-numerictextbox
+                            #nroCuota
+                            formControlName="nroCuota"
+                            [style.width.px]="100"
+                            [min]="0"
+                            [max]="100"
+                            [decimals]="0"
+                            [format]="'0'"
+                        >
+                        </kendo-numerictextbox>
+                        <kendo-formhint> Ingrese el número de Cuota</kendo-formhint>
+                        <kendo-formerror>
+                            {{getErrorMessage('nroCuota')}}
+                        </kendo-formerror>
+                    </kendo-formfield>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-sm-12 col-md-12 k-form-horizontal">
+                    <kendo-formfield orientation="horizontal">
+                      <label [for]="nroSubCuota" class="k-label">
+                          <span
+                            >Nro. SubCuota:
+                            <span class="text-danger fw-bold">*</span></span
+                          >
+                        </label>
+                        <kendo-numerictextbox
+                            #nroSubCuota
+                            formControlName="nroSubCuota"
+                            [style.width.px]="100"
+                            [min]="0"
+                            [max]="100"
+                            [decimals]="0"
+                            [format]="'0'"
+                        >
+                        </kendo-numerictextbox>
+                        <kendo-formhint> Ingrese el número de SubCuota</kendo-formhint>
+                        <kendo-formerror>
+                            {{getErrorMessage('nroSubCuota')}}
+                        </kendo-formerror>
+                    </kendo-formfield>
+                </div>
+            </div>
+            
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="fechaVencimientoNueva" class="k-label">
+                    <span
+                    >Fecha Vencimiento:
+                    <span class="text-danger fw-bold">*</span></span
+                  >
+                </label>
+                <kendo-datepicker
+                #fechaVencimientoNueva
+                formControlName="fechaVencimientoNueva"
+                [incompleteDateValidation]="true"
+                calendarType="classic"
+                [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                placeholder="dia-mes-año"
+                ></kendo-datepicker>
+                <kendo-formhint>Seleccione una fecha de vencimiento</kendo-formhint>
+                <kendo-formerror>{{getErrorMessage('fechaVencimientoNueva')}}</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="cuota" class="k-label">
+                      <span
+                        >Cuota Monto Actual:
+                        <span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-numerictextbox
+                        #cuota
+                        formControlName="cuota"
+                        [style.width.px]="100"
+                        [min]="0"
+                        [decimals]="2"
+                        [format]="'0.00'"
+
+                    >
+                    </kendo-numerictextbox>
+                    <kendo-formhint> Ingrese la cuota del monto actual</kendo-formhint>
+                    <kendo-formerror>
+                        {{getErrorMessage('cuota')}}
+                    </kendo-formerror>
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="saldo" class="k-label">
+                      <span
+                        >Saldo Pendiente:
+                        <span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-numerictextbox
+                        #saldo
+                        formControlName="saldo"
+                        [style.width.px]="100"
+                        [min]="0"
+                        [decimals]="2"
+                        [format]="'0.00'"
+
+                    >
+                    </kendo-numerictextbox>
+                    <kendo-formhint> Ingrese el saldo pendiente</kendo-formhint>
+                    <kendo-formerror>
+                        {{getErrorMessage('saldo')}}
+                    </kendo-formerror>
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="mora" class="k-label">
+                      <span
+                        >Mora:
+                        <span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-numerictextbox
+                        #mora
+                        formControlName="mora"
+                        [style.width.px]="100"
+                        [min]="0"
+                        [decimals]="2"
+                        [format]="'0.00'"
+
+                    >
+                    </kendo-numerictextbox>
+                    <kendo-formhint> Ingrese la mora</kendo-formhint>
+                    <kendo-formerror>
+                        {{getErrorMessage('mora')}}
+                    </kendo-formerror>
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="montoPagado" class="k-label">
+                      <span
+                        >Monto Pagado:
+                        <span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-numerictextbox
+                        #montoPagado
+                        formControlName="montoPagado"
+                        [style.width.px]="100"
+                        [min]="0"
+                        [decimals]="2"
+                        [format]="'0.00'"
+
+                    >
+                    </kendo-numerictextbox>
+                    <kendo-formhint> Ingrese el monto pagado</kendo-formhint>
+                    <kendo-formerror>
+                        {{getErrorMessage('montoPagado')}}
+                    </kendo-formerror>
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="tipoCuota" class="k-label">
+                  <span
+                    >Tipo Cuota:
+                    <span class="text-danger fw-bold">*</span></span
+                  >
+                </label>
+                <kendo-dropdownlist
+                  #tipoCuota
+                  size="medium"
+                  formControlName="tipoCuota"
+                  inputValidSpaceDir
+                  [clearButton]="true"
+                  class="d-flex center"
+                  [data]="ListatipoCuota"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'< Seleccionar >'}"
+                  [valuePrimitive]="true"                                  
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint> Seleccione un tipo de cuota</kendo-formhint>
+                <kendo-formerror>
+                    {{getErrorMessage('tipoCuota')}}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idmoneda" class="k-label">
+                  <span
+                    >Moneda:
+                    <span class="text-danger fw-bold">*</span></span
+                  >
+                </label>
+                <kendo-dropdownlist
+                  #idmoneda
+                  size="medium"
+                  formControlName="idmoneda"
+                  inputValidSpaceDir
+                  [clearButton]="true"
+                  class="d-flex center"
+                  [data]="listaMoneda"
+                  textField="nombrePlural"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombrePlural:'< Seleccionar >'}"
+                  [valuePrimitive]="true"                                  
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint> Seleccione una moneda</kendo-formhint>
+                <kendo-formerror>
+                    {{getErrorMessage('idmoneda')}}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="fechaPagoNueva" class="k-label">
+                    <span
+                    >Fecha Pago:
+                    <span class="text-danger fw-bold">*</span></span
+                  >
+                </label>
+                <kendo-datepicker
+                #fechaPagoNueva
+                formControlName="fechaPagoNueva"
+                [incompleteDateValidation]="true"
+                calendarType="classic"
+                [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                placeholder="dia-mes-año"
+                ></kendo-datepicker>
+                <kendo-formhint>Seleccione una fecha de pago</kendo-formhint>
+                <kendo-formerror>{{getErrorMessage('fechaPagoNueva')}}</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idPeriodo" class="k-label">
+                  <span
+                    >Periodo:
+                    <span class="text-danger fw-bold">*</span></span
+                  >
+                </label>
+                <kendo-dropdownlist
+                  #idPeriodo
+                  size="medium"
+                  formControlName="idPeriodo"
+                  inputValidSpaceDir
+                  [clearButton]="true"
+                  class="d-flex center"
+                  [data]="listaPeriodo"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'< Seleccionar >'}"
+                  [valuePrimitive]="true"                                  
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint> Seleccione un periodo</kendo-formhint>
+                <kendo-formerror>
+                    {{getErrorMessage('idPeriodo')}}
+                </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <kendo-label
+                  [for]="estado"
+                  text="Cancelado"
+                ></kendo-label>
+                <kendo-switch
+                  #estado
+                  formControlName="cancelado"
+                  size="medium"
+                  trackRounded="full"
+                  thumbRounded="full"
+                  onLabel="Si"
+                  offLabel="No"
+                  style="width: 60px;"
+                >
+                </kendo-switch>
+              </kendo-formfield>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" 
+      class="btn btn-primary"
+      (click)="accionModal()"
+      >
+        {{ btnModal }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="modal.close('Close click')"
+      >
+        Cancelar
+      </button>
+    </div>
+</ng-template>
+
+
+<div class="">
+    <div class="row">
+        <div class="col-1fa-rotate-270">
+            <div class="card">
+                <div class="card-header bg-color-material">
+                    <h1 class="text-white">Alumno Nuevo Congelado</h1>
+                </div>
+                <div  class="card-body p-4">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="card" style="padding: 0px;">
+                                <div class="card-header bg-color-material pb-0">
+                                    <h3 class="text-white mb-2">Importar Datos Alumno Congelado</h3>
+                                </div>
+                                <div  class="card-body p-4">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <p>
+                                                Seleccione un archivo (.CSV) <strong style="color: red;">*</strong>:
+                                            </p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-1"> 
+
+                                                <input type="file" style="display: none" #fileInput accept=".CSV" (change)="onChangeFileInput()" />
+                                                <button mat-raised-button class="file-select-button" (click)="onClickFileInputButton()">
+                                                  <mat-icon>attach_file</mat-icon>
+                                                  subir archivo
+                                                </button>
+                                                
+                                            </div>
+                                            <div class="col-md-1" style="padding: 0%;width: 50px;"> </div>
+                                            <div class="col-md-3" style="justify-content: center;">
+                                                <div class="card" style="margin-top: 2.5px;">
+                                                    <ng-container *ngIf="!file; else fileName">
+                                                        <div class ="row" style="margin: 2%;height: 20px;">
+                                                            <div class="col-md-11">
+                                                                <p class="file-name">
+                                                                    Ningún archivo seleccionado
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-md-1" style="padding-left: 0px;">
+                                                                 <span class="k-icon k-i-file-error"
+                                                                 style="color: rgb(220, 200, 71);"></span>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-template #fileName>
+                                                        <div class ="row" style="margin: 2%;height: 20px;">
+                                                            <div class="col-md-11">
+                                                                <p class="file-name fileInput">{{ file?.name }}  </p>
+                                                            </div>
+                                                            <div class="col-md-1" style="padding-left: 0px;">
+                                                                <ng-container *ngIf="file?.type=='text/csv'">
+                                                                    <span class="k-icon k-i-track-changes-accept"
+                                                                    style="color: rgb(98, 189, 84);"></span>
+                                                                </ng-container>
+                                                                <ng-container *ngIf="file?.type!='text/csv'">
+                                                                    <span class="k-icon k-i-track-changes-reject"
+                                                                    style="color: rgb(144, 37, 37);"></span>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div>
+                                                    </ng-template>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="col-md-1" style="margin-top: 1.5px;">
+                                              <ng-container *ngIf="cargar">
+                                                <button mat-raised-button color="primary" class="file-select-button" (click)="CargarDataCSV()">
+                                                  <mat-icon>save_alt</mat-icon>
+                                                  Cargar
+                                              </button>
+                                              </ng-container>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <kendo-grid
+                                            [kendoGridBinding]="listaCSV"
+                                            [loading]="loadeCargarDatar"
+                                            [pageSize]="5"
+                                            [sortable]="true"
+                                            [reorderable]="true"
+                                            [resizable]="true"
+                                            [columnMenu]="{ filter: true }"
+                                            [pageable]="{
+                                              buttonCount: 5,
+                                              info: true,
+                                              type: 'numeric',
+                                              pageSizes: true,
+                                              previousNext: true,
+                                              position: 'bottom'
+                                            }"                          
+                                            >
+                                              <kendo-grid-column
+                                                  title="Código de Matrícula"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="200"
+                                                  field="codigoMatricula"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                  
+                                                >
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Nro. Cuota"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="150"
+                                                  field="nroCuota"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Nro. Sub-Cuota"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="150"
+                                                  field="nroSubCuota"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Fecha de Vencimiento"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="200"
+                                                  field="fechaVencimiento"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                  <ng-template kendoGridCellTemplate let-dataItem >
+                                                    {{
+                                                        fechaTemplate(dataItem.fechaVencimiento)
+                                                    }}
+                                                  </ng-template>
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Cuota Monto Actual"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="200"
+                                                  field="cuota"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Saldo Pendiente"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="150"
+                                                  field="saldo"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Mora"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="150"
+                                                  field="mora"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Monto Pagado"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="200"
+                                                  field="montoPagado"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                  
+                                                </kendo-grid-column>
+                                                <kendo-grid-column
+                                                  title="Fecha de Pago"
+                                                  headerClass="justify-content-center k-grid-header "
+                                                  [width]="200"
+                                                  field="fechaPago"
+                                                  [locked]="false"
+                                                  [sticky]="false"
+                                                  [filterable]="true"
+                                                  [hidden]="false"
+                                                >
+                                                  <ng-template kendoGridCellTemplate let-dataItem >
+                                                    {{
+                                                        fechaTemplate(dataItem.fechaPago)
+                                                    }}
+                                                  </ng-template>
+                                                </kendo-grid-column>
+                                                <ng-template kendoGridNoRecordsTemplate>
+                                                    <div>
+                                                      <kendo-badge-container>
+                                                        <kendo-icon name="cloud" size="large"></kendo-icon>
+                                                        <kendo-badge position="inside">
+                                                          <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                                                        </kendo-badge>
+                                                      </kendo-badge-container>
+                                                    </div>
+                                                    <p>No hay registros cargados!</p>
+                                                  </ng-template>
+                                            </kendo-grid>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4 k-form-horizontal">
+                                                <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                                    <label [for]="dropdownlist" class="k-label" style="margin-bottom: 5px;">
+                                                        <span
+                                                        >Periodo :
+                                                        </span>
+                                                    </label>
+                                                    <kendo-dropdownlist
+                                                        [formControl]="periodo"
+                                                        class="d-flex center"
+                                                        size="medium"
+                                                        #dropdownlist
+                                                        [data]="listaPeriodo"
+                                                        textField="nombre"
+                                                        valueField="id"
+                                                        [defaultItem]="{id:null,nombre:'< Seleccionar >'}"
+                                                        [valuePrimitive]="true"
+                                                    >
+                                                    </kendo-dropdownlist>
+                                                </kendo-formfield> 
+                                            </div>
+                                            <div class="col-md-4 k-form-horizontal">
+                                                <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                                    <label [for]="fechainputCong" style="margin-bottom: 5px;width: 200px;">
+                                                        <span
+                                                        >Fecha Congelamiento :
+                                                        </span>
+                                                    </label>
+                                                    <kendo-datepicker
+                                                    #fechainputCong
+                                                    calendarType="classic"
+                                                    [formControl]="fechainput"
+                                                    [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                                    placeholder="dia-mes-año"
+                                                    ></kendo-datepicker>
+                                                </kendo-formfield> 
+                                            </div>
+                                            <div class="col-md-1" style="padding: 0%;width: 35px;"></div>
+                                            <div class="col-md-1" *ngIf="!cargar">
+                                                <button mat-raised-button color="warn" class="file-select-button" (click)="terminarProcesoDataCSV()">
+                                                  <mat-icon>cancel</mat-icon>
+                                                  Cancelar
+                                                </button>
+                                            </div>
+                                            <div class="col-md-1" style="padding: 0%;width: 35px;"> </div>
+                                            <div class="col-md-1" *ngIf="!cargar">
+                                                <button mat-raised-button color="primary" class="file-select-button" (click)="msgGuardarData()">
+                                                    <mat-icon>save</mat-icon>
+                                                    Guardar Datos
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="card" style="padding: 0px;">
+                                <div class="card-header bg-color-material pb-0">
+                                    <h3 class="text-white mb-2">Datos/Lectura de Archivo CSV para importar datos de flujo.</h3>
+                                </div>
+                                <div  class="card-body p-4">
+                                    <div class="row">
+                                        <kendo-grid
+                                        [kendoGridBinding]="listaAlumnoNuevoCongelado"
+                                        [loading]="loaderAlumnoNuevoCongelado"
+                                        [pageSize]="5"
+                                        [sortable]="true"
+                                        [reorderable]="true"
+                                        [resizable]="true"
+                                        [columnMenu]="{ filter: true }"
+                                        [pageable]="{
+                                          buttonCount: 5,
+                                          info: true,
+                                          type: 'numeric',
+                                          pageSizes: true,
+                                          previousNext: true,
+                                          position: 'bottom'
+                                        }"                          
+                                        >
+                                        <ng-template kendoGridToolbarTemplate class="bg-danger">
+                                            
+                                            <button mat-stroked-button
+                                            (click)="gridControl('reload')">
+                                                <mat-icon>refresh</mat-icon>
+                                            </button>
+                                            <kendo-grid-spacer></kendo-grid-spacer>
+                                            <button 
+                                            kendoGridAddCommand 
+                                            [themeColor]="'primary'" 
+                                            (click)="gridControl('add')"
+                                            >
+                                              + Nuevo
+                                            </button>
+                                          </ng-template>
+                                          <kendo-grid-column
+                                              title="Código de Matrícula"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="codigoMatricula"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                              
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Nro. Cuota"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="150"
+                                              field="nroCuota"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Nro. Sub-Cuota"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="150"
+                                              field="nroSubCuota"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Fecha de Vencimiento"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="fechaVencimiento"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                                <ng-template kendoGridCellTemplate let-dataItem >
+                                                    {{
+                                                        fechaTemplate(dataItem.fechaVencimiento)
+                                                    }}
+                                                </ng-template>
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Cuota Monto Actual"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="cuota"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Saldo Pendiente"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="150"
+                                              field="saldo"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Mora"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="150"
+                                              field="mora"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Monto Pagado"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="montoPagado"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Cancelado"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="cancelado"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                                <ng-template kendoGridCellTemplate let-dataItem >
+                                                    <ng-container *ngIf="dataItem.cancelado==true">
+                                                        <span class="k-icon  k-i-check-outline k-icon-30" 
+                                                        style="color:rgb(105, 185, 105);font-size: 30px;"></span>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="dataItem.cancelado==false">
+                                                        <span class="k-icon k-i-x-outline k-icon-30" 
+                                                        style="color:rgb(179, 97, 90);font-size: 30px;"></span>
+                                                    </ng-container>
+                                                    
+                                                </ng-template>
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Tipo Cuota"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="tipoCuota"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Moneda"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="150"
+                                              field="moneda"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Fecha de Pago"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="fechaPago"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                                <ng-template kendoGridCellTemplate let-dataItem >
+                                                    {{
+                                                        fechaTemplate(dataItem.fechaPago)
+                                                    }}
+                                                </ng-template>
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Fecha de Congelamiento"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="200"
+                                              field="fechaCongelamiento"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                                <ng-template kendoGridCellTemplate let-dataItem >
+                                                    {{
+                                                        fechaTemplate(dataItem.fechaCongelamiento)
+                                                    }}
+                                                </ng-template>
+                                            </kendo-grid-column>
+                                            <kendo-grid-column
+                                              title="Periodo"
+                                              headerClass="justify-content-center k-grid-header "
+                                              [width]="150"
+                                              field="idPeriodo"
+                                              [locked]="false"
+                                              [sticky]="false"
+                                              [filterable]="true"
+                                              [hidden]="false"
+                                            >
+                                                <ng-template kendoGridCellTemplate let-dataItem >
+                                                    {{
+                                                        periodoTemplate(dataItem.idPeriodo)
+                                                    }}
+                                                </ng-template>
+                                            </kendo-grid-column>
+                                            <kendo-grid-command-column
+                                            [sticky]="true"
+                                            title="Acciones"
+                                            [width]="150"
+                                            headerClass="justify-content-center text-center k-grid-header-command"
+                                            >
+                                            <ng-template 
+                                            kendoGridCellTemplate 
+                                            let-dataItem="dataItem" 
+                                            let-rowIndex="rowIndex"
+                                            >
+                                                <div class="w-100 d-flex justify-content-center" style="padding:20px" kendoTooltip>
+                                                    <button
+                                                    title="Editar"
+                                                    kendoButton
+                                                    themeColor="warning"
+                                                    fillMode="solid"
+                                                    rounded="large"
+                                                    size="large"
+                                                    class="p-2 me-1 ms-1"
+                                                    container="body"
+                                                    placement="top"
+                                                    (click)="gridControl('update',dataItem,rowIndex)"
+                                                    >
+                                                    <span class="k-icon k-i-pencil k-icon-20"></span>
+                                                    </button>
+
+                                                    <button
+                                                    title="Eliminar"
+                                                    kendoButton
+                                                    themeColor="error"
+                                                    fillMode="solid"
+                                                    rounded="large"
+                                                    size="large"
+                                                    class="p-2 me-1 ms-1"
+                                                    container="body"
+                                                    placement="top"
+                                                    (click)="gridControl('delete',dataItem,rowIndex)"
+                                                    >
+                                                    <span class="k-icon k-i-trash k-icon-20"></span>
+                                                    </button>
+                                                </div>
+                                            </ng-template>
+                                            </kendo-grid-command-column>
+                                            <ng-template kendoGridNoRecordsTemplate>
+                                                <div>
+                                                  <kendo-badge-container>
+                                                    <kendo-icon name="cloud" size="large"></kendo-icon>
+                                                    <kendo-badge position="inside">
+                                                      <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                                                    </kendo-badge>
+                                                  </kendo-badge-container>
+                                                </div>
+                                                <p>No hay registros cargados!</p>
+                                            </ng-template>
+                                        </kendo-grid>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

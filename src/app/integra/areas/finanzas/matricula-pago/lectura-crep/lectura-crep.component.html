@@ -1,0 +1,275 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Importar archivo CDPG</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <p>
+                    Seleccione un archivo (.TXT) <strong style="color: red;">*</strong>:
+                </p>
+            </div>
+            <div class="row">
+              <div class="col-md-1"style="
+              padding-right: 0px;width: 100px;
+              "> 
+                <button mat-raised-button color="primary" (click)="RefrescarGrilla()" >
+                  <mat-icon>refresh</mat-icon>
+                </button>
+                
+              </div>
+                <div class="col-md-1" style="
+                padding-left: 0px;
+                "> 
+
+                    <input type="file" style="display: none" #fileInput accept=".txt" (change)="onChangeFileInput()" />
+                    <button mat-raised-button class="file-select-button" (click)="onClickFileInputButton()">
+                      <mat-icon>attach_file</mat-icon>
+                      subir archivo
+                    </button>
+                    
+                </div>
+                <div class="col-md-1" style="padding: 0%;width: 50px;"> </div>
+                <div class="col-md-3" style="justify-content: center;">
+                    <div class="card" style="margin-top: 2.5px;">
+                        <ng-container *ngIf="!file; else fileName">
+                            <div class ="row" style="margin: 2%;height: 20px;">
+                                <div class="col-md-11">
+                                    <p class="file-name">
+                                        Ningún archivo seleccionado
+                                    </p>
+                                </div>
+                                <div class="col-md-1" style="padding-left: 0px;">
+                                     <span class="k-icon k-i-file-error"
+                                     style="color: rgb(220, 200, 71);"></span>
+                                </div>
+                                
+                            </div>
+                        </ng-container>
+                        <ng-template #fileName>
+                            <div class ="row" style="margin: 2%;height: 20px;">
+                                <div class="col-md-11">
+                                    <p class="file-name fileInput">{{ file?.name }}  </p>
+                                </div>
+                                <div class="col-md-1" style="padding-left: 0px;">
+                                    <ng-container *ngIf="file?.type=='text/plain'">
+                                        <span class="k-icon k-i-track-changes-accept"
+                                        style="color: rgb(98, 189, 84);"></span>
+                                    </ng-container>
+                                    <ng-container *ngIf="file?.type!='text/plain'">
+                                        <span class="k-icon k-i-track-changes-reject"
+                                        style="color: rgb(144, 37, 37);"></span>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                    
+                </div>
+                <div class="col-md-1" style="margin-top: 1.5px;">
+                  <ng-container *ngIf="cargar">
+                    <button mat-raised-button color="primary" class="file-select-button" (click)="VisualizarCrep()">
+                      <mat-icon>save_alt</mat-icon>
+                      Cargar
+                  </button>
+                  </ng-container>
+                </div>
+            </div>
+            </div>
+          </div>
+          <br>
+          <div class="row">
+                <ng-container *ngIf="loading==true">
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                </ng-container>
+                <div class="row">
+                  <div class="col-md-12">
+                    <kendo-grid
+                    [kendoGridBinding]="txtTabla"
+                      [pageSize]="20"
+                      [sortable]="true"
+                      [reorderable]="true"
+                      [resizable]="true"
+                      [columnMenu]="{ filter: true }"
+                      [selectable]="true"
+                    >
+                    <kendo-grid-command-column
+                    [sticky]="true"
+                    title="Eliminar"
+                    [width]="120"
+                    headerClass="justify-content-center text-center k-grid-header-command"
+                    >
+                    <ng-template 
+                    kendoGridCellTemplate 
+                    let-dataItem="dataItem" 
+                    let-rowIndex="rowIndex"
+                    >
+                        <div class="w-100 d-flex justify-content-center" style="padding:20px" kendoTooltip>
+                    
+
+                            <button
+                            title="Eliminar"
+                            kendoButton
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            (click)="Eliminar(dataItem,rowIndex)"
+                            >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                            </button>
+                        </div>
+                    </ng-template>
+                  </kendo-grid-command-column>
+                      <kendo-grid-column
+                        title="CodUsuario"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="codigousuario"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="CodRetorno"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="codigoespecial"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="FechaPago"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="fechapago"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="FechaVcmto"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="fechavencimiento"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="MontoPago"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="montopago"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="MontoMora"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="montomora"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="MontoTotal"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="montototal"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Observaciones"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="observaciones"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Moneda"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="moneda"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="NroOperacion"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="cuenta"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <ng-template kendoGridNoRecordsTemplate>
+                        <div>
+                          <kendo-badge-container>
+                            <kendo-icon name="cloud" size="large"></kendo-icon>
+                            <kendo-badge position="inside">
+                              <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                            </kendo-badge>
+                          </kendo-badge-container>
+                        </div>
+                        <p>No hay registros cargados!</p>
+                      </ng-template>
+                    </kendo-grid>
+                  </div>
+                </div>
+                <ng-container *ngIf="activar==true">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button
+                          style="margin-top: 1.5rem"
+                          kendoButton
+                          type="button"
+                          themeColor="primary"
+                          (click)="ProcesarPago()"
+                        >
+                          Procesar Pago
+                        </button>
+                      </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,523 @@
+
+    <app-loader *ngIf="loaderModalComprobante"></app-loader>
+    <div class="modal-header">
+      <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+        {{nombreModal}}
+      </h2>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body" >
+      <form class="k-form" [formGroup]="formGroupComprobante">
+        <fieldset class="k-form-fieldset">
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idSede" class="k-label">
+                    <span
+                    >Sede :
+                    <strong class="text-danger">*</strong></span>
+                </label>
+                <kendo-dropdownlist
+                    formControlName="idSede"
+                    class="d-flex"
+                    size="small"
+                    #idSede
+                    [data]="listaSede"
+                    textField="nombre"
+                    valueField="id"
+                    [defaultItem]="{id:null,nombre:'Seleccionar Sede'}"
+                    [valuePrimitive]="true"
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint>Seleccione un tipo de Documento SUNAT</kendo-formhint>
+  
+                <kendo-formerror>{{ getErrorMessageComprobante("idSunatDocumento") }} </kendo-formerror>
+  
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idSunatDocumento" class="k-label">
+                    <span
+                    >Tipo Documento :
+                    <strong class="text-danger">*</strong></span>
+                </label>
+                <kendo-dropdownlist
+                    formControlName="idSunatDocumento"
+                    class="d-flex"
+                    size="small"
+                    #idSunatDocumento
+                    [data]="itemsDocSunat"
+                    textField="nombre"
+                    valueField="id"
+                    [defaultItem]="{id:null,nombre:'Seleccionar documento SUNAT'}"
+                    [valuePrimitive]="true"
+                    [filterable]="true"
+                    (filterChange)="filterChangeDocSunat($event)"
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint>Seleccione un tipo de Documento SUNAT</kendo-formhint>
+  
+                <kendo-formerror>{{ getErrorMessageComprobante("idSunatDocumento") }} </kendo-formerror>
+  
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idProveedor" class="k-label">
+                    <span
+                    >Proveedor :
+                    <strong class="text-danger">*</strong></span>
+                </label>
+                <kendo-dropdownlist
+                    formControlName="idProveedor"
+                    class="d-flex"
+                    size="small"
+                    #idProveedor
+                    [data]="listaProveedor"
+                    textField="nroDocIdentidad"
+                    valueField="id"
+                    [defaultItem]="{id:null,nroDocIdentidad:'Seleccionar'}"
+                    [valuePrimitive]="true"
+                    [filterable]="true"
+                    (filterChange)="filterChangeProvedor($event)"
+                    (selectionChange)="seleccionPreveedor($event)"
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint>Seleccine un proveedor</kendo-formhint>
+  
+                <kendo-formerror>{{ getErrorMessageComprobante("idProveedor") }} </kendo-formerror>
+  
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-7 k-form-horizontal" style="padding-right:0px;">
+                  <div class="row" >
+                    <div class="col-md-6" style="padding-top: 12px;padding-right:0px;">
+                      <label [for]="Serie" class="k-label">
+                        <span
+                        >Serie y Número<br>de Documento :
+                        <strong class="text-danger">*</strong></span>
+                    </label>
+                    </div>
+                    <div class="col-md-4" style="padding-right:0px;padding-left:0px;">
+                      <kendo-formfield>
+                        <kendo-textbox
+                        #Serie
+                        orientation="horizontal"
+                        [style.width.px]="120"
+                        formControlName="serie"
+                        placeholder="Serie.."
+                        [maxlength]="6"
+                        (blur)="onBlurSerie()"
+                        >
+                        </kendo-textbox>  
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-5" style="padding-left:0px;">
+                  <kendo-formfield>
+                    <kendo-textbox
+                      #numeroComprobante
+                      orientation="horizontal"
+                      [style.width.px]="170"
+                      formControlName="nroComprobante"
+                      placeholder="Número.."
+                      [maxlength]="13"
+                      (blur)="onBlurNumero()"
+                      >
+                      </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal" >
+                <label [for]="fechaEmision" class="k-label">
+                  <span
+                    > Fecha de Emisión :
+                    <strong class="text-danger">*</strong></span
+                  >
+                </label>
+                <kendo-datepicker
+                    #fechaEmision
+                    formControlName="fechaEmision"
+                    [incompleteDateValidation]="true"
+                    calendarType="classic"
+                    [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                    placeholder="dia-mes-año"
+                ></kendo-datepicker>
+                <kendo-formhint>Ingrese la fecha de emisión</kendo-formhint>
+                <kendo-formerror>{{ getErrorMessageComprobante("fechaEmision") }} </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal" >
+                <label [for]="fechaProgramacion" class="k-label">
+                  <span
+                    > Fecha de Programación :
+                    <strong class="text-danger">*</strong></span
+                  >
+                </label>
+                <kendo-datepicker
+                    #fechaProgramacion
+                    formControlName="fechaProgramacion"
+                    [incompleteDateValidation]="true"
+                    calendarType="classic"
+                    [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                    placeholder="dia-mes-año"
+                ></kendo-datepicker>
+                <kendo-formhint>Ingrese la fecha de programación</kendo-formhint>
+                <kendo-formerror>{{ getErrorMessageComprobante("fechaProgramacion") }} </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idPais" class="k-label">
+                    <span
+                    >Pais :
+                    <strong class="text-danger">*</strong></span>
+                </label>
+                <kendo-dropdownlist
+                    formControlName="idPais"
+                    class="d-flex"
+                    size="small"
+                    #idPais
+                    [data]="listaPais"
+                    textField="nombrePais"
+                    valueField="id"
+                    [defaultItem]="{id:null,nombrePais:'Seleccionar'}"
+                    [valuePrimitive]="true"
+                    (selectionChange)="seleccionPais($event)"
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint>Seleccione un pais</kendo-formhint>
+  
+                <kendo-formerror>{{ getErrorMessageComprobante("idPais") }} </kendo-formerror>
+  
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="montoInafecto" class="k-label">
+                    <span
+                    >Monto Inafecto :</span>
+                  </label>
+                  <kendo-numerictextbox
+                  #montoInafecto
+                  orientation="horizontal"
+                  [style.width.px]="170"
+                  formControlName="montoInafecto"
+                  [min]="0"
+                  [decimals]="3"
+                  [autoCorrect]="true"
+                  (valueChange)="CalcularMontoNetoComprobante()"
+                  (blur)="CalcularMontoNetoComprobante()"
+                  >
+                  </kendo-numerictextbox>
+                  <kendo-formhint>Ingrese el monto inafecto</kendo-formhint>
+                </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal" >
+                <label [for]="montoBruto" class="k-label" >
+                  <span
+                    >Monto Afecto :
+                    <strong class="text-danger">*</strong></span
+                  >
+                </label>
+                <kendo-numerictextbox
+                #montoBruto
+                orientation="horizontal"
+                [style.width.px]="170"
+                [decimals]="3"
+                formControlName="montoBruto"
+                [min]="0"
+                [autoCorrect]="true"
+                (valueChange)="CalcularMontoNetoComprobante()"
+                (blur)="CalcularMontoNetoComprobante()"
+                >
+                </kendo-numerictextbox>
+                <kendo-formhint>Ingrese el monto afecto</kendo-formhint>
+                <kendo-formerror>{{ getErrorMessageComprobante("montoBruto") }}</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal" >
+                <label [for]="montoBruto" class="k-label" >
+                  <span
+                    >Otra taza de Contribución :</span
+                  >
+                </label>
+                <kendo-numerictextbox
+                #montoBruto
+                orientation="horizontal"
+                [style.width.px]="170"
+                formControlName="otraTazaContribucion"
+                [min]="0"
+                [decimals]="3"
+                [autoCorrect]="true"
+                (valueChange)="CalcularMontoNetoComprobante()"
+                (blur)="CalcularMontoNetoComprobante()"
+                >
+                </kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal" >
+                <label [for]="ajusteMontoBruto" class="k-label" >
+                  <span
+                    >Reajuste :</span
+                  >
+                </label>
+                <kendo-numerictextbox
+                #ajusteMontoBruto
+                orientation="horizontal"
+                [style.width.px]="170"
+                formControlName="ajusteMontoBruto"
+                [min]="0"
+                [max]="0.99"
+                [step]="0.01"
+                [decimals]="2"
+                [autoCorrect]="true"
+                (valueChange)="CalcularMontoNetoComprobante()"
+                (blur)="CalcularMontoNetoComprobante()"
+                >
+                </kendo-numerictextbox>
+                <kendo-formhint>Ingrese el reajuste del monto neto</kendo-formhint>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col k-form-horizontal">
+            <div class="row">
+              <div class="col-md-2" style="padding: 0px !important;"> </div>
+              <div class="col-md-4" style="padding: 0px !important;">
+                <kendo-formfield orientation="horizontal">
+                  <div class="k-checkbox-wrap">
+                    <input
+                      class="d-flex"
+                      size="medium"
+                      #igvChek
+                      type="checkbox"
+                      kendoCheckBox
+                      formControlName="igvChek"
+                      (change)="CalcularMontoNetoComprobante()"
+                    />
+                    <kendo-label
+                      [for]="igvChek"
+                      style="padding-top: 0px !important;"
+                      class="k-checkbox-label mb-0 pt-2"
+                      text="IGV (%)"
+                    ></kendo-label>
+                  </div>
+                </kendo-formfield>
+              </div>
+              <div 
+              *ngIf="formGroupComprobante.get('igvChek').value"
+              class="col-md-5" 
+              style="padding-top: 12px !important;">
+                <kendo-textbox
+                orientation="horizontal"
+                [style.width.px]="170"
+                formControlName="porcentajeIgv"
+                [readonly]="true"
+                (valueChange)="CalcularMontoNetoComprobante()"
+                >
+                </kendo-textbox>
+              </div>
+            </div>
+          </div>
+          <div class="col k-form-horizontal">
+            <div class="row">
+              <div class="col-md-2" style="padding: 0px !important;"></div>
+              <div class="col-md-4" style="padding: 0px !important;">
+                <kendo-formfield orientation="horizontal">
+                  <div class="k-checkbox-wrap">
+                    <input
+                      class="d-flex"
+                      size="medium"
+                      #retencionChek
+                      type="checkbox"
+                      kendoCheckBox
+                      formControlName="retencionChek"
+                      (change)="retencionChekEstado($event)"
+                    />
+                    <kendo-label
+                      [for]="retencionChek"
+                      style="padding-top: 0px !important;"
+                      class="k-checkbox-label mb-0 pt-2"
+                      text="Retención (%)"
+                    ></kendo-label>
+                  </div>
+                </kendo-formfield>
+              </div>
+              <div 
+              *ngIf="formGroupComprobante.get('retencionChek').value"
+              class="col-md-5" 
+              style="padding-top: 8px !important;" >
+                <kendo-dropdownlist
+                    formControlName="idRetencion"
+                    class="d-flex"
+                    size="small"
+                    #idFur
+                    [data]="itemsRetencion"
+                    textField="nombre"
+                    valueField="id"
+                    [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                    [valuePrimitive]="true"
+                    (selectionChange)="selectionChancge($event)"
+                    (blur)="CalcularMontoNetoComprobante()"
+                >
+                <ng-template kendoDropDownListNoDataTemplate>
+                  <h4>
+                    <span class="k-icon k-i-exclamation-circle"></span><br /><br />
+                    Seleccione un Pais!
+                  </h4>
+                </ng-template>
+                </kendo-dropdownlist>
+              </div>
+            </div>
+          </div>
+          <div class="col k-form-horizontal">
+            <div class="row">
+              <div class="col-md-2" style="padding: 0px !important;"></div>
+              <div class="col-md-4" style="padding: 0px !important;">
+                <kendo-formfield orientation="horizontal">
+                  <div class="k-checkbox-wrap">
+                    <input
+                      class="d-flex"
+                      size="medium"
+                      #detraccionChek
+                      type="checkbox"
+                      kendoCheckBox
+                      formControlName="detraccionChek"
+                      (change)="detraccionChekEstado($event)"
+                    />
+                    <kendo-label
+                      [for]="detraccionChek"
+                      style="padding-top: 0px !important;"
+                      class="k-checkbox-label mb-0 pt-2"
+                      text="Detracción (%)"
+                    ></kendo-label>
+                  </div>
+                </kendo-formfield>
+              </div>
+              <div 
+              *ngIf="formGroupComprobante.get('detraccionChek').value"
+              class="col-md-5" 
+              style="padding-top: 8px !important;">
+                <kendo-dropdownlist
+                    formControlName="idDetraccion"
+                    class="d-flex"
+                    size="small"
+                    #idFur
+                    [data]="itemsDetraccion"
+                    textField="nombre"
+                    valueField="id"
+                    [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                    [valuePrimitive]="true"
+                >
+                <ng-template kendoDropDownListNoDataTemplate>
+                  <h4>
+                    <span class="k-icon k-i-exclamation-circle"></span><br /><br />
+                    Seleccione un Pais!
+                  </h4>
+                </ng-template>
+                </kendo-dropdownlist>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal" >
+                <label [for]="totalEfectivo" class="k-label" >
+                  <span
+                    >Monto Neto :</span
+                  >
+                </label>
+                <kendo-numerictextbox
+                [readonly]="true"
+                #totalEfectivo
+                orientation="horizontal"
+                [style.width.px]="170"
+                formControlName="montoNeto"
+                [min]="0"
+                [autoCorrect]="true"
+                [spinners]="false"
+                >
+                </kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idMoneda" class="k-label">
+                    <span
+                    >Moneda :
+                    <strong class="text-danger">*</strong></span>
+                </label>
+                <kendo-dropdownlist
+                    formControlName="idMoneda"
+                    class="d-flex"
+                    size="small"
+                    #idMoneda
+                    [data]="listaMoneda"
+                    textField="nombrePlural"
+                    valueField="id"
+                    [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                    [valuePrimitive]="true"
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint>Seleccione una moneda</kendo-formhint>
+                <kendo-formerror>{{ getErrorMessageComprobante("idMoneda") }} </kendo-formerror>
+  
+                </kendo-formfield>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="accionModalComprobante()"
+      >
+        {{nombreBTN}}
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>

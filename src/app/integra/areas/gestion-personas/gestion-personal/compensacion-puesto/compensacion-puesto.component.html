@@ -1,0 +1,822 @@
+<div class="contenedor">
+  <div class="row">
+      <div class="col-12">
+          <div class="card">
+              <div class="card-header bg-color-material pb-0">
+                <h2 class="text-white mb-2">(O) Compensación por Puesto de Trabajo</h2>
+              </div>
+              <div class="card-body p-4" id="grillaAgendaTab">
+                <div class="col-12">
+                  <kendo-grid
+                  kendoGrid
+                  [kendoGridBinding]="gridCompensacionPuesto.data"
+                  [loading]="gridCompensacionPuesto.loading"
+                  (remove)="gridCompensacionPuesto.removeHandler($event)"
+                    [resizable]="true"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"
+                    [skip]="0"
+                    [pageSize]="10"
+                    filterable="menu"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoButton
+                        icon="reload"
+                        fillMode="flat"
+                        themeColor="secondary"
+                        (click)="obtener()"
+                      ></button>
+                      <kendo-grid-spacer></kendo-grid-spacer>
+                      <button
+                       kendoGridAddCommand
+                       themeColor="primary"
+                       icon="plus"
+                       (click)="abrirModalCompensacion(modalPuestoTrabajoEditar, true)"
+                      >
+                        Nuevo
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="personalAreaTrabajo"
+                      title="Área"
+                      headerClass="header-grid-integra"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="puestoTrabajo"
+                      title="Puesto de Trabajo"
+                      headerClass="header-grid-integra"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="categoria"
+                      title="Categoria"
+                      headerClass="header-grid-integra"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="pais"
+                      title="Pais"
+                      headerClass="header-grid-integra"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-command-column title="Opciones" [width]="150" [headerClass]="'header-grid-integra'">
+                      <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem="dataItem">
+                        <div class="w-100 d-flex justify-content-center">
+                          <button
+                            kendoGridEditCommand
+                            themeColor="warning"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                            (click)="abrirModalCompensacion(modalPuestoTrabajoEditar, isNew, dataItem)"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-delete k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-command-column>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+      </div>
+  </div>
+</div>
+
+<!-- Modal Modificador -->
+<ng-template #modalPuestoTrabajoEditar let-modal>
+<app-loader *ngIf="loaderModal"></app-loader>
+<div class="modal-header bg-primary-header-modal">
+  <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+    Modificar Compensación por Puesto
+  </h3>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="limpiarCamposForm()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="formCompensacionPuesto">
+    <div class="row mb-3">
+      <!-- area -->
+      <div class="col-12 col-md-6 k-form-horizontal">
+        <kendo-formfield orientation="horizontal" class="d-flex align-items-center">
+          <kendo-label
+            class="flex-shrink-0"
+            [style.width.px]="70"
+            [for]="area"
+            text="Área:"
+          >
+          </kendo-label>
+          <kendo-dropdownlist
+            #area
+            class="flex-grow-1"
+            [data]="combos.obtenerArea"
+            textField="nombre"
+            valueField="id"
+            formControlName="idPersonalAreaTrabajo"
+            [filterable]="true"
+            [valuePrimitive]="true"
+            [defaultItem]="{ id: null, nombre: '<Seleccione el Área>' }"
+            [kendoDropDownFilter]="filterSettings"
+          ></kendo-dropdownlist>
+          <kendo-formerror>
+            Por favor, Seleccione un Área.
+          </kendo-formerror>
+        </kendo-formfield>
+      </div>
+      <!-- pais -->
+      <div class="col-12 col-md-6 k-form-horizontal">
+        <kendo-formfield orientation="horizontal" class="d-flex align-items-center">
+          <kendo-label
+            class="flex-shrink-0"
+            [style.width.px]="70"
+            [for]="pais"
+            text="País:"
+          >
+          </kendo-label>
+          <kendo-dropdownlist
+            #pais
+            class="flex-grow-1"
+            [data]="combos.obtenerPais"
+            textField="nombre"
+            valueField="id"
+            formControlName="idPais"
+            [filterable]="true"
+            [valuePrimitive]="true"
+            [defaultItem]="{ id: null, nombre: '<Seleccione el País>' }"
+            [kendoDropDownFilter]="filterSettings"
+          ></kendo-dropdownlist>
+          <kendo-formerror>
+            Por favor, Seleccione un País.
+          </kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <!-- puesto trabajo -->
+      <div class="col-12 col-md-6 k-form-horizontal">
+        <kendo-formfield orientation="horizontal" class="d-flex align-items-center">
+          <kendo-label
+            class="flex-shrink-0"
+            [style.width.px]="70"
+            [for]="puestoTrabajo"
+            text="Puesto de Trabajo:"
+          >
+          </kendo-label>
+          <kendo-dropdownlist
+            #puestoTrabajo
+            class="flex-grow-1"
+            [data]="combos.obtenerPuestoTrabajo"
+            textField="nombre"
+            valueField="id"
+            formControlName="idPuestoTrabajo"
+            [filterable]="true"
+            [valuePrimitive]="true"
+            [defaultItem]="{ id: null, nombre: '<Seleccione el Puesto de Trabajo>' }"
+            [kendoDropDownFilter]="filterSettings"
+          ></kendo-dropdownlist>
+          <kendo-formerror>
+            Por favor, Seleccione un Puesto de Trabajo.
+          </kendo-formerror>
+        </kendo-formfield>
+      </div>
+      <!-- categoria -->
+      <div class="col-12 col-md-6 k-form-horizontal">
+        <kendo-formfield orientation="horizontal" class="d-flex align-items-center">
+          <kendo-label
+            class="flex-shrink-0"
+            [style.width.px]="70"
+            [for]="categoria"
+            text="Categoría:"
+          >
+          </kendo-label>
+          <kendo-dropdownlist
+            #categoria
+            class="flex-grow-1"
+            [data]="combos.obtenerCategoria"
+            textField="nombre"
+            valueField="id"
+            formControlName="idCategoria"
+            [filterable]="true"
+            [valuePrimitive]="true"
+            [defaultItem]="{ id: null, nombre: '<Seleccione una Categoría>' }"
+            [kendoDropDownFilter]="filterSettings"
+          ></kendo-dropdownlist>
+          <kendo-formerror>
+            Por favor, Seleccione una Categoría.
+          </kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </div>
+  </form>
+
+  <div class="contenedor">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-color-material pb-0 d-flex justify-content-between align-items-center">
+            <h2 class="text-white mb-2">Detalles</h2>
+          </div>
+          <div class="card-body" id="grillaPuestoTrabajoDetalle">
+              <kendo-grid
+                kendoGrid
+                [data]="gridCompensacionPuestoDetalle.data"
+                [kendoGridBinding]="gridCompensacionPuestoDetalle.data"
+                [loading]="gridCompensacionPuestoDetalle.loading"
+                (cancel)="gridCompensacionPuestoDetalle.cancelHandler($event)"
+                (save)="gridCompensacionPuestoDetalle.saveHandler($event)"
+                (remove)="gridCompensacionPuestoDetalle.removeHandler($event)"
+                (add)="gridCompensacionPuestoDetalle.addHandler($event)"
+                (edit)="gridCompensacionPuestoDetalle.editHandler($event)"
+                [resizable]="true"
+                [pageable]="{
+                  buttonCount: 5,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+                [pageSize]="10"
+                [sortable]="true"
+                [reorderable]="true"
+                [resizable]="true"
+                [columnMenu]="{ filter: true }"
+                [selectable]="{ enabled: true, checkboxOnly: true }"
+              >
+                <ng-template kendoGridToolbarTemplate>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                    <button
+                    kendoButton
+                    icon="upload"
+                    fillMode="flat"
+                    themeColor="warning"
+                    (click)="importarExcel()"
+                    >
+                    Importar Excel
+                    </button>
+                  <button
+                    kendoGridAddCommand
+                    themeColor="primary"
+                    icon="plus"
+                  >
+                    Agregar
+                  </button>
+                </ng-template>
+                <kendo-grid-column
+                  field="idRemuneracion"
+                  [width]="200"
+                  title="Tipo Remuneracion"
+                  headerClass="header-grid-integra"
+                >
+                    <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                          getNombre(dataItem.idRemuneracion, "obtenerRemuneracion")
+                      }}
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="
+                        formGroup.get('idRemuneracion')
+                      "
+                      [data]="combos.obtenerRemuneracion"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccionar...'
+                      }"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="idTipoRemuneracion"
+                  [width]="150"
+                  title="Tipo"
+                  headerClass="header-grid-integra"
+                >
+                    <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                          getNombre(dataItem.idTipoRemuneracion, "obtenerTipoRemuneracion")
+                      }}
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="
+                        formGroup.get('idTipoRemuneracion')
+                      "
+                      [data]="combos.obtenerTipoRemuneracion"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccionar...'
+                      }"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="idClaseRemuneracion"
+                  title="Clase"
+                  [width]="150"
+                  headerClass="header-grid-integra"
+                >
+                    <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                          getNombre(dataItem.idClaseRemuneracion, "obtenerClaseRemuneracion")
+                      }}
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="
+                        formGroup.get('idClaseRemuneracion')
+                      "
+                      [data]="combos.obtenerClaseRemuneracion"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccionar...'
+                      }"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                      (valueChange)="onClaseChange($event, formGroup)"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="idPeriodoRemuneracion"
+                  title="Periodo"
+                  headerClass="header-grid-integra"
+                  [width]="150"
+                >
+                    <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                          getNombre(dataItem.idPeriodoRemuneracion, "obtenerPeriodoRemuneracion")
+                      }}
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="
+                        formGroup.get('idPeriodoRemuneracion')
+                      "
+                      [data]="combos.obtenerPeriodoRemuneracion"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccionar...'
+                      }"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="esTasa"
+                  title="Tasa"
+                  [width]="150"
+                  headerClass="header-grid-integra"
+                >
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                    <div *ngIf="dataItem.esTasa">Si</div>
+                    <div *ngIf="!dataItem.esTasa">No</div>
+                    </ng-template>
+                    <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                      <kendo-dropdownlist
+                        [formControl]="formGroup.get('esTasa')"
+                        [data]="[
+                        { text: 'Sí', value: true },
+                        { text: 'No', value: false }
+                        ]"
+                        textField="text"
+                        valueField="value"
+                        [valuePrimitive]="true"
+                        [defaultItem]="{
+                        text: 'Seleccionar...',
+                        value: null
+                        }"
+                        (valueChange)="onEsTasaChange($event, formGroup)"
+                      >
+                      </kendo-dropdownlist>
+                    </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="montoFijo"
+                  title="Monto"
+                  [width]="150"
+                  editor="numeric"
+                  headerClass="header-grid-integra">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="idMoneda"
+                  title="Moneda"
+                  [width]="150"
+                  headerClass="header-grid-integra"
+                >
+                    <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                          getNombre(dataItem.idMoneda, "obtenerMoneda")
+                      }}
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="
+                        formGroup.get('idMoneda')
+                      "
+                      [data]="combos.obtenerMoneda"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccionar...'
+                      }"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="porcentajeTasa"
+                  title="% Tasa"
+                  [width]="200"
+                  editor="numeric"
+                  headerClass="header-grid-integra">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                  <ng-container *ngIf="dataItem.porcentajeTasa">{{ dataItem.porcentajeTasa }}</ng-container>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="descripcionEquipo"
+                  title="Descripción de Equipo"
+                  [width]="250"
+                  editor="text"
+                  headerClass="header-grid-integra"
+                >
+                  
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="tieneCondicion"
+                  title="Condición"
+                  [width]="150"
+                  headerClass="header-grid-integra"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div *ngIf="dataItem.tieneCondicion">Si</div>
+                    <div *ngIf="!dataItem.tieneCondicion">No</div>
+                  </ng-template>
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('tieneCondicion')"
+                      [data]="[
+                        { text: 'Sí', value: true },
+                        { text: 'No', value: false }
+                      ]"
+                      textField="text"
+                      valueField="value"
+                      [valuePrimitive]="true"
+                      [defaultItem]="{
+                        text: 'Seleccionar...',
+                        value: null
+                      }"
+                      (valueChange)="onTieneCondicionChange($event, formGroup)"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="idDescripcionMonetaria"
+                  title="Descripcion Monetaria"
+                  [width]="250"
+                  headerClass="header-grid-integra"
+                  >
+                    <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                          getNombre(dataItem.idDescripcionMonetaria, "obtenerDescripcionMonetaria")
+                      }}
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="
+                        formGroup.get('idDescripcionMonetaria')
+                      "
+                      [data]="combos.obtenerDescripcionMonetaria"
+                      textField="nombre"
+                      [disabled]="true"
+                      valueField="id"
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccionar...'
+                      }"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="rangoValorMinimo"
+                  title="Valor Mínimo"
+                  [width]="250"
+                  [disabled]="true"
+                  editor="numeric"
+                  headerClass="header-grid-integra">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="rangoValorMaximo"
+                  title="Valor Máximo"
+                  [width]="250"
+                  editor="numeric"
+                  headerClass="header-grid-integra">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="idMonedaValorVariable"
+                  title="Moneda"
+                  [width]="250"
+                  headerClass="header-grid-integra"
+                >
+                    <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      {{
+                          getNombre(dataItem.idMonedaValorVariable, "obtenerMoneda")
+                      }}
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-dropdownlist
+                      [formControl]="
+                        formGroup.get('idMonedaValorVariable')
+                      "
+                      [data]="combos.obtenerMoneda"
+                      textField="nombre"
+                      [disabled]="true"
+                      valueField="id"
+                      [defaultItem]="{
+                        id: null,
+                        nombre: 'Seleccionar...'
+                      }"
+                      [valuePrimitive]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="ingresoMensual"
+                  title="Ingreso del Mes"
+                  [width]="200"
+                  editor="numeric"
+                  headerClass="header-grid-integra">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <ng-container *ngIf="dataItem.ingresoMensual">{{ dataItem.ingresoMensual }}%</ng-container>
+                  </ng-template>
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <input kendoTextBox [formControl]="formGroup.get('ingresoMensual')" *ngIf="formGroup.get('ingresoMensual').value">
+                    </ng-template>
+                </kendo-grid-column>
+
+                <!-- terminando cambio -->
+                <kendo-grid-command-column
+                  title="Opciones"
+                  [width]="150"
+                  [sticky]="true"
+                  [headerClass]="'header-grid-integra'"
+                >
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem="dataItem"
+                    let-isNew="isNew"
+                  >
+                    <div class="w-100 d-flex justify-content-center">
+                      <button
+                        kendoGridEditCommand
+                        themeColor="warning"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Editar"
+                      >
+                        <span class="k-icon k-i-edit k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoGridRemoveCommand
+                        themeColor="error"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="removeDetalle"
+                      >
+                        <span class="k-icon k-i-delete k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoGridSaveCommand
+                        themeColor="primary"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Guardar"
+                      >
+                        <span class="k-icon k-i-save k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoGridCancelCommand
+                        themeColor="secondary"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Cancelar"
+                      >
+                        <span class="k-icon k-i-cancel k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Crear/Editar-->
+<div class="modal-footer">
+  <button
+    *ngIf="isNew"
+    type="button"
+    class="btn btn-primary"
+    (click)="guardarCompensacionPuesto()"
+  >
+    Guardar
+  </button>
+  <button
+    *ngIf="!isNew"
+    type="button"
+    class="btn btn-primary"
+    (click)="actualizarCompensacionPuesto()"
+  >
+    Actualizar
+  </button>
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="modal.close('Close click')"
+  >
+    Cancelar
+  </button>
+</div>
+</ng-template>
+<!-- Modal Modificador Individual -->
+
+

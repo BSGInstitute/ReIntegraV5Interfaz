@@ -1,0 +1,486 @@
+<!-- #region Modal modalSubPPEspecifico -->
+<div class="modal-header">
+  <h2 class="modal-title w-100 mb-0 fw-bold">
+    Lista de Programas Especificos asociados a
+    {{ dataItemPespecificoTemp.nombre }}
+  </h2>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body" #modalSubPespecifico id="modalSubPespecifico">
+  <div class="row">
+    <div class="w-100">
+      <kendo-grid
+        #kgridSubPgeneral
+        [kendoGridBinding]="gridSubPgeneral.data"
+        [loading]="gridSubPgeneral.loading"
+        (cellClick)="gridSubPgeneral.cellClickHandler($event)"
+        (cellClose)="gridSubPgeneral.cellCloseHandler($event)"
+        (remove)="gridSubPgeneral.removeHandler($event)"
+        [pageable]="{
+          buttonCount: 5,
+          info: true,
+          type: 'numeric',
+          pageSizes: true,
+          previousNext: true,
+          position: 'bottom'
+        }"
+        [pageSize]="20"
+        [sort]="[
+          {
+            field: 'fechaHoraInicio',
+            dir: 'asc'
+          }
+        ]"
+        [selectable]="false"
+        kendoGridSelectBy="id"
+        [(selectedKeys)]="idsPespecificoSeleccionado"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          <button
+            kendoButton
+            icon="reload"
+            fillMode="flat"
+            themeColor="base"
+            (click)="reloadGridSupPgeneral(kgridSubPgeneral)"
+          ></button>
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <!-- <button
+            kendoButton
+            icon="plus"
+            themeColor="success"
+            (click)="agregarModuloCurso()"
+          >
+            Agregar
+          </button> -->
+        </ng-template>
+        <kendo-grid-checkbox-column
+          [width]="60"
+          [locked]="true"
+          [headerClass]="{ 'text-center': true }"
+          [class]="{ 'text-center': true }"
+          [showSelectAll]="true"
+        ></kendo-grid-checkbox-column>
+        <kendo-grid-column
+          [locked]="true"
+          title="N°"
+          [width]="50"
+          class="text-center"
+          headerClass="justify-content-center"
+          [editable]="false"
+        >
+          <ng-template
+            kendoGridCellTemplate
+            let-dataItem
+            let-rowIndex="rowIndex"
+          >
+            {{ rowIndex + 1 }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="id"
+          title="Nombre Programa Especifico"
+          [width]="300"
+          headerClass="justify-content-center"
+          [editable]="false"
+        >
+          <ng-template
+            kendoGridCellTemplate
+            let-dataItem
+            let-rowIndex="rowIndex"
+          >
+            {{
+              dataItem.id != null && dataItem.id != 0
+                ? dataItem.nombre
+                : "Seleccione Modulo o Webinar"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('id')"
+              class="d-flex"
+              size="medium"
+              [data]="filtroPespecificoWebinar"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <!-- Se agrega para instituto INICIO-->
+        <kendo-grid-column
+          *ngIf="esProgramaInstitutoTemp"
+          field="idPeriodoLectivo"
+          title="Periodo Lectivo"
+          class="text-center"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombreCombo(dataItem.idPeriodoLectivo, "periodoLectivo") ??
+                "Seleccione Periodo Lectivo"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idPeriodoLectivo')"
+              class="d-flex"
+              size="medium"
+              [data]="combosModulo.periodoLectivo"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          *ngIf="esProgramaInstitutoTemp"
+          field="idCiclo"
+          title="Ciclo"
+          class="text-center"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombreCombo(dataItem.idCiclo, "ciclo") ??
+                "Seleccione ciclo"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idCiclo')"
+              class="d-flex"
+              size="medium"
+              [data]="combosModulo.ciclo"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <!-- Se agrega para instituto FIN-->
+        <kendo-grid-column
+          field="idEstadoPEspecifico"
+          title="Estado"
+          class="text-center"
+          [width]="120"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombreCombo(
+                dataItem.idEstadoPEspecifico,
+                "estadoPEspecifico"
+              ) ?? "Seleccione Estado"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idEstadoPEspecifico')"
+              class="d-flex"
+              size="medium"
+              [data]="combosModulo.estadoPEspecifico"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="idModalidadCurso"
+          title="Modalidad"
+          class="text-center"
+          [width]="150"
+          headerClass="justify-content-center"
+          ><ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombreCombo(dataItem.idModalidadCurso, "modalidad") ??
+                "Seleccione Modalidad"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idModalidadCurso')"
+              class="d-flex"
+              size="medium"
+              [data]="combosModulo.modalidad"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="duracion"
+          title="Duracion"
+          class="text-center"
+          [width]="90"
+          editor="numeric"
+          headerClass="justify-content-center"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="idProveedor"
+          title="Proveedor"
+          class="text-center"
+          [width]="145"
+          headerClass="justify-content-center"
+          ><ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombreCombo(dataItem.idProveedor, "proveedorCurso") ??
+                "Seleccione Proveedor"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idProveedor')"
+              class="d-flex"
+              size="medium"
+              [data]="combosModulo.proveedorCurso"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist> </ng-template
+        ></kendo-grid-column>
+        <kendo-grid-column
+          field="idAmbiente"
+          title="Ambiente"
+          class="text-center"
+          [width]="145"
+          headerClass="justify-content-center"
+          ><ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              obtenerNombreCombo(dataItem.idAmbiente, "ambiente") ??
+                "Seleccione Ambiente"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idAmbiente')"
+              class="d-flex"
+              size="medium"
+              [data]="filtroAmbienteWebinar"
+              textField="nombre"
+              valueField="codigo"
+              [defaultItem]="{ codigo: null, nombre: '<Seleccione>' }"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist> </ng-template
+        ></kendo-grid-column>
+        <kendo-grid-command-column
+          title="Acciones"
+          [width]="80"
+          headerClass="justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-center">
+              <button
+                *ngIf="dataItem.id != 0 && dataItem.id != null"
+                themeColor="success"
+                kendoButton
+                icon="download"
+                container="body"
+                placement="top"
+                ngbTooltip="Descargar"
+                (click)="generarDescargarCronogramaPorId(dataItem.id)"
+              ></button>
+              <button
+                *ngIf="dataItem.id == 0 || dataItem.id == null"
+                kendoGridRemoveCommand
+                themeColor="error"
+                icon="close"
+                container="body"
+                placement="top"
+                ngbTooltip="Eliminar"
+              ></button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+  <ng-container *ngIf="showCruces">
+    <div class="row mt-2 mb-3">
+      <div class="col-12 my-2">
+        <div class="alert alert-danger" role="alert">
+          Se encontraron cruces de Docente/Ambiente
+        </div>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="col-12">
+        <kendo-grid
+          [kendoGridBinding]="gridCruces.data"
+          [loading]="gridCruces.loading"
+          [selectable]="true"
+          [resizable]="true"
+          scrollable="scrollable"
+        >
+          <kendo-grid-column
+            field="curso"
+            title="Curso"
+            [width]="100"
+            headerClass="justify-content-center"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="nombreCentroCosto"
+            title="Centro Costo"
+            [width]="100"
+            headerClass="justify-content-center"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="fechaHoraInicio"
+            title="Fecha Inicio"
+            [width]="100"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{
+                dataItem.fechaHoraInicio != null
+                  ? (dataItem.fechaHoraInicio | date : "yyyy-MM-dd HH:mm")
+                  : "yyyy-MM-dd HH:mm"
+              }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="fechaFin"
+            title="Fecha Fin"
+            [width]="100"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{
+                dataItem.fechaFin != null
+                  ? (dataItem.fechaFin | date : "yyyy-MM-dd HH:mm")
+                  : "yyyy-MM-dd HH:mm"
+              }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="ambiente"
+            title="Ambiente"
+            [width]="100"
+            headerClass="justify-content-center"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="expositor"
+            title="Expositor"
+            [width]="100"
+            headerClass="justify-content-center"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="proveedor"
+            title="Proveedor"
+            [width]="100"
+            headerClass="justify-content-center"
+          ></kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </ng-container>
+  <div class="row mt-3 mb-2">
+    <div class="col-12">
+      <div
+        class="k-form-buttons m-0"
+        *ngIf="btnClosureSubPEspecifico.showBtnAsignarFrecuencia"
+      >
+        <button
+          themeColor="success"
+          size="medium"
+          class="col-12 mt-1"
+          kendoButton
+          (click)="crearCronograma()"
+        >
+          Asignar Frecuencia
+        </button>
+      </div>
+    </div>
+    <div class="col-12">
+      <div
+        class="k-form-buttons m-0"
+        *ngIf="btnClosureSubPEspecifico.showBtnVerCronograma"
+      >
+        <button
+          themeColor="tertiary"
+          size="medium"
+          kendoButton
+          class="col-12"
+          (click)="verCronograma()"
+        >
+          Ver Cronograma
+        </button>
+      </div>
+    </div>
+    <div class="col-12">
+      <div
+        class="k-form-buttons m-0"
+        *ngIf="btnClosureSubPEspecifico.showBtnModificarCronograma"
+      >
+        <button
+          themeColor="warning"
+          size="medium"
+          kendoButton
+          class="col-12"
+          (click)="modificarCronograma()"
+        >
+          Modificar Cronograma
+        </button>
+      </div>
+    </div>
+    <div class="col-12">
+      <div
+        class="k-form-buttons m-0"
+        *ngIf="btnClosureSubPEspecifico.showBtnGenerarFur"
+      >
+        <button
+          themeColor="success"
+          size="medium"
+          kendoButton
+          class="col-12 mb-1"
+          (click)="registroFur()"
+        >
+          Generar FUR
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="k-form-buttons m-0 justify-content-end">
+    <button
+      themeColor="error"
+      size="medium"
+      icon="close"
+      kendoButton
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+</div>
+<!-- #endregion Modal modalSubPPEspecifico-->

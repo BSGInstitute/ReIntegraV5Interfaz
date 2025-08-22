@@ -1,0 +1,756 @@
+<mat-expansion-panel
+  class="mt-2"
+  [expanded]="true"
+  (opened)="panelOpenState = true"
+  (closed)="!(panelOpenState = false)"
+>
+  <mat-expansion-panel-header class="enuciadoHeader">
+    <mat-panel-title>
+      Historial de Interacción de Oportunidades</mat-panel-title
+    >
+    <!-- <div
+      class="col"
+      style="margin-right: 12px; justify-content: end; display: flex"
+    >
+      <button
+        (click)="openModalComentario(modalCreacionComentario, $event)"
+        class="btn-hio-hover-effect"
+        style="
+          background: #0079ff;
+          border-radius: 10px;
+          color: white;
+          border: none;
+          padding: 7px;
+        "
+      >
+        <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+        Añadir comentario
+      </button>
+    </div> -->
+  </mat-expansion-panel-header>
+  <div class="card-body">
+    <div style="max-height: 500px; overflow-y: auto">
+      <table mat-table [dataSource]="gridHistorialInteraccionesCompleto">
+        <ng-container matColumnDef="actividad">
+          <th mat-header-cell *matHeaderCellDef>Actividad</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.nombreActividad ?? "Llamada de Seguimiento" }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let row">
+            <div>
+              <ng-container *ngIf="row.fechaSiguienteLlamada == null;else SinFechaSiguenteLlamada">
+                {{ row.fechaSiguienteLlamada | date : "dd/MM/yyyy" }}
+                <p class="d-inline fechaProgramada">P: 00000000000000</p>
+              </ng-container>
+              <ng-template #SinFechaSiguenteLlamada>
+                <p class="d-inline tiempos fechaProgramada">
+                  P: {{ row.fechaSiguienteLlamada | date : "dd/MM/yyyy" }}
+                </p>
+              </ng-template>
+              <br/>
+              <ng-container *ngIf="row.fechaModificacion == null || row.fechaModificacion == undefined;else SinFechaModificacion">
+                <p class="d-inline tiempos fechaReal">R: -</p>
+              </ng-container>
+              <ng-template #SinFechaModificacion>
+                <p class="d-inline tiempos fechaReal">
+                  R: {{ row.fechaModificacion | date : "dd/MM/yyyy" }}
+                </p>
+              </ng-template>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="datosLlamada">
+          <th mat-header-cell *matHeaderCellDef>
+            Hora Llamada/ Duración de Llamada
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <div>
+              <div
+                *ngIf="
+                  row.fechaSiguienteLlamada == null;
+                  else SinFechaSiguenteLlamada
+                "
+              >
+                <p class="d-inline fechaProgramada">P: 00000000000000</p>
+              </div>
+              <ng-template #SinFechaSiguenteLlamada>
+                <p class="d-inline tiempos fechaProgramada">
+                  P: {{ row.fechaSiguienteLlamada | date : "HH:mm" }}
+                </p>
+              </ng-template>
+              <br />
+              <div *ngIf="row.llamadasIntegra3cx">
+                <div *ngIf="row.llamadasIntegra3cx.length > 0">
+                  <div *ngFor="let data of row.llamadasIntegra3cx; let i = index">
+                    <p class="d-inline tiempos fechaReal">
+                      <strong>I{{ i + 1 }} </strong>
+                      {{ data.fechaInicioLlamada | date : "HH:mm" }}
+                      <!-- <strong>TF </strong>
+                      {{ data.fechaFinLlamada | date : "HH:mm" }} -->
+                      <!-- <span style="margin-left: 20px"></span> -->
+                      <br />
+                      <span class="colorPersonalizado">
+                        TT: {{ data.duracionTimbrado }}
+                      </span>
+                      /
+                      <span class="colorPersonalizado">
+                        TC: {{ data.duracionContestoMinutos }}
+                      </span>
+                      <span style="margin-left: 20px"></span>
+                      <ng-container
+                        *ngIf="data.duracionContestoMinutos != '0.0'"
+                      >
+                        <button
+                          *ngIf="data.duracionContestoMinutos != '0.0'"
+                          title="reproducirLlamada"
+                          class="d-inline botonReproducirLlamada"
+                          container="body"
+                          (click)="
+                            reproducirAudio(modalReproducirAudio,row.llamadasIntegra3cx[i])
+                          "
+                          [disabled]="
+                            data.duracionContestoMinutos == '0.0'
+                          "
+                        >
+                          <span class="material-icons"></span>
+                          <img
+                            class="circlegreen"
+                            src="assets/img/iconsagendaatc/Play.svg"
+                          />
+                        </button>
+                      </ng-container>
+                      <br />
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="estadoOcurrencia">
+          <th mat-header-cell *matHeaderCellDef>
+            Estado Ocurrencia/ Estado Llamadas
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <!-- <div *ngIf="row.llamadaIntegra"> -->
+              <p><strong>{{
+                row.estado
+                  ? row.estado  + (row.nombreOcurrencia? ", " + row.nombreOcurrencia : " ")
+                  : row.nombreOcurrencia ?? " "
+              }}</strong>
+              <br /></p>
+              <div *ngFor="let data of row.llamadasIntegra3cx">
+                <p>
+                  <strong>Tipo: </strong>{{ data.estadoLlamada }}<br />
+                  <strong>SubTipo: </strong>{{ data.subEstadoLlamada }}
+                  <br />
+                </p>
+              </div>
+            <!-- </div> -->
+<!--
+            <div *ngIf="row.llamadaIntegra == null && row.estado == null && row.nombreOcurrencia == null">
+              -Pendiente-
+            </div> -->
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="comentarios">
+          <th mat-header-cell *matHeaderCellDef>Comentario Pagos/Acádemico</th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngFor="let items of element.categoriasComentario">
+              <span
+                class="estilocatpago"
+                style="background-color: {{
+                  items.categorias[0].idTipoSeguimientoAlumnoCategoria === 1
+                    ? '#9bf7b5'
+                    : items.categorias[0].idTipoSeguimientoAlumnoCategoria === 2
+                    ? '#C8E0FF'
+                    : 'transparent'
+                }}"
+              >
+                {{
+                  items.categorias[0].idTipoSeguimientoAlumnoCategoria === 1
+                    ? "Pagos"
+                    : items.categorias[0].idTipoSeguimientoAlumnoCategoria === 2
+                    ? "Académico"
+                    : "Otro"
+                }}
+              </span>
+              <span
+                class="estilocategoria"
+                style="
+                  font-weight: bold;
+                  font: normal normal bold 14px/17px Roboto;
+                "
+              >
+                Categoría:
+              </span>
+              <span class="estilocategoria">
+                {{ items.categorias[0].tipoCategoria }}
+              </span>
+              <br />
+              <p style="margin-top: 10px">
+                {{ items.categorias[0].comentario ?? "Sin comentario" }}
+              </p>
+            </div>
+            <div *ngIf="element.categoriasComentario == null || element.categoriasComentario.length<=0">
+              - No registrado -
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="usuario">
+          <th mat-header-cell *matHeaderCellDef>Usuario Creacion</th>
+          <td mat-cell *matCellDef="let element">
+            <!-- <ul> -->
+              <div *ngFor="let items of element.categoriasComentario">
+                <!-- <li> -->
+                  {{ items.usuarioCreacion }}
+                <!-- </li> -->
+                <br />
+                <br />
+              </div>
+            <!-- </ul> -->
+            <div *ngIf="element.categoriasComentario == null || element.categoriasComentario.length<=0">
+              - No registrado -
+            </div>
+          </td>
+        </ng-container>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="columnsToDisplayHistorialInteracciones"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="
+            let myRowData;
+            columns: columnsToDisplayHistorialInteracciones
+          "
+        ></tr>
+      </table>
+    </div>
+    <mat-paginator
+      [ngStyle]="{
+        display:
+          gridHistorialInteraccionesCompleto?.data?.length > 0
+            ? 'flex'
+            : 'none',
+        'justify-content': 'center'
+      }"
+      [pageSizeOptions]="[5, 10, 20, 50, 100]"
+      [pageSize]="5"
+    ></mat-paginator>
+    <loading [loading]="isLoading"></loading>
+  </div>
+</mat-expansion-panel>
+
+
+
+
+
+<!-- <kendo-window
+  *ngIf="abrirComentario"
+  [(top)]="windowTop"
+  [(left)]="windowLeft"
+  autoFocusedElement="#kwcomentario"
+  title="Comentario Actividad"
+  class="kw-comentarioAgenda"
+  (close)="closeComentario()"
+  [resizable]="true"
+  [width]="450"
+  style="position: fixed;"
+>
+  <kendo-window-titlebar>
+    <div style="background-color: #ff6113;color: #ffffff">Añadir Comentario</div>
+    <button kendoWindowCloseAction></button>
+  </kendo-window-titlebar>
+   <div #modalDrag class="">
+    <div class="modal-body">
+      <div class="row" style="padding-bottom: 50px">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #d5ffe1;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Pagos
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaPago"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaPago"
+              [valueField]="'id'"
+              [defaultItem]="{
+                id: 0,
+                nombre: 'Seleccione'
+              }"
+              [filterable]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioPago"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo:</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #cbe4ff;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Académico
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaAcademico"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaAcademico"
+              [valueField]="'id'"
+              [kendoDropDownFilter]="filterSettings"
+              [filterable]="true"
+              [defaultItem]="{
+                id: 0,
+                nombre: 'Seleccione'
+              }"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioAcademico"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 30px">
+      <div class="col" style="display: flex; justify-content: end">
+        <button
+          class="botonModalcomentario btn-hio-hover-effect"
+          style="
+            background-color: #0079ff;
+            color: white;
+            border-radius: 8px;
+            width: 100px;
+            height: 40px;
+            border: none;
+          "
+          (click)="guardarComentarios()"
+        >
+          Guardar
+        </button>
+      </div>
+      <div class="col" style="display: flex; justify-content: initial">
+        <button
+          class="botonModalcomentario btn-hio-hover-effect"
+          style="
+            color: #0079ff;
+            border: solid 1px #0079ff;
+            border-radius: 8px;
+            background-color: white;
+            width: 100px;
+            height: 40px;
+            cursor: pointer;
+          "
+          (click)="closeComentario()"
+        >
+          Cerrar
+        </button>
+      </div>
+      <loading [loading]="loadingGuardar"></loading>
+    </div>
+  </div>
+</kendo-window> -->
+<!-- Modal creacion-->
+<ng-template #modalCreacionComentarioDrag let-modal>
+  <div #modalDrag class="modal-content" cdkDrag>
+    <div class="modal-header" style="background-color: #ff6113">
+      <!-- (click)="openModalComentario(modalCreacionComentario, $event)" -->
+      <h2
+        class="modal-title mb-0"
+        style="color: #ffffff"
+      >
+        Añadir Comentario
+      </h2>
+    </div>
+    <div class="modal-body">
+      <div class="row" style="padding-bottom: 50px">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #d5ffe1;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Pagos
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaPago"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaPago"
+              [valueField]="'id'"
+              [defaultItem]="{
+                id: 0,
+                nombre: 'Seleccione'
+              }"
+              [filterable]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioPago"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo:</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #cbe4ff;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Académico
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaAcademico"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaAcademico"
+              [valueField]="'id'"
+              [kendoDropDownFilter]="filterSettings"
+              [filterable]="true"
+              [defaultItem]="{
+                id: 0,
+                nombre: 'Seleccione'
+              }"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioAcademico"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 30px">
+      <div class="col" style="display: flex; justify-content: end">
+        <button
+          class="botonModalcomentario btn-hio-hover-effect"
+          style="
+            background-color: #0079ff;
+            color: white;
+            border-radius: 8px;
+            width: 100px;
+            height: 40px;
+            border: none;
+          "
+          (click)="guardarComentarios()"
+        >
+          Guardar
+        </button>
+      </div>
+      <div class="col" style="display: flex; justify-content: initial">
+        <button
+          class="botonModalcomentario btn-hio-hover-effect"
+          style="
+            color: #0079ff;
+            border: solid 1px #0079ff;
+            border-radius: 8px;
+            background-color: white;
+            width: 100px;
+            height: 40px;
+            cursor: pointer;
+          "
+          (click)="modal.close()"
+        >
+          Cerrar
+        </button>
+      </div>
+      <loading [loading]="loadingGuardar"></loading>
+    </div>
+  </div>
+</ng-template>
+
+
+<!-- Modal creacion-->
+<ng-template #modalCreacionComentario let-modal>
+  <div class="modal-content">
+    <div class="modal-header" style="background-color: #ff6113">
+      <!-- (click)="openModalComentario(modalCreacionComentario, $event)" -->
+      <h2
+        class="modal-title mb-0"
+        style="color: #ffffff"
+      >
+        Añadir Comentario
+      </h2>
+    </div>
+    <div class="modal-body">
+      <div class="row" style="padding-bottom: 50px">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #d5ffe1;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Pagos
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaPago"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaPago"
+              [valueField]="'id'"
+              [defaultItem]="{
+                id: 0,
+                nombre: 'Seleccione'
+              }"
+              [filterable]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioPago"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Tipo:</div>
+          <div
+            class="col-4"
+            style="
+              background-color: #cbe4ff;
+              justify-content: center;
+              border-radius: 9px;
+              display: flex;
+              height: 30px;
+              align-items: center;
+            "
+          >
+            Académico
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Categoría</div>
+          <div class="col" style="padding: 0">
+            <kendo-dropdownlist
+              [data]="inputSeguimientoAlumnoCategoriaAcademico"
+              [valuePrimitive]="true"
+              [(ngModel)]="dataCategoriaAcademico"
+              [valueField]="'id'"
+              [kendoDropDownFilter]="filterSettings"
+              [filterable]="true"
+              [defaultItem]="{
+                id: 0,
+                nombre: 'Seleccione'
+              }"
+              [textField]="'nombre'"
+            >
+            </kendo-dropdownlist>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 15px">
+          <div class="col-3">Comentario</div>
+          <div class="col" style="padding: 0">
+            <textarea
+              rows="5"
+              cols="4"
+              type="text"
+              [(ngModel)]="comentarioAcademico"
+              placeholder="Comentario"
+              style="width: 100%"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding-bottom: 30px">
+      <div class="col" style="display: flex; justify-content: end">
+        <button
+          class="botonModalcomentario btn-hio-hover-effect"
+          style="
+            background-color: #0079ff;
+            color: white;
+            border-radius: 8px;
+            width: 100px;
+            height: 40px;
+            border: none;
+          "
+          (click)="guardarComentarios()"
+        >
+          Guardar
+        </button>
+      </div>
+      <div class="col" style="display: flex; justify-content: initial">
+        <button
+          class="botonModalcomentario btn-hio-hover-effect"
+          style="
+            color: #0079ff;
+            border: solid 1px #0079ff;
+            border-radius: 8px;
+            background-color: white;
+            width: 100px;
+            height: 40px;
+            cursor: pointer;
+          "
+          (click)="modal.close()"
+        >
+          Cerrar
+        </button>
+      </div>
+      <loading [loading]="loadingGuardar"></loading>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalReproducirAudio let-modal>
+  <div
+    class="modal-header"
+    [ngClass]="{
+      'mra-bg-3cx': origenLlamada.includes('Integra'),
+      'mra-bg-integra': origenLlamada.includes('3cx'),
+      'mra-bg-wolkbox': origenLlamada.includes('Wolkbox'),
+      'mra-bg-ringover': origenLlamada.includes('Ringover'),
+      'mra-bg-wavix': origenLlamada.includes('Wavix')
+    }"
+  >
+    <h2 class="modal-title mb-0 text-white">Grabación {{ origenLlamada }}</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center">
+      <audio controls [src]="urlGrabacion" type="audio/mp3" controls autoplay>
+        Tu navegador no soporta el elemento de <code>audio</code>
+      </audio>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>

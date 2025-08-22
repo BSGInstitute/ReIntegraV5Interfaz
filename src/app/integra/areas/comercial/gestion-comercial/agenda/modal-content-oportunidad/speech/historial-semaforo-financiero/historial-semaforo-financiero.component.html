@@ -1,0 +1,665 @@
+<div class="fs-5">
+
+  <div class="row mb-2" style="padding: 0% 20% 0% 20%">
+    <div class="col-12 my-1 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label
+          [for]="nroDoc"
+          class="k-label pt-0 d-flex align-items-start text-start"
+        >
+          Numero de documento de identidad
+        </label>
+        <div class="input-group d-flex">
+          <input
+            kendoTextBox
+            #nroDoc
+            size="medium"
+            [(ngModel)]="nroDocumento"
+            name="nroDocumento"
+            placeholder="Documento de Identidad"
+            class="col bgInputIA"
+          />
+          <div class="input-group-append col-auto">
+            <button
+              kendoButton
+              class="send-button"
+              icon="search"
+              [themeColor]="btnConsultar.color"
+              (click)="consultarNroDocumento()"
+              [disabled]="btnConsultar.disabled"
+            >
+              {{ btnConsultar.text }}
+            </button>
+          </div>
+        </div>
+      </kendo-formfield>
+    </div>
+  </div>
+
+  <div class="row d-flex" *ngIf="showSentinelHelp" style="padding: 0% 0% 0% 20%">
+    <div class="col-sm-12 col-md-9">
+      <small
+        id="sentinelHelp"
+        class="form-text text-muted"
+        style="
+          font-size: 15px;
+          margin-top: 0px;
+          text-align: justify;
+          display: block;
+        "
+      >
+        <div [innerHtml]="sentinelHelp"></div>
+      </small>
+    </div>
+  </div>
+  <div class="row d-flex" style="padding: 0% 20% 0% 20%">
+    <div class="col-sm-12 col-md-8" id="verDetalleSentinel">
+      <button
+        *ngIf="btnVerDetalleSentinel.show"
+        (click)="verDetalleSemaforoFin(modalSemaforoFinanciero)"
+        class="btn btn-sm btn-link"
+        [disabled]="btnVerDetalleSentinel.disabled"
+      >
+        Ver Detalle
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="rounded-custom-1 text-center p-2 text-white my-2"
+    [style.background-color]="cabeceraSemaforoFinanciero.color"
+  >
+    {{ cabeceraSemaforoFinanciero.mensaje }}
+  </div>
+  <!-- <div class="row my-2">
+    <div class="text-center">{{ edadClienteSentinel }}</div>
+  </div> -->
+  <div class="row my-3">
+    <div class="col-6 grid-speech" *ngIf="
+    flagPeru">
+      <div class="row my-2">
+        <div class="col">
+          Tarjetas de credito disponible: {{ monedaCliente }}
+        </div>
+      </div>
+      <ng-container
+        *ngIf="gridCreditos?.data.length > 0; else elseTemplateCredito"
+      >
+        <kendo-grid [kendoGridBinding]="gridCreditos?.data" scrollable="none">
+          <kendo-grid-column
+            field="cnsEntNomRazLn"
+            title="Institución"
+            [width]="200"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="lineaCredito"
+            title="L. O."
+            format="{0:n0}"
+            [width]="200"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="lineaUtil"
+            title="L. U."
+            format="{0:n0}"
+            [width]="200"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="lineaCreditoNoUtil"
+            title="L. D."
+            format="{0:n0}"
+            [width]="200"
+          ></kendo-grid-column>
+        </kendo-grid>
+      </ng-container>
+      <ng-template #elseTemplateCredito>
+        <div class="col-12">
+          <span class="my-2 div-semaforo d-flex justify-content-between">
+            <span>{{flagConsultaCR?'Sin tarjetas de credito':'Aun no se consulto'}}</span>
+            <fa-icon *ngIf="flagConsultaCR"
+              [icon]="['fas', 'check-circle']"
+              style="color: #04ff00"
+              class="fa-lg"
+            ></fa-icon>
+            <fa-icon *ngIf="!flagConsultaCR"
+              [icon]="['fas', 'times-circle']"
+              style="color: #bd425f"
+              class="fa-lg"
+            ></fa-icon>
+          </span>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-6 grid-speech" *ngIf="
+    flagPeru">
+      <div class="row my-2">
+        <span class="col-12">Creditos vigentes: {{ monedaCliente }} </span>
+      </div>
+      <ng-container
+        *ngIf="gridDeudas?.data.length > 0; else elseTemplateDeudas"
+      >
+        <div class="col-12">
+          <kendo-grid [kendoGridBinding]="gridDeudas?.data" scrollable="none">
+            <kendo-grid-column
+              field="nombreRazonSocial"
+              title="Institución"
+              [width]="200"
+            ></kendo-grid-column>
+            <kendo-grid-column
+              field="montoDeuda"
+              title="Monto"
+              format="{0:n0}"
+              [width]="200"
+            ></kendo-grid-column>
+          </kendo-grid>
+        </div>
+      </ng-container>
+      <ng-template #elseTemplateDeudas>
+        <div class="col-12">
+          <span class="my-2 div-semaforo d-flex justify-content-between">
+            <span>{{flagConsultaCR?'Sin deudas vigentes':'Aun no se consulto'}}</span>
+            <fa-icon *ngIf="flagConsultaCR"
+              [icon]="['fas', 'check-circle']"
+              style="color: #04ff00"
+              class="fa-lg"
+            ></fa-icon>
+            <fa-icon *ngIf="!flagConsultaCR"
+              [icon]="['fas', 'times-circle']"
+              style="color: #bd425f"
+              class="fa-lg"
+            ></fa-icon>
+          </span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <div class="row my-3">
+    <div class="col-6 grid-speech" *ngIf="
+    flagPeru">
+      <div class="row my-2">
+        <span class="col-12">Deudas vencidas: {{ monedaCliente }}</span>
+      </div>
+      <ng-container
+        *ngIf="
+          gridDeudasVencidas?.data.length > 0;
+          else elseTemplateDeudasVencidas
+        "
+      >
+        <div class="col-12">
+          <kendo-grid
+            [kendoGridBinding]="gridDeudasVencidas?.data"
+            scrollable="none"
+            class="grid-speech"
+          >
+            <kendo-grid-column
+              field="nombreRazonSocial"
+              title="Institución"
+              [width]="200"
+            ></kendo-grid-column>
+            <kendo-grid-column
+              field="montoDeuda"
+              title="Monto"
+              format="{0:n0}"
+              [width]="200"
+            ></kendo-grid-column>
+            <kendo-grid-column
+              field="diasVencidos"
+              title="D. V."
+              [width]="200"
+            ></kendo-grid-column>
+          </kendo-grid>
+        </div>
+      </ng-container>
+      <ng-template #elseTemplateDeudasVencidas>
+        <div class="col-12">
+          <span class="my-2 div-semaforo d-flex justify-content-between">
+            <span>{{flagConsultaCR?'Sin deudas vencidas':'Aun no se consulto'}}</span>
+            
+            <fa-icon *ngIf="
+                flagConsultaCR"
+                [icon]="['fas', 'check-circle']"
+                style="color: #04ff00"
+                class="fa-lg"
+            ></fa-icon>
+            <fa-icon *ngIf="
+                !flagConsultaCR"
+              [icon]="['fas', 'times-circle']"
+              style="color: #bd425f"
+              class="fa-lg"
+            ></fa-icon>
+
+          </span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <div
+    class="rounded-custom-1 text-center p-2 text-white my-2"
+    [style.background-color]="'#F5631B'"
+  >
+    L.O. : Linea Otorgada&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;L.U. : Linea Utilizada&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;L.D. : Linea Disponible
+  </div>
+</div>
+
+
+
+<!-- Modal Semaforo Financiero -->
+<ng-template #modalSemaforoFinanciero let-modal>
+  <div class="modal-header">
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-3">
+    <div class="row">
+      <div class="col-12">
+        <!-- Documentos -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Documentos</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid [data]="gridDNIRUC.data">
+                  <kendo-grid-column
+                    field="fechaProceso"
+                    title="Fecha Proceso"
+                    format="{0:dd/MM/yyyy}"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="tipoDocumento" title="Tipo Doc">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="documento" title="N. Doc">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="razonSocial"
+                    title="Nombre/Razon Social"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="score" title="Score">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="deudaTotal" title="Deuda Total">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="semanaActual" title="Actual">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="semanaPrevio" title="Previo">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="veces24m" title="12m">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Documentos -->
+        <!-- Documento de Identidad Consultado -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Documento de Identidad Consultado</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">Semaforo de los ultimos 4 meses</div>
+            </div>
+            <div class="row my-2">
+              <div class="col-12 d-flex justify-content-center">
+                <span *ngFor="let item of semaforos" class="mx-1">
+                  <fa-icon
+                    [icon]="['fas', 'circle']"
+                    [ngStyle]="{ color: _colorSemaforoAV(item) }"
+                  >
+                  </fa-icon>
+                </span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">Detalle de la deuda SBS/Microfinanzas</div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <kendo-grid [data]="gridDocumentoConsultadoDetalleDeuda.data">
+                  <kendo-grid-column field="nombreRazonSocial" title="Entidad">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="calificacion" title="Calificacion">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="montoDeuda" title="Monto">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="diasVencidos" title="Dias Vencidos">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="fechaReporte"
+                    title="Fecha Reporte"
+                    format="{0:dd/MM/yyyy}"
+                  >
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">Detalle Vencidos</div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <kendo-grid [data]="gridDocumentoDetalleVencidos.data">
+                  <kendo-grid-column field="entidad" title="Entidad">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="cantidadDocs" title="Cantidad Docs">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="fuente" title="Fuente">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="monto" title="Monto">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="diasVencidos" title="Días Vencidos">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">Utilización de Lineas de Crédito</div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <kendo-grid [data]="gridDocumentoLineasCredito.data">
+                  <kendo-grid-column field="cnsEntNomRazLn" title="Entidad">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="tipoCuenta" title="Tipo Cuenta">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="lineaCredito"
+                    title="Linea Aprobada"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="lineaCreditoNoUtil"
+                    title="Linea No Utilizada"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="lineaUtil" title="Linea Utilizada">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END Documento de Identidad Consultado -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Otros Documentos de Identidad Relacionados</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">Semáforos de los últimos 24 meses</div>
+            </div>
+            <div class="row my-2">
+              <div class="col-12 d-flex justify-content-center">
+                <span *ngFor="let item of semaforos2" class="mx-1">
+                  <fa-icon
+                    [icon]="['fas', 'circle']"
+                    [ngStyle]="{ color: _colorSemaforoAV(item) }"
+                  >
+                  </fa-icon>
+                </span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">Detalle de la deuda SBS/Microfinanzas</div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid
+                  [data]="gridOtroDocumentoConsultadoDetalleDeuda.data"
+                >
+                  <kendo-grid-column field="nombreRazonSocial" title="Entidad">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="calificacion" title="Calificacion">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="montoDeuda" title="Monto">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="diasVencidos" title="Días Vencidos">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="fechaReporte"
+                    title="FechaReporte"
+                    format="{0:dd/MM/yyyy}"
+                  >
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">Detalle Vencidos</div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid [data]="gridOtroDocumentoDetalleVencidos.data">
+                  <kendo-grid-column field="entidad" title="Entidad">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="cantidadDocs" title="Cantidad Docs">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="fuente" title="Fuente">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="monto" title="Monto">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="diasVencidos" title="Días Vencidos">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">Utilización de Lineas de Crédito</div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid [data]="gridOtroDocumentoLineasCredito.data">
+                  <kendo-grid-column field="cnsEntNomRazLn" title="Entidad">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="tipoCuenta" title="Tipo Cuenta">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="lineaCredito"
+                    title="Linea Aprobada"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="lineaCreditoNoUtil"
+                    title="Linea No Utilizada"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="lineaUtil" title="Linea Utilizada">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Datos Generales</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid [data]="gridDatosGenerales.data">
+                  <kendo-grid-column
+                    field="fechaNacimiento"
+                    title="FechaNacimiento"
+                    format="{0:dd/MM/yyyy}"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="sexo" title="Género">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="digito" title="Dígito Verificador">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="digitoAnterior"
+                    title="Dígito Verificador Anterior"
+                  >
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Datos Principales</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid [data]="gridDatosPrincipales1.data">
+                  <kendo-grid-column field="ruc" title="Ruc">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="razonSocial" title="Razón Social">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="nombreComercial"
+                    title="Nombre Comercial"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="tipoContribuyente"
+                    title="Tipo de Contribuyente"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="estadoContribuyente"
+                    title="Estado de Contribuyente"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="condicionContribuyente"
+                    title="Condición Contribuyente"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="dependencia" title="Dependencia">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-12">
+                <kendo-grid [data]="gridDatosPrincipales2.data">
+                  <kendo-grid-column field="ciiu" title="CIIU">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="fechaActividad"
+                    title="Inicio de Actividades"
+                    format="{0:dd/MM/yyyy}"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="patron" title="Carnet Patronal">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="folio" title="Folio">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="asiento" title="Asiento">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="telefono" title="Telefono 1">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="telefono" title="Telefono 2">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="telefono" title="Telefono 3">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Direcciones Registradas</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid [data]="gridDireccionesRegistradas.data">
+                  <kendo-grid-column field="ciiu" title="Dirección">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="fuenteDireccion" title="Fuente">
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Posición Histórica</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <kendo-grid [data]="gridPosicionHistorica.data" [height]="500">
+                  <kendo-grid-column
+                    field="fechaProceso"
+                    title="Fecha de Proceso"
+                    format="{0:dd/MM/yyyy}"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="semanaActual" title="Sema. Actual">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="score" title="Score Riesgo">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="numeroEntidades"
+                    title="Num. Entidad"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="deudaTotal" title="Deuda Total">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="porcentajeCalificacion"
+                    title="% Call. normal"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="peorCalificacion"
+                    title="Peor Calif."
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="deudaNotiene" title="Deuda Vencida">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="progresoRegistro" title="Protestos">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="docImpuesto" title="Docs. Impagos">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="deudaTributaria"
+                    title="Deuda Tributaria"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column field="notiene" title="Deuda Laboral">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="cuentaCorriente" title="Cta. Cte.">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="tarjetaCredito" title="Tar. Cred.">
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    field="reporteNegativo"
+                    title="Otros Repor. Negat."
+                  >
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Documento de Identidad Consultado</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- END Modal Semaforo Financiero -->
+

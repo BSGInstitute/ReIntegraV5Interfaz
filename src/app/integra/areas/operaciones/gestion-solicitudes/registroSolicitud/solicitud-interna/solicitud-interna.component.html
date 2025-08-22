@@ -1,0 +1,255 @@
+<ng-template #modalDetalleSolicitud let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nueva Categoria" : "Modificar Categoria" }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="registrarSolicitudInterna()"
+      >
+        Guardar
+      </button>
+      <!-- <button kendoButton *ngIf="!isNew" themeColor="tertiary" (click)="actualizarCategoria()">Actualizar</button> -->
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<div class="card border-primary" #reporte>
+  <div class="card-header pb-0 bg-color-material">
+    <div class="col text-aling-center">
+      <h2 class="mb-2 text-white" style="text-align: center">
+        (R) Registrar Solicitud Interna BSG
+      </h2>
+    </div>
+  </div>
+
+  <div class="card-body p-4">
+    <form
+      class="k-form k-form-horizontal"
+      [formGroup]="formFiltroAlumnoSolicitud"
+    >
+      <div class="row">
+        <div class="col-sm-12 col-md-6  ">
+            <div class="row my-2">
+                <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label [for]="tipoReporte" class="k-label pt-0 d-flex align-items-start text-start">
+                        <span
+                          >Tipo Reporte</span
+                        >
+                      </label>
+                      <kendo-grid-spacer></kendo-grid-spacer>
+                      <kendo-dropdownlist
+                        #tipoReporte
+                        [data]="dataTipoReporte"
+                        class="d-flex"
+                        size="medium"
+                        placeholder="Tipo Reporte"
+                        textField="nombre"
+                        valueField="id"
+                        (valueChange)="categoriaByTipoReporte($event)"
+                        [defaultItem]="{
+                          id: null,
+                          nombre: 'Tipo reporte...'
+                        }"
+                        [valuePrimitive]="true"
+                        formControlName="tipoReporte"
+                        [filterable]="true"
+                      >
+                      </kendo-dropdownlist>
+                      <kendo-formerror>
+                        {{ "Ingrese un TipoReporte" }}
+                      </kendo-formerror>
+                    </kendo-formfield>
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label [for]="categoria" class="k-label pt-0 d-flex align-items-start text-start">
+                        <span>Categoria</span>
+                      </label>
+                      <kendo-grid-spacer></kendo-grid-spacer>
+                      <kendo-dropdownlist
+                        #categoria
+                        [data]="dataCategoriaFiltro"
+                        size="medium"
+                        class="d-flex"
+                        textField="nombre"
+                        valueField="id"
+                        [valuePrimitive]="true"
+                        [autoClose]="true"
+                        [defaultItem]="{
+                          nombre: 'Categoria ...',
+                          id: null
+                        }"
+                        (valueChange)="subCategoriaByCategoria($event)"
+                        formControlName="categoria"
+                        [virtual]="virtual"
+                        [filterable]="true"
+                      >
+                      </kendo-dropdownlist>
+                      <kendo-formerror>
+                        {{ "Ingrese una Categoria" }}
+                      </kendo-formerror>
+                    </kendo-formfield>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div class="row my-2">
+                <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                        <label [for]="subCategoria" class="k-label pt-0 d-flex align-items-start text-start">
+                          <span
+                            >Sub-Categoria </span
+                          >
+                        </label>
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                        <kendo-dropdownlist
+                          #subCategoria
+                          [data]="dataSubCategoriaFiltro"
+                          textField="nombre"
+                          valueField="id"
+                          class="d-flex"
+                          size="medium"
+                          [valuePrimitive]="true"
+                          [autoClose]="true"
+                          (valueChange)="SolicitudBySubCategoria($event)"
+                          [defaultItem]="{
+                            nombre: 'Sub-Categoria ...',
+                            id: null
+                          }"
+                          formControlName="subCategoria"
+                          [virtual]="virtual"
+                          [filterable]="true"
+                        >
+                        </kendo-dropdownlist>
+                        <kendo-formerror>
+                          {{ "Ingrese una Sub-Categoria" }}
+                        </kendo-formerror>
+                      </kendo-formfield>
+                    
+                </div>
+            </div>
+            <div class="ro my-2">
+                <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                        <label [for]="solicitud" class="k-label pt-0 d-flex align-items-start text-start">
+                          <span>Solicitud</span>
+                        </label>
+                        <kendo-dropdownlist
+                          #solicitud
+                          [data]="dataSolicitudFiltro"
+                          [(ngModel)]="idSolicitud"
+                          textField="nombreSolicitud"
+                          placeholder="Solicitud..."
+                          valueField="idSolicitud"
+                          [valuePrimitive]="true"
+                          [autoClose]="true"
+                          [defaultItem]="{
+                            nombreSolicitud: 'Solicitud ...',
+                            idSolicitud: null
+                          }"
+                          formControlName="solicitud"
+                          class="d-flex"
+                          size="medium"
+                          [filterable]="true"
+                        >
+                        </kendo-dropdownlist>
+                        <kendo-formerror>
+                          {{ "Ingrese una Solicitud" }}
+                        </kendo-formerror>
+                      </kendo-formfield>
+                </div>
+            </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<br />
+<div class="card border-primary" #reporte>
+  <loading [loading]="loading"></loading>
+  <div class="card-body">
+    <div class="row">
+      <div>
+        <h3><b>Detalle Solicitud</b></h3>
+      </div>
+      <kendo-textarea
+        #descripcion
+        class="textArea"
+        [style.width.%]="100"
+        resizable="auto"
+        size="large"
+        rounded="large"
+        fillMode="solid"
+        [maxlength]="800"
+        [(ngModel)]="inputDetalle"
+      >
+        <kendo-textarea-suffix class="custom-styling"> </kendo-textarea-suffix>
+      </kendo-textarea>
+    </div>
+
+    <kendo-grid-spacer></kendo-grid-spacer>
+    <div class="row">
+      <div>
+        <h3><b>Subir Archivos</b></h3>
+      </div>
+      <div class="col-10">
+        <kendo-fileselect
+          #archivoBol
+          [multiple]="false"
+          [(ngModel)]="inputArchivoSolicitudAlumno"
+        ></kendo-fileselect>
+      </div>
+      <div class="col-1">
+        <div>
+          <button
+            kendoButton
+            style="padding: '10px 20px'"
+            size="large"
+            themeColor="primary"
+            (click)="registrarSolicitudInterna()"
+            title="descargar"
+          >
+            Guardar
+          </button>
+        </div>
+      </div>
+      <div class="col-1">
+        <div>
+          <button
+            kendoButton
+            style="padding: '10px 20px'"
+            size="large"
+            themeColor="error"
+            (click)="(true)"
+            title="descargar"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+    <kendo-grid-spacer></kendo-grid-spacer>
+  </div>
+</div>

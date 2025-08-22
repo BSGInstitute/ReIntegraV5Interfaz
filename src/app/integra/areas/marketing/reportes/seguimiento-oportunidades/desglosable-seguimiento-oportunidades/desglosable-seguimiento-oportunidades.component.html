@@ -1,0 +1,173 @@
+<ng-template #modalAudio let-modal>
+  <div
+    class="modal-header bg-primary-header-modal"
+    style="height: 60px; padding-left: 10px"
+  >
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Grabacion Integra
+    </h3>
+  </div>
+
+  <audio controls [src]="urlGrabacion" type="audio/mp3" controls autoplay>
+    Tu navegador no soporta el elemento de <code>audio</code>
+  </audio>
+
+  <button themeColor="error" kendoButton (click)="modal.dismiss('Cross click')">
+    Cerrar
+  </button>
+</ng-template>
+
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <kendo-grid
+                [kendoGridBinding]="listaDesglose"
+                [pageSize]="10"
+                [sortable]="true"
+                [resizable]="true"
+                [pageable]="{
+                  buttonCount: 5,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+                [loading]="loader"
+                [selectable]="true"
+                [reorderable]="true"
+              >
+                <kendo-grid-column field="faseInicio" title="Fase I.">
+                </kendo-grid-column>
+
+                <kendo-grid-column field="faseDestino" title="	Fase D.">
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="llamadasfase1"
+                  title="# Llamadas Realizadas Fase I"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div>EJEC: {{ dataItem.totalEjecutadas }}</div>
+                      <div>NO EJEC: {{ dataItem.totalNoEjecutadas }}</div>
+                      <div>ASIG M: {{ dataItem.totalAsignacionManual }}</div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="fecha" title="Fecha.">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div>
+                        Fecha Programada:
+                        {{
+                          dataItem.fechaSiguienteLlamada | date : "dd/MM/yyyy"
+                        }}
+                      </div>
+                      <div>
+                        Fecha Real:
+                        {{ dataItem.fechaModificacion | date : "dd/MM/yyyy" }}
+                      </div>
+                      <div *ngFor="let llamadaI of dataItem.llamadaIntegra">
+                        <div>
+                          <b>I:</b>
+                          {{ llamadaI.fechaInicioLlamada | date : "HH:mm:ss" }}
+                          - <b>T:</b>
+                          {{ llamadaI.fechaFinLlamada | date : "HH:mm:ss" }}
+                        </div>
+                      </div>
+                      <div>
+                        <b>MO:</b>
+                        {{ dataItem.fechaModificacion | date : "HH:mm:ss" }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="fechaEnvio" title="Fecha Envio">
+                </kendo-grid-column>
+                <kendo-grid-column field="fechaPago" title="Fecha Pago">
+                </kendo-grid-column>
+                <kendo-grid-column field="estado" title="Estado Ocurrencia">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div>{{ dataItem.estado }}</div>
+                      <div>{{ dataItem.nombreOcurrencia }}</div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="estadoLlamada3cx"
+                  title="Estado Llamada 3CX"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div *ngFor="let llamada of dataItem.llamadaTresCX">
+                        <div>
+                          <b>Tipo: {{ llamada.estadoLlamada }}</b>
+                        </div>
+                        <div>{{ llamada.subEstadoLlamada }}</div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="tiempoIntegra"
+                  title="Tiempo Integra(seg)"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div
+                        *ngFor="let llamada of dataItem.llamadaIntegra"
+                        [innerHTML]="llamada.tiempoDuracion"
+                      ></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="grabacion" title="Grabación">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div *ngFor="let item of dataItem?.llamadaIntegra">
+                        <div
+                          *ngIf="item.nombreGrabacion"
+                          (click)="reproducirAudio(modalAudio, item)"
+                          class="escuchar-button"
+                        >
+                          Escuchar
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="Tiempo3cx" title="Tiempo 3CX(seg)">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div
+                        *ngFor="let llamada of dataItem.llamadaTresCX"
+                        [innerHTML]="llamada.tiempoDuracion"
+                      ></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="grabacion" title="Grabacion">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="column-container">
+                      <div *ngFor="let item of dataItem?.llamadaTresCX">
+                        <div *ngIf="item.nombreGrabacion">Escuchar</div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

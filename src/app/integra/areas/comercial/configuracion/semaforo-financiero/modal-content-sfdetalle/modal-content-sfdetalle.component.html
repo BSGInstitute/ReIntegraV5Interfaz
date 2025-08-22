@@ -1,0 +1,131 @@
+<!-- <ng-template #modalSemaforoDetalle let-modal>
+</ng-template> -->
+<app-loader *ngIf="loaderModal"></app-loader>
+<div class="modal-header bg-primary-header-modal">
+  <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+    Datos del Semaforo Financiero
+  </h3>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body">
+  <form class="k-form k-form-horizontal" [formGroup]="formSemaforoFinanciero">
+    <div class="row">
+      <div class="col-sm-12 col-md-8">
+        <kendo-formfield orientation="horizontal">
+          <label [for]="codigoPais" class="k-label">
+            <span>Pais <span class="text-danger fw-bold">*</span></span>
+          </label>
+          <kendo-dropdownlist
+            #codigoPais
+            formControlName="codigoPais"
+            size="medium"
+            [data]="listaPais"
+            [defaultItem]="{
+              nombrePais: 'Seleccione un Pais...',
+              codigoPais: null
+            }"
+            textField="nombrePais"
+            valueField="codigoPais"
+            [valuePrimitive]="true"
+          >
+          </kendo-dropdownlist>
+          <kendo-formerror>
+            {{ getErrorMessage("codigoPais") }}
+          </kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-8">
+        <kendo-formfield orientation="horizontal">
+          <kendo-label [for]="activo" text="Activo"></kendo-label>
+          <div class="h-100 d-flex align-items-center">
+            <input
+              #activo
+              formControlName="activo"
+              type="checkbox"
+              size="medium"
+              rounded="medium"
+              kendoCheckBox
+            />
+          </div>
+        </kendo-formfield>
+      </div>
+    </div>
+  </form>
+  <div class="row mt-4">
+    <div class="col text-center" style="text-align: center">
+      <ng-template
+        #cellTemplateSFD
+        let-dataItem="dataItem"
+        let-field="field"
+        let-itemValue="itemValue"
+      >
+        <ng-container [ngSwitch]="field">
+          <ng-container *ngSwitchCase="'color'">
+            <input type="color" disabled [value]="itemValue" />
+          </ng-container>
+          <ng-container *ngSwitchCase="'fechaModificacion'">
+            <!-- {{ dataItem.fechaModificacion | date: "dd-MM-yyyy" }} -->
+            <!-- {{ itemValue | date: "dd-MM-yyyy" }} -->
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ itemValue }}
+          </ng-container>
+        </ng-container>
+      </ng-template>
+
+      <ng-template
+        #cellEditTemplateSFD
+        let-column="column"
+        let-formGroup="formGroup"
+        let-isNew="isNew"
+      >
+        <!-- Template Columna -->
+        <ng-container [ngSwitch]="column.field">
+          <ng-container *ngSwitchCase="'color'">
+            <input
+              type="color"
+              style="width: revert"
+              [formControl]="formGroup.get(column.field)"
+            />
+          </ng-container>
+          <ng-container *ngSwitchCase="'fechaModificacion'">
+            <!-- {{ dataItem.fechaModificacion | date: "dd-MM-yyyy" }} -->
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            <input
+              #input
+              class="k-textbox k-input k-rounded-md"
+              [formControl]="formGroup.get(column.field)"
+            />
+          </ng-container>
+        </ng-container>
+      </ng-template>
+      <k-grid
+        [gridData]="listaDetalleSemaforo"
+        [formGroup]="formGridEditable"
+        [loader]="loaderGrid"
+        [gridState]="gridSemaforoDetalle.gridState"
+        [kendoGrid]="gridSemaforoDetalle"
+        [cellTemplateRef]="cellTemplateSFD"
+        [cellTemplateEditRef]="cellEditTemplateSFD"
+        (OnGridEvents)="gridEventsSemaforoDetalle($event)"
+      >
+      </k-grid>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-info" type="button" (click)="guardarSemaforoDetalle()">
+    Actualizar
+  </button>
+  <button type="button" class="btn btn-danger" (click)="cerrarModalSemaforoDetalle()">
+    Cerrar
+  </button>
+</div>

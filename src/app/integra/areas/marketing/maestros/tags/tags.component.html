@@ -1,0 +1,641 @@
+<ng-template #modalTags let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nuevo Tags" : "Modificar Tags" }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formTags">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombre" class="k-label">
+                <span>Nombre<span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+                #nombre
+                size="medium"
+                placeholder="Nombre "
+                formControlName="nombre"
+                [clearButton]="true"
+                [maxlength]="100"
+                [showSuccessIcon]="getShowSuccessIcon('nombre')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+
+              <kendo-formerror>
+                {{ getErrorMessage("nombre") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="texto" class="k-label">
+                <span> Texto <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+                #texto
+                size="medium"
+                placeholder="texto"
+                formControlName="texto"
+                [clearButton]="true"
+                [maxlength]="100"
+                [showSuccessIcon]="getShowSuccessIcon('texto')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+
+              <kendo-formerror>
+                {{ getErrorMessage("texto") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombreTipo" class="k-label">
+                <span>Tipo <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+                #nombreTipo
+                size="medium"
+                placeholder="nombreTipo"
+                formControlName="nombreTipo"
+                [clearButton]="true"
+                [maxlength]="100"
+                [showSuccessIcon]="getShowSuccessIcon('nombreTipo')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+
+              <kendo-formerror>
+                {{ getErrorMessage("nombreTipo") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="crearTags()"
+      >
+        Guardar
+      </button>
+      <button
+        kendoButton
+        *ngIf="!isNew"
+        themeColor="tertiary"
+        (click)="actualizarTags()"
+      >
+        Actualizar
+      </button>
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalTagsEstilo let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Editar Estilos del Tag {{ nameTag }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formTagsEstilo">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idEstilos" class="k-label">
+                <span>Estilo <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-dropdownlist
+                #idEstilos
+                formControlName="idEstilo"
+                class="d-flex"
+                size="medium"
+                [data]="listaEstilo"
+                [defaultItem]="{
+                  id: null,
+                  nombre: 'Seleccione un Estilo'
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                (selectionChange)="Fuente($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ getErrorMessage2("idEstilo") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row valor" *ngIf="tipoEstilo == 'magnitud'">
+          <div class="col-sm-10 col-md-10 valor2 " >
+            <kendo-formfield orientation="horizontal" class="formInput">
+              <label [for]="valor" class="k-label">
+                <span> Valor <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+               class="inputMagnitud"
+                #valor
+                size="medium"
+                placeholder="Valor"
+                formControlName="valor"
+                [clearButton]="true"
+                [maxlength]="100"
+                [showSuccessIcon]="getShowSuccessIcon('valor')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >  
+              </kendo-textbox>
+              
+            
+                <kendo-dropdownlist
+                class="tipoMagnitud"
+                [data]="tipoMagnitudes"
+                [defaultItem]="{ text:'', value: '' }"
+                [textField]="'text'"
+                [valueField]="'value'"
+                [valuePrimitive]="true"
+                [(ngModel)]="tipoM"
+                [ngModelOptions]="{standalone: true}"
+            >
+            </kendo-dropdownlist>
+              <!-- </div> -->
+              <kendo-formerror>
+                {{ getErrorMessage2("valor") }}
+              </kendo-formerror>
+            </kendo-formfield>
+
+          </div>
+          
+        </div>
+
+
+        <div class="row" *ngIf="tipoEstilo == 'fuente'">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="valor" class="k-label">
+                <span>Fuente <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-dropdownlist
+                #valor
+                formControlName="valor"
+                class="d-flex"
+                size="medium"
+                [data]="listaFuente"
+                [defaultItem]="{
+                  id: null,
+                  nombre: 'Seleccione una Fuente'
+                }"
+                textField="nombreArchivo"
+                valueField="nombreArchivo"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>
+                {{ getErrorMessage2("valor") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="tipoEstilo == 'color'">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="valor" class="k-label">
+                <span> Color <span class="text-danger fw-bold">*</span></span>
+              </label>
+
+              <kendo-colorpicker
+                #valor
+                formControlName="valor"
+                [value]="selected"
+                (valueChange)="onChange($event)"
+              >
+              </kendo-colorpicker>
+
+              <kendo-formerror>
+                {{ getErrorMessage2("valor") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row" *ngIf="tipoEstilo == 'normal'">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="valor" class="k-label">
+                <span> Normal <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+                #valor
+                size="medium"
+                placeholder="valor"
+                formControlName="valor"
+                [clearButton]="true"
+                [maxlength]="100"
+                type="color"
+                [showSuccessIcon]="getShowSuccessIcon('valor')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+
+              <kendo-formerror>
+                {{ getErrorMessage2("valor") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="k-form-buttons m-0">
+            <button
+              kendoButton
+              themeColor="primary"
+              (click)="crearTagsEstilo()"
+            >
+              Guardar
+            </button>
+
+            <button
+              themeColor="error"
+              kendoButton
+              (click)="modal.dismiss('Cross click')"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </fieldset>
+      <div class="modal-body">
+        <form class="k-form k-form-horizontal">
+          <fieldset class="k-form-fieldset">
+            <div class="titulo">Estilos del tag</div>
+            <!-- modal ver -->
+            <div class="">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body p-4">
+                      <div class="row">
+                        <div class="col">
+                          <ng-template
+                            #cellTemplateGrid
+                            let-dataItem="dataItem"
+                            let-field="field"
+                            let-itemValue="itemValue"
+                          >
+                            <ng-template #gridTempDefault>
+                              {{ itemValue }}
+                            </ng-template>
+                          </ng-template>
+
+                          <kendo-grid
+                            [loading]="gridTagEstiloValor.loading"
+                            (dataStateChange)="
+                              gridTagEstiloValor.onStateChange($event)
+                            "
+                            [resizable]="gridTagEstiloValor.resizable"
+                            (edit)="gridTagEstiloValor.editHandler($event)"
+                            (cancel)="gridTagEstiloValor.cancelHandler($event)"
+                            (save)="gridTagEstiloValor.saveHandler($event)"
+                            (remove)="gridTagEstiloValor.removeHandler($event)"
+                            (add)="gridTagEstiloValor.addHandler($event)"
+                            [filterable]="gridTagEstiloValor.filterable"
+                            [pageSize]="gridTagEstiloValor.gridState.take"
+                            [skip]="gridTagEstiloValor.gridState.skip"
+                            [sort]="gridTagEstiloValor.gridState.sort"
+                            [kendoGridBinding]="gridTagEstiloValor.data"
+                            [pageable]="gridTagEstiloValor.pageable"
+                          >
+                            <kendo-grid-column
+                              field="nombre"
+                              title="Nombre"
+                              [filterable]="true"
+                            >
+                            </kendo-grid-column>
+
+                            <kendo-grid-column
+                              field="valor"
+                              title="Valor"
+                              [filterable]="false"
+                            >
+                              <ng-template
+                                kendoGridEditTemplate
+                                let-formGroup="formGroup"
+                                let-rowIndex="rowIndex"
+                              >
+                                <ng-container *ngIf="listaTagsEstiloValor[rowIndex].tipo=='magnitud'">
+                                  <kendo-textbox
+                                    [formControl]="formGroup.get('valor')"
+                                    class="d-flex"
+                                    size="medium"
+                                    textField="nombre"
+                                  >
+                                  </kendo-textbox>
+                                </ng-container>
+                                <ng-container *ngIf="listaTagsEstiloValor[rowIndex].tipo == 'fuente'">
+                                  <kendo-dropdownlist
+                                  [formControl]="formGroup.get('valor')"
+                                  class="d-flex"
+                                  size="medium"
+                                  [data]="listaFuente"
+                                  textField="nombreArchivo"
+                                  valueField="nombreArchivo"
+                                  [valuePrimitive]="true"
+                                >
+                                </kendo-dropdownlist>
+                                </ng-container>
+                                <ng-container *ngIf="listaTagsEstiloValor[rowIndex].tipo == 'color'">
+                                  <kendo-colorpicker
+                                    [formControl]="formGroup.get('valor')"
+                                    class="d-flex"
+                                    size="medium"
+                                    textField="nombre"
+                                  >
+                                  </kendo-colorpicker>
+                                </ng-container>
+
+                                <ng-container *ngIf="listaTagsEstiloValor[rowIndex].tipo == 'normal'">
+                                  <kendo-textbox
+                                    [formControl]="formGroup.get('valor')"
+                                    class="d-flex"
+                                    size="medium"
+                                    textField="nombre"
+                                  >
+                                  </kendo-textbox>
+                                </ng-container>
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-command-column title="" [width]="150">
+                              <ng-template
+                                kendoGridCellTemplate
+                                let-isNew="isNew"
+                                let-dataItem="dataItem"
+                                let-rowindex="rowindex"
+                              >
+                                <div
+                                  class="w-100 d-flex justify-content-center"
+                                >
+                                  <button
+                                    kendoGridEditCommand
+                                    themeColor="warning"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    class="p-2 me-1 ms-1"
+                                    container="body"
+                                    placement="top"
+                                    ngbTooltip="Editar"
+                                  >
+                                    <span
+                                      class="k-icon k-i-edit k-icon-20"
+                                    ></span>
+                                  </button>
+                                  <button
+                                    kendoGridSaveCommand
+                                    themeColor="primary"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    class="p-2 me-1 ms-1"
+                                    [disabled]="
+                                      gridTagEstiloValor.formGroup?.invalid
+                                    "
+                                    container="body"
+                                    placement="top"
+                                    ngbTooltip="Guardar"
+                                  >
+                                    <span
+                                      class="k-icon k-i-save k-icon-20"
+                                    ></span>
+                                    <!-- {{ gridAgendaTab.isNew ? "Guardar" : "Actualizar" }} -->
+                                  </button>
+
+                                  <button
+                                    kendoButton
+                                    themeColor="error"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    s
+                                    class="p-2 me-1 ms-1"
+                                    container="body"
+                                    placement="top"
+                                    ngbTooltip="Eliminar"
+                                    (click)="
+                                      eliminarTagsEstilo(dataItem, rowindex)
+                                    "
+                                  >
+                                    <span
+                                      class="k-icon k-i-close k-icon-20"
+                                    ></span>
+                                  </button>
+                                </div>
+                              </ng-template>
+                            </kendo-grid-command-column>
+                          </kendo-grid>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<div class="modal-body">
+  <form class="k-form k-form-horizontal">
+    <fieldset class="k-form-fieldset">
+      <div class="titulo">Tags</div>
+      <!-- modal ver -->
+      <div class="">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body p-4">
+                <div class="row">
+                  <div class="col">
+                    <ng-template
+                      #cellTemplateGrid
+                      let-dataItem="dataItem"
+                      let-field="field"
+                      let-itemValue="itemValue"
+                    >
+                      <ng-template #gridTempDefault>
+                        {{ itemValue }}
+                      </ng-template>
+                    </ng-template>
+
+                    <kendo-grid
+                      [loading]="gridTag.loading"
+                      (dataStateChange)="gridTag.onStateChange($event)"
+                      [resizable]="gridTag.resizable"
+                      (edit)="gridTag.editHandler($event)"
+                      (cancel)="gridTag.cancelHandler($event)"
+                      (save)="gridTag.saveHandler($event)"
+                      (remove)="gridTag.removeHandler($event)"
+                      (add)="gridTag.addHandler($event)"
+                      (dataStateChange)="gridTag.onStateChange($event)"
+                      [filterable]="gridTag.filterable"
+                      [pageSize]="gridTag.gridState.take"
+                      [skip]="gridTag.gridState.skip"
+                      [sort]="gridTag.gridState.sort"
+                      [kendoGridBinding]="gridTag.data"
+                      [pageable]="gridTag.pageable"
+                    >
+                      <ng-template kendoGridToolbarTemplate>
+                        <button
+                          kendoButton
+                          icon="reload"
+                          fillMode="flat"
+                          themeColor="secondary"
+                          (click)="reloadTags()"
+                        ></button>
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                        <button
+                          kendoButton
+                          [themeColor]="'primary'"
+                          icon="plus"
+                          (click)="abrirmodalTags(true, null)"
+                        >
+                          Agregar
+                        </button>
+                      </ng-template>
+
+                      <kendo-grid-column
+                        field="nombre"
+                        title="Nombre"
+                        [filterable]="true"
+                      >
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        field="texto"
+                        title="texto"
+                        [filterable]="false"
+                      >
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        field="nombreTipo"
+                        title="Tipo"
+                        [filterable]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-command-column title="" [width]="150">
+                        <ng-template
+                          kendoGridCellTemplate
+                          let-isNew="isNew"
+                          let-dataItem="dataItem"
+                          let-rowindex="rowindex"
+                        >
+                          <div class="w-100 d-flex justify-content-center">
+                            <button
+                              kendoButton
+                              themeColor="primary"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Editar"
+                              (click)="editarEstilos(false, dataItem)"
+                            >
+                              <span class="k-icon k-i-edit-tools"></span>
+                            </button>
+                            <button
+                              kendoButton
+                              themeColor="warning"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Editar"
+                              (click)="abrirmodalTags(false, dataItem)"
+                            >
+                              <span class="k-icon k-i-edit k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoButton
+                              themeColor="error"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              s
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Eliminar"
+                              (click)="eliminarTags(dataItem, rowindex)"
+                            >
+                              <span class="k-icon k-i-close k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-command-column>
+                    </kendo-grid>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</div>

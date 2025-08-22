@@ -1,0 +1,950 @@
+<div class="contendor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <div class="col">
+              <h2 class="text-white mb-2" id="titulo">
+                (R) Reporte de Control de Cobranza
+              </h2>
+            </div>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="search"
+                themeColor="success"
+                (click)="generarReporte()"
+              >
+                Generar Reporte
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <form [formGroup]="formFiltro" class="k-form k-form-horizontal">
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="multiselectPerAsignado"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        <span>Asistentes:</span>
+                      </label>
+                      <kendo-multiselect
+                        #multiselectPerAsignado
+                        [data]="personalAsignadoFiltro"
+                        [kendoDropDownFilter]="filterSettings2"
+                        [filterable]="true"
+                        placeholder="<Todos>"
+                        textField="nombres"
+                        valueField="usuario"
+                        [disabled]="!esCoordinadora"
+                        formControlName="idAsesor"
+                        [valuePrimitive]="true"
+                      ></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="estadoPersonal"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        <span>Estado del Personal:</span>
+                      </label>
+                      <kendo-dropdownlist
+                        #estadoPersonal
+                        formControlName="estadoPersonal"
+                        [data]="dataEstadoAsistentes"
+                        [defaultItem]="{ id: 1, nombre: 'Todo el personal' }"
+                        [valuePrimitive]="true"
+                        (valueChange)="cambiarEstadoPersonal($event)"
+                        textField="nombre"
+                        valueField="id"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="modalidades"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        <span>Modalidad:</span>
+                      </label>
+                      <kendo-multiselect
+                        #modalidades
+                        formControlName="modalidades"
+                        [data]="datamodalidades"
+                        [valuePrimitive]="true"
+                        [filterable]="true"
+                        placeholder="Todas"
+                        textField="nombre"
+                        valueField="id"
+                      >
+                      </kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-6">
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="fechaInicio"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        <span>Fecha Inicio:</span>
+                      </label>
+                      <kendo-datepicker
+                        #fechaInicio
+                        formControlName="fechaInicio"
+                        format="dd-MM-yyyy"
+                        [formatPlaceholder]="{
+                          year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'
+                        }"
+                      ></kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="fechaFin"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        <span>Fecha Fin:</span>
+                      </label>
+                      <kendo-datepicker
+                        #fechaFin
+                        formControlName="fechaFin"
+                        format="dd-MM-yyyy"
+                        [formatPlaceholder]="{
+                          year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'
+                        }"
+                      ></kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br />
+<div class="contendor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <div class="col">
+              <h2 class="text-white mb-2" id="titulo">Reporte de Pendientes</h2>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <div class="wrapper">
+            <kendo-tabstrip (tabSelect)="onTabSelect($event)" class="mi-tabstrip">
+              <kendo-tabstrip-tab
+                title="Reporte del Mes"
+                id="headerTabReporteMes"
+                [selected]="true"
+              >
+                <ng-template kendoTabContent>
+                  <div class="content">
+                    <div class="contendor">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-header bg-color-material pb-0">
+                              <div class="row">
+                                <div class="col">
+                                  <h2 class="text-white mb-2" id="titulo">
+                                    Reporte por Periodo
+                                  </h2>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card-body">
+                              <loading [loading]="loading"></loading>
+
+                              <kendo-grid
+                                *ngIf="datos_grid.length > 0"
+                                [kendoGridBinding]="datos_grid"
+                                [resizable]="true"
+                                [sortable]="true"
+                                scrollable="scrollable"
+                              >
+                                <ng-template kendoGridToolbarTemplate>
+                                  <button
+                                    kendoGridExcelCommand
+                                    themeColor="success"
+                                    type="button"
+                                    icon="file-excel"
+                                  >
+                                    Export to Excel
+                                  </button>
+                                </ng-template>
+                                <kendo-grid-column
+                                  field="TipoMonto"
+                                  title="-"
+                                  [width]="300"
+                                  [headerStyle]="{
+                                    'background-color': '#BEC3A3',
+                                    color: 'white',
+                                    'justify-content': 'center',
+                                    border: '1px solid white'
+                                  }"
+                                  [locked]="true"
+                                ></kendo-grid-column>
+                                <kendo-grid-column
+                                  field="fakeColumn"
+                                  tilte=""
+                                  [width]="0.01"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column-group
+                                  *ngFor="let col of columnas_grid"
+                                  [title]="col.title"
+                                  [resizable]="true"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white',
+                                    'justify-content': 'center',
+                                    border: '1px solid white'
+                                  }"
+                                >
+                                  <kendo-grid-column
+                                    *ngFor="let item of col.columns"
+                                    [field]="item.field"
+                                    [width]="200"
+                                    title="Monto"
+                                    [headerStyle]="{
+                                      'background-color': '#27ae60',
+                                      color: 'white',
+                                      'justify-content': 'center',
+                                      border: '1px solid white'
+                                    }"
+                                    class="text-center"
+                                  ></kendo-grid-column>
+                                </kendo-grid-column-group>
+                                <kendo-grid-excel
+                                  fileName="CobranzaReporte.xlsx"
+                                ></kendo-grid-excel>
+                              </kendo-grid>
+                            </div>
+                          </div>
+                          <!-- cierra div.card -->
+                        </div>
+                        <!-- cierra div.col-12 -->
+                      </div>
+                      <!-- cierra div.row -->
+                    </div>
+                    <!-- cierra div.contendor -->
+                  </div>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <kendo-tabstrip-tab title="Reporte por Periodo">
+                <ng-template kendoTabContent>
+                  <div class="content">
+                    <div class="contendor">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-header bg-color-material pb-0">
+                              <div class="row">
+                                <div class="col">
+                                  <h2 class="text-white mb-2" id="titulo">
+                                    Reporte por Coordinador
+                                  </h2>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row"></div>
+                            <div class="card-body">
+                              <loading [loading]="loading"></loading>
+
+                              <div class="row">
+                                <div class="col-12">
+                                  <kendo-grid
+                                    *ngIf="datos_grid2.length > 0"
+                                    [kendoGridBinding]="datos_grid2"
+                                    [resizable]="true"
+                                    [sortable]="true"
+                                    scrollable="scrollable"
+                                  >
+                                    <ng-template kendoGridToolbarTemplate>
+                                      <button
+                                        kendoGridExcelCommand
+                                        themeColor="success"
+                                        type="button"
+                                        icon="file-excel"
+                                      >
+                                        Export to Excel
+                                      </button>
+                                    </ng-template>
+                                    <kendo-grid-column
+                                      field="TipoMonto"
+                                      title="Nuevos Matriculados"
+                                      [width]="300"
+                                      [headerStyle]="{
+                                        'background-color': '#BEC3A3',
+                                        color: 'white',
+                                        'justify-content': 'center',
+                                        border: '1px solid white'
+                                      }"
+                                      [locked]="true"
+                                    >
+                                    </kendo-grid-column>
+                                    <kendo-grid-column
+                                      field="fakeColumn"
+                                      tilte=""
+                                      [width]="0.01"
+                                    >
+                                    </kendo-grid-column>
+                                    <kendo-grid-column-group
+                                      *ngFor="let col of columnas_grid2"
+                                      [title]="col.title"
+                                      [headerStyle]="{
+                                        'background-color': '#27ae60',
+                                        color: 'white',
+                                        'justify-content': 'center',
+                                        border: '1px solid white'
+                                      }"
+                                    >
+                                      <kendo-grid-column
+                                        *ngFor="let item of col.columns"
+                                        [field]="item.field"
+                                        [width]="200"
+                                        title="Monto"
+                                        [headerStyle]="{
+                                          'background-color': '#27ae60',
+                                          color: 'white',
+                                          'justify-content': 'center',
+                                          border: '1px solid white'
+                                        }"
+                                        class="text-center"
+                                      ></kendo-grid-column>
+                                    </kendo-grid-column-group>
+                                    <kendo-grid-excel
+                                      fileName="CobranzaReporte.xlsx"
+                                    ></kendo-grid-excel>
+                                  </kendo-grid>
+                                </div>
+                              </div>
+                              <br /><br />
+                              <div class="row">
+                                <div class="col-12">
+                                  <kendo-grid
+                                    *ngIf="datos_grid3.length > 0"
+                                    [kendoGridBinding]="datos_grid3"
+                                    [resizable]="true"
+                                    [sortable]="true"
+                                  >
+                                    <ng-template kendoGridToolbarTemplate>
+                                      <button
+                                        kendoGridExcelCommand
+                                        themeColor="success"
+                                        type="button"
+                                        icon="file-excel"
+                                      >
+                                        Export to Excel
+                                      </button>
+                                    </ng-template>
+                                    <kendo-grid-column
+                                      field="TipoMonto"
+                                      title="-"
+                                      [width]="300"
+                                      [filterable]="true"
+                                      [locked]="true"
+                                      [headerStyle]="{
+                                        'background-color': '#BEC3A3',
+                                        color: 'white',
+                                        'justify-content': 'center',
+                                        border: '1px solid white'
+                                      }"
+                                    >
+                                    </kendo-grid-column>
+                                    <kendo-grid-column
+                                      field="fakeColumn"
+                                      tilte=""
+                                      [width]="0.01"
+                                    >
+                                    </kendo-grid-column>
+                                    <kendo-grid-column-group
+                                      *ngFor="let col of columnas_grid3"
+                                      [title]="col.title"
+                                      [headerStyle]="{
+                                        'background-color': '#27ae60',
+                                        color: 'white',
+                                        'justify-content': 'center',
+                                        border: '1px solid white'
+                                      }"
+                                    >
+                                      <kendo-grid-column
+                                        *ngFor="let item of col.columns"
+                                        [field]="item.field"
+                                        [width]="item.width"
+                                        title="Monto"
+                                        [headerStyle]="{
+                                          'background-color': '#27ae60',
+                                          color: 'white',
+                                          'justify-content': 'center',
+                                          border: '1px solid white'
+                                        }"
+                                        class="text-center"
+                                      ></kendo-grid-column>
+                                    </kendo-grid-column-group>
+                                    <kendo-grid-excel
+                                      fileName="CobranzaReporte.xlsx"
+                                    ></kendo-grid-excel>
+                                  </kendo-grid>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Cierre de la etiqueta 'div' con clase 'row' -->
+                    </div>
+                    <!-- Cierre de la etiqueta 'div' con clase 'contendor' -->
+                  </div>
+                  <!-- Cierre de la etiqueta 'div' con clase 'content' -->
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <kendo-tabstrip-tab title="Reporte por Coordinadoras"
+                >|
+                <ng-template kendoTabContent>
+                  <div class="content">
+                    <div class="contendor">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-header bg-color-material pb-0">
+                              <div class="row">
+                                <div class="col">
+                                  <h2 class="text-white mb-2" id="titulo">
+                                    Reporte por Periodo y Coordinador
+                                  </h2>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card-body">
+                              <loading [loading]="loading"></loading>
+
+                              <kendo-grid
+                                kendoGridExpandGroupBy
+                                *ngIf="datos_grid4.length > 0"
+                                [kendoGridBinding]="datos_grid4"
+                                [resizable]="true"
+                                [sortable]="true"
+                                [groupable]="true"
+                                [group]="[{ field: 'Coordinador' }]"
+                                [groupsInitiallyExpanded]="initiallyExpanded"
+                                [(expandedGroupKeys)]="expandedGroupKeys"
+                              >
+                                <ng-template kendoGridToolbarTemplate>
+                                  <button
+                                    kendoButton
+                                    themeColor="secondary"
+                                    (click)="expandAll()"
+                                  >
+                                    Expandir Todos
+                                  </button>
+                                  <button
+                                    kendoButton
+                                    themeColor="warning"
+                                    (click)="collapseAll()"
+                                  >
+                                    Comprimir Todos
+                                  </button>
+                                  <kendo-grid-spacer></kendo-grid-spacer>
+
+                                  <button
+                                    kendoGridExcelCommand
+                                    themeColor="success"
+                                    type="button"
+                                    icon="file-excel"
+                                  >
+                                    Export to Excel
+                                  </button>
+                                </ng-template>
+
+                                <kendo-grid-column
+                                  field="Coordinador"
+                                  title="Coordinador"
+                                  [width]="300"
+                                  [hidden]="true"
+                                  [filterable]="false"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white',
+                                    'justify-content': 'center',
+                                    border: '1px solid white'
+                                  }"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  field="TipoMonto"
+                                  title="Tipo Monto Por Coordinador"
+                                  [width]="300"
+                                  [filterable]="true"
+                                  [locked]="true"
+                                  [headerStyle]="{
+                                    'background-color': '#BEC3A3',
+                                    color: 'white',
+                                    'justify-content': 'center',
+                                    border: '1px solid white'
+                                  }"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  field="fakeColumn"
+                                  tilte=""
+                                  [width]="0.01"
+                                >
+                                </kendo-grid-column>
+                                <kendo-grid-column-group
+                                  *ngFor="let col of columnas_grid4"
+                                  [title]="col.title"
+                                  [headerStyle]="{
+                                    'background-color': '#27ae60',
+                                    color: 'white',
+                                    'justify-content': 'center',
+                                    border: '1px solid white'
+                                  }"
+                                >
+                                  <kendo-grid-column
+                                    *ngFor="let item of col.columns"
+                                    [field]="item.field"
+                                    [width]="item.width"
+                                    title="Monto"
+                                    [headerStyle]="{
+                                      'background-color': '#27ae60',
+                                      color: 'white',
+                                      'justify-content': 'center',
+                                      border: '1px solid white'
+                                    }"
+                                    class="text-center"
+                                  ></kendo-grid-column>
+                                </kendo-grid-column-group>
+                                <kendo-grid-excel
+                                  fileName="Reporte.xlsx"
+                                ></kendo-grid-excel>
+                              </kendo-grid>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <kendo-tabstrip-tab title="Detalles">
+                <ng-template kendoTabContent>
+                  <div class="content">
+                    <div class="contendor">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-header bg-color-material pb-0">
+                              <div class="row">
+                                <div class="col">
+                                  <h2 class="text-white mb-2" id="titulo">
+                                    Detalle Por Coordinadora
+                                  </h2>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card-body p-4">
+                              <loading [loading]="loadingDetalles"></loading>
+                              <kendo-tabstrip
+                                (tabSelect)="onTabSelect($event)"
+                                [keepTabContent]="true"
+                              >
+                                <kendo-tabstrip-tab
+                                  *ngFor="let tab of tabsData"
+                                  [title]="tab.title"
+                                >
+                                  <ng-template kendoTabContent *loadOnDemand>
+                                    <div class="contendor">
+                                      <div class="row">
+                                        <div class="col-12">
+                                          <div class="card">
+                                            <div
+                                              class="card-header bg-color-material pb-0"
+                                            >
+                                              <div class="row">
+                                                <div class="col">
+                                                  <h2
+                                                    class="text-white mb-2"
+                                                    id="titulo"
+                                                  >
+                                                    {{ tab.title }}
+                                                  </h2>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="card-body p-4">
+                                              <div class="row">
+                                                <div class="col-12">
+                                                  <kendo-grid
+                                                    [resizable]="true"
+                                                    [kendoGridBinding]="
+                                                      tab.gridData[0]
+                                                    "
+                                                    [sortable]="true"
+                                                    [style.maxHeight.px]="800"
+                                                    [filterable]="true"
+                                                    [pageable]="true"
+                                                    scrollable="scrollable"
+                                                  >
+                                                    <ng-template
+                                                      kendoGridToolbarTemplate
+                                                    >
+                                                      <button
+                                                        kendoGridExcelCommand
+                                                        class="btn btn-success"
+                                                        themeColor="success"
+                                                        type="button"
+                                                        icon="file-excel"
+                                                      >
+                                                        Export to Excel
+                                                      </button>
+                                                    </ng-template>
+                                                    <kendo-grid-column
+                                                      field="ciudad"
+                                                      title="Modalidad"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="coordinador"
+                                                      title="Coordinador Academico"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="programa"
+                                                      title="Programa"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="codigoAlumno"
+                                                      title="Codigo de Alumno"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="estadoMatricula"
+                                                      title="Estado del Alumno"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="alumno"
+                                                      title="Alumno"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="fechaCuota"
+                                                      title="Fecha Cuota"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="montoCuota"
+                                                      title="Monto Cuota"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="fechaPago"
+                                                      title="Fecha Pago"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+
+                                                    <kendo-grid-column
+                                                      field="montoPagado"
+                                                      title="Pago"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="saldoPendiente"
+                                                      title="Saldo Pendiente"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="mora"
+                                                      title="Mora"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="nroCuota"
+                                                      title="Nro Cuota"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="moneda"
+                                                      title="Moneda"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="montoCuotaDol"
+                                                      title="Total ($)"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="montoPagadoDol"
+                                                      title="Real ($)"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="saldoPendienteDol"
+                                                      title="Pend ($)"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-column
+                                                      field="documentacion"
+                                                      title="Documentacion"
+                                                      [width]="170"
+                                                      [headerStyle]="{
+                                                        'background-color':
+                                                          '#337ab7',
+                                                        color: 'white',
+                                                        'text-aling': 'center',
+                                                        'justify-content':
+                                                          'center',
+                                                        border:
+                                                          '1px solid white'
+                                                      }"
+                                                    >
+                                                    </kendo-grid-column>
+                                                    <kendo-grid-excel
+                                                      fileName="TReporte Pendiente Operaciones {{
+                                                        tab.title
+                                                      }}.xlsx"
+                                                    ></kendo-grid-excel>
+                                                  </kendo-grid>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </ng-template>
+                                </kendo-tabstrip-tab>
+                              </kendo-tabstrip>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </kendo-tabstrip-tab>
+            </kendo-tabstrip>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

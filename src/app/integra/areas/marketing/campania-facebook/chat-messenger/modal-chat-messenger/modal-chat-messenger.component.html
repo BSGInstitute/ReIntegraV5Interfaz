@@ -1,0 +1,421 @@
+<ng-container *ngIf="loader == true">
+  <div class="loading-indicator">
+    <mat-progress-spinner
+      mode="indeterminate"
+      color="accent"
+    ></mat-progress-spinner>
+  </div>
+</ng-container>
+<div class="modal-messenger">
+  <div class="contenedor-inferior">
+    <div class="contenedor-horizontal">
+      <div class="centrado-izquierda-messenger">
+        <div class="contenedorTotal">
+          <div class="datos-messenger">
+            <div class="chat-header-messenger">
+              <h1>Historial de Oportunidades</h1>
+            </div>
+            <div class="tabla">
+              <kendo-grid
+                [kendoGridBinding]="grilla"
+                kendoGridSelectBy="id"
+                [sortable]="true"
+                [reorderable]="true"
+                [resizable]="true"
+                [class]="'cellCustomClass'"
+              >
+                <kendo-grid-column
+                  field="categoria"
+                  title="Nombre Campaña"
+                  [width]="100"
+                  [headerClass]="'headerCustomClass'"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="tipo"
+                  title="Tipo"
+                  [width]="50"
+                  [headerClass]="'headerCustomClass'"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="fechaCreacion"
+                  title="Fecha Envio Programado"
+                  [width]="100"
+                  [headerClass]="'headerCustomClass'"
+                >
+                </kendo-grid-column>
+              </kendo-grid>
+            </div>
+            <ng-template kendoExpansionPanelTitleDirective>
+              <div>
+                <span class="exp"> Chatbot</span>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      <div class="centrado-medio-messenger">
+        <div class="chat-container">
+          <div class="chat-area-messenger">
+            <div class="chat-header-messenger">
+              <div class="chat-name">{{ nombre }}</div>
+              <div class="chat-email">{{ email1 }}</div>
+            </div>
+            <div class="chat-messages" #contentC id="content-chats">
+              <div
+                *ngFor="let message of mensajesMess"
+                class="message"
+                [class.sent]="message.tipo == 2 && message.idAlumnoCelular == 1"
+                [class.sentA]="
+                  message.tipo == 2 && message.idAlumnoCelular == 0
+                "
+                [class.received]="
+                  message.tipo == 1 && message.idAlumnoCelular == 1
+                "
+                [class.receivedA]="
+                  message.tipo == 1 && message.idAlumnoCelular == 0
+                "
+              >
+                <ng-container *ngIf="message.tipo == 1">
+                  <div class="message-content">
+                    <div class="NombreMessage">{{ message.alumno }}</div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="message.tipo == 2">
+                  <div class="message-content">
+                    <div class="NombreMessage">{{ message.personal }}</div>
+                  </div>
+                </ng-container>
+                <div
+                  class="message-content w-100"
+                  [innerHTML]="message.mensaje"
+                ></div>
+                <div
+                  class="message-time align-right"
+                  style="margin-bottom: 4px; top: 0"
+                >
+                  <div
+                    *ngIf="message.tipo == 2"
+                    style="padding-right: 32px; top: 0"
+                  >
+                    <p style="font-weight: 500; margin-bottom: 0px; top: 0">
+                      {{ message.fechaMensaje | date : "dd/MM/yyyy HH:mm" }}
+                    </p>
+                  </div>
+                  <div *ngIf="message.tipo == 1">
+                    <p style="font-weight: 500; margin-bottom: 0px; top: 0">
+                      {{ message.fechaMensaje | date : "dd/MM/yyyy HH:mm" }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input">
+              <div class="button-group">
+                <button
+                  mat-icon-button
+                  class="fileMessenger"
+                  (click)="abrirModalPlantilla()"
+                >
+                  <i class="material-icons">attach_file</i>
+                </button>
+                <button mat-icon-button class="evMessenger">
+                  <i class="material-icons">file_copy</i>
+                </button>
+              </div>
+
+              <textarea
+                [(ngModel)]="newMessage"
+                placeholder="Escribe un mensaje..."
+                rows="4"
+                (input)="countWords()"
+                class="textarea"
+              ></textarea>
+              <div class="botonesChat">
+                <button
+                  mat-icon-button
+                  (click)="sendMessage()"
+                  class="sendbMessenger"
+                >
+                  <mat-icon>send</mat-icon>
+                </button>
+                <div class="word-count">{{ wordCount }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="centrado-derecha-messenger">
+        <div class="centrado-medio-datos-messenger">
+          <div class="content">
+            <div class="datos-messenger">
+              <h1 style="padding-top: 15px; margin-bottom: 0px">
+                Datos del Alumno
+              </h1>
+              <div class="datosIniciales">
+                <div class="centrar-contenido">
+                  <mat-form-field
+                    class="InpuId"
+                    appearance="outline"
+                    style="height: 60px; width: 200px"
+                  >
+                    <mat-label>IdAlumno</mat-label>
+                    <input
+                      matInput
+                      type="text"
+                      name="nombre"
+                      [readonly]="!isEditable"
+                      [(ngModel)]="idAlumno"
+                      style="width: 100%"
+                    />
+                  </mat-form-field>
+                  <img
+                    src="../../../../../../assets/img/usuario.png"
+                    style="width: 100px"
+                  />
+                  <div class="botones">
+                    <button
+                      mat-flat-button
+                      [class.selected]="seleccionado[0]"
+                      (click)="seleccionarBoton(1)"
+                      class="butdatos"
+                    >
+                      <mat-icon>notifications_off</mat-icon>
+                      Archivar
+                    </button>
+                    <button
+                      mat-flat-button
+                      [class.selected]="seleccionado[1]"
+                      (click)="seleccionarBoton(2)"
+                      class="butdatos"
+                    >
+                      <i class="material-icons">person_off</i>
+                      Desuscribir
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <form class="form-container-messenger">
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Nombre</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="nombre"
+                    [readonly]="!isEditable"
+                    [(ngModel)]="nombre"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Nombre2</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="nombre2"
+                    [readonly]="!isEditable"
+                    [(ngModel)]="nombre2"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Apellido Paterno</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="apellidoPaterno"
+                    [readonly]="!isEditable"
+                    [(ngModel)]="ApPa"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Apellido Materno</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="apellidoMaterno"
+                    [readonly]="!isEditable"
+                    [(ngModel)]="ApMa"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Celular 1</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="celular"
+                    [readonly]="true"
+                    [(ngModel)]="cel"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Celular 2</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="celular2"
+                    [readonly]="!isEditable"
+                    [(ngModel)]="cel2"
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Email1</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="email1"
+                    [(ngModel)]="email1"
+                    readonly
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  class="example-full-width"
+                  appearance="outline"
+                  style="height: 60px"
+                >
+                  <mat-label>Email2</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    name="email2"
+                    [(ngModel)]="email2"
+                  />
+                </mat-form-field>
+
+                <div class="input-container">
+                  <span class="input-label">Profesion</span>
+                  <div class="example-wrapper" style="width: 100%">
+                    <kendo-dropdownlist
+                      name="profesion"
+                      (selectionChange)="selectionChangeP($event)"
+                      class="d-flex"
+                      size="medium"
+                      [data]="listaAreaFormacion"
+                      [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [disabled]="!editar"
+                      [(ngModel)]="profesion"
+                      [kendoDropDownFilter]="filterSettings"
+                    >
+                    </kendo-dropdownlist>
+                  </div>
+                </div>
+
+                <div class="input-container">
+                  <span class="input-label">Cargo</span>
+                  <div class="example-wrapper" style="width: 100%">
+                    <kendo-dropdownlist
+                      name="cargo"
+                      (selectionChange)="selectionChangeC($event)"
+                      class="d-flex"
+                      size="medium"
+                      [data]="listaCargo"
+                      [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [disabled]="!editar"
+                      [kendoDropDownFilter]="filterSettings"
+                      [(ngModel)]="cargo"
+                    >
+                    </kendo-dropdownlist>
+                  </div>
+                </div>
+
+                <div class="input-container">
+                  <span class="input-label">Area Laboral</span>
+                  <div class="example-wrapper" style="width: 100%">
+                    <kendo-dropdownlist
+                      name="areaLaboral"
+                      (selectionChange)="selectionChangeA($event)"
+                      class="d-flex"
+                      size="medium"
+                      [data]="listaAreaTrabajo"
+                      [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [disabled]="!editar"
+                      [kendoDropDownFilter]="filterSettings"
+                      [(ngModel)]="areaLaboral"
+                    >
+                    </kendo-dropdownlist>
+                  </div>
+                </div>
+
+                <div class="input-container">
+                  <span class="input-label">Industria</span>
+                  <div class="example-wrapper" style="width: 100%">
+                    <kendo-dropdownlist
+                      name="industria"
+                      (selectionChange)="selectionChangeI($event)"
+                      class="d-flex"
+                      size="medium"
+                      [data]="listaIndustria"
+                      [defaultItem]="{ nombre: 'Ninguno', id: null }"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [disabled]="!editar"
+                      [kendoDropDownFilter]="filterSettings"
+                      [(ngModel)]="industria"
+                    >
+                    </kendo-dropdownlist>
+                  </div>
+                </div>
+                <div class="button-group">
+                  <button
+                    mat-raised-button
+                    class="botonOportunidad"
+                    type="button"
+                  >
+                    Crear Oportunidad
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- </ng-container> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

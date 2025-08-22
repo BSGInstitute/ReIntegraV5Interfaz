@@ -1,0 +1,733 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Reporte Flujo</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="k-loading-panel" *ngIf="loader">
+            <div class="k-loading-panel-mask"></div>
+            <div class="k-loading-panel-wrapper">
+              <kendo-loader
+                type="converging-spinner"
+                themeColor="primary"
+                size="large"
+              >
+              </kendo-loader>
+              <div class="k-loading-panel-text fs-5 text-primary">
+                Cargando...
+              </div>
+            </div>
+          </div>
+          <kendo-tabstrip
+            style="background-color: #d3d4dc"
+            [keepTabContent]="true"
+          >
+            <kendo-tabstrip-tab title="FILTRO REPORTE FLUJO" [selected]="true">
+              <ng-template kendoTabContent>
+                <div class="row">
+                  <div class="col-md-2"></div>
+                  <div class="col-md-8">
+                    <form class="k-form" [formGroup]="formGroupFiltro">
+                      <fieldset class="k-form-fieldset">
+                        <div
+                          class="row"
+                          style="display: flex; justify-content: center"
+                        >
+                          <div class="col-md-8">
+                            <kendo-daterange [incompleteDateValidation]="true">
+                              <div class="col-md-5">
+                                <label style="width: 250px">
+                                  <span
+                                    >Fechas vencimiento de Cronograma :</span
+                                  >
+                                </label>
+                                <kendo-dateinput
+                                  kendoDateRangeStartInput
+                                  [size]="'medium'"
+                                  formControlName="fechaInicio"
+                                  [placeholder]="'Inicio'"
+                                  [format]="{
+                                    displayFormat: 'dd-MM-yyyy',
+                                    inputFormat: 'dd-MM-yyyy'
+                                  }"
+                                  [incompleteDateValidation]="true"
+                                  fillMode="outline"
+                                >
+                                </kendo-dateinput>
+                              </div>
+                              <div
+                                class="col-md-2"
+                                style="
+                                  padding: 0%;
+                                  width: 5%;
+                                  text-align: center;
+                                "
+                              >
+                                <p style="margin-bottom: 5px">
+                                  <strong>—</strong>
+                                </p>
+                              </div>
+                              <div class="col-md-5">
+                                <kendo-dateinput
+                                  kendoDateRangeEndInput
+                                  [size]="'medium'"
+                                  [placeholder]="'fin'"
+                                  formControlName="fechaFin"
+                                  [format]="{
+                                    displayFormat: 'dd-MM-yyyy',
+                                    inputFormat: 'dd-MM-yyyy'
+                                  }"
+                                  [incompleteDateValidation]="true"
+                                  fillMode="outline"
+                                ></kendo-dateinput>
+                              </div>
+                            </kendo-daterange>
+                          </div>
+                          <div class="col-md-2" style="padding-top: 15px">
+                            <button mat-raised-button color="primary" (click)="generarReporte()">
+                              <mat-icon>search</mat-icon>
+                              Buscar
+                            </button>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </form>
+                  </div>
+                  <div class="col-md-2"></div>
+                </div>
+              </ng-template>
+            </kendo-tabstrip-tab>
+            <kendo-tabstrip-tab title="CONGELAMIENTO DE DATOS">
+              <ng-template kendoTabContent>
+                <app-congelamiento-datos-flujo
+                (loading)="ActividadLoading($event)"
+                ></app-congelamiento-datos-flujo>
+              </ng-template>
+            </kendo-tabstrip-tab>
+          </kendo-tabstrip>
+          <br />
+          <div class="row conteiner-toolbar-retiros-matricula">
+            <div class="card" style="padding: 0px">
+              <div class="card-header bg-color-material pb-0">
+                <h3 class="text-white mb-2">Lista reporte flujo</h3>
+              </div>
+              <div class="card-body p-4 contendor-grid-flujo">
+                <kendo-grid
+                  #grid
+                  [kendoGridBinding]="listaReporte"
+                  [pageSize]="5"
+                  [sortable]="true"
+                  [reorderable]="false"
+                  [resizable]="true"
+                  filterable="menu"
+                  [pageable]="true"
+                  style="max-height: 700px; border-top-width: 0px"
+                >
+                  <ng-template kendoGridToolbarTemplate>
+                    <div
+                      class="col-md-7"
+                      style="display: flex; justify-content: start"
+                    >
+                    <button
+                    mat-raised-button
+                    class="btn-export-excel"
+                    (click)="exportarAExcel(blobExport)"
+                  >
+                  <span class="k-icon k-i-file-excel k-icon-20"></span>
+                    Exportar a Excel
+                  </button>
+                    </div>
+                  </ng-template>
+                  <kendo-grid-column
+                    title="Código de Programa"
+                    headerClass="justify-content-center k-grid-header cabeceras"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                    [width]="150"
+                    field="codigo"
+                    [locked]="false"
+                    [sticky]="true"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Estado de Programa"
+                    headerClass="justify-content-center k-grid-header cabeceras"
+                    [width]="150"
+                    field="estadoP"
+                    [locked]="false"
+                    [sticky]="true"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Estado de Finanzas"
+                    headerClass="justify-content-center k-grid-header cabeceras"
+                    [width]="120"
+                    field="estadoFinanzas"
+                    [locked]="false"
+                    [sticky]="true"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Estado Matricula"
+                    headerClass="justify-content-center k-grid-header cabeceras"
+                    [width]="150"
+                    field="estadoMatricula"
+                    [locked]="false"
+                    [sticky]="true"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Subestado de Matricula"
+                    headerClass="justify-content-center k-grid-header cabeceras"
+                    [width]="150"
+                    field="subEstadoMatricula"
+                    [locked]="false"
+                    [sticky]="true"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Alumno"
+                    headerClass="justify-content-center k-grid-header cabeceras"
+                    [width]="150"
+                    field="alumno"
+                    [locked]="false"
+                    [sticky]="true"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Pais Alumno"
+                    headerClass="justify-content-center k-grid-header cabeceras"
+                    [width]="150"
+                    field="paisAlumno"
+                    [locked]="false"
+                    [sticky]="true"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': 'rgb(255, 193, 7)',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column-group
+                    title="CRONOGRAMA ORGINAL"
+                    [columnMenu]="false"
+                    headerClass="justify-content-center k-grid-header"
+                    [headerStyle]="{
+                      'background-color': 'rgb(255, 193, 7)',
+                      color: 'white'
+                    }"
+                  >
+                    <kendo-grid-column
+                      title="Fecha Vencimiento Original"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="150"
+                      field="fechavencimientoOriginal"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                      [headerStyle]="{
+                        'background-color': 'rgb(255, 193, 7)',
+                        color: 'white'
+                      }"
+                    >
+                    <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                      <kendo-grid-date-filter-menu
+                          [column]="column"
+                          [format]="'dd-MM-yyyy'"
+                          [filter]="filter"
+                          [placeholder]="'dia-mes-año'"
+                          [filterService]="filterService"
+                          >
+                      </kendo-grid-date-filter-menu>
+                    </ng-template>
+                    <ng-template  kendoGridCellTemplate let-dataItem>
+                      {{finanzasService.fechaTemplate(dataItem.fechavencimientoOriginal,false)}}
+                    </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Monto Cuota Original"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="150"
+                      field="cuotaOriginal"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                      [headerStyle]="{
+                        'background-color': 'rgb(255, 193, 7)',
+                        color: 'white'
+                      }"
+                    >
+                    </kendo-grid-column>
+                  </kendo-grid-column-group>
+                  <kendo-grid-column
+                    title="Monto Modificado"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="modificacion"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column-group
+                    title="CRONOGRAMA ACTUAL"
+                    [columnMenu]="false"
+                    headerClass="justify-content-center k-grid-header "
+                    [headerStyle]="{
+                      'background-color': 'rgb(255, 110, 7)',
+                      color: 'white'
+                    }"
+                  >
+                    <kendo-grid-column
+                      title="Fecha Vencimiento Actual"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="150"
+                      field="fechavencimiento"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                      [headerStyle]="{
+                        'background-color': 'rgb(255, 110, 7)',
+                        color: 'white'
+                      }"
+                    >
+                    <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                      <kendo-grid-date-filter-menu
+                          [column]="column"
+                          [format]="'dd-MM-yyyy'"
+                          [filter]="filter"
+                          [placeholder]="'dia-mes-año'"
+                          [filterService]="filterService"
+                          >
+                      </kendo-grid-date-filter-menu>
+                    </ng-template>
+                    <ng-template  kendoGridCellTemplate let-dataItem>
+                      {{finanzasService.fechaTemplate(dataItem.fechavencimiento,false)}}
+                    </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Monto Cuota Actual"
+                      headerClass="justify-content-center k-grid-header "
+                      [width]="150"
+                      field="cuota"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                      [headerStyle]="{
+                        'background-color': 'rgb(255, 110, 7)',
+                        color: 'white'
+                      }"
+                    >
+                    </kendo-grid-column>
+                  </kendo-grid-column-group>
+                  <kendo-grid-column
+                    title="Fecha Pago"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="fechaPago"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                    <kendo-grid-date-filter-menu
+                        [column]="column"
+                        [format]="'dd-MM-yyyy'"
+                        [filter]="filter"
+                        [placeholder]="'dia-mes-año'"
+                        [filterService]="filterService"
+                        >
+                    </kendo-grid-date-filter-menu>
+                  </ng-template>
+                  <ng-template  kendoGridCellTemplate let-dataItem>
+                    {{finanzasService.fechaTemplate(dataItem.fechaPago,false)}}
+                  </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Monto Pagado"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="montopagado"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Saldo Pendiente"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="saldopendiente"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Mora"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="mora"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Nro Cuota"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="nrocuota"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Moneda"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="moneda"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Total Cuota Dolar"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="totalCuotaD"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Real Pago Dolar"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="realPagoD"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Saldo Pendiente Dolar"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="saldoPendienteD"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Origen Programa"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="origenPrograma"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Código Matricula"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="codigoMatricula"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Paquete"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="paquete"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Email"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="email"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Tel Fijo"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="telFijo"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Tel Cel"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="telCel"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="DNI"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="dni"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Dirección"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="direccion"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Documento Pago"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="documentoPago"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Razón Social"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="razonSocial"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column
+                  ><kendo-grid-column
+                    title="Coordinadora Academica"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="coordinadoraacademica"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column
+                  ><kendo-grid-column
+                    title="Coordinadora Cobranza"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="coordinadoracobranza"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#27ae60',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  
+                  <ng-template kendoGridNoRecordsTemplate>
+                    <div>
+                      <kendo-badge-container>
+                        <kendo-icon name="cloud" size="large"></kendo-icon>
+                        <kendo-badge position="inside">
+                          <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                        </kendo-badge>
+                      </kendo-badge-container>
+                    </div>
+                    <p>No hay registros cargados!</p>
+                </ng-template>
+                  <ng-template
+                    kendoPagerTemplate
+                    let-totalPages="totalPages"
+                    let-currentPage="currentPage"
+                  >
+                    <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                    <kendo-pager-numeric-buttons
+                      [buttonCount]="5"
+                    ></kendo-pager-numeric-buttons>
+                    <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                    <!-- <kendo-pager-input></kendo-pager-input> -->
+                    <kendo-pager-info></kendo-pager-info>
+                    <kendo-pager-page-sizes
+                      [pageSizes]="pageSizes"
+                    ></kendo-pager-page-sizes>
+                  </ng-template>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

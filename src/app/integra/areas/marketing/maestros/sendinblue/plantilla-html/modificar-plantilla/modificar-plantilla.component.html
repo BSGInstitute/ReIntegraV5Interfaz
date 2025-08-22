@@ -1,0 +1,392 @@
+<ng-container *ngIf="loader == true">
+  <div class="loading-indicator">
+    <mat-progress-spinner
+      mode="indeterminate"
+      color="accent"
+    ></mat-progress-spinner>
+  </div>
+</ng-container>
+<div class="contenedor">
+  <div class="titulo">
+    <h3>Plantilla</h3>
+    <div class="botonCerrar">
+      <button mat-flat-button color="warn" class="circulo" (click)="Cerrar()">
+        <i class="material-icons">clear</i>
+      </button>
+    </div>
+  </div>
+
+  <mat-tab-group>
+    <mat-tab label="Configuracion Plantilla">
+      <div class="titulo">
+        <h3>Configuracion Principal</h3>
+      </div>
+
+      <div class="contenedor">
+        <div class="plantilla">
+          <div class="row justify-content-center">
+            <div class="col-md-10">
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right"
+                  >Nombre Plantilla</label
+                >
+                <div class="col-md-8">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <input matInput [(ngModel)]="nombrePlantilla" />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row justify-content-center" style="margin-bottom: 15px">
+            <div class="col-md-10">
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right"
+                  >Tipo de Plantilla</label
+                >
+                <div class="col-md-8">
+                  <mat-form-field appearance="outline">
+                    <mat-select
+                      [(ngModel)]="idTipoPlantilla"
+                      (selectionChange)="plantillaSeleccionada($event)"
+                      [disabled]="actualizar === true"
+                    >
+                      <mat-option>Seleccione una lista</mat-option>
+                      <mat-option
+                        *ngFor="let lista of listaPlantillaPrueba"
+                        [value]="lista.id"
+                      >
+                        {{ lista.nombre }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <button mat-flat-button class="registrar" (click)="generarUrl()">
+            Generar Url
+          </button> -->
+        </div>
+        <div class="titulo">
+          <h3>Configuracion Plantilla</h3>
+        </div>
+        <div class="contenedorTotal">
+          <div class="plantillaC">
+            <ng-container *ngFor="let item of listaEtiquetas; let i = index">
+              <div class="row justify-content-center">
+                <div class="col-md-10">
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label text-right">{{
+                      item.nombre
+                    }}</label>
+                    <div class="col-md-8">
+                      <ng-container *ngIf="item.nombreTipo === 'input'">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <input
+                            matInput
+                            [(ngModel)]="item.valor"
+                            [readOnly]="true"
+                            (input)="funcionsota()"
+                            [ngClass]="{
+                              'repeated-value': isValueRepeated(item.valor)
+                            }"
+                          />
+                        </mat-form-field>
+                      </ng-container>
+                      <ng-container *ngIf="item.nombreTipo === 'select'">
+                        <kendo-dropdownlist
+                          [data]="getOptionsForSelect(item.etiqueta)"
+                          [(ngModel)]="item.valor"
+                          (valueChange)="funcionsota()"
+                          [textField]="'nombreArchivo'"
+                          [valueField]="'ruta'"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          (selectionChange)="
+                            imprimirValor($event, item.etiqueta)
+                          "
+                        >
+                        </kendo-dropdownlist>
+
+                        <ng-container *ngIf="item.etiqueta != 'imagenAsesor'">
+                          <div class="container contenedorTabla">
+                            <div class="card-body p-4">
+                              <div class="excc">
+                                <input
+                                  #fileInput
+                                  type="file"
+                                  accept="image/*"
+                                  (change)="onFileChange($event)"
+                                  style="display: none"
+                                />
+                                <button
+                                  mat-button
+                                  class="btn"
+                                  type="button"
+                                  (click)="fileInput.click()"
+                                >
+                                  Seleccionar Imagen
+                                  <span class="k-icon k-i-file-excel"></span>
+                                </button>
+                                <div
+                                  *ngIf="selectedImage"
+                                  class="image-container"
+                                >
+                                  <img
+                                    [src]="selectedImage"
+                                    alt="Selected Image"
+                                    class="selected-image"
+                                  />
+                                </div>
+                                <button
+                                  mat-button
+                                  class="btn butEx"
+                                  type="button"
+                                  (click)="onSubmit()"
+                                  [disabled]="!selectedImage"
+                                >
+                                  Enviar
+                                </button>
+                                <button
+                                  mat-button
+                                  class="btn butEl"
+                                  type="button"
+                                  (click)="eliminarImagen()"
+                                >
+                                  Eliminar
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ng-container>
+                      <ng-container *ngIf="item.nombreTipo === 'multiselect'">
+                        <mat-form-field appearance="outline" class="w-100">
+                          <mat-select
+                            [(ngModel)]="item.valor"
+                            (selectionChange)="funcionsota()"
+                            multiple
+                          >
+                            <mat-option
+                              *ngFor="
+                                let option of getOptionsForMultiselect(
+                                  item.etiqueta
+                                )
+                              "
+                              [value]="option"
+                            >
+                              {{ option }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </ng-container>
+                      <ng-container *ngIf="item.nombreTipo === 'listaInput'">
+                        <mat-form-field class="example-chip-list">
+                          <mat-label>Añade listas</mat-label>
+                          <mat-chip-list #chipList aria-label="Enter values">
+                            <mat-chip
+                              *ngFor="let value of item.valor; let f = index"
+                              (removed)="remove(value, f, i)"
+                            >
+                              {{ value | slice : 0 : 10 }}
+                              <!-- Aquí se mostrarán solo los primeros 10 caracteres -->
+                              <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                            <input
+                              placeholder="New value..."
+                              [matChipInputFor]="chipList"
+                              [matChipInputSeparatorKeyCodes]="
+                                separatorKeysCodes
+                              "
+                              [matChipInputAddOnBlur]="addOnBlur"
+                              (matChipInputTokenEnd)="add($event, i)"
+                            />
+                          </mat-chip-list>
+                        </mat-form-field>
+                      </ng-container>
+
+                      <ng-container *ngIf="item.nombreTipo === 'textarea'" style="margin-bottom: 10px">
+                        <ckeditor
+                          [(ngModel)]="item.valor"
+                          class="custom-kendo-editor"
+                          (change)="funcionsota()"
+                          [editor]="editor2"
+                        ></ckeditor>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div class="plantillaB">
+            <div #miDiv [innerHTML]="itemmodificado | safeHtml"></div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="actualizar == true">
+          <button
+            mat-flat-button
+            class="registrar"
+            (click)="ActualizarPlantilla()"
+          >
+            Actualizar
+          </button>
+        </ng-container>
+        <ng-container *ngIf="actualizar == false">
+          <button
+            mat-flat-button
+            class="registrar"
+            (click)="InsertarPlantilla()"
+          >
+            Guardar
+          </button>
+        </ng-container>
+      </div>
+    </mat-tab>
+
+    <!-- <mat-tab label="Subir Imagenes">
+      <app-agregar-plantilla></app-agregar-plantilla>
+      <div class="titulo">
+        <h3>Subir Imagenes</h3>
+      </div>
+
+      <div class="container contenedorTabla">
+        <div class="card-body p-4">
+          <div class="excc">
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              (change)="onFileChange($event)"
+              style="display: none"
+            />
+            <button
+              mat-button
+              class="btn butEx"
+              type="button"
+              (click)="fileInput.click()"
+            >
+              Seleccionar Imagen
+              <span class="k-icon k-i-file-excel"></span>
+            </button>
+            <div *ngIf="selectedImage" class="image-container">
+              <img
+                [src]="selectedImage"
+                alt="Selected Image"
+                class="selected-image"
+              />
+            </div>
+            <button
+              mat-button
+              class="btn butEx"
+              type="button"
+              (click)="onSubmit()"
+              [disabled]="!selectedImage"
+            >
+              Enviar
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-tab> -->
+
+    <mat-tab label="Generar Url">
+      <!-- <app-configuracion-plantilla [filteredItems]="filteredItems" [filteredItemsLeng]="filteredItems.length"></app-configuracion-plantilla> -->
+
+      <div class="titulo">
+        <h3>Generar Url</h3>
+      </div>
+
+      <div class="container" style="padding: 50px">
+        <div class="row justify-content-center">
+          <div class="col-md-10">
+            <div class="form-group row">
+              <label
+                class="col-md-4 col-form-label text-right custom-label"
+                style="margin-top: 15px"
+              >
+                Url Plantilla
+              </label>
+
+              <div class="col-md-8">
+                <kendo-multiselect
+                  [data]="filteredItems"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="nombre"
+                  valueField="etiqueta"
+                  (valueChange)="selectionChangeUrl($event)"
+                  [(ngModel)]="etiqueta"
+                  [valuePrimitive]="true"
+                >
+                </kendo-multiselect>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-md-10">
+            <div class="form-group row">
+              <label class="col-md-4 col-form-label text-right"
+                >Nombre Formulario</label
+              >
+              <div class="col-md-8">
+                <mat-form-field appearance="outline" class="w-100">
+                  <input matInput [(ngModel)]="nombreFormulario" />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-md-10">
+            <div class="form-group row">
+              <label
+                class="col-md-4 col-form-label text-right custom-label"
+                style="margin-top: 15px"
+              >
+                Centro de Costo
+              </label>
+
+              <div class="col-md-8">
+                <kendo-dropdownlist
+                  [data]="listaCentroCosto"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="nombre"
+                  valueField="id"
+                  (selectionChange)="selectionChangeCentro($event)"
+                  [(ngModel)]="idCentroCosto"
+                  [valuePrimitive]="true"
+                >
+                </kendo-dropdownlist>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="generado == true">
+          <div class="row justify-content-center">
+            <div class="col-md-10">
+              <div class="form-group row">
+                <label class="col-md-4 col-form-label text-right"
+                  >Url Generada</label
+                >
+                <div class="col-md-8">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <input matInput [(ngModel)]="urlGenerada" readonly />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <button mat-flat-button class="registrar" (click)="generarUrl()">
+          Generar
+        </button>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

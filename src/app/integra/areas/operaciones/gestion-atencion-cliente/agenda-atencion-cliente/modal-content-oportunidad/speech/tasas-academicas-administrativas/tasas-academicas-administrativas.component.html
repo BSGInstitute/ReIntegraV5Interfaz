@@ -1,0 +1,506 @@
+<mat-expansion-panel class="mt-2" [expanded]="true" (opened)="panelOpenState = true" (closed)="!panelOpenState = false">
+  <mat-expansion-panel-header class="enuciadoHeader">
+    <mat-panel-title> Certificaciones / Tasas académicas y administrativas</mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div class="row">
+    
+
+      <!-- <ng-container -->
+      <!-- *ngIf="gridCreditos?.data.length > 0; else elseTemplateCredito" -->
+      <!-- > -->
+      <div *ngIf="isLoading" style="height: 100px">
+        <loading [loading]="true"></loading>
+      </div>
+      <h3 *ngIf="!isLoading && gridCostosAdmistrativos?.data != null && gridCostosAdmistrativos?.data.length == 0" style="text-align: center;font-weight: bold;margin: 25px 0;"> - No existen registros - </h3>
+      <!-- <h3 *ngIf="!isLoading && gridCostosAdmistrativos?.data!=null && gridCostosAdmistrativos?.data.length == 0" style="text-align: center;font-weight: bold;margin: 25px 0;"> - No existen registros - </h3> -->
+      
+      <table *ngIf="!isLoading && gridCostosAdmistrativos?.data != null && gridCostosAdmistrativos?.data.length > 0" mat-table style="width:100%" [dataSource]="gridCostosAdmistrativos">
+        <ng-container matColumnDef="concepto">
+          <th mat-header-cell *matHeaderCellDef> Concepto </th>
+          <td mat-cell *matCellDef="let element"> {{element.concepto}} </td>
+        </ng-container>
+        <ng-container matColumnDef="monto">
+          <th mat-header-cell *matHeaderCellDef> Monto </th>
+          <td mat-cell *matCellDef="let element"> {{element.monto + " " + element.moneda}} </td>
+        </ng-container>
+        <ng-container matColumnDef="fechaRegistro">
+          <th mat-header-cell *matHeaderCellDef> Fecha Registro </th>
+          <td mat-cell *matCellDef="let element"> {{element.fechaCreacion | date: 'dd/MM/yyyy h:mm a'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="documento">
+          <th mat-header-cell *matHeaderCellDef> Documento </th>
+          <td mat-cell *matCellDef="let element"> <button mat-raised-button (click)="visualizarCertificado(element)" [disabled]="element.gestionado == true ? false : true"><span class="k-icon k-i-pdf"></span> DESCARGAR</button> </td>
+        </ng-container>
+        <ng-container matColumnDef="generar">
+          <th mat-header-cell *matHeaderCellDef> Generar </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button [disabled]="habilitarGenerar(element)" (click)="constancias(element)">
+              GENERAR
+            </button>
+            <!-- <button mat-raised-button>Generar</button>  -->
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="republicacionCertificado">
+          <th mat-header-cell *matHeaderCellDef> Republicación Certificado </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button [disabled]="!enRevision(element)"
+              (click)="republicacionCertificado(element)">
+              <span class="k-icon k-i-reload"></span>
+            </button>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="solicitarCertificadoFisico">
+          <th mat-header-cell *matHeaderCellDef> Solicitar Certificado Fisico </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button [disabled]="habilitarSolicitar(element)" (click)="solicitarCertificadoFisico(element)">
+              SOLICITAR
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colsToDisplayCostosAdministrativos"></tr>
+        <tr mat-row *matRowDef="let myRowData; columns: colsToDisplayCostosAdministrativos"></tr>
+      </table>
+      <!-- <table class="table" *ngIf="!isLoading && gridCostosAdmistrativos?.data!=null && gridCostosAdmistrativos?.data.length > 0" style="border-spacing: 10px 5px;">
+        <thead style="background-color: #FF6113; color: white;">
+          <tr>
+            <td style="border-top-left-radius: 12px;">
+              <p style="margin-left:30px;margin-right:8px">Concepto</p>
+            </td>
+            <td>
+              <p style="margin-left:15px;margin-right:15px">Monto</p>
+            </td>
+            <td>
+              <p style="margin-left:15px;margin-right:15px">Fecha de<br>Solicitud</p>
+            </td>
+            <td >
+              <p style="margin-left:15px;margin-right:15px">Fecha Entrega<br>Estimada</p>
+            </td>
+            <td >
+              <p style="margin-left:15px;margin-right:15px">Estado</p>
+            </td>
+            <td>
+              <p style="margin-left:15px;margin-right:15px">Generar<br>Digital</p>
+            </td>
+            <td >
+              <p style="margin-left:15px;margin-right:15px">Documento</p>
+            </td>
+            <td style="border-top-right-radius: 12px;">
+              <p style="margin-left:15px;margin-right:15px">Solicitar<br>Fisico</p>
+            </td>
+          </tr>
+        </thead>
+        <tbody style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <tr *ngFor="let item of gridCostosAdmistrativos?.data">
+            <td style="margin-left: 10px !important;border-right: solid 1px #DEE2E6;">
+              <p style="margin-left:30px;margin-right:8px">{{ item.concepto }}</p>
+            </td>
+            <td style="border-right: solid 1px #DEE2E6;">
+              <p style="margin-left:15px;margin-right:15px">{{ item.monto }}</p>
+            </td>
+            <td style="border-right: solid 1px #DEE2E6;">
+              <p style="margin-left:15px;margin-right:15px">
+                <ng-template kendoGridCellTemplate>
+                  {{ item.fechaCreacion | date: 'dd/MM/yyyy' }}
+                </ng-template>
+              </p>
+            </td>
+            <td style="border-right: solid 1px #DEE2E6;">
+              <p style="margin-left:15px;margin-right:15px">{{ item.fechaEntregaEstimada }}</p>
+            </td>
+            <td style="border-right: solid 1px #DEE2E6;">
+              <p style="margin-left:15px;margin-right:15px">
+                <ng-template kendoGridCellTemplate>
+                  <div class="text-center">
+                    {{  item.idEstadoCertificadoFisico == 1 ? 'Pendiente':'Entregado'}}
+                  </div>
+                </ng-template>
+              </p>
+            </td>
+            <td style="border-right: solid 1px #DEE2E6;">
+              <p style="margin-left:15px;margin-right:15px">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="w-100 d-flex justify-content-center">
+                    <button
+                      kendoGridEditCommand
+                      [disabled]="habilitarGenerar(dataItem)"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="k-button"
+                      (click)="constancias(dataItem)"
+                    >
+                      GENERAR
+                    </button>
+                  </div>
+                </ng-template>
+                
+              </p>
+            </td>
+            <td>
+              <p style="margin-left:15px"><ng-template kendoGridCellTemplate let-dataItem>
+                <div class="w-100 d-flex justify-content-center">
+                  <button kendoGridEditCommand [disabled]="dataItem.gestionado == true ? false : true"
+                    fillMode="solid" icon="file-pdf" (click)="visualizarCertificado(dataItem)"></button>
+                </div>
+              </ng-template></p>
+            </td>
+          </tr>
+        </tbody>
+      </table> -->
+  </div>
+
+</mat-expansion-panel>
+
+
+
+<!-- <div class="card mb-3">
+  <div class="card-header bg-atencion text-white py-2">
+    <h2 class="m-1">Tasas Académicas y Administrativas Pagadas</h2>
+  </div>
+
+  <div class="card-body">
+    <div id="gridCostosAdmistrativos"></div>
+    <kendo-grid [kendoGridBinding]="gridCostosAdmistrativos.data">
+      <kendo-grid-column title="Concepto" field="concepto" [width]="200">
+      </kendo-grid-column>
+      <kendo-grid-column title="Moneda" field="moneda" [width]="100">
+      </kendo-grid-column>
+      <kendo-grid-column title="Monto" field="monto" [width]="80">
+      </kendo-grid-column>
+      <kendo-grid-column title="Fecha Registro" field="fechaCreacion" [width]="180">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-center">
+            {{ dataItem.fechaCreacion | date : "dd-MM-yyyy hh:mm a" }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-container>
+        <kendo-grid-column title="Fecha Estimada Entrega Certificado Fisico" field="fechaEntregaEstimada" [width]="200"
+          *ngIf="tieneSolicitud">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-center">
+              {{ dataItem.fechaEntregaEstimada | date : "dd-MM-yyyy hh:mm a" }}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column title="Estado Entrega Certificado Fisico" field="idEstadoCertificadoFisico" [width]="200"
+          *ngIf="tieneSolicitud">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-center">
+              {{  dataItem.IdEstadoCertificadoFisico == 1 ? 'Pendiente':'Entregado'}}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      </ng-container>
+      <kendo-grid-command-column title="Documento" field="" [width]="80">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="w-100 d-flex justify-content-center">
+            <button kendoGridEditCommand [disabled]="dataItem.gestionado == true ? false : true" fillMode="solid"
+              icon="file-pdf" (click)="visualizarCertificado(dataItem)"></button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+      <kendo-grid-command-column title="Generar" field="" [width]="180">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="w-100 d-flex justify-content-center">
+            <button kendoGridEditCommand [disabled]="habilitarGenerar(dataItem)" fillMode="solid" rounded="large"
+              size="large" class="k-button" (click)="constancias(dataItem)">
+              GENERAR
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+
+      <kendo-grid-command-column title="Republicación Certificado" field="" [width]="200">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="w-100 d-flex justify-content-center">
+            <button kendoGridEditCommand [disabled]="!enRevision(dataItem)" fillMode="solid" icon="refresh"
+              (click)="republicacionCertificado(dataItem)"></button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+      <kendo-grid-command-column title="Solicitar Certificado Fisico" field="" [width]="180">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="w-100 d-flex justify-content-center">
+            <button kendoGridEditCommand [disabled]="habilitarSolicitar(dataItem)" fillMode="solid" rounded="large"
+              size="large" class="k-button" (click)="solicitarCertificadoFisico(dataItem)">
+              SOLICITAR
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+  </div>
+</div> -->
+
+<ng-template #modalAlertaCertificado let-modal>
+  <!-- MODAL DE ALERTA DE MODIFICACION PENDIENTE DE CERTIFICADOS-->
+  <div id="modalAlertaCertificado">
+    <div class="modal-header">
+      <h2 class="modal-title mb-0" style="color: #2e6ea6">
+        Republicacion Certificado
+      </h2>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          Tu supervisor(a) aun no aprueba la solicitud
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="k-form-buttons m-0">
+        <button themeColor="error" kendoButton (click)="modal.dismiss('Cross click')">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalRepublicacionCertificado let-modal>
+  <!-- MODAL PARA REPUBLICACION DE CERTIFICADO-->
+  <div class="modal-header">
+    <h2 class="modal-title mb-0" style="color: #2e6ea6">
+      Republicacion Certificado
+    </h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>
+          Para la republicacion del certificado se necesita la aprobacion de tu
+          supervisora
+        </h3>
+      </div>
+    </div>
+
+    <form class="k-form k-form-horizontal" [formGroup]="formDatosPersonalesCertificado">
+      <div>
+        <div class="row">
+          <div class="col-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombre">
+                <span id="Nombre">Nombre del Programa: </span>
+              </label>
+              <kendo-textbox #nombre formControlName="nombre" placeholder="Nombre">
+                <!-- <input type="text" class="form-control input-sm" id="inputNomPrograma" name="inputNomPrograma" required; /> -->
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+
+          <div class="col-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="duracion">
+                <span id="Nombre">Duracion: </span>
+              </label>
+              <kendo-textbox #duracion formControlName="duracion">
+                <!-- <input type="number" class="form-control input-sm" id="inputDuracionCertificado" name="inputDuracionCertificado" ; /> -->
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="fechaInicioCapacitacion">
+                <span id="Nombre">Fecha Inicio Capacitacion: </span>
+              </label>
+              <kendo-datepicker format="yyyy-MM-dd" #fechaInicioCapacitacion formControlName="fechaInicioCapacitacion">
+                <!-- <input type="text" class="form-control input-sm" id="inputFechaInicioCapacitacion" name="inputFechaInicioCapacitacion" ; /> -->
+              </kendo-datepicker>
+            </kendo-formfield>
+          </div>
+
+          <div class="col-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="fechaFinCapacitacion">
+                <span id="Nombre">Fecha Fin Capacitacion: </span>
+              </label>
+              <kendo-datepicker format="yyyy-MM-dd" #fechaFinCapacitacion formControlName="fechaFinCapacitacion">
+                <!-- <input type="text" class="form-control input-sm" id="inputFechaFinCapacitacion" name="inputFechaFinCapacitacion" ; /> -->
+              </kendo-datepicker>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="motivo">
+                <span id="Nombre">Motivo: </span>
+              </label>
+              <kendo-textarea #motivo formControlName="motivo">
+              </kendo-textarea>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-6">
+            <kendo-formfield orientation="horizontal">
+              <input formControlName="retencionChek" type="checkbox" [(ngModel)]="checkDatosPersonales"
+                id="checkDatosPersonales" name="checkDatosPersonales" />
+
+              <span>Actualizar Datos Personales</span>
+            </kendo-formfield>
+          </div>
+        </div>
+      </div>
+    </form>
+    <ng-container *ngIf="checkDatosPersonales">
+      <form class="k-form k-form-horizontal" [formGroup]="cardDatosPersonales">
+        <div class="card">
+          <div class="card-header" style="background: #4584a7; color: #fff; font-size: 15px">
+            <h2>Actualizar Datos Personales</h2>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="primerNombre">
+                    <span id="Nombre">Primer Nombre: </span>
+                  </label>
+                  <kendo-textbox #primerNombre formControlName="primerNombre">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+
+              <div class="col">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="segundoNombre">
+                    <span id="Nombre">Segundo Nombre: </span>
+                  </label>
+                  <kendo-textbox #segundoNombre formControlName="segundoNombre">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="apellidoPaterno">
+                    <span id="Nombre">Apellido Paterno: </span>
+                  </label>
+                  <kendo-textbox #apellidoPaterno formControlName="apellidoPaterno">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+
+              <div class="col">
+                <kendo-formfield orientation="horizontal">
+                  <label [for]="apellidoMaterno">
+                    <span id="Nombre">Apellido Materno: </span>
+                  </label>
+                  <kendo-textbox #apellidoMaterno formControlName="apellidoMaterno">
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" id="buttonEnviarSolicitudRepublicar" (click)="buttonEnviarSolicitudRepublicar()">
+      <i class="icon-print icon-white"></i> Enviar Solicitud
+    </button>
+
+    <button class="btn btn-danger" id="buttonCancelarSolicitudRepublicar" (click)="modal.dismiss('Cross click')">
+      <i class="icon-print icon-white"></i> Cancelar
+    </button>
+  </div>
+  <loading [loading]="isRepublicacionCertificadoLoading"></loading>
+</ng-template>
+
+<ng-template #modalCertificadoFisico let-modal>
+  <!-- Modal Solicitar Cambio Operaciones-->
+  <div class="modal-header">
+    <h2 class="modal-title mb-0" style="color: #2e6ea6">Certificado Fisico</h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formmodalCertificadoFisico">
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="region">
+              <span>Región :</span>
+            </label>
+
+            <kendo-textbox #region formControlName="region"> </kendo-textbox>
+          </kendo-formfield>
+        </div>
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="distrito">
+              <span>Distrito :</span>
+            </label>
+
+            <kendo-textbox #distrito formControlName="distrito">
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="ciudad">
+              <span>Ciudad :</span>
+            </label>
+
+            <kendo-textbox #ciudad formControlName="ciudad"> </kendo-textbox>
+          </kendo-formfield>
+        </div>
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="direccion">
+              <span>Dirección :</span>
+            </label>
+
+            <kendo-textbox #direccion formControlName="direccion">
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="codigoPostal">
+              <span>Código Postal :</span>
+            </label>
+
+            <kendo-textbox #codigoPostal formControlName="codigoPostal">
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+        <div class="col">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="referencia">
+              <span id="Categoria">Referencia :</span>
+            </label>
+
+            <kendo-textbox #referencia formControlName="referencia"></kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" id="btnCancelarCambio" (click)="modal.dismiss('Cross click')">
+      <i class="fa fa-times" aria-hidden="true"></i> Cancelar
+    </button>
+    <button class="btn btn-primary" id="btnsolicitarCambio" (click)="SolicitarCertificadoFisicoDatos()">
+      <i class="fa fa-check" aria-hidden="true"></i> Aceptar
+    </button>
+  </div>
+</ng-template>

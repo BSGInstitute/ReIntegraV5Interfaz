@@ -1,0 +1,1069 @@
+<div class="row">
+  <div class="col-1fa-rotate-270">
+    <div class="card">
+      <div class="card-header bg-color-material">
+        <h1 class="text-white">Reporte Documentos</h1>
+      </div>
+      <div class="card-body p-4">
+        <div class="k-loading-panel" *ngIf="loader">
+          <div class="k-loading-panel-mask"></div>
+          <div class="k-loading-panel-wrapper">
+            <kendo-loader
+              type="converging-spinner"
+              themeColor="primary"
+              size="large"
+            >
+            </kendo-loader>
+            <div class="k-loading-panel-text fs-5 text-primary">
+              Cargando...
+            </div>
+          </div>
+        </div>
+        <div class="row conteiner-toolbar-retiros-matricula">
+          <div class="card" style="padding: 0px">
+            <div class="card-header bg-color-material pb-0">
+              <h3 class="text-white mb-2">Filtro</h3>
+            </div>
+            <div class="card-body p-4">
+              <form class="k-form" [formGroup]="formGroupFiltro">
+                <fieldset class="k-form-fieldset">
+                  <div class="row">
+                    <div class="col-md-4" style="padding: 0px">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="margin-top: 0px !important; padding-left: 30px"
+                      >
+                        <label
+                          [for]="idsAsesores"
+                          class="k-label"
+                          [style.width.px]="100"
+                          [style.padding.px]="5"
+                        >
+                          Asesor(es):
+                        </label>
+                        <kendo-multiselect
+                          #idsAsesores
+                          class="d-flex"
+                          [data]="itemslistaAsesores"
+                          size="medium"
+                          formControlName="idsAsesores"
+                          [style.width.%]="90"
+                          textField="nombreCompleto"
+                          [valuePrimitive]="true"
+                          valueField="id"
+                          placeholder="< Todos >"
+                          [filterable]="true"
+                          (filterChange)="filtrarAsesores($event)"
+                        >
+                        </kendo-multiselect>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4" style="padding: 0px">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="margin-top: 0px !important"
+                      >
+                        <label
+                          [for]="idsCoordinadores"
+                          class="k-label"
+                          [style.width.px]="100"
+                          [style.padding.px]="5"
+                        >
+                          Coordinadores:
+                        </label>
+                        <kendo-multiselect
+                          #idsCoordinadores
+                          class="d-flex"
+                          [data]="itemslistaCoordinadores"
+                          size="medium"
+                          formControlName="idsCoordinadores"
+                          [style.width.%]="90"
+                          textField="nombreCompleto"
+                          [valuePrimitive]="true"
+                          valueField="id"
+                          placeholder="< Todos >"
+                          [filterable]="true"
+                          (filterChange)="filtrarCoordinadores($event)"
+                        >
+                        </kendo-multiselect>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-4" style="padding: 0px">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="margin-top: 0px !important"
+                      >
+                        <label
+                          [for]="frecuencia"
+                          class="k-label"
+                          [style.width.px]="100"
+                          [style.padding.px]="5"
+                        >
+                          Frecuencia:
+                        </label>
+                        <kendo-dropdownlist
+                          #frecuencia
+                          [data]="listaFrecuencia"
+                          [filterable]="true"
+                          textField="nombre"
+                          valueField="id"
+                          formControlName="frecuencia"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row" style="margin: 10px; margin-top: 20px">
+                    <div class="col-md-8" style="padding-left: 30px">
+                      <div class="row" style="border: 1px solid black">
+                        <div class="card-header bg-color-material pb-0">
+                          <h3 class="text-white mb-2">Rango de fechas</h3>
+                        </div>
+                        <div style="padding: 10px">
+                          <kendo-daterange [incompleteDateValidation]="true">
+                            <div class="col-md-5">
+                              <label
+                                style="width: 250px"
+                                [style.padding.px]="5"
+                              >
+                                <span>Fechas:</span>
+                              </label>
+                              <kendo-dateinput
+                                kendoDateRangeStartInput
+                                [size]="'medium'"
+                                formControlName="fechaInicio"
+                                [placeholder]="'Inicio'"
+                                [format]="{
+                                  displayFormat: 'dd-MM-yyyy',
+                                  inputFormat: 'dd-MM-yyyy'
+                                }"
+                                [incompleteDateValidation]="true"
+                                fillMode="outline"
+                                style="width: 100%"
+                              >
+                              </kendo-dateinput>
+                            </div>
+                            <div
+                              class="col-md-8"
+                              style="padding: 0%; width: 5%; text-align: center"
+                            >
+                              <p style="margin-bottom: 5px">
+                                <strong>—</strong>
+                              </p>
+                            </div>
+                            <div class="col-md-5">
+                              <kendo-dateinput
+                                kendoDateRangeEndInput
+                                [size]="'medium'"
+                                [placeholder]="'fin'"
+                                formControlName="fechaFin"
+                                [format]="{
+                                  displayFormat: 'dd-MM-yyyy',
+                                  inputFormat: 'dd-MM-yyyy'
+                                }"
+                                [incompleteDateValidation]="true"
+                                fillMode="outline"
+                                style="width: 100%"
+                              ></kendo-dateinput>
+                            </div>
+                          </kendo-daterange>
+                        </div>
+                      </div>
+                      <div
+                        class="row"
+                        style="
+                          display: flex;
+                          flex-wrap: wrap;
+                          justify-content: center;
+                          padding-top: 30px;
+                        "
+                      >
+                        <div
+                          class="col-md-5"
+                          style="flex-basis: 174px; padding-bottom: 5px"
+                        ></div>
+                        <div class="col-md-6" style="flex-basis: 174px">
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="generarReporte()"
+                          >
+                            <mat-icon>search</mat-icon>
+                            Generar Reporte
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+          </div>
+          <div style="height: 20px"></div>
+          <div class="wrapper">
+            <kendo-tabstrip
+              (tabSelect)="onTabSelect($event)"
+              [keepTabContent]="true"
+            >
+              <ng-container *ngIf="validorAsesor == 1 || validorTodo == 1">
+                <kendo-tabstrip-tab
+                  title="Reporte Documentos Por Asesor"
+                  [selected]="true"
+                >
+                  <ng-template kendoTabContent>
+                    <ng-container>
+                      <kendo-grid
+                        [data]="listaReportePorteAsesor"
+                        style="height: 500px"
+                      >
+                        <ng-template kendoGridToolbarTemplate class="bg-danger">
+                          <button
+                            mat-stroked-button
+                            sytle="backgroun-color:grey;"
+                          >
+                            <mat-icon>refresh</mat-icon>
+                          </button>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                          <div style="display: flex; justify-content: start">
+                            <button
+                              kendoGridExcelCommand
+                              mat-raised-button
+                              class="btn-export-excel"
+                            >
+                              <span
+                                class="k-icon k-i-file-excel k-icon-20"
+                              ></span>
+                              Exportar a Excel
+                            </button>
+                          </div>
+                        </ng-template>
+                        <kendo-grid-column
+                          title="Nombre Personal Asesor"
+                          [width]="250"
+                          field="nombrePersonalAsesor"
+                          [locked]="false"
+                          [sticky]="true"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#ED912A',
+                            color: 'white'
+                          }"
+                          [resizable]="true"
+                        >
+                        </kendo-grid-column>
+
+                        <ng-container
+                          *ngFor="
+                            let semana of listaReporteDocumentos.reporteDocumentosAsesor
+                          "
+                        >
+                          <kendo-grid-column-group
+                            [title]="semana.fecha"
+                            [headerStyle]="{
+                              'background-color': '#ED912A',
+                              color: 'white'
+                            }"
+                          >
+                            <kendo-grid-column
+                              title="IS"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="60"
+                              [field]="semana.fecha + '_IS'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                              [defaultValue]="0"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_IS"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Pago Contado"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_PC'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_PC"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Contrato de Voz"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_contratoVoz'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_contratoVoz"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Contrato Firmado"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_CF'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_CF"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Empresa"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="100"
+                              [field]="semana.fecha + '_E'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_E"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Sin Documentacion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_SD'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_SD"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Observacion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="100"
+                              [field]="semana.fecha + '_O'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_O"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="% Convenio"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_PorcentajeConvenio'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaProcentaje(
+                                    listaReportePorteAsesor,
+                                    semana.fecha
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="% Sin Documentacion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="
+                                semana.fecha + '_PorcentajeSinDocumentacion'
+                              "
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaProcentajeDoc(
+                                    listaReportePorteAsesor,
+                                    semana.fecha
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                          </kendo-grid-column-group>
+                        </ng-container>
+                        <kendo-grid-excel
+                          [fileName]="'Reporte Documentos por Asesor.xlsx'"
+                        ></kendo-grid-excel>
+                      </kendo-grid>
+                    </ng-container>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+              </ng-container>
+              <ng-container *ngIf="validorCoordinador == 1 || validorTodo == 1">
+                <kendo-tabstrip-tab title="Reporte Documentos Por Equipo">
+                  <ng-template kendoTabContent>
+                    <ng-container>
+                      <kendo-grid
+                        [kendoGridBinding]="listaReportePorteEquipo"
+                        [groupable]="false"
+                        [group]="group"
+                        style="height: 500px"
+                      >
+                        <ng-template kendoGridToolbarTemplate class="bg-danger">
+                          <button
+                            mat-stroked-button
+                            sytle="backgroun-color:grey;"
+                          >
+                            <mat-icon>refresh</mat-icon>
+                          </button>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                        </ng-template>
+                        <div style="display: flex; justify-content: start">
+                          <button
+                            kendoGridExcelCommand
+                            mat-raised-button
+                            class="btn-export-excel"
+                          >
+                            <span
+                              class="k-icon k-i-file-excel k-icon-20"
+                            ></span>
+                            Exportar a Excel
+                          </button>
+                        </div>
+                        <kendo-grid-column
+                          title="Asesor"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="200"
+                          field="nombrePersonalAsesor"
+                          [locked]="false"
+                          [sticky]="true"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [class]="'cellCustomClass'"
+                          [resizable]="true"
+                          [headerStyle]="{
+                            'background-color': '#ED912A',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+
+                        <ng-container
+                          *ngFor="
+                            let semana of listaReporteDocumentos.reporteDocumentosEquipo
+                          "
+                        >
+                          <kendo-grid-column-group
+                            [title]="semana.fecha"
+                            [headerStyle]="{
+                              'background-color': '#ED912A',
+                              color: 'white'
+                            }"
+                          >
+                            <kendo-grid-column
+                              title="IS"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="60"
+                              [field]="semana.fecha + '_IS'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(group, semana.fecha + "_IS")
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Pago Contado"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_PC'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(group, semana.fecha + "_PC")
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Contrato de Voz"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_contratoVoz'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(
+                                    group,
+                                    semana.fecha + "_contratoVoz"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Contrato Firmado"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_CF'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(group, semana.fecha + "_CF")
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Empresa"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="100"
+                              [field]="semana.fecha + '_E'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(group, semana.fecha + "_SD")
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Sin Documento"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_SDP'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(
+                                    group,
+                                    semana.fecha + "_SDP"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Observacion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="100"
+                              [field]="semana.fecha + '_O'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(group, semana.fecha + "_O")
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="% Convenio"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_PorcentajeConvenio'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                              cells
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{ obtenerSumaPorcentaje(group, semana.fecha) }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title=" % Sin Documentacion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="
+                                semana.fecha + '_PorcentajeSinDocumentacion'
+                              "
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [class]="'cellCustomClass'"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template
+                                kendoGridGroupFooterTemplate
+                                let-group="group"
+                              >
+                                {{
+                                  obtenerSumaFooter(group, semana.fecha + "_PorcentajeSinDocumentacion")
+                              
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                          </kendo-grid-column-group>
+                        </ng-container>
+                        <kendo-grid-excel
+                          [fileName]="'Reporte Documentos por Equipo.xlsx'"
+                        ></kendo-grid-excel>
+                      </kendo-grid>
+                    </ng-container>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+              </ng-container>
+              <ng-container *ngIf="validorCoordinador == 1 || validorTodo == 1">
+                <kendo-tabstrip-tab title="Reporte Documentos Por Coordinador">
+                  <ng-template kendoTabContent>
+                    <ng-container>
+                      <kendo-grid
+                        [data]="listaReportePorteCoordinador"
+                        style="height: 500px"
+                      >
+                        <ng-template kendoGridToolbarTemplate class="bg-danger">
+                          <button
+                            mat-stroked-button
+                            sytle="backgroun-color:grey;"
+                          >
+                            <mat-icon>refresh</mat-icon>
+                          </button>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                          <div style="display: flex; justify-content: start">
+                            <button
+                              kendoGridExcelCommand
+                              mat-raised-button
+                              class="btn-export-excel"
+                            >
+                              <span
+                                class="k-icon k-i-file-excel k-icon-20"
+                              ></span>
+                              Exportar a Excel
+                            </button>
+                          </div>
+                        </ng-template>
+                        <kendo-grid-column
+                          title="Coordinador"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="250"
+                          field="coordinador"
+                          [locked]="false"
+                          [sticky]="true"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#ED912A',
+                            color: 'white'
+                          }"
+                          [resizable]="true"
+                        >
+                        </kendo-grid-column>
+
+                        <ng-container
+                          *ngFor="
+                            let semana of listaReporteDocumentos.reporteDocumentosCoordinador
+                          "
+                        >
+                          <kendo-grid-column-group
+                            [title]="semana.fecha"
+                            [headerStyle]="{
+                              'background-color': '#ED912A',
+                              color: 'white'
+                            }"
+                          >
+                            <kendo-grid-column
+                              title="IS"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="60"
+                              [field]="semana.fecha + '_IS'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteCoordinador,
+                                    semana.fecha + "_IS"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            title="Pago Contado"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            [field]="semana.fecha + '_PC'"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#ED912A',
+                              color: 'white'
+                            }"
+                          >
+                            <ng-template kendoGridFooterTemplate>
+                              {{
+                                obtenerSumaFooterCol(
+                                  listaReportePorteCoordinador,
+                                  semana.fecha + "_PC"
+                                )
+                              }}
+                            </ng-template>
+                          </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Contrato de Voz"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_contratoVoz'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteCoordinador,
+                                    semana.fecha + "_contratoVoz"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Contrato Firmado"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_CF'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteCoordinador,
+                                    semana.fecha + "_CF"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Empresa"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="100"
+                              [field]="semana.fecha + '_E'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteCoordinador,
+                                    semana.fecha + "_E"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Sin Documento"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_SDP'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteAsesor,
+                                    semana.fecha + "_SDP"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Observacion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="semana.fecha + '_O'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaFooterCol(
+                                    listaReportePorteCoordinador,
+                                    semana.fecha + "_O"
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="% Convenio"
+                              headerClass="justify-content-center k-grid-header"
+                              [width]="120"
+                              [field]="semana.fecha + '_PorcentajeConvenio'"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaProcentaje(
+                                    listaReportePorteCoordinador,
+                                    semana.fecha
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title=" % Sin Documentacion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              [field]="
+                                semana.fecha + '_PorcentajeSinDocumentacion'
+                              "
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                              [headerStyle]="{
+                                'background-color': '#ED912A',
+                                color: 'white'
+                              }"
+                            >
+                              <ng-template kendoGridFooterTemplate>
+                                {{
+                                  obtenerSumaProcentajeDoc(
+                                    listaReportePorteCoordinador,
+                                    semana.fecha
+                                  )
+                                }}
+                              </ng-template>
+                            </kendo-grid-column>
+
+                          
+                          </kendo-grid-column-group>
+                        </ng-container>
+                        <kendo-grid-excel
+                          [fileName]="'Reporte Documentos por Coordinador.xlsx'"
+                        ></kendo-grid-excel>
+                      </kendo-grid>
+                    </ng-container>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+              </ng-container>
+            </kendo-tabstrip>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+  </div>
+</div>

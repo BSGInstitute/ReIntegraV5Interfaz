@@ -1,0 +1,489 @@
+<div class="card border-primary mb-3">
+  <div class="card-header bg-color-material pb-0">
+    <div class="row">
+      <div class="col-sm-11">
+        <h2 class="mb-2 text-white" id="titulo">
+          Tarifarios
+        </h2>
+      </div>
+      <div class="col-sm-1">
+        <a class="btn btn-success pull-right mb-2" role="button">
+          <a
+            class="k-icon k-i-plus-circle"
+            style="color: rgb(255, 255, 255); font-size: 30px"
+            (click)="modalOpenTarifarios(modalCrearTarifario, 'xl')"
+          ></a>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body p-4">
+    <kendo-grid
+      [kendoGridBinding]="_gridSistemas.data"
+      [loading]="_gridSistemas.loading"
+      [pageSize]="15"
+      [pageable]="true"
+      [sortable]="true"
+      [selectable]="true"
+      [resizable]="true"
+      [columnMenu]="{ filter: true }"
+    >
+      <kendo-grid-column title="Nombre" field="nombre"> </kendo-grid-column>
+      <kendo-grid-column title="Fecha Inicio" field="fechaInicio">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.fechaInicio | date: "dd-MM-yyyy" }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Fecha Fin" field="fechaFin">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.fechaFin | date: "dd-MM-yyyy" }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        title="Usuario Modifiacion"
+        field="usuarioModificacion"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column title="Fecha Modificacion" field="fechaModificacion">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.fechaModificacion | date: "dd-MM-yyyy" }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Editar">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="btn btn-warning m-2" role="button" (click)="modalEditarTarifario(modalCrearTarifario,dataItem)">
+            <a
+              class="k-icon k-i-pencil"
+              style="color: white"
+            >
+            </a>
+          </a>
+          <a class="btn btn-danger m-2" role="button" (click)="deleteTarifario(dataItem.id)">
+            <a class="k-icon k-i-delete" style="color: white"> </a>
+          </a>
+        </ng-template>
+      </kendo-grid-column>
+    </kendo-grid>
+  </div>
+</div>
+<ng-template #modalCrearTarifario let-modal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title" id="myModalLabel" style="color: rgb(52, 52, 243)">
+        Datos Tarifario
+      </h1>
+    </div>
+    <div class="modal-body">
+    <form [formGroup]="formFiltroDatosTarifarios" orientation="horizontal">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="form-horizontal" id="insert-form" data-role="validator">
+            <div class="row g-3 align-items-center px-5">
+              <div class="col-3">
+                <h4 class="col-form-label"><strong>Nombre: </strong></h4>
+              </div>
+              <div class="col-9">
+                <input
+                  #nombre
+                  formControlName="nombre"
+                  type="text"
+                  class="form-control input-group-lg"
+                  placeholder="Nombre"
+                  required=""
+                  data-required-msg="Ingrese Nombre"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-horizontal" id="insert-form" data-role="validator">
+            <div class="row g-3 align-items-center px-5">
+              <div class="col-3">
+                <h4 class="col-form-label"><strong>Fecha Inicio: </strong></h4>
+              </div>
+              <div class="col-9">
+                <kendo-datetimepicker
+                  #fechaInicio
+                  formControlName="fechaInicio"   
+                  [format]="format"
+                  style="width: 200px"
+                  placeholder="fecha inicio"
+                >
+                </kendo-datetimepicker>
+              </div>
+            </div>
+          </div>
+          <div class="form-horizontal" id="insert-form" data-role="validator">
+            <div class="row g-3 align-items-center px-5">
+              <div class="col-3">
+                <h4 class="col-form-label"><strong>Fecha Fin: </strong></h4>
+              </div>
+              <div class="col-9">
+                <kendo-datetimepicker
+                  #fechaFin
+                  formControlName="fechaFin"
+                  placeholder="fecha inicio"
+                  [format]="format"
+                  style="width: 200px"
+                >
+                </kendo-datetimepicker>
+              </div>
+            </div>
+          </div>
+          <div class="form-horizontal" id="insert-form" data-role="validator">
+            <div class="row g-3 align-items-center px-5">
+              <div class="col-3">
+                <h4 class="col-form-label">
+                  <strong>Visible Portal Web: </strong>
+                </h4>
+              </div>
+              <div class="col-9">
+                <input
+                  #visiblePortalWeb
+                  formControlName="visiblePortalWeb"
+                  class="form-check-input input-sm"
+                  type="checkbox"
+                  value=""
+                  style="font-size: 40px"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-horizontal" id="insert-form" data-role="validator">
+            <div class="row g-3 align-items-center px-5">
+              <div class="col-3">
+                <h4 class="col-form-label"><strong>Tarifas: </strong></h4>
+              </div>
+              <div class="col-9">
+                <a
+                  class="btn btn-success"
+                  role="button"
+                  (click)="modalOpenDetallesTarifarios(modalDetallesTarifas, '')"
+                >
+                  AÑADIR
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header bg-color-material pb-0">
+            <h3 class="mb-2 text-white">Detalles</h3>
+          </div>
+          <div class="card-body p-4">
+            <kendo-grid
+                [kendoGridBinding]="_gridDatos.data"
+                [sortable]="true"
+                [selectable]="true"
+                [resizable]="true"
+                [columnMenu]="{ filter: true }"
+            >
+              <kendo-grid-column title="Concepto" field="concepto"> </kendo-grid-column>
+              <kendo-grid-column title="Descripcion" field="descripcion"> </kendo-grid-column>
+              <kendo-grid-column title="Paises" field="listaPaises">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <!-- <div [innerHtml]="dataItem.listaPaises"></div> -->
+                    <div [innerHtml]="defListaPaises(dataItem)"></div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column title="Editar" field="concepto">
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex = "rowIndex">
+                    <a class="btn btn-warning m-1" role="button" (click)="modalEditarDetallesTarifarios(modalDetallesTarifas, dataItem, rowIndex)">
+                        <a
+                          class="k-icon k-i-pencil"
+                          style="color: white"
+                        >
+                        </a>
+                    </a>
+
+                    <a class="btn btn-danger m-1" role="button" (click)="deleteDetallesTarifarios(dataItem, rowIndex)">
+                        <a class="k-icon k-i-delete" style="color: white"> </a>
+                    </a>
+                </ng-template>
+                    
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        *ngIf="hidenTarifario"
+        class="btn btn-primary"
+        id="botomAcepatarModalAlterno"
+        style="color: white"
+        (click)="setDatosTarifarios(modalCrearTarifario)"
+      >
+        Nuevo
+      </button>
+      <button
+        *ngIf="!hidenTarifario"
+        class="btn btn-primary"
+        id="botomAcepatarModalAlterno"
+        style="color: white"
+        (click)="updateDatosTarifarios(modalCrearTarifario)"
+      >
+        Actualizar
+      </button>
+      <a
+        #closeModal 
+        class="btn btn-danger"
+        id="botomCerrarModalAlterno"
+        style="color: white"
+        data-dismiss="modal"
+        (click)="modalCloseTarifario(modalCrearTarifario)"
+        >Cancelar</a
+      >
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalDetallesTarifas>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title" id="myModalLabel" style="color: rgb(52, 52, 243)">
+        Detalles Tarifas
+      </h1>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formFiltroDetallesTarifas" orientation="horizontal">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="form-horizontal" id="insert-form" data-role="validator">
+              <div class="row g-3 align-items-center">
+                <div class="col-3">
+                  <h4 class="col-form-label"><strong>Concepto: </strong></h4>
+                </div>
+                <div class="col-9">
+                  <input
+                    #concepto
+                    formControlName="concepto"
+                    type="text"
+                    class="form-control input-group-lg"
+                    placeholder="Concepto"
+                    required=""
+                    data-required-msg="Ingrese Concepto"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="form-horizontal" id="insert-form" data-role="validator">
+              <div class="row g-3 align-items-center">
+                <div class="col-3">
+                  <h4 class="col-form-label"><strong>Descripcion: </strong></h4>
+                </div>
+                <div class="col-9">
+                  <input
+                    #descripcion
+                    formControlName="descripcion"
+                    type="text"
+                    class="form-control input-group-lg"
+                    placeholder="Descripcion"
+                    required=""
+                    data-required-msg="Ingrese Descripcion"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="form-horizontal" id="insert-form" data-role="validator">
+              <kendo-grid
+                #listaIdPaises
+                [kendoGridBinding]="_gridPaisesTarifario.data"
+                [sortable]="true"
+                (remove)="_gridPaisesTarifario.removeHandler($event)"
+                (cellClick)="_gridPaisesTarifario.cellClickHandler($event)"
+                (cellClose)="_gridPaisesTarifario.cellCloseHandler($event)"
+                [resizable]="true"
+                [columnMenu]="{ filter: true }"
+              >
+                <ng-template
+                  kendoGridToolbarTemplate
+                  style="background-color: black"
+                >
+                  <button
+                    kendoButton
+                    (click)="agregarDato()"
+                    style="background-color: #198754"
+                  >
+                    <a
+                      class="k-icon k-i-plus-circle"
+                      style="color: rgb(255, 255, 255)"
+                    ></a
+                    ><a style="color: rgb(255, 255, 255)">Añadir</a>
+                  </button>
+                </ng-template>
+
+                <kendo-grid-column
+                  title="Pais"
+                  field="idPais"
+                  [headerStyle]="{
+                    'background-color': '#4584a7',
+                    color: 'white'
+                  }"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ obtenerPais(dataItem.idPais) }}
+                  </ng-template>
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [data]="filtroPaises"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [formControl]="formGroup.get('idPais')"
+                    ></kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  title="Monto"
+                  field="monto"
+                  editor="numeric"
+                  [headerStyle]="{
+                    'background-color': '#4584a7',
+                    color: 'white'
+                  }"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ obtenerMonto(dataItem.monto) }}
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  title="Moneda"
+                  field="idMoneda"
+                  [headerStyle]="{
+                    'background-color': '#4584a7',
+                    color: 'white'
+                  }"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ obtenerMoneda(dataItem.idMoneda) }}
+                  </ng-template>
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [data]="filtroMoneda"
+                      textField="nombrePlural"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [formControl]="formGroup.get('idMoneda')"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-command-column
+                  title="Eliminar"
+                  [headerStyle]="{
+                    'background-color': '#4584a7',
+                    color: 'white'
+                  }"
+                  [headerClass]="{ 'text-center': true }"
+                >
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-isNew="isNew"
+                    let-dataItem
+                  >
+                    <button kendoGridRemoveCommand>
+                      <a
+                        class="k-icon k-i-close-circle"
+                        style="color: rgb(209, 5, 5)"
+                      ></a>
+                    </button>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+            <div class="form-horizontal" id="insert-form" data-role="validator">
+              <div class="row g-3 align-items-center">
+                <div class="col-3">
+                  <h4 class="col-form-label"><strong>Estados: </strong></h4>
+                </div>
+                <div class="col-9">
+                  <kendo-multiselect
+                    #estados
+                    formControlName="estados"
+                    [data]="filtroEstadoMatricula"
+                    (filterChange)="filterEstado($event)"
+                    (valueChange)="_subEstado($event)"
+                    (removeTag)="removeEstado($event)"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    placeholder="<Seleccione>"
+                  >
+                  </kendo-multiselect>
+                </div>
+              </div>
+            </div>
+            <div class="form-horizontal" id="insert-form" data-role="validator">
+              <div class="row g-3 align-items-center">
+                <div class="col-3">
+                  <h4 class="col-form-label"><strong>Sub Estados: </strong></h4>
+                </div>
+                <div class="col-9">
+                  <kendo-multiselect
+                    #subEstados
+                    formControlName="subEstados"
+                    [data]="filtroSubEstadoMatricula"
+                    textField="nombre"
+                    valueField="id"
+                    placeholder="<Seleccione>"
+                    [valuePrimitive]="true"
+                  >
+                  </kendo-multiselect>
+                </div>
+              </div>
+            </div>
+            <div class="form-horizontal" id="insert-form" data-role="validator">
+              <div class="row g-3 align-items-center">
+                <div class="col-3">
+                  <h4 class="col-form-label"><strong>Tipo monto: </strong></h4>
+                </div>
+                <div class="col-9">
+                  <kendo-dropdownlist
+                    #tipoMonto
+                    formControlName="tipoCantidad"
+                    [data]="filtroTipoMonto"
+                    [textField]="'text'"
+                    [valueField]="'value'"
+                    [valuePrimitive]="true"
+                    [placeholder]="'Seleccione Tipo'"
+                  >
+                  </kendo-dropdownlist>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        *ngIf="hidenDetalle"
+        class="btn btn-primary"
+        id="botomAcepatarModalAlterno"
+        (click)="setDetallePais()"
+        style="color: white"
+      >
+        Nuevo
+      </button>
+      <button
+        *ngIf="!hidenDetalle"
+        class="btn btn-primary"
+        id="botomAcepatarModalAlterno"
+        (click)="updateDetallePais()"
+        style="color: white"
+      >
+        Actualizar
+      </button>
+      <a
+        class="btn btn-danger"
+        id="botomCerrarModalAlterno"
+        style="color: white"
+        data-dismiss="modal"
+        (click)="modalCloseDetallesTarifario(modalDetallesTarifas)"
+        >Cancelar</a
+      >
+    </div>
+  </div>
+</ng-template>

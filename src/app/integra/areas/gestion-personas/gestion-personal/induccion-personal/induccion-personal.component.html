@@ -1,0 +1,459 @@
+<div class="row">
+  <div class="col-12 panel-whatsapp">
+    <div class="k-loading-panel" *ngIf="loaderForm">
+      <div class="k-loading-panel-mask"></div>
+      <div class="k-loading-panel-wrapper">
+        <kendo-loader themeColor="primary" size="large"> </kendo-loader>
+      </div>
+    </div>
+    <div class="card border-primary mb-3">
+      <div class="card-header pb-0">
+        <h2 class="mb-2 text-white text-center">
+          (R) Reporte de Induccion del Personal
+        </h2>
+      </div>
+      <div class="card-body p-4">
+        <form
+          [formGroup]="formFiltro"
+          class="k-form k-form-horizontal"
+          orientation="horizontal"
+        >
+          <div class="row">
+            <div class="col-sm-12 col-md">
+              <div class="row mb-4">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      Area:
+                    </label>
+                    <kendo-multiselect
+                      #area
+                      formControlName="IdArea"
+                      [data]="comboInduccion.listaAreas"
+                      placeholder="<Todas las Areas>"
+                      [kendoDropDownFilter]="filterSettings"
+                      [valuePrimitive]="true"
+                      [virtual]="true"
+                      textField="nombre"
+                      valueField="id"
+                    >
+                    </kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      Sede
+                    </label>
+                    <kendo-multiselect
+                      #sede
+                      formControlName="IdSede"
+                      [data]="comboInduccion.listaSedes"
+                      placeholder="<Todas las Sedes>"
+                      [kendoDropDownFilter]="filterSettings"
+                      [valuePrimitive]="true"
+                      [virtual]="true"
+                      textField="nombre"
+                      valueField="id"
+                    >
+                    </kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md">
+              <div class="row mb-4">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      Proceso de Seleccion
+                    </label>
+                    <kendo-multiselect
+                      #sede
+                      formControlName="IdProceso"
+                      [data]="comboInduccion.listaProcesos"
+                      placeholder="<Todos los Procesos>"
+                      [kendoDropDownFilter]="filterSettings"
+                      [valuePrimitive]="true"
+                      [virtual]="true"
+                      textField="nombre"
+                      valueField="id"
+                    >
+                      <ng-template kendoMultiSelectTagTemplate let-dataItem>
+                        <div
+                          style="
+                            white-space: normal;
+                            word-wrap: break-word;
+                            width: 100%;
+                          "
+                        >
+                          {{ dataItem.nombre }}
+                        </div>
+                      </ng-template>
+                    </kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md">
+              <div class="row mb-4">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="fechaInicio"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      Fecha Inicio
+                    </label>
+                    <kendo-datepicker
+                      #fechaInicio
+                      formControlName="FechaInicio"
+                      [incompleteDateValidation]="true"
+                      [format]="format"
+                      [max]="fechaActual"
+                      (blur)="validarFechas()"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row mb-4">
+                <div class="col-12">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="fechaFin"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      Fecha Fin
+                    </label>
+                    <kendo-datepicker
+                      #fechaFin
+                      formControlName="FechaFin"
+                      [format]="format"
+                      [incompleteDateValidation]="true"
+                      (blur)="validarFechas()"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer">
+        <div class="row d-flex justify-content-end">
+          <div class="col-md-1">
+            <button
+              kendoButton
+              class="send-button"
+              icon="search"
+              style="height: 35px"
+              themeColor="success"
+              [disabled]="buttonDisable"
+              (click)="buscar()"
+            >
+              Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <kendo-grid
+      #kgridInduccionPersonal
+      [kendoGridBinding]="gridInduccionPersonal.data"
+      [loading]="gridInduccionPersonal.loading"
+      [pageable]="true"
+      [pageSize]="pageSize"
+      filterable="menu"
+      [resizable]="true"
+      (excelExport)="onExcelExport($event)"
+    >
+      <ng-template kendoGridToolbarTemplate class="toolbar-grid-integra">
+        <button
+          kendoGridExcelCommand
+          kendoButton
+          themeColor="success"
+          class="buton-excel"
+        >
+          <span class="k-icon k-i-excel"></span> Exportar a Excel
+        </button>
+      </ng-template>
+      <kendo-grid-column
+        field="fechaRealizado"
+        title="Fecha Realizado"
+        headerClass="header-grid-integra"
+        [width]="150"
+        [filterable]="false"
+        [hidden]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            dataItem.fechaRealizado
+              ? (dataItem.fechaRealizado | date : "dd-MM-YYYY")
+              : "Sin Datos"
+          }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="nombreSede"
+        title="Sede"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="nombreArea"
+        title="Area"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="nombrePuestoTrabajo"
+        title="Puesto Trabajo"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="nroDocumento"
+        title="Nro Documento"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="nombrePostulante"
+        title="Nombres y Apellidos"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-string-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            [extra]="false"
+            operator="contains"
+          >
+            <kendo-filter-contains-operator
+              text="Contiene"
+            ></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-menu>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idCursoCalificacion"
+        title="N. Presentacion BSG"
+        [filterable]="false"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ ordenNotas(dataItem.idCursoCalificacion, 1) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idCursoCalificacion"
+        title="N. Reglamento Interno"
+        [filterable]="false"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ ordenNotas(dataItem.idCursoCalificacion, 2) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idCursoCalificacion"
+        title="N. Gestión de Calidad"
+        [filterable]="false"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ ordenNotas(dataItem.idCursoCalificacion, 3) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idCursoCalificacion"
+        title="N. Seguridad y Salud"
+        [filterable]="false"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ ordenNotas(dataItem.idCursoCalificacion, 4) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="promedioGeneral"
+        title="Promedio"
+        [filterable]="false"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+      </kendo-grid-column>
+      <kendo-grid-excel fileName="ReporteInduccionPersonal.xlsx">
+        <!-- <kendo-excelexport-column field="fechaIncoorporacion" title="Origen">
+        </kendo-excelexport-column>
+        <kendo-excelexport-column field="fechaRealizado" title="Nombres">
+        </kendo-excelexport-column>
+        <kendo-excelexport-column field="nombreSede" title="Sede">
+        </kendo-excelexport-column>
+        <kendo-excelexport-column field="nombreArea" title="Area">
+        </kendo-excelexport-column>
+        <kendo-excelexport-column
+          field="nombrePuestoTrabajo"
+          title="Puesto de Trabajo"
+        >
+        </kendo-excelexport-column>
+        <kendo-excelexport-column field="nroDocumento" title="Nro Documento">
+        </kendo-excelexport-column>
+        <kendo-excelexport-column
+          field="nombrePostulante"
+          title="Nombre Postulante"
+        >
+        </kendo-excelexport-column>
+        <kendo-excelexport-column
+          field="idCursoCalificacion"
+          title="N. Presentacion BSG"
+          [cellOptions]="ordenNotas(dataItem.idCursoCalificacion, 2)"
+          >
+        </kendo-excelexport-column>
+        <kendo-excelexport-column
+          field="idCursoCalificacion"
+          title="N. Reglamento Interno"
+        >
+          <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ ordenNotas(dataItem.idCursoCalificacion, 2) }}
+          </ng-template>
+        </kendo-excelexport-column>
+        <kendo-excelexport-column
+          field="idCursoCalificacion"
+          title="N. Gestión de Calidad"
+        >
+          <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ ordenNotas(dataItem.idCursoCalificacion, 3) }}
+          </ng-template>
+        </kendo-excelexport-column>
+        <kendo-excelexport-column
+          field="idCursoCalificacion"
+          title="N. Seguridad y Salud"
+        >
+          <ng-template kendoExcelExportCellTemplate let-dataItem>
+            {{ ordenNotas(dataItem.idCursoCalificacion, 4) }}
+          </ng-template>
+        </kendo-excelexport-column>
+        <kendo-excelexport-column
+          field="promedioGeneral"
+          title="Promedio General"
+        >
+        </kendo-excelexport-column> -->
+      </kendo-grid-excel>
+
+      <ng-template
+        kendoPagerTemplate
+        let-totalPages="totalPages"
+        let-currentPage="currentPage"
+      >
+        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+        <kendo-pager-numeric-buttons
+          [buttonCount]="buttonCount"
+        ></kendo-pager-numeric-buttons>
+        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+        <kendo-pager-input></kendo-pager-input>
+        <kendo-pager-info></kendo-pager-info>
+        <kendo-pager-page-sizes [pageSizes]="sizes"></kendo-pager-page-sizes>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</div>

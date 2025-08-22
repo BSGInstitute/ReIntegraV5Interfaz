@@ -1,0 +1,487 @@
+<ng-container *ngIf="loader == true">
+  <div class="loading-indicator">
+    <mat-progress-spinner
+      mode="indeterminate"
+      color="accent"
+    ></mat-progress-spinner>
+  </div>
+</ng-container>
+<div class="titulo">Campañas Masivas de Whatsapp</div>
+<div class="ContenedorTotal">
+  <div class="contenedorCampania" style="padding: 50px">
+    <div class="row justify-content-center">
+      <div style="display: flex; align-items: center">
+        <div style="text-align: right; margin-right: 4px; width: 50%">
+          <label
+            class="col-md-4 col-form-label text-right"
+            style="text-align: right"
+          >
+            Nombre de campaña general:
+          </label>
+        </div>
+        <div
+          style="flex: 1; display: flex; align-items: center; margin-left: 4px"
+        >
+          <mat-form-field
+            appearance="outline"
+            style="width: 390px; padding: 4px"
+          >
+            <input
+              matInput
+              placeholder="Nombre de campaña general"
+              [(ngModel)]="nombreCampania"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div style="display: flex; align-items: center">
+        <div style="text-align: right; margin-right: 4px; width: 50%">
+          <label
+            class="col-md-4 col-form-label text-right"
+            style="text-align: right"
+          >
+            Fecha Inicio envío :
+          </label>
+        </div>
+        <div
+          style="flex: 1; display: flex; align-items: center; margin-left: 4px"
+        >
+          <mat-form-field appearance="outline" style="width: 390px">
+            <input
+              matInput
+              [matDatepicker]="picker2"
+              placeholder="Fecha inicio envío"
+              [(ngModel)]="fechaInicioEnvio"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker2"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div style="display: flex; align-items: center">
+        <div style="text-align: right; margin-right: 4px; width: 50%">
+          <label
+            class="col-md-4 col-form-label text-right"
+            style="text-align: right"
+          >
+            Hora envío :
+          </label>
+        </div>
+        <div
+          style="flex: 1; display: flex; align-items: center; margin-left: 4px"
+        >
+          <mat-form-field appearance="outline" style="width: 390px">
+            <input
+              matInput
+              maxlength="8"
+              placeholder="Hora de envío"
+              [(ngModel)]="horaEnvio"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center">
+        <button class="btn but" (click)="Modificar()">Modificar</button>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center">
+        <button class="btn but" style="background-color: #9aa0a1ec; color: white;" (click)="EjecutarCampania()">
+          Ejecutar Campaña
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <div style="padding: 50px" class="contenedorGrilla">
+    <mat-tab-group>
+      <mat-tab label="Campañas Masivas">
+        <div class="card-body p-4">
+          <div class="row d-flex justify-content-center mb-4">
+            <kendo-grid
+              [kendoGridBinding]="this.listaPrioridades"
+              kendoGridSelectBy="id"
+              [sortable]="true"
+              [reorderable]="true"
+              [resizable]="true"
+              [filterable]="true"
+              [columnMenu]="{ filter: true }"
+              [class]="'cellCustomClass'"
+              id="my-grid"
+              [headerClass]="'headerPrioridades'"
+              [pageable]="true"
+              [pageSize]="20"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <div class="opciones" style="bottom: -12px; right: 20px">
+                  <div class="example-wrapper sen" (click)="abrirPrioridades()">
+                    Sendinblue
+                    <span
+                      style="margin-left: 10px"
+                      class="k-icon k-i-plus-circle"
+                    ></span>
+                  </div>
+                  <div class="example-wrapper exc" (click)="crearExcel()">
+                    Importar Excel
+                    <span
+                      style="margin-left: 10px"
+                      class="k-icon k-i-plus-circle"
+                    ></span>
+                  </div>
+                </div>
+              </ng-template>
+              <kendo-grid-column
+                field="nombreCampaniaOrigen"
+                title="Nombre Campaña"
+                [width]="200"
+                [headerClass]="'headerPrioridades'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="prioridad"
+                title="Prioridad"
+                [width]="50"
+                [headerClass]="'headerPrioridades'"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre Prioridad"
+                [width]="200"
+                [headerClass]="'headerPrioridades'"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                [headerClass]="'headerPrioridades'"
+                title="Activar Masivo"
+                [width]="50"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      [checked]="dataItem.activarMasivo"
+                      [ngModel]="dataItem.activarMasivo"
+                      (ngModelChange)="toggleActivarMasivo($event, dataItem)"
+                    />
+                    <span class="slider round"></span>
+                  </label>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="cantidadBase"
+                title="Cantidad por Filtro"
+                [width]="100"
+                [headerClass]="'headerPrioridades'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="programados"
+                title="Programados"
+                [width]="100"
+                [headerClass]="'headerPrioridades'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="enviados"
+                title="Enviados"
+                [width]="100"
+                [headerClass]="'headerPrioridades'"
+                [cellClass]="getCellStyle"
+                [cellTitle]="getCellTitle"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-command-column
+                title=""
+                [width]="150"
+                [headerClass]="'headerPrioridades'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1 editW"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Faccionar"
+                    (click)="editar(dataItem)"
+                  >
+                    <span class="k-icon k-i-edit"></span>
+                  </button>
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1 detalW"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Faccionar"
+                    (click)="Detalle(dataItem)"
+                  >
+                    <span class="k-icon k-i-rows k-icon-20"></span>
+                  </button>
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1 deleteW"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Eliminar"
+                    (click)="Eliminar(dataItem)"
+                    [disabled]="dataItem.enviados > 0"
+                    [ngClass]="{ 'disabled-button': dataItem.enviados > 0 }"
+                  >
+                    <span class="k-icon k-i-delete k-icon-20"></span>
+                  </button>
+                </ng-template> </kendo-grid-command-column
+            ></kendo-grid>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Reporte Interacciones">
+        <div class="contenedorTabla">
+          <div class="card-body p-4" style="height: auto">
+            <div class="excc">
+              <button
+                mat-button
+                class="btn butEx"
+                type="button"
+                (click)="excelexport.save()"
+              >
+                Exportar Excel
+                <span class="k-icon k-i-file-excel"></span>
+
+                <kendo-excelexport
+                  [data]="this.reporte"
+                  fileName="ReporteInteraccionesWhatsapp.xlsx"
+                  #excelexport
+                >
+                  <kendo-excelexport-column
+                    field="nombreCampaniaOrigen"
+                    title="Nombre Campaña"
+                  >
+                  </kendo-excelexport-column>
+
+                  <kendo-excelexport-column field="prioridad" title="Prioridad">
+                  </kendo-excelexport-column>
+
+                  <kendo-excelexport-column
+                    field="nombreDetalle"
+                    title="Nombre Prioridad"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="personal" title="Personal">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="centroCosto"
+                    title="Centro de Costo"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="plantilla" title="Plantilla">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="programados"
+                    title="Programados"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="enviados" title="Enviados">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="entregados"
+                    title="Entregados"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="leidos" title="Leidos">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="chatsValidos"
+                    title="Chats Validos"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="chatsInvalidos"
+                    title="Chats Invalidos"
+                  >
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column
+                    field="oportunidadesCreadas"
+                    title="Oportunidades"
+                  >
+                  </kendo-excelexport-column>
+                </kendo-excelexport>
+              </button>
+
+              <div class="card-body p-4" style="width: 100%;">
+                <div class="row d-flex justify-content-center mb-4">
+                  <kendo-grid
+                    [kendoGridBinding]="this.reporte"
+                    kendoGridSelectBy="id"
+                    [sortable]="true"
+                    [reorderable]="true"
+                    [resizable]="true"
+                    [filterable]="true"
+                    [columnMenu]="{ filter: true }"
+                    [class]="'cellCustomClass'"
+                    id="my-grid"
+                    [headerClass]="'headerPrioridades'"
+                    [pageable]="true"
+                    [pageSize]="20"
+                  >
+                    <kendo-grid-column
+                      field="nombreCampaniaOrigen"
+                      title="Nombre Campaña"
+                      [width]="200"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="prioridad"
+                      title="Prioridad"
+                      [width]="50"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="nombreDetalle"
+                      title="Nombre Prioridad"
+                      [width]="200"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="personal"
+                      title="Personal"
+                      [width]="200"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="centroCosto"
+                      title="Centro de Costo"
+                      [width]="200"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="plantilla"
+                      title="Plantilla"
+                      [width]="200"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="programados"
+                      title="Programados"
+                      [width]="100"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                      <ng-template kendoGridFooterTemplate>
+                        <td>{{ sumaProgramados }}</td>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="enviados"
+                      title="Enviados"
+                      [width]="100"
+                      [headerClass]="'headerPrioridades'"
+                      [cellClass]="getCellStyle"
+                      [cellTitle]="getCellTitle"
+                    >
+                      <ng-template kendoGridFooterTemplate>
+                        <td>{{ sumaEnviados }}</td>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="entregados"
+                      title="Entregados"
+                      [width]="100"
+                      [headerClass]="'headerPrioridades'"
+                      [cellClass]="getCellStyle"
+                      [cellTitle]="getCellTitle"
+                    >
+                      <ng-template kendoGridFooterTemplate>
+                        <td>{{ sumaEntregados }}</td>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="leidos"
+                      title="Leidos"
+                      [width]="100"
+                      [headerClass]="'headerPrioridades'"
+                      [cellClass]="getCellStyle"
+                      [cellTitle]="getCellTitle"
+                    >
+                      <ng-template kendoGridFooterTemplate>
+                        <td>{{ sumaLeidos }}</td>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="chatsValidos"
+                      title="Chats Validos"
+                      [width]="100"
+                      [headerClass]="'headerPrioridades'"
+                      [cellClass]="getCellStyle"
+                      [cellTitle]="getCellTitle"
+                    >
+                      <ng-template kendoGridFooterTemplate>
+                        <td>{{ sumaChatsV }}</td>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="chatsInvalidos"
+                      title="Chats Invalidos"
+                      [width]="100"
+                      [headerClass]="'headerPrioridades'"
+                      [cellClass]="getCellStyle"
+                      [cellTitle]="getCellTitle"
+                    >
+                      <ng-template kendoGridFooterTemplate>
+                        <td>{{ sumaChatsI }}</td>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="oportunidadesCreadas"
+                      title="Oportunidad"
+                      [width]="100"
+                      [headerClass]="'headerPrioridades'"
+                    >
+                      <ng-template kendoGridFooterTemplate>
+                        <td>{{ sumaOportunidad }}</td>
+                      </ng-template>
+                    </kendo-grid-column>
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

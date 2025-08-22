@@ -1,0 +1,679 @@
+<div class="row">
+  <div class="card col-12">
+    <div class="card-header bg-color-material">
+      <h1 class="text-white pb-0">Empresas</h1>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <div class="col">
+          <kendo-grid
+            #kendoGrid
+            [data]="gridEmpresa.view$ | async"
+            [loading]="gridEmpresa.loading"
+            filterable="menu"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+            [pageSize]="gridEmpresa.gridState.take"
+            [skip]="gridEmpresa.gridState.skip"
+            [filter]="gridEmpresa.gridState.filter"
+            (dataStateChange)="gridEmpresa.onStateChange($event)"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <button
+                kendoButton
+                icon="reload"
+                fillMode="flat"
+                themeColor="secondary"
+                (click)="obtenerEmpresas()"
+              ></button>
+
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <button
+                kendoButton
+                [themeColor]="'primary'"
+                (click)="abrirModalEmpresa(modalEmpresa, true)"
+              >
+                Agregar
+              </button>
+            </ng-template>
+
+            <kendo-grid-column
+              field="nombre"
+              title="Razon Social"
+              headerClass="header-grid-integra"
+            >
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="eq"
+                >
+                  <kendo-filter-eq-operator
+                    text="Igual a"
+                  ></kendo-filter-eq-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="ruc"
+              title="RUC"
+              headerClass="header-grid-integra"
+            >
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="eq"
+                >
+                  <kendo-filter-eq-operator
+                    text="Igual a"
+                  ></kendo-filter-eq-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="direccion"
+              title="Dirección"
+              headerClass="header-grid-integra"
+            >
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="eq"
+                >
+                  <kendo-filter-eq-operator
+                    text="Igual a"
+                  ></kendo-filter-eq-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="idPais"
+              title="Pais"
+              headerClass="header-grid-integra"
+              [filterable]="false"
+            >
+              <!-- <ng-template
+                kendoGridFilterMenuTemplate
+                let-column="column"
+                let-filter="filter"
+                let-filterService="filterService"
+              >
+                <kendo-dropdownlist
+                  [data]="dataPais"
+                  textField="nombrePais"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                  [value]="filter"
+                  (valueChange)="paisFilterChange($event, filterService)"
+                >
+                </kendo-dropdownlist>
+              </ng-template> -->
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ obtenerNombrePais(dataItem.idPais) }}
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-command-column
+              title="Opciones"
+              [width]="150"
+              headerClass="header-grid-integra"
+            >
+              <ng-template
+                kendoGridCellTemplate
+                let-dataItem="dataItem"
+                let-isNew="isNew"
+              >
+                <div class="w-100 d-flex justify-content-center">
+                  <button
+                    kendoButton
+                    themeColor="warning"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    (click)="abrirModalEmpresa(modalEmpresa, false, dataItem)"
+                    placement="top"
+                    ngbTooltip="Editar"
+                  >
+                    <span class="k-icon k-i-edit k-icon-20"></span>
+                  </button>
+                  <button
+                    kendoButton
+                    themeColor="error"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    (click)="eliminarEmpresa(dataItem)"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Eliminar"
+                  >
+                    <span class="k-icon k-i-delete k-icon-20"></span>
+                  </button>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalEmpresa let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Registro de Empresa" : "Actualizar Registro de Empresa" }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formEmpresa">
+      <div class="row">
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="razonSocial"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Razón Social<strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #razonSocial formControlName="razonSocial">
+            </kendo-textbox>
+            <kendo-formerror
+              >El nombre de la Empresa es necesario!
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="pais"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Pais:
+            </label>
+            <kendo-dropdownlist
+              #pais
+              formControlName="pais"
+              [data]="dataPais"
+              [virtual]="virtual"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccionar...' }"
+              [valuePrimitive]="true"
+              (valueChange)="changePais($event)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="identificadorTributario"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Identificador<br />Tributario
+            </label>
+            <kendo-textbox
+              #identificadorTributario
+              formControlName="identificadorTributario"
+            >
+            </kendo-textbox>
+            <kendo-formerror>Solo se aceptan numeros </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="region"
+              class="k-label d-flex align-items-start text-start pt-0"
+              *ngIf="!showDatosMexico"
+            >
+              Region
+            </label>
+            <label
+              [for]="region"
+              class="k-label d-flex align-items-start text-start pt-0"
+              *ngIf="showDatosMexico"
+            >
+              Estado
+            </label>
+            <kendo-dropdownlist
+              #region
+              formControlName="region"
+              [data]="dataCiudad"
+              [virtual]="virtual"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: '-Seleccione-' }"
+              [valuePrimitive]="true"
+              (valueChange)="changeCiudad($event)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="tamanioEmpresa"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Tamaño<br />Empresa:
+            </label>
+            <kendo-dropdownlist
+              #tamanioEmpresa
+              formControlName="tamanioEmpresa"
+              [data]="dataTamanioEmpresa"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccionar...' }"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5" *ngIf="!showDatosMexico">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="ciudad"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Ciudad
+            </label>
+            <kendo-dropdownlist
+              #ciudad
+              formControlName="ciudad"
+              [data]="dataRegionCiudad"
+              [virtual]="virtual"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccionar...' }"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5" *ngIf="showDatosMexico">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="ciudadmexico"
+              class="k-label pt-0 d-flex align-items-start text-start"
+            >
+              Ciudad:
+            </label>
+            <kendo-dropdownlist
+              #ciudadmexico
+              [data]="dataCiudadMexico"
+              formControlName="idCiudadMexico"
+              [virtual]="virtual"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: '-Sin Ciudad-' }"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [filterable]="true"
+              (valueChange)="changeCiudadMexico($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <!-- ---------------------------------------------------------------------------------- -->
+
+      <div class="row d-flex justify-content-end" *ngIf="showDatosMexico">
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="municipio"
+              class="k-label pt-0 d-flex align-items-start text-start"
+            >
+              Alcaldia o <br />
+              Municipio:
+            </label>
+            <kendo-dropdownlist
+              #municipio
+              [data]="dataMunicipio"
+              formControlName="idMunicipioMexico"
+              [virtual]="virtual"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: '-Sin Municipio-' }"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              [filterable]="true"
+              (valueChange)="changeMunicipio($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row d-flex justify-content-end" *ngIf="showDatosMexico">
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="colonia"
+              class="k-label pt-0 d-flex align-items-start text-start"
+            >
+              Colonia:
+            </label>
+            <kendo-dropdownlist
+              #colonia
+              [data]="dataAsentamiento"
+              [defaultItem]="{
+                idAsentamientoMexico: null,
+                asentamientoMexico: '-Sin Colonia-'
+              }"
+              valueField="idAsentamientoMexico"
+              textField="asentamientoMexico"
+              [valuePrimitive]="true"
+              formControlName="idAsentamientoMexico"
+              [filterable]="true"
+              (valueChange)="cargarCodigoPostal($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row d-flex justify-content-end" *ngIf="showDatosMexico">
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="codigoPostalInput"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Codigo<br />Postal
+            </label>
+            <div class="input-group d-flex">
+              <input
+                #codigoPostalInput
+                kendoTextBox
+                class="custom-fill-mode col"
+                formControlName="codigoPostal"
+              />
+              <div class="input-group-append col-auto">
+                <button
+                  kendoButton
+                  themeColor="primary"
+                  placement="top"
+                  ngbTooltip="CodigoPostal"
+                  (click)="filtroCodigoPostal(codigoPostalInput.value)"
+                >
+                  <fa-icon [icon]="['fas', 'search']"></fa-icon>
+                </button>
+              </div>
+            </div>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div *ngIf="mostrarTabla" class="col-sm-12 col-md-12 my-2">
+        <kendo-grid
+          [data]="dataCP"
+          scrollable="scrollable"
+          filterable="menu"
+          [style.max-height.px]="200"
+          (cellClick)="seleccionarCodigoPostal($event.dataItem)"
+        >
+          <kendo-grid-column
+            field="nombreCiudad"
+            title="Estado"
+            filter="text"
+            [filterable]="true"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="ciudadMexico"
+            title="Ciudad"
+            filter="text"
+            [filterable]="true"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="municipioMexico"
+            title="Municipio"
+            filter="text"
+            [filterable]="true"
+          ></kendo-grid-column>
+
+          <kendo-grid-column
+            field="asentamientoMexico"
+            title="Asentamiento"
+            filter="text"
+            [filterable]="true"
+          ></kendo-grid-column>
+
+          <kendo-grid-column
+            field="codigoPostal"
+            title="Codigo Postal"
+            filter="numeric"
+          ></kendo-grid-column>
+        </kendo-grid>
+      </div>
+      <!-- ---------------------------------------------------------------------------------- -->
+      <div class="row">
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="email"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Email
+            </label>
+            <kendo-textbox #email formControlName="email"> </kendo-textbox>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="tipoIdentificador"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Tipo de <br />Identificador
+            </label>
+            <kendo-dropdownlist
+              #tipoIdentificador
+              formControlName="tipoIdentificador"
+              [data]="dataTipoIdentificador"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="codigoCIIU"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Código CIIU
+            </label>
+            <kendo-dropdownlist
+              #codigoCIIU
+              formControlName="codigoCIIU"
+              [data]="dataCodigoCIIU$ | async"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccionar...' }"
+              [valuePrimitive]="true"
+              [filterable]="true"
+              (filterChange)="filterCodigoCIIU($event, codigoCIIU)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="telefono"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Telefono
+            </label>
+            <kendo-textbox #telefono formControlName="telefono">
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="tipoEmpresa"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Tipo Empresa
+            </label>
+            <kendo-dropdownlist
+              #tipoEmpresa
+              formControlName="tipoEmpresa"
+              [data]="dataTipoEmpresa"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="nroTrabajadores"
+              [style.width.px]="220"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Nro Trabajadores
+            </label>
+            <kendo-numerictextbox
+              format="n0"
+              #nroTrabajadores
+              formControlName="nroTrabajadores"
+              [min]="0"
+            >
+            </kendo-numerictextbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row d-flex justify-content-end">
+        <div class="col-sm-12 col-md-5">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="nivelFacturacion"
+              [style.width.px]="220"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Nivel de Facturacion (Millones US$)
+            </label>
+            <kendo-numerictextbox
+              #nivelFacturacion
+              formControlName="nivelFacturacion"
+              [min]="0"
+            >
+            </kendo-numerictextbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="paginaWeb"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Pagina Web
+            </label>
+            <kendo-textbox #paginaWeb formControlName="paginaWeb">
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="direccion"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              Direccion
+            </label>
+            <kendo-textbox #direccion formControlName="direccion">
+            </kendo-textbox>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="guardarEmpresa()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizarEmpresa()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>

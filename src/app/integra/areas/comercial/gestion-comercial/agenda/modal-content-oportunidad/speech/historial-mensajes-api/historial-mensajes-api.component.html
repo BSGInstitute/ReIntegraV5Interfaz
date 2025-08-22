@@ -1,0 +1,436 @@
+<kendo-tabstrip class="p-0 rounded-3" [scrollable]="{ scrollButtons: null }" [keepTabContent]="true" [animate]="false"
+  (tabSelect)="obtenerHistorialChatsPortal()">
+  >
+  <!-- CORREOS RECIBIDOS -->
+  <kendo-tabstrip-tab [selected]="true">
+    <ng-template kendoTabTitle>
+      <span>Correos Recibidos</span>
+    </ng-template>
+    <ng-template kendoTabContent *loadOnDemand>
+      <div class="row grid-speech">
+        <kendo-grid [kendoGridBinding]="gridHistorialMensajes?.data" [loading]="gridHistorialMensajes.loading"
+          scrollable="none" [pageable]="true" [pageSize]="5">
+          <kendo-grid-column field="fecha" title="Fecha" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fecha | date : "dd/MM/yyyy" }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="fecha" title="Hora" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fecha | date : "h:mm a" }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="tipo" title="Tipo" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.tipo != null ? dataItem.tipo : 'Recibido' }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="asunto" title="Asunto" [width]="600"></kendo-grid-column>
+          <kendo-grid-command-column title="Acciones" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="btn-group" role="group" aria-label="Basic outlined example">
+                <button kendoGridEditCommand class="btn btn-light m-1 border" (click)="verHistorialInbox(dataItem)">
+                  <span class="k-icon k-i-eye text-dark"></span>
+                </button>
+                <button kendoGridEditCommand class="btn btn-light m-1 border" (click)="
+                    verInteraccionesCorreo(dataItem, modalInteraccionesCorreo)
+                  ">
+                  <span class="k-icon k-i-refresh text-dark"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+          <ng-template kendoPagerTemplate>
+            <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+            <kendo-pager-numeric-buttons [buttonCount]="10"></kendo-pager-numeric-buttons>
+            <kendo-pager-next-buttons></kendo-pager-next-buttons>
+            <kendo-pager-input></kendo-pager-input>
+            <kendo-pager-info></kendo-pager-info>
+            <kendo-pager-page-sizes [pageSizes]="[5, 10, 20]"></kendo-pager-page-sizes>
+            <div class="w-100 text-end">
+              <button kendoButton icon="reload" fillMode="flat" themeColor="secondary"
+                (click)="cargarHistorialCorreo()"></button>
+            </div>
+          </ng-template>
+        </kendo-grid>
+      </div>
+    </ng-template>
+  </kendo-tabstrip-tab>
+  <!-- END CORREOS RECIBIDOS -->
+  <!-- CHAT WHATSAPP -->
+  <!-- <kendo-tabstrip-tab>
+    <ng-template kendoTabTitle>
+      <span>Chat WhatsApp</span>
+    </ng-template>
+    <ng-template kendoTabContent *loadOnDemand>
+      <ng-container>
+      </ng-container>
+    </ng-template>
+  </kendo-tabstrip-tab> -->
+  <!-- END CHAT WHATSAPP -->
+  <kendo-tabstrip-tab>
+    <ng-template kendoTabTitle>
+      <span>Chat Portal Web</span>
+    </ng-template>
+    <ng-template kendoTabContent *loadOnDemand>
+      <ng-container>
+        <div class="containerChat">
+          <div class="block-header fw-bold" style="
+                            background-color: #89a8d7;
+                            border-radius: 10px 10px 0 0;
+                            padding: 5px;
+                            ">
+            <div class="p-2 px-3 text-white text-center">
+              <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                  <div class="d-flex flex-column align-items-center py-1">
+                    <span class="px-1 fw-bold" style="
+                                            color: #ffffff;
+                                            font-size: 17px;
+                                            font-weight: 500 !important;
+                                        ">{{ nombreAlumno }}</span>
+                    <span class="px-1 fw-bold" style="
+                                            color: #ffffff;
+                                            font-size: 14px;
+                                            font-weight: 150 !important;
+                                        ">
+                      <ng-container>
+                        Fecha de último mensaje :
+                        {{ dateOfLastMessage ? (dateOfLastMessage | date: "dd/MM/yyyy hh:mm") : "No tiene mensajes" }}
+                      </ng-container>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-2 d-flex justify-content-end align-items-end">
+                  <button class="btn">
+                    <img src="assets/img/iconsagendaatc/refresh.svg" alt="Icono" class="tamano-icono"
+                    style="vertical-align: middle;width: 30px;" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <loading [loading]="loadingChat"></loading>
+          <div #content class="p-2 px-3 block-message" style="
+          background-image: url('../../../../../../../../../assets/img/fonWhats4darker.jpg');
+          background-size: cover;
+          background-repeat: no-repeat;
+          overflow-y: scroll;
+          height: 550px;
+        ">
+      <div #messages>
+        <div #messages *ngFor="let mensajes of historyOfMessages">
+          <ng-container *ngIf="mensajes.idRemitente == 'visitante'">
+            <div class="row message">
+              <div class="text-start">
+                <div class="d-flex flex-row">
+                  <div class="text-end pt-1">
+                    <div class="rounded-circle px-2 pt-1 m-1"
+                      style="width: 30px; height: 30px; background-color: #d3d6db">
+                      <fa-icon [icon]="['fas', 'user']" class="fa-lg text-white"></fa-icon>
+                    </div>
+                  </div>
+                  <label class="w-auto p-2 my-1 rounded images" style="
+                      max-width: 75%;
+                      background-color: #f5f5f5;
+                      border-radius: 0px 6px 6px 9px;
+                      opacity: 1;
+                      word-wrap: break-word;
+                     overflow-wrap: anywhere;
+                    ">
+                    <!-- <span class="px-1 fw-bold" style="font-size: small">{{nameAlumno}}</span> -->
+                    <span class="px-1" style="color: #373737" [innerHTML]="mensajes.mensaje"></span>
+                    <span class="d-flex pt-1 hora-chat">{{
+                      mensajes.fecha | date : "dd/MM/yyyy hh:mm"
+                    }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="mensajes.idRemitente == 'asesor'">
+            <div class="row message">
+              <div class="text-end">
+                <label class="w-auto p-2 m-1 rounded images" style="
+                    max-width: 75%;
+                    background-color: #ecfef1;
+                    text-align: left !important;
+                    border-radius: 13px 0px 13px 13px;
+                    opacity: 1;
+                    word-wrap: break-word;
+                    overflow-wrap: anywhere;
+                  ">
+                  <span class="px-1 fw-bold"
+                    style="font-size: small"></span>
+                  <span class="d-flex mt-1 px-1" [innerHTML]="mensajes.mensaje"></span>
+                  <span class="d-flex flex-row-reverse px-2 hora-chat" style="height: 10px">
+                    {{ mensajes.fecha | date : "dd/MM/yyyy hh:mm" }}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+          <div class="footerChat py-2"
+            style="background-color: #ffffff;border-top: 1px solid #b2b2b2;border-radius: 0 0 10px 10px;display: flex;justify-content: center; "
+            [formGroup]="formEnviarMensajeChat">
+            <!-- <div class="row mx-2 pb-2" style="
+          display: flex;
+          align-items: center;">
+               <div class="p-2 rounded" style="background-color: #f8d7da">
+                <div class="row">
+                   <div class="col-md-2">
+                    <div class="text-end">
+                      <i class="material-icons addfile" (click)="fileInput.click()">attach_file</i>
+                      <input #fileInput type="file" style="display:none;" type="file" style="display:none;"
+                        accept="image/png, image/jpeg, image/jpg, image/jfif, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                    </div>
+                  </div> 
+                </div>
+              </div>
+            </div> -->
+            <div class="row mx-2 w-100">
+              <div class="col-10" style="
+                            background-color: #ededed;
+                            border-radius: 10px 0 0 10px;
+                            padding: 10px;
+                            border-right: 1px solid #d2d1d1;
+                          ">
+                <kendo-textarea class="form-control customBorder" formControlName="mensaje"
+                  style="background-color: #ededed" resizable="auto">
+                </kendo-textarea>
+              </div>
+              <div class="col-2" style="
+                            align-items: center;
+                            justify-content: center;
+                            display: flex;
+                            background-color: #ededed;
+                            border-radius: 0 10px 10px 0;
+                            padding: 2%;
+                          ">
+                <button class="btn btn-custom-disabled" style="
+                              background-color: #11c744;
+                              border-top: none;
+                              border-bottom: none;
+                              border-right: none;
+                              border-left: none;
+                            " >
+                  <fa-icon [icon]="['fas', 'paper-plane']" [style.color]="'rgb(255 255 255)'"></fa-icon>
+                </button>
+                <button class="btn btn-custom-disabled" style="
+                              background-color: red;
+                              border-top: none;
+                              border-bottom: none;
+                              border-right: none;
+                              border-left: none;
+                              margin-left: 7%;
+                            ">
+                  <fa-icon [icon]="['fas', 'broom']" style="font-weight: bold" [style.color]="'rgb(255 255 255)'">
+                  </fa-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+          <div style="padding-left: 10%; padding-right: 10%; padding-top: 2px">
+            <div class="row" style="padding-left: 85%; padding-top: 30px">
+              <button class="btn-cw-hover-effect" style="
+                  border: none;
+                  background: #0079ff;
+                  width: 163px;
+                  top: 3980px;
+                  left: 1234px;
+                  height: 43px;
+                  border-radius: 9px;
+                  opacity: 1;
+                  color: white;
+                " >
+                <fa-icon [icon]="['fas', 'right-from-bracket']"></fa-icon>
+                Finalizar Chat
+              </button>
+            </div>
+          </div>
+        
+      </ng-container>
+      <!-- <ng-container *ngIf="mensajesPortal == null">
+        <div class="w-100 text-center m-2 p-2">
+          No se encontro historial de chat(Portal).
+        </div>
+      </ng-container> -->
+    </ng-template>
+  </kendo-tabstrip-tab>
+</kendo-tabstrip>
+
+<ng-template #modalVerCorreoAlternoSpeech let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Visualización de correo
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-3 px-3">
+      No se encuentra informacion de este correo porque es de tipo ENVIO
+      AUTOMATICO
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button themeColor="error" kendoButton (click)="modal.dismiss('Cross click')">
+      Cerrar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalPreviaVistaCorreos let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Visualización de correo
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-3 px-3">
+      <div class="col-md-2"><label class="my-1">Remitente:</label></div>
+      <div class="col-md-10">
+        <div class="form-control form-control-sm form-radius-15 nowrapText div-disabled">
+          {{ correoEnviado.remitente }}
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3 px-3">
+      <div class="col-md-2"><label class="my-1">Destinatario(s):</label></div>
+      <div class="col-md-10">
+        <div class="form-control form-control-sm form-radius-15 nowrapText div-disabled">
+          {{ destinatarioEncode }}
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3 px-3">
+      <div class="col-md-2"><label class="my-1">Asunto:</label></div>
+      <div class="col-md-10">
+        <div class="form-control form-control-sm form-radius-15 nowrapText div-disabled">
+          {{ correoEnviado.asunto }}
+        </div>
+      </div>
+    </div>
+    <div class="row px-3" *ngIf="flagRecibidos">
+      <div class="col-md-2"><label class="my-1">Adjuntar:</label></div>
+      <div class="col-md-10">
+        <kendo-fileselect placeholder="adjuntar archivo" [formControl]="archivoAdjuntos"></kendo-fileselect>
+      </div>
+    </div>
+    <div class="row px-3">
+      <div class="col-md-2"><label class="my-1">Mensaje:</label></div>
+      <div class="col-md-10">
+        <!-- <kendo-editor
+          [value]="correoEnviado.emailBody"
+          style="height: 420px"
+        ></kendo-editor> -->
+        <kendo-editor [pasteCleanupSettings]="pasteCleanupSettings" style="height: 500px" [formControl]="emailBody">
+          <kendo-toolbar>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorBoldButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorItalicButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorUnderlineButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorStrikethroughButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorSubscriptButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorSuperscriptButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorAlignLeftButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorAlignCenterButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorAlignRightButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorAlignJustifyButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-dropdownlist kendoEditorFormat></kendo-toolbar-dropdownlist>
+            <kendo-toolbar-dropdownlist kendoEditorFontSize></kendo-toolbar-dropdownlist>
+            <kendo-toolbar-dropdownlist kendoEditorFontFamily></kendo-toolbar-dropdownlist>
+            <kendo-toolbar-colorpicker kendoEditorForeColor></kendo-toolbar-colorpicker>
+            <kendo-toolbar-colorpicker kendoEditorBackColor view="gradient"></kendo-toolbar-colorpicker>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorInsertUnorderedListButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorInsertOrderedListButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorIndentButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorOutdentButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-button kendoEditorBlockquoteButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorSelectAllButton></kendo-toolbar-button>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorUndoButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorRedoButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorCreateLinkButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorUnlinkButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-button kendoEditorInsertFileButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorInsertImageButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorViewSourceButton></kendo-toolbar-button>
+            <kendo-toolbar-button kendoEditorCleanFormattingButton></kendo-toolbar-button>
+            <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorAddColumnBeforeButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorAddColumnAfterButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorAddRowBeforeButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorAddRowAfterButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorDeleteColumnButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorDeleteRowButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorDeleteTableButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-buttongroup>
+              <kendo-toolbar-button kendoEditorMergeCellsButton></kendo-toolbar-button>
+              <kendo-toolbar-button kendoEditorSplitCellButton></kendo-toolbar-button>
+            </kendo-toolbar-buttongroup>
+            <kendo-toolbar-button kendoEditorPrintButton></kendo-toolbar-button>
+          </kendo-toolbar>
+        </kendo-editor>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <ng-container *ngIf="flagRecibidos">
+      <button kendoButton [disabled]="btnResponderDisabled" themeColor="success" (click)="responderCorreo()">
+        Responder
+      </button>
+    </ng-container>
+    <button themeColor="error" kendoButton (click)="modal.dismiss('Cross click')">
+      Cerrar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalInteraccionesCorreo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title ">
+      Interacciones del Correo
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row grid-speech">
+      <kendo-grid [kendoGridBinding]="gridHistorialCorreo?.data" scrollable="none" [sortable]="true">
+        <kendo-grid-column field="fechaCreacion" title="Fecha" [width]="150">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaCreacion | date : "dd/MM/yyyy" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="programa" title="Hora" [width]="150">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.fechaCreacion | date : "hh:mm a" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="estado" title="Tipo" [width]="200"></kendo-grid-column>
+        <ng-template kendoGridNoRecordsTemplate>
+          No se encontraron correos.
+        </ng-template>
+      </kendo-grid>
+    </div>
+  </div>
+</ng-template>

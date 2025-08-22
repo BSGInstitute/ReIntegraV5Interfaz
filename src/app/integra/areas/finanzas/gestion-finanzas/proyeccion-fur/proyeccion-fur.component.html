@@ -1,0 +1,1880 @@
+<div class="contenedor" >
+  <diV class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">MODULO PROYECCION FUR</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row mb-4">
+            <div class="col-md-12" id="pConfiguracionFur">
+              <kendo-tabstrip [animate]="false" [keepTabContent]="true">
+                <kendo-tabstrip-tab title="CONFIGURACION FUR" [selected]="true">
+                  <ng-template kendoTabContent *loadOnDemand>
+                    <div class="content-tab">
+                      <ng-container>
+                        <div class="card-body k-form k-form-horizontal">
+                          <form [formGroup]="formFiltro">
+                            <div class="row">
+                              <div class="col-md-2"></div>
+
+                              <div class="col-md-3">
+                                <kendo-formfield orientation="horizontal">
+                                  <label
+                                    [for]="estado"
+                                    class="k-label"
+                                    [style.width.px]="150"
+                                  >
+                                    Estado Solicitud:
+                                  </label>
+                                  <kendo-dropdownlist
+                                    #estado
+                                    formControlName="idEstadoSolicitud"
+                                    [data]="listaEstado"
+                                    [valuePrimitive]="true"
+                                    valueField="id"
+                                    textField="nombre"
+                                    [defaultItem]="{
+                                      nombre: 'Todos',
+                                      id: null
+                                    }"
+                                  >
+                                  </kendo-dropdownlist>
+                                </kendo-formfield>
+                              </div>
+
+                              <div class="col-md-3" style="padding-right: 10px">
+                                <kendo-formfield orientation="horizontal">
+                                  <label [for]="area" class="k-label">
+                                    Area:
+                                  </label>
+                                  <kendo-dropdownlist
+                                    #area
+                                    formControlName="idArea"
+                                    class="d-flex"
+                                    size="medium"
+                                    #dropdownlist
+                                    [data]="listaArea"
+                                    textField="codigo"
+                                    valueField="id"
+                                    [defaultItem]="{
+                                      id: null,
+                                      codigo: 'Todos'
+                                    }"
+                                    [valuePrimitive]="true"
+                                    [disabled]="!accesoTotal"
+                                  >
+                                  </kendo-dropdownlist>
+                                </kendo-formfield>
+                              </div>
+
+                              <div class="col-md-3">
+                                <div
+                                  class="row"
+                                  style="width: 110px; padding-top: 10px"
+                                >
+                                  <div class="col-md-1"></div>
+                                  <div class="col-md-11">
+                                    <button
+                                      mat-raised-button
+                                      style="
+                                        background-color: rgb(10, 8, 132);
+                                        color: white;
+                                      "
+                                      (click)="
+                                        BuscarByFiltroCabeceraProyeccionFur()
+                                      "
+                                    >
+                                      <mat-icon>search</mat-icon>
+                                      Buscar
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-2"></div>
+                            </div>
+                          </form>
+                        </div>
+
+                        <div class="row mt-3">
+                          <div class="col-12 toolbar-grid-integra">
+                            <div class="row">
+                              <div class="col-md-12">
+                                <kendo-grid
+                                  style="max-height: 700px"
+                                  [kendoGridBinding]="
+                                    gridCabeceraFurConfiguracion.data
+                                  "
+                                  [loading]="loaderConfiguracion"
+                                  [resizable]="true"
+                                  [sortable]="true"
+                                  filterable="menu"
+                                  [pageable]="true"
+                                  [pageSize]="15"
+                                  [selectable]="{
+                                    checkboxOnly: true,
+                                    mode: 'multiple'
+                                  }"
+                                  kendoGridSelectBy="idArea"
+                                   [(selectedKeys)]="listaSeleccion"
+                                  (add)="addHandler($event)"
+                                  (cancel)="gridCabeceraFurConfiguracion.cancelHandler($event
+                                    )
+                                  "
+                                  (save)="
+                                    gridCabeceraFurConfiguracion.saveHandler(
+                                      $event
+                                    )
+                                  "
+                                  (remove)="
+                                    gridCabeceraFurConfiguracion.removeHandler(
+                                      $event
+                                    )
+                                  "
+                                  (edit)="editHandler(
+                                      $event
+                                    )
+                                  "
+                                  (cancel)="cancelHandler(
+                                    $event
+                                  )"
+                                >
+                                  <ng-template
+                                    kendoGridToolbarTemplate
+                                    let-dataItem="dataItem"
+                                  >
+                                    <button
+                                      kendoButton
+                                      icon="reload"
+                                      fillMode="flat"
+                                      themeColor="base"
+                                      class="text-white"
+                                      (click)="refreshCabeceraProyeccionFur()"
+                                    ></button>
+                                    <div>
+                                      <ng-container *ngIf="botonProyectar && accesoTotal">
+                                        <button
+                                        mat-raised-button
+                                        style="
+                                          background-color: rgb(2, 118, 2);
+                                          color: white;
+                                        "
+                                        (click)="ProcesoProyeccionCostosFijos()"
+                                      >
+                                        <mat-icon>open_in_browser</mat-icon>
+                                        Proyectar Seleccionados
+                                      </button>
+                                      </ng-container>
+
+
+                                    </div>
+
+                                    <kendo-grid-spacer></kendo-grid-spacer>
+                                    <kendo-label
+                                    class="k-form"
+                                    text="Fecha Limite de Envio:"
+                                    [for]="fecha"
+
+                                    style=" color: white;"
+                                    >
+                                    </kendo-label>
+                                  <kendo-textbox
+                                    #fecha
+                                    [readOnly]="true"
+                                    [ngStyle]="{ 
+                                      'color': isEnvio==true?'green':'red'
+                                    }"
+                                    [style.width.px]="200"
+                                    [readonly]="true"
+                                    [formControl]="inputFechaFinEnvio"
+                                  >
+                                    <ng-container *ngIf="isEnvio==false">
+                                      <ng-template kendoTextBoxPrefixTemplate>
+                                        <kendo-textbox-separator></kendo-textbox-separator>
+                                        <div kendoTooltip [closable]="true" >
+                                          <kendo-icon name="warning" title="La fecha de envio a revisión ha vencido!"></kendo-icon>
+                                        </div>
+                                      </ng-template>
+                                    </ng-container>
+                                  </kendo-textbox>
+                                  
+
+                                    <div>
+                                      <ng-container  *ngIf="!botonProyectar">
+                                        <button
+                                        kendoGridAddCommand
+                                        mat-raised-button
+                                        style="
+                                          background-color: rgba(
+                                            0,
+                                            132,
+                                            208,
+                                            0.771
+                                          );
+
+                                          color: white;
+                                        "
+                                        class="hover_butom_primary"
+                                      >
+                                        <mat-icon>add_circle_outline</mat-icon>
+                                        Agregar
+                                      </button>
+                                      </ng-container>
+                                    </div>
+                                  </ng-template>
+
+                                  <ng-container  *ngIf="botonProyectar && accesoTotal">
+                                    <kendo-grid-checkbox-column
+                                    [width]="45"
+                                    [headerClass]="{ 'text-center': true }"
+                                    [class]="{ 'text-center': true }"
+                                    [showSelectAll]="true"
+                                    headerClass="header-grid-single"
+                                  ></kendo-grid-checkbox-column>
+                                  </ng-container>
+                                  <kendo-grid-column
+                                    field="idArea"
+                                    title="Area"
+                                    class="k-label"
+                                    [filterable]="true"
+                                    [width]="60"
+                                  >
+                                    <ng-template
+                                      kendoGridEditTemplate
+                                      let-formGroup="formGroup"
+                                    >
+                                      <kendo-dropdownlist
+                                        [readonly]="true"
+                                        [formControl]="formGroup.get('idArea')"
+                                        class="d-flex"
+                                        size="medium"
+                                        #dropdownlist
+                                        [data]="listaArea"
+                                        textField="codigo"
+                                        valueField="id"
+                                        [defaultItem]="{
+                                          id: null,
+                                          codigo: 'Sin Area'
+                                        }"
+                                        [valuePrimitive]="true"
+                                      >
+                                      </kendo-dropdownlist>
+                                    </ng-template>
+                                    <ng-template
+                                      kendoGridCellTemplate
+                                      let-dataItem
+                                    >
+                                      {{ TemplateArea(dataItem.idArea) }}
+                                    </ng-template>
+                                  </kendo-grid-column>
+                                  <kendo-grid-column
+                                    field="nombre"
+                                    title="Nombre"
+                                    [filterable]="true"
+                                    [width]="150"
+                                  >
+                                    <ng-template
+                                      kendoGridEditTemplate
+                                      let-formGroup="formGroup"
+                                    >
+                                      <kendo-textbox
+                                        [formControl]="formGroup.get('nombre')"
+                                        style="
+                                          background-color: rgb(236, 236, 236);
+                                        "
+                                        class="d-flex"
+                                        size="medium"
+                                        [maxlength]="70"
+                                      >
+                                      </kendo-textbox>
+                                    </ng-template>
+                                  </kendo-grid-column>
+                                  <kendo-grid-column
+                                    field="codigo"
+                                    title="Codigo"
+                                    [filterable]="true"
+                                    [width]="150"
+                                  >
+                                    <ng-template
+                                      kendoGridEditTemplate
+                                      let-formGroup="formGroup"
+                                    >
+                                      <kendo-textbox
+                                        [formControl]="formGroup.get('codigo')"
+                                        style="
+                                          background-color: rgb(236, 236, 236);
+                                        "
+                                        class="d-flex"
+                                        size="medium"
+                                        [maxlength]="70"
+                                      >
+                                      </kendo-textbox>
+                                    </ng-template>
+                                  </kendo-grid-column>
+
+                                  <kendo-grid-column
+                                    field="idPeriodoProyeccion"
+                                    title="Periodo Proyectado"
+                                    [filterable]="true"
+                                    [width]="100"
+                                  >
+                                    <ng-template
+                                      kendoGridEditTemplate
+                                      let-formGroup="formGroup"
+                                    >
+                                      <kendo-dropdownlist
+                                        [readonly]="true"
+                                        [formControl]="
+                                          formGroup.get('idPeriodoProyeccion')
+                                        "
+                                        class="d-flex"
+                                        size="medium"
+                                        #dropdownlist
+                                        [data]="listaPeriodo"
+                                        textField="periodo"
+                                        valueField="id"
+                                        [defaultItem]="{
+                                          id: null,
+                                          periodo: 'Seleccionar'
+                                        }"
+                                        [valuePrimitive]="true"
+                                      >
+                                      </kendo-dropdownlist>
+                                    </ng-template>
+                                    <ng-template
+                                      kendoGridCellTemplate
+                                      let-dataItem
+                                    >
+                                      {{
+                                        TemplatePeriodoProyeccion(
+                                          dataItem.idPeriodoProyeccion
+                                        )
+                                      }}
+                                    </ng-template>
+                                  </kendo-grid-column>
+                                  <kendo-grid-column
+                                    field="idEstadoProyeccionFur"
+                                    title="Estado"
+                                    [filterable]="true"
+                                    [width]="90"
+                                  >
+                                    <ng-template
+                                      kendoGridEditTemplate
+                                      let-formGroup="formGroup"
+                                    >
+                                      <kendo-dropdownlist
+                                        [readonly]="true"
+                                        [formControl]="
+                                          formGroup.get('idEstadoProyeccionFur')
+                                        "
+                                        class="d-flex"
+                                        size="medium"
+                                        #dropdownlist
+                                        [data]="listaEstado"
+                                        textField="nombre"
+                                        valueField="id"
+                                        [defaultItem]="{
+                                          id: null,
+                                          nombre: 'Seleccionar'
+                                        }"
+                                        [valuePrimitive]="true"
+                                      >
+                                      </kendo-dropdownlist>
+                                    </ng-template>
+                                    <ng-template
+                                      kendoGridCellTemplate
+                                      let-dataItem
+                                    >
+                                      <div
+                                        [ngStyle]="{
+                                          color:
+                                            dataItem.idEstadoProyeccionFur == 1
+                                              ? 'blue'
+                                              : dataItem.idEstadoProyeccionFur ==
+                                                2
+                                              ? 'orange'
+                                              : dataItem.idEstadoProyeccionFur ==
+                                                3
+                                              ? 'green'
+                                              : dataItem.idEstadoProyeccionFur ==
+                                                4
+                                              ? 'red'
+                                              : 'black'
+                                        }"
+                                      >
+                                        {{
+                                          TemplateEstadoProyeccion(
+                                            dataItem.idEstadoProyeccionFur
+                                          )
+                                        }}
+                                      </div>
+                                    </ng-template>
+                                  </kendo-grid-column>
+                                  <kendo-grid-column
+                                    field="observacion"
+                                    title="Observacion"
+                                    [filterable]="true"
+                                    [width]="160"
+                                  >
+                                    <ng-template
+                                      kendoGridEditTemplate
+                                      let-formGroup="formGroup"
+                                    >
+                                      <kendo-textbox
+                                        [formControl]="
+                                          formGroup.get('observacion')
+                                        "
+                                        style="
+                                          background-color: rgb(236, 236, 236);
+                                        "
+                                        class="d-flex"
+                                        size="medium"
+                                        [placeholder]="'Ninguna'"
+                                        [maxlength]="200"
+                                      >
+                                      </kendo-textbox>
+                                    </ng-template>
+                                    <ng-template
+                                      kendoGridCellTemplate
+                                      let-dataItem
+                                    >
+                                      {{
+                                        TemplateObservacion(
+                                          dataItem.observacion
+                                        )
+                                      }}
+                                    </ng-template>
+                                  </kendo-grid-column>
+                                  <kendo-grid-column
+                                    [sticky]="true"
+                                    title="Acciones"
+                                    [width]="150"
+                                    headerClass="justify-content-center"
+                                  >
+                                    <ng-template
+                                      kendoGridCellTemplate
+                                      let-dataItem="dataItem"
+                                      let-isNew="isNew"
+                                      let-rowIndex="rowIndex"
+                                    >
+                                      <div
+                                        class="w-100 d-flex justify-content-center"
+                                        kendoTooltip
+                                      >
+                                        <button
+                                          [disabled]="dataItem.idEstadoProyeccionFur==2"
+                                          kendoGridEditCommand
+                                          themeColor="warning"
+                                          fillMode="solid"
+                                          rounded="large"
+                                          size="large"
+                                          class="p-2 me-1 ms-1"
+                                          container="body"
+                                          placement="top"
+                                          title="Editar"
+                                        >
+                                          <span
+                                            class="k-icon k-i-edit k-icon-20"
+                                          ></span>
+                                        </button>
+                                        <button
+                                          kendoGridSaveCommand
+                                          [disabled]="
+                                            gridCabeceraFurConfiguracion
+                                              .formGroup?.invalid
+                                          "
+                                          themeColor="primary"
+                                          fillMode="solid"
+                                          rounded="large"
+                                          size="large"
+                                          class="p-2 me-1 ms-1"
+                                          container="body"
+                                          placement="top"
+                                          title="Guardar"
+                                        >
+                                          <span
+                                            class="k-icon k-i-save k-icon-20"
+                                          ></span>
+                                        </button>
+                                        <button
+                                          kendoGridCancelCommand
+                                          themeColor="secondary"
+
+                                          fillMode="solid"
+                                          rounded="large"
+                                          size="large"
+                                          class="p-2 me-1 ms-1"
+                                          container="body"
+                                          placement="top"
+                                          title="Cancelar"
+                                        >
+                                          <span
+                                            class="k-icon k-i-cancel k-icon-20"
+                                          ></span>
+                                        </button>
+                                        <button
+                                          kendoGridRemoveCommand
+                                          themeColor="error"
+                                          fillMode="solid"
+                                          rounded="large"
+                                          size="large"
+                                          class="p-2 me-1 ms-1"
+                                          container="body"
+                                          placement="top"
+                                          title="Eliminar"
+                                        >
+                                          <span
+                                            class="k-icon k-i-delete k-icon-20"
+                                          ></span>
+                                        </button>
+
+                                        <button
+                                          kendoButton
+                                          themeColor="success"
+                                          fillMode="solid"
+                                          rounded="large"
+                                          size="large"
+                                          class="p-2 me-1 ms-1"
+                                          container="body"
+                                          (click)="abrirModalDetalle(dataItem)"
+                                          placement="top"
+                                          title="Detalle"
+                                          [disabled]="botonesGrilla"
+                                        >
+                                          <span
+                                            class="k-icon k-i-rows k-icon-20"
+                                          ></span>
+                                        </button>
+                                        <ng-container *ngIf="!botonProyectar">
+                                          <button
+                                          kendoButton
+                                          themeColor="inverse"
+                                          fillMode="solid"
+                                          rounded="large"
+                                          size="large"
+                                          class="p-2 me-1 ms-1"
+                                          container="body"
+                                          placement="top"
+                                          title="Enviar"
+                                          (click)="aprovarSolicitud(dataItem,rowIndex)"
+                                          [disabled]="botonesGrilla || dataItem.idArea!=idArea"
+                                        >
+                                          <span
+                                            class="k-icon k-i-upload k-icon-20"
+                                          ></span>
+                                        </button>
+                                        </ng-container>
+                                        <ng-container *ngIf="botonProyectar && accesoTotal">
+                                          <button
+                                          kendoButton
+                                            themeColor="error"
+                                            fillMode="solid"
+                                            rounded="large"
+                                            size="large"
+                                            class="p-2 me-1 ms-1"
+                                            container="body"
+                                            placement="top"
+                                            title="Rechazar"
+                                            (click)="confirmarRechazoSolicitud(dataItem,rowIndex)"
+                                            [disabled]="botonesGrilla"
+
+                                          >
+                                            <span
+                                              class="k-icon k-i-x-outline k-icon-20" style="font-size: 20px !important;"
+                                            ></span>
+                                          </button>
+                                        </ng-container>
+
+                                      </div>
+                                    </ng-template>
+                                  </kendo-grid-column>
+                                  <ng-template
+                                    kendoPagerTemplate
+                                    let-totalPages="totalPages"
+                                    let-currentPage="currentPage"
+                                    >
+                                      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                                      <kendo-pager-numeric-buttons
+                                        [buttonCount]="5"
+                                      ></kendo-pager-numeric-buttons>
+                                      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                                      <!-- <kendo-pager-input></kendo-pager-input> -->
+                                      <kendo-pager-info></kendo-pager-info>
+                                      <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                                    </ng-template>
+                                </kendo-grid>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+                <!-- <kendo-tabstrip-tab title="FUR PLANILLA">
+                  <ng-template kendoTabContent *loadOnDemand>
+                    <div class="row">
+                      <div class="col-12 toolbar-grid-integra"></div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-12 d-flex justify-content-end">
+                        <button kendoButton themeColor="primary"></button>
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-tabstrip-tab> -->
+              </kendo-tabstrip>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </diV>
+</div>
+
+<!-- Grilla COnfiguracion Fur -->
+
+<!--
+Modal Configuracion Fur -->
+
+<ng-template #modalConfiguracionFur let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      CONFIGURACION DE FUR
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body p-4" id="grillaAgendaTab">
+    <div class="k-loading-panel" *ngIf="loaderGeneral">
+      <div class="k-loading-panel-mask"></div>
+      <div class="k-loading-panel-wrapper">
+        <!-- tamano de loading -->
+        <mat-spinner diameter="50"></mat-spinner>
+        <div class="k-loading-panel-text fs-5 text-primary"></div>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-center mb-4">
+      <div class="col-12">
+        <div class="card-body k-form k-form-horizontal">
+          <form [formGroup]="">
+            <div class="row">
+              <div class="row my-2">
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label"> Periodo: </label>
+                    <kendo-textbox
+                      style="background-color: rgb(236, 236, 236)"
+                      [formControl]="inputPerido"
+                      class="d-flex"
+                      size="medium"
+                      [style.width.px]="300"
+                      [readonly]="true"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-md-5">
+                  <kendo-formfield orientation="horizontal">
+                    <label class="k-label"> Fecha Semilla: </label>
+                    <kendo-textbox
+                      style="background-color: rgb(236, 236, 236)"
+                      [formControl]="inputFechaSemilla"
+                      class="d-flex"
+                      size="medium"
+                      [style.width.px]="300"
+                      [readonly]="true"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+                <div class="col-md-1"></div>
+              </div>
+
+              <div class="row my-2">
+                <div class="col-md-1"></div>
+
+                <div class="col-md-5">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="nombre" class="k-label">
+                      <span
+                        >Nombre<span class="text-danger fw-bold"></span
+                      ></span>
+                    </label>
+                    <kendo-textbox
+                      #nombre
+                      [style.width.px]="300"
+                      [formControl]="inputNombre"
+                      placeholder=""
+                      [filterable]="true"
+                      [valuePrimitive]="true"
+                      style="background-color: rgb(254, 254, 254)"
+                      [readonly]="true"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-md-5">
+                  <kendo-formfield orientation="horizontal">
+                    <label [for]="codigo" class="k-label">
+                      <span
+                        >Codigo <span class="text-danger fw-bold"></span
+                      ></span>
+                    </label>
+                    <kendo-textbox
+                      #codigo
+                      [style.width.px]="300"
+                      [formControl]="inputCodigo"
+                      placeholder=""
+                      [filterable]="true"
+                      [valuePrimitive]="true"
+                      style="background-color: rgb(254, 254, 254)"
+                      [readonly]="true"
+                    >
+                    </kendo-textbox>
+                  </kendo-formfield>
+                </div>
+                <div class="col-md-1"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-color-material pb-0">
+            <h3 class="text-white mb-2">Detalle Proyeccion Fur</h3>
+          </div>
+          <div class="card-body p-4">
+            <div class="row">
+              <kendo-grid
+                style="max-height: 700px"
+                [kendoGridBinding]="gridConfiguracionDetalle.data"
+                [loading]="loaderConfiguracionDetalle"
+                [pageSize]="5"
+                [sortable]="true"
+                [reorderable]="true"
+                [resizable]="true"
+                filterable="menu"
+                [pageable]="true"
+                (add)="gridConfiguracionDetalle.addHandler($event)"
+                (cancel)="gridConfiguracionDetalle.cancelHandler($event)"
+                (save)="gridConfiguracionDetalle.saveHandler($event)"
+                (remove)="gridConfiguracionDetalle.removeHandler($event)"
+                (edit)="editHandlerDetalle($event)"
+
+                [selectable]="{
+                  checkboxOnly: true,
+                  mode: 'multiple'
+                }"
+                kendoGridSelectBy="id"
+                 [(selectedKeys)]="listaSeleccionDetalle"
+              >
+                <ng-template
+                  kendoGridToolbarTemplate
+                  class="bg-danger"
+                  $kendo-component-bg="#3f51b5"
+                >
+                  <button mat-raised-button
+                  style="background-color: rgb(104, 190, 175) !important;"
+                  (click)="abrilModalMontosTotales()"
+                  >
+                  <span class="material-symbols-outlined">
+                      payments
+                  </span>
+                      Ver montos totales
+                  </button>
+                  <button mat-raised-button
+                    style="background-color: rgb(0, 127, 131) !important;color:whitesmoke"
+                      (click)="excelexport.save()"
+                      >
+                      <span class="k-icon k-i-file-excel" style="font-size:23px;" ></span>
+                      Exportar a Excel
+                    </button>
+                    
+                    <kendo-excelexport 
+                    [data]="gridConfiguracionDetalle.data" 
+                    fileName="Detalle Proyección FUR.xlsx" #excelexport>
+                      <kendo-excelexport-column field="nombreEmpresa" title="Empresa">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="nombreSede" title="Sede">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="nombreCentroCosto" title="Centro de Costo">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="nombreProveedor" title="Razón Social">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="rucProveedor" title="RUC (Proveedor)">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="nombreMonedaPagoReal" title="Pago en Moneda Real">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="precioUnitario" title="Precio">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="cantidad" title="Cantidad">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="montoProyectado" title="Monto Proyectado">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="nombreFurTipoPedido" title="Tipo de FUR">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="descripcion" title="Desripcion">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="nombreFrecuencia" title="Frecuencia">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="ajusteNumeroSemana" title="Ajuste numero de Dias">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="fechaInicioConfiguracionVista" title="Fecha Inicio Funcionamiento">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="fechaFinConfiguracionVista" title="Fecha Fin Funcionamiento">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="usuarioCreacion" title="Usuario Creación">
+                      </kendo-excelexport-column>
+                      <kendo-excelexport-column field="usuarioSolicitud" title="Usuario Modificación">
+                      </kendo-excelexport-column>
+                    </kendo-excelexport>
+                  <ng-container *ngIf="detalleReadOnly && accesoTotal && checkbox">
+                    <button mat-raised-button
+                    color="warn"
+                    (click)="abrirModalEliminar()"
+                    >
+                    <span class="k-icon k-i-delete k-icon-20" style="font-size:20px;"></span>
+                        Eliminar Proyectados
+                    </button>
+                  </ng-container>
+                  
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <ng-container *ngIf="!detalleReadOnly">
+                    <button kendoGridAddCommand themeColor="success" icon="plus">
+                      Añadir
+                    </button>
+                  </ng-container>
+                </ng-template>
+                <ng-container *ngIf="checkbox">
+                  <kendo-grid-checkbox-column
+                  [width]="45"
+                  [headerClass]="{ 'text-center': true }"
+                  [class]="{ 'text-center': true }"
+                  [sticky]="true"
+                  >
+                    <ng-template kendoGridHeaderTemplate>
+                      <input
+                        type="checkbox"
+                        kendoCheckBox
+                        id="selectAllCheckboxId"
+                        kendoGridSelectAllCheckbox
+                        (selectAllChange)="onSelectAllChange($event)"
+                      />
+                      <label class="k-checkbox-label" for="selectAllCheckboxId"></label>
+                    </ng-template>
+                  </kendo-grid-checkbox-column>
+                </ng-container>
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Empresa"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="300"
+                  field="nombreEmpresa"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idEmpresa')"
+                      class="d-flex style-tam"
+                      size="small"
+                      [data]="listaEmpresa"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [defaultItem]="{idEmpresa:null,nombre:'Seleccionar'}"
+                      (selectionChange)="buscarCiudad($event, formGroup)"
+                      [required]="true"
+                      >
+                      <ng-template kendoDropDownListItemTemplate let-dataItem>
+                        <span style="font-size: x-small">{{
+                          dataItem.nombre
+                        }}</span>
+                      </ng-template>
+
+                    </kendo-dropdownlist>
+
+                  </ng-template>
+                  <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                >
+                <div style="font-size: x-small">
+                  {{(dataItem.nombreEmpresa)  }}
+                </div>
+
+                </ng-template>
+
+                </kendo-grid-column>
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Sede"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="150"
+                  field="nombreSede"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idSede')"
+                      class="d-flex style-tam"
+                      size="medium"
+                      [data]="listaCiudad"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [readonly]="true"
+                      [defaultItem]="{id:null,nombre:'Sin sede'}"
+                      [required]="true"
+                    >
+
+                    </kendo-dropdownlist>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{ dataItem.nombreSede }}
+                    </div>
+                  </ng-template>
+
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Centro de Costo"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="300"
+                  field="nombreCentroCosto"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idCentroCosto')"
+                      class="d-flex style-tam"
+                      size="small"
+                      [data]="listaCentroCosto"
+                      [valuePrimitive]="true"
+                      [defaultItem]="{
+                        nombreCentroCosto: '-Seleccione un Centro de Costo',
+                        idCentroCosto: null
+                      }"
+                      textField="nombreCentroCosto"
+                      [required]="true"
+                      valueField="idCentroCosto"
+                      (filterChange)="ObtenerCentroCosto($event)"
+                      [filterable]="true"
+
+
+                      >
+                      <ng-template kendoDropDownListItemTemplate let-dataItem>
+                        <span style="font-size: x-small">{{
+                          dataItem.nombreCentroCosto
+                        }}</span>
+                      </ng-template>
+
+                    </kendo-dropdownlist>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+
+                    <div style="font-size: x-small">
+                      {{ (dataItem.nombreCentroCosto) }}
+                    </div>
+
+                  </ng-template>
+                </kendo-grid-column>
+
+
+
+                <kendo-grid-column
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                title="Razón Social:"
+                headerClass="justify-content-center k-grid-header "
+                [width]="250"
+                field="nombreProveedor"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+                [virtual]="virtual"
+              >
+                <ng-template
+                  kendoGridEditTemplate
+                  let-dataItem="dataItem"
+                  let-formGroup="formGroup"
+                >
+                  <kendo-dropdownlist
+                    [formControl]="formGroup.get('idProveedor')"
+                    class="d-flex style-tam"
+                    size="small"
+                    [data]="itemRazonSocial"
+                    textField="razonSocial"
+                    valueField="idProveedor"
+                    [defaultItem]="{
+                      idProveedor: null,
+                      razonSocial: 'Seleccionar'
+                    }"
+                    [required]="true"
+                    [valuePrimitive]="true"
+                    [filterable]="true"
+                    (filterChange)="BuscarRazonSocial($event)"
+                    (selectionChange)="
+                      BuscarProductosByProveedor($event, formGroup)
+                    "
+                  >
+                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                      <span style="font-size: x-small">{{
+                        dataItem.razonSocial
+                      }}</span>
+                    </ng-template>
+                  </kendo-dropdownlist>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div style="font-size: x-small">
+                    {{ (dataItem.nombreProveedor) }}
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+
+
+
+              <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="RUC (Proveedor)"
+
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+                  field="rucProveedor"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <div style="font-size: x-small">
+                      {{ formGroup.get("rucProveedor").value }}
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{dataItem.rucProveedor }}
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Producto"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="200"
+                  field="nombreProducto"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idProducto')"
+                      class="d-flex style-tam"
+                      size="small"
+                      [data]="itemProducto"
+                      textField="nombreProducto"
+                      valueField="idProducto"
+                      [defaultItem]="{
+                        idProducto: null,
+                        nombreProducto: 'Seleccionar'
+                      }"
+                      [valuePrimitive]="true"
+                      (selectionChange)=" BuscarProductosbyMoneda($event, formGroup)"
+                      [required]="true"
+                    >
+                    <ng-template kendoDropDownListItemTemplate let-dataItem>
+                      <span style="font-size: x-small">{{
+                        dataItem.nombreProducto
+                      }}</span>
+                    </ng-template>
+                    </kendo-dropdownlist>
+                  </ng-template>
+
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{ dataItem.nombreProducto }}
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Pago en Moneda Real"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+                  field="nombreMonedaPagoReal"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idMonedaPagoReal')"
+                      class="d-flex style-tam"
+                      size="small"
+                      [data]="listaMoneda"
+                      textField="nombrePlural"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombrePlural: 'Seleccionar' }"
+                      [valuePrimitive]="true"
+                      [required]="true"
+                    >
+                      <ng-template kendoDropDownListItemTemplate let-dataItem>
+                        <span style="font-size: x-small">{{
+                          dataItem.nombrePlural
+                        }}</span>
+                      </ng-template>
+                    </kendo-dropdownlist>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{ dataItem.nombreMonedaPagoReal }}
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Precio"
+
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+                  field="precioUnitario"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+
+                >
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <div style="font-size: x-small">
+                    {{ formGroup.get("precioUnitario").value }}
+                  </div>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div style="font-size: x-small">
+                    {{(dataItem.precioUnitario) }}
+                  </div>
+                </ng-template>
+
+                </kendo-grid-column>
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Cantidad"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+                  field="cantidad"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <kendo-numerictextbox
+                  orientation="horizontal"
+                  class="d-flex style-tam"
+                  [formControl]="formGroup.get('cantidad')"
+                  [min]="1"
+                  [decimals]="2"
+                  [format]="'0.00'"
+                  [required]="true"
+                  [autoCorrect]="true"
+                  (valueChange)="calcularMontoProyectado($event,formGroup)"
+                >
+                </kendo-numerictextbox>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div style="font-size: x-small">
+                    {{(dataItem.cantidad) }}
+                  </div>
+                </ng-template>
+
+                </kendo-grid-column>
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Monto Proyectado"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+
+                  field="montoProyectado"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <div style="font-size: x-small">
+                    {{ formGroup.get("montoProyectado").value }}
+                  </div>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div style="font-size: x-small">
+                    {{(dataItem.montoProyectado) }}
+                  </div>
+                </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Tipo de FUR"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="160"
+                  field="nombreFurTipoPedido"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idFurTipoPedido')"
+                      class="d-flex style-tam"
+                      size="small"
+                      [data]="listaTipoFur"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [required]="true"
+                      [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{ dataItem.nombreFurTipoPedido }}
+                    </div>
+                  </ng-template>
+
+
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Desripcion"
+                  headerClass="justify-content-center k-grid-header "
+
+
+                  [width]="200"
+                  field="descripcion"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-textarea
+                      [formControl]="formGroup.get('descripcion')"
+                      class="border border-1"
+                      class="d-flex style-tam"
+                      [required]="true"
+                      [maxlength]="400"
+                    >
+                    </kendo-textarea>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{(dataItem.descripcion) }}
+                    </div>
+                  </ng-template>
+
+
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Frecuencia"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+                  field="nombreFrecuencia"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                    <kendo-dropdownlist
+                      [formControl]="formGroup.get('idFrecuencia')"
+                      class="d-flex style-tam"
+                      size="small"
+                      [data]="listaFrecuencia"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [required]="true"
+                      [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                    >
+                    </kendo-dropdownlist>
+                  </ng-template>
+
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{ dataItem.nombreFrecuencia }}
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Ajuste numero de Dias"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+                  field="ajusteNumeroSemana"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+
+                >
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-dataItem="dataItem"
+                    let-formGroup="formGroup"
+                >
+                  <kendo-numerictextbox
+                  class="d-flex style-tam"
+
+                  size="small"
+                  [formControl]="formGroup.get('ajusteNumeroSemana')"
+                  [min]="0"
+                  [max]="100"
+                  [format]="'0'"
+                  [decimals]="0"
+                  [required]="true"
+                  [autoCorrect]="true"
+                >
+                </kendo-numerictextbox>
+
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{(dataItem.ajusteNumeroSemana) }}
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Fecha Inicio Funcionamiento"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="170"
+                  field="fechaInicioConfiguracionVista"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                    <kendo-grid-date-filter-menu
+                        [column]="column"
+                        [format]="'dd-MM-yyyy'"
+                        [filter]="filter"
+                        [placeholder]="'dia-mes-año'"
+                        [filterService]="filterService"
+                        >
+                    </kendo-grid-date-filter-menu>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-dataItem="dataItem"
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-datepicker
+                      [format]="'dd-MM-yyyy'"
+                      [placeholder]="'dia-mes-año'"
+                      class="d-flex style-tam"
+                      [size]="'small'"
+                      calendarType="classic"
+                      [formControl]="formGroup.get('fechaInicioConfiguracionVista')"
+                      [required]="true"
+                      calendarType="classic"
+                    >
+                    </kendo-datepicker>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{ finanzasService.fechaTemplate(dataItem.fechaInicioConfiguracionVista) }}
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Fecha Fin Funcionamiento"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="170"
+                  field="fechaFinConfiguracionVista"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                    <kendo-grid-date-filter-menu
+                        [column]="column"
+                        [format]="'dd-MM-yyyy'"
+                        [filter]="filter"
+                        [placeholder]="'dia-mes-año'"
+                        [filterService]="filterService"
+                        >
+                    </kendo-grid-date-filter-menu>
+                  </ng-template>
+                  <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                    <kendo-grid-date-filter-menu
+                        [column]="column"
+                        [filter]="filter"
+                        [filterService]="filterService"
+                        >
+                    </kendo-grid-date-filter-menu>
+                  </ng-template>
+                  <ng-template
+                    kendoGridEditTemplate
+                    let-dataItem="dataItem"
+                    let-formGroup="formGroup"
+                  >
+                    <kendo-datepicker
+                      format="dd-MM-yyyy"
+                      [placeholder]="'dia-mes-año'"
+                      class="d-flex style-tam"
+                      [size]="'small'"
+                      [formControl]="formGroup.get('fechaFinConfiguracionVista')"
+                      [required]="true"
+                      calendarType="classic"
+                    >
+                    </kendo-datepicker>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div style="font-size: x-small">
+                      {{ finanzasService.fechaTemplate(dataItem.fechaFinConfiguracionVista) }}
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                  title="Usuario Creación"
+
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="120"
+                  field="usuarioCreacion"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+
+                >
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <div style="font-size: x-small">
+                    {{ formGroup.get("usuarioCreacion").value }}
+                  </div>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div style="font-size: x-small">
+                    {{(dataItem.usuarioCreacion) }}
+                  </div>
+                </ng-template>
+
+                </kendo-grid-column>
+                <kendo-grid-column
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                title="Usuario Modificación"
+
+                headerClass="justify-content-center k-grid-header "
+                [width]="120"
+                field="usuarioSolicitud"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+
+              >
+              <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                <div style="font-size: x-small">
+                  {{ formGroup.get("usuarioSolicitud").value }}
+                </div>
+              </ng-template>
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: x-small">
+                  {{(dataItem.usuarioSolicitud) }}
+                </div>
+              </ng-template>
+
+              </kendo-grid-column>
+
+                <ng-container *ngIf="!detalleReadOnly">
+                  <kendo-grid-column
+                    [sticky]="true"
+                    title="Acciones"
+                    [width]="120"
+                    headerClass="justify-content-center CPC-clasesilla "
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white',
+                      'font-size': 'x-small'
+                    }"
+                  >
+                    <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem="dataItem"
+                      let-isNew="isNew"
+                      let-rowIndex="rowIndex"
+                    >
+                      <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                        <button
+                        
+                          kendoGridEditCommand
+                          themeColor="warning"
+                          fillMode="solid"
+                          rounded="large"
+                          size="large"
+                          class="p-2 me-1 ms-1"
+                          container="body"
+                          placement="top"
+                          title="Editar"
+                        >
+                          <span class="k-icon k-i-edit k-icon-20"></span>
+                        </button>
+                        <button
+                          kendoGridSaveCommand
+                          [disabled]="gridConfiguracionDetalle.formGroup?.invalid"
+                          themeColor="primary"
+                          fillMode="solid"
+                          rounded="large"
+                          size="large"
+                          class="p-2 me-1 ms-1"
+                          container="body"
+                          placement="top"
+                          title="Guardar"
+                        >
+                          <span class="k-icon k-i-save k-icon-20"></span>
+                        </button>
+                        <button
+                          kendoGridCancelCommand
+                          themeColor="secondary"
+                          fillMode="solid"
+                          rounded="large"
+                          size="large"
+                          class="p-2 me-1 ms-1"
+                          container="body"
+                          placement="top"
+                          title="Cancelar"
+                        >
+                          <span class="k-icon k-i-cancel k-icon-20"></span>
+                        </button>
+                        <button
+                          kendoGridRemoveCommand
+                          themeColor="error"
+                          fillMode="solid"
+                          rounded="large"
+                          size="large"
+                          class="p-2 me-1 ms-1"
+                          container="body"
+                          placement="top"
+                          title="Eliminar"
+                        >
+                          <span class="k-icon k-i-delete k-icon-20"></span>
+                        </button>
+                      </div>
+                    </ng-template>
+                  </kendo-grid-column>
+                </ng-container>
+                <ng-template
+                            kendoPagerTemplate
+                            let-totalPages="totalPages"
+                            let-currentPage="currentPage"
+                            >
+                              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                              <kendo-pager-numeric-buttons
+                                [buttonCount]="5"
+                              ></kendo-pager-numeric-buttons>
+                              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                              <!-- <kendo-pager-input></kendo-pager-input> -->
+                              <kendo-pager-info></kendo-pager-info>
+                              <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                            </ng-template>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div>
+        <button
+        mat-raised-button
+        color="warn"
+        (click)="modal.close('Close click')"
+        >
+        Salir
+        </button>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #modalMontosTotales let-modal>
+  <div class="modal-header">
+      <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+          Montos Totales a Proyectar
+      </h2>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+          <kendo-grid
+          [kendoGridBinding]="listaMontosTotales"
+          [loading]="false"
+          [pageSize]="5"
+          [sortable]="true"
+          [reorderable]="true"
+          [resizable]="true"
+          [columnMenu]="{ filter: true }"
+          [pageable]="{
+            buttonCount: 5,
+            info: true,
+            type: 'numeric',
+            pageSizes: true,
+            previousNext: true,
+            position: 'bottom'
+          }"
+
+          >
+
+              <kendo-grid-column
+                title="Moneda"
+                headerClass="justify-content-center k-grid-header "
+                [width]="200"
+                field="nombreMoneda"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Monto Total Proyectado"
+                headerClass="justify-content-center k-grid-header "
+                [width]="200"
+                field="total"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              >
+              </kendo-grid-column>
+              <ng-template kendoGridNoRecordsTemplate>
+                  <div>
+                    <kendo-badge-container>
+                      <kendo-icon name="cloud" size="large"></kendo-icon>
+                      <kendo-badge position="inside">
+                        <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                      </kendo-badge>
+                    </kendo-badge-container>
+                  </div>
+                  <p>No hay registros cargados!</p>
+              </ng-template>
+              
+          </kendo-grid>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div>
+          <button
+          mat-raised-button
+          color="warn"
+          (click)="modal.close('Close click')"
+          >
+          Salir
+          </button>
+      </div>
+    </div>
+</ng-template>
+
+
+<ng-template #modalEliminarProyectados let-modal>
+  <div class="modal-header">
+      <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+          Eliminar Proyectados
+      </h2>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form class="k-form" [formGroup]="formEliminarProyectado" style="
+      padding-left: 5%;"   >
+       <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div  style="padding:0%">
+            <label   class="k-label" style="margin-bottom: 0.5rem;">
+                <span
+                  >Rango de fechas Elminación de Proyección:</span
+                >
+            </label>
+          </div>
+        </div>
+        <div class="row" >
+          <kendo-daterange
+          [incompleteDateValidation]="true"
+          >
+              <div class="col-md-5">
+                  <kendo-dateinput
+                  kendoDateRangeStartInput
+                  size="small"
+                  formControlName="inicio"
+                  [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                  placeholder="Inicio"
+                  [incompleteDateValidation]="true"
+                  ></kendo-dateinput>
+              </div>
+              <div class="col-md-2" style="padding: 0%;width: 5%;text-align: center;"><p style="
+                  margin-bottom: 5px;"><strong>—</strong></p></div>
+              <div class="col-md-5">
+                  <kendo-dateinput
+                  kendoDateRangeEndInput
+                  size="small"
+                  placeholder="Fin"
+                  formControlName="fin"
+                  [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                  [incompleteDateValidation]="true"
+                  ></kendo-dateinput>
+              </div>
+              
+              
+          </kendo-daterange>
+        </div>
+       </fieldset>  
+      </form>
+          
+      
+    </div>
+    <div class="modal-footer">
+      <div>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="eliminarProyecciones(modal)"
+          >
+          Continuar
+          </button>
+      </div>
+      <div>
+          <button
+          mat-raised-button
+          color="warn"
+          (click)="modal.close('Close click')"
+          >
+          Salir
+          </button>
+      </div>
+    </div>
+</ng-template>

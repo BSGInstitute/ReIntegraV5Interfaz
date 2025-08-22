@@ -1,0 +1,516 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">(M) Courier</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              kendoGrid
+              [kendoGridBinding]="gridCourier.data$ | async"
+              [loading]="gridCourier.loading"
+              (remove)="gridCourier.removeHandler($event)"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="0"
+              [pageSize]="20"
+              filterable="menu"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <button kendoButton icon="reload" fillMode="flat" themeColor="secondary" (click)="obtener()"></button>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  themeColor="primary"
+                  icon="plus"
+                  (click)="abrirModalCourier(modalCourier)"
+                >
+                  Agregar
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="nombre"
+                title="Courier"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="pais"
+                title="País Remitente"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="ciudad"
+                title="Ciudad Remitente"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="url"
+                title="Pagina Web"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Acciones"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNewCourier"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- kendoGridEditCommand -->
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      (click)="abrirModalCourier(modalCourier, dataItem)"
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-delete k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalCourier let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNewCourier ? "Registrar Courier" : "Modificar Courier" }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formCourier">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="nombre"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Nombre <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #nombre formControlName="nombre"> </kendo-textbox>
+            <kendo-formerror
+              >EL Dato es requerido.
+            </kendo-formerror>
+          </kendo-formfield>
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="url"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Pagina Web <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #url formControlName="url"> </kendo-textbox>
+            <kendo-formerror
+              >EL Dato es requerido.
+            </kendo-formerror>
+          </kendo-formfield>
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="telefono"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Teléfono <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #telefono formControlName="telefono">
+            </kendo-textbox>
+            <kendo-formerror
+              >EL Dato es requerido, ponga solo numeros continuos.
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label d-flex align-items-start text-start pt-0">
+              País Remitente:
+            </label>
+            <kendo-dropdownlist
+              #idPais
+              formControlName="idPais"
+              [data]="comboPais"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{
+                id: null,
+                nombre: 'Seleccionar...'
+              }"
+              [valuePrimitive]="true"
+              (valueChange)="cargarCiudades($event, false)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label d-flex align-items-start text-start pt-0">
+              Ciudad Remitente:
+            </label>
+            <kendo-dropdownlist
+              #idCiudad
+              formControlName="idCiudad"
+              [data]="comboCiudad"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{
+                id: null,
+                nombre: 'Seleccionar...'
+              }"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="direccion"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Direccion <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #direccion formControlName="direccion">
+            </kendo-textbox>
+            <kendo-formerror>Direccion: </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+    <ng-container *ngIf="!isNewCourier">
+      <div class="row">
+        <div class="col-12">
+          <kendo-grid
+            [kendoGridBinding]="gridCourierDetalle.data"
+            [loading]="gridCourierDetalle.loading"
+            (cancel)="gridCourierDetalle.cancelHandler($event)"
+            (save)="gridCourierDetalle.saveHandler($event)"
+            (remove)="gridCourierDetalle.removeHandler($event)"
+            (add)="gridCourierDetalle.addHandler($event)"
+            (edit)="gridCourierDetalle.editHandler($event)"
+            [resizable]="true"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+            [skip]="0"
+            [pageSize]="5"
+            filterable="menu"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <button kendoButton icon="reload" fillMode="flat" themeColor="secondary"  (click)="obtenerDetalleCourier()"></button>
+              Detalles de Courier
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <button
+                kendoButton
+                themeColor="primary"
+                icon="plus"
+                (click)="abrirModalCourierDetalle(modalCourierDetalle)"
+              >
+                Agregar
+              </button>
+            </ng-template>
+            <kendo-grid-column
+              field="pais"
+              title="Pais Consignado"
+              headerClass="header-grid-integra"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="ciudad"
+              title="Ciudad Consignada"
+              headerClass="header-grid-integra"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="direccion"
+              title="Dirección"
+              headerClass="header-grid-integra"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+              field="telefono"
+              title="Telefono"
+              headerClass="header-grid-integra"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+              field="tiempoEnvio"
+              title="Tiempo Envio"
+              headerClass="header-grid-integra"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-command-column
+              title="Opciones"
+              [width]="150"
+              [headerClass]="'header-grid-integra'"
+            >
+              <ng-template
+                kendoGridCellTemplate
+                let-dataItem="dataItem"
+                let-isNew="isNew"
+              >
+                <div class="w-100 d-flex justify-content-center">
+                  <button
+                    kendoGridRemoveCommand
+                    themeColor="error"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="removeDetalle"
+                  >
+                    <span class="k-icon k-i-delete k-icon-20"></span>
+                  </button>
+                  <button
+                    kendoGridSaveCommand
+                    themeColor="primary"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    [disabled]="gridCourierDetalle.formGroup?.invalid"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Guardar"
+                  >
+                    <span class="k-icon k-i-save k-icon-20"></span>
+                  </button>
+                  <button
+                    kendoGridCancelCommand
+                    themeColor="secondary"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Cancelar"
+                  >
+                    <span class="k-icon k-i-cancel k-icon-20"></span>
+                  </button>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 justify-content-end">
+      <button
+        *ngIf="!isNewCourier"
+        themeColor="success"
+        size="medium"
+        kendoButton
+        (click)="actualizarCourier()"
+      >
+        Actualizar
+      </button>
+      <button
+        *ngIf="isNewCourier"
+        themeColor="success"
+        size="medium"
+        kendoButton
+        (click)="insertarCourier()"
+      >
+        Insertar
+      </button>
+
+      <button
+        themeColor="error"
+        size="medium"
+        icon="close"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>
+
+<ng-template #modalCourierDetalle let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registro Detalle del Courier
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      kendoButton
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formCourierDetalle">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label d-flex align-items-start text-start pt-0">
+              País Remitente:
+            </label>
+            <kendo-dropdownlist
+              #idPais
+              formControlName="idPais"
+              [data]="comboPais"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{
+                id: null,
+                nombre: 'Seleccionar...'
+              }"
+              [valuePrimitive]="true"
+              (valueChange)="cargarCiudades($event, true)"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror> {{ getErrorDetalleMessage("idPais") }} </kendo-formerror>
+          </kendo-formfield>
+
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label d-flex align-items-start text-start pt-0">
+              Ciudad Remitente:
+            </label>
+            <kendo-dropdownlist
+              #idCiudad
+              formControlName="idCiudad"
+              [data]="comboCiudadDetalle"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{
+                id: null,
+                nombre: 'Seleccionar...'
+              }"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>
+              {{ getErrorDetalleMessage("idCiudad") }}
+            </kendo-formerror>
+          </kendo-formfield>
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="direccion"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Direccion <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #direccion formControlName="direccion">
+            </kendo-textbox>
+            <kendo-formerror>
+              {{ getErrorDetalleMessage("direccion") }}
+            </kendo-formerror>
+          </kendo-formfield>
+
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="telefono"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Teléfono <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #telefono formControlName="telefono">
+            </kendo-textbox>
+            <kendo-formerror>
+              {{ getErrorDetalleMessage("telefono") }}
+            </kendo-formerror>
+          </kendo-formfield>
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="tiempoEnvio"
+              class="k-label d-flex align-items-start text-start pt-0"
+              filter="numeric"
+            >
+              <span> Tiempo Envio <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-numerictextbox #tiempoEnvio formControlName="tiempoEnvio">
+            </kendo-numerictextbox>
+            <kendo-formerror>
+              {{ getErrorDetalleMessage("tiempoEnvio") }}
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 justify-content-end">
+      <button
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="insertarCourierDetalle()"
+      >
+        Registrar
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        icon="close"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>

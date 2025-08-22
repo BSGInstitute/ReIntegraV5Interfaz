@@ -1,0 +1,213 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">(C) Aprobación de perfiles</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAprobacionPerfiles">
+          <div class="col-12">
+            <div class="d-flex justify-content-end mb-3">
+              <button
+                (click)="
+                  abrirModalAprobacionPerfiles(
+                    modalModificarAprobacionPerfiles,
+                    true,
+                    null
+                  )
+                "
+                class="btn btn-primary"
+              >
+                Agregar
+              </button>
+            </div>
+            <kendo-grid
+              [kendoGridBinding]="gridAprobacionPerfiles.data"
+              [data]="gridAprobacionPerfiles.data"
+              [loading]="gridAprobacionPerfiles.loading"
+              (remove)="gridAprobacionPerfiles.removeHandler($event)"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="0"
+              [pageSize]="15"
+              filterable="menu"
+              id="gridAprobacionPerfiles"
+            >
+              <kendo-grid-column
+                field="personal"
+                title="Personal"
+                [headerClass]="'header-grid-integra'"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="puestoTrabajo"
+                title="Puesto de Trabajo"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <ul>
+                    <li *ngFor="let puestoTrabajo of dataItem.puestoTrabajo">
+                      {{ puestoTrabajo }}
+                    </li>
+                  </ul>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-command-column title="Opciones" [width]="250"    [headerClass]="'header-grid-integra'">
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                      (click)="
+                        abrirModalAprobacionPerfiles(
+                          modalModificarAprobacionPerfiles,
+                          false,
+                          dataItem
+                        )
+                      "
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-delete k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modificador -->
+<ng-template #modalModificarAprobacionPerfiles let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Modificar Aprobacion de Perfiles
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+        <form [formGroup]="formAprobacionPerfiles">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+               
+                    <label [for]="personal" class="d-flex align-items-start">
+                      <span
+                        ><b>Personal</b
+                        ><strong class="text-danger">*</strong>:</span
+                      >
+                    </label>
+                
+                    <kendo-multiselect
+                      #personal
+                      [data]="combo.listaPersonal"
+                      textField="nombreCompleto"
+                      valueField="id"
+                      formControlName="idPersonal"
+                      [filterable]="true"
+                      [kendoDropDownFilter]="filterSettings"
+                      [valuePrimitive]="true"
+                      placeholder="<Seleccione Personal>"
+                    ></kendo-multiselect>
+                 
+              </kendo-formfield>
+            </div>
+            <br />
+            <div class="col-sm-12 col-md-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+              
+                    <label
+                      [for]="puestoTrabajo"
+                      class="d-flex align-items-start"
+                    >
+                      <span
+                        ><b>Puesto Trabajo</b
+                        ><strong class="text-danger">*</strong>:</span
+                      >
+                    </label>
+                    <kendo-multiselect
+                      #puestoTrabajo
+                      [filterable]="true"
+                      [data]="combo.listaPuestoTrabajo"
+                      textField="nombre"
+                      valueField="id"
+                      formControlName="idPuestoTrabajo"
+                      [kendoDropDownFilter]="filterSettings"
+                      [valuePrimitive]="true"
+                      placeholder="<Seleccione Puesto de Trabajo>"
+                    ></kendo-multiselect>
+                
+              </kendo-formfield>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        class="btn btn-primary"
+        *ngIf="isNew"
+        style="color: white"
+        (click)="guardarAprobacionPerfiles()"
+      >
+        Guardar
+      </button>
+      <button
+        class="btn btn-primary"
+        *ngIf="!isNew"
+        style="color: white"
+        (click)="actualizarAprobacionPerfiles()"
+      >
+        Actualizar
+      </button>
+      <a
+        class="btn btn-danger"
+        id=""
+        style="color: white"
+        data-dismiss="modal"
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </a>
+    </div>
+  </div>
+</ng-template>

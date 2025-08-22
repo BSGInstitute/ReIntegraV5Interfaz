@@ -1,0 +1,240 @@
+
+<ng-template #modalProveedorCampaniaIntegra let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? 'Nuevo Proveedor Campania Integra'  : 'Modificar Campania Integra'}}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formProveedorCampaniaIntegra">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombre" class="k-label">
+                <span>Nombre <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-textbox
+                #nombre
+                size="medium"
+                placeholder="Nombre"
+                formControlName="nombre"
+                [clearButton]="true"
+                [showSuccessIcon]="getShowSuccessIcon('nombre')"
+                [successIcon]="successIcon"
+                showErrorIcon="initial"
+                inputValidSpaceDir
+              >
+              </kendo-textbox>
+              <kendo-formhint
+                >Nombre de Proveedor Campania Integra</kendo-formhint
+              >
+              <kendo-formerror> {{ getErrorMessage("nombre") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12 checkbox-align-center">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="pordefecto"
+                text="Por Defecto"
+              ></kendo-label>
+              <div class="h-100 d-flex align-items-center">
+                <input
+                  #pordefecto
+                  formControlName="porDefecto"
+                  type="checkbox"
+                  size="medium"
+                  rounded="medium"
+                  kendoCheckBox
+                />
+              </div>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="crearProveedorCampaniaIntegra()"
+      >
+        Guardar
+      </button>
+      <button
+        kendoButton
+        *ngIf="!isNew"
+        themeColor="tertiary"
+        (click)="actualizarProveedorCampaniaIntegra()"
+      >
+        Actualizar
+      </button>
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Proveedor Campania integra</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <ng-template
+              #cellTemplateGridRetencion
+              let-dataItem="dataItem"
+              let-field="field"
+              let-itemValue="itemValue"
+            >
+              <ng-container
+                *ngIf="field == 'fechaModificacion'; else gridEntFinDefault"
+              >
+                {{ itemValue | date: "dd-MM-yyyy" }}
+              </ng-container>
+
+              <ng-template #gridEntFinDefault>
+                {{ itemValue }}
+              </ng-template>
+            </ng-template>
+              <!-- <k-grid-edit
+                [gridData]="listaProveedorCamapaniaIntegra"
+                [loader]="loaderGrid"
+                [columns]="gridProveedorCamapaniaIntegra.columns"
+                [commands]="gridProveedorCamapaniaIntegra.comands"
+                [readOnlyColumns]="gridProveedorCamapaniaIntegra.readOnlyColumns"
+                [gridConfig]="gridProveedorCamapaniaIntegra.gridConfig"
+                [gridState]="gridProveedorCamapaniaIntegra.gridState"
+                [commandAdd]="'external'"
+                [commandEdit]="'external'"
+                [cellTemplateRef]="cellTemplateGridRetencion"
+                (OnGridEvents)="gridEventsProveedorCampaniaIntegra($event)"
+              >
+              </k-grid-edit> -->
+
+              <kendo-grid
+              [kendoGridBinding]="listaProveedorCamapaniaIntegra"
+              [pageSize]="10"
+              [sortable]="true"
+              [filterable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+            }"
+              >
+
+              <ng-template kendoGridToolbarTemplate>
+                <button
+                  kendoButton
+                  icon="reload"
+                  fillMode="flat"
+                  themeColor="secondary"
+                  (click)="gridEventsProveedorCampaniaIntegra('reload', null, null, null)"
+                ></button>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  [themeColor]="'primary'"
+                  icon="plus"
+                  (click)="gridEventsProveedorCampaniaIntegra('add', true, null, null)"
+                >
+                  Agregar
+                </button>
+              </ng-template>
+              <kendo-grid-column
+              field="id"
+              title="ID"
+              [filterable]="true"
+            >
+            </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombre"
+                  title="Nombre"
+                  [filterable]="true"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="fechaModificacion"
+                  title="Fecha Modificacion"
+                  [filterable]="true"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-command-column title="" [width]="150">
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-isNew="isNew"
+                    let-dataItem="dataItem"
+                    let-rowindex="rowindex"
+                  >
+                    <div class="w-100 d-flex justify-content-center">
+                      <button
+                        kendoButton
+                        themeColor="warning"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Editar"
+                        (click)="gridEventsProveedorCampaniaIntegra('edit', false, dataItem, rowindex)"
+                      >
+                        <span class="k-icon k-i-edit k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoButton
+                        themeColor="error"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        s
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Eliminar"
+                        (click)="gridEventsProveedorCampaniaIntegra('remove', null, dataItem, rowindex)"
+                      >
+                        <span class="k-icon k-i-close k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

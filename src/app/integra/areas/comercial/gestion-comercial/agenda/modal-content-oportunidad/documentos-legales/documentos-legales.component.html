@@ -1,0 +1,163 @@
+<div class="content">
+  <div class="card">
+    <div class="card-header cabecera_tab my-4">
+      <div
+        class="panel-title"
+        style="
+          text-align: center;
+          margin-top: 0;
+          margin-bottom: 0;
+          font-size: 16px;
+          color: inherit;
+          font-weight: bold;
+        "
+      >
+        Documentos Legales de BSG Institute
+      </div>
+    </div>
+    <div class="card-body">
+      <div
+        class="alert alert-warning py-2"
+        role="alert"
+        *ngIf="showMensajeAlerta"
+      >
+        <fa-icon [icon]="['fas', 'circle-info']"></fa-icon>
+        No existen documentos legales
+      </div>
+      <kendo-grid
+        [kendoGridBinding]="gridDocumentosLegales.data"
+        [loading]="gridDocumentosLegales.loading"
+        [resizable]="true"
+        [pageable]="{
+          buttonCount: 5,
+          info: true,
+          type: 'numeric',
+          pageSizes: true,
+          previousNext: true,
+          position: 'bottom'
+        }"
+        [pageSize]="5"
+        [height]="700"
+      >
+        <kendo-grid-column
+          field="nombre"
+          title="Documento"
+          [width]="150"
+          [filterable]="true"
+          headerClass="header-grid-integra"
+        >
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          field="descripcion"
+          title="Descripcion"
+          [width]="200"
+          [filterable]="true"
+          headerClass="header-grid-integra"
+        >
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="pais"
+          title="Pais"
+          [width]="100"
+          [filterable]="true"
+          headerClass="header-grid-integra"
+        >
+        </kendo-grid-column>
+        <kendo-grid-command-column
+          title="Opciones"
+          [width]="70"
+          headerClass="grid-documento-legal"
+          headerClass="header-grid-integra"
+        >
+          <ng-template
+            kendoGridCellTemplate
+            let-isNew=" isNew"
+            let-dataItem="dataItem"
+          >
+            <div class="w-100 d-flex justify-content-center">
+              <button
+                kendoButton
+                themeColor="primary"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="p-2 me-1 ms-1"
+                container="body"
+                placement="top"
+                (click)="verDocumentoLegal(modalVerDocumento, dataItem)"
+                ngbTooltip="Ver Documento"
+              >
+                <span class="k-icon k-i-eye k-icon-20"></span>
+              </button>
+              <button
+                kendoButton
+                themeColor="secondary"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="p-2 me-1 ms-1"
+                container="body"
+                placement="top"
+                (click)="descargarDocumentoLegal(dataItem)"
+                ngbTooltip="Descargar Documento"
+              >
+                <span class="k-icon k-i-download k-icon-20"></span>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalVerDocumento let-modal>
+  <div class="modal-header">
+    <h3 class="modal-title mb-0" style="color: #2e6ea6">
+      {{ documentoLegalTemp.nombre }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-sm-12 col-md-12">
+        <div id="documentosLegalService.mostrarImg"></div>
+        <!-- <pdf-viewer [src]="documentosLegalService.url2"
+          [original-size]="false"
+        ></pdf-viewer> -->
+        <object
+          *ngIf="showPdf"
+          type="application/pdf"
+          id="verDocumentoLegalPDF"
+          [data]="documentoLegalTemp.urlSanitize"
+          width="100%"
+          height="500"
+        ></object>
+        <img
+          *ngIf="!showPdf"
+          [src]="documentoLegalTemp.urlSanitize"
+          alt=""
+          id="verDocumentoLegalIMG"
+          class="img-fluid"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

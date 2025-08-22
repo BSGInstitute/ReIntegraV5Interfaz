@@ -1,0 +1,423 @@
+<div class="card mt-3">
+  <div class="card-title cabeceras">
+    <h2 class="m-3">Lista de Postulantes</h2>
+  </div>
+  <div card-body>
+    <kendo-grid
+      [loading]="gridDatosPostulante.loading"
+      [data]="gridDatosPostulante.view"
+      [sortable]="true"
+      [resizable]="true"
+      [pageable]="{
+        buttonCount: 10,
+        info: true,
+        type: 'numeric',
+        pageSizes: true,
+        previousNext: true,
+        position: 'bottom'
+      }"
+      [skip]="gridDatosPostulante.gridState.skip"
+      [pageSize]="gridDatosPostulante.gridState.take"
+      kendoGridSelectBy="idPostulanteProcesoSeleccion"
+      [(selectedKeys)]="mySelection"
+      [sort]="gridDatosPostulante.gridState.sort"
+      [filter]="gridDatosPostulante.gridState.filter"
+      (dataStateChange)="onStateChange($event)"
+      [selectable]="{
+        checkboxOnly: true,
+        mode: 'multiple'
+      }"
+      [filterable]="true"
+      filterable="menu"
+      (filterChange)="filterChange($event)"
+      (selectedKeysChange)="ControlarBotones()"
+      [showOperators]="true"
+    >
+      <ng-template kendoGridToolbarTemplate class="toolbar-grid-integra">
+        <button
+          kendoButton
+          themeColor="success"
+          (click)="abrirModalAgregarPostulante()"
+        >
+          <fa-icon
+            [icon]="['fas', 'plus']"
+            [size]="'lg'"
+            class="text-white"
+          ></fa-icon
+          > Añadir
+        </button>
+        <button
+          kendoButton
+          [disabled]="BtnBool"
+          themeColor="success"
+          (click)="abrirModalContactoPostulante(mySelection, 'email')"
+        >
+          Enviar E-mail
+        </button>
+        <button
+          kendoButton
+          [disabled]="BtnBool"
+          themeColor="success"
+          (click)="abrirModalContactoPostulante(mySelection, 'whatsapp')"
+        >
+          Enviar Whatsapp
+        </button>
+        <kendo-grid-spacer></kendo-grid-spacer>
+        <button
+          kendoButton
+          themeColor="success"
+          class="buton-excel"
+          (click)="abrirModalImportacionDePostulantes()"
+        >
+          <span class="k-icon k-i-excel"></span> Importar desde Excel
+        </button>
+      </ng-template>
+      <kendo-grid-checkbox-column
+        [headerStyle]="colorColumnasEstaticas"
+        [showSelectAll]="true"
+        [resizable]="false"
+        [width]="45"
+      >
+      </kendo-grid-checkbox-column>
+      <!-- <ng-template kendoGridToolbarTemplate>
+        <kendo-grid-spacer></kendo-grid-spacer>
+      </ng-template> -->
+      <kendo-grid-column
+        field="nombre"
+        title="Nombres"
+        headerClass="header-grid-integra"
+        [width]="150"
+        [filterable]="true"
+        [hidden]="false"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="apellidoPaterno"
+        title="Apellido Paterno"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="apellidoMaterno"
+        title="Apellido Materno"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idTipoDocumento"
+        title="Tipo de Documento"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ obtenerTipoDocumentoPorID(dataItem.idTipoDocumento) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="nroDocumento"
+        title="N° de Documento"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="celular"
+        title="Celular"
+        headerClass="header-grid-integra"
+        [width]="125"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idPais"
+        title="Pais"
+        headerClass="header-grid-integra"
+        [width]="64"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ obtenerNombrePaisPorId(dataItem.idPais) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idCiudad"
+        title="Ciudad"
+        headerClass="header-grid-integra"
+        [width]="110"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ obtenerNombreCiudadPorId(dataItem.idCiudad) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="email"
+        title="Email"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="procesoSeleccion"
+        title="Proceso Selección"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idEstadoProcesoSeleccion"
+        title="Estado Proceso Selección"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            obtenerNombreEstadoProcesoSeleccionPorId(
+              dataItem.idEstadoProcesoSeleccion
+            )
+          }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="fechaEnvioAccesos"
+        title="Fecha de Envio Accesos"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            dataItem.fechaEnvioAccesos
+              ? (dataItem.fechaEnvioAccesos | date : "dd-MM-YYYY")
+              : "Por enviar accesos"
+          }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="fechaRendicionExamen"
+        title="Fecha Examen"
+        headerClass="header-grid-integra"
+        [width]="150"
+        filter="date"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            dataItem.fechaRendicionExamen
+              ? (dataItem.fechaRendicionExamen | date : "dd-MM-YYYY")
+              : "Por rendir Examen"
+          }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idProcesoSeleccionEtapa"
+        title="Etapa Proceso Selección"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            obtenerNombreEtapaProcesoSeleccionPorId(
+              dataItem.idProcesoSeleccionEtapa
+            )
+          }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="idEstadoEtapaProcesoSeleccion"
+        title="Estado Etapa Proceso Selección"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            obtenerNombreEstadoEtapaProcesoSeleccionPorId(
+              dataItem.idEstadoEtapaProcesoSeleccion
+            )
+          }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- SE comento por peticion de GP -->
+      <!-- <kendo-grid-column
+        field="idRespuestas"
+        title="Factor Desaprobatorio"
+        headerClass="header-grid-integra"
+        [width]="200"
+
+      > -->
+      <!-- <ng-template kendoGridCellTemplate let-dataItem> -->
+      <!-- {{ obtenerNombreFactorDesaprovatorioPorId(dataItem.idRespuestas) }} -->
+      <!-- <span
+            [innerHTML]="
+              obtenerNombreFactorDesaprovatorioPorId(dataItem.idRespuestas)
+            "
+          ></span> -->
+      <!-- </ng-template>
+      </kendo-grid-column> -->
+
+      <!-- <kendo-grid-column
+        field=""
+        title="Factor Desaprovatorio"
+        headerClass="header-grid-integra"
+        [width]="150"
+
+        filter="date"
+      >
+      </kendo-grid-column> -->
+      <kendo-grid-column
+        field="idPostulanteNivelPotencial"
+        title="Potencial Proceso de Seleccion"
+        headerClass="header-grid-integra"
+        [width]="100"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            obtenerNombrePotencialProcesoSeleccionPorId(
+              dataItem.idPostulanteNivelPotencial
+            )
+          }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idProveedor"
+        title="Proveedor"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ obtenerNombreProveedorPorId(dataItem.idProveedor) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idPersonal_OperadorProceso"
+        title="Operador"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ obtenerNombreOperadorPorId(dataItem.idPersonal_OperadorProceso) }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="idProcesoSeleccion"
+        title="Codigo Nombre Combocatoria"
+        headerClass="header-grid-integra"
+        [width]="150"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            obtenerNombreCodigoCombocatoriaPorId(dataItem.idProcesoSeleccion)
+          }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-command-column
+        [resizable]="false"
+        [sticky]="true"
+        title="Opciones"
+        [width]="230"
+        headerClass="header-grid-integra"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="container-opciones">
+            <div kendoTooltip class="opciones__boton">
+              <button
+                kendoButton
+                icon="edit"
+                themeColor="info"
+                class="boton-opciones"
+                title="Editar"
+                (click)="abrirModalEditarPostulante(dataItem)"
+              ></button>
+            </div>
+            <div kendoTooltip class="opciones__boton">
+              <button
+                kendoButton
+                themeColor="warning"
+                class="boton-opciones"
+                title="Enviar Accesos Email"
+                (click)="
+                  abrirModalContactoPostulante(
+                    dataItem.idPostulanteProcesoSeleccion,
+                    'email'
+                  )
+                "
+              >
+                <span class="k-icon k-i-email"></span>
+              </button>
+            </div>
+            <div kendoTooltip class="opciones__boton">
+              <button
+                kendoButton
+                themeColor="success"
+                class="boton-opciones"
+                title="Agregar Nuevo Proceso"
+                (click)="abrirModalNuevoProcesoSeleccion(dataItem)"
+              >
+                <fa-icon
+                  [icon]="['fas', 'plus']"
+                  [size]="'lg'"
+                  class="text-white"
+                ></fa-icon>
+              </button>
+            </div>
+            <div kendoTooltip class="opciones__boton">
+              <button
+                kendoButton
+                themeColor="error"
+                class="close"
+                class="boton-opciones"
+                title="Eliminar"
+                (click)="eliminarPostulante(dataItem.idPostulante)"
+              >
+                <span class="k-icon k-i-close"></span>
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="Contiene"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+      <ng-template
+        kendoPagerTemplate
+        let-totalPages="totalPages"
+        let-currentPage="currentPage"
+      >
+        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+        <kendo-pager-numeric-buttons
+          [buttonCount]="10"
+        ></kendo-pager-numeric-buttons>
+        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+        <!-- <kendo-pager-input></kendo-pager-input> -->
+        <kendo-pager-info></kendo-pager-info>
+        <kendo-pager-page-sizes
+          [pageSizes]="pageSizeOptions"
+        ></kendo-pager-page-sizes>
+        <div class="w-100 text-end">
+          <button
+            kendoButton
+            icon="reload"
+            fillMode="flat"
+            themeColor="secondary"
+            (click)="obtenerPostulantesFiltroManual()"
+          ></button>
+        </div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</div>

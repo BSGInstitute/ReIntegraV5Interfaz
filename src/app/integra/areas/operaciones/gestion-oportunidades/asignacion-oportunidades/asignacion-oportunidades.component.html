@@ -1,0 +1,356 @@
+<div class="card">
+    <div class="card-title cabeceras">
+        <h2 class="m-3">
+            (O) Asignar manualmente alumnos
+        </h2>
+    </div>
+    <div class="card-body">
+        <p style="font-weight: bold; font-size:1.1rem">Búsqueda por</p>
+        <div class="row m-3">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        Asistente:
+                    </div>
+                    <div class="col-5">
+                        <kendo-multiselect
+                        [data]="dataPersonal"
+                        [kendoDropDownFilter]="filterSettings"
+                        [(ngModel)]="inputPersonal"
+                        [valuePrimitive]="true"
+                        [textField]="'nombres'"
+                        [valueField]="'id'"
+                        [disabled]="filtroExcel"
+                        ></kendo-multiselect>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        Centro de Costo:
+                    </div>
+                    <div class="col-5">
+                        <kendo-multiselect
+                        [data]="dataCentroCosto"
+                        [kendoDropDownFilter]="filterSettings"
+                        [(ngModel)]="inputCentroCosto"
+                        [virtual]="true"
+                        [valuePrimitive]="true"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [disabled]="filtroExcel"
+                        ></kendo-multiselect>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-3">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        Filtro Email:
+                    </div>
+                    <div class="col-5">
+                        <kendo-textbox
+                        [(ngModel)]="inputEmail"
+                        [disabled]="filtroExcel"
+                        placeholder="<Ingrese Email>"></kendo-textbox>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        Código Matricula:
+                    </div>
+                    <div class="col-5">
+                        <kendo-textbox
+                        [(ngModel)]="inputCodigoMatricula"
+                        [disabled]="filtroExcel"
+                        placeholder="<Ingrese Codigo Matricula>"></kendo-textbox>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-3">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        Estado Matricula:
+                    </div>
+                    <div class="col-5">
+                        <kendo-multiselect
+                        [kendoDropDownFilter]="filterSettings"
+                        [(ngModel)]="inputEstadoMatricula"
+                        [valuePrimitive]="true"
+                        [data]="dataEstadoMatricula"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [disabled]="filtroExcel"
+                        (valueChange)="onEstadoMatriculaSelectionChange()"
+                        >
+                        </kendo-multiselect>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        Sub-Estado Matricula:
+                    </div>
+                    <div class="col-5">
+                        <kendo-multiselect
+                        [kendoDropDownFilter]="filterSettings"
+                        [data]="dataSubestadoMatricula"
+                        [valuePrimitive]="true"
+                        [(ngModel)]="inputSubestadoMatricula"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [disabled]="filtroExcel"
+                        ></kendo-multiselect>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-3">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        Modalidad:
+                    </div>
+                    <div class="col-5">
+                        <kendo-multiselect
+                        [data]="dataModalidad"
+                        [(ngModel)]="inputModalidad"
+                        [valuePrimitive]="true"
+                        [textField]="'nombre'"
+                        [valueField]="'id'"
+                        [kendoDropDownFilter]="filterSettings"
+                        [disabled]="filtroExcel"
+                        ></kendo-multiselect>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        <input
+                        class="form-check-input"
+                        (change)="changeFiltroExcel($event)"
+                        [(ngModel)] ="filtroExcel"
+                        type="checkbox"/>
+                        <span style="margin-left: 5px;">Filtar por Excel</span>
+                    </div>
+                    <div class="col-5" *ngIf="filtroExcel">
+                        <input
+                        (change)="onFileChange($event)"
+                        class="form-control"
+                        [accept]="['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']"
+                        [multiple]="false"
+                        type="file">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer" style="justify-content: end; display: flex;">
+        <button class="btn btn-primary boton" (click)="loadGridData()">
+            <span class="col">
+                Buscar
+            </span>
+            <mat-icon class="col">
+                search
+            </mat-icon>
+        </button>
+    </div>
+</div>
+<div class="card mt-3">
+    <div class="card-title cabeceras">
+        <h2 class="m-3">
+            Lista de alumnos
+        </h2>
+    </div>
+    <div class="card-body">
+        <kendo-grid
+        [data]="gridData"
+        [loading]="loadinGrid"
+        [pageSize]="selectedPageSize"
+        [sortable]="true"
+        [sort]="sort"
+        (sortChange)="sortChange($event)"
+        [skip]="skip"
+        [pageable]="true"
+        (pageChange)="pageChange($event)"
+        (filterChange)="onDataStateChange($event)"
+        >
+            <ng-template kendoGridToolbarTemplate id="fuente">
+                <button class="btn" (click)="aperturaModalAsignacion()" style="color:white ;background-color: rgb(5, 174, 5);">
+                    Asignar a asistente
+                </button>
+            </ng-template>
+            <kendo-grid-column
+            [width]="40"
+            >
+                <ng-template kendoGridHeaderTemplate>
+                    <input
+                    (change)="selectAll($event)"
+                    class="form-check-input"
+                    type="checkbox"/>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    <input
+                    [(ngModel)]="dataItem.seleccionado"
+                    class="form-check-input"
+                    type="checkbox"/>
+                </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            field="centroCosto"
+            title="Centro de costo"
+            [class.k-i-arrow-desc]="mostrarFlechaOrdenamiento('centroCosto') && sort[0].dir === 'desc'"
+            [class.k-i-arrow-asc]="mostrarFlechaOrdenamiento('centroCosto') && sort[0].dir === 'asc'"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            field="personal"
+            title="Asistente"
+            ></kendo-grid-column>
+
+            <kendo-grid-column
+            field="alumno"
+            title="Alumno"
+            ></kendo-grid-column>
+
+            <kendo-grid-column
+            field="email"
+            title="Email"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            field="codigoMatricula"
+            title="Codigo de matricula"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            field="estadoMatricula"
+            title="Estado de matricula"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            field="subEstadoMatricula"
+            title="Subestado de matricula"
+            >
+            </kendo-grid-column>
+
+            <kendo-grid-column
+            field="usuarioModificacion"
+            title="Usuario modificacion"
+            ></kendo-grid-column>
+
+            <kendo-grid-column
+            field="fechaModificacion"
+            title="Fecha de Modificación"
+            >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{dataItem.fechaModificacion | date: 'dd/MM/yyyy HH:mm:ss'}}
+                </ng-template>
+            </kendo-grid-column>
+
+            <ng-template kendoPagerTemplate>
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="10"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                [pageSizes]="pageSizeOptions"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="loadGridData()"
+                  ></button>
+                </div>
+            </ng-template>
+        </kendo-grid>
+    </div>
+</div>
+
+
+<ng-template #modalAsignacionAutomatica let-modal>
+    <div class="card">
+        <div class="card-title cabeceras">
+            <h2 class="m-3">
+                Asignar oportunidades:
+            </h2>
+        </div>
+        <div class="card-body" *ngIf="!loadingCambio">
+            <div class="row m-3">
+                <div class="col-3">
+                    <p>Asistente:</p>
+                </div>
+                <div class="col-8">
+                    <kendo-dropdownlist
+                    [data]="dataPersonal"
+                    [kendoDropDownFilter]="filterSettings"
+                    [valuePrimitive]="true"
+                    [textField]="'nombres'"
+                    [valueField]="'id'"
+                    [(ngModel)]="inputPersonalSelecionado"
+                    ></kendo-dropdownlist>
+                </div>
+            </div>
+            <div class="row m-3">
+                <div class="col-3">
+                    <p>Tab destino:</p>
+                </div>
+                <div class="col-8">
+                    <kendo-dropdownlist
+                    [data]="dataDestino"
+                    [kendoDropDownFilter]="filterSettings"
+                    [valuePrimitive]="true"
+                    [textField]="'nombre'"
+                    [valueField]="'id'"
+                    [(ngModel)]="inputDestino"
+                    ></kendo-dropdownlist>
+                </div>
+            </div>
+        </div>
+        <div class="card-body"  *ngIf="loadingCambio">
+            <div class="row" style="justify-content: center;">
+                <span class="loader-asignacion"></span>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row"  style="justify-content: end;">
+                <button class="col-auto btn btn-primary m-2 botonModal" [disabled]="loadingCambio" (click)="asignarOportunidades()">
+                    <span class="col-auto">
+                        Asignar
+                    </span>
+                    <mat-icon class="col-auto">
+                        assignment_ind
+                    </mat-icon>
+                </button>
+                <button class="col-auto btn btn-danger m-2 botonModal" [disabled]="loadingCambio"  (click)="modal.dismiss('Cross click')">
+                    <span class="col-auto">
+                        Cerrar
+                    </span>
+                    <mat-icon class="col-auto">
+                        close
+                    </mat-icon>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</ng-template>

@@ -1,0 +1,277 @@
+<div class="row" style="display:flex;justify-content: center;">
+    <div class="col-md-6">
+      <kendo-grid
+        style="max-height: 300px; border-top-width: 0px; padding: 0px"
+        [kendoGridBinding]="gridConfiguracion.data"
+        [loading]="loading"
+        [pageSize]="5"
+        [sortable]="true"
+        [reorderable]="true"
+        [resizable]="true"
+        filterable="menu"
+        [pageable]="true"
+        (add)="gridConfiguracion.addHandler($event)"
+        (cancel)="gridConfiguracion.cancelHandler($event ) "
+        (save)=" gridConfiguracion.saveHandler( $event ) "
+        (remove)=" gridConfiguracion.removeHandler( $event ) "
+        (edit)="gridConfiguracion.editHandler( $event ) "
+
+        [selectable]="{
+          checkboxOnly: true,
+          mode: 'multiple'
+        }"
+        kendoGridSelectBy="id"
+         [(selectedKeys)]="listaSeleccion"
+      >
+        <ng-template
+          kendoGridToolbarTemplate
+          class="bg-danger"
+          $kendo-component-bg="#3f51b5"
+        >
+          
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <ng-container >
+            <button kendoGridAddCommand   mat-raised-button class="btn-succes-color">
+              <mat-icon >add_circle_outline</mat-icon >
+                Agregar 
+            </button>
+          </ng-container>
+        </ng-template>
+        <ng-container >
+          <kendo-grid-checkbox-column
+          [width]="45"
+          [headerClass]="{ 'text-center': true }"
+          [class]="{ 'text-center': true }"
+          [sticky]="true"
+          >
+            <ng-template kendoGridHeaderTemplate>
+              <input
+                type="checkbox"
+                kendoCheckBox
+                id="selectAllCheckboxId"
+                kendoGridSelectAllCheckbox
+                (selectAllChange)="onSelectAllChange($event)"
+              />
+              <label class="k-checkbox-label" for="selectAllCheckboxId"></label>
+            </ng-template>
+          </kendo-grid-checkbox-column>
+        </ng-container>
+        <kendo-grid-column
+        title="Nombre"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="nombre"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+        [headerStyle]="{
+          'background-color': '#27ae60',
+          color: 'white'
+        }"
+      >
+      <ng-template
+          kendoGridEditTemplate
+          let-formGroup="formGroup"
+        >
+          <kendo-textbox
+          [formControl]="formGroup.get('nombre')"
+          class="d-flex"
+          size="medium"
+          [maxlength]="50"
+
+          >
+          </kendo-textbox>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        title="Fecha Inicio"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="fechaInicio"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+        [headerStyle]="{
+          'background-color': '#27ae60',
+          color: 'white'
+        }"
+      >
+      <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup"
+    >
+      <kendo-datepicker
+        format="dd-MM-yyyy"
+        [placeholder]="'dia-mes-año'"
+        class="d-flex style-tam"
+        [size]="'small'"
+        [formControl]="formGroup.get('fechaInicio')"
+        [required]="true"
+        calendarType="classic"
+        [max]="formGroup.get('fechaFin').value==null?fechaMax:formGroup.get('fechaFin').value"
+
+      >
+      </kendo-datepicker>
+    </ng-template>
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+          <kendo-grid-date-filter-menu
+              [column]="column"
+              [format]="'dd-MM-yyyy'"
+              [filter]="filter"
+              [placeholder]="'dia-mes-año'"
+              [filterService]="filterService"
+              >
+          </kendo-grid-date-filter-menu>
+        </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          {{finanzasService.fechaTemplate(dataItem.fechaInicio)}}
+      </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        title="Fecha Fin"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="fechaFin"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+        [headerStyle]="{
+          'background-color': '#27ae60',
+          color: 'white'
+        }"
+      >
+      <ng-template
+      kendoGridEditTemplate
+      let-dataItem="dataItem"
+      let-formGroup="formGroup"
+    >
+      <kendo-datepicker
+        format="dd-MM-yyyy"
+        [placeholder]="'dia-mes-año'"
+        class="d-flex style-tam"
+        [size]="'small'"
+        [formControl]="formGroup.get('fechaFin')"
+        [required]="true"
+        [min]="formGroup.get('fechaInicio').value==null?fechaMin:formGroup.get('fechaInicio').value"
+        calendarType="classic"
+      >
+      </kendo-datepicker>
+    </ng-template>
+      <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+          <kendo-grid-date-filter-menu
+              [column]="column"
+              [format]="'dd-MM-yyyy'"
+              [filter]="filter"
+              [placeholder]="'dia-mes-año'"
+              [filterService]="filterService"
+              >
+          </kendo-grid-date-filter-menu>
+        </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          {{finanzasService.fechaTemplate(dataItem.fechaFin)}}
+      </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+      [sticky]="true"
+      title="Acciones"
+      [width]="120"
+      headerClass="justify-content-center CPC-clasesilla "
+      [headerStyle]="{
+        'background-color': '#3382a9',
+        color: 'white',
+        'font-size': 'x-small'
+      }"
+    >
+      <ng-template
+        kendoGridCellTemplate
+        let-dataItem="dataItem"
+        let-isNew="isNew"
+        let-rowIndex="rowIndex"
+      >
+        <div class="w-100 d-flex justify-content-center" kendoTooltip>
+          <button
+                        
+          kendoGridEditCommand
+          themeColor="warning"
+          fillMode="solid"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          title="Editar"
+        >
+          <span class="k-icon k-i-edit k-icon-20"></span>
+        </button>
+        <div 
+        [title]="gridConfiguracion.formGroup?.invalid==true?'Guardar deshabilitado : Completa el formulario':'Guardar'"
+        style="height: fit-content;width: fit-content;"
+        >
+        <button
+          kendoGridSaveCommand
+          [disabled]="gridConfiguracion.formGroup?.invalid"
+          themeColor="primary"
+          fillMode="solid"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+        >
+          <span class="k-icon k-i-save k-icon-20"></span>
+        </button>
+        </div>
+        
+        <button
+          kendoGridCancelCommand
+          themeColor="secondary"
+          fillMode="solid"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          title="Cancelar"
+        >
+          <span class="k-icon k-i-cancel k-icon-20"></span>
+        </button>
+        <button
+          kendoGridRemoveCommand
+          themeColor="error"
+          fillMode="solid"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          title="Eliminar"
+        >
+          <span class="k-icon k-i-delete k-icon-20"></span>
+        </button>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+        <ng-template
+                    kendoPagerTemplate
+                    let-totalPages="totalPages"
+                    let-currentPage="currentPage"
+                    >
+                      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                      <kendo-pager-numeric-buttons
+                        [buttonCount]="5"
+                      ></kendo-pager-numeric-buttons>
+                      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                      <!-- <kendo-pager-input></kendo-pager-input> -->
+                      <kendo-pager-info></kendo-pager-info>
+                      <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                    </ng-template>
+      </kendo-grid>
+          
+    </div>
+</div>

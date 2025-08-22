@@ -1,0 +1,168 @@
+<div class="pg-contenedor-tab">
+  <div class="row mt-3">
+    <div class="col-12 pg-kgrid">
+      <kendo-grid
+        [kendoGridBinding]="gridPrerequisitos.data"
+        [loading]="gridPrerequisitos.loading"
+        [selectable]="false"
+        scrollable="none"
+        filterable="menu"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          <h3 class="mb-0 w-auto text-center">Pre - Requisitos</h3>
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <button
+            kendoGridAddCommand
+            icon="plus"
+            themeColor="success"
+            (click)="abrirModal(modalInsertar, true, null)"
+          >
+            Nuevo
+          </button>
+        </ng-template>
+        <kendo-grid-column
+          field="nombrePreRequisito"
+          title="Nombre"
+          class="text-start"
+          [style]="{ width: '40%' }"
+          headerClass="pg-header-grid justify-content-center "
+        ></kendo-grid-column>
+        <kendo-grid-column
+          field="modalidades"
+          title="Modalidad"
+          class="text-start fw-bold"
+          [filterable]="false"
+          [style]="{ width: '40%' }"
+          headerClass="pg-header-grid justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container
+              *ngIf="
+                dataItem.modalidades != null && dataItem.modalidades.length > 0
+              "
+            >
+              {{ impresionModalidad(dataItem) }}
+            </ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Acciones"
+          [style]="{ width: '20%' }"
+          headerClass="pg-header-grid justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+            <div class="row justify-content-center">
+              <div kendoTooltip class="col-auto p-0 mx-1">
+                <button
+                  kendoButton
+                  themeColor="warning"
+                  icon="pencil"
+                  title="Editar"
+                  (click)="abrirModal(modalInsertar, false, dataItem)"
+                ></button>
+              </div>
+              <div kendoTooltip class="col-auto p-0 mx-1">
+                <button
+                  kendoButton
+                  themeColor="error"
+                  icon="trash"
+                  title="Eliminar"
+                  (click)="eliminarPreRequisito(dataItem)"
+                ></button>
+              </div>
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalInsertar let-modal>
+  <div class="modal-header py-2 bg-success text-white text-center">
+    <h2 class="modal-title mb-0 w-100">
+      {{
+        esNuevo ? "Registro de Pre - Requisito" : "Actualizar Pre - Requisito"
+      }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="card">
+      <div class="card-body">
+        <form class="k-form k-form-horizontal" [formGroup]="formPrerequisito">
+          <div class="row">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="nombre" class="k-label">
+                  <span>Nombre<strong class="fw-bold"> *</strong></span>
+                </label>
+                <kendo-textbox
+                  #nombre
+                  formControlName="nombre"
+                  inputValidSpaceDir
+                  placeholder="Ingrese nombre"
+                >
+                </kendo-textbox>
+                <kendo-formerror>{{ getErrorMessage("nombre") }}</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="modalidades" class="k-label">
+                  <span>Modalidad<strong class="fw-bold"> *</strong></span>
+                </label>
+                <kendo-multiselect
+                  #modalidades
+                  formControlName="modalidades"
+                  [data]="combosModalidad"
+                  textField="nombre"
+                  valueField="idModalidad"
+                  placeholder="Seleccione una modalidad"
+                  [defaultItem]="{
+                    id: null,
+                    nombre: '<Seleccionar>'
+                  }"
+                  [kendoDropDownFilter]="filterSettings"
+                ></kendo-multiselect>
+                <kendo-formerror>{{
+                  getErrorMessage("modalidades")
+                }}</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <loading [loading]="loaderModal"></loading>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="guardarPreRequisito()"
+      >
+        {{ esNuevo ? "Nuevo" : "Actualizar" }}
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        icon="close"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

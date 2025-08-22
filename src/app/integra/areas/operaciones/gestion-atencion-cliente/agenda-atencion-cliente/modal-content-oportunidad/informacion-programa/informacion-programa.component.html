@@ -1,0 +1,282 @@
+<div class="p-5 informacionProgramaContainer">
+  <mat-expansion-panel disabled expanded hideToggle class="my-3 informacionPrograma-custom-mat-expansion-panel">
+      <mat-expansion-panel-header>
+      <mat-panel-title>
+          Detalle del programa
+      </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="d-flex justify-content-center align-items-baseline">
+        <strong class="d-inline-block" style="margin-right: 15px;">Tipo de programa:</strong>
+        <mat-form-field appearance="outline" style="width: 120px;margin-right:25px">
+            <mat-label>Tipo</mat-label>
+            <mat-select (selectionChange)="Filtrar()" [(value)]="filtroTipoSeleccionado">
+              <mat-option *ngFor="let filtro of listaFiltroTipoPrograma" [value]="filtro">
+                  {{filtro.nombre}}
+                </mat-option>
+              </mat-select>
+          </mat-form-field>
+        <strong class="d-inline-block" style="margin-right: 15px;">Área:</strong>
+          <mat-form-field appearance="outline" style="width: 120px;margin-right:25px">
+            <mat-label>Área</mat-label>
+            <mat-select (selectionChange)="Filtrar()" [(value)]="filtroAreaSeleccionado">
+              <mat-option *ngFor="let filtro of listaFiltroAreaPrograma" [value]="filtro">
+                  {{filtro.nombre}}
+                </mat-option>
+              </mat-select>
+          </mat-form-field>
+          <strong class="d-inline-block" style="margin-right: 15px;">Programa:</strong>
+          <mat-form-field appearance="outline" style="width: 50%">
+              <mat-label>Programa</mat-label>
+              <mat-select #select (selectionChange)="CargarNuevoPrograma()" [(value)]="programaSeleccionado" panelClass="mat-select-custom-style">
+                <mat-select-filter 
+                *ngIf="select.focused"
+                [array]="dataProgramaGeneralFiltrado" 
+                [displayMember]="'nombrePGeneral'" 
+                [placeholder]="'Buscar...'"
+                [noResultsMessage]="'No hay coincidencias.'"
+                (filteredReturn)="dataProgramaGeneralFiltradoPorNombre = $event"></mat-select-filter>
+    
+                <mat-option *ngFor="let programa of dataProgramaGeneralFiltradoPorNombre" [value]="programa">
+                    {{programa.nombrePGeneral}}
+                  </mat-option>
+                </mat-select>
+            </mat-form-field>
+      </div>
+      <!-- <mat-card *ngFor="let modalidad of informacionProgramaCleaned.modalidad">
+        <mat-card-content>Modalidad: {{modalidad.tipo}} || Inicio: {{modalidad.fechaInicio}}</mat-card-content>
+      </mat-card> -->
+      <!-- <p *ngFor="let modalidad of informacionProgramaCleaned.modalidad"></p> -->
+
+
+      <ng-container *ngIf="informacionProgramaCleaned.inversion != null && informacionProgramaCleaned.inversion.lista != null && informacionProgramaCleaned.inversion.lista.length > 0">
+        <table mat-table [dataSource]="informacionProgramaCleaned.inversion.lista">
+          <ng-container matColumnDef="version">
+              <th mat-header-cell *matHeaderCellDef> Versión </th>
+              <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="beneficios">
+              <th mat-header-cell *matHeaderCellDef> Beneficios </th>
+              <td mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.beneficio != null && element.beneficio.length > 0; else sinBeneficios">
+                  <ul>
+                    <li *ngFor="let e of element.beneficio">{{e}}</li>
+                  </ul>
+                </ng-container>
+                <ng-template #sinBeneficios>
+                  <span>- No incluye beneficios -</span>
+                </ng-template>
+              </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="precioContado">
+              <th mat-header-cell *matHeaderCellDef> Precio al contado </th>
+              <td mat-cell *matCellDef="let element"> {{convertirSignosPrecio(element.precioContado)}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="precioCredito">
+              <th mat-header-cell *matHeaderCellDef> Precio al crédito </th>
+              <td mat-cell *matCellDef="let element"> {{convertirSignosPrecio(element.precioCredito)}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplayInversionTable"></tr>
+          <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplayInversionTable"></tr>
+      </table>
+      <p>{{informacionProgramaCleaned.inversion.piePagina}}</p>
+      </ng-container>
+      
+  </mat-expansion-panel>
+
+
+  <!--Modalidades-->
+  <mat-expansion-panel *ngIf="informacionProgramaCleaned.modalidad != null && informacionProgramaCleaned.modalidad.length > 0" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+    <mat-expansion-panel-header>
+    <mat-panel-title>
+        Modalidades
+    </mat-panel-title>
+    </mat-expansion-panel-header>
+    <!-- <ng-container *ngFor="let m of informacionProgramaCleaned.modalidad">
+      <strong>Modalidad:</strong> {{m.tipo}} <strong>- Fecha Inicio:</strong> {{m.fechaInicio}}
+      <br/>
+    </ng-container> -->
+    <table mat-table [dataSource]="informacionProgramaCleaned.modalidad">
+      <ng-container matColumnDef="modalidad">
+          <th mat-header-cell *matHeaderCellDef> Modalidad </th>
+          <td mat-cell *matCellDef="let element"> {{element.tipo}} </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="fechaInicio">
+          <th mat-header-cell *matHeaderCellDef> Fecha de Inicio </th>
+          <td mat-cell *matCellDef="let element"> {{element.fechaInicio}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplayModalidadTable"></tr>
+      <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplayModalidadTable"></tr>
+  </table>
+</mat-expansion-panel>
+
+
+
+<!--Presentacion-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.presentacion != null && informacionProgramaCleaned.presentacion != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+  <mat-expansion-panel-header>
+  <mat-panel-title>
+      Presentación
+  </mat-panel-title>
+  </mat-expansion-panel-header>
+    <div [innerHTML]="informacionProgramaCleaned.presentacion"></div>
+</mat-expansion-panel>
+
+<!--Objetivos-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.objetivos != null && informacionProgramaCleaned.objetivos != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+  <mat-expansion-panel-header>
+  <mat-panel-title>
+      Objetivos
+  </mat-panel-title>
+  </mat-expansion-panel-header>
+    <div [innerHTML]="informacionProgramaCleaned.objetivos"></div>
+</mat-expansion-panel>
+
+<!--Publico Objetivo-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.publicoObjetivo != null && informacionProgramaCleaned.publicoObjetivo != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+<mat-expansion-panel-header>
+<mat-panel-title>
+    Público Objetivo
+</mat-panel-title>
+</mat-expansion-panel-header>
+  <div [innerHTML]="informacionProgramaCleaned.publicoObjetivo"></div>
+</mat-expansion-panel>
+
+<!--Prerrequisitos-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.prerrequisitos != null" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+<mat-expansion-panel-header>
+<mat-panel-title>
+    Prerrequisitos
+</mat-panel-title>
+</mat-expansion-panel-header>
+  <p>{{informacionProgramaCleaned.prerrequisitos.cabecera}}</p>
+  <ul>
+    <li *ngFor="let req of informacionProgramaCleaned.prerrequisitos.lista">{{req}}</li>
+  </ul>
+  <div [innerHTML]="informacionProgramaCleaned.prerrequisitos.piePagina"></div>
+</mat-expansion-panel>
+
+<!--Estructura Curricular-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.estructuraCurricular != null && informacionProgramaCleaned.estructuraCurricular.length > 0" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+<mat-expansion-panel-header>
+<mat-panel-title>
+    Estructura Curricular
+</mat-panel-title>
+</mat-expansion-panel-header>
+<ng-container *ngFor="let e of informacionProgramaCleaned.estructuraCurricular">
+  <strong>{{e.titulo}}</strong>
+  <br/>
+  <ul>
+    <li *ngFor="let detalle of e.detalles">{{detalle}}</li>
+  </ul>
+  <div [innerHTML]="e.notas"></div>
+</ng-container>
+</mat-expansion-panel>
+
+   <!--Duracion y Horario-->
+   <mat-expansion-panel *ngIf="informacionProgramaCleaned.duracionHorario != null && informacionProgramaCleaned.duracionHorario != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+    <mat-expansion-panel-header>
+    <mat-panel-title>
+        Duración Y Horarios
+    </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div [innerHTML]="informacionProgramaCleaned.duracionHorario"></div>
+  </mat-expansion-panel>
+
+<!--Certificacion-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.certificacion != null" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+<mat-expansion-panel-header>
+<mat-panel-title>
+    Certificación
+</mat-panel-title>
+</mat-expansion-panel-header>
+  <p>{{informacionProgramaCleaned.certificacion.cabecera}}</p>
+  <ul>
+    <li *ngFor="let req of informacionProgramaCleaned.certificacion.lista">{{req}}</li>
+  </ul>
+  <div [innerHTML]="informacionProgramaCleaned.certificacion.piePagina"></div>
+</mat-expansion-panel>
+
+
+  <!--Expositores-->
+  <mat-expansion-panel *ngIf="informacionProgramaCleaned.expositores != undefined && informacionProgramaCleaned.expositores.length > 0" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+      <mat-expansion-panel-header>
+      <mat-panel-title>
+          Expositores
+      </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-container *ngFor="let e of informacionProgramaCleaned.expositores">
+        <strong>{{e.nombres}}</strong>
+        <p>{{e.descripcion}}</p>
+        <br/>
+      </ng-container>
+  </mat-expansion-panel>
+
+  <!--Descripcion de Certificacion-->
+  <!-- <mat-expansion-panel *ngIf="informacionProgramaCleaned.descripcionCertificacion != null && informacionProgramaCleaned.descripcionCertificacion != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+    <mat-expansion-panel-header>
+    <mat-panel-title>
+        Descripción Certificación
+    </mat-panel-title>
+    </mat-expansion-panel-header>
+      <p>{{informacionProgramaCleaned.descripcionCertificacion}}</p>
+      <br/>
+  </mat-expansion-panel> -->
+  
+  
+
+  <!--Metodologia-->
+  <mat-expansion-panel *ngIf="informacionProgramaCleaned.metodologia != null && informacionProgramaCleaned.metodologia != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+    <mat-expansion-panel-header>
+    <mat-panel-title>
+        Metodología Online de este Programa
+    </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div [innerHTML]="informacionProgramaCleaned.metodologia"></div>
+    </mat-expansion-panel>
+
+    <!--Material del curso-->
+  <mat-expansion-panel *ngIf="informacionProgramaCleaned.materialCurso != null && informacionProgramaCleaned.materialCurso != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+    <mat-expansion-panel-header>
+    <mat-panel-title>
+        Material del Curso
+    </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div [innerHTML]="informacionProgramaCleaned.materialCurso"></div>
+    </mat-expansion-panel>
+
+<!--Pautas Complementarias-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.pautasComplementarias != null && informacionProgramaCleaned.pautasComplementarias != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+<mat-expansion-panel-header>
+<mat-panel-title>
+    Pautas Complementarias
+</mat-panel-title>
+</mat-expansion-panel-header>
+<div [innerHTML]="informacionProgramaCleaned.pautasComplementarias"></div>
+</mat-expansion-panel>
+
+<!--Bibliografia-->
+<mat-expansion-panel *ngIf="informacionProgramaCleaned.bibliografia != null && informacionProgramaCleaned.bibliografia != ''" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+  <mat-expansion-panel-header>
+  <mat-panel-title>
+    Bibliografía
+  </mat-panel-title>
+  </mat-expansion-panel-header>
+  <div [innerHTML]="informacionProgramaCleaned.bibliografia"></div>
+  </mat-expansion-panel>
+
+  <!-- <mat-expansion-panel *ngFor="let info of informacionProgramaRaw" class="my-3 informacionPrograma-custom-mat-expansion-panel">
+      <mat-expansion-panel-header>
+      <mat-panel-title>
+          {{info.seccion ?? ''}}
+      </mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>{{info.detalleSeccion[0]?.detalleContenido[0] ?? ''}}</p>
+  </mat-expansion-panel> -->
+</div>
+<loading [loading]="isLoading"></loading>

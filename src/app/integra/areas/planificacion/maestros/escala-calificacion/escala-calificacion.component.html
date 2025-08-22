@@ -1,0 +1,293 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">
+            (M) Escalas de calificación del aula virtual
+          </h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              kendoGrid
+              [kendoGridBinding]="gridEscalaCalificacion.data"
+              [loading]="gridEscalaCalificacion.loading"
+              (remove)="gridEscalaCalificacion.removeHandler($event)"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="0"
+              [pageSize]="20"
+              filterable="menu"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  themeColor="primary"
+                  icon="plus"
+                  (click)="
+                    abrirModalEscalaCalificacion(modalEscalaCalificacion, true)
+                  "
+                >
+                  Agregar
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- kendoGridEditCommand -->
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      (click)="
+                        abrirModalEscalaCalificacion(
+                          modalEscalaCalificacion,
+                          isNew,
+                          dataItem
+                        )
+                      "
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-delete k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalEscalaCalificacion let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{
+        isNew
+          ? "Registro de Escala Calificación"
+          : "Actualizar Escala Calificación"
+      }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-7">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="nombreEscalaCalificacion"
+              class="k-label d-flex align-items-start text-start pt-0"
+            >
+              <span> Nombre <strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox
+              #nombreEscalaCalificacion
+              [formControl]="controlNombreEscalaCalificacion"
+            >
+            </kendo-textbox>
+            <!-- <kendo-textbox #nombreEscalaCalificacion [(ngModel)]="nombreEscalaCalificacion" required>
+            </kendo-textbox> -->
+            <kendo-formerror
+              >El nombre de la Escala Calificación es necesario! No debe empezar
+              o terminar con espacios.
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+        <div class="contenedor">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h2 class="text-white mb-2">Criterios</h2>
+                </div>
+                <div class="card-body p-4" id="grillaAgendaTab">
+                  <div class="col-12">
+                    <kendo-grid
+                      kendoGrid
+                      [kendoGridBinding]="gridEscalaCalificacionDetalle.data"
+                      [loading]="gridEscalaCalificacionDetalle.loading"
+                      (cancel)="
+                        gridEscalaCalificacionDetalle.cancelHandler($event)
+                      "
+                      (save)="gridEscalaCalificacionDetalle.saveHandler($event)"
+                      (remove)="
+                        gridEscalaCalificacionDetalle.removeHandler($event)
+                      "
+                      (add)="gridEscalaCalificacionDetalle.addHandler($event)"
+                      [resizable]="true"
+                      [pageable]="{
+                        buttonCount: 5,
+                        info: true,
+                        type: 'numeric',
+                        pageSizes: true,
+                        previousNext: true,
+                        position: 'bottom'
+                      }"
+                      [skip]="0"
+                      [pageSize]="5"
+                      filterable="menu"
+                    >
+                      <ng-template kendoGridToolbarTemplate>
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                        <button
+                          kendoGridAddCommand
+                          themeColor="primary"
+                          icon="plus"
+                        >
+                          Agregar
+                        </button>
+                      </ng-template>
+                      <kendo-grid-column
+                        field="nombre"
+                        title="Nombre"
+                        headerClass="header-grid-integra"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        field="valor"
+                        title="Valor"
+                        headerClass="header-grid-integra"
+                        editor="numeric"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-command-column
+                        title="Opciones"
+                        [width]="150"
+                        [headerClass]="'header-grid-integra'"
+                      >
+                        <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem="dataItem"
+                          let-isNew="isNew"
+                        >
+                          <div class="w-100 d-flex justify-content-center">
+                            <button
+                              kendoGridRemoveCommand
+                              themeColor="error"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="removeDetalle"
+                            >
+                              <span class="k-icon k-i-delete k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoGridSaveCommand
+                              themeColor="primary"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              [disabled]="gridEscalaCalificacionDetalle.formGroup?.invalid"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Guardar"
+                            >
+                              <span class="k-icon k-i-save k-icon-20"></span>
+                            </button>
+                            <button
+                              kendoGridCancelCommand
+                              themeColor="secondary"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Cancelar"
+                            >
+                              <span class="k-icon k-i-cancel k-icon-20"></span>
+                            </button>
+                          </div>
+                        </ng-template>
+                      </kendo-grid-command-column>
+                    </kendo-grid>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="guardarEscalaCalificacion()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizarEscalaCalificacion()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click');"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>

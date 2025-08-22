@@ -1,0 +1,1043 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Lista de Expositores</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridExpositores
+              [kendoGridBinding]="gridExpositores.data"
+              [loading]="gridExpositores.loading"
+              [selectable]="true"
+              [resizable]="true"
+              filterable="menu"
+              [pageSize]="10"
+              [pageable]="true"
+              [sortable]="true"
+              [pageable]="{ pageSizes: [10, 20, 30] }"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <button
+                  kendoButton
+                  icon="reload"
+                  fillMode="flat"
+                  themeColor="primary"
+                  (click)="obtener()"
+                ></button>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="abrirModalExpositor(modalExpositor, true)"
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="primerNombre"
+                title="Primer Nombre"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="apellidoPaterno"
+                title="Apellido Paterno"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="apellidoMaterno"
+                title="Apellido Materno"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idPaisProcedencia"
+                title="Pais de Procedencia"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{ obtenerNombrePais(dataItem.idPaisProcedencia) }}
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idCiudadProcedencia"
+                title="Ciudad de Procedencia"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{ obtenerNombreCiudad(dataItem.idCiudadProcedencia) }}
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="telfCelular1"
+                title="CELULAR 1"
+                [width]="90"
+                v
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="email1"
+                title="EMAIL 1"
+                [width]="90"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Editar"
+                [width]="70"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <button
+                      kendoButton
+                      fillMode="solid"
+                      rounded="large"
+                      themeColor="warning"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                      (click)="
+                        abrirModalExpositor(modalExpositor, false, dataItem)
+                      "
+                    >
+                      <span class="k-icon k-i-pencil k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- #region modal Expositor -->
+<ng-template #modalExpositor let-modal>
+  <div class="modal-body">
+    <div class="row">
+      <kendo-tabstrip [keepTabContent]="true">
+        <kendo-tabstrip-tab [selected]="true">
+          <ng-template kendoTabTitle>
+            <span>Informacion</span>
+          </ng-template>
+          <ng-template kendoTabContent *loadOnDemand>
+            <div class="modal-header bg-primary-header-modal">
+              <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+                Datos Personales
+              </h1>
+            </div>
+            <form [formGroup]="formDatosPersonales" class="k-form">
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="dropdownlistTipoDocumento"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b
+                          >Tipo de<br />
+                          Documento</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-dropdownlist
+                      #dropdownlistTipoDocumento
+                      [data]="comboTipoDocumento"
+                      textField="descripcion"
+                      valueField="id"
+                      [defaultItem]="{ id: null, descripcion: '<Seleccione>' }"
+                      [valuePrimitive]="true"
+                      formControlName="tipoDocumento"
+                      [kendoDropDownFilter]="filterSettings"
+                    ></kendo-dropdownlist>
+                    <kendo-formerror>Ingrese Tipo de Documento</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="nroDocumento"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b>Nro. Documento</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #nroDocumento
+                      formControlName="nroDocumento"
+                      placeholder="Nro. Documento"
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese Nro. Documento</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="primerNombre"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b>Primer Nombre</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #primerNombre
+                      formControlName="primerNombre"
+                      placeholder="Primer Nombre"
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese Primer Nombre</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="segundoNombre"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Segundo Nombre</b></span>
+                    </label>
+                    <kendo-textbox
+                      #segundoNombre
+                      formControlName="segundoNombre"
+                      placeholder="Segundo Nombre"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="segundoNombre"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b>Apellido Paterno</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #apellidoPaterno
+                      formControlName="apellidoPaterno"
+                      placeholder="Apellido Paterno"
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese Apellido Paterno</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="apellidoMaterno"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b>Apellido Materno</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #apellidoMaterno
+                      formControlName="apellidoMaterno"
+                      placeholder="Apellido Materno"
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese Apellido Materno</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="fechaNacimiento" 
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b
+                          >Fecha de<br />
+                          Nacimiento</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-datepicker
+                      #fechaNacimiento
+                      format="yyyy-MM-dd"
+                      formControlName="fechaNacimiento"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Ingrese Tipo de Documento</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="dropdowlistCoordinadores"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Coordinador</b></span>
+                    </label>
+                    <kendo-dropdownlist
+                      #dropdowlistCoordinadores
+                      [data]="comboCoordinadores"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                      [valuePrimitive]="true"
+                      formControlName="idPersonalAsignado"
+                      [kendoDropDownFilter]="filterSettings"
+                    ></kendo-dropdownlist>
+                    <kendo-formerror>Coordinador</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="dropdownlistPaisProcedencia"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b
+                          >Pais de<br />
+                          Procedencia</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-dropdownlist
+                      #dropdownlistPaisProcedencia
+                      [data]="comboPaises"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                      [valuePrimitive]="true"
+                      formControlName="paisProcedencia"
+                      [kendoDropDownFilter]="filterSettings"
+                      (valueChange)="
+                        obtenerCiudadesdeporIdPaisProcedencia($event)
+                      "
+                    ></kendo-dropdownlist>
+                    <kendo-formerror
+                      >Ingrese Pais de Procedencia</kendo-formerror
+                    >
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="dropdownListCiudadProcedencia"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b>Ciudad de<br />Procedencia</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-dropdownlist
+                      #dropdownListCiudadProcedencia
+                      [data]="comboCiudadesP"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                      [valuePrimitive]="true"
+                      formControlName="ciudadProcedencia"
+                      [kendoDropDownFilter]="filterSettings"
+                      [disabled]="
+                        formDatosPersonales.get('paisProcedencia').value == null
+                      "
+                    ></kendo-dropdownlist>
+                    <kendo-formerror>Ingrese Ciudad</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="dropdownlistReferidoPor"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span> <b>Referido Por</b></span>
+                    </label>
+                    <kendo-dropdownlist
+                      #dropdownlistReferidoPor
+                      [data]="comboExpositores"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                      [valuePrimitive]="true"
+                      formControlName="idReferidoPor"
+                      [kendoDropDownFilter]="filterSettings"
+                    ></kendo-dropdownlist>
+                    <kendo-formerror>Ingrese Tipo de Documento</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-8 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Foto</b></span>
+                    </label>
+                    <kendo-fileselect
+                      #archivofoto
+                      formControlName="archivofoto"
+                      [autoUpload]="false"
+                      [restrictions]="myRestrictions"
+                    >
+                      <input type="file" accept="image/*" />
+                    </kendo-fileselect>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-4 col-md-6 k-form-horizontal">
+                  <div class="form-control" style="background-color: gray; height: 2.5rem; margin-top: 1.0rem;">
+                    {{ formDatosPersonales.controls["fotoDocente"].value?? " " }}
+                  </div>
+                </div>
+              </div>
+            </form>
+            <br />
+            <div class="modal-header bg-primary-header-modal">
+              <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+                Datos Ubicacion
+              </h1>
+            </div>
+            <form [formGroup]="formDatosUbicacion" class="k-form">
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="celular1"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b>Celular 1</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #celular1
+                      formControlName="telfCelular1"
+                      placeholder="Celular 1"
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese un Celular</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="email1"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b>Email 1</b
+                        ><span class="text-danger fw-bold">*</span></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      [disabled]="!isNew"
+                      #email1
+                      formControlName="email1"
+                      placeholder="Email 1"
+                    ></kendo-textbox>
+                    <kendo-formerror>Ingrese Email</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="celular2"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Celular 2</b></span>
+                    </label>
+                    <kendo-textbox
+                      #celular2
+                      formControlName="telfCelular2"
+                      placeholder="Celular 2"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="email2"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Email 2</b></span>
+                    </label>
+                    <kendo-textbox
+                      #email2
+                      formControlName="email2"
+                      placeholder="Email 2"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="celular3"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Celular 3</b></span>
+                    </label>
+                    <kendo-textbox
+                      #celular3
+                      formControlName="telfCelular3"
+                      placeholder="Celular 3"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="email3"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Email 3</b></span>
+                    </label>
+                    <kendo-textbox
+                      #email3
+                      formControlName="email3"
+                      placeholder="Email 3"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="domicilio"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Domicilio</b></span>
+                    </label>
+                    <kendo-textbox
+                      #domicilio
+                      formControlName="domicilio"
+                      placeholder="Domicilio"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+                <div
+                  class="col-sm-12 col-md-6 k-form-horizontal"
+                  style="display: flex"
+                >
+                  <div class="col-sm-12 col-md-6 k-form-horizontal">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-dropdownlist
+                        [data]="comboPaises"
+                        textField="nombre"
+                        placeHolder="Pais del Domicilio"
+                        valueField="id"
+                        [defaultItem]="{
+                          id: null,
+                          nombre: '<Seleccione>'
+                        }"
+                        [valuePrimitive]="true"
+                        (valueChange)="
+                          obtenerCiudadesdeporIdPaisDomicilio($event)
+                        "
+                        formControlName="paisDomicilio"
+                        [kendoDropDownFilter]="filterSettings"
+                      ></kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-sm-12 col-md-6 k-form-horizontal">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-dropdownlist
+                        [data]="comboCiudadesD"
+                        textField="nombre"
+                        placeHolder="Ciudad del Domicilio"
+                        valueField="id"
+                        [defaultItem]="{
+                          id: null,
+                          nombre: '<Seleccione>'
+                        }"
+                        [valuePrimitive]="true" 
+                        formControlName="ciudadDomicilio"
+                        [kendoDropDownFilter]="filterSettings"
+                        [disabled]="
+                          formDatosUbicacion.get('paisDomicilio').value == null
+                        "
+                      ></kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="lugarTrabajo"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Lugar de Trabajo</b></span>
+                    </label>
+                    <kendo-textbox
+                      #lugarTrabajo
+                      formControlName="lugarTrabajo"
+                      placeholder="Lugar de Trabajo"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+                <div
+                  class="col-sm-12 col-md-6 k-form-horizontal"
+                  style="display: flex"
+                >
+                  <div class="col-sm-12 col-md-6 k-form-horizontal">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-dropdownlist
+                        [data]="comboPaises"
+                        textField="nombre"
+                        valueField="id"
+                        placeHolder="Pais del Lugar"
+                        [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                        [valuePrimitive]="true"
+                        formControlName="paisLugarTrabajo"
+                        (valueChange)="
+                          obtenerCiudadesdeporIdPaisTrabajo($event)
+                        "
+                        [kendoDropDownFilter]="filterSettings"
+                      ></kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-sm-12 col-md-6 k-form-horizontal">
+                    <kendo-formfield orientation="horizontal">
+                      <kendo-dropdownlist
+                        [data]="comboCiudadesT"
+                        textField="nombre"
+                        valueField="id"
+                        placeHolder="Ciudad del Lugar"
+                        [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                        [valuePrimitive]="true"
+                        formControlName="ciudadLugarTrabajo"
+                        [kendoDropDownFilter]="filterSettings"
+                        [disabled]="
+                          formDatosUbicacion.get('paisLugarTrabajo').value ==
+                          null
+                        "
+                      ></kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <br />
+            <div class="modal-header bg-primary-header-modal">
+              <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+                Asistente o Contacto
+              </h1>
+            </div>
+            <form [formGroup]="formAsistenteContacto" class="k-form">
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="asistenteNombre"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b
+                          >Nombre de<br />
+                          Asistente</b
+                        ></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #asistenteNombre
+                      formControlName="asistenteNombre"
+                      placeholder="Nombre de Asistente"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="asistenteTelefono"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span>
+                        <b
+                          >Telefono de<br />
+                          Asistente</b
+                        ></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #asistenteTelefono
+                      formControlName="asistenteTelefono"
+                      placeholder="Telefono de Asistente"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+                <div class="col-sm-12 col-md-6 k-form-horizontal">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="asistenteCelular"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span
+                        ><b
+                          >Celular de<br />
+                          Asistente</b
+                        ></span
+                      >
+                    </label>
+                    <kendo-textbox
+                      #asistenteCelular
+                      formControlName="asistenteCelular"
+                      placeholder="Celular de Asistente"
+                    ></kendo-textbox>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </form>
+            <!-- CONTENT -->
+          </ng-template>
+        </kendo-tabstrip-tab>
+        <kendo-tabstrip-tab>
+          <ng-template kendoTabTitle>
+            <span>Detalles</span>
+          </ng-template>
+          <ng-template kendoTabContent *loadOnDemand>
+            <!-- CONTENT -->
+            <form [formGroup]="formDetalles" class="k-form">
+              <div class="row">
+                <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="hojaVidaResumidaPerfil"
+                      class="k-label d-flex align-items-start text-start pt-0"
+                      ><b>Hoja de Vida Resumida Perfil</b>
+                    </label>
+                    <kendo-editor
+                      #hojaVidaResumidaPerfil
+                      formControlName="hojaVidaResumidaPerfil"
+                      style="height: 250px"
+                      [pasteCleanupSettings]="{
+                        removeInvalidHTML: true,
+                        convertMsLists: true,
+                        removeMsClasses: true,
+                        removeMsStyles: true
+                      }"
+                    >
+                      <kendo-toolbar>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorBoldButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorItalicButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorUnderlineButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorStrikethroughButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorAlignLeftButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAlignCenterButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAlignRightButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAlignJustifyButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-dropdownlist
+                          kendoEditorFormat
+                        ></kendo-toolbar-dropdownlist>
+                        <kendo-toolbar-dropdownlist
+                          kendoEditorFontSize
+                        ></kendo-toolbar-dropdownlist>
+                        <kendo-toolbar-dropdownlist
+                          kendoEditorFontFamily
+                        ></kendo-toolbar-dropdownlist>
+                        <kendo-toolbar-colorpicker
+                          kendoEditorForeColor
+                        ></kendo-toolbar-colorpicker>
+                        <kendo-toolbar-colorpicker
+                          kendoEditorBackColor
+                          view="gradient"
+                        ></kendo-toolbar-colorpicker>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorInsertUnorderedListButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorInsertOrderedListButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorIndentButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorOutdentButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-button
+                          kendoEditorBlockquoteButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorCreateLinkButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorUnlinkButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-button
+                          kendoEditorViewSourceButton
+                        ></kendo-toolbar-button>
+                        <kendo-toolbar-button
+                          kendoEditorCleanFormattingButton
+                        ></kendo-toolbar-button>
+                        <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorAddColumnBeforeButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAddColumnAfterButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAddRowBeforeButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorAddRowAfterButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-buttongroup>
+                          <kendo-toolbar-button
+                            kendoEditorDeleteColumnButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorDeleteRowButton
+                          ></kendo-toolbar-button>
+                          <kendo-toolbar-button
+                            kendoEditorDeleteTableButton
+                          ></kendo-toolbar-button>
+                        </kendo-toolbar-buttongroup>
+                        <kendo-toolbar-button
+                          kendoEditorPrintButton
+                        ></kendo-toolbar-button>
+                      </kendo-toolbar>
+                    </kendo-editor>
+                  </kendo-formfield>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="hojaVidaResumidaSpeech"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span> <b>Hoja de Vida Resumida Speech</b></span>
+                    </label>
+                    <kendo-textarea
+                      #hojaVidaResumidaSpeech
+                      formControlName="hojaVidaResumidaSpeech"
+                      [placeholder]="'Hoja de Vida Resumida Speech'"
+                      resizable="none"
+                      [rows]="12"
+                      style="height: 150px"
+                    >
+                    </kendo-textarea>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="formacionAcademica"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Formacion Academica</b></span>
+                    </label>
+                    <kendo-textarea
+                      #formacionAcademica
+                      resizable="none"
+                      [placeholder]="'Formacion Academica'"
+                      [rows]="12"
+                      style="height: 150px"
+                      formControlName="formacionAcademica"
+                    >
+                    </kendo-textarea>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="experienciaProfesional"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Experiencia Profesional</b></span>
+                    </label>
+                    <kendo-textarea
+                      #experienciaProfesional
+                      formControlName="experienciaProfesional"
+                      [placeholder]="'Experiencia Profesional'"
+                      resizable="none"
+                      [rows]="12"
+                      style="height: 150px"
+                    >
+                    </kendo-textarea>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="publicaciones"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                      style="resize: none"
+                    >
+                      <span><b>Publicaciones</b></span>
+                    </label>
+                    <kendo-textarea
+                      #publicaciones
+                      formControlName="publicaciones"
+                      [placeholder]="'Publicaciones'"
+                      resizable="none"
+                      [rows]="12"
+                      style="height: 150px"
+                    >
+                    </kendo-textarea>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="premiosDistinciones"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Premios Distinciones</b></span>
+                    </label>
+                    <kendo-textarea
+                      #premiosDistinciones
+                      formControlName="premiosDistinciones"
+                      [placeholder]="'Premios Distinciones'"
+                      resizable="none"
+                      [rows]="12"
+                      style="height: 150px"
+                    >
+                    </kendo-textarea>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+                  <kendo-formfield orientation="horizontal">
+                    <label
+                      [for]="otraInformacion"
+                      class="k-label pt-0 d-flex align-items-start text-start"
+                    >
+                      <span><b>Otra Informacion</b></span>
+                    </label>
+                    <kendo-textarea
+                      #otraInformacion
+                      formControlName="otraInformacion"
+                      [placeholder]="'Otra Informacion'"
+                      resizable="none"
+                      [rows]="12"
+                      style="height: 150px"
+                    >
+                    </kendo-textarea>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </form>
+            <!-- CONTENT -->
+          </ng-template>
+        </kendo-tabstrip-tab>
+      </kendo-tabstrip>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 justify-content-end">
+      <button
+        themeColor="success"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="isNew ? insertar() : actualizar()"
+        [disabled]="enProcesoSolicitud"
+      >
+        {{ isNew ? " Nuevo" : "Actualizar" }}
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        icon="close"
+        kendoButton
+        [disabled]="enProcesoSolicitud"
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+<!-- #endregion Modal Expositor-->

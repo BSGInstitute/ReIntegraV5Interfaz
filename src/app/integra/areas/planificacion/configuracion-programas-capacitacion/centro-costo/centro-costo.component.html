@@ -1,0 +1,349 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Lista de Centro Costos</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              kendoGrid
+              [kendoGridBinding]="gridCentroCosto.data"
+              [loading]="gridCentroCosto.loading"
+              (edit)="gridCentroCosto.editHandler($event)"
+              (cancel)="gridCentroCosto.cancelHandler($event)"
+              (save)="gridCentroCosto.saveHandler($event)"
+              (remove)="gridCentroCosto.removeHandler($event)"
+              (add)="gridCentroCosto.addHandler($event)"
+              (dataStateChange)="gridCentroCosto.onStateChange($event)"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="gridCentroCosto.gridState.skip"
+              [pageSize]="gridCentroCosto.gridState.take"
+              filterable="menu"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  [themeColor]="'primary'"
+                  icon="plus"
+                  (click)="abrirModalCentroCosto(modalCentroCosto, true)"
+                >
+                  Agregar
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="nombre"
+                title="Centro Costo"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="codigo"
+                title="Codigo"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="usuarioCreacion"
+                title="Usuario Creacion"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="fechaCreacion"
+                title="Fecha Creacion"
+                headerClass="header-grid-integra"
+              >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="text-center">
+                  {{ dataItem.fechaCreacion | date : "dd-MM-yyyy HH:mm" }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="usuarioModificacion"
+                title="Usuario Modificaciono"
+                headerClass="header-grid-integra"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="fechaModificacion"
+                title="Fecha Modificacion"
+                headerClass="header-grid-integra"
+              >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="text-center">
+                  {{ dataItem.fechaCreacion | date : "dd-MM-yyyy HH:mm" }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- kendoGridEditCommand -->
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      (click)="
+                        abrirModalCentroCosto(modalCentroCosto, false, dataItem)
+                      "
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-delete k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalCentroCosto let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Registrar Centro Costo" : "Actualizar CentroCosto" }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formCentroCosto">
+      <div class="row">
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label pt-0 d-flex align-items-start text-start">
+            Area BS
+          </label>
+          <kendo-dropdownlist
+            [data]="combos.areaCc"
+            textField="nombre"
+            valueField="id"
+            formControlName="idAreaBS"
+            [valuePrimitive]="true"
+            [kendoDropDownFilter]="filterSettings"
+            (valueChange)="onChangeAreaBs($event)"
+            [defaultItem]="{
+              id: null,
+              nombre: '<Seleccione Area>'
+            }"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label pt-0 d-flex align-items-start text-start">
+            Sub Nivel
+          </label>
+          <kendo-dropdownlist
+            [data]="filtroSubNivel"
+            textField="nombre"
+            valueField="id"
+            formControlName="idSubNivel"
+            [valuePrimitive]="true"
+            [kendoDropDownFilter]="filterSettings"
+            (valueChange)="onChangeSubNivel($event)"
+            [defaultItem]="{
+              id: null,
+              nombre: '<Seleccione SubNivel>'
+            }"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label pt-0 d-flex align-items-start text-start">
+            Ciudad
+          </label>
+          <kendo-dropdownlist
+            [data]="combos.ciudad"
+            textField="nombre"
+            valueField="id"
+            formControlName="idCiudad"
+            [valuePrimitive]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{
+              id: null,
+              nombre: '<Seleccione Ciudad>'
+            }"
+            (valueChange)="onChangeCiudad($event)"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label d-flex align-items-start text-start pt-0">
+            <span> Codigo Troncal<strong class="text-danger"></strong>:</span>
+          </label>
+          <kendo-textbox
+            #codigoTroncal
+            formControlName="codigoTroncal"
+            [disabled]="true"
+          >
+          </kendo-textbox>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label pt-0 d-flex align-items-start text-start">
+            Area
+          </label>
+          <kendo-dropdownlist
+            [data]="combos.area"
+            textField="nombre"
+            valueField="id"
+            formControlName="idArea"
+            [valuePrimitive]="true"
+            (valueChange)="cargarSubAreas($event)"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{
+              id: null,
+              nombre: '<Seleccione Area>'
+            }"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label pt-0 d-flex align-items-start text-start">
+            Sub Area
+          </label>
+          <kendo-dropdownlist
+            [data]="filtroSubArea"
+            textField="nombre"
+            valueField="id"
+            formControlName="idSubArea"
+            [valuePrimitive]="true"
+            (valueChange)="cargarPGenerales($event)"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{
+              id: null,
+              nombre: '<Seleccione SubArea>'
+            }"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label pt-0 d-flex align-items-start text-start">
+            Programa General
+          </label>
+          <kendo-dropdownlist
+            [data]="filtroPGeneral"
+            textField="nombre"
+            valueField="codigo"
+            formControlName="nombrePGeneral"
+            [valuePrimitive]="true"
+            [kendoDropDownFilter]="filterSettings"
+            (valueChange)="cargarNombreCc($event)"
+            [defaultItem]="{
+              codigo: null,
+              nombre: '<Seleccione Programa>'
+            }"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label d-flex align-items-start text-start pt-0">
+            <span> Centro Costo<strong class="text-danger">*</strong>:</span>
+          </label>
+          <kendo-textbox
+            #centroCosto
+            formControlName="nombreCentroCosto"
+            placeholder="<Centro Costo>"
+          >
+          </kendo-textbox>
+          <kendo-formerror
+            >El nombre del Centro Costo es requerido
+          </kendo-formerror>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label
+            class="k-label d-flex align-items-start text-start pt-0"
+            numeric
+          >
+            <span> codigo<strong class="text-danger"></strong>:</span>
+          </label>
+          <kendo-textbox
+            #nombre
+            formControlName="codigo"
+            placeholder="<Codigo>"
+          >
+          </kendo-textbox>
+          <kendo-formerror>El codigo es requerido </kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="crearCentroCosto()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizarCentroCosto()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>

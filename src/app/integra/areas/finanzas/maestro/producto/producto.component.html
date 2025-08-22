@@ -1,0 +1,778 @@
+
+<ng-template #modalProveedor let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Añadir Proveedor
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupDataProveedor">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="dropdownlist" class="k-label">
+                <span
+                  > Nombre Proveedor :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idProveedor"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="itemProveedor"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filtroProveedor($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione al proveedor</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageProveedor("idProveedor") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="Numeric" class="k-label">
+                <span
+                  > Precio :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-numerictextbox
+              #Numeric
+              orientation="horizontal"
+              [style.width.px]="170"
+              formControlName="precio"
+              [min]="0"
+              [autoCorrect]="true"
+              >
+              </kendo-numerictextbox>
+              <kendo-formerror>{{ getErrorMessageProveedor("precio") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="dropdownlist" class="k-label">
+                <span
+                  > Moneda :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idMoneda"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="listaMoneda"
+                  textField="nombrePlural"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione la Moneda</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageProveedor("idMoneda") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="dropdownlist" class="k-label">
+                <span
+                  > Tipo de Pago :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+              formControlName="idTipoPago"
+              class="d-flex"
+              size="small"
+              #dropdownlist
+              [data]="listaTipoPago"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{id:null,nombre:'Seleccionar'}"
+              [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione el tipo de pago</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageProveedor("idTipoPago") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="dropdownlist" class="k-label">
+                <span
+                  > Condiciones :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+              formControlName="idCondicionPago"
+              class="d-flex"
+              size="small"
+              #dropdownlist
+              [data]="listaCondicionPago"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{id:null,nombre:'Seleccionar'}"
+              [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Ingrese la central de la empresa autorizada</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageProveedor("idCondicionPago") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Observaciones :
+                  </span>
+              </label>
+              <kendo-textarea
+                #invitation
+                [style.width.%]="100"
+                resizable="auto"
+                [maxlength]="maxlength"
+                formControlName="observaciones"
+                (valueChange)="onValueChange($event)"
+              >
+                <kendo-textarea-suffix class="custom-styling">
+                  <span class="counter">{{ counter }}</span>
+                </kendo-textarea-suffix>
+              </kendo-textarea>
+              <kendo-formerror>{{ getErrorMessageProveedor("observaciones") }} </kendo-formerror>
+              </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="guardarHistoricoProducto()"
+    >
+      Guardar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalHistorico let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Editar Datos del Historial
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupDataProveedor">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="txt" class="k-label">
+                <span
+                  > Producto :
+                </span
+                >
+              </label>
+              <kendo-textbox
+              [readonly]="true"
+              #txt
+              class="d-flex"
+              size="medium"
+              [clearButton]="true"
+              formControlName="producto"
+              >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="txt" class="k-label">
+                <span
+                  > Proveedor :
+                </span
+                >
+              </label>
+              <kendo-textbox
+              [readonly]="true"
+              #txt
+              class="d-flex"
+              size="medium"
+              [clearButton]="true"
+              formControlName="proveedor"
+              >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="txt" class="k-label">
+                <span
+                  > Precio :
+                </span
+                >
+              </label>
+              <kendo-textbox
+              [readonly]="true"
+              #txt
+              class="d-flex"
+              size="medium"
+              [clearButton]="true"
+              formControlName="precio"
+              >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="txt" class="k-label">
+                <span
+                  > Moneda :
+                </span
+                >
+              </label>
+              <kendo-textbox
+              [readonly]="true"
+              #txt
+              class="d-flex"
+              size="medium"
+              [clearButton]="true"
+              formControlName="moneda"
+              >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="dropdownlist" class="k-label">
+                <span
+                  > Tipo de Pago :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+              formControlName="idTipoPago"
+              class="d-flex"
+              size="small"
+              #dropdownlist
+              [data]="listaTipoPago"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{id:null,nombre:'Seleccionar'}"
+              [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione el tipo de pago</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageProveedor("idTipoPago") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="dropdownlist" class="k-label">
+                <span
+                  > Condiciones :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+              formControlName="idCondicionPago"
+              class="d-flex"
+              size="small"
+              #dropdownlist
+              [data]="listaCondicionPago"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{id:null,nombre:'Seleccionar'}"
+              [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Ingrese la central de la empresa autorizada</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageProveedor("idCondicionPago") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Observaciones :
+                  </span>
+              </label>
+              <kendo-textarea
+                #invitation
+                [style.width.%]="100"
+                resizable="auto"
+                [maxlength]="maxlength"
+                formControlName="observaciones"
+                (valueChange)="onValueChange($event)"
+              >
+                <kendo-textarea-suffix class="custom-styling">
+                  <span class="counter">{{ counter }}</span>
+                </kendo-textarea-suffix>
+              </kendo-textarea>
+              <kendo-formerror>{{ getErrorMessageProveedor("observaciones") }} </kendo-formerror>
+              </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizarHistorico()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<div class="">
+    <div class="row">
+      <div class="col-1fa-rotate-270">
+        <div class="card">
+          <div class="card-header bg-color-material">
+            <h1 class="text-white">Maestro Producto</h1>
+          </div>
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col">
+                <div class="col-1fa-rotate-270">
+                    <div class="card element">
+                      <div class="card-header">
+                        <div class="row">
+                          <div class="col">
+                            <h1 class="text-black">Registros del Producto</h1>
+                          </div>
+                          <div class="col-md-3" >
+                            <button
+                            [disabled]="boton"
+                            type="button"
+                            class="btn btn-success"
+                            style="margin-right: 1rem;"
+                            (click)="Nuevo()"
+                                  >
+                                 + Nuevo
+                            </button>
+                            <button
+                            [disabled]="boton"
+                            type="button"
+                            class="btn btn-warning"
+                            (click)="Editar()"
+                                  >
+                                  Editar
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card-body p-4" >
+                        <div class="row">
+                          <div class="col">
+                            <div *ngIf="productoForm">
+                            <form class="k-form" [formGroup]="formGroupDataProducto">
+
+                                <fieldset class="k-form-fieldset">
+
+                                    <app-loader *ngIf="loaderModal"></app-loader>
+                                    <div class="row col-md-12" style="justify-content: center;" *ngIf="!nuevo">
+                                      <h1 class="text-black" style="text-align: center;">Editar Producto</h1>
+                                    </div>
+                                    <div class="row" style="justify-content: center;" *ngIf="!nuevo">
+                                      <div class="col k-form-horizontal col-md-6">
+                                        <kendo-formfield orientation="horizontal">
+                                          <label [for]="dropdownlist" class="k-label">
+                                              <span
+                                              >Nombre :
+                                              <strong class="text-danger">*</strong></span>
+                                          </label>
+                                          <kendo-dropdownlist
+                                              [disabled]="Activar"
+                                              formControlName="id"
+                                              class="d-flex"
+                                              size="medium"
+                                              #dropdownlist
+                                              [data]="itemsFiltroProducto"
+                                              textField="nombre"
+                                              valueField="id"
+                                              [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                                              [valuePrimitive]="true"
+                                              (selectionChange)="selectionChangeNombre($event)"
+                                              [filterable]="true"
+                                              (filterChange)="filtroProducto($event)"
+                                          >
+                                          </kendo-dropdownlist>
+                                          <kendo-formhint>Seleccione el nombre del Producto</kendo-formhint>
+                                          <kendo-formerror>{{ getErrorMessage("id") }} </kendo-formerror>
+                                        </kendo-formfield>
+                                      </div>
+                                    </div>
+                                    <div class="row" style="justify-content: center;" *ngIf="!nuevo">
+                                      <div class="col k-form-horizontal col-md-6">
+                                        <kendo-formfield orientation="horizontal">
+                                          <label [for]="dropdownlist" class="k-label">
+                                              <span
+                                              >Nuevo Nombre :
+                                              <strong class="text-danger">*</strong></span>
+                                          </label>
+                                          <kendo-combobox
+                                            [disabled]="Activar"
+                                            #txt
+                                            class="d-flex"
+                                            size="medium"
+                                            formControlName="nombre"
+                                            [required]="true"
+                                            [data]="itemsFiltroProducto"
+                                            [filterable]="true"
+                                            textField="nombre"
+                                            valueField="nombre"
+                                            (filterChange)="filtroProducto($event)"
+                                            [allowCustom]="true"
+                                            [defaultItem]="{nombre:'Seleccionar'}"
+                                            [valuePrimitive]="true"
+                                            [itemDisabled]="itemDisabled"
+                                          >
+                                          </kendo-combobox>
+                                          <kendo-formhint>Ingrese el nombre del Producto</kendo-formhint>
+                                          <kendo-formerror>{{ getErrorMessage("nombre") }} </kendo-formerror>
+                                        </kendo-formfield>
+                                      </div>
+                                    </div>
+                                    <div class="row col-md-12" style="justify-content: center;" *ngIf="nuevo">
+                                      <h1 class="text-black" style="text-align: center;">Nuevo Producto</h1>
+                                    </div>
+                                    <div class="row" style="justify-content: center;" *ngIf="nuevo">
+                                      <div class="col k-form-horizontal col-md-6">
+                                        <kendo-formfield orientation="horizontal">
+                                          <label [for]="txt" class="k-label">
+                                              <span
+                                              >Nombre :
+                                              <strong class="text-danger">*</strong></span>
+                                          </label>
+                                          <kendo-combobox
+                                            [disabled]="Activar"
+                                            #txt
+                                            class="d-flex"
+                                            size="medium"
+                                            formControlName="nombre"
+                                            [required]="true"
+                                            [data]="itemsFiltroProducto"
+                                            [filterable]="true"
+                                            textField="nombre"
+                                            valueField="nombre"
+                                            (filterChange)="filtroProducto($event)"
+                                            (selectionChange)="selectionChangeNombre($event)"
+                                            [allowCustom]="true"
+                                            [defaultItem]="{nombre:'Seleccionar'}"
+                                            [valuePrimitive]="true"
+                                            [itemDisabled]="itemDisabled"
+                                            [clearButton]="true"
+                                          >
+                                          </kendo-combobox>
+                                          <kendo-formhint>Ingrese el nombre del Producto</kendo-formhint>
+                                          <kendo-formerror>{{ getErrorMessage("nombre") }} </kendo-formerror>
+                                        </kendo-formfield>
+                                      </div>
+                                    </div>
+                                    <div class="row" style="justify-content: center;">
+                                      <div class="col k-form-horizontal col-md-6">
+                                        <kendo-formfield orientation="horizontal" >
+                                          <label [for]="text" class="k-label">
+                                            <span
+                                              > Descripción :
+                                              <strong class="text-danger">*</strong></span
+                                            >
+                                          </label>
+                                          <kendo-textbox
+                                            [disabled]="Activar"
+                                            #text
+                                            class="d-flex"
+                                            size="medium"
+                                            [clearButton]="true"
+                                            formControlName="descripcion"
+                                            [required]="true"
+                                          >
+                                          </kendo-textbox>
+                                          <kendo-formhint>Ingrese la descripción del Producto</kendo-formhint>
+                                          <kendo-formerror>{{ getErrorMessage("descripcion") }} </kendo-formerror>
+                                        </kendo-formfield>
+                                      </div>
+                                    </div>
+                                    <div class="row" style="justify-content: center;">
+                                      <div class="col k-form-horizontal col-md-6">
+                                        <kendo-formfield orientation="horizontal">
+                                          <label [for]="dropdownlist" class="k-label">
+                                              <span
+                                              >Cuenta :
+                                              <strong class="text-danger">*</strong></span>
+                                          </label>
+                                          <kendo-dropdownlist
+                                              [disabled]="Activar"
+                                              formControlName="cuentaGeneral"
+                                              class="d-flex"
+                                              size="medium"
+                                              #dropdownlist
+                                              [data]="itemsCuentas"
+                                              textField="nombre"
+                                              valueField="cuenta"
+                                              [defaultItem]="{cuenta:null,nombre:'Seleccionar'}"
+                                              [valuePrimitive]="true"
+                                              [filterable]="true"
+                                              (filterChange)="filterChangeCuenta($event)"
+                                          >
+                                          </kendo-dropdownlist>
+                                          <kendo-formerror>{{ getErrorMessage("cuentaGeneral") }} </kendo-formerror>
+                                        </kendo-formfield>
+                                      </div>
+                                    </div>
+                                    <div class="row" style="justify-content: center;">
+                                      <div class="col k-form-horizontal col-md-6">
+                                        <kendo-formfield orientation="horizontal">
+                                          <label [for]="dropdownlist" class="k-label">
+                                              <span
+                                              >Unidad :
+                                              <strong class="text-danger">*</strong></span>
+                                          </label>
+                                          <kendo-dropdownlist
+                                              [disabled]="Activar"
+                                              formControlName="idProductoPresentacion"
+                                              class="d-flex"
+                                              size="medium"
+                                              #dropdownlist
+                                              [data]="listItemsUnidad"
+                                              textField="nombre"
+                                              valueField="id"
+                                              [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                                              [valuePrimitive]="true"
+                                          >
+                                          </kendo-dropdownlist>
+                                          <kendo-formerror>{{ getErrorMessage("idProductoPresentacion") }} </kendo-formerror>
+                                        </kendo-formfield>
+                                      </div>
+                                    </div>
+
+                                </fieldset>
+                              </form>
+                              <br>
+                                <div class="row " style="justify-content: center;">
+                                  <div class="col-md-5"></div>
+                                  <div class="col-md-1">
+                                    <button
+                                    [disabled]="Activar"
+                                    type="button"
+                                    class="btn btn-primary"
+                                    (click)="accionProducto();"
+                                >
+                                    Guardar
+                                </button>
+                                  </div>
+
+                                  <div class="col-md-1">
+                                    <button
+                                    [disabled]="Activar"
+                                    type="button"
+                                    class="btn btn-danger"
+                                    (click)="ResetearForm();"
+                                >
+                                    Cancelar
+                                </button>
+                                  </div>
+
+                                  <div class="col-md-3">
+                                    <button
+                                              [disabled]="Activar"
+                                              type="button"
+                                              class="btn btn-success"
+                                              (click)="openModalProveedor();"
+                                          >
+                                              + Añadir Proveedor
+                                          </button>
+                                  </div>
+                                  <div class="col-md-2">
+                                  </div>
+                               </div>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="card element">
+                        <div class="card-header">
+                          <div class="row">
+                            <div class="col">
+                              <h1 class="text-black">Historial Producto + Proveedor</h1>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <div class="col-md-6 k-form-horizontal">
+                                    <kendo-formfield orientation="horizontal">
+                                      <label [for]="dropdownlist" class="k-label">
+                                          <span
+                                          >Producto + Proveedor :
+                                          </span>
+                                      </label>
+                                      <kendo-dropdownlist
+                                          [formControl]="producto"
+                                          class="d-flex"
+                                          size="medium"
+                                          #dropdownlist
+                                          [data]="itemsHistoricoProductoCombo"
+                                          textField="nombre"
+                                          valueField="id"
+                                          [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                                          [valuePrimitive]="true"
+                                          [filterable]="true"
+                                          (filterChange)="filterChangeProducto($event)"
+                                      >
+                                      </kendo-dropdownlist>
+
+                                    </kendo-formfield>
+                                </div>
+                                <div class="col-md-6">
+                                  <button
+                                      kendoButton
+                                      icon="k-icon k-i-search k-icon-20"
+                                      type="button"
+                                      themeColor="primary"
+                                      (click)="BuscarHistoricoProducto();"
+                                      >
+                                      Buscar
+                                  </button>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                              <div class="col">
+                                <div class="card-header bg-color-material">
+                                  <div class="col">
+                                    <button
+                                    kendoButton
+                                    icon="reload"
+                                    type="button"
+                                    themeColor="secondary"
+                                    style="margin-right: 1rem;"
+                                    (click)="refrescarGrilla()"
+                                    >
+                                    </button>
+
+                                  <button
+                                      kendoButton
+                                      icon="k-icon k-i-file-excel k-icon-20"
+                                      type="button"
+                                      themeColor="tertiary"
+                                      (click)="excelexport.save()"
+                                      >
+                                      Exportar a Excel
+                                  </button>
+                                  <kendo-excelexport
+                                  [data]="listaHistoricoProducto"
+                                  fileName="HistorialProductoProveedor.xlsx" #excelexport>
+                                    <kendo-excelexport-column field="id" title="Id Historial">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="producto" title="Producto">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="proveedor" title="Proveedor">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="condicionPago" title="Condiciones">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="moneda" title="Moneda">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="precio" title="Precio">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="tipoPago" title="Tipo de Pago">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="observaciones" title="Observaciones">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="usuarioModificacion" title="Usuario Modificación">
+                                    </kendo-excelexport-column>
+                                    <kendo-excelexport-column field="fechaModificacion" title="Fecha Modificación" >
+                                    </kendo-excelexport-column>
+                                  </kendo-excelexport>
+                                  </div>
+                                </div>
+                                <k-grid-edit
+                                  [gridData]="listaHistoricoProducto"
+                                  [loader]="loader"
+                                  [columns]="gridProducto.columns"
+                                  [commands]="gridProducto.comands"
+                                  [readOnlyColumns]="gridProducto.readOnlyColumns"
+                                  [gridConfig]="gridProducto.gridConfig"
+                                  [gridState]="gridProducto.gridState"
+                                  [commandAdd]="'external'"
+                                  [commandEdit]="'external'"
+                                  (OnGridEvents)="gridEventsResponse($event)"
+                                  [toolbarTemplate]="false"
+                                >
+                                </k-grid-edit>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,673 @@
+<div class="contenedor" #pespecificomodule id="pespecificomodule">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header pb-0 bg-color-material">
+          <h2 class="mb-2 text-white text-center">
+            Registro de Encuestas Asignadas al Programa Especifico
+          </h2>
+        </div>
+        <div class="card-body p-4 k-form k-form-horizontal" id="grillaAgendaTab">
+          <div class="row mt-1">
+            <div class="col fw-bold fs-6">Búsqueda por</div>
+          </div>
+          <form [formGroup]="formFiltro">
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Area
+                      </label>
+                      <kendo-multiselect [data]="combosModulo.areaCapacitacion" textField="nombre" valueField="id"
+                        formControlName="idsAreas" [valuePrimitive]="true" (valueChange)="cargarSubAreas($event)"
+                        [kendoDropDownFilter]="filterSettings"></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Sub Area
+                      </label>
+                      <kendo-multiselect [data]="subAreasCapacitacion" textField="nombre" valueField="id"
+                        formControlName="idsSubAreas" [valuePrimitive]="true" (valueChange)="cargarPGenerales($event)"
+                        [kendoDropDownFilter]="filterSettings"></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Programa General
+                      </label>
+                      <kendo-multiselect [data]="programasGeneralP" textField="nombre" valueField="id"
+                        formControlName="idsProgramasGenerales" [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings" (valueChange)="cargarPEspecificos($event)">
+                      </kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Programa Especifico
+                      </label>
+                      <kendo-multiselect [data]="programasEspecifico" textField="nombre" valueField="id"
+                        formControlName="idsProgramasEspecifico" [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings" (valueChange)="cargarCentrosCosto($event)">
+                      </kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-6">
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Estado<br />
+                        Programa Especifico
+                      </label>
+                      <kendo-multiselect [data]="combosModulo.estadoPEspecifico" [filterable]="true" textField="nombre"
+                        valueField="id" formControlName="idsEstadosPEspecifico" [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Ciudad
+                      </label>
+                      <kendo-multiselect [data]="combosModulo.ciudadBS" [filterable]="true" textField="nombre"
+                        valueField="id" formControlName="idsCiudades" [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Modalidad
+                      </label>
+                      <kendo-multiselect [data]="combosModulo.modalidad" [filterable]="true" textField="nombre"
+                        valueField="id" formControlName="idsModalidades" [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"></kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer py-3">
+          <div class="k-form-buttons m-0 justify-content-end">
+            <button themeColor="primary" kendoButton icon="search" (click)="obtenerPespecificos()">
+              Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <kendo-grid [kendoGridBinding]="gridProgramaEspecifico.data" [loading]="gridProgramaEspecifico.loading"
+            [pageSize]="gridProgramaEspecifico.pageSize" [sortable]="true" [resizable]="true" [selectable]="true"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }" [skip]="0" [pageSize]="20" filterable="menu" [sort]="[{ field: 'id', dir: 'desc' }]"
+            (cellClick)="gridProgramaEspecifico.cellClickHandler($event)"
+            (cellClose)="gridProgramaEspecifico.cellCloseHandler($event)">
+            <kendo-grid-column field="nombre" title="Programa Especifico" [width]="300"
+              headerClass="justify-content-center" [editable]="false">
+            </kendo-grid-column>
+            <kendo-grid-column field="estadoP" title="Estado" [width]="100" headerClass="justify-content-center">
+              <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                <kendo-dropdownlist [formControl]="formGroup.get('estadoPespecifico')" class="d-flex" size="medium"
+                  [data]="combosModulo.estadoPEspecifico" textField="nombre" valueField="id">
+                </kendo-dropdownlist>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="tipo" title="Tipo" [width]="100" headerClass="justify-content-center"
+              [editable]="false">
+            </kendo-grid-column>
+            <kendo-grid-column field="ciudad" title="Ciudad" [width]="100" headerClass="justify-content-center"
+              [editable]="false">
+            </kendo-grid-column>
+            <kendo-grid-column field="tipoSesion" title="Tipo Programa" [width]="100"
+              headerClass="justify-content-center" [editable]="false">
+            </kendo-grid-column>
+            <kendo-grid-column field="tipoProgramaGeneral" title="Tipo Programa General" [width]="100"
+              headerClass="justify-content-center" [editable]="false">
+              <ng-template kendoGridHeaderTemplate>
+                <div class="w-100 text-center text-overflow-hidden">
+                  Tipo Programa<br />General
+                </div>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-command-column title="Configurar" [width]="80" headerClass="justify-content-center">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="text-center">
+                  <button themeColor="warning" kendoButton icon="gear" class="mx-1" container="body" placement="top"
+                    ngbTooltip="Ver Configuracion" [disabled]="disablebBtnpPespecifico"
+                    (click)="abrirModalEncuesta(dataItem)"></button>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+            <kendo-grid-excel fileName="Products.xlsx" [fetchData]="allData"></kendo-grid-excel>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- #region Modal modalPespecificoEncuesta  -->
+<ng-template #modalPespecificoEncuesta let-modal>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="modal-header bg-color-material d-flex justify-content-between align-items-center">
+          <h2 class="modal-title m-0 p-0 text-white text-center flex-grow-1">
+            Registro de Encuestas Asignadas al Programa Especifico
+          </h2>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+        <div class="card-body p-4 k-form k-form-horizontal" id="grillaAgendaTab">
+          <form [formGroup]="formAsignarEncuesta">
+            <div class="row mx-4">
+              <p style="font-size: 1rem">Detalle</p>
+              <hr style="margin: 8px 0" />
+              <div class="col-sm-12">
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Programa General
+                      </label>
+                      <kendo-textbox textField="nombre"  [disabled]="true" valueField="id" formControlName="nombre"
+                        [valuePrimitive]="true"></kendo-textbox>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Programa Especifico
+                      </label>
+                      <kendo-textbox textField="nombre"  [disabled]="true" valueField="id" formControlName="nombrePespecifico"
+                        [valuePrimitive]="true"></kendo-textbox>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label pt-0 d-flex align-items-start text-start">
+                        Tipo Programa
+                      </label>
+                      <kendo-textbox textField="nombre" valueField="id"  [disabled]="true" formControlName="tipo" [valuePrimitive]="true">
+                      </kendo-textbox>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="row mt-2 mx-4">
+          <div class="col-12">
+              <div class="card-body">
+                <kendo-grid [kendoGridBinding]="gridSesiones.data" [loading]="loadingGridCursosHijos"
+                  [pageSize]="gridProgramaEspecifico.pageSize" [navigable]="true" [sortable]="true" [resizable]="true"
+                  [selectable]="true" [pageable]="{
+                    buttonCount: 5,
+                    info: true,
+                    type: 'numeric',
+                    pageSizes: true,
+                    previousNext: true,
+                    position: 'bottom'
+                  }" [skip]="0" [pageSize]="20" filterable="menu" [sort]="[{ field: 'id', dir: 'desc' }]"
+                  (detailExpand)="onDetailExpand($event)">
+                  <ng-template kendoGridToolbarTemplate> </ng-template>
+                  <kendo-grid-column field="nombre" title="Programa Especifico" [width]="300"
+                    headerClass="justify-content-center">
+                  </kendo-grid-column>
+                  <kendo-grid-column field="idEstadoPEspecifico" title="Estado" class="text-center" [width]="120"
+                    headerClass="justify-content-center">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      {{ estados[dataItem.idEstadoPEspecifico] }}
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column field="idModalidadCurso" title="Modalidad" class="text-center" [width]="150"
+                    headerClass="justify-content-center">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      {{ modalidades[dataItem.idModalidadCurso] }}
+                    </ng-template>
+                  </kendo-grid-column>
+                  <ng-template kendoGridDetailTemplate let-dataItem>
+                    <div *ngIf="dataItem.idModalidadCurso == 2" class="card-body">
+                      <kendo-grid [data]="dataItem.listaSesiones" [loading]="dataItem.loadingSesiones" [pageSize]="5"
+                        [pageable]="true" scrollable="none" [navigable]="true" kendoGridFocusable>
+                        <kendo-grid-column title="Sesiones" [width]="120">
+                          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                            {{ "Sesion " + (rowIndex + 1) }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column field="fechaHoraSesion" title="Fecha">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.fechaHoraInicio | date : "dd/MM/yyyy" }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column field="fechaHoraSesion" title="Hora">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.fechaHoraInicio | date : "HH:mm" }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column title="Encuesta Asignada">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.numeroEncuestas == 0 ? "NO" : "SI" }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column field="numeroEncuestas" title="Nro Encuestas">
+                        </kendo-grid-column>
+                        <kendo-grid-command-column title="Asignar" [width]="80" headerClass="justify-content-center">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            <div class="text-center">
+                              <button themeColor="warning" kendoButton icon="check-circle" class="mx-1" container="body"
+                                placement="top" ngbTooltip="Ver Configuracion" (click)="asignarEncuesta(dataItem)"></button>
+                            </div>
+                          </ng-template>
+                        </kendo-grid-command-column>
+                      </kendo-grid>
+                    </div>
+
+                    <div *ngIf="dataItem.idModalidadCurso == 1" class="card-body">
+                      <kendo-grid [data]="dataItem.listaSesiones" [loading]="dataItem.loadingSesiones" [pageSize]="5"
+                        [pageable]="true" scrollable="none" [navigable]="true" kendoGridFocusable>
+                        <kendo-grid-column title="Capitulo" [width]="120">
+                          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                            {{ dataItem.nombreCapitulo}}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column title="EncuestaAsignada">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.titulo}}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column title="Ubicación">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.ubicacionEncuesta == 1 ? "Antes del Capítulo" : "Después del Capítulo" }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column title="Fecha de asignación">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ dataItem.fechaModificacion | date : "dd/MM/yyyy" }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-command-column title="Acciones" [width]="80" headerClass="justify-content-center">
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            <div class="text-center">
+                              <button themeColor="warning" kendoButton icon="check-circle" class="mx-1" container="body"
+                                placement="top" ngbTooltip="Ver Configuracion" (click)="AsignarEncuestaAsincronica(dataItem)"></button>
+                            </div>
+                          </ng-template>
+                        </kendo-grid-command-column>
+                      </kendo-grid>
+                      <div style="display: flex; justify-content: end;">
+                        <button style="background-color: #0F4C81;color: white;font-weight: bold;padding: 7px 20px" (click)="AsignarEncuestaAsincronica(true)">
+                          + Añadir
+                        </button>
+                      </div>
+                    </div>
+                  </ng-template>
+                </kendo-grid>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+</ng-template>
+<!-- #endregion Modal modalPespecificoEncuesta -->
+
+<!-- #region Modal modalAsignarEncuesta -->
+<ng-template #modalDetalleEncuestas let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary text-light">
+    <h3>Detalle Configuración</h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formEncuesta">
+      <p style="font-size: 1rem">Asignacion de Encuesta</p>
+      <hr style="margin: 8px 0" />
+      <div class="row">
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Encuesta :</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+            <kendo-dropdownlist formControlName="idEncuestaOnline" class="d-flex" size="small" #dropdownlistCategoria
+              [data]="listaEncuesta" textField="nombre" valueField="id" [defaultItem]="{id:null,nombre:'Seleccionar'}"
+              [valuePrimitive]="true">
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Encuesta Obligatoria:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+
+            <kendo-switch formControlName="encuestaObligatoria" onLabel="SI" offLabel="NO" style="width: 65px;"
+              (click)="logSwitch()">
+            </kendo-switch>
+          </kendo-formfield>
+        </div>
+        <div class="col-2">
+          <label style="margin-top: 1em; padding: 0 15px" class="k-label">
+            <span>Encuesta Activa:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+
+            <kendo-switch formControlName="encuestaActiva" onLabel="SI" offLabel="NO" style="width: 65px;"
+              (click)="logSwitch()">
+            </kendo-switch>
+          </kendo-formfield>
+        </div>
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Encuesta para alumno:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+            <input type="radio" kendoRadioButton formControlName="asignadoPara" value="alumno" />
+          </kendo-formfield>
+        </div>
+        <div class="col-2">
+          <label style="margin-top: 1em; padding: 0 15px" class="k-label">
+            <span>Encuesta para docente:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+            <input type="radio" kendoRadioButton formControlName="asignadoPara" value="docente" />
+          </kendo-formfield>
+        </div>
+      </div>
+
+
+      <p style="font-size: 1rem">Encuestas Asignadas</p>
+      <hr style="margin: 8px 0" />
+      <div class="row m-3">
+        <kendo-grid [kendoGridBinding]="listaEncuestaAsignada" [pageSize]="5" [pageable]="true" [sortable]="true"
+          [resizable]="true" [loading]="loadingGridAsignado" class="gridLog">
+          <kendo-grid-column title="Encuesta Asignada" field="nombreEncuesta">
+          </kendo-grid-column>
+          <kendo-grid-column title="Obligatoria" field="encuestaObligatoria">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.encuestaObligatoria ? 'Sí' : 'No' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Activa" field="encuestaActiva">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.encuestaActiva ? 'Sí' : 'No' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Asignado" field="asignadoPara">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.asignadoPara ? 'Alumno' : 'Docente' }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-command-column title="Acciones" [width]="80" headerClass="justify-content-center">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="text-center">
+                <button themeColor="error" kendoButton icon="trash" class="mx-1" container="body"
+                  placement="top" ngbTooltip="Eliminar" (click)="eliminarEncuesta(dataItem)"></button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton class="hoverButton" themeColor="primary" (click)="registrarEncuesta()">
+        Guardar
+      </button>
+      <button kendoButton themeColor="error" class="hoverButton" (click)="modal.dismiss('Cross click')">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- #region Modal modalAsignarEncuestaAsincrona -->
+
+<ng-template #modalDetalleEncuestasAsincronica let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary text-light">
+    <h3>Detalle Configuración</h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formEncuestaAsincronica">
+      <p style="font-size: 1rem">Asignacion de Encuesta</p>
+      <hr style="margin: 8px 0" />
+      <div class="row">
+        
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Encuesta :</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+            <kendo-dropdownlist formControlName="idExamen" class="d-flex" size="small" #dropdownlistCategoria
+              [data]="listaEncuestaAsincronica" textField="nombre" valueField="id" [defaultItem]="{id:null,nombre:'Seleccionar'}"
+              [valuePrimitive]="true">
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Capitulo :</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+            <kendo-dropdownlist class="d-flex" formControlName="idCapituloProgramaCapacitacion" size="small"
+              [data]="capitulos" textField="capituloProgramaCapacitacion" valueField="idCapituloProgramaCapacitacion" [defaultItem]="{idCapituloProgramaCapacitacion:null,capituloProgramaCapacitacion:'Seleccionar'}"
+              [valuePrimitive]="true"
+              >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+
+        <!-- <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Sesion :</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+            <kendo-dropdownlist class="d-flex" formControlName="idSesionProgramaCapacitacion" size="small" 
+              [data]="sesiones" textField="sesionProgramaCapacitacion" valueField="idSesionProgramaCapacitacion" [defaultItem]="{idSesionProgramaCapacitacion:null,sesionProgramaCapacitacion:'Seleccionar'}"
+              [valuePrimitive]="true"
+              (valueChange)="onSesionChange($event)"
+              [disabled]="!sesiones.length"
+              >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Subsesión :</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+            <kendo-dropdownlist class="d-flex" formControlName="idSubSesionProgramaCapacitacion" size="small"
+              [data]="subSesiones" textField="subSeccionProgramaCapacitacion" valueField="idSubSesionProgramaCapacitacion" [defaultItem]="{idSubSesionProgramaCapacitacion:null,subSeccionProgramaCapacitacion:'Seleccionar'}"
+              [valuePrimitive]="true"
+              [disabled]="!subSesiones.length"
+              >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div> -->
+
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span> Ubicación de la encuesta:</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-formfield class="custom-rqsc-remove-max-width-formfield" orientation="horizontal">
+            <kendo-dropdownlist class="d-flex" formControlName="ubicacionEncuesta" size="small"
+              [data]="ubicacionEncuesta" textField="nombre" valueField="id" [defaultItem]="{id:null,nombre:'Seleccionar'}"
+              [valuePrimitive]="true"
+              >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Encuesta Obligatoria:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+            <kendo-switch formControlName="encuestaObligatoria" onLabel="SI" offLabel="NO" style="width: 65px;"
+              (click)="logSwitch()">
+            </kendo-switch>
+          </kendo-formfield>
+        </div>
+        <div class="col-2">
+          <label style="margin-top: 1em; padding: 0 15px" class="k-label">
+            <span>Encuesta Activa:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+            <kendo-switch formControlName="encuestaActiva" onLabel="SI" offLabel="NO" style="width: 65px;"
+              (click)="logSwitch()">
+            </kendo-switch>
+          </kendo-formfield>
+        </div>
+        <div class="w-100"></div>
+        <div class="col-2">
+          <label style="margin-top: 1em" class="k-label">
+            <span>Encuesta para alumno:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+            <input type="radio" kendoRadioButton formControlName="idTipoPersona" value="alumno" />
+          </kendo-formfield>
+        </div>
+        <div class="col-2">
+          <label style="margin-top: 1em; padding: 0 15px" class="k-label">
+            <span>Encuesta para docente:</span>
+          </label>
+        </div>
+        <div class="col-4">
+          <kendo-formfield orientation="horizontal">
+            <input type="radio" kendoRadioButton formControlName="idTipoPersona" value="docente" />
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <p style="font-size: 1rem">Encuestas Asignadas</p>
+      <hr style="margin: 8px 0" />
+      <div class="row m-3">
+        <kendo-grid [kendoGridBinding]="dataItemActual.listaSesiones" [pageSize]="5" [pageable]="true" [sortable]="true"
+          [resizable]="true" [loading]="loadingGridAsignado" class="gridLog">
+          <kendo-grid-column title="Capitulo" field="nombreCapitulo">
+            {{dataItemActual.nombreCapitulo}}
+          </kendo-grid-column>
+          <kendo-grid-column title="Encuesta Asignada" field="titulo">
+            {{dataItemActual.titulo}}
+          </kendo-grid-column>
+          <kendo-grid-column title="Obligatoria" field="encuestaObligatoria">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.encuestaObligatoria ? 'Sí' : 'No' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Activa" field="encuestaActiva">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.encuestaActiva ? 'Sí' : 'No' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Asignado" field="idTipoPersona">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.idTipoPersona == 1 ? 'Alumno' : 'Docente' }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-command-column title="Acciones" [width]="80" headerClass="justify-content-center">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="text-center">
+                <button themeColor="error" kendoButton icon="trash" class="mx-1" container="body"
+                  placement="top" ngbTooltip="Eliminar" (click)="eliminarEncuestaAsincronicaAsignada(dataItem)"></button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton class="hoverButton" themeColor="primary" (click)="registrarEncuestaAsincronica()">
+        Guardar
+      </button>
+      <button kendoButton themeColor="error" class="hoverButton" (click)="modal.dismiss('Cross click')">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

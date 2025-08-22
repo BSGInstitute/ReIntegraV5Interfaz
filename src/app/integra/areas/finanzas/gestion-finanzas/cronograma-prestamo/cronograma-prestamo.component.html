@@ -1,0 +1,220 @@
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">(R) Generación de Reporte de Prestamos</h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="row d-flex justify-content-center mb-4">
+            <div class="col-8">
+              <div class="card">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Resultados del Reporte</h3>
+                </div>
+                <div class="card-body k-form k-form-horizontal">
+                  <form [formGroup]="formReporteCronogramaPrestamo">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="entidad" class="k-label">
+                            Entidad: </label>
+                            <kendo-dropdownlist
+                            #entidad
+                            formControlName="idEntidadFinanciera"
+                            [data]="comboEntidadFinanciera"
+                            textField="nombre"
+                            [valuePrimitive]="true"
+                            valueField="id"
+                            [defaultItem]="{nombre:'Seleccionar Entidad'}"
+                            (valueChange)="changeEntidadFinanciera($event)"
+
+
+                          >
+                        </kendo-dropdownlist>
+                        </kendo-formfield>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="prestamo" class="k-label">
+                            Prestamo
+                          </label>
+                          <kendo-dropdownlist
+                            #prestamo
+                            formControlName="idGastoFinancieroCronograma"
+                            [data]="ComboPrestamo"
+                            [valuePrimitive]="true"
+                            textField="nombre"
+                            valueField="id"
+                            [defaultItem]="{id:null,nombre:'Seleccionar Prestamo'}"
+                          >
+                        </kendo-dropdownlist>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                </form>
+                </div>
+
+                <div class="card-footer">
+                  <div class="k-form-buttons m-0">
+                    <div
+                      class="col-12 d-flex justify-content-end k-form-buttons m-0"
+                    >
+                      <button
+                        kendoButton
+                        role="button"
+                        themeColor="success"
+                        (click)="ObtenerReportePrestamo()"
+
+                      >
+                        Generar Reporte
+                      </button>
+
+                    </div>
+                  </div>
+
+                  <div class="col-6 d-flex justify-content-end"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+
+    <div class="">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header bg-color-material pb-0">
+              <h3 class="text-white mb-2">Registros LandingPage - Facebook</h3>
+            </div>
+            <div class="card-body p-4">
+              <div class="row">
+                <div class="col">
+                  <kendo-grid
+                    [loading]="loader"
+                    [kendoGridBinding]="gridCronogramaPrestamo.data"
+                    filterable="menu"
+                    [sortable]="true"
+                    [resizable]="true"
+                    [pageable]="{
+                      buttonCount: 5,
+                      info: true,
+                      type: 'numeric',
+                      pageSizes: true,
+                      previousNext: true,
+                      position: 'bottom'
+                    }"
+                    [pageSize]="10"
+
+                  >
+                  <ng-template kendoGridToolbarTemplate>
+                    <button type="button" kendoGridExcelCommand icon="file-excel"
+                    (click)="excelexport.save()">
+                      Export to Excel
+                    </button>
+                  </ng-template>
+
+
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoButton
+                        icon="reload"
+                        fillMode="flat"
+                        themeColor="secondary"
+
+                      >
+                    </button>
+                      <kendo-grid-spacer></kendo-grid-spacer>
+                    </ng-template>
+                    <kendo-grid-column
+                        field="numeroCuota"
+                        title="Nro. Cuota"
+                        [width]="270"
+                        headerClass="headerGridChat"
+
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                      field="fechaVencimientoCuota"
+                      title="Fecha de Vencimiento"
+                      [width]="270"
+                      headerClass="headerGridChat"
+
+                    >
+                    <ng-template kendoGridCellTemplate let-dataItem >
+                      {{
+                          fechaTemplate(dataItem.fechaVencimientoCuota)
+                      }}
+                    </ng-template>
+                    </kendo-grid-column>
+                      <kendo-grid-column
+                        field="capitalCuota"
+                        title="Capital de Cuota"
+                        [width]="270"
+                        headerClass="headerGridChat"
+
+                      >
+                      </kendo-grid-column>
+
+
+                        <kendo-grid-column
+                        field="interesCuota"
+                        title="Interes de Cuota"
+                        [width]="270"
+                        headerClass="headerGridChat"
+
+                      >
+                      </kendo-grid-column>
+
+
+                      <kendo-grid-column
+
+                      field="totalCuota"
+                      title="Total de Cuota"
+                      [width]="270"
+                      headerClass="headerGridChat"
+
+                    >
+                </kendo-grid-column>
+
+                <kendo-excelexport
+
+                [data]="gridCronogramaPrestamo.data"
+                fileName="ReporteCronograma" #excelexport>
+                  <kendo-excelexport-column field="numeroCuota" title="Nro. Cuota">
+                  </kendo-excelexport-column>
+
+                  <kendo-excelexport-column field="fechaVencimientoCuota" title="Fecha de Vencimiento">
+                  </kendo-excelexport-column>
+
+                  <kendo-excelexport-column field="capitalCuota" title="Capital de Cuota">
+                  </kendo-excelexport-column>
+
+                  <kendo-excelexport-column field="interesCuota" title="Total de Cuota">
+                  </kendo-excelexport-column>
+
+                  <kendo-excelexport-column field="totalCuota" title="Total de Cuota">
+                  </kendo-excelexport-column>
+
+
+
+                </kendo-excelexport>
+
+
+                  </kendo-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+

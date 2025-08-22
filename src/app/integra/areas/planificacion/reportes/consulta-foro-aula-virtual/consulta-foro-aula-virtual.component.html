@@ -1,0 +1,674 @@
+<div class="card border-primary mb-3 rpav">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="mb-2 text-white text-center">
+      (R) Filtro para consultas en foros del aula virtual
+    </h2>
+  </div>
+  <div class="card-body p-4">
+    <form [formGroup]="formFiltro" orientation="horizontal">
+      <div class="row">
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="idsProgramas" class="k-label">
+                <span>Programas</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #idsProgramas
+                formControlName="idsProgramas"
+                [data]="dataProgramas"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="idsDocentes" class="k-label">
+                <span>Docentes</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #idsDocentes
+                formControlName="idsDocentes"
+                [data]="dataDocentes"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="idsCursos" class="k-label">
+                <span>Cursos</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-multiselect
+                #idsCursos
+                formControlName="idsCursos"
+                [data]="dataCursos"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+              >
+              </kendo-multiselect>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm col-md m-3">
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <label [for]="idEstado" class="k-label">
+                <span>Estado de la consulta</span>
+              </label>
+            </div>
+            <div class="col-md-8">
+              <kendo-dropdownlist
+                #idEstado
+                formControlName="idEstado"
+                [data]="dataEstado"
+                placeholder="<Todos>"
+                [kendoDropDownFilter]="filterSettings"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+              >
+              </kendo-dropdownlist>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span>Fecha Inicio</span>
+            </div>
+            <div class="col-md-8">
+              <kendo-datepicker
+                #fechaInicio
+                formControlName="fechaInicio"
+                format="yyyy-MM-dd"
+                [max]="obtenerFechaActual"
+              ></kendo-datepicker>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <span>Fecha Fin</span>
+            </div>
+            <div class="col-md-8">
+              <kendo-datepicker
+                #fechaFin
+                formControlName="fechaFin"
+                format="yyyy-MM-dd"
+                [min]="fechaInicio.value"
+              ></kendo-datepicker>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-12 d-flex justify-content-end">
+        <button
+          kendoButton
+          class="send-button"
+          icon="search"
+          style="height: 35px"
+          themeColor="success"
+          [disabled]="btnBuscarDisabled"
+          (click)="generarReporte()"
+        >
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card-body">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="mb-2 text-white text-center">Lista de Consultas en foros</h2>
+  </div>
+
+  <kendo-grid
+    [kendoGridBinding]="gridReporteConsultaForoAulaVirtual.data"
+    [loading]="gridReporteConsultaForoAulaVirtual.loading"
+    [pageSize]="20"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: true,
+      previousNext: true,
+      position: 'bottom'
+    }"
+    [sortable]="true"
+    [selectable]="true"
+    [resizable]="true"
+    filterable="menu"
+  >
+    <ng-template kendoGridToolbarTemplate>
+      <button
+        class="btn btn-success"
+        type="button"
+        kendoGridExcelCommand
+        icon="file-excel"
+        themeColor="success"
+      >
+        Exportar Excel
+      </button>
+    </ng-template>
+    <ng-template
+      kendoPagerTemplate
+      let-totalPages="totalPages"
+      let-currentPage="currentPage"
+    >
+      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+      <kendo-pager-numeric-buttons
+        [buttonCount]="5"
+      ></kendo-pager-numeric-buttons>
+      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+      <kendo-pager-input></kendo-pager-input>
+      <kendo-pager-info></kendo-pager-info>
+      <kendo-pager-page-sizes
+        [pageSizes]="cantidadItems"
+      ></kendo-pager-page-sizes>
+    </ng-template>
+
+    <kendo-grid-column
+      field="idForoCurso"
+      title="Id Foro"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="centroCosto"
+      title="Centro Costo"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+        [style]="'justify-content-center'"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="programa"
+      title="Programa"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="curso"
+      title="Curso"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="docente"
+      title="Docente"
+      [width]="150"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="coordinadorDocente"
+      title="Coordinador Docente"
+      [width]="150"
+      headerClass="justify-content-center"
+    >
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="codigoMatricula"
+      title="cod.Matricula"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="alumno"
+      title="Alumno"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="nombreCoordinadora"
+      title="Coordinadora Alumno"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="tema"
+      title="Tema"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="consulta"
+      title="Consulta"
+      [width]="350"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="fechaConsulta"
+      title="Fecha Consulta"
+      [width]="163"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="text-center">
+          {{ dataItem.fechaConsulta | date : "dd-MM-yyyy" }}
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridFilterMenuTemplate
+        let-filter
+        let-column="column"
+        let-filterService="filterService"
+      >
+        <kendo-grid-string-filter-menu
+          [column]="column"
+          [filter]="filter"
+          [filterService]="filterService"
+          [extra]="false"
+          operator="contains"
+        >
+          <kendo-filter-contains-operator
+            text="Contiene"
+          ></kendo-filter-contains-operator>
+        </kendo-grid-string-filter-menu>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="horaConsulta"
+      title="Hora Consulta"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="usuarioRespuesta"
+      title="Usuario Respuesta"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="respuesta"
+      title="Respuesta"
+      [width]="300"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="fechaRespuesta"
+      title="Fecha Respuesta"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="text-center">
+          {{ dataItem.fechaRespuesta | date : "dd-MM-yyyy" }}
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="horaRespuesta"
+      title="Hora Respuesta"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="estadoAtendido"
+      title="estado de Atencion"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="fechaRespuesta"
+      title="Dias transcurridos"
+      [width]="110"
+      headerClass="justify-content-center"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem ngIF>
+        {{ this.obtenerDiasTrancurridos(dataItem) }}
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="estadoCerrado"
+      title="Estado de Foro"
+      [width]="200"
+      headerClass="justify-content-center"
+    >
+    </kendo-grid-column>
+
+    <kendo-grid-command-column
+      title="Reasignar Docente"
+      [headerStyle]="{ color: '#999999' }"
+      [width]="150"
+      [headerClass]="'justify-content-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <button
+          kendoButton
+          fillMode="solid"
+          themeColor="success"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          ngbTooltip="Confirmar"
+          [disabled]="dataItem.estadoAtendido == 'Atendido'"
+          (click)="abrirModalAsignarDocente(modalAsignarDocente, dataItem)"
+        >
+          Asignar
+        </button>
+      </ng-template>
+    </kendo-grid-command-column>
+    <kendo-grid-command-column
+      title="Apertura de Foro"
+      [headerStyle]="{ color: '#999999' }"
+      [width]="320"
+      [headerClass]="'justify-content-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <button
+          kendoButton
+          fillMode="solid"
+          themeColor="success"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          ngbTooltip="Confirmar"
+          [disabled]="dataItem.estadoCerrado == 'Abierto'"
+          (click)="actualizarAperturaForo(dataItem.idForoCurso, false)"
+        >
+          Abrir Foro
+        </button>
+        <button
+          kendoButton
+          fillMode="solid"
+          themeColor="warning"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          ngbTooltip="Confirmar"
+          [disabled]="dataItem.estadoCerrado == 'Cerrado'"
+          (click)="actualizarAperturaForo(dataItem.idForoCurso, true)"
+        >
+          Cerrar Foro
+        </button>
+      </ng-template>
+    </kendo-grid-command-column>
+    <kendo-grid-command-column
+      title="Opciones de Foro"
+      [headerStyle]="{ color: '#999999' }"
+      [width]="320"
+      [headerClass]="'justify-content-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <button
+          kendoButton
+          fillMode="solid"
+          themeColor="success"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          ngbTooltip="Confirmar"
+          (click)="
+            actualizarEstadoAtencionForo(
+              dataItem.idForoCurso,
+              dataItem.estadoAtendido == 'Pendiente'
+            )
+          "
+        >
+          Cambiar Estado
+        </button>
+        <button
+          kendoButton
+          fillMode="solid"
+          themeColor="error"
+          rounded="large"
+          size="large"
+          class="p-2 me-1 ms-1"
+          container="body"
+          placement="top"
+          ngbTooltip="Eliminar"
+          (click)="eliminar(dataItem.idForoCurso)"
+        >
+          Eliminar Foro
+        </button>
+      </ng-template>
+    </kendo-grid-command-column>
+
+    <ng-template kendoGridDetailTemplate let-dataItem>
+      <app-consulta-foro-aula-virtual-hijo-detalle
+        [idForo]="dataItem.idForoCurso"
+      >
+      </app-consulta-foro-aula-virtual-hijo-detalle>
+    </ng-template>
+
+    <kendo-grid-excel
+      fileName="Reporte-Consulta-Foro-Aula-Virtual.xlsx"
+      [fetchData]="allData"
+    >
+    </kendo-grid-excel>
+  </kendo-grid>
+</div>
+
+<!--Modal Asignar Docente -->
+<ng-template #modalAsignarDocente let-modal>
+  <div class="modal-header">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">Asignar Docente</h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal" [formGroup]="formAsignarDocente">
+      <div class="row">
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label d-flex align-items-start text-start pt-0">
+            <span> Nombre<strong class="text-danger"></strong>:</span>
+          </label>
+          <kendo-textbox
+            #codigoTroncal
+            formControlName="alumno"
+            [disabled]="true"
+          >
+          </kendo-textbox>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label
+            class="k-label d-flex align-items-start text-start pt-0"
+            numeric
+          >
+            <span> Curso<strong class="text-danger"></strong>:</span>
+          </label>
+          <kendo-textbox #nombre formControlName="programa" [disabled]="true">
+          </kendo-textbox>
+        </kendo-formfield>
+
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label pt-0 d-flex align-items-start text-start">
+            Docente
+          </label>
+          <kendo-dropdownlist
+            [data]="dataDocentes"
+            textField="nombre"
+            valueField="id"
+            formControlName="idDocente"
+            [valuePrimitive]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{
+              id: null,
+              nombre: '<Seleccione Docente>'
+            }"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="asignarDocente()">
+      Asignar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="loaderModal"></loading>
+</ng-template>

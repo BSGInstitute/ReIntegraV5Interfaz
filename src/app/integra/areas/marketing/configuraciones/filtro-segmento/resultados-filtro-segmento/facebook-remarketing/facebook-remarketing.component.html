@@ -1,0 +1,285 @@
+<div class="contenedor">
+  <div class="titulo">
+    <h2>Total de Contactos Seleccionados : {{ listaEnvioContactos.length }}</h2>
+  </div>
+
+  <div class="card">
+    <div class="botones">
+      <button mat-flat-button class="botonAgregar" (click)="crepu()">
+        Crear Publico
+      </button>
+      <button mat-flat-button class="botonAgregar" (click)="acpu()">
+        Actualizar Publico
+      </button>
+    </div>
+    <div class="opciones">
+      <ng-container *ngIf="cambio == false">
+        <div class="crearPu">
+          <mat-form-field
+            class="example-full-width"
+            appearance="outline"
+            style="margin-right: 10px; width: 200px"
+          >
+            <mat-label>Nombre Publico</mat-label>
+            <input matInput [(ngModel)]="Nombre" />
+          </mat-form-field>
+          <mat-form-field
+            class="example-full-width"
+            appearance="outline"
+            style="margin-right: 10px; width: 200px"
+          >
+            <mat-label>Descripcion</mat-label>
+            <input matInput [(ngModel)]="Descripcion" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-80" style="margin-right: 10px;">
+            <mat-label>Seleccione tipo de dato:</mat-label>
+            <mat-select [(ngModel)]="tipoDato">
+              <ng-container
+                *ngFor="let item of listaFacebookCuentaPublicitaria"
+              >
+                <mat-option [value]="item.id">{{ item.nombre }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+          <button mat-flat-button class="botonAgregar" (click)="Crear()">
+            Crear en Facebook
+          </button>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="cambio == true">
+        <div class="actualizarPu">
+          <mat-form-field appearance="outline" class="wide-select" style="margin-right: 10px;">
+            <mat-label>Seleccione tipo de dato:</mat-label>
+            <mat-select [(ngModel)]="tipoAudiencia" (selectionChange)="onTipoDatoChanged($event.value)" >
+              <ng-container *ngFor="let item of listaFacebookAudiencia">
+                <mat-option [value]="item.id">{{ item.nombre }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+              <!-- Selector de cuenta publicitaria -->
+        <!-- <mat-form-field appearance="outline" class="wide-select" style="margin-right: 10px; width: 250px;">
+          <mat-label>Seleccione cuenta publicitaria:</mat-label>
+          <mat-select [(ngModel)]="tipoDato">
+            <ng-container *ngFor="let cuenta of listaFacebookCuentaPublicitaria">
+              <mat-option [value]="cuenta.id">{{ cuenta.nombre }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field> -->
+
+          <button mat-flat-button class="botonAgregar" (click)="Actualizar()">
+            Actualizar en Facebook
+          </button>
+        </div>
+      </ng-container>
+    </div>
+    <div class="contenedor">
+      <div class="mat-elevation-z8">
+        <ng-container *ngIf="loading">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-container>
+        <kendo-grid
+          [kendoGridBinding]="listaContactos"
+          [pageSize]="50"
+          [scrollable]="'scrollable'"
+          [height]="500"
+          [sortable]="true"
+          [reorderable]="false"
+          [resizable]="true"
+          [columnMenu]="{ filter: true }"
+          kendoGridSelectBy="idAlumno"
+          [(selectedKeys)]="mySelection"
+          [selectable]="true"
+          (selectionChange)="Seleccionar($event)"
+          [pageable]="{
+            buttonCount: 5,
+            info: true,
+            type: 'numeric',
+            pageSizes: true,
+            previousNext: true,
+            position: 'bottom'
+          }"
+        >
+          <kendo-grid-column
+            title="Check"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template
+              kendoGridHeaderTemplate
+              let-column
+              let-columnIndex="columnIndex"
+            >
+              <i
+                class="material-icons"
+                (click)="SeleccionarTodos()"
+                *ngIf="allSeleccionados != true"
+                >check_box_outline_blank</i
+              >
+              <i
+                class="material-icons"
+                (click)="SeleccionarTodos()"
+                *ngIf="allSeleccionados != false"
+                >check_box</i
+              >
+            </ng-template>
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <i class="material-icons" *ngIf="!dataItem.select"
+                >check_box_outline_blank</i
+              >
+              <i class="material-icons" *ngIf="dataItem.select"
+                >check_box</i
+              >
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            title="Id Alumno"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="idAlumno"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Nombre Alumno"
+            headerClass="justify-content-center k-grid-header "
+            [width]="200"
+            field="nombreAlumno"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Email 1"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="email1Encriptado"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Email 2"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="email2"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Telefono"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="telefono"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Celular"
+            headerClass="justify-content-center k-grid-header "
+            [width]="150"
+            field="celularEncriptado"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Pais"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="nombrePais"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Ciudad"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="nombreCiudad"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Area Formacion"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="nombreAreaFormacion"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Area Trabajo"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="nombreAreaTrabajo"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Industria"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="nombreIndustria"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Cargo"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="nombreCargo"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="En venta Cruzada"
+            headerClass="justify-content-center k-grid-header "
+            [width]="250"
+            field="esVentaCruzada"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>

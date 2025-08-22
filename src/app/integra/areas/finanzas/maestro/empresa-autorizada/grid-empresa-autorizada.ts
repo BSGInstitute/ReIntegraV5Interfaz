@@ -1,0 +1,178 @@
+import { State } from '@progress/kendo-data-query';
+
+export class GridEmpresaAutorizada {
+  readOnlyColumns: any = [
+    'razonSocial',
+    'nombreComercial',
+    'ruc',
+    'direccion',
+    'central',
+    'pais',
+    'usuarioModificacion',
+    'fechaModificacion',
+    'activo',
+  ];
+  columns: any = [
+    {
+      title: 'Razon social',
+      field: 'razonSocial',
+      width: 200,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'Nombre Comercial',
+      field: 'nombreComercial',
+      width: 200,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'RUC',
+      field: 'ruc',
+      width: 120,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'Dirección',
+      field: 'direccion',
+      width: 300,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'Central',
+      field: 'central',
+      width: 200,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'Pais',
+      field: 'pais',
+      width: 150,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'Usuario Modificación',
+      field: 'usuarioModificacion',
+      width: 120,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'Fecha Modificación',
+      field: 'fechaModificacion',
+      width: 140,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+    {
+      title: 'Activo',
+      field: 'activo',
+      width: 100,
+      editable: false,
+      locked: false,
+      sticky: false,
+      filterable: true,
+      autoFitColumn: false,
+      headerClass: 'justify-content-center k-grid-header',
+      columnClass: '',
+    },
+  ];
+
+  comands: any = [
+    {
+      title: 'Acciones',
+      width: 150,
+      autoFitColumn: false,
+      locked: false,
+      sticky: true,
+      headerClass: 'justify-content-center text-center k-grid-header-command',
+      columnClass: '',
+      commands: [
+        {
+          name: 'kendoEditCommand',
+          kendoCommand: true,
+          themeColor: 'warning',
+          fillMode: 'solid',
+          rounded: 'large',
+          size: 'large',
+          icon: 'k-icon',
+          classIcon: 'k-icon k-i-edit k-icon-20',
+          text: '',
+        },
+        {
+          name: 'kendoRemoveCommand',
+          kendoCommand: true,
+          themeColor: 'error',
+          fillMode: 'solid',
+          rounded: 'large',
+          size: 'large',
+          icon: 'k-icon',
+          classIcon: 'k-icon k-i-delete k-icon-20',
+          text: '',
+        },
+      ],
+    },
+  ];
+  gridConfig: any = {
+    filterable: 'menu', //true
+    sortable: false,
+  };
+
+  gridState: State = {
+    group: [],
+    skip: 0,
+    take: 20,
+    sort: [
+      // orden inicial
+      {
+        field: 'fechaModificacion',
+        dir: 'desc', //desc
+      },
+    ],
+  };
+}

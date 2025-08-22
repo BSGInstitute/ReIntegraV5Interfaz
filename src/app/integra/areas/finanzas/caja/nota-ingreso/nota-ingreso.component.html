@@ -1,0 +1,497 @@
+
+<ng-template #modalNotaIngresoCaja let-modal>
+    <app-loader *ngIf="loaderModal"></app-loader>
+    <div class="modal-header">
+      <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+        {{ nombreModal }}
+      </h2>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body" >
+      <form class="k-form" [formGroup]="formGroupNotaIngresoCaja" >
+        <fieldset class="k-form-fieldset">
+          <div class="row">
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal" >
+                <label [for]="idCaja" class="k-label">
+                  <span
+                    > Caja :
+                    <strong class="text-danger">*</strong></span
+                  >
+                </label>
+                <kendo-dropdownlist
+                    formControlName="idCaja"
+                    class="d-flex"
+                    size="small"
+                    #idCaja
+                    [data]="listaCajas"
+                    textField="nombre"
+                    valueField="id"
+                    [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                    [valuePrimitive]="true"
+                    (selectionChange)="selectionChangeCaja($event)"
+
+                >
+                </kendo-dropdownlist>
+                <kendo-formhint>Seleccione una caja</kendo-formhint>
+                <kendo-formerror>{{ getErrorMessage("idCaja") }} </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal" >
+                  <label [for]="responsableCaja" class="k-label">
+                    <span
+                      > Responsable :
+                      <strong class="text-danger">*</strong></span
+                    >
+                  </label>
+                  <kendo-textbox
+                    [disabled]="true"
+                    #responsableCaja
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="responsableCaja"
+                  >
+                  </kendo-textbox>
+                </kendo-formfield>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal" >
+                  <label [for]="idOrigenIngresoCaja" class="k-label">
+                    <span
+                      > Origen :
+                      <strong class="text-danger">*</strong></span
+                    >
+                  </label>
+                  <kendo-dropdownlist
+                      formControlName="idOrigenIngresoCaja"
+                      class="d-flex"
+                      size="small"
+                      #idOrigenIngresoCaja
+                      [data]="listaOrigenIngresoCaja"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                      [valuePrimitive]="true"
+                  >
+                  </kendo-dropdownlist>
+                  <kendo-formhint>Seleccione una origen de ingreso</kendo-formhint>
+                  <kendo-formerror>{{ getErrorMessage("idOrigenIngresoCaja") }} </kendo-formerror>
+                </kendo-formfield>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal" >
+                  <label [for]="idPersonalEmitido" class="k-label">
+                    <span
+                      > Emitido a :
+                      <strong class="text-danger">*</strong></span
+                    >
+                  </label>
+                  <kendo-dropdownlist
+                      formControlName="idPersonalEmitido"
+                      class="d-flex"
+                      size="small"
+                      #idPersonalEmitido
+                      [data]="itemslistaPersonal"
+                      textField="nombres"
+                      valueField="id"
+                      [defaultItem]="{id:null,nombres:'Seleccionar'}"
+                      [valuePrimitive]="true"
+                      [filterable]="true"
+                      (filterChange)="filterChangePersonal($event)"
+                  >
+                  </kendo-dropdownlist>
+                  <kendo-formhint>Seleccione un personal</kendo-formhint>
+                  <kendo-formerror>{{ getErrorMessage("idPersonalEmitido") }} </kendo-formerror>
+                </kendo-formfield>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal" >
+                  <label [for]="monto" class="k-label" >
+                    <span
+                      >Monto :
+                      <strong class="text-danger">*</strong></span
+                    >
+                  </label>
+                  <kendo-numerictextbox
+                  #monto
+                  orientation="horizontal"
+                  [style.width.px]="170"
+                  formControlName="monto"
+                  [min]="0"
+                  [autoCorrect]="true"
+                  >
+                  </kendo-numerictextbox>
+                  <kendo-formhint>Ingrese el valor del monto</kendo-formhint>
+                  <kendo-formerror>{{ getErrorMessage("monto") }}</kendo-formerror>
+                </kendo-formfield>
+              </div>
+          </div>
+          <div class="row" >
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="fechaGiro" class="k-label">
+                    <span
+                    >Fecha Giro:
+                    <strong class="text-danger">*</strong></span
+                  >
+                </label>
+                <kendo-datepicker
+                  #fechaGiro
+                  formControlName="fechaGiroModi"
+                  [incompleteDateValidation]="true"
+                  calendarType="classic"
+                  [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                  placeholder="dia-mes-año"
+                  ></kendo-datepicker>
+                  <kendo-formhint>Seleccione una fecha</kendo-formhint>
+                  <kendo-formerror>{{ getErrorMessage("fechaGiroModi") }} </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div>
+            <div class="col k-form-horizontal">
+                <kendo-formfield orientation="horizontal" >
+                  <label [for]="concepto" class="k-label">
+                    <span
+                      > Concepto :
+                      <strong class="text-danger">*</strong></span
+                    >
+                  </label>
+                  <kendo-textbox
+                    #concepto
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="concepto"
+                    [required]="true"
+                    [showSuccessIcon]="getShowSuccessIcon('concepto')"
+                    [successIcon]="successIcon"
+                  >
+                  </kendo-textbox>
+                  <kendo-formhint>Ingrese el numero de cuenta</kendo-formhint>
+                  <kendo-formerror>{{ getErrorMessage("concepto") }} </kendo-formerror>
+                </kendo-formfield>
+              </div>
+          </div>
+          <div class="row" >
+            <div class="col k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="fechaCobro" class="k-label">
+                    <span
+                    >Fecha Cobro:
+                    <strong class="text-danger">*</strong></span
+                  >
+                </label>
+                <kendo-datepicker
+                  #fechaCobro
+                  formControlName="fechaCobroModi"
+                  [incompleteDateValidation]="true"
+                  calendarType="classic"
+                  [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                  placeholder="dia-mes-año"
+                  ></kendo-datepicker>
+                  <kendo-formhint>Seleccione una fecha</kendo-formhint>
+                  <kendo-formerror>{{ getErrorMessage("fechaCobroModi") }} </kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+  
+        </fieldset>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="accionModal()"
+      >
+        {{ btnModalNombre }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="modal.close('Close click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </ng-template>
+  
+
+
+<div class="">
+    <div class="row">
+      <div class="col-1fa-rotate-270">
+        <div class="card">
+            <div class="card-header bg-color-material">
+                <h1 class="text-white">Gestion de Ingresos de Notas de Caja</h1>
+            </div>
+            <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 k-form-horizontal">
+                            <kendo-formfield orientation="horizontal">
+                              <label [for]="dropdownlist" class="k-label">
+                                  <span
+                                  >Código de Caja:
+                                  </span>
+                              </label>
+                              <kendo-dropdownlist
+                                  [formControl]="cajaBuscar"
+                                  class="d-flex"
+                                  size="medium"
+                                  #dropdownlist
+                                  [data]="itemslistaCajas"
+                                  textField="nombre"
+                                  valueField="id"
+                                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                                  [valuePrimitive]="true"
+                                  [filterable]="true"
+                                  (filterChange)="filterChangeCaja($event)"
+                              >
+                              </kendo-dropdownlist>
+                              
+                            </kendo-formfield>  
+                        </div>
+                        <div class="col-md-2">
+                          <button
+                              kendoButton 
+                              icon="k-icon k-i-search k-icon-20"
+                              type="button"
+                              themeColor="primary"
+                              (click)="BuscarPorCaja();"
+                              >
+                              Buscar
+                          </button>
+                        </div>
+                             
+                    </div>
+                    <br>
+                    <div class="row">
+                      <div class="col">
+                        
+                        <kendo-grid
+                        style="max-height:600px"
+                        [kendoGridBinding]="listaNotaIngresoCaja"
+                        [loading]="loader"
+                        [pageSize]="5"
+                        [sortable]="true"
+                        [reorderable]="true"
+                        [resizable]="true"
+                        [columnMenu]="{ filter: true }"
+                        [pageable]="true"
+                        style="max-height: 700px"     
+                        [sort]="gridState.sort"                    
+                        >
+                        <ng-template kendoGridToolbarTemplate class="bg-danger color">
+                            
+                            <button mat-stroked-button
+                            (click)="refrescarGrilla()">
+                                <mat-icon>refresh</mat-icon>
+                            </button>
+                            <button
+                              kendoButton 
+                              icon="k-icon k-i-file-excel k-icon-20"
+                              type="button"
+                              themeColor="tertiary"
+                              (click)="excelexport.save()"
+                              >
+                              Exportar a Excel
+                            </button>
+                            <kendo-excelexport 
+                            [data]="listaNotaIngresoCaja" 
+                            fileName="NotaIngresoCajas.xlsx" #excelexport>
+                              <kendo-excelexport-column field="codigoNic" title="Código NIC">
+                              </kendo-excelexport-column>
+                              <kendo-excelexport-column field="codigoCaja" title="Código de Caja">
+                              </kendo-excelexport-column>
+                              <kendo-excelexport-column field="origenIngresoCaja" title="Origen">
+                              </kendo-excelexport-column>
+                              <kendo-excelexport-column field="personalEmitido" title="Emitido A">
+                              </kendo-excelexport-column>
+                              <kendo-excelexport-column field="monto" title="Monto">
+                              </kendo-excelexport-column>
+                              <kendo-excelexport-column field="fechaGiro" title="Fecha de Giro">
+                              </kendo-excelexport-column>
+                              <kendo-excelexport-column field="concepto" title="Concepto">
+                              </kendo-excelexport-column>
+                            </kendo-excelexport>
+                            <kendo-grid-spacer></kendo-grid-spacer>
+                            <button 
+                            kendoGridAddCommand 
+                            [themeColor]="'primary'" 
+                            (click)="openModalNotaIngresoCaja(true)">
+                            Agregar
+                            </button>
+                          </ng-template>
+                          <kendo-grid-column
+                              [width]="10"field="id"[hidden]="true">
+                            </kendo-grid-column>
+                          <kendo-grid-column
+                              title="Código NIC"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="codigoNic"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Código de Caja"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="codigoCaja"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            title="Origen"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="170"
+                            field="origenIngresoCaja"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                          >
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Emitido A"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="200"
+                            field="personalEmitido"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                          >
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Monto"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="200"
+                            field="monto"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                          >
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Fecha de Giro"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="200"
+                            field="fechaGiro"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                          >
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Concepto"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="200"
+                            field="concepto"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                          >
+                          </kendo-grid-column>
+                            <kendo-grid-command-column
+                            [sticky]="true"
+                            title="Acciones"
+                            [width]="150"
+                            headerClass="justify-content-center text-center k-grid-header-command"
+                            >
+                            <ng-template 
+                            kendoGridCellTemplate 
+                            let-dataItem="dataItem" 
+                            let-rowIndex="rowIndex"
+                            >
+                                <div class="w-100 d-flex justify-content-center" style="padding:20px" kendoTooltip>
+                                    <button
+                                    title="Editar"
+                                    kendoButton
+                                    themeColor="warning"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    class="p-2 me-1 ms-1"
+                                    container="body"
+                                    placement="top"
+                                    (click)="gridEventsResponse({action:'edit',dataItem:dataItem})"
+                                    >
+                                    <span class="k-icon k-i-pencil k-icon-20"></span>
+                                    </button>
+          
+                                    <button
+                                    title="Eliminar"
+                                    kendoButton
+                                    themeColor="error"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    class="p-2 me-1 ms-1"
+                                    container="body"
+                                    placement="top"
+                                    (click)="gridEventsResponse({action:'remove',dataItem:dataItem,rowIndex:rowIndex})"
+                                    >
+                                    <span class="k-icon k-i-trash k-icon-20"></span>
+                                    </button>
+                                </div>
+                            </ng-template>
+                            </kendo-grid-command-column>
+                            <ng-template kendoGridNoRecordsTemplate>
+                                <div>
+                                  <kendo-badge-container>
+                                    <kendo-icon name="cloud" size="large"></kendo-icon>
+                                    <kendo-badge position="inside">
+                                      <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                                    </kendo-badge>
+                                  </kendo-badge-container>
+                                </div>
+                                <p>No hay registros cargados!</p>
+                            </ng-template>
+                            <ng-template
+                              kendoPagerTemplate
+                              let-totalPages="totalPages"
+                              let-currentPage="currentPage"
+                              >
+                                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                                <kendo-pager-numeric-buttons
+                                  [buttonCount]="5"
+                                ></kendo-pager-numeric-buttons>
+                                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                                <!-- <kendo-pager-input></kendo-pager-input> -->
+                                <kendo-pager-info></kendo-pager-info>
+                                <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                            </ng-template>
+                        </kendo-grid>
+                      </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>

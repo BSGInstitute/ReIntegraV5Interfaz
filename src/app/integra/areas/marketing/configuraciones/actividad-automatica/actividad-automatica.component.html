@@ -1,0 +1,730 @@
+<ng-template #modalActividad>
+  <div
+    class="modal-header bg-primary-header-modal"
+    style="height: 60px; padding-left: 10px; overflow-y: auto"
+  >
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos de Actividad Cabecera
+    </h3>
+  </div>
+
+  <div class="modal-body formulario">
+    <div class="contenedor" style="width: 1000px">
+      <form [formGroup]="formulario">
+        <div class="row">
+          <div class="col-md-6">Nombre</div>
+          <div class="col-md-6">
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombre" placeholder="Nombre" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">Descripción</div>
+          <div class="col-md-6">
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <input
+                matInput
+                formControlName="descripcion"
+                placeholder="Descripción"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">Actividad Base</div>
+          <div class="col-md-6">
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Actividad Base</mat-label>
+              <mat-select
+                formControlName="actividadCabecera"
+                (selectionChange)="Prueba($event)"
+              >
+                <mat-option
+                  *ngFor="let actividad of ListaActiviidadBase"
+                  [value]="actividad.id"
+                >
+                  {{ actividad.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">Área</div>
+          <div class="col-md-6">
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Área</mat-label>
+              <mat-select formControlName="area">
+                <mat-option
+                  *ngFor="let area of listaPersonalAreaTrabajo"
+                  [value]="area.id"
+                >
+                  {{ area.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <ng-container *ngIf="actividadB == 5 || actividadB == 7">
+          <div class="row">
+            <div class="col-md-6">Sleccione una plantilla</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Plantilla</mat-label>
+                <mat-select formControlName="plantilla">
+                  <mat-option
+                    *ngFor="let conjunto of listaPlantillasSpeech"
+                    [value]="conjunto.id"
+                  >
+                    {{ conjunto.nombre }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button></button>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container
+          *ngIf="actividadB != 0 && actividadB != 5 && actividadB != 7"
+        >
+          <div class="row">
+            <div class="col-md-6">Conjunto Lista</div>
+            <div class="col-md-4">
+                   <kendo-dropdownlist
+              [data]="listaConjuntoLista"
+              [kendoDropDownFilter]="filterSettings"
+              formControlName="conjuntoLista"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+            >
+            </kendo-dropdownlist>
+              <!-- <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Conjunto Lista</mat-label>
+                <mat-select formControlName="conjuntoLista">
+                  <mat-option
+                    *ngFor="let conjunto of listaConjuntoLista"
+                    [value]="conjunto.id"
+                  >
+                    {{ conjunto.nombre }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>         -->
+            </div>
+            <div class="col-md-2">
+              <button class="plantiC" mat-raised-button
+              (click)="openDialog()">
+                <span class="k-icon k-i-redo k-icon-20"></span>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container
+          *ngIf="actividadB == 0 && actividadB != 5 && actividadB != 7"
+        >
+          <div class="row">
+            <div class="col-md-6">Duracion Estimada</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <input matInput type="number" formControlName="duracion" />
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">Nro Maximo de llamadas</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <input matInput type="number" formControlName="llamadas" />
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">Speech</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Speech</mat-label>
+                <mat-select formControlName="speech">
+                  <mat-option
+                    *ngFor="let speech of listaPlantillasSpeech"
+                    [value]="speech.id"
+                  >
+                    {{ speech.nombre }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">Speech Despedida</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Speech</mat-label>
+                <mat-select formControlName="speechDespe">
+                  <mat-option
+                    *ngFor="let speech of listaPlantillasSpeechDespedida"
+                    [value]="speech.id"
+                  >
+                    {{ speech.nombre }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <mat-checkbox formControlName="manual">
+                Repro. Manual:</mat-checkbox
+              >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <mat-checkbox formControlName="automatica">
+                Repro. Automatica:</mat-checkbox
+              >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <mat-checkbox formControlName="validaLlamada">
+                Valida llamada:</mat-checkbox
+              >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">Categorias</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Categorias:</mat-label>
+                <mat-select formControlName="categoria" multiple>
+                  <mat-select-trigger>
+                    {{ getSelectedOptionsCategoria() }}
+                  </mat-select-trigger>
+                  <mat-option
+                    *ngFor="let conjunto of listaCategoria"
+                    [value]="conjunto.id"
+                  >
+                    {{ conjunto.nombre }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container
+          *ngIf="actividadB != 0 && actividadB != 5 && actividadB != 7"
+        >
+          <div
+            class="modal-body form"
+            style="border: 1px solid rgb(211, 211, 211)"
+          >
+            <div
+              class="modal-header bg-primary-header-modal"
+              style="height: 60px; padding-left: 10px; overflow-y: auto"
+            >
+              <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                Frecuencia de Ejecución
+              </h3>
+            </div>
+            <ng-container>
+              <div class="modal-body form">
+                <div class="contenedor">
+                  <div class="row">
+                    <div class="col-md-6">Sucede:</div>
+                    <div class="col-md-6">
+                      <mat-form-field
+                        class="example-full-width"
+                        appearance="outline"
+                      >
+                        <mat-label>Sucede:</mat-label>
+                        <mat-select
+                          formControlName="frecuencia"
+                          (selectionChange)="Sucede($event)"
+                        >
+                          <mat-option
+                            *ngFor="let frecuencia of listaFrecuencia"
+                            [value]="frecuencia.id"
+                          >
+                            {{ frecuencia.nombre }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <ng-container *ngIf="frecuencia != 0 && frecuencia != 5">
+                      <div
+                        class="modal-body form"
+                        style="border: 1px solid rgb(211, 211, 211)"
+                      >
+                        <div
+                          class="modal-header bg-primary-header-modal"
+                          style="
+                            height: 60px;
+                            padding-left: 10px;
+                            overflow-y: auto;
+                          "
+                        >
+                          <h3
+                            class="modal-title m-0 p-0"
+                            id="modal-basic-title"
+                          >
+                            Frecuencia Semanal
+                          </h3>
+                        </div>
+
+                        <div class="modal-body form">
+                          <ng-container *ngIf="frecuencia == 1">
+                            <div class="row">
+                              <div class="col-md-6">Día Semana:</div>
+                              <div class="col-md-6">
+                                <mat-form-field
+                                  class="example-full-width"
+                                  appearance="outline"
+                                >
+                                  <mat-label>Día Semana:</mat-label>
+                                  <mat-select formControlName="semana" multiple>
+                                    <mat-select-trigger>
+                                      {{ getSelectedOptions() }}
+                                    </mat-select-trigger>
+                                    <mat-option
+                                      *ngFor="let conjunto of listaDiasSemana"
+                                      [value]="conjunto.id"
+                                    >
+                                      {{ conjunto.nombre }}
+                                    </mat-option>
+                                  </mat-select>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </ng-container>
+                          <ng-container *ngIf="frecuencia == 3">
+                            <div class="row">
+                              <div class="col-md-6">Nro Dia del Mes:</div>
+                              <div class="col-md-6">
+                                <mat-form-field
+                                  class="example-full-width"
+                                  appearance="outline"
+                                >
+                                  <input
+                                    matInput
+                                    type="number"
+                                    formControlName="mes"
+                                  />
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </ng-container>
+                          <ng-container
+                            *ngIf="frecuencia != 0 && frecuencia != 5"
+                          >
+                            <div
+                              class="modal-body form"
+                              style="border: 1px solid rgb(211, 211, 211)"
+                            >
+                              <div
+                                class="modal-header bg-primary-header-modal"
+                                style="
+                                  height: 60px;
+                                  padding-left: 10px;
+                                  overflow-y: auto;
+                                "
+                              >
+                                <h3
+                                  class="modal-title m-0 p-0"
+                                  id="modal-basic-title"
+                                >
+                                  Frecuencia Envío
+                                </h3>
+                              </div>
+
+                              <div class="modal-body form">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <mat-checkbox
+                                      (change)="showOptionsOne($event)"
+                                      [formControl]="checkOneControl"
+                                    >
+                                      Ocurre una vez:</mat-checkbox
+                                    >
+                                  </div>
+                                  <div class="col-md-6">
+                                    <kendo-formfield orientation="horizontal">
+                                      <kendo-timepicker
+                                        [disabled]="!checkOneControl.value"
+                                        formControlName="horaUn"
+                                        name="time"
+                                        [steps]="interval"
+                                      ></kendo-timepicker>
+                                    </kendo-formfield>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-3">
+                                    <mat-checkbox
+                                      (change)="showOptionsTwo($event)"
+                                      [formControl]="checkTwoControl"
+                                    >
+                                      Ocurre cada:</mat-checkbox
+                                    >
+                                  </div>
+                                  <div class="col-md-3">
+                                    <mat-form-field
+                                      class="example-full-width"
+                                      appearance="outline"
+                                    >
+                                      <input
+                                        matInput
+                                        type="number"
+                                        formControlName="veces"
+                                        [readonly]="
+                                          !checkTwoControl.value ||
+                                          checkOneControl.value
+                                        "
+                                      />
+                                    </mat-form-field>
+                                  </div>
+                                  <div class="col-md-3">
+                                    <mat-form-field
+                                      class="example-full-width"
+                                      appearance="outline"
+                                    >
+                                      <mat-select
+                                        formControlName="tipofor"
+                                        [disabled]="
+                                          !checkTwoControl.value ||
+                                          checkOneControl.value
+                                        "
+                                      >
+                                        <mat-option
+                                          *ngFor="let tiempo of tiempo"
+                                          [value]="tiempo.id"
+                                        >
+                                          {{ tiempo.nombre }}
+                                        </mat-option>
+                                      </mat-select>
+                                    </mat-form-field>
+                                  </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="col-md-6">Hora Inicio:</div>
+                                  <div class="col-md-6">
+                                    <kendo-formfield orientation="horizontal">
+                                      <kendo-timepicker
+                                        [disabled]="
+                                          !checkTwoControl.value ||
+                                          checkOneControl.value
+                                        "
+                                        formControlName="horaIn"
+                                        name="time"
+                                        [steps]="interval"
+                                      ></kendo-timepicker>
+                                    </kendo-formfield>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-6">Hora fin:</div>
+                                  <div class="col-md-6">
+                                    <kendo-formfield orientation="horizontal">
+                                      <kendo-timepicker
+                                        [disabled]="
+                                          !checkTwoControl.value ||
+                                          checkOneControl.value
+                                        "
+                                        formControlName="horaFin"
+                                        name="time"
+                                        [steps]="interval"
+                                      ></kendo-timepicker>
+                                    </kendo-formfield>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">Fecha Inicio Actividad:</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Escoge una fecha</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  formControlName="fechaInicioActividad"
+                />
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">Fecha Fin Actividad:</div>
+            <div class="col-md-6">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Escoge una fecha</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="pickerFin"
+                  formControlName="fechaFinActividad"
+                />
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="pickerFin"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #pickerFin></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+        </ng-container>
+      </form>
+    </div>
+  </div>
+
+  <button mat-button (click)="cerrarModal()">Cerrar</button>
+  <ng-containter *ngIf="actualizar == true">
+    <button mat-raised-button color="primary" (click)="guardar()">Nuevo</button>
+  </ng-containter>
+  <ng-containter *ngIf="actualizar == false">
+    <button mat-raised-button color="primary" (click)="guardar()">
+      Actualizar
+    </button>
+  </ng-containter>
+  <!-- <ng-container *ngIf="actividadB == 3">
+    <button mat-raised-button color="primary" (click)="Reanudar()">
+      Reanudar Envio
+    </button>
+  </ng-container> -->
+</ng-template>
+
+<ng-template #modalWhats>
+  <div
+    class="modal-header bg-primary-header-modal"
+    style="height: 60px; padding-left: 10px; overflow-y: auto"
+  >
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Pre-Procesamiento de Datos
+    </h3>
+  </div>
+
+  <div class="modal-body formulario">
+    <div class="contenedor" style="width: 1000px">
+      <div class="expli">
+        <p>
+          Esta lista no tiene datos pre procesados, esta funcion procesara
+          listas previas a su envio, con listas historicas no se ejecuran debido
+          ya asu ejecución realizada, procesar 0 lista(s) debe dar clic en el
+          boton de abajo.
+        </p>
+        <span class="k-icon k-i-arrow-down k-icon-20"></span>
+      </div>
+
+      <button class="whatsbut">
+        PRE PROCESAR LISTA DE DATOS PARA SU ENVIO PARA WHATSAPP
+      </button>
+    </div>
+  </div>
+</ng-template>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-color-material pb-0">
+        <h3 class="text-white mb-2">Lista de Actividades de Envios Masivos</h3>
+      </div>
+
+      <div class="mat-elevation-z8">
+        <ng-container *ngIf="loading">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-container>
+        <div class="mat-elevation-z8">
+          <ng-container *ngIf="loading">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </ng-container>
+          <kendo-grid
+            [kendoGridBinding]="dataSourceEP"
+            [pageSize]="5"
+            [sortable]="true"
+            [reorderable]="true"
+            [resizable]="true"
+            [columnMenu]="{ filter: true }"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <button
+                kendoButton
+                icon="reload"
+                fillMode="flat"
+                themeColor="secondary"
+                (click)="ObtenerEnvios()"
+              ></button>
+              <kendo-grid-spacer></kendo-grid-spacer>
+              <button
+                kendoButton
+                [themeColor]="'primary'"
+                icon="plus"
+                (click)="abrirModal(true)"
+              >
+                Agregar
+              </button>
+            </ng-template>
+            <kendo-grid-column
+              title="Nombre"
+              headerClass="justify-content-center k-grid-header "
+              [width]="200"
+              field="nombre"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Descripcion"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="descripcion"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Actividad Base"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="nombreActividadBase"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Area"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="personalAreaTrabajo"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              title="Conjunto Lista"
+              headerClass="justify-content-center k-grid-header "
+              [width]="150"
+              field="nombreConjuntoLista"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            </kendo-grid-column>
+            <!-- <kendo-grid-column
+              title="Ejec. Conj. Lista"
+              headerClass="justify-content-center k-grid-header"
+              [width]="150"
+              field="activo"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <kendo-checkbox [(ngModel)]="dataItem.activo"></kendo-checkbox>
+              </ng-template>
+            </kendo-grid-column> -->
+
+            <kendo-grid-command-column
+              [sticky]="true"
+              title="Acciones"
+              [width]="150"
+              headerClass="justify-content-center text-center k-grid-header-command"
+            >
+              <ng-template
+                kendoGridCellTemplate
+                let-isNew="isNew"
+                let-dataItem="dataItem"
+                let-rowIndex="rowIndex"
+              >
+                <div
+                  class="w-100 d-flex justify-content-center"
+                  style="padding: 20px"
+                  kendoTooltip
+                >
+                  <div>
+                    <button
+                      title="Editar"
+                      kendoButton
+                      themeColor="info"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="abrirModal(false, dataItem)"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <!-- <button
+                      title="Ejecutar"
+                      kendoButton
+                      themeColor="success"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="abrirmodalWhats()"
+                    >
+                      <span class="k-icon k-i-gears k-i-cogs k-icon-20"></span>
+                    </button> -->
+                    <button
+                      title="Eliminar"
+                      kendoButton
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="eliminarEnvio(dataItem)"
+                    >
+                      <span class="k-icon k-i-close k-i-x k-icon-20"></span>
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

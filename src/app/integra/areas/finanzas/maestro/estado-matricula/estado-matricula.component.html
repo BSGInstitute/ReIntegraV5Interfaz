@@ -1,0 +1,148 @@
+<ng-template #modalEstadoMatricula let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModal }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+
+    <form class="k-form" [formGroup]="formGroupData">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="nombre" class="k-label">
+                <span
+                  >Estado Matricula
+                  <span class="text-danger fw-bold">*</span></span
+                >
+              </label>
+              <kendo-textbox
+                #nombre
+                size="medium"
+                formControlName="estadoMatricula"
+                inputValidSpaceDir
+                [clearButton]="true"
+              >
+              </kendo-textbox>
+              <kendo-formhint> Nombre del Estado de Matricula </kendo-formhint>
+              <kendo-formerror>
+                El nombre del Estado de Matricula es necesario!
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="estado"
+                text="Estado"
+              ></kendo-label>
+              <kendo-switch
+                #estado
+                formControlName="activo"
+                size="medium"
+                trackRounded="full"
+                thumbRounded="full"
+                onLabel="Activo"
+                offLabel="Inactivo"
+                style="width: 85px;"
+              >
+              </kendo-switch>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="multiselect" class="k-label">
+                <span>SubEstados Matricula : </span>
+              </label>
+              <kendo-multiselect
+                #multiselect
+                formControlName="idSubEstados"
+                [data]="listItemsSubEstados"
+                class="d-flex"
+                size="medium"
+                textField="nombre"
+                [valuePrimitive]="true"
+                valueField="id"
+              >
+              </kendo-multiselect>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="accionModal()">
+      {{ btnModalNombre }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Estados de Matricula</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-12 text-center">
+              <ng-template
+                #cellTemplateGridEstadoMat
+                let-dataItem="dataItem"
+                let-field="field"
+                let-itemValue="itemValue"
+              >
+                <ng-container [ngSwitch]="field">
+                  <ng-container *ngSwitchCase="'activo'">
+                    <fa-icon *ngIf="!itemValue" [icon]="['fas', 'toggle-off']" class="fa-lg fs-3 fw-bold" style="color: darkgray"></fa-icon>
+                    <fa-icon *ngIf="itemValue" [icon]="['fas', 'toggle-on']" class="fa-lg fs-3 fw-bold text-success"></fa-icon>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'fechaModificacion'">
+                    {{ itemValue | date: "dd-MM-yyyy" }}
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    {{ itemValue }}
+                  </ng-container>
+                </ng-container>
+              </ng-template>
+
+              <k-grid-edit
+                [loader]="loader"
+                [gridData]="listaEstadoMatricula"
+                [columns]="gridEstadoMatricula.columns"
+                [commands]="gridEstadoMatricula.comands"
+                [gridConfig]="gridEstadoMatricula.gridConfig"
+                [gridState]="gridEstadoMatricula.gridState"
+                [commandAdd]="'external'"
+                [commandEdit]="'external'"
+                [cellTemplateRef]="cellTemplateGridEstadoMat"
+                (OnGridEvents)="gridEventsResponse($event)"
+              >
+              </k-grid-edit>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

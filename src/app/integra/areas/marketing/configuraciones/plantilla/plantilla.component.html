@@ -1,0 +1,639 @@
+<ng-template #modalPlantilla>
+  <div
+    class="modal-header bg-primary-header-modal"
+    style="height: 60px; padding-left: 10px; overflow-y: auto"
+  >
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nueva Plantilla" : "Modificar Plantilla" }}
+    </h3>
+  </div>
+  <div class="modal-body">
+    <div style="width: 1000px; display: flex">
+      <div class="acordeon">
+        <mat-accordion>
+          <mat-expansion-panel
+            *ngFor="let item of listaCategorias"
+            (opened)="onExpansibleOpened(item)"
+          >
+            <mat-expansion-panel-header>
+              {{ item.nombre }}
+            </mat-expansion-panel-header>
+            <ng-container *ngFor="let itemc of listaDetalle">
+              <p
+                class="mat-panel-description"
+                (click)="mostrarDetalle(itemc.campoDb)"
+              >
+                {{ itemc.nombre }}
+              </p>
+            </ng-container>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+      <div class="formulario">
+        <form [formGroup]="formulario">
+          <div class="form-row">
+            <div class="form-label">Área</div>
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Área</mat-label>
+              <mat-select formControlName="area">
+                <mat-option *ngFor="let area of listaArea" [value]="area.id">
+                  {{ area.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label">Plantilla Base</div>
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Plantilla Base</mat-label>
+              <mat-select
+                formControlName="plantillaBase"
+                (selectionChange)="onPlantillaBaseChange($event)"
+              >
+                <mat-option
+                  *ngFor="let area of listaObtenerPlantillaBase"
+                  [value]="area.id"
+                >
+                  {{ area.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label">Nombre</div>
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombre" placeholder="Nombre" />
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label">Descripción</div>
+            <mat-form-field class="example-full-width" appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <input
+                matInput
+                formControlName="descripcion"
+                placeholder="Descripción"
+              />
+            </mat-form-field>
+          </div>
+
+          <ng-container *ngIf="idPlantillaBase == 2">
+            <div class="form-row">
+              <div class="form-label">Asunto</div>
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Asunto</mat-label>
+                <input matInput formControlName="asunto" placeholder="Asunto" />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="idPlantillaBase == 5">
+            <div class="form-row">
+              <div class="form-label">Tipo Documento - DO:</div>
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Tipo Documento</mat-label>
+                <mat-select formControlName="tipoDocumento">
+                  <mat-option
+                    *ngFor="let documento of ds_TipoDocumentos"
+                    [value]="documento.value"
+                  >
+                    {{ documento.text }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="form-row">
+            <div class="form-label">Módulo del Sistema</div>
+            <kendo-multiselect
+              [data]="listaModulo"
+              [kendoDropDownFilter]="filterSettings"
+              textField="nombre"
+              valueField="id"
+              formControlName="moduloSistema"
+              class="w-100"
+              (valueChange)="canchgeprueb($event)"
+            >
+            </kendo-multiselect>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label">Detalle Seleccionado</div>
+            <mat-form-field
+              class="example-full-width"
+              appearance="outline"
+              style="background-color: rgb(244, 244, 244); height: 50px"
+            >
+              <mat-label>Detalle Seleccionado</mat-label>
+              <input
+                matInput
+                formControlName="detalleSeleccionado"
+                [readonly]="true"
+              />
+            </mat-form-field>
+            <button mat-icon-button (click)="copiarDetalleSeleccionado()">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label">Estado</div>
+            <mat-checkbox formControlName="estado">Estado</mat-checkbox>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label">Color de fondo</div>
+            <input
+              type="color"
+              [(ngModel)]="selectedColor"
+              formControlName="colorFondo"
+            />
+          </div>
+          <ng-container *ngIf="idPlantillaBase == 8">
+            <div class="form-row">
+              <kendo-editor
+                formControlName="editor"
+                style="height: 570px; width: 100%"
+                [style.background-color]="selectedColor"
+              >
+              </kendo-editor>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="idPlantillaBase != 8">
+            <div class="form-row">
+              <kendo-editor
+                formControlName="editor"
+                style="height: 570px; width: 100%"
+                [style.background-color]="selectedColor"
+              >
+                <kendo-toolbar>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorBoldButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorItalicButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorUnderlineButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorStrikethroughButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorSubscriptButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorSuperscriptButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorAlignLeftButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorAlignCenterButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorAlignRightButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorAlignJustifyButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-dropdownlist
+                    kendoEditorFormat
+                  ></kendo-toolbar-dropdownlist>
+                  <kendo-toolbar-dropdownlist
+                    kendoEditorFontSize
+                  ></kendo-toolbar-dropdownlist>
+                  <kendo-toolbar-dropdownlist
+                    kendoEditorFontFamily
+                  ></kendo-toolbar-dropdownlist>
+                  <kendo-toolbar-colorpicker
+                    kendoEditorForeColor
+                  ></kendo-toolbar-colorpicker>
+                  <kendo-toolbar-colorpicker
+                    kendoEditorBackColor
+                    view="gradient"
+                  ></kendo-toolbar-colorpicker>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorInsertUnorderedListButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorInsertOrderedListButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorIndentButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorOutdentButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorBlockquoteButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorSelectAllButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorUndoButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorRedoButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorCreateLinkButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorUnlinkButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorInsertFileButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorInsertImageButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorViewSourceButton
+                  ></kendo-toolbar-button>
+                  <kendo-toolbar-button
+                    kendoEditorCleanFormattingButton
+                  ></kendo-toolbar-button>
+                  <kendo-editor-insert-table-button></kendo-editor-insert-table-button>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorAddColumnBeforeButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorAddColumnAfterButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorAddRowBeforeButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorAddRowAfterButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorDeleteColumnButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorDeleteRowButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorDeleteTableButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-buttongroup>
+                    <kendo-toolbar-button
+                      kendoEditorMergeCellsButton
+                    ></kendo-toolbar-button>
+                    <kendo-toolbar-button
+                      kendoEditorSplitCellButton
+                    ></kendo-toolbar-button>
+                  </kendo-toolbar-buttongroup>
+                  <kendo-toolbar-button
+                    kendoEditorPrintButton
+                  ></kendo-toolbar-button>
+                </kendo-toolbar>
+              </kendo-editor>
+            </div>
+          </ng-container>
+        </form>
+        <div *ngIf="idPlantillaBase == 8 && esActualizar == false" >
+          <div class="form-row">
+            <div class="form-label">Tiene Botones?</div>
+            <mat-checkbox
+              [(ngModel)]="tieneBotones"
+              (selectionChange)="onCheckboxChange($event)"
+              >Botones</mat-checkbox
+            >
+          </div>
+
+          <div class="form-row">
+            <div class="form-label">Imagen</div>
+            <div>
+              <div>
+                <div class="col-md-8">
+                  <kendo-dropdownlist
+                    [data]="listaImagenes"
+                    [kendoDropDownFilter]="filterSettings"
+                    textField="nombreArchivo"
+                    valueField="ruta"
+                    [(ngModel)]="imagen"
+                    [valuePrimitive]="true"
+                  >
+                  </kendo-dropdownlist>
+                </div>
+              </div>
+              <div>
+                <input
+                  #fileInput
+                  type="file"
+                  accept="image/*"
+                  (change)="onFileChange($event)"
+                  style="display: none"
+                />
+                <button
+                  mat-button
+                  class="btn"
+                  type="button"
+                  (click)="fileInput.click()"
+                >
+                  Seleccionar Imagen
+                  <span class="k-icon k-i-file-excel"></span>
+                </button>
+                <div *ngIf="selectedImage" class="image-container">
+                  <img
+                    [src]="selectedImage"
+                    alt="Selected Image"
+                    class="selected-image"
+                  />
+                </div>
+                <button
+                  mat-button
+                  class="btn butEx"
+                  type="button"
+                  (click)="onSubmit()"
+                  [disabled]="!selectedImage"
+                >
+                  Enviar
+                </button>
+                <button
+                  mat-button
+                  class="btn butEl"
+                  type="button"
+                  (click)="eliminarImagen()"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="tieneBotones == true">
+            <div class="form-row">
+              <div class="form-label">Número de Botones</div>
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Seleccione la cantidad de botones</mat-label>
+                <mat-select [(ngModel)]="cantidadBotones">
+                  <mat-option
+                    *ngFor="let cantidad of [1, 2, 3, 4,5,6,7,8,9,10]"
+                    [value]="cantidad"
+                  >
+                    {{ cantidad }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div *ngFor="let index of cantidadBotonesArray()">
+              <div class="form-row">
+                <div class="form-label">Nombre del Botón {{ index + 1 }}</div>
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label>Nombre del Botón {{ index + 1 }}</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="nombreBotones[index]"
+                    name="nombreBoton{{ index }}"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button mat-button (click)="cerrarModal()">Cerrar</button>
+  <ng-container *ngIf="isNew == false">
+    <button mat-raised-button color="primary" (click)="guardar()">
+      Actualizar
+    </button>
+  </ng-container>
+  <ng-container *ngIf="isNew == true">
+    <button mat-raised-button color="primary" (click)="guardar()">
+      Guardar
+    </button>
+  </ng-container>
+</ng-template>
+
+<ng-template #modalDetallePlantilla style="width: 1000px; overflow-y: auto">
+  <div class="modal-body">
+    <div
+      class="modal-header bg-primary-header-modal"
+      style="height: 60px; padding-left: 10px"
+    >
+      <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+        Datos de la plantilla
+      </h3>
+    </div>
+    <div class="contenedor">
+      <div class="paper">
+        <div>
+          <div>
+            <span class="label">Plantilla Base:</span>
+            {{ listaPlantillaClaveValor.plantillaBase }}
+          </div>
+        </div>
+
+        <div>
+          <div>
+            <span class="label">Nombre:</span>
+            {{ listaPlantillaClaveValor.nombre }}
+          </div>
+        </div>
+
+        <div>
+          <div>
+            <span class="label">Descripción:</span>
+            {{ listaPlantillaClaveValor.descripcion }}
+          </div>
+        </div>
+
+        <div>
+          <div>
+            <span class="label">Texto:</span>
+            <div [innerHTML]="listaPlantillaClaveValor.texto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button mat-button (click)="cerrarModal()">Cerrar</button>
+</ng-template>
+
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Lista de Plantillas</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <kendo-grid
+                [kendoGridBinding]="listaPlantilla"
+                [pageSize]="10"
+                [sortable]="true"
+                [filterable]="true"
+                [pageable]="{
+                  buttonCount: 5,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+              >
+                <ng-template kendoGridToolbarTemplate>
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="obtenerPlantilla()"
+                  ></button>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <button
+                    kendoButton
+                    [themeColor]="'primary'"
+                    icon="plus"
+                    (click)="abrirModal(true)"
+                  >
+                    Agregar
+                  </button>
+                </ng-template>
+
+                <kendo-grid-column
+                  field="nombre"
+                  title="Nombre"
+                  [filterable]="true"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombrePersonalAreaTrabajo"
+                  title="Area"
+                  [filterable]="true"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombrePlantillaBase"
+                  title="Plantilla Base"
+                  [filterable]="true"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="listaPlantillaAsociacionModuloSistema"
+                  title="Modulos Asociados"
+                  [filterable]="true"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <ng-container
+                      *ngIf="
+                        dataItem.listaPlantillaAsociacionModuloSistema &&
+                        dataItem.listaPlantillaAsociacionModuloSistema.length >
+                          0
+                      "
+                    >
+                      Modulos Asociados:
+                      <ul>
+                        <li
+                          *ngFor="
+                            let modulo of dataItem.listaPlantillaAsociacionModuloSistema
+                          "
+                        >
+                          {{ modulo.nombreModulo }}
+                        </li>
+                      </ul>
+                    </ng-container>
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="estado"
+                  title="Estado"
+                  [filterable]="true"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-command-column title="" [width]="150">
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-isNew="isNew"
+                    let-dataItem="dataItem"
+                    let-rowindex="rowindex"
+                  >
+                    <div class="w-100 d-flex justify-content-center">
+                      <button
+                        title="Observar"
+                        kendoButton
+                        themeColor="success"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        (click)="abrirModalDetalle(dataItem)"
+                      >
+                        <span class="k-icon k-i-check k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoButton
+                        themeColor="warning"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Editar"
+                        (click)="abrirModal(false, dataItem)"
+                      >
+                        <span class="k-icon k-i-edit k-icon-20"></span>
+                      </button>
+                      <button
+                        kendoButton
+                        themeColor="error"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        s
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        ngbTooltip="Eliminar"
+                        (click)="Eliminar(dataItem)"
+                      >
+                        <span class="k-icon k-i-close k-icon-20"></span>
+                      </button>
+                    </div>
+                  </ng-template>
+                </kendo-grid-command-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

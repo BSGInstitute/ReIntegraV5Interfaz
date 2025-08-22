@@ -1,0 +1,311 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Importar Marcaciones Personal</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="card" style="padding: 0px">
+                <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Importar Marcaciones Personal</h3>
+                </div>
+                <div class="card-body p-4">
+                  <div class="col-md-12">
+                    <div class="row">
+                      <p>
+                        Seleccione un archivo (.CSV)
+                        <strong style="color: red">*</strong>:
+                      </p>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-1">
+                        <input
+                          type="file"
+                          style="display: none"
+                          #fileInput
+                          accept=".CSV"
+                          (change)="onChangeFileInput()"
+                        />
+                        <button
+                          mat-raised-button
+                          class="file-select-button"
+                          (click)="onClickFileInputButton()"
+                        >
+                          <mat-icon>attach_file</mat-icon>
+                          subir archivo
+                        </button>
+                      </div>
+                      <div
+                        class="col-md-1"
+                        style="padding: 0%; width: 50px"
+                      ></div>
+                      <div class="col-md-3" style="justify-content: center">
+                        <div class="card" style="margin-top: 2.5px">
+                          <ng-container *ngIf="!file; else fileName">
+                            <div class="row" style="margin: 2%; height: 20px">
+                              <div class="col-md-11">
+                                <p class="file-name">
+                                  Ningún archivo seleccionado
+                                </p>
+                              </div>
+                              <div class="col-md-1" style="padding-left: 0px">
+                                <span
+                                  class="k-icon k-i-file-error"
+                                  style="color: rgb(220, 200, 71)"
+                                ></span>
+                              </div>
+                            </div>
+                          </ng-container>
+                          <ng-template #fileName>
+                            <div class="row" style="margin: 2%; height: 20px">
+                              <div class="col-md-11">
+                                <p class="file-name fileInput">
+                                  {{ file?.name }}
+                                </p>
+                              </div>
+                              <div class="col-md-1" style="padding-left: 0px">
+                                <ng-container *ngIf="file?.type == 'text/csv'">
+                                  <span
+                                    class="k-icon k-i-track-changes-accept"
+                                    style="color: rgb(98, 189, 84)"
+                                  ></span>
+                                </ng-container>
+                                <ng-container *ngIf="file?.type != 'text/csv'">
+                                  <span
+                                    class="k-icon k-i-track-changes-reject"
+                                    style="color: rgb(144, 37, 37)"
+                                  ></span>
+                                </ng-container>
+                              </div>
+                            </div>
+                          </ng-template>
+                        </div>
+                      </div>
+                      <div class="col-md-1" style="margin-top: 1.5px">
+                        <ng-container *ngIf="true">
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            class="file-select-button"
+                            (click)="CargarDataCSV()"
+                          >
+                            <mat-icon>save_alt</mat-icon>
+                            Cargar
+                          </button>
+                        </ng-container>
+                      </div>
+                      <div class="col-md-1" style="margin-top: 1.5px; min-width:fit-content !important;" >
+                        <ng-container>
+                          <button
+                            mat-raised-button
+                            class="file-select-button btn-save"
+                            (click)="importarMarcacionPersonal()"
+                          >
+                            <mat-icon>save</mat-icon>
+                            Importar Registros
+                          </button>
+                        </ng-container>
+                      </div>
+                      <div class="col-md-1" style="margin-top: 1.5px;padding-left : 0px;">
+                        <ng-container>
+                          <button
+                            mat-raised-button
+                            class="file-select-button btn-formato"
+                            (click)="excelexport.save()"
+                          >
+                          <span class="k-icon k-i-file-excel k-icon-20"></span>
+                            Descargar Formato CSV
+                          </button>
+                          <kendo-excelexport
+                                [data]="listaCSVExample"
+                                fileName="MarcacionPeronalEjemplo" #excelexport>
+                                <kendo-excelexport-column field="dni" title="dni">
+                                </kendo-excelexport-column>
+                                <kendo-excelexport-column field="fechaMarcacion" title="fechaMarcacion">
+                                </kendo-excelexport-column>
+                                <kendo-excelexport-column field="m1" title="m1">
+                                </kendo-excelexport-column>
+                                <kendo-excelexport-column field="m2" title="m2">
+                                </kendo-excelexport-column>
+                                <kendo-excelexport-column field="m3" title="m3">
+                                </kendo-excelexport-column>
+                                <kendo-excelexport-column field="m4" title="m4">
+                                </kendo-excelexport-column>
+                                <kendo-excelexport-column field="m5" title="m5">
+                                </kendo-excelexport-column>
+                                <kendo-excelexport-column field="m6" title="m6">
+                                </kendo-excelexport-column>
+                            </kendo-excelexport>
+                        </ng-container>
+                      </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                      <kendo-grid
+                        [kendoGridBinding]="listaCSV"
+                        [loading]="loadeCargarDatar"
+                        [pageSize]="5"
+                        [pageable]="{
+                          buttonCount: 5,
+                          info: true,
+                          type: 'numeric',
+                          pageSizes: true,
+                          previousNext: true,
+                          position: 'bottom'
+                        }"
+                      >
+                        <kendo-grid-column
+                          title="DNI"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="200"
+                          field="dni"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Fecha Marcación"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="fechaMarcacion"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                            {{ finanzasService.fechaTemplate(dataItem.fechaMarcacion) }}
+                          </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Marcación 1"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="m1"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Marcación 2"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="m2"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Marcación 3"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="m3"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Marcación 4"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="m4"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Marcación 5"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="m5"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Marcación 6"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="m6"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="false"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#3382a9',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <ng-template kendoGridNoRecordsTemplate>
+                          <div>
+                            <kendo-badge-container>
+                              <kendo-icon
+                                name="cloud"
+                                size="large"
+                              ></kendo-icon>
+                              <kendo-badge position="inside">
+                                <kendo-icon
+                                  name="close"
+                                  style="color: red"
+                                ></kendo-icon>
+                              </kendo-badge>
+                            </kendo-badge-container>
+                          </div>
+                          <p>No hay registros cargados!</p>
+                        </ng-template>
+                      </kendo-grid>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

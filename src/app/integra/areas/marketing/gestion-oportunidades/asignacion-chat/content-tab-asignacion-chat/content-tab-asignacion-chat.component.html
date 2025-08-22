@@ -1,0 +1,460 @@
+<div *ngIf="tab.indexTab == 0">
+  <div class="card-body p-4">
+    <div class="row">
+      <div class="col">
+        <kendo-grid
+          [kendoGridBinding]="gridFormularioListaAsesores.data"
+          [loading]="gridFormularioListaAsesores.loading"
+          (remove)="gridFormularioListaAsesores.removeHandler($event)"
+          (dataStateChange)="gridFormularioListaAsesores.onStateChange($event)"
+          [filterable]="true"
+          [sortable]="gridFormularioListaAsesores.sortable"
+          [resizable]="gridFormularioListaAsesores.resizable"
+          [pageable]="gridFormularioListaAsesores.pageable"
+          [skip]="gridFormularioListaAsesores.gridState.skip"
+          [pageSize]="10"
+          [sort]="gridFormularioListaAsesores.gridState.sort"
+          [reorderable]="true"
+          style="max-height: 700px"
+        >
+          <ng-template kendoGridToolbarTemplate>
+            <button
+              kendoButton
+              icon="reload"
+              fillMode="flat"
+              themeColor="secondary"
+              (click)="ObtenerTodoListaAsesores()"
+            ></button>
+            <kendo-grid-spacer></kendo-grid-spacer>
+            <button
+              kendoButton
+              themeColor="primary"
+              icon="plus"
+              (click)="abrirModal(true)"
+            >
+              Agregar
+            </button>
+          </ng-template>
+          <kendo-grid-column
+            *ngFor="let item of gridFormularioListaAsesores.columns"
+            [field]="item.field"
+            [title]="item.title"
+            [filterable]="item.filterable"
+            [headerClass]="item.headerClass"
+            [width]="item.width"
+          >
+            <ng-template
+              *ngIf="item.field == 'listaArea'"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <div [innerHTML]="dataItem.listaArea"></div>
+            </ng-template>
+            <ng-template
+              *ngIf="item.field == 'listaSubArea'"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <div [innerHTML]="dataItem.listaSubArea"></div>
+            </ng-template>
+            <ng-template
+              *ngIf="item.field == 'listaProgramaGeneral'"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <div [innerHTML]="dataItem.listaProgramaGeneral"></div>
+            </ng-template>
+            <ng-template
+              *ngIf="item.field == 'listaPais'"
+              kendoGridCellTemplate
+              let-dataItem
+            >
+              <div [innerHTML]="dataItem.listaPais"></div>
+            </ng-template>
+            <ng-template
+              kendoGridFilterMenuTemplate
+              let-filter
+              let-column="column"
+              let-filterService="filterService"
+            >
+              <kendo-grid-string-filter-menu
+                [column]="column"
+                [filter]="filter"
+                [filterService]="filterService"
+                [extra]="false"
+                operator="eq"
+              >
+                <kendo-filter-eq-operator
+                  text="Igual a"
+                ></kendo-filter-eq-operator>
+              </kendo-grid-string-filter-menu>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-command-column
+            title="Editar"
+            [width]="120"
+            [headerClass]="'header-grid-integra'"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+              <div class="w-100 d-flex justify-content-center">
+                <button
+                  kendoButton
+                  themeColor="warning"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  (click)="abrirModal(false, dataItem)"
+                  placement="top"
+                  ngbTooltip="Editar"
+                >
+                  <span class="k-icon k-i-edit k-icon-20"></span>
+                </button>
+                <button
+                  kendoGridRemoveCommand
+                  themeColor="error"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Eliminar"
+                >
+                  <span class="k-icon k-i-delete k-icon-20"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+          <ng-template
+          kendoPagerTemplate
+          let-totalPages="totalPages"
+          let-currentPage="currentPage"
+        >
+          <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+          <kendo-pager-numeric-buttons
+            [buttonCount]="5"
+          ></kendo-pager-numeric-buttons>
+          <kendo-pager-next-buttons></kendo-pager-next-buttons>
+          <!-- <kendo-pager-input></kendo-pager-input> -->
+          <kendo-pager-info></kendo-pager-info>
+          <kendo-pager-page-sizes
+            [pageSizes]="pageSizes"
+          ></kendo-pager-page-sizes>
+        </ng-template>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="tab.indexTab == 1">
+  <div class="card-body p-4">
+    <div class="row">
+      <div class="col">
+        <!-- listaChats -->
+
+        <kendo-grid
+          [kendoGridBinding]="listaChats.asesorChat"
+          [pageSize]="10"
+          [sortable]="true"
+          [filterable]="true"
+          [pageable]="{
+            buttonCount: 5,
+            info: true,
+            type: 'numeric',
+            pageSizes: true,
+            previousNext: true,
+            position: 'bottom'
+          }"
+          style="max-height: 700px"
+          [groupable]="true"
+        >
+          <kendo-grid-column
+            field="nombreArea"
+            title="Area"
+            [filterable]="true"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="nombreSubArea"
+            title="SubArea"
+            [filterable]="true"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="nombrePGeneral"
+            title="Programa General"
+            [filterable]="true"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="nombrePais"
+            title="Pais"
+            [filterable]="true"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="esAsignado"
+            title="Asignado"
+            [filterable]="true"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="nombrePersonal"
+            title="Asesor"
+            [filterable]="true"
+          >
+          </kendo-grid-column>
+          <ng-template
+            kendoPagerTemplate
+            let-totalPages="totalPages"
+            let-currentPage="currentPage"
+          >
+            <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+            <kendo-pager-numeric-buttons
+              [buttonCount]="5"
+            ></kendo-pager-numeric-buttons>
+            <kendo-pager-next-buttons></kendo-pager-next-buttons>
+            <!-- <kendo-pager-input></kendo-pager-input> -->
+            <kendo-pager-info></kendo-pager-info>
+            <kendo-pager-page-sizes
+              [pageSizes]="pageSizes"
+            ></kendo-pager-page-sizes>
+          </ng-template>
+        </kendo-grid>
+        <!-- <kendo-grid
+          [kendoGridBinding]="gridFormularioListaChats.view.data"
+          [loading]="gridFormularioListaChats.loading"
+          (remove)="gridFormularioListaChats.removeHandler($event)"
+          (dataStateChange)="gridFormularioListaChats.onStateChange($event)"
+          [filterable]="gridFormularioListaChats.filterable"
+          [sortable]="gridFormularioListaChats.sortable"
+          [resizable]="gridFormularioListaChats.resizable"
+          [pageable]="gridFormularioListaChats.pageable"
+          [skip]="gridFormularioListaChats.gridState.skip"
+          [pageSize]="gridFormularioListaChats.gridState.take"
+          [sort]="gridFormularioListaChats.gridState.sort"
+          [groupable]="true"
+
+        >
+          <kendo-grid-column
+            *ngFor="let item of gridFormularioListaChats.columns"
+            [field]="item.field"
+            [title]="item.title"
+            [filterable]="item.filterable"
+            [headerClass]="item.headerClass"
+            [width]="item.width"
+          >
+            <ng-template
+              kendoGridFilterMenuTemplate
+              let-filter
+              let-column="column"
+              let-filterService="filterService"
+            >
+              <kendo-grid-string-filter-menu
+                [column]="column"
+                [filter]="filter"
+                [filterService]="filterService"
+                [extra]="false"
+                operator="eq"
+              >
+                <kendo-filter-eq-operator
+                  text="Igual a"
+                ></kendo-filter-eq-operator>
+              </kendo-grid-string-filter-menu>
+            </ng-template>
+          </kendo-grid-column>
+
+        </kendo-grid> -->
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #modalAsignacionChat let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? "Nueva Asignación de Chat" : "Modificar Asignación de chat" }}
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form
+      class="k-form k-form-horizontal"
+      [formGroup]="formFormularioAsesorChat"
+    >
+      <fieldset class="k-form-fieldset">
+        <div class="col-sm-12 col-md-12">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="idPersonal" class="k-label">
+              <span style="flex-direction: column"
+                >Asesor: <span class="text-danger fw-bold">*</span></span
+              >
+            </label>
+            <kendo-dropdownlist
+              #idPersonal
+              formControlName="idPersonal"
+              class="d-flex"
+              size="medium"
+              [data]="filtrosGenerales.listaAsesores"
+              [defaultItem]="{
+                textoBoton: 'Seleccione un asesor...',
+                id: null
+              }"
+              textField="nombreCompleto"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            >
+            </kendo-dropdownlist>
+            <kendo-formerror>
+              {{ getErrorMessage("idPersonal") }}
+            </kendo-formerror>
+          </kendo-formfield>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="area" class="k-label">
+                <span>Area: <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-multiselect
+                #area
+                formControlName="area"
+                [data]="areasCapacitacionFiltro"
+                textField="nombre"
+                valueField="id"
+                (filterChange)="filterAreas($event)"
+                (valueChange)="changeArea($event)"
+                (removeTag)="removeArea($event)"
+                [valuePrimitive]="true"
+                [filterable]="true"
+                [kendoDropDownFilter]="filterSettings"
+              ></kendo-multiselect>
+              <kendo-formerror>
+                {{ getErrorMessage("area") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="subArea" class="k-label">
+                <span
+                  >Sub Area: <span class="text-danger fw-bold">*</span></span
+                >
+              </label>
+              <kendo-multiselect
+                #subArea
+                formControlName="subArea"
+                [data]="subAreasCapacitacionFiltro"
+                textField="nombre"
+                [valuePrimitive]="true"
+                [filterable]="true"
+                valueField="id"
+                (valueChange)="changeSubArea($event)"
+                (removeTag)="removeSubArea($event)"
+                [kendoDropDownFilter]="filterSettings"
+              ></kendo-multiselect>
+              <kendo-formerror>
+                {{ getErrorMessage("subArea") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="programas" class="k-label">
+                <span
+                  >Programas: <span class="text-danger fw-bold">*</span></span
+                >
+              </label>
+              <kendo-multiselect
+                #programas
+                formControlName="programas"
+                [data]="programasFiltro"
+                textField="nombre"
+                [valuePrimitive]="true"
+                [filterable]="true"
+                valueField="id"
+                [kendoDropDownFilter]="filterSettings"
+              ></kendo-multiselect>
+              <kendo-formerror>
+                {{ getErrorMessage("programas") }}
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="paises" class="k-label">
+                <span>País: <span class="text-danger fw-bold">*</span></span>
+              </label>
+              <kendo-multiselect
+                #paises
+                [data]="filtrosGenerales.listaPaises"
+                textField="nombrePais"
+                [valuePrimitive]="true"
+                valueField="id"
+                [filterable]="true"
+                formControlName="paises"
+                [kendoDropDownFilter]="filterSettings" 
+              ></kendo-multiselect>
+              <kendo-formerror>
+                {{ getErrorMessage("paises") }}
+                
+              </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="isNew"
+        themeColor="primary"
+        (click)="crearAsesorChat()"
+      >
+        Guardar
+      </button>
+
+      <button
+        kendoButton
+        *ngIf="!isNew"
+        themeColor="tertiary"
+        (click)="actualizarAsesorChat()"
+      >
+        Actualizar
+      </button>
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

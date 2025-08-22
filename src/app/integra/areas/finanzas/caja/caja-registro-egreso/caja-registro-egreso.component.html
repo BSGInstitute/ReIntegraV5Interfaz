@@ -1,0 +1,1114 @@
+<ng-template #modalCrearRECDirecto let-modal>
+  <app-loader *ngIf="loaderModalREC"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Creación directa de REC
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupRECDirecto">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idPr" class="k-label t_font">
+                  <span
+                  >Registro Por<br> Rendir (PR):</span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idPr"
+                  class="d-flex"
+                  size="small"
+                  #idPr
+                  [data]="itemslistaPr"
+                  textField="codigo"
+                  valueField="id"
+                  [defaultItem]="{id:null,codigo:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangeCabeceraPR($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione un PR</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageRECDirecto("idPr") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idComprobante" class="k-label t_font">
+                  <span
+                  >Comprobante :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idComprobante"
+                  class="d-flex"
+                  size="small"
+                  #idComprobante
+                  [data]="listaComprobantePago"
+                  textField="comprobante"
+                  valueField="id"
+                  [defaultItem]="{id:null,comprobante:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangeComprobante($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione un Comprobante de Pago</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageRECDirecto("idComprobante") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idSolicitante" class="k-label t_font">
+                  <span
+                  >Solicitante:
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  [disabled]="CajaRECDirecto"
+                  formControlName="idSolicitante"
+                  class="d-flex"
+                  size="small"
+                  #idSolicitante
+                  [data]="itemslistaPersonal"
+                  textField="nombres"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombres:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangePersonal($event)"
+              >
+
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione el personal solicitante</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageRECDirecto("idSolicitante") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idCaja" class="k-label t_font">
+                  <span
+                  >Caja :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  [disabled]="CajaRECDirecto"
+                  formControlName="idCaja"
+                  class="d-flex"
+                  size="small"
+                  #idCaja
+                  [data]="listaCaja"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  (selectionChange)="CajaDirecto($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione una Caja</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageRECDirecto("idCaja") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idFur" class="k-label t_font">
+                  <span
+                  >FUR :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idFur"
+                  class="d-flex"
+                  size="small"
+                  #idFur
+                  [data]="itemlistaFur"
+                  textField="codigo"
+                  valueField="id"
+                  [defaultItem]="{id:null,codigo:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangeFur($event)"
+                  (selectionChange)="FurDirectoChange($event)"
+              >
+              <ng-template kendoDropDownListNoDataTemplate>
+                <h4>
+                  <span class="k-icon k-i-exclamation-circle"></span><br /><br />
+                  Seleccione una caja y busque el FUR!
+                </h4>
+              </ng-template>
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione un FUR</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessageRECDirecto("idFur") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="detalle" class="k-label t_font">
+                  <span
+                  >Detalle :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-textbox
+              [readonly]="true"
+              #detalle
+              class="d-flex"
+              size="small"
+              [clearButton]="true"
+              formControlName="detalle"
+              [required]="true"
+              [successIcon]="successIcon"
+              >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idMoneda" class="k-label t_font">
+                  <span
+                  >Moneda :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  [readonly]="true"
+                  formControlName="idMoneda"
+                  class="d-flex"
+                  size="small"
+                  #idMoneda
+                  [data]="listaMoneda"
+                  textField="nombrePlural"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="totalEfectivo" class="k-label t_font">
+                  <span
+                  >Total Efectivo :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-numerictextbox
+                    #totalEfectivo
+                    orientation="horizontal"
+                    [style.width.px]="170"
+                    formControlName="totalEfectivo"
+                    [min]="1"
+                    [autoCorrect]="true"
+                    [spinners]="false"
+                    >
+                    </kendo-numerictextbox>
+              <kendo-formhint>Ingrese el Total efectivo de la Solicitud REC</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("totalEfectivo") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idMoneda" class="k-label t_font">
+                  <span
+                  >Fecha de Generación<br>REC :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-datepicker
+              [disabled]="CajaRECDirecto"
+              [formControl]="fechaCajaEgresoDirecto"
+              [incompleteDateValidation]="true"
+              calendarType="classic"
+              [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+              placeholder="dd-MM-yyyy"
+              [required]="true"
+              ></kendo-datepicker>                                     
+            </kendo-formfield>
+          </div>
+          <div class="col-md-1"></div>
+          <div class="col k-form-horizontal col-md-5" style="padding-top:15px ;">
+            <button
+              kendoButton 
+              type="button"
+              themeColor="primary"
+              (click)="anadirSolicitudDirecta()"
+            >
+              Añadir
+            </button>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+    <br>
+    <div class="row">
+      <kendo-grid 
+      [data]="listaRECDirecto"
+      [pageSize]="20"
+      [pageable]="true"
+      [sortable]="true"
+      [reorderable]="true"
+      [resizable]="true"
+      >
+      <kendo-grid-command-column
+          [sticky]="true"
+          title="Acciones"
+          [width]="100"
+          headerClass="justify-content-center text-center k-grid-header-command"
+        >
+        <ng-template 
+        kendoGridCellTemplate 
+        let-isNew="isNew" 
+        let-dataItem="dataItem" 
+        let-rowIndex="rowIndex"
+        >
+
+          <div class="w-100 d-flex justify-content-center">
+            <button
+              title="Cancelar"
+              kendoButton
+              themeColor="tertiary"
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1"
+              container="body"
+              placement="top"
+              (click)="gridEventsResponse('esCancelado',dataItem)"
+            >
+              <span class="k-icon k-i-check-outline k-icon-20"></span>
+            </button>                       
+            <button
+              title="Eliminar"
+              kendoButton
+              themeColor="error"
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1"
+              container="body"
+              placement="top"
+              ngbTooltip="Eliminar"
+              (click)="smsEliminarRECirecto(rowIndex)" 
+            >
+              <span class="k-icon k-i-delete k-icon-20"></span>
+            </button>
+          </div>
+        </ng-template>
+        </kendo-grid-command-column>
+      <kendo-grid-column
+        title="Es Cancelado"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="esCancelado"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+      >
+      <ng-template kendoGridCellTemplate let-dataItem>
+                              
+        <fa-icon *ngIf="!dataItem.esCancelado" [icon]="['fas', 'toggle-off']" class="fa-lg fs-3 fw-bold" style="color: darkgray"></fa-icon>
+        <fa-icon *ngIf="dataItem.esCancelado" [icon]="['fas', 'toggle-on']" class="fa-lg fs-3 fw-bold" style="color: rgb(69, 112, 242)"></fa-icon>
+      
+    </ng-template>
+      </kendo-grid-column>   
+
+        <kendo-grid-column
+        title="Codigo Fur"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="codigoFur"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+      ></kendo-grid-column>
+      <kendo-grid-column
+        title="Monto Declarado"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="totalEfectivo"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+      >
+      </kendo-grid-column>                       
+      <kendo-grid-column
+        title="Descripción"
+        headerClass="justify-content-center k-grid-header "
+        [width]="250"
+        field="descripcion"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+      >
+      </kendo-grid-column>   
+      <kendo-grid-column
+        title="Proveedor"
+        headerClass="justify-content-center k-grid-header "
+        [width]="250"
+        field="nombreProveedor"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        title="RUC"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="rucProveedor"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+      >
+      </kendo-grid-column>  
+      <kendo-grid-column
+        title="Documento SUNAT"
+        headerClass="justify-content-center k-grid-header "
+        [width]="150"
+        field="nombreSunatDocumento"
+        [locked]="false"
+        [sticky]="false"
+        [filterable]="true"
+        [hidden]="false"
+      >
+      </kendo-grid-column> 
+      <kendo-grid-column
+      title="Serie de Comprobante"
+      headerClass="justify-content-center k-grid-header "
+      [width]="150"
+      field="serie"
+      [locked]="false"
+      [sticky]="false"
+      [filterable]="true"
+      [hidden]="false"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      title="Número de Comprobante "
+      headerClass="justify-content-center k-grid-header "
+      [width]="150"
+      field="numero"
+      [locked]="false"
+      [sticky]="false"
+      [filterable]="true"
+      [hidden]="false"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      title="Fecha de Emisión "
+      headerClass="justify-content-center k-grid-header "
+      [width]="150"
+      field="fechaEmision"
+      [locked]="false"
+      [sticky]="false"
+      [filterable]="true"
+      [hidden]="false"
+    >
+    </kendo-grid-column>                                                              
+        
+      </kendo-grid>             
+    </div>
+    
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="generarRECDirecto()"
+    >
+      Generar REC
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+
+
+
+<ng-template #modalAnadirComprobante let-modal>
+  <app-modal-comprobante-pag
+  [modal]="modal"
+  [nombreModal]="'Nuevo Comprobante de Pago'"
+  [nombreBTN]="'Nuevo'"
+  [listaSede]="listaSede"
+  [listaMoneda]="listaMoneda"
+  [listaDocSunat]="listaDocSunat"
+  [listaTipoImpuesto]="listaTipoImpuesto"
+  [listaRetencion]="listaRetencion"
+  [listaDetraccion]="listaDetraccion"
+  [listaPais]="listaPais"
+  [dataEditar]="null"
+  >
+  </app-modal-comprobante-pag>
+</ng-template>
+
+
+<ng-template #modalEditarREC let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Editar REC
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupREC">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idComprobantePago" class="k-label">
+                  <span
+                  >Comprobante :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idComprobantePago"
+                  class="d-flex"
+                  size="small"
+                  #idComprobantePago
+                  [data]="listaComprobantePago"
+                  textField="comprobante"
+                  valueField="id"
+                  [defaultItem]="{id:null,comprobante:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangeComprobante($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>{{ getErrorMessage("idComprobantePago") }} </kendo-formerror>
+
+              </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idPersonalSolicitante" class="k-label">
+                  <span
+                  >Solicitante :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idPersonalSolicitante"
+                  class="d-flex"
+                  size="small"
+                  #idPersonalSolicitante
+                  [data]="itemslistaPersonal"
+                  textField="nombres"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombres:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  (filterChange)="filterChangePersonal($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>{{ getErrorMessage("idPersonalSolicitante") }} </kendo-formerror>
+
+              </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idFur" class="k-label">
+                  <span
+                  >FUR :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idFur"
+                  class="d-flex"
+                  size="small"
+                  #idFur
+                  [data]="itemlistaFur"
+                  textField="codigo"
+                  valueField="id"
+                  [defaultItem]="{id:null,codigo:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangeFur($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formerror>{{ getErrorMessage("idFur") }} </kendo-formerror>
+
+              </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="descripcion" class="k-label">
+                <span
+                  > Detalle :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-textarea
+                    #descripcion
+                    [style.width.%]="100"
+                    resizable="auto"
+                    [maxlength]="maxlength"
+                    formControlName="descripcion"
+                    (valueChange)="onValueChange($event)"
+                >
+                    <kendo-textarea-suffix class="custom-styling">
+                    <span class="counter">{{ counter }}</span>
+                    </kendo-textarea-suffix>
+                </kendo-textarea>
+              <kendo-formhint>Ingrese el detalle REC</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("descripcion") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idMoneda" class="k-label">
+                  <span
+                  >Moneda :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idMoneda"
+                  class="d-flex"
+                  size="small"
+                  #idMoneda
+                  [data]="listaMoneda"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+
+              >
+              </kendo-dropdownlist>
+              </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="totalEfectivo" class="k-label" >
+                <span
+                  >Total Efectivo :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-numerictextbox
+              #totalEfectivo
+              orientation="horizontal"
+              [style.width.px]="170"
+              formControlName="totalEfectivo"
+              [min]="0"
+              [autoCorrect]="true"
+              >
+              </kendo-numerictextbox>
+              <kendo-formhint>ingrese el monto del total efectivo</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("totalEfectivo") }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="actualizarSolicitudCajaEgreso()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+
+<div class="">
+    <div class="row">
+      <div class="col-1fa-rotate-270">
+        <div class="card">
+            <div class="card-header bg-color-material">
+                <h1 class="text-white">Gestion de Registro Egreso Caja (REC)</h1>
+            </div>
+            <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 k-form-horizontal" >
+                            <kendo-formfield orientation="horizontal" style="margin-top: 1.5rem;">
+                              <label [for]="dropdownlist" class="k-label">
+                                  <span
+                                  >Solicitante :
+                                  </span>
+                              </label>
+                              <kendo-dropdownlist
+                                  [formControl]="solicitanteBusqueda"
+                                  class="d-flex"
+                                  size="medium"
+                                  #dropdownlist
+                                  [data]="listaSolicitante"
+                                  textField="nombre"
+                                  valueField="id"
+                                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                                  [valuePrimitive]="true"
+                                  (selectionChange)="selectionChangeSolicitante($event)"
+                              >
+                              </kendo-dropdownlist>
+                              
+                            </kendo-formfield>  
+                        </div> 
+                        <div class="col-md-2">
+                          
+                        </div>
+                        <div class="card element col-md-3">
+                          
+                            <div class="row" style="padding: 0.5rem;">
+                              <div class="col-md-5">
+                                Tipo de Moneda :
+                              </div>
+                              <div class="col-md-7" style="margin-left: -1.5rem;">
+                                <kendo-textbox
+                                [readonly]="true"
+                                [value]="tipoMoneda"
+                                class="d-flex"
+                                size="small"
+                              >
+                              </kendo-textbox>
+                              </div>
+                              
+                            </div>
+                            <div class="row" style="padding: 0.5rem;">
+                              <div class="col-md-5">
+                                Total Por Rendir :
+                              </div>
+                              <div class="col-md-7" style="margin-left: -1.5rem;">
+                                <kendo-numerictextbox
+                                [spinners]="false"
+                                [readonly]="true"
+                                [value]="total"
+                                class="d-flex"
+                                size="small"
+                              >
+                              </kendo-numerictextbox>
+                              </div>
+                            </div>
+                          
+                        </div>
+                             
+                    </div>
+                    <br>
+                    <div class="row col-md-12">
+                      <div class="col-md-12">
+                        <div class="card-header bg-color-material col-md-12">
+                            <div class="row col-md-12">
+                                <div div class="col-md-8" style="text-align: left;">
+                                  <div class="row">
+                                    <div class="col-md-4">
+                                      <button 
+                                      kendoButton 
+                                      icon="reload" 
+                                      type="button"
+                                      themeColor="secondary" 
+                                      style="margin-right: 1rem;"
+                                      (click)="gridEventsResponse('reload')"
+                                      >
+                                      </button>
+                                      <button
+                                        kendoButton 
+                                        icon="k-icon k-i-file-excel k-icon-20"
+                                        type="button"
+                                        themeColor="tertiary"
+                                        (click)="excelexport.save()"
+                                        >
+                                        Exportar a Excel
+                                      </button>
+                                      <kendo-excelexport 
+                                      [data]="gridView" 
+                                      fileName="CajaEgreso.xlsx" #excelexport>
+                                        <kendo-excelexport-column field="codigoFur" title="Código Fur">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="totalEfectivo" title="Monto Declarado">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="montoFur" title="Monto Fur">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="montoPendiente" title="Monto Pendiente">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="esCancelado" title="Es Cancelado">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="descripcion" title="Descripción">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="nombreProveedor" title="Proveedor">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="rucProveedor" title="RUC">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="nombreSunatDocumento" title="Documento SUNAT">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="serie" title="Serie de Comprobante">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="numero" title="Número de Comprobante">
+                                        </kendo-excelexport-column>
+                                        <kendo-excelexport-column field="fechaEmision" title="Fecha Emisión">
+                                        </kendo-excelexport-column>
+                                      </kendo-excelexport>
+                                    </div>
+                                    <div class="col-md-1" style="padding-right: 6rem;">
+                                      <button
+                                        [disabled]="btnGenerarREC"
+                                        kendoButton 
+                                        type="button"
+                                        themeColor="primary"
+                                        (click)="gridEventsResponse('generarREC')"
+                                        >
+                                        Generar REC
+                                    </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <kendo-dropdownlist
+                                                    [formControl]="cajaBusqueda"
+                                                    class="d-flex center"
+                                                    size="medium"
+                                                    #dropdownlist
+                                                    [data]="listaCaja"
+                                                    textField="nombre"
+                                                    valueField="id"
+                                                    [defaultItem]="{id:null,nombre:'< Seleccionar Caja >'}"
+                                                    [valuePrimitive]="true"
+                                                    (selectionChange)="selectionChangeCaja($event)"
+                                                >
+                                                </kendo-dropdownlist>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <kendo-datepicker
+                                                    [formControl]="fechaCajaEgreso"
+                                                    [incompleteDateValidation]="true"
+                                                    calendarType="classic"
+                                                    [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                                    placeholder="Fecha Generación REC"
+                                                    (valueChange)="onChangeFechaREC($event)"
+                                                ></kendo-datepicker>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-md-4" >
+                                  <div class="row" style="text-align: right;">
+                                    <div class="col-md-7">
+                                        <button
+                                        kendoButton
+                                        themeColor="success"
+                                        (click)="openModalComprobante()"
+                                        >
+                                          <span class="k-icon k-i-js k-icon-10"></span>
+                                          Crear comprobante
+                                        </button>
+                                    </div>
+                                    <div class="col-md-5">
+                                      <button
+                                      kendoButton 
+                                      type="button"
+                                      themeColor="primary"
+                                      (click)="openModalRECDirecto()"
+                                      >
+                                      + Crear REC Directo
+                                  </button>
+                                    </div>
+
+                                  </div>
+                                </div>
+                                     
+                            </div>
+                        </div>
+                        <kendo-grid
+                        [kendoGridBinding]="gridView"
+                        [loading]="loader"
+                        [pageSize]="5"
+                        [sortable]="true"
+                        [reorderable]="true"
+                        [resizable]="true"
+                        [columnMenu]="{ filter: true }"
+                        kendoGridSelectBy="id"
+                        [(selectedKeys)]="listaSeleccion"
+                        [selectable]="{ enabled: true, checkboxOnly: true }"
+                        (selectedKeysChange)="CalcularTotal()"
+                        [pageable]="{
+                          buttonCount: 5,
+                          info: true,
+                          type: 'numeric',
+                          pageSizes: true,
+                          previousNext: true,
+                          position: 'bottom'
+                        }"
+                        
+                        >
+                          <kendo-grid-checkbox-column
+                          [width]="45"
+                          [headerClass]="{ 'text-center': true }"
+                          [class]="{ 'text-center': true }"
+                          [resizable]="false"
+                          [columnMenu]="false"
+                          [showSelectAll]="true"
+                          [sticky]="true"
+                          >
+                          </kendo-grid-checkbox-column>
+                          <kendo-grid-column
+                              title="Codigo Fur"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="codigoFur"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Solicitante"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="personalSolicitante"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Monto Declarado"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="totalEfectivo"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Monto Fur"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="montoFur"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Monto Pendiente"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="montoPendiente"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Es Cancelado"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="esCancelado"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              
+                                <fa-icon *ngIf="!dataItem.esCancelado" [icon]="['fas', 'toggle-off']" class="fa-lg fs-3 fw-bold" style="color: darkgray"></fa-icon>
+                                <fa-icon *ngIf="dataItem.esCancelado" [icon]="['fas', 'toggle-on']" class="fa-lg fs-3 fw-bold" style="color: rgb(69, 112, 242)"></fa-icon>
+                              
+                            </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Descripción"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="250"
+                              field="descripcion"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Proveedor"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="250"
+                              field="nombreProveedor"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="RUC"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="rucProveedor"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Documento SUNAT"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="nombreSunatDocumento"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Serie de Comprobante"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="serie"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Número de Comprobante "
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="numero"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Fecha de Emisión "
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="fechaEmision"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template  kendoGridCellTemplate let-dataItem>
+                              {{finanzasService.fechaTemplate(dataItem.fechaEmision,false)}}
+                            </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-command-column
+                            [sticky]="true"
+                            title="Acciones"
+                            [width]="220"
+                            headerClass="justify-content-center text-center k-grid-header-command"
+                              >
+                              <ng-template 
+                              kendoGridCellTemplate 
+                              let-isNew="isNew" 
+                              let-dataItem="dataItem" 
+                              let-rowIndex="rowIndex"
+                              >
+                                <div class="w-100 d-flex justify-content-center" style="padding:20px" kendoTooltip>
+                                  <div 
+                                  >
+                                    <button
+                                    title="Devolver"
+                                    kendoButton
+                                    themeColor="secondary"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    class="p-2 me-1 ms-1"
+                                    container="body"
+                                    placement="top"
+                                    (click)="gridEventsResponse('devolver',dataItem,rowIndex)"
+                                  >
+                                    <span class="k-icon k-i-undo k-icon-20"></span>
+                                  </button>
+                                    <button
+                                    title="Cancelar"
+                                    kendoButton
+                                    themeColor="tertiary"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    class="p-2 me-1 ms-1"
+                                    container="body"
+                                    placement="top"
+                                    (click)="gridEventsResponse('esCancelado',dataItem)"
+                                  >
+                                    <span class="k-icon k-i-check-outline k-icon-20"></span>
+                                  </button>
+                                  
+                                    <button
+                                    title="Editar"
+                                    kendoButton
+                                    themeColor="warning"
+                                    fillMode="solid"
+                                    rounded="large"
+                                    size="large"
+                                    class="p-2 me-1 ms-1"
+                                    container="body"
+                                    placement="top"
+                                    (click)="gridEventsResponse('edit',dataItem)"
+                                    
+                                  >
+                                    <span class="k-icon k-i-edit k-icon-20"></span>
+                                  </button>
+                                   
+                                  </div>
+                                  
+                                </div>
+                              </ng-template>
+                              </kendo-grid-command-column>
+                          
+                        </kendo-grid>
+                        
+                      </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>

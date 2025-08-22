@@ -1,0 +1,394 @@
+
+<div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Reporte por estados de matricula</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="k-loading-panel" *ngIf="loader">
+            <div class="k-loading-panel-mask"></div>
+            <div class="k-loading-panel-wrapper">
+              <kendo-loader
+                type="converging-spinner"
+                themeColor="primary"
+                size="large"
+              >
+              </kendo-loader>
+              <div class="k-loading-panel-text fs-5 text-primary">
+                Cargando...
+              </div>
+            </div>
+          </div>
+          <div class="row conteiner-toolbar-retiros-matricula">
+            <div class="card" style="padding: 0px;"> 
+                <div class="card-header bg-color-material pb-0">
+                    <h3 class="text-white mb-2">Configuración de agrupación matrícula </h3>
+                </div>
+                <div  class="card-body p-4">
+                    <app-configuracion-agrupacion-matricula> </app-configuracion-agrupacion-matricula>
+                </div>
+            </div>
+            <div style="height:15px;"></div>
+            <div class="card" style="padding: 0px;"> 
+                <div class="card-header bg-color-material pb-0">
+                    <h3 class="text-white mb-2">Filtro </h3>
+                </div>
+                <div  class="card-body p-4">
+                    <div class="row" style="display: flex; justify-content: center">
+                        <div class="col-md-10">
+                            <form class="k-form" [formGroup]="formGroupFiltro">
+                                <fieldset class="k-form-fieldset">
+                                    <div class="row" style="  margin-top: 0px !important ">
+                                      <div class="col-md-7">
+                                        <div class="row">
+                                          <div class="col-md-5" style="
+                                          padding-right: 0px;
+                                          display: flex;
+                                          padding-top: 5px;
+                                          width: 222px;
+                                      ">
+                                              <label
+                                              [for]="fecha"
+                                              class="k-label"
+                                              style="width: fit-content;padding-top:5px;"
+                                            
+                                            >
+                                            Rango de fechas de vencimiento :
+                                            </label>
+                                          </div>
+                                          <div class="col-md-7" style="padding-top: 5px;">
+                                              <div class="row" >
+                                                  <kendo-daterange
+                                                  [incompleteDateValidation]="true"
+                                                  >
+                                                      <div class="col-md-5"  >
+                                                            <kendo-dateinput
+                                                            kendoDateRangeStartInput
+                                                            [size]="'medium'"
+                                                            formControlName="fechaInicio"
+                                                            [placeholder]="'Inicio'"
+                                                            [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                                            [incompleteDateValidation]="true"
+                                                            fillMode="outline"
+                                                            #fecha
+                                                            >
+                                                        </kendo-dateinput>
+                                                      </div>
+                                                      <div class="col-md-2" style="padding: 0%;width: 5%;text-align: center;"><p style="
+                                                          margin-bottom: 5px;"><strong>—</strong></p></div>
+                                                      <div class="col-md-5">
+                                                            <kendo-dateinput
+                                                            kendoDateRangeEndInput
+                                                            [size]="'medium'"
+                                                            [placeholder]="'fin'"
+                                                            formControlName="fechaFin"
+                                                            [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                                                            [incompleteDateValidation]="true"
+                                                            fillMode="outline"
+                                                            ></kendo-dateinput>
+                                                      </div>
+                                                  </kendo-daterange>
+                                              </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-5  k-form-horizontal" >
+                                        <kendo-formfield orientation="horizontal" style=" margin-top: 5px !important; "> 
+                                          <label [for]="estMatr" class="k-label" style="
+                                          min-width: fit-content;
+                                          max-width: fit-content;
+                                      ">
+                                            <span>Estados de Matrícula :</span>
+                                          </label>
+                                          <kendo-multiselect
+                                            #estMatr
+                                            formControlName="idsEstados"
+                                            [data]="itemsEstado"
+                                            class="d-flex"
+                                            size="medium"
+                                            textField="estadoMatricula"
+                                            [valuePrimitive]="true"
+                                            valueField="id"
+                                            placeholder="< Seleccionar estados >"
+                                            [style.width.%]="100"
+                                            [filterable]="true"
+                                            (filterChange)="filterEstado($event)"
+                                          >
+                                          </kendo-multiselect>
+                                        </kendo-formfield>
+                                      </div>
+                                                    
+                                    </div>
+                                    <div style="height: 15px;"></div>
+                                    <div class="row">
+                                        <div class="col-md-10 k-form-horizontal">
+                                            <kendo-formfield orientation="horizontal" style=" margin-top: 5px !important; "> 
+                                                <label [for]="idsCoordinadoras" class="k-label" style="
+                                                min-width: fit-content;
+                                                max-width: fit-content;
+                                            ">
+                                                  <span>Asistente de Cobranza :</span>
+                                                </label>
+                                                <kendo-multiselect
+                                                  #idsCoordinadoras
+                                                  formControlName="idsCoordinadora"
+                                                  [data]="listaPersonal"
+                                                  class="d-flex"
+                                                  size="medium"
+                                                  textField="nombre"
+                                                  [valuePrimitive]="true"
+                                                  valueField="id"
+                                                  placeholder="< Seleccionar asistente >"
+                                                  [style.width.%]="100"
+                                                  [filterable]="true"
+                                                  (filterChange)="filterPersonal($event)"
+                                                >
+                                                </kendo-multiselect>
+                                              </kendo-formfield>
+                                        </div>
+                                        <div class="col-md-2" style="display: flex; justify-content: end;">
+                                            <div style="width: fit-content;height: fit-content;">
+                                                <button
+                                                mat-raised-button
+                                                color="primary"
+                                                style="width: fit-content;height: fit-content;"
+                                                (click)="generarReporte()"
+                                              >
+                                                <mat-icon>search</mat-icon>
+                                                 Buscar
+                                              </button>
+                                            </div>
+                                       
+                                          </div>
+                                    </div>
+                                    
+                                </fieldset>
+                            </form>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height:15px;"></div>
+            <div class="card conteiner-toolbar-retiros-matricula" style="padding: 0px;">
+              <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Lista reporte estados de matricula</h3>
+              </div>
+              <div  class="card-body p-4">
+                <kendo-tabstrip
+                style="background-color: #d3d4dc"
+                [keepTabContent]="true"
+              >
+                <kendo-tabstrip-tab title="PROYECTADO" [selected]="true">
+                  <ng-template kendoTabContent>
+                    <app-grid-auxiliar
+                    [detalle]="detalle"
+                    [listaReporte]="listaReporteProyectado"
+                    [tipo]="'PROYECTADO'"
+                    ></app-grid-auxiliar>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+                <kendo-tabstrip-tab title="REAL">
+                  <ng-template kendoTabContent>
+                    <app-grid-auxiliar
+                    [detalle]="detalle"
+                    [listaReporte]="listaReporteReal"
+                    [tipo]="'REAL'"
+                    ></app-grid-auxiliar>
+                  </ng-template>
+                </kendo-tabstrip-tab>
+                <kendo-tabstrip-tab title="PENDIENTE" >
+                    <ng-template kendoTabContent>
+                      <app-grid-auxiliar
+                      [detalle]="detalle"
+                      [listaReporte]="listaReportePendiente"
+                      [tipo]="'PENDIENTE'"
+                      ></app-grid-auxiliar>
+                    </ng-template>
+                  </kendo-tabstrip-tab>
+                  <kendo-tabstrip-tab title="MATRICULADO" >
+                    <ng-template kendoTabContent>
+                        <kendo-grid
+                        #grid
+                        [kendoGridBinding]="listaReporteMatriculado"
+                        [pageSize]="10"
+                        [sortable]="true"
+                        [reorderable]="false"
+                        [resizable]="true"
+                        filterable="menu"
+                        [pageable]="true"
+                        style="max-height: 700px; border-top-width: 0px; padding: 0px"
+                      >
+                        <ng-template kendoGridToolbarTemplate>
+                          <div
+                            class="col-md-7"
+                            style="display: flex; justify-content: start"
+                          >
+                             <button
+                             (click)="excelexport.save()"
+                             mat-raised-button
+                             class="btn-export-excel"
+                           >
+                           <span class="k-icon k-i-file-excel k-icon-20"></span>
+                             Exportar a Excel
+                           </button>
+                           <kendo-excelexport 
+                           [data]="listaReporteMatriculado" 
+                           fileName="Reporte por estados de matricula - MATRICULADO.xlsx" #excelexport>
+                             <kendo-excelexport-column field="codigoMatricula" title="Código Matrícula">
+                             </kendo-excelexport-column>
+                             <kendo-excelexport-column field="fechaMatricula" title="Fecha Matrícula">
+                            </kendo-excelexport-column>
+                             <kendo-excelexport-column field="agrupacionMat" title="Agrupación de matrícula">
+                             </kendo-excelexport-column>
+                             <kendo-excelexport-column field="estadoMatricula" title="Estado Matrícula">
+                             </kendo-excelexport-column>
+                            <kendo-excelexport-column field="paisAlumno" title="Pais Alumno">
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column field="coordinadoraCobranza" title="Asistente Cobranza">
+                            </kendo-excelexport-column>
+                           </kendo-excelexport>
+                          </div>
+                        </ng-template>
+                        <kendo-grid-column
+                          title="Código Matrícula"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="codigoMatricula"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#27ae60',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Fecha Matrícula"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="fechaMatricula"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#27ae60',
+                            color: 'white'
+                          }"
+                        >
+                            <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                                <kendo-grid-date-filter-menu
+                                    [column]="column"
+                                    [format]="'dd-MM-yyyy'"
+                                    [filter]="filter"
+                                    [placeholder]="'dia-mes-año'"
+                                    [filterService]="filterService"
+                                    >
+                                </kendo-grid-date-filter-menu>
+                            </ng-template>
+                            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                                {{finanzasService.fechaTemplate(dataItem.fechaMatricula)}}
+                            </ng-template>
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Agrupación de matrícula"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="agrupacionMat"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#27ae60',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Estado Matrícula"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="estadoMatricula"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#27ae60',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Pais Alumno"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="paisAlumno"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#27ae60',
+                            color: 'white'
+                          }"
+                        >
+                        
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          title="Asistente Cobranza"
+                          headerClass="justify-content-center k-grid-header "
+                          [width]="150"
+                          field="coordinadoraCobranza"
+                          [locked]="false"
+                          [sticky]="false"
+                          [filterable]="true"
+                          [hidden]="false"
+                          [headerStyle]="{
+                            'background-color': '#27ae60',
+                            color: 'white'
+                          }"
+                        >
+                        </kendo-grid-column>
+                        <ng-template kendoGridNoRecordsTemplate>
+                          <div>
+                            <kendo-badge-container>
+                              <kendo-icon name="cloud" size="large"></kendo-icon>
+                              <kendo-badge position="inside">
+                                <kendo-icon name="close" style="color: red"></kendo-icon>
+                              </kendo-badge>
+                            </kendo-badge-container>
+                          </div>
+                          <p>No hay registros cargados!</p>
+                        </ng-template>
+                        <ng-template
+                          kendoPagerTemplate
+                          let-totalPages="totalPages"
+                          let-currentPage="currentPage"
+                        >
+                          <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                          <kendo-pager-numeric-buttons
+                            [buttonCount]="5"
+                          ></kendo-pager-numeric-buttons>
+                          <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                          
+                          <kendo-pager-info></kendo-pager-info>
+                          <kendo-pager-page-sizes
+                            [pageSizes]="pageSizes"
+                          ></kendo-pager-page-sizes>
+                        </ng-template>
+                        </kendo-grid>
+                    </ng-template>
+                  </kendo-tabstrip-tab>
+              </kendo-tabstrip>
+              </div>
+          </div>
+        </div> 
+        </div>
+      </div>
+    </div>
+  </div>

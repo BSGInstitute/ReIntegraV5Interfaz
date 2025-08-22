@@ -1,0 +1,200 @@
+<div class="modal-header">
+  <h3 class="modal-title" id="modal-basic-title">
+    Datos de semaforo financiero 1
+  </h3>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body">
+  <form
+    class="k-form k-form-horizontal"
+    [formGroup]="formSemaforoDetalleVariable"
+  >
+    <div class="row">
+      <div class="col-sm-10 col-md-8">
+        <kendo-formfield orientation="horizontal">
+          <label [for]="nombre" class="k-label">
+            <span>Nombre <span class="text-danger fw-bold">*</span></span>
+          </label>
+          <kendo-textbox
+            #nombre
+            size="medium"
+            formControlName="nombre"
+            [showSuccessIcon]="getShowSuccessIcon('nombre')"
+            [successIcon]="successIcon"
+            showErrorIcon="initial"
+            [clearButton]="true"
+            inputValidSpaceDir
+          >
+          </kendo-textbox>
+          <kendo-formerror> {{ getErrorMessage("nombre") }} </kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-10 col-md-8">
+        <kendo-formfield orientation="horizontal">
+          <label [for]="mensaje" class="k-label">
+            <span>Mensaje <span class="text-danger fw-bold">*</span></span>
+          </label>
+          <kendo-textbox
+            #mensaje
+            size="medium"
+            formControlName="mensaje"
+            [showSuccessIcon]="getShowSuccessIcon('mensaje')"
+            [successIcon]="successIcon"
+            showErrorIcon="initial"
+            [clearButton]="true"
+            inputValidSpaceDir
+          >
+          </kendo-textbox>
+          <kendo-formerror> {{ getErrorMessage("mensaje") }} </kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-10 col-md-8">
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label">
+            <span>Color <span class="text-danger fw-bold">*</span></span>
+          </label>
+          <kendo-colorpicker
+            activeView="palette"
+            formControlName="color"
+            format="hex"
+          >
+          </kendo-colorpicker>
+        </kendo-formfield>
+      </div>
+    </div>
+  </form>
+  <div class="row mt-2">
+    <div class="mb-2">Variables</div>
+    <div>
+      <div class="col text-center" style="text-align: center">
+        <ng-template
+          #cellTemplateSFDC
+          let-dataItem="dataItem"
+          let-field="field"
+          let-itemValue="itemValue"
+        >
+          <ng-container [ngSwitch]="field">
+            <ng-container *ngSwitchCase="'unidad'">
+              <ng-container *ngIf="dataItem.aplicaUnidad == true">
+                <ng-container *ngIf="itemValue == null || itemValue == ''">
+                  No Seleccionado
+                </ng-container>
+                <ng-container *ngIf="itemValue != null">
+                  {{ itemValue }}
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="dataItem.aplicaUnidad != true">
+              </ng-container>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              {{ itemValue }}
+            </ng-container>
+          </ng-container>
+        </ng-template>
+
+        <ng-template
+          #cellEditTemplateSFDC
+          let-column="column"
+          let-formGroup="formGroup"
+          let-isNew="isNew"
+          let-dataItem="dataItem"
+        >
+          <!-- Template Columna -->
+          <!-- {{ column.field }} -->
+
+          <ng-container *ngIf="column.field == 'unidad'; else second">
+            <ng-container *ngIf="dataItem.aplicaUnidad == true">
+              <kendo-dropdownlist
+                [formControl]="formGroup.get('idMoneda')"
+                class="d-flex"
+                size="medium"
+                [data]="listaMoneda"
+                textField="nombrePlural"
+                valueField="id"
+                [defaultItem]="{ nombrePlural: 'Seleccione...', id: null }"
+                (valueChange)="valueChangeMoneda($event)"
+                [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </ng-container>
+            <ng-container *ngIf="dataItem.aplicaUnidad != true">
+              <div class="row"></div>
+            </ng-container>
+          </ng-container>
+          <ng-template #second>
+            <ng-container
+              *ngIf="
+                column.field == 'valorMinimo' || column.field == 'valorMaximo'
+              "
+            >
+              <kendo-numerictextbox
+                [formControl]="formGroup.get(column.field)"
+                format="n"
+              ></kendo-numerictextbox>
+            </ng-container>
+          </ng-template>
+          <ng-template #default>
+            <!-- <kendo-numerictextbox
+              [formControl]="formGroup.get(column.field)"
+              format="n"
+            ></kendo-numerictextbox> -->
+          </ng-template>
+        </ng-template>
+
+        <!-- <k-grid-edit
+          [gridData]="listaSemaforoDetalleVariable"
+          [loader]="loader"
+          [columns]="gridSemaforoDetalleConfiguracion.columns"
+          [readOnlyColumns]="gridSemaforoDetalleConfiguracion.readOnlyColumns"
+          [gridConfig]="gridSemaforoDetalleConfiguracion.gridConfig"
+          [gridState]="gridSemaforoDetalleConfiguracion.gridState"
+          [cellTemplateRef]="cellTemplateSFDC"
+          [cellTemplateEditRef]="cellEditTemplateSFDC"
+          [formGroup]="formGridEditable2"
+          [toolbarTemplate]="false"
+          [commandAdd]="'inline'"
+          [commandEdit]="'cell-click'"
+          (OnGridEvents)="gridEventsResponse3($event)"
+        >
+        </k-grid-edit> -->
+
+        <k-grid
+          [gridData]="listaSemaforoDetalleVariable"
+          [formGroup]="formGridEditable"
+          [loader]="loaderGrid"
+          [gridState]="gridSemaforoDetalleConfiguracion.gridState"
+          [kendoGrid]="gridSemaforoDetalleConfiguracion"
+          [cellTemplateRef]="cellTemplateSFDC"
+          [cellTemplateEditRef]="cellEditTemplateSFDC"
+          (OnGridEvents)="gridEventsSemaforoDetalleVariable($event)"
+        >
+        </k-grid>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button
+    class="btn btn-info"
+    type="button"
+    (click)="guardarSemaforoDetalleVariable()"
+  >
+    Guardar
+  </button>
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="activeModal.dismiss('Cross click')"
+  >
+    Cerrar
+  </button>
+</div>

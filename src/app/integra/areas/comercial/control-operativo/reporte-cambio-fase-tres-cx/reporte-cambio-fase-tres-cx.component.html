@@ -1,0 +1,4227 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header pb-0 bg-color-material">
+          <h2 class="mb-2 text-white text-center">
+            (R) Cambio de Fase 3CX - Integra
+          </h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <form
+            class="k-form k-form-horizontal"
+            [formGroup]="formFiltroCambioFase"
+          >
+            <div class="row">
+              <div class="col-sm-12 col-md-5 my-2">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="124"
+                    [for]="asesores"
+                    text="Asesores"
+                  >
+                  </kendo-label>
+                  <kendo-multiselect
+                    #asesores
+                    [data]="asesorFiltro"
+                    (filterChange)="filterAsesor($event)"
+                    [filterable]="true"
+                    textField="nombreCompleto"
+                    valueField="id"
+                    formControlName="asesores"
+                    [virtual]="virtual"
+                    [valuePrimitive]="true"
+                  ></kendo-multiselect>
+                  <kendo-formerror>Seleccione un Asesor</kendo-formerror>
+                </kendo-formfield>
+              </div>
+              <div class="col-sm-12 col-md-5 my-2">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [style.width.px]="150"
+                    [for]="fechaInicio"
+                    text="Fecha Inicio"
+                  >
+                  </kendo-label>
+                  <kendo-datepicker
+                    #fechaInicio
+                    formControlName="fechaInicio"
+                    format="yyyy-MM-dd"
+                    [max]="fechaActual"
+                    [incompleteDateValidation]="true"
+                  ></kendo-datepicker>
+                  <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                </kendo-formfield>
+              </div>
+              <div
+                class="col-sm-12 col-md-2 my-2 d-flex justify-content-sm-center align-items-end"
+              >
+                <div class="row">
+                  <div class="col-12">
+                    <button
+                      kendoButton
+                      class="send-button"
+                      icon="search"
+                      style="height: 35px"
+                      themeColor="success"
+                      [disabled]="btnBuscarDisabled"
+                      (click)="generarReporteCobertura()"
+                    >
+                      Buscar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 col-md-5 my-2">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [for]="centroCosto"
+                    text="Centros de Costo"
+                    [style.width.px]="124"
+                  >
+                  </kendo-label>
+                  <kendo-multiselect
+                    #centroCosto
+                    [data]="dataCentroCostoFiltro"
+                    (filterChange)="filterCentroCosto($event)"
+                    [filterable]="true"
+                    textField="nombre"
+                    valueField="id"
+                    formControlName="centroCosto"
+                    [virtual]="virtual"
+                    [valuePrimitive]="true"
+                  ></kendo-multiselect>
+                </kendo-formfield>
+              </div>
+              <div class="col-sm-12 col-md-5 my-2">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [for]="fechaFin"
+                    text="Fecha Fin"
+                    [style.width.px]="150"
+                  >
+                  </kendo-label>
+                  <kendo-datepicker
+                    #fechaFin
+                    formControlName="fechaFin"
+                    format="yyyy-MM-dd"
+                    [incompleteDateValidation]="true"
+                    [min]="fechaInicio.value"
+                  >
+                  </kendo-datepicker>
+                  <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+                </kendo-formfield>
+              </div>
+              <div
+                class="col-sm-12 col-md-2 my-2 d-flex justify-content-sm-center align-items-end"
+              >
+                <div class="row">
+                  <div class="col-12">
+                    <label>
+                      <input
+                        type="checkbox"
+                        size="large"
+                        rounded="small"
+                        kendoCheckBox
+                        formControlName="acumulado"
+                        #acumulado
+                      />
+                      Acumulado
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 col-md-5 my-2">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-label
+                    class="d-flex align-items-start"
+                    [for]="estadoPersonal"
+                    text="Estado del Personal"
+                    [style.width.px]="124"
+                  >
+                  </kendo-label>
+                  <kendo-dropdownlist
+                    #estadoPersonal
+                    class="d-flex"
+                    [data]="estadoAsesores"
+                    [virtual]="virtual"
+                    formControlName="estadoPersonal"
+                    textField="nombre"
+                    valueField="id"
+                    [defaultItem]="{ id: null, nombre: 'Todos...' }"
+                    (valueChange)="changeEstadoPersonal($event)"
+                    [valuePrimitive]="true"
+                  >
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="false">
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Tasa de contacto</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                #anchor1
+                themeColor="base"
+                (click)="gridTasaContacto.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchor1"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridTasaContacto.showPopup = false"
+                *ngIf="gridTasaContacto.showPopup"
+              >
+                <div class="content-popup py-3 px-2">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades totales:</span
+                              >
+                              # de actividades totales trabajadas por el asesor.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades ejecutadas:</span
+                              >
+                              # de actividades ejecutadas reales(20 seg de
+                              duracion de la llamada y ocurrencia con estado
+                              ejecutado).
+                            </li>
+                            <li>
+                              <span class="fw-bold">TASA DE CONTACTO:</span>
+                              Número de actividades ejecutadas / Número de
+                              actividades totales.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de cambios de fase (solo con
+                                llamadas):</span
+                              >
+                              # de cambios de fase hecho que tienen llamada de
+                              por medio (No considera fases NS)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de cambios de fase (sin llamadas):</span
+                              >
+                              # de cambios de fases hecho que no tienen llamada
+                              de por medio (No considera fases NS)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >% CAMBIOS DE FASE EJECUTADAS:</span
+                              >
+                              Número de cambios de fase (solo con llamadas) /
+                              Número de actividades totales.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades pasadas a fase final (solo con
+                                llamadas):</span
+                              >
+                              # de oportunidades pasadas a fase finales
+                              (NI,IS,RN3,RN2-B,RN2-A,M,D,RN4) con llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades pasadas a fase final (sin
+                                llamadas):</span
+                              >
+                              # Oportunidades pasadas a fase finales
+                              (NI,IS,RN3,RN2-B,RN2-A,M,D,RN4) sin llamadas
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Para que se considere actividad ejecutada , su tiempo
+                          de contacto tiene que ser mayor igual a 20 seg.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridTasaContacto.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="valor"
+                title="Valor"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <div class="row"></div>
+          <loading [loading]="gridTasaContacto.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="generarReporteTasaContactoAsyncReplica(true)"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Control de Llamadas</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchor2gcf
+                (click)="gridControlCambiodeFase.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchor2gcf"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridControlCambiodeFase.showPopup = false
+                "
+                *ngIf="gridControlCambiodeFase.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades ejecutadas:</span
+                              >
+                              # de actividades ejecutadas reales (20 seg de
+                              duracion de la llamada y ocurrencia con estado
+                              ejecutado)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas
+                                automáticas:</span
+                              >
+                              # de actividades reprogramadas automaticamente.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas
+                                manuales:</span
+                              >
+                              # de actividades reprogramadas manualmente.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades ejecutadas sin
+                                llamada:</span
+                              ># de actividades ejecutadas sin Llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas 
+                                 automaticas sin llamada:</span
+                              ># de actividades reprogramadas automaticas sin Llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas manuales
+                                 sin llamada:</span
+                              ># de actividades reprogramadas manuales sin Llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold">Contactabilidad (%):</span>
+                              Número de actividades ejecutadas / (Número de
+                              actividades ejecutadas + Número de actividades
+                              reprogramadas automáticas + Número de actividades
+                              reprogramadas manuales + Número de actividades
+                              ejecutadas sin llamada)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Duración promedio de actividades ejecutadas en
+                                minutos:</span
+                              >
+                              Duracion promedio de las llamadas de todas las
+                              actividades ejecutadas (en minutos)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Duración promedio de reprogramadas manuales en
+                                minutos:</span
+                              >
+                              Duracion promedio de las llamadas de todas las
+                              actividades reprogramadas manualmente(en minutos)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número promedio de intentos de llamadas en
+                                actividades reprogramadas automáticas:</span
+                              >
+                              # promedio de intentos de llamadas de todas las
+                              actividades reprogramadas automaticamente
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Tiempo de timbrado promedio de llamadas en
+                                actividades reprogramadas automáticas en
+                                segundos:</span
+                              >
+                              Tiempo de timbrado promedio de las llamadas de
+                              todas las actividades reprogramadas
+                              automaticamente(en segundos)
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Para que se considere actividad ejecutada , su tiempo
+                          de contacto tiene que ser mayor igual a 20 seg.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridControlCambiodeFase.data"
+              scrollable="scrollable"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                [width]="200"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridControlCambiodeFase.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="generarReporteV2AsyncReplica()"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Tasa de Contacto Telefonico (solo actividades con llamada real asociada)</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                #anchor1
+                themeColor="base"
+                (click)="gridTasaContactoV2.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchor1"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridTasaContactoV2.showPopup = false"
+                *ngIf="gridTasaContactoV2.showPopup"
+              >
+                <div class="content-popup py-3 px-2">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades totales:</span
+                              >
+                              # de actividades totales trabajadas por el asesor con llamada real asociada.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades ejecutadas:</span
+                              >
+                              # de actividades ejecutadas reportadas por el asesor con llamada real asociada.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Actividades reprogramadas manuales:</span
+                              >
+                              # de actividades reprogramadas manualmente reportadas por el asesor con llamada real asociada.
+                            </li>
+                            <li>
+                              <span class="fw-bold">Tasa de contacto ejecutadas:</span>
+                              Número de actividades ejecutadas / Número de
+                              actividades totales.
+                            </li>
+                            <li>
+                              <span class="fw-bold">Tasa de contacto (ejecutadas+Manuales):</span>
+                              (Número de actividades ejecutadas + Actividades reprogramadas manuales) / Número de
+                              actividades totales.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >% Cambios de fase ejecutadas:</span
+                              >
+                              Número de cambios de fase (con llamada real asociada) /
+                              Número de actividades ejecutadas. No considera fase destino a (BIC, RN, RN1, E, RN5, BNC1, OD, OM, RN8, BRM1)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades pasadas a fase final (con llamada real asociada):</span
+                              >
+                              # de oportunidades pasadas a fase finales
+                              (NI,IS,RN3,RN2-B,RN2-A,M,D,RN4) con llamadas
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                           No se consideran actividades trabajadas "Por otro medio" , "Seguimiento Whatsapp" , "Sin Llamada Real Asociada"
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridTasaContactoV2.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="valor"
+                title="Valor"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <div class="row"></div>
+          <loading [loading]="gridTasaContactoV2.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="generarReporteTasaContactoV2AsyncReplica(true)"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Control de Actividades (solo actividades con llamada real asociada)</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchor2gcf
+                (click)="gridControlCambiodeFase.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchor2gcf"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridControlCambiodeFase.showPopup = false
+                "
+                *ngIf="gridControlCambiodeFase.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades ejecutadas:</span
+                              >
+                              # de actividades ejecutadas reales (ocurrencia con
+                              estado ejecutado)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas
+                                automáticas:</span
+                              >
+                              # de actividades reprogramadas automaticamente.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas
+                                manuales:</span
+                              >
+                              # de actividades reprogramadas manualmente.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades ejecutadas sin
+                                llamada:</span
+                              ># de actividades ejecutadas sin Llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas 
+                                 automaticas sin llamada:</span
+                              ># de actividades reprogramadas automaticas sin Llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades reprogramadas manuales
+                                 sin llamada:</span
+                              ># de actividades reprogramadas manuales sin Llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold">Contactabilidad (%):</span>
+                              Número de actividades ejecutadas / (Número de
+                              actividades ejecutadas + Número de actividades
+                              reprogramadas automáticas + Número de actividades
+                              reprogramadas manuales + Número de actividades
+                              ejecutadas sin llamada)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Duración promedio de actividades ejecutadas en
+                                minutos:</span
+                              >
+                              Duracion promedio de las llamadas de todas las
+                              actividades ejecutadas (en minutos)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Duración promedio de reprogramadas manuales en
+                                minutos:</span
+                              >
+                              Duracion promedio de las llamadas de todas las
+                              actividades reprogramadas manualmente(en minutos)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número promedio de intentos de llamadas en
+                                actividades reprogramadas automáticas:</span
+                              >
+                              # promedio de intentos de llamadas de todas las
+                              actividades reprogramadas automaticamente
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Tiempo de timbrado promedio de llamadas en
+                                actividades reprogramadas automáticas en
+                                segundos:</span
+                              >
+                              Tiempo de timbrado promedio de las llamadas de
+                              todas las actividades reprogramadas
+                              automaticamente(en segundos)
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+               id="my-grid2"
+              [kendoGridBinding]="gridControlCambiodeFase.data"
+              scrollable="scrollable"
+              [rowClass]="rowCallback2"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                [width]="200"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <!-- <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column> -->
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridControlCambiodeFase.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="generarReporteV2AsyncReplica()"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+  <div class="row">
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Oportunidades Pasadas a Fase Final</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                #anchoropff
+                themeColor="base"
+                (click)="gridTasaFaseFinal.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchoropff"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridTasaFaseFinal.showPopup = false"
+                *ngIf="gridTasaFaseFinal.showPopup"
+              >
+                <div class="content-popup py-3 px-2">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades pasadas a fase final reportadas como respuestas telefonicas sin llamada real asociada:</span
+                              >
+                              Considera las fases de cierre
+                              (NI,IS,RN3,RN2-B,RN2-A,M,D,RN4)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades pasadas a fase final reportadas como ejecutadas por otro medio:</span
+                              >
+                              Considera las fases de cierre
+                              (NI,IS,RN3,RN2-B,RN2-A,M,D,RN4)
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridTasaFaseFinal.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="valor"
+                title="Valor"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <div class="row"></div>
+          <loading [loading]="gridTasaFaseFinal.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="generarReporteTasaContactoV2AsyncReplica(true)"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Diferencia de llamadas por bloques (mañana/tarde)
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGDLlB
+                (click)="gridDiferenciaLlamadasBloque.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGDLlB"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridDiferenciaLlamadasBloque.showPopup = false
+                "
+                *ngIf="gridDiferenciaLlamadasBloque.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de datos que no han respondido y se
+                          les ha llamado en ambos bloques a excepcion de 0 dias
+                          , 1 dia, 2 dias , mas de 2 dias
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridDiferenciaLlamadasBloque.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="cantidad"
+                title="Cantidad"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridDiferenciaLlamadasBloque.loading"></loading>
+        </div>
+      </div>
+    </div> -->
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Actividades Reportadas como Respuestas Telefonicas sin Llamada Real Asociada
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGDLlB
+                (click)="gridActividadesinLlamadaRegistrada.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGDLlB"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridActividadesinLlamadaRegistrada.showPopup = false
+                "
+                *ngIf="gridActividadesinLlamadaRegistrada.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de datos que no han respondido y se
+                          les ha llamado en ambos bloques a excepcion de 0 dias
+                          , 1 dia, 2 dias , mas de 2 dias
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridActividadesinLlamadaRegistrada.data"
+              scrollable="scrollable"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                [width]="200"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <!-- <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column> -->
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridActividadesinLlamadaRegistrada.loading"></loading>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card" *ngIf="flagGridConteoDatosFase == true">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Conteo de Datos por Fase</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGCDF
+                (click)="gridConteoDatosFase.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGCDF"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridConteoDatosFase.showPopup = false"
+                *ngIf="gridConteoDatosFase.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de datos que al inicio del dia
+                          (9:00 am - Hora de Peru) y al término del mismo (11:00
+                          pm Hora de Peru) se tenia en cada fase.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Si se filtro el dia actual la columna "MOMENTO" se
+                          muestra a la hora actual (Hora de Peru).
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridConteoDatosFase.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="fase"
+                title="Fases"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="inicio"
+                title="Inicio"
+                headerClass="header-grid-single"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="text-center">
+                    Inicio ({{
+                      fechaConteoInicio != null
+                        ? (fechaConteoInicio | date : "h:mm a")
+                        : "--:--"
+                    }})
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="momento"
+                title="Momento"
+                headerClass="header-grid-single"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="text-center">
+                    Momento ({{
+                      fechaConteoMomento != null
+                        ? (fechaConteoMomento | date : "h:mm a")
+                        : "--:--"
+                    }})
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridConteoDatosFase.loading"></loading>
+        </div>
+      </div>
+      <div class="card" *ngIf="flagGridConteoDatosFase == false">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Conteo de Datos por Fase</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGCDFAlt
+                (click)="gridConteoDatosFaseAlterno.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGCDFAlt"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridConteoDatosFaseAlterno.showPopup = false
+                "
+                *ngIf="gridConteoDatosFaseAlterno.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de datos agrupados por pais que al
+                          inicio del dia (9:00 am - Hora de Peru) y al término
+                          del mismo (11:00 pm Hora de Peru) se tenia en cada
+                          fase.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          <ul>
+                            <li>
+                              Si se filtra el dia actual la columna "MOMENTO" se muestra a la hora actual (Hora de Peru).
+                            </li>
+                            <li>  
+                              Para el "Total" no se considera la columna de Whatsapp , es solo para control de cuantos datos hay en ese tab(Whatsapp)
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridConteoDatosFaseAlterno.data"
+              [selectable]="true"
+              [resizable]="true"
+              scrollable="scrollable"
+            >
+              <kendo-grid-column
+                field="fase"
+                title="Fases"
+                [width]="80"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column-group
+                *ngIf="flagPaisesConteoDatosFase.contadorPeru"
+                title="Perú"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="inicioPeru"
+                  title="Inicio"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      I ({{
+                        fechaConteoInicioPeru != null
+                          ? (fechaConteoInicioPeru | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="momentoPeru"
+                  title="Momento"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      M ({{
+                        fechaConteoMomentoPeru != null
+                          ? (fechaConteoMomentoPeru | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                *ngIf="flagPaisesConteoDatosFase.contadorColombia"
+                title="Colombia"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="inicioColombia"
+                  title="Inicio"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      I ({{
+                        fechaConteoInicioColombia != null
+                          ? (fechaConteoInicioColombia | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="momentoColombia"
+                  title="Momento"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      M ({{
+                        fechaConteoMomentoColombia != null
+                          ? (fechaConteoMomentoColombia | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                *ngIf="flagPaisesConteoDatosFase.contadorMexico"
+                title="México"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="inicioMexico"
+                  title="Inicio"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      I ({{
+                        fechaConteoInicioMexico != null
+                          ? (fechaConteoInicioMexico | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="momentoMexico"
+                  title="Momento"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      M ({{
+                        fechaConteoMomentoMexico != null
+                          ? (fechaConteoMomentoMexico | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                *ngIf="flagPaisesConteoDatosFase.contadorChile"
+                title="Chile"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="inicioChile"
+                  title="Inicio"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      I ({{
+                        fechaConteoInicioChile != null
+                          ? (fechaConteoInicioChile | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="momentoChile"
+                  title="Momento"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      M ({{
+                        fechaConteoMomentoChile != null
+                          ? (fechaConteoMomentoChile | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                *ngIf="flagPaisesConteoDatosFase.contadorOtros"
+                title="Otros"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="inicioOtros"
+                  title="Inicio"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      I ({{
+                        fechaConteoInicioOtros != null
+                          ? (fechaConteoInicioOtros | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="momentoOtros"
+                  title="momento"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      M ({{
+                        fechaConteoMomentoOtros != null
+                          ? (fechaConteoMomentoOtros | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+                            <kendo-grid-column-group
+                *ngIf="flagPaisesConteoDatosFase.contadorWhatsapp"
+                title="Tab Whatsapp"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="inicioWhatsapp"
+                  title="Inicio"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em" [ngStyle]="{'color': '#15a522'}">
+                      I ({{
+                        fechaConteoInicioWhatsapp != null
+                          ? (fechaConteoInicioWhatsapp | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="momentoWhatsapp"
+                  title="Momento"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em" [ngStyle]="{'color': '#15a522'}">
+                      M ({{
+                        fechaConteoMomentoWhatsapp != null
+                          ? (fechaConteoMomentoWhatsapp | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Total"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="inicioTotal"
+                  title="Inicio"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      I ({{
+                        fechaConteoInicioTotal != null
+                          ? (fechaConteoInicioTotal | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="momentoTotal"
+                  title="momento"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-end"
+                  [width]="80"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div style="font-size: 0.65em">
+                      M ({{
+                        fechaConteoMomentoTotal != null
+                          ? (fechaConteoMomentoTotal | date : "h:mm a")
+                          : "--:--"
+                      }})
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridConteoDatosFaseAlterno.loading"></loading>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Actividades Reportadas como Ejecutadas Por Otro Medio
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorAREOM
+                (click)="gridActividadesPorOtroMedio.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorAREOM"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridActividadesPorOtroMedio.showPopup = false
+                "
+                *ngIf="gridActividadesPorOtroMedio.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de datos que no han respondido y se
+                          les ha llamado en ambos bloques a excepcion de 0 dias
+                          , 1 dia, 2 dias , mas de 2 dias
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridActividadesPorOtroMedio.data"
+              scrollable="scrollable"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                [width]="200"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <!-- <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column> -->
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                [width]="65"
+                headerClass="header-grid-single"
+              >
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridActividadesPorOtroMedio.loading"></loading>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Tasa de Contacto por Otro Medio</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                #anchor1
+                themeColor="base"
+                (click)="gridTasaContactoOtroMedio.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchor1"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridTasaContactoOtroMedio.showPopup = false
+                "
+                *ngIf="gridTasaContactoOtroMedio.showPopup"
+              >
+                <div class="content-popup py-3 px-2">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades totales:</span
+                              >
+                              # de actividades totales trabajadas por el asesor.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de actividades ejecutadas:</span
+                              >
+                              # de actividades ejecutadas reales(20 seg de
+                              duracion de la llamada y ocurrencia con estado
+                              ejecutado).
+                            </li>
+                            <li>
+                              <span class="fw-bold">TASA DE CONTACTO:</span>
+                              Número de actividades ejecutadas / Número de
+                              actividades totales.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de cambios de fase (solo con
+                                llamadas):</span
+                              >
+                              # de cambios de fase hecho que tienen llamada de
+                              por medio (No considera fases NS)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Número de cambios de fase (sin llamadas):</span
+                              >
+                              # de cambios de fases hecho que no tienen llamada
+                              de por medio (No considera fases NS)
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >% CAMBIOS DE FASE EJECUTADAS:</span
+                              >
+                              Número de cambios de fase (solo con llamadas) /
+                              Número de actividades totales.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades pasadas a fase final (solo con
+                                llamadas):</span
+                              >
+                              # de oportunidades pasadas a fase finales
+                              (NI,IS,RN3,RN2-B,RN2-A,M,D,RN4) con llamadas
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades pasadas a fase final (sin
+                                llamadas):</span
+                              >
+                              # Oportunidades pasadas a fase finales
+                              (NI,IS,RN3,RN2-B,RN2-A,M,D,RN4) sin llamadas
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Para que se considere actividad ejecutada , su tiempo
+                          de contacto tiene que ser mayor igual a 20 seg.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridTasaContactoOtroMedio.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="valor"
+                title="Valor"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <div class="row"></div>
+          <loading [loading]="gridTasaContactoOtroMedio.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="generarReporteTasaContactoOtroMedioAsyncReplica(true)"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Control de Oportunidades - Predictivas</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                #anchorCOP
+                themeColor="base"
+                (click)="gridControlOportunidadPredictiva.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorCOP"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridControlOportunidadPredictiva.showPopup = false
+                "
+                *ngIf="gridControlOportunidadPredictiva.showPopup"
+              >
+                <div class="content-popup py-3 px-2">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra el estado de las oportunidades creadas mediante llamadas predictivas y que hayan creado en la fecha del filtro.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridControlOportunidadPredictiva.data"
+              [selectable]="true"
+              [resizable]="true"
+              scrollable="scrollable"
+              [style.maxHeight.px]="500"
+            >
+              <kendo-grid-column
+                field="personalAsignado"
+                title="Asesor"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="centroCosto"
+                title="Centro de Costos"
+                [width]="200"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="oa"
+                title="OA"
+                class="text-center"
+                [width]="60"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="oc"
+                title="OC"
+                class="text-center"
+                [width]="60"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="ism"
+                title="IS/M"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="ens"
+                title="E+NS"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="bic"
+                title="BIC"
+                class="text-center"
+                [width]="60"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="odom"
+                title="OD/M"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <div class="row"></div>
+          <loading [loading]="gridControlOportunidadPredictiva.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="obtenerControlOportunidadPredictiva()"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Cambios de Fase(Con Llamada y Sin Llamada)</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorPVGCF
+                (click)="
+                  pivotGridCambioFase.showPopup = !pivotGridCambioFase.showPopup
+                "
+              ></button>
+              <kendo-popup
+                [anchor]="anchorPVGCF"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="pivotGridCambioFase.showPopup = false"
+                *ngIf="pivotGridCambioFase.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra los cambios de fase hechos de una fase Origen
+                          X a una fase Destino Y
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          No considera las fase de destino
+                          (BIC,RN,RN1,E,BNC1,BRM1,OD,OM,RN8).
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 overflow-auto">
+          <div>
+            <kendo-pivotgrid
+              [kendoPivotLocalBinding]="pivotGridCambioFase.data"
+              [dimensions]="pivotGridCambioFase.dimensions"
+              [measures]="pivotGridCambioFase.measures"
+              [rowAxes]="pivotGridCambioFase.rowAxes"
+              [columnAxes]="pivotGridCambioFase.columnAxes"
+              [measureAxes]="pivotGridCambioFase.measureAxes"
+            >
+            </kendo-pivotgrid>
+          </div>
+          <loading [loading]="pivotGridCambioFase.loading"></loading>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Cambios de Fase con Llamada</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorpvgCll
+                (click)="
+                  pivotGridConLlamada.showPopup = !pivotGridConLlamada.showPopup
+                "
+              ></button>
+              <kendo-popup
+                [anchor]="anchorpvgCll"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="pivotGridConLlamada.showPopup = false"
+                *ngIf="pivotGridConLlamada.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra los cambios de fase hechos de una fase Origen
+                          "X" a una fase Destino "Y" que hayan tenido almenos 1
+                          llamada
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-pivotgrid
+              [kendoPivotLocalBinding]="pivotGridConLlamada.data"
+              [dimensions]="pivotGridConLlamada.dimensions"
+              [measures]="pivotGridConLlamada.measures"
+              [rowAxes]="pivotGridConLlamada.rowAxes"
+              [columnAxes]="pivotGridConLlamada.columnAxes"
+              [measureAxes]="pivotGridConLlamada.measureAxes"
+            >
+            </kendo-pivotgrid>
+          </div>
+          <loading [loading]="pivotGridConLlamada.loading"></loading>
+        </div>
+      </div>
+    </div> -->
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Cambios de Fase sin Llamada</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorpvgSll
+                (click)="
+                  pivotGridSinLlamada.showPopup = !pivotGridSinLlamada.showPopup
+                "
+              ></button>
+              <kendo-popup
+                [anchor]="anchorpvgSll"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="pivotGridSinLlamada.showPopup = false"
+                *ngIf="pivotGridSinLlamada.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra los cambios de fase hechos de una fase Origen
+                          "X" a una fase Destino "Y" que no hayan tenido
+                          llamadas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-pivotgrid
+              [kendoPivotLocalBinding]="pivotGridSinLlamada.data"
+              [dimensions]="pivotGridSinLlamada.dimensions"
+              [measures]="pivotGridSinLlamada.measures"
+              [rowAxes]="pivotGridSinLlamada.rowAxes"
+              [columnAxes]="pivotGridSinLlamada.columnAxes"
+              [measureAxes]="pivotGridSinLlamada.measureAxes"
+            >
+            </kendo-pivotgrid>
+          </div>
+          <loading [loading]="pivotGridSinLlamada.loading"></loading>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header pb-0 bg-color-material">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Control de BIC, E y NS</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorpvgCBENS
+                (click)="
+                  pivotGridControlBIC_E_NS.showPopup =
+                    !pivotGridControlBIC_E_NS.showPopup
+                "
+              ></button>
+              <kendo-popup
+                [anchor]="anchorpvgCBENS"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  pivotGridControlBIC_E_NS.showPopup = false
+                "
+                *ngIf="pivotGridControlBIC_E_NS.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra los cambios de fase hecho de una fase Origen
+                          "X" a una fase Destino BIC, E Y NS (Con y sin
+                          llamada).
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-pivotgrid
+              [kendoPivotLocalBinding]="pivotGridControlBIC_E_NS.data"
+              [dimensions]="pivotGridControlBIC_E_NS.dimensions"
+              [measures]="pivotGridControlBIC_E_NS.measures"
+              [rowAxes]="pivotGridControlBIC_E_NS.rowAxes"
+              [columnAxes]="pivotGridControlBIC_E_NS.columnAxes"
+              [measureAxes]="pivotGridControlBIC_E_NS.measureAxes"
+            >
+            </kendo-pivotgrid>
+          </div>
+          <loading [loading]="pivotGridControlBIC_E_NS.loading"></loading>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header pb-0 bg-color-material">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Control de RN1 y RN</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorpvgRNRN1
+                (click)="pivotGridRNyRN1.showPopup = !pivotGridRNyRN1.showPopup"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorpvgRNRN1"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="pivotGridRNyRN1.showPopup = false"
+                *ngIf="pivotGridRNyRN1.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra los cambios de fase hecho de una fase Origen
+                          "X" a una fase Destino RN1 Y RN (Con y sin llamada).
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-pivotgrid
+              [kendoPivotLocalBinding]="pivotGridRNyRN1.data"
+              [dimensions]="pivotGridRNyRN1.dimensions"
+              [measures]="pivotGridRNyRN1.measures"
+              [rowAxes]="pivotGridRNyRN1.rowAxes"
+              [columnAxes]="pivotGridRNyRN1.columnAxes"
+              [measureAxes]="pivotGridRNyRN1.measureAxes"
+            >
+            </kendo-pivotgrid>
+          </div>
+          <loading [loading]="pivotGridRNyRN1.loading"></loading>
+        </div>
+      </div>
+    </div> -->
+    
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Llamadas Observadas</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchor2
+                (click)="gridLlamadaObservada.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchor2"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridLlamadaObservada.showPopup = false"
+                *ngIf="gridLlamadaObservada.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de actividades que según el filtro
+                          hayan sido trabajadas como automáticas ,manuales,
+                          ejecutadas y clasificadas por la fase en la que se
+                          encontraban y la duración de las llamadas en esas
+                          actividades
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          No es acumulativo , es segun en la fase que se dieron
+                          dichas actividades.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+              id="my-grid"
+              [kendoGridBinding]="gridLlamadaObservada.data"
+              [selectable]="true"
+              scrollable="scrollable"
+              [resizable]="true"
+              [rowClass]="rowCallback"
+            >
+              <kendo-grid-column
+                field="caso"
+                title="Descripción"
+                [width]="270"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <!-- <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column> -->
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="IC"
+                title="IC"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="ISM"
+                title="IS/M"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridLlamadaObservada.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="cargarLlamadasObservadas()"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Llamadas con Duraciones Atipicas</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorLDA
+                (click)="gridLlamadaObservadaDuracionAtipica.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorLDA"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridLlamadaObservadaDuracionAtipica.showPopup = false"
+                *ngIf="gridLlamadaObservadaDuracionAtipica.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de actividades que según el filtro
+                          hayan sido trabajadas como automáticas ,manuales,
+                          ejecutadas y clasificadas por la fase en la que se
+                          encontraban y la duración de las llamadas en esas
+                          actividades
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          No es acumulativo , es segun en la fase que se dieron
+                          dichas actividades.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+              id="my-grid"
+              [kendoGridBinding]="gridLlamadaObservadaDuracionAtipica.data"
+              [selectable]="true"
+              scrollable="scrollable"
+              [resizable]="true"
+              [rowClass]="rowCallback"
+            >
+              <kendo-grid-column
+                field="caso"
+                title="Descripción"
+                [width]="270"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <!-- <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column> -->
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="IC"
+                title="IC"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="ISM"
+                title="IS/M"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridLlamadaObservadaDuracionAtipica.loading"></loading>
+        </div>
+        <div class="card-footer px-1" *ngIf="flagReload">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="reload"
+                themeColor="base"
+                (click)="cargarLlamadasObservadasDuracionAtipica()"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Número de actividades ejecutadas acumuladas hasta la fase actual
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchor
+                (click)="gridActividadEjecutadaFaseActual.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchor"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridActividadEjecutadaFaseActual.showPopup = false
+                "
+                *ngIf="gridActividadEjecutadaFaseActual.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Al momento de generacion del reporte.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta cuantas actividades ejecutadas tienen
+                          acumuladas al momento, de cualquier de fase y la
+                          duracion promedio del tiempo de contacto de dichas
+                          actividades.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Para que se considere actividad ejecutada , su tiempo
+                          de contacto tiene que ser mayor igual a 20 seg.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+              #kgridActividadEjecutadaFaseActual
+              [kendoGridBinding]="gridActividadEjecutadaFaseActual.data"
+              scrollable="scrollable"
+              [resizable]="true"
+            >
+              <kendo-grid-column
+                field="caso"
+                title="Nº Actividades"
+                class="text-center"
+                [width]="115"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                [width]="115"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                [width]="115"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                [width]="115"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                [width]="115"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="IC"
+                title="IC"
+                [width]="115"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                [width]="115"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="ISM"
+                title="IS/M"
+                [width]="115"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              >
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading
+            [loading]="gridActividadEjecutadaFaseActual.loading"
+          ></loading>
+        </div>
+      </div>
+    </div> -->
+
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Numero de Minutos Acumulados de Tiempo de Contacto Efectivo
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGATC
+                (click)="gridAcumuladoTiempoContacto.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGATC"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridAcumuladoTiempoContacto.showPopup = false
+                "
+                *ngIf="gridAcumuladoTiempoContacto.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          <ul>
+                            <li>
+                              Al momento de la generacion del reporte en las
+                              oportunidades abiertas.
+                            </li>
+                            <li>
+                              Según el filtro en las oportunidades cerradas.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              En las oportunidades abiertas: Cuenta la cantidad
+                              de oportunidades abiertas al momento de la
+                              generacion del reporte y clasificadas segun el
+                              numero de minutos acumulados de contacto efectivo.
+                            </li>
+                            <li>
+                              En las oportunidades cerradas: Cuenta la cantidad
+                              de oportunidades cerradas en el rango de fechas
+                              seleccionado y clasificadas segun el numero de
+                              minutos acumulados de contacto efectivo.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Para que se considere contacto efectivo, su tiempo de
+                          contacto tiene que ser mayor igual a 20 seg.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100 text-center">
+            <kendo-grid
+              [kendoGridBinding]="gridAcumuladoTiempoContacto.data"
+              [selectable]="true"
+              scrollable="scrollable"
+              [resizable]="true"
+            >
+              <kendo-grid-column
+                field="caso"
+                title="Descripción"
+                [width]="150"
+                class="text-center"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column-group
+                title="Oportunidades abiertas al momento"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="BNC"
+                  title="BNC"
+                  class="text-center"
+                  [width]="80"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <!-- <kendo-grid-column
+                  field="BNC_1"
+                  title="BNC-1"
+                  class="text-center"
+                  [width]="80"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column> -->
+                <kendo-grid-column
+                  field="IT"
+                  title="IT"
+                  class="text-center"
+                  [width]="80"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="IP"
+                  title="IP"
+                  class="text-center"
+                  [width]="80"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="IC"
+                  title="IC"
+                  class="text-center"
+                  [width]="80"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="PF"
+                  title="PF"
+                  class="text-center"
+                  [width]="80"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridAcumuladoTiempoContacto.loading"></loading>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="row">
+    
+  </div> -->
+  <div class="row">
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Numero de Actividades Reprogramadas Manualmente Acumuladas Hasta
+              la Fase Actual
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGALL
+                (click)="gridAcumuladoLlamadas.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGALL"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridAcumuladoLlamadas.showPopup = false"
+                *ngIf="gridAcumuladoLlamadas.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Al momento de generacion del reporte.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de actividades reprogramadas
+                          manualmente acumuladas hasta el momento, clasificadas
+                          por 1,2,3,4,5 y mas de 5.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 grid-edit">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridAcumuladoLlamadas.data"
+              [selectable]="true"
+              scrollable="scrollable"
+              [resizable]="true"
+            >
+              <kendo-grid-column
+                field="caso"
+                class="text-center"
+                title="Nro. Actividades"
+                [width]="140"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="BNC"
+                title="BNC"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <!-- <kendo-grid-column
+                field="BNC_1"
+                title="BNC-1"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column> -->
+              <kendo-grid-column
+                field="IT"
+                title="IT"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="IP"
+                title="IP"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="IC"
+                title="IC"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="PF"
+                title="PF"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="ISM"
+                title="IS/M"
+                class="text-center"
+                [width]="80"
+                headerClass="header-grid-single justify-content-center"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridAcumuladoLlamadas.loading"></loading>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Actividades Vencidas Agenda (al Termino del Día de la Fecha)
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGAV
+                (click)="gridActividadesVencidas.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGAV"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridActividadesVencidas.showPopup = false
+                "
+                *ngIf="gridActividadesVencidas.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta la cantidad de oportunidades vencidas por tab y
+                          los 3 dias anteriores al cierre de esos dias.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Si se filtra al dia actual , la cantidad que muestra
+                          es al momento ,mas si se filtra de un dia anterior es
+                          a como cerro a ese dia
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100" *ngIf="gridActividadesVencidas.data.length > 0">
+            <kendo-grid
+              [kendoGridBinding]="gridActividadesVencidas.data"
+              [selectable]="true"
+              [sortable]="true"
+              [resizable]="true"
+              scrollable="scrollable"
+            >
+              <kendo-grid-column
+                field="estado"
+                title="Pestaña"
+                [width]="200"
+                [locked]="true"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column-group
+                *ngFor="let item of columnGridActividadesVencidas"
+                [title]="headerFecha(item.title)"
+                [width]="600"
+                headerClass="header-grid-single"
+              >
+                <kendo-grid-column
+                  *ngFor="let subColumn of item.columns"
+                  [field]="subColumn.field"
+                  title="Cantidad"
+                  [width]="140"
+                  headerClass="header-grid-single justify-content-center"
+                  class="text-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column
+                field="total"
+                title="Total"
+                [width]="150"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridActividadesVencidas.loading"></loading>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">
+              Actividades Ejecutadas Sin Cambio de Fase
+            </h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGAESCF
+                (click)="gridActividadEjecutadaSinCambioFase.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGAESCF"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridActividadEjecutadaSinCambioFase.showPopup = false
+                "
+                *ngIf="gridActividadEjecutadaSinCambioFase.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Al momento de generacion del reporte.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Cuenta el Numero de actividades ejecutadas en la fase
+                          actual sin cambio de fase al momento de la generacion
+                          del reporte.
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Para que se considere actividad ejecutada , su tiempo
+                          de contacto tiene que ser mayor igual a 20 seg.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridActividadEjecutadaSinCambioFase.data"
+              [selectable]="true"
+              [sortable]="true"
+              [resizable]="true"
+              scrollable="scrollable"
+            >
+              <kendo-grid-column
+                field="faseOrigen"
+                title="Fase"
+                [width]="100"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+              <kendo-grid-column-group
+                title="Número de actividades ejecutadas previas en el mismo estado"
+                headerClass="header-grid-single"
+              >
+                <kendo-grid-column
+                  field="uno"
+                  title="1"
+                  [width]="80"
+                  headerClass="header-grid-single"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="dos"
+                  title="2"
+                  [width]="80"
+                  headerClass="header-grid-single"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="tres"
+                  title="3"
+                  [width]="80"
+                  headerClass="header-grid-single"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="cuatro"
+                  title="4"
+                  [width]="80"
+                  headerClass="header-grid-single"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="masDeCuatro"
+                  title="Mas de 4"
+                  [width]="80"
+                  headerClass="header-grid-single"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column
+                field="tiempoTotal"
+                title="Total"
+                [width]="100"
+                headerClass="header-grid-single"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  >Tiempo Promedio de <br />Contacto (min)
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{
+                    dataItem.tiempoTotal == null
+                      ? "0.0"
+                      : sumarEjecutadas(dataItem)
+                  }}
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading
+            [loading]="gridActividadEjecutadaSinCambioFase.loading"
+          ></loading>
+        </div>
+      </div>
+    </div> -->
+    
+  </div>
+  
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-12 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Cambios de Fase - Predictivas</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorPVGCF_p
+                (click)="
+                  pivotGridCambioFasePredictivo.showPopup = !pivotGridCambioFasePredictivo.showPopup
+                "
+              ></button>
+              <kendo-popup
+                [anchor]="anchorPVGCF_p"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="pivotGridCambioFasePredictivo.showPopup = false"
+                *ngIf="pivotGridCambioFasePredictivo.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra los cambios de fase hechos de una fase Origen
+                          X a una fase Destino Y
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          No considera las fase de destino
+                          (BIC,RN,RN1,E,BNC1,BRM1,OD,OM,RN8).
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0 overflow-auto">
+          <div style="width: 1600px">
+            <kendo-pivotgrid
+              [kendoPivotLocalBinding]="pivotGridCambioFasePredictivo.data"
+              [dimensions]="pivotGridCambioFasePredictivo.dimensions"
+              [measures]="pivotGridCambioFasePredictivo.measures"
+              [rowAxes]="pivotGridCambioFasePredictivo.rowAxes"
+              [columnAxes]="pivotGridCambioFasePredictivo.columnAxes"
+              [measureAxes]="pivotGridCambioFasePredictivo.measureAxes"
+            >
+            </kendo-pivotgrid>
+          </div>
+          <loading [loading]="pivotGridCambioFasePredictivo.loading"></loading>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Tasa de Conversión</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGTC
+                (click)="gridTasaConversion.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGTC"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridTasaConversion.showPopup = false"
+                *ngIf="gridTasaConversion.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Inscritos/Matriculados(IS/M):</span
+                              >
+                              Muestra la cantidad de oportunidades pasados a IS
+                              o M segun la fecha del filtro.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades cerradas(OC):</span
+                              >
+                              Muestra la cantidad de oportunidades pasados a OC
+                              segun la fecha del filtro.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Tasa conversion real(TCR):</span
+                              >
+                              (IS/M )/OC en porcentaje% y a 1 decimal (0.0).
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Tasa conversion meta(TCM):</span
+                              ># de actividades ejecutadas sin Llamadas .
+                            </li>
+                            <li>
+                              <span class="fw-bold">TCR/TCM:</span> TCR/TCM en
+                              porcentaje% sin decimales.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Precio Promedio IS/M en USD:</span
+                              >
+                              Muestra el precio promedio segun el costo del
+                              programa de las oportunidades pasadas a IS/M.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Precio Promedio OC en USD:</span
+                              >
+                              Muestra el precio promedio segun el costo del
+                              programa de las oportunidades pasadas a OC.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Precio Promedio IS/M en USD / Precio Promedio
+                                OC en USD:</span
+                              >
+                              Precio Promedio IS/M en USD / Precio Promedio OC
+                              en USD en porcentaje% sin decimales.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Ingreso en el mes en USD:</span
+                              >
+                              Muestra el monto del programa que ingreso en el
+                              mes del filtro.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Ingreso en el mes (%):</span
+                              >
+                              Muestra el % que representa el ingreso del mes
+                              sobre el costo total del programa.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Descuento promedio(%):</span
+                              >
+                              Muestra el descuento promedio otorgado en
+                              porcentaje% de los IS/M.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Ingreso real en USD(IR):</span
+                              >
+                              Muestra el costo del programa que se vendio de los
+                              IS/M en USD.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Ingreso meta en USD(IM):</span
+                              >
+                              Muestra el costo de los programas de las OC.
+                            </li>
+                            <li>
+                              <span class="fw-bold">IR/IM(%):</span> IR/IM en
+                              porcentaje% sin decimales.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Muestra la misma información que el reporte de "Tasas
+                          de Conversión Consolidadas"
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridTasaConversion.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                [width]="200"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+
+              <kendo-grid-column-group
+                title="Perú"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversion.flagColumnPeru"
+              >
+                <kendo-grid-column
+                  field="peru7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="peruMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Colombia"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversion.flagColumnColombia"
+              >
+                <kendo-grid-column
+                  field="colombia7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="colombiaMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Bolivia"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversion.flagColumnBolivia"
+              >
+                <kendo-grid-column
+                  field="bolivia7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="boliviaMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="México"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversion.flagColumnMexico"
+              >
+                <kendo-grid-column
+                  field="mexico7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="mexicoMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Chile"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversion.flagColumnChile"
+              >
+                <kendo-grid-column
+                  field="chile7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="chileMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Otros Paises"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversion.flagColumnOtros"
+              >
+                <kendo-grid-column
+                  field="otro7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="otroMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Total"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="total7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="totalMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridTasaConversion.loading"></loading>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-12 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Tasa de Conversión - Predictivas</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGTCP
+                (click)="gridTasaConversionPredictiva.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGTCP"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="gridTasaConversionPredictiva.showPopup = false"
+                *ngIf="gridTasaConversionPredictiva.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          <ul>
+                            <li>
+                              <span class="fw-bold"
+                                >Inscritos/Matriculados(IS/M):</span
+                              >
+                              Muestra la cantidad de oportunidades pasados a IS
+                              o M segun la fecha del filtro.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Oportunidades cerradas(OC):</span
+                              >
+                              Muestra la cantidad de oportunidades pasados a OC
+                              segun la fecha del filtro.
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Tasa conversion real(TCR):</span
+                              >
+                              (IS/M )/OC en porcentaje% y a 1 decimal (0.0).
+                            </li>
+                            <li>
+                              <span class="fw-bold"
+                                >Tasa conversion meta(TCM):</span
+                              ># de actividades ejecutadas sin Llamadas .
+                            </li>
+                            <li>
+                              <span class="fw-bold">TCR/TCM:</span> TCR/TCM en
+                              porcentaje% sin decimales.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Muestra la misma información que el reporte de "Tasas
+                          de Conversión Consolidadas"
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridTasaConversionPredictiva.data"
+              [selectable]="true"
+              scrollable="none"
+            >
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripcion"
+                [width]="200"
+                headerClass="header-grid-single"
+              ></kendo-grid-column>
+
+              <kendo-grid-column-group
+                title="Perú"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversionPredictiva.flagColumnPeru"
+              >
+                <kendo-grid-column
+                  field="peru7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="peruMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Colombia"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversionPredictiva.flagColumnColombia"
+              >
+                <kendo-grid-column
+                  field="colombia7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="colombiaMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Bolivia"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversionPredictiva.flagColumnBolivia"
+              >
+                <kendo-grid-column
+                  field="bolivia7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="boliviaMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="México"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversionPredictiva.flagColumnMexico"
+              >
+                <kendo-grid-column
+                  field="mexico7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="mexicoMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Chile"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversionPredictiva.flagColumnChile"
+              >
+                <kendo-grid-column
+                  field="chile7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="chileMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Otros Paises"
+                headerClass="header-grid-single justify-content-center"
+                *ngIf="flagColumnsTasaConversionPredictiva.flagColumnOtros"
+              >
+                <kendo-grid-column
+                  field="otro7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="otroMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Total"
+                headerClass="header-grid-single justify-content-center"
+              >
+                <kendo-grid-column
+                  field="total7Dias"
+                  title="7 Días"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+                <kendo-grid-column
+                  field="totalMes"
+                  title="Mes"
+                  [width]="80"
+                  class="text-center"
+                  headerClass="header-grid-single justify-content-center"
+                ></kendo-grid-column>
+              </kendo-grid-column-group>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridTasaConversionPredictiva.loading"></loading>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-12 my-4">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Calidad Procesamiento</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorGCP
+                (click)="gridCalidadProcesamiento.onToggle()"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorGCP"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="
+                  gridCalidadProcesamiento.showPopup = false
+                "
+                *ngIf="gridCalidadProcesamiento.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra el % de datos por fase que tienen validado el
+                          (Perfil Profesional, Historial Financiero,
+                          Motivacion,Perfil del Cliente, Aspectos del Programa,
+                          Inicio del Programa, Competidores,
+                          Problemas(Seleccionados/Solucionados))
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                          Las secciones son las mismas que tiene la agenda
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-grid
+              [kendoGridBinding]="gridCalidadProcesamiento.data"
+              [selectable]="true"
+              scrollable="scrollable"
+              [resizable]="true"
+              [style.maxHeight.px]="600"
+            >
+              <kendo-grid-column
+                field="datosAsesor"
+                title="Asesor"
+                headerClass="justify-content-center"
+                [width]="250"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="nombreFase"
+                title="Fase"
+                class="text-center"
+                headerClass="justify-content-center"
+                [width]="40"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="promedioPerfil"
+                title="Validacion Perfil"
+                class="text-center"
+                [width]="60"
+                headerClass="justify-content-center"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="col-12 text-center">Perfil<br />Profesional</div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{ dataItem.promedioPerfil * 100 | number : "1.0-0" }}
+                  %
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="promedioSentinel"
+                title="Historial Financiero"
+                [width]="60"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="col-12 text-center">
+                    Historial<br />Financiero
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{
+                    dataItem.promedioHistorialFinanciero * 100
+                      | number : "1.0-0"
+                  }}
+                  %
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="promedioPGeneralMotivacion"
+                title="Motivación"
+                headerClass="justify-content-center"
+                [width]="60"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{
+                    dataItem.promedioPGeneralMotivacion * 100 | number : "1.0-0"
+                  }}
+                  %
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column-group
+                headerClass="justify-content-center"
+                [width]="180"
+                title="Perfil del Cliente"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  Perfil del Cliente
+                </ng-template>
+                <kendo-grid-column
+                  field="promedioPublicoObjetivo"
+                  title="Publico Objetivo"
+                  [width]="60"
+                  headerClass="justify-content-center"
+                  class="text-center"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="col-12 text-center">Publico<br />Objetivo</div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-rowIndex="rowIndex"
+                  >
+                    {{
+                      dataItem.promedioPublicoObjetivo * 100 | number : "1.0-0"
+                    }}
+                    %
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="promedioPrerequisitoPrograma"
+                  title="Prerequisitos Programa"
+                  [width]="60"
+                  headerClass="justify-content-center"
+                  class="text-center"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="col-12 text-center">
+                      Prerequisitos<br />
+                      del Programa
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-rowIndex="rowIndex"
+                  >
+                    {{
+                      dataItem.promedioPrerequisitoPrograma * 100
+                        | number : "1.0-0"
+                    }}
+                    %
+                  </ng-template></kendo-grid-column
+                >
+                <kendo-grid-column
+                  field="promedioRequisitoCertificacion"
+                  title="Requisitos Certificacion"
+                  [width]="60"
+                  headerClass="justify-content-center"
+                  class="text-center"
+                >
+                  <ng-template
+                    kendoGridHeaderTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="col-12 text-center">
+                      Requisitos<br />
+                      Certificación
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridCellTemplate
+                    let-dataItem
+                    let-rowIndex="rowIndex"
+                  >
+                    {{
+                      dataItem.promedioRequisitoCertificacion * 100
+                        | number : "1.0-0"
+                    }}
+                    %
+                  </ng-template></kendo-grid-column
+                >
+              </kendo-grid-column-group>
+              <kendo-grid-column
+                field="promedioBeneficios"
+                title="Beneficios"
+                [width]="60"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="col-12 text-center">
+                    Aspectos<br />del Programa
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{
+                    dataItem.promedioProblemaSeleccionados * 100
+                      | number : "1.0-0"
+                  }}
+                  %
+                </ng-template></kendo-grid-column
+              >
+              <kendo-grid-column
+                field="promedioInicioPrograma"
+                title="Inicio Programa"
+                [width]="60"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="col-12 text-center">Inicio<br />del Programa</div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{ dataItem.promedioInicioPrograma * 100 | number : "1.0-0" }}
+                  %
+                </ng-template></kendo-grid-column
+              >
+              <kendo-grid-column
+                field="promedioCompetidores"
+                title="Competidores"
+                [width]="60"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{ dataItem.promedioCompetidores * 100 | number : "1.0-0" }}
+                  %
+                </ng-template></kendo-grid-column
+              >
+              <kendo-grid-column
+                field="promedioProblemaSeleccionados"
+                title="Problema Seleccionados"
+                [width]="60"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="col-12 text-center">
+                    Problemas<br />Seleccionados
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{
+                    dataItem.promedioProblemaSeleccionados * 100
+                      | number : "1.0-0"
+                  }}
+                  %
+                </ng-template></kendo-grid-column
+              >
+              <kendo-grid-column
+                field="promedioProblemaSolucionados"
+                title="Problema Solucionados"
+                [width]="60"
+                headerClass="justify-content-center"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridHeaderTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="col-12 text-center">
+                    Problemas<br />Solucionados
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{
+                    dataItem.promedioProblemaSolucionados * 100
+                      | number : "1.0-0"
+                  }}
+                  %
+                </ng-template></kendo-grid-column
+              >
+              <kendo-grid-column
+                field="registros"
+                title="Registros"
+                [width]="60"
+                headerClass="justify-content-center"
+                class="text-center"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+          <loading [loading]="gridCalidadProcesamiento.loading"></loading>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+  <div class="row">
+    <!-- <div class="col-sm-12 col-md-6 my-4">
+      <div class="card">
+        <div class="card-header pb-0 bg-color-material">
+          <div class="row">
+            <h3 class="text-white mb-2 col">Control de RN5</h3>
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="information"
+                themeColor="base"
+                #anchorpvgRN5
+                (click)="pivotGridRN5.showPopup = !pivotGridRN5.showPopup"
+              ></button>
+              <kendo-popup
+                [anchor]="anchorpvgRN5"
+                [popupAlign]="{ horizontal: 'right', vertical: 'top' }"
+                (anchorViewportLeave)="pivotGridRN5.showPopup = false"
+                *ngIf="pivotGridRN5.showPopup"
+              >
+                <div class="content-popup p-3">
+                  <div class="row">
+                    <div class="col-12">
+                      <ul>
+                        <li>
+                          <div class="fw-bold">FILTRO</div>
+                          Según el filtro de fechas.
+                        </li>
+                        <li>
+                          <div class="fw-bold">DESCRIPCION</div>
+                          Muestra los cambios de fase hecho segun la fecha del
+                          filtro de una fase Origen "X" a una fase Destino RN5
+                          (Con y sin llamada)
+                        </li>
+                        <li>
+                          <div class="fw-bold">NOTA</div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </kendo-popup>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="w-100">
+            <kendo-pivotgrid
+              [kendoPivotLocalBinding]="pivotGridRN5.data"
+              [dimensions]="pivotGridRN5.dimensions"
+              [measures]="pivotGridRN5.measures"
+              [rowAxes]="pivotGridRN5.rowAxes"
+              [columnAxes]="pivotGridRN5.columnAxes"
+              [measureAxes]="pivotGridRN5.measureAxes"
+            >
+            </kendo-pivotgrid>
+          </div>
+          <loading [loading]="pivotGridRN5.loading"></loading>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</div>

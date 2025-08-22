@@ -1,0 +1,2478 @@
+
+
+
+
+<ng-template  #modalCrearPago let-modal>
+  <app-loader *ngIf="loaderCrearPago"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{nombreModalCrearPago}}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click');quitarValorAgregado()"
+    ></button>
+  </div>
+ <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body p-4">
+            <kendo-grid
+            [kendoGridBinding]="listaComprobanteParaPago"
+            [loading]="loaderGridComprobanteAsociados"
+            [sortable]="true"
+            [reorderable]="true"
+            [resizable]="true"
+            [columnMenu]="{ filter: true }"
+            style="max-height: 300px;"
+            >
+            <ng-template kendoGridToolbarTemplate class="bg-danger" >
+              <div>Lista de Comprobantes de Pago</div>
+              <kendo-grid-spacer></kendo-grid-spacer>
+            </ng-template>
+                <kendo-grid-column
+                  
+                  title="Comprobante"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="150"
+                  field="comprobante"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                >
+                <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.comprobante}}
+                            </div>
+                          </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  title="Proveedor"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="220"
+                  field="proveedor"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                >
+                <ng-template
+                kendoGridCellTemplate
+                let-dataItem
+              >
+                <div style="font-size: x-small">
+                  {{dataItem.proveedor}}
+                </div>
+              </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  title="Monto Asociado"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="110"
+                  field="montoAsociado"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                >
+                <ng-template
+                kendoGridCellTemplate
+                let-dataItem
+              >
+                <div style="font-size: x-small">
+                  {{dataItem.montoAsociado}}
+                </div>
+              </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  title="Monto Pendiente"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="110"
+                  field="montoAmortizar"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white',
+                    'font-size': 'x-small'
+                  }"
+                >
+                <ng-template
+                kendoGridCellTemplate
+                let-dataItem
+              >
+                <div style="font-size: x-small">
+                  {{dataItem.montoAmortizar}}
+                </div>
+              </ng-template>
+                </kendo-grid-column>
+  
+            </kendo-grid>  
+            <br>
+            <div class="row">
+              <div class="col-md-1"></div>
+              <div class="col-md-10 card element">
+                <form class="k-form" [formGroup]="formGroupRegistarPago">
+                  <fieldset class="k-form-fieldset">
+                    <div class="row">
+                      <div class="col k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="idComprobantePagoPorFur" class="k-label">
+                              <span style="
+                              width: 155px;
+                             "
+                              >Comprobante Asociado :</span>
+                          </label>
+                          <kendo-dropdownlist
+                              formControlName="idComprobantePagoPorFur"
+                              class="d-flex"
+                              size="small"
+                              #idComprobantePagoPorFur
+                              [data]="listaComprobanteParaPago"
+                              textField="nombreAsociacion"
+                              valueField="id"
+                              [defaultItem]="{id:null,nombreAsociacion:'Seleccionar'}"
+                              [valuePrimitive]="true"
+                              [filterable]="true"
+                              (selectionChange)="seleccionComprobante($event)"
+                          >
+                          </kendo-dropdownlist>
+                          </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="idMoneda" class="k-label">
+                              <span
+                              >Moneda Pago :
+                              <strong class="text-danger">*</strong></span>
+                          </label>
+                          <kendo-dropdownlist
+                              formControlName="idMoneda"
+                              class="d-flex"
+                              size="small"
+                              #idMoneda
+                              [data]="listaMoneda"
+                              textField="nombrePlural"
+                              valueField="id"
+                              [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                              [valuePrimitive]="true"
+                              [required]="true"
+                          >
+                          </kendo-dropdownlist>
+                          </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col k-form-horizontal">
+                        <kendo-formfield orientation="horizontal" >
+                          <label [for]="numeroCuenta" class="k-label">
+                            <span
+                              > Cuenta Bancaria :
+                              <strong class="text-danger">*</strong></span
+                            >
+                          </label>
+                          <kendo-dropdownlist
+                              formControlName="numeroCuenta"
+                              class="d-flex"
+                              size="small"
+                              #numeroCuenta
+                              [data]="listaCuentaBancaria"
+                              textField="numeroCuenta"
+                              valueField="id"
+                              [defaultItem]="{id:null,numeroCuenta:'Seleccionar'}"
+                              [valuePrimitive]="true"
+                              [required]="true"
+                          >
+                          </kendo-dropdownlist>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="numeroRecibo" class="k-label">
+                              <span
+                              >Numero de Recibo :
+                              <strong class="text-danger">*</strong></span>
+                          </label>
+                            <kendo-textbox
+                              #numeroRecibo
+                              class="d-flex"
+                              size="small"
+                              [clearButton]="true"
+                              formControlName="numeroRecibo"
+                              [required]="true"
+                            >
+                            </kendo-textbox>
+                          </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="idFormaPago" class="k-label">
+                              <span
+                              >Tipo Pago :
+                              <strong class="text-danger">*</strong></span>
+                          </label>
+                          <kendo-dropdownlist
+                              formControlName="idFormaPago"
+                              class="d-flex"
+                              size="small"
+                              #idFormaPago
+                              [data]="listaTipoPago"
+                              textField="nombre"
+                              valueField="id"
+                              [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                              [valuePrimitive]="true"
+                              [required]="true"
+                          >
+                          </kendo-dropdownlist>
+                          </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="fechaCobroBanco" class="k-label">
+                              <span
+                              >Fecha Cobro Banco :
+                              <strong class="text-danger">*</strong></span>
+                          </label>
+                          <kendo-datepicker
+                            #fechaCobroBanco
+                            formControlName="fechaCobroBanco"
+                            [incompleteDateValidation]="true"
+                            calendarType="classic"
+                            [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                            placeholder="dia-mes-año"
+                            [style.width.px]="170"
+                            [required]="true"
+                            ></kendo-datepicker>
+                          </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="precioTotalMonedaOrigen" class="k-label">
+                              <span
+                              >Precio Total :
+                              <strong class="text-danger">*</strong></span>
+                          </label>
+                          <kendo-numerictextbox
+                            #precioTotalMonedaOrigen
+                            orientation="horizontal"
+                            [style.width.px]="170"
+                            formControlName="precioTotalMonedaOrigen"
+                            [min]="0"
+                            [max]="valorTotalFUR"
+                            [decimals]="3"
+                            [required]="true"
+                            [autoCorrect]="true"
+                          >
+                        </kendo-numerictextbox>
+                          </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <kendo-label
+                            [for]="idCancelado"
+                            text="Estado :"
+                          ></kendo-label>
+                          <kendo-switch
+                            #idCancelado
+                            formControlName="idCancelado"
+                            size="medium"
+                            trackRounded="full"
+                            thumbRounded="full"
+                            onLabel="Cancelado"
+                            offLabel="Pendiente"
+                            style="width: 100px;"
+                          >
+                          </kendo-switch>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                    <br>
+                  </fieldset>
+                </form>
+              </div>
+              <div class="col-md-1"></div>
+            </div>
+          </div>
+        </div>                
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="accionModalCrearPago(modal)"
+    >
+      {{nombreBTNCrearPago}}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click');quitarValorAgregado()"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalRegistrarPago let-modal>
+  <app-loader *ngIf="loderModalRegistrarPago"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registrar Pago por Fur
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click');validarEdicionPagos()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+
+            <div class="card">
+              <div class="card-header bg-color-material pb-0">
+                  <h3 class="text-white mb-2">Lista de Pagos FUR</h3>
+              </div>
+              <div class="card-body p-4">
+                <div class="row">
+                  <kendo-grid
+                  [kendoGridBinding]="listaPagadosPorFur"
+                  [loading]="loaderGridPagos"
+                  [pageSize]="5"
+                  [sortable]="true"
+                  [reorderable]="true"
+                  [resizable]="true"
+                  [columnMenu]="{ filter: true }"
+                  [pageable]="{
+                    buttonCount: 5,
+                    info: true,
+                    type: 'numeric',
+                    pageSizes: true,
+                    previousNext: true,
+                    position: 'bottom'
+                  }"
+                  >
+                  <ng-template kendoGridToolbarTemplate class="bg-danger" >
+                    <div class="col k-form-horizontal">
+                      <kendo-formfield orientation="horizontal">
+                        <label [for]="dropdownlist" style="width: 100px;">
+                            <span
+                            >Saldo FUR:</span>
+                        </label>
+                        <kendo-numerictextbox
+                        [readonly]="true"
+                          orientation="horizontal"
+                          [style.width.px]="170"
+                          [(ngModel)]="valorTotalFUR"
+                          [value]="valorTotalFUR"
+                          [decimals]="3"
+                          [autoCorrect]="true"
+                    >
+                  </kendo-numerictextbox>
+                      </kendo-formfield>
+                    </div>
+                    
+                    <kendo-grid-spacer></kendo-grid-spacer>
+                    <button
+                    kendoButton
+                    themeColor="primary"
+                    (click)="openModalCrearPago(true)"
+                    >
+                      Crear Pago
+                  </button>
+                  </ng-template>
+                  <kendo-grid-column
+                    [sticky]="true"
+                    title="Acciones"
+                    [width]="120"
+                    headerClass="justify-content-center CPC-clasesilla "
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white',
+                      'font-size': 'x-small'
+                    }"
+                  >
+                    <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem="dataItem"
+                      let-isNew="isNew"
+                      let-rowIndex="rowIndex"
+                    >
+                    <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                      <button
+                      title="Editar"
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="openModalCrearPago(false,dataItem)"
+                      >
+                      <span class="k-icon k-i-pencil k-icon-20"></span>
+                      </button>
+
+                      <button
+                      title="Eliminar"
+                      kendoButton
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="msgEliminarPago(dataItem)"
+                      >
+                      <span class="k-icon k-i-trash k-icon-20"></span>
+                      </button>
+                  </div>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-command-column
+                  [sticky]="true"
+                  title="Acciones"
+                  [width]="120"
+                  headerClass="justify-content-center CPC-clasesilla"
+                  [hidden]="true"
+                  >
+                      <ng-template 
+                      kendoGridCellTemplate 
+                      let-isNew="isNew" 
+                      let-dataItem="dataItem" 
+                      let-rowIndex="rowIndex"
+                      >
+                          <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                              <div>
+                                  <button
+                                  title="Editar"
+                                  kendoButton
+                                  themeColor="warning"
+                                  fillMode="solid"
+                                  rounded="large"
+                                  size="large"
+                                  class="p-2 me-1 ms-1"
+                                  container="body"
+                                  placement="top"
+                                  (click)="openModalLogin()"           
+                                  >
+                                      <span class="k-icon k-i-edit " style="font-size: 10px;"></span>
+                                  </button>
+                              </div>
+                          </div>
+                      </ng-template>
+                  </kendo-grid-command-column>
+                      <kendo-grid-column
+                        title="Comprobante Asociado"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="200"
+                        field="nombreComprobantePagoPorFur"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.nombreComprobantePagoPorFur}}
+                          </div>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Tipo de Pago"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="nombreFormaPago"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.nombreFormaPago}}
+                          </div>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Cuenta"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="150"
+                        field="nombreCuenta"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.nombreCuenta}}
+                          </div>
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Nro de Recibo"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="numeroRecibo"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem
+                    >
+                      <div style="font-size: x-small">
+                        {{dataItem.numeroRecibo}}
+                      </div>
+                    </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Fecha de Cobro"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="fechaCobroBanco"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem
+                    >
+                      <div style="font-size: x-small">
+                        {{finanzasService.fechaTemplate(dataItem.fechaCobroBanco)}}
+                      </div>
+                    </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Moneda Origen"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="nombreMoneda"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem
+                    >
+                      <div style="font-size: x-small">
+                        {{dataItem.nombreMoneda}}
+                      </div>
+                    </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Total Moneda Origen"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="precioTotalMonedaOrigen"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem
+                    >
+                      <div style="font-size: x-small">
+                        {{dataItem.precioTotalMonedaOrigen}}
+                      </div>
+                    </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Total Dolares"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="120"
+                        field="precioTotalMonedaDolares"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem
+                    >
+                      <div style="font-size: x-small">
+                        {{dataItem.precioTotalMonedaDolares}}
+                      </div>
+                    </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Cancelado"
+                        headerClass="justify-content-center k-grid-header "
+                        [width]="150"
+                        field="nombreCancelado"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white',
+                          'font-size': 'x-small'
+                        }"
+                      >
+                      <ng-template
+                      kendoGridCellTemplate
+                      let-dataItem
+                    >
+                      <div style="font-size: x-small">
+                        {{dataItem.nombreCancelado}}
+                      </div>
+                    </ng-template>
+                      </kendo-grid-column>
+                  </kendo-grid>  
+                </div>
+              </div>
+                               
+      </div>
+      </div>
+    </div>
+    <div class="row">
+      
+    </div>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>
+
+
+
+<ng-template #modalAsociarComprobante let-modal>
+  <app-loader *ngIf="loaderModalAsociar"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Asociar Comprobante  
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupAscociarFUR">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Codigo FUR :</span>
+              </label>
+              <kendo-textbox
+                    [disabled]="true"
+                    #text
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="codigo"
+                    [required]="true"
+                    fillMode="outline"
+                  >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Monto FUR :</span>
+              </label>
+              <kendo-textbox
+                    [disabled]="true"
+                    #text
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="precioTotalSoles"
+                    [required]="true"
+                    fillMode="outline"
+                  >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Moneda FUR :</span>
+              </label>
+              <kendo-textbox
+                    [disabled]="true"
+                    #text
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="nombreMonedaFur"
+                    [required]="true"
+                    fillMode="outline"
+                  >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Comprobante de Pago :</span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idComprobantePago"
+                  class="d-flex"
+                  size="small"
+                  #dropdownlist
+                  [data]="itemlistaCN"
+                  textField="comprobante"
+                  valueField="id"
+                  [defaultItem]="{id:null,comprobante:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterChangeComprobanteNoAsociado($event)"
+                  (selectionChange)="selectionChangeComprobanteNoAsociado($event)"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Monto Comprobante :</span>
+              </label>
+              <kendo-textbox
+                    [disabled]="true"
+                    #text
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="monto"
+                    [required]="true"
+                    fillMode="outline"
+                  >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Moneda Comprobante :</span>
+              </label>
+              <kendo-textbox
+                    [disabled]="true"
+                    #text
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="monedaCp"
+                    [required]="true"
+                    fillMode="outline"
+                  >
+              </kendo-textbox>
+            </kendo-formfield>
+          </div>
+        </div>
+          
+
+      </fieldset>
+    </form>
+    
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="validarMoneda(modal)"
+    >
+      Asociar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+
+<ng-template #modalComprobante let-modal>
+  <app-loader *ngIf="loaderModalComprobante"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Comprobantes Electrónicos
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body" >
+    <div class="row">
+      <div class="col-md-12">
+        <kendo-tabstrip 
+        style="background-color: #d3d4dc;"
+        
+        >
+          <kendo-tabstrip-tab title="COMPROBANTES ELECTRÓNICOS" [selected]="true">
+            <ng-template kendoTabContent>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-header bg-color-material pb-0">
+                        <h3 class="text-white mb-2">Lista de Comprobantes no asociados</h3>
+                    </div>
+                    <div class="card-body p-4">
+                      <div class="row">
+                        <kendo-grid
+                        style="max-height: 600px;"
+                        [kendoGridBinding]="listaComprobantesNoAsociados"
+                        [loading]="loaderGridComprobante"
+                        [pageSize]="5"
+                        [sortable]="true"
+                        [reorderable]="true"
+                        [resizable]="true"
+                        filterable="menu"
+                        [pageable]="{
+                          buttonCount: 5,
+                          info: true,
+                          type: 'numeric',
+                          pageSizes: true,
+                          previousNext: true,
+                          position: 'bottom'
+                        }"
+                        >
+                          <ng-template kendoGridToolbarTemplate class="bg-danger" $kendo-component-bg="#3f51b5">
+                            <button 
+                            kendoButton 
+                            icon="reload" 
+                            type="button"
+                            themeColor="secondary" 
+                            style="margin-right: 1rem;"
+                            (click)="RefrescarGrillaComprobante()"
+                            >
+                            </button>
+                              
+                            <kendo-grid-spacer></kendo-grid-spacer>
+                            <button
+                              kendoButton
+                              themeColor="primary"
+                              (click)="openModalComprobante(true)"
+                              >
+                                <span class="k-icon k-i-js k-icon-10"></span>
+                                Agregar
+                            </button>  
+                          </ng-template>
+                            <kendo-grid-column
+                            [sticky]="true"
+                            title="Acciones"
+                            [width]="120"
+                            headerClass="justify-content-center CPC-clasesilla"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                            >
+                                <ng-template 
+                                kendoGridCellTemplate 
+                                let-isNew="isNew" 
+                                let-dataItem="dataItem" 
+                                let-rowIndex="rowIndex"
+                                >
+                                    <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                                        <div>
+                                            <button
+                                            title="Editar"
+                                            kendoButton
+                                            themeColor="warning"
+                                            fillMode="solid"
+                                            rounded="large"
+                                            size="large"
+                                            class="p-2 me-1 ms-1"
+                                            container="body"
+                                            placement="top"
+                                            (click)="openModalComprobante(false,dataItem)"
+                                            >
+                                                <span class="k-icon k-i-edit" style="font-size: 15px;"></span>
+                                            </button>
+                                        </div>
+                                        <div>
+                                          <button
+                                            title="Eliminar"
+                                            kendoButton
+                                            themeColor="error"
+                                            fillMode="solid"
+                                            rounded="large"
+                                            size="large"
+                                            class="p-2 me-1 ms-1"
+                                            container="body"
+                                            placement="top"
+                                            (click)="msgEliminarComprobante(dataItem)"
+                                            >
+                                              <span class="k-icon k-i-delete" style="font-size: 15px;"></span>
+                                          </button>
+                                      </div>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Proveedor"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="razonSocial"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                              <ng-template
+                                kendoGridCellTemplate
+                                let-dataItem
+                              >
+                                <div style="font-size: x-small">
+                                  {{dataItem.razonSocial}}
+                                </div>
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Tipo Comprobante"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="nombreDocumento"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                              <ng-template
+                                kendoGridCellTemplate
+                                let-dataItem
+                              >
+                                <div style="font-size: x-small">
+                                  {{dataItem.nombreDocumento}}
+                                </div>
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="País"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="nombrePais"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                                kendoGridCellTemplate
+                                let-dataItem
+                              >
+                                <div style="font-size: x-small">
+                                  {{dataItem.nombrePais}}
+                                </div>
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Nro Serie"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="100"
+                              field="serie"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                                kendoGridCellTemplate
+                                let-dataItem
+                              >
+                                <div style="font-size: x-small">
+                                  {{dataItem.serie}}
+                                </div>
+                              </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Nro Comprobante"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="nroComprobante"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.nroComprobante}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Fecha Emisión"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="fechaEmision"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                              <kendo-grid-date-filter-menu
+                                  [column]="column"
+                                  [format]="'dd-MM-yyyy'"
+                                  [filter]="filter"
+                                  [placeholder]="'dia-mes-año'"
+                                  [filterService]="filterService"
+                                  >
+                              </kendo-grid-date-filter-menu>
+                            </ng-template>
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{finanzasService.fechaTemplate(dataItem.fechaEmision)}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Fecha Programación"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="fechaProgramacion"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                              <kendo-grid-date-filter-menu
+                                  [column]="column"
+                                  [format]="'dd-MM-yyyy'"
+                                  [filter]="filter"
+                                  [placeholder]="'dia-mes-año'"
+                                  [filterService]="filterService"
+                                  >
+                              </kendo-grid-date-filter-menu>
+                            </ng-template>
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{finanzasService.fechaTemplate(dataItem.fechaProgramacion)}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Moneda"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="moneda"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.moneda}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Monto Inafecto"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="montoInafecto"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.montoInafecto}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Monto Afecto"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="montoBruto"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.montoBruto}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Monto Neto"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="montoNeto"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.montoNeto}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Reajuste"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="ajusteMontoBruto"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.ajusteMontoBruto}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Otra Taza Contribución"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="otraTazaContribucion"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.otraTazaContribucion}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Monto IGV"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="montoIgv"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.montoIgv}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Monto Retencion"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="valorRetencion"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                              {{dataItem.valorRetencion}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                              title="Monto Detracción"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="120"
+                              field="valorDetraccion"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template
+                            kendoGridCellTemplate
+                            let-dataItem
+                          >
+                            <div style="font-size: x-small">
+                             {{dataItem.valorDetraccion}}
+                            </div>
+                          </ng-template>
+                            </kendo-grid-column>
+    
+                        </kendo-grid>   
+                      </div>
+                    </div>
+                  </div>
+                                        
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab title="ASOCIAR COMPROBANTE A FUR">
+            <ng-template kendoTabContent>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-header bg-color-material pb-0">
+                      <h3 class="text-white mb-2">Lista de Comprobantes Asociados FUR</h3>
+                    </div>
+                    <div class="card-body p-4">
+                      <kendo-grid
+                      
+                      [kendoGridBinding]="listaComprobantesAsociadosFUR"
+                      [loading]="loaderGridComprobanteAsociados"
+                      [pageSize]="5"
+                      [sortable]="true"
+                      [reorderable]="true"
+                      [resizable]="true"
+                      [columnMenu]="{ filter: true }"
+                      [pageable]="{
+                        buttonCount: 5,
+                        info: true,
+                        type: 'numeric',
+                        pageSizes: true,
+                        previousNext: true,
+                        position: 'bottom'
+                      }"
+                      >
+                      <ng-template kendoGridToolbarTemplate class="bg-danger" >
+                        <div class="k-form-horizontal" >
+                          <kendo-formfield orientation="horizontal" >
+                            <label [for]="dropdownlist" style="width: 100px;">
+                                <span
+                                >Código FUR :
+                                </span>
+                            </label> 
+                            <kendo-dropdownlist
+                                [style.width.%]="150"
+                                [formControl]="fur"
+                                class="d-flex"
+                                size="small"
+                                #idFur
+                                [data]="itemlistaFur"
+                                textField="codigo"
+                                valueField="id"
+                                [defaultItem]="{id:null,codigo:'Seleccionar'}"
+                                [valuePrimitive]="true"
+                                [filterable]="true"
+                                (filterChange)="filterChangeFur($event)"
+                                (selectionChange)="buscarFurAsociados($event)"
+                            >
+                            </kendo-dropdownlist>                            
+                                                                
+                          </kendo-formfield>  
+                      </div> 
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                        <button
+                                kendoButton
+                                themeColor="primary"
+                                (click)="openModalAsociar()"
+                                >
+                                  <span class="k-icon k-i-js k-icon-10"></span>
+                                  Asociar Comprobante
+                                </button>   
+                      </ng-template>
+
+                          <kendo-grid-column
+                            title="Codigo FUR"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="codigoFur"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                            <ng-template
+                                kendoGridCellTemplate
+                                let-dataItem
+                              >
+                                <div style="font-size: x-small">
+                                  {{dataItem.codigoFur}}
+                                </div>
+                              </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Proveedor"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="nombreProveedor"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.nombreProveedor}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Tipo Comprobante"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="nombreDocumento"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.nombreDocumento}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="País"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="nombrePais"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.nombrePais}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Nro Serie"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="serieComprobante"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.serieComprobante}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Nro Comprobante"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="150"
+                            field="numeroComprobante"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.numeroComprobante}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Fecha Emisión"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="150"
+                            field="fechaEmision"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{finanzasService.fechaTemplate(dataItem.fechaEmision)}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Fecha Programación"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="150"
+                            field="fechaProgramacion"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                            format="{0:dd/MM/yyyy}"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{finanzasService.fechaTemplate(dataItem.fechaProgramacion)}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Moneda"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="nombreMoneda"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.nombreMoneda}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Monto Inafecto"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="montoInafecto"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.montoInafecto}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Monto Afecto"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="montoAfecto"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.montoAfecto}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Monto Neto"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="monto"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.monto}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Reajuste"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="ajusteMontoBruto"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.ajusteMontoBruto}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Otra Taza Contribución"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="otraTazaContribucion"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.otraTazaContribucion}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Valor IGV"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="valorIGV"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.valorIGV}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Valor Retencion"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="valorRetencion"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.valorRetencion}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            title="Valor Detracción"
+                            headerClass="justify-content-center k-grid-header "
+                            [width]="120"
+                            field="valorDetraccion"
+                            [locked]="false"
+                            [sticky]="false"
+                            [filterable]="true"
+                            [hidden]="false"
+                            [headerStyle]="{
+                              'background-color': '#3382a9',
+                              color: 'white',
+                              'font-size': 'x-small'
+                            }"
+                          >
+                          <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                        >
+                          <div style="font-size: x-small">
+                            {{dataItem.valorDetraccion}}
+                          </div>
+                        </ng-template>
+                          </kendo-grid-column>
+  
+                      </kendo-grid>   
+                    </div>
+                  </div>
+                </div>
+                      
+            </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+      </kendo-tabstrip>  
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+
+  </div>
+</ng-template>
+
+
+
+<ng-template #modalAnadirComprobante let-modal>
+  <app-modal-comprobante-pag
+  [modal]="modal"
+  [nombreModal]="nombreModalComprobante"
+  [nombreBTN]="nombreBTNComprobante"
+  [listaSede]="listaSede"
+  [listaMoneda]="listaMoneda"
+  [listaDocSunat]="listaDocSunat"
+  [listaTipoImpuesto]="listaTipoImpuesto"
+  [listaRetencion]="listaRetencion"
+  [listaDetraccion]="listaDetraccion"
+  [listaPais]="listaPais"
+  [dataEditar]="dataEditar"
+  (cargarData)="RefrescarGrillaComprobante()"
+  >
+  </app-modal-comprobante-pag>
+</ng-template>
+
+<div class="">
+    <div class="row">
+      <div class="col-1fa-rotate-270">
+        <div class="card">
+            <div class="card-header bg-color-material">
+                <h1 class="text-white">Registrar FUR's Pago</h1>
+            </div>
+            <div class="card-body p-4" >
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-11">
+                                <div class="row">
+                                    <div class="col-md-4 k-form-horizontal" >
+                                        <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                        <label [for]="dropdownlist" class="k-label t_font">
+                                            <span
+                                            >Área :
+                                            </span>
+                                        </label>
+                                        <kendo-dropdownlist
+                                            
+                                            [formControl]="area"
+                                            class="d-flex"
+                                            size="medium"
+                                            #dropdownlist
+                                            [data]="listaAreas"
+                                            textField="codigo"
+                                            valueField="id"
+                                            [defaultItem]="{id:null,codigo:'< Todos >'}"
+                                            [valuePrimitive]="true"
+                                        >
+                                        </kendo-dropdownlist>
+                                        </kendo-formfield>  
+                                    </div>
+                                    <div class="col-md-4 k-form-horizontal" >
+                                        <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                        <label [for]="dropdownlist" class="k-label t_font">
+                                            <span
+                                            >Ciudad :
+                                            </span>
+                                        </label>
+                                        <kendo-dropdownlist
+                                            [formControl]="ciudad"
+                                            class="d-flex"
+                                            size="medium"
+                                            #dropdownlist
+                                            [data]="listaCiudadSede"
+                                            textField="nombre"
+                                            valueField="id"
+                                            [defaultItem]="{id:null,nombre:'< Todos >'}"
+                                            [valuePrimitive]="true"
+                                        >
+                                        </kendo-dropdownlist>
+                                        </kendo-formfield>  
+                                    </div>
+                                    <div class="col-md-4 k-form-horizontal" >
+                                        <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                        <label [for]="dropdownlist" class="k-label t_font">
+                                            <span
+                                            >Año :
+                                            </span>
+                                        </label>
+                                        <kendo-numerictextbox
+                                            [formControl]="anio"
+                                            orientation="horizontal"
+                                            [min]="1991"
+                                            [max]="2999"
+                                            [decimals]="0"
+                                            [format]="'0000'"
+                                            [autoCorrect]="true" 
+                                            [maxlength]="4"                       
+                                            >
+                                            </kendo-numerictextbox>               
+                                        </kendo-formfield>  
+                                    </div>
+        
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 k-form-horizontal" >
+                                        <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                        <label [for]="dropdownlist" class="k-label t_font">
+                                            <span
+                                            >Semana :
+                                            </span>
+                                        </label>
+                                        <kendo-numerictextbox
+                                            [formControl]="semana"
+                                            orientation="horizontal"
+                                            [min]="1"
+                                            [max]="99"
+                                            [decimals]="0"
+                                            [format]="'00'"
+                                            [autoCorrect]="true" 
+                                            [maxlength]="2"                       
+                                            >
+                                            </kendo-numerictextbox>  
+                                        </kendo-formfield>  
+                                    </div>
+                                    <div class="col-md-4 k-form-horizontal" >
+                                        <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                        <label [for]="dropdownlist" class="k-label t_font">
+                                            <span
+                                            >Moneda :
+                                            </span>
+                                        </label>
+                                        <kendo-dropdownlist
+                                            
+                                            [formControl]="moneda"
+                                            class="d-flex"
+                                            size="medium"
+                                            #dropdownlist
+                                            [data]="listaMoneda"
+                                            textField="nombrePlural"
+                                            valueField="id"
+                                            [defaultItem]="{id:null,nombrePlural:'< Todos >'}"
+                                            [valuePrimitive]="true"
+                                        >
+                                        </kendo-dropdownlist>
+                                        </kendo-formfield>  
+                                    </div>
+                                    <div class="col-md-4 k-form-horizontal" >
+                                        <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                                        <label [for]="dropdownlist" class="k-label t_font">
+                                            <span
+                                            >Estado :
+                                            </span>
+                                        </label>
+                                        <kendo-dropdownlist
+                                            
+                                            [formControl]="estado"
+                                            class="d-flex"
+                                            size="medium"
+                                            #dropdownlist
+                                            [data]="listaEstado"
+                                            textField="nombre"
+                                            valueField="id"
+                                            [defaultItem]="{id:null,nombre:'< Todos >'}"
+                                            [valuePrimitive]="true"
+                                        >
+                                        </kendo-dropdownlist>
+                                        </kendo-formfield>  
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-1">
+                        <button
+                            style="margin-top: 1rem;margin-left: 0.5rem;"
+                            kendoButton 
+                            icon="k-icon k-i-search k-icon-20"
+                            type="button"
+                            themeColor="primary"
+                            (click)="BuscarPorFiltro()"
+                        >
+                            Buscar
+                        </button>                      
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-header bg-color-material col-md-12" style="color: white;">
+                            <div class="row">
+                                <div class="col-md-2">Lista de FURS</div>
+                                <div class="col-md-7">
+
+                                </div>
+                                <div class="col-md-3" style="text-align: right;">
+                                    <button
+                                    kendoButton
+                                    themeColor="success"
+                                    (click)="openModalTodoComprobante()"
+                                    >
+                                      <span class="k-icon k-i-js k-icon-10"></span>
+                                      Comprobantes
+                                    </button>    
+                                    <button 
+                                    kendoButton 
+                                    icon="reload" 
+                                    type="button"
+                                    themeColor="secondary" 
+                                    style="margin-right: 1rem;margin-left: 1rem;"
+                                    (click)="RefrescarGrilla()"
+                                    >
+                                    </button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <kendo-grid
+                        style="max-height: 800px;"
+                        [kendoGridBinding]="listaRegistrarFurPago"
+                        [loading]="loader"
+                        [pageSize]="5"
+                        [sortable]="true"
+                        [reorderable]="true"
+                        [resizable]="true"
+                        filterable="menu"
+
+                        [pageable]="true"
+                        >
+                            <kendo-grid-command-column
+                            [sticky]="true"
+                            title="Acciones"
+                            [width]="120"
+                            headerClass="justify-content-center text-center k-grid-header-command"
+                            >
+                                <ng-template 
+                                kendoGridCellTemplate 
+                                let-isNew="isNew" 
+                                let-dataItem="dataItem" 
+                                let-rowIndex="rowIndex"
+                                >
+                                    <div class="w-100 d-flex justify-content-center" style="padding:20px" kendoTooltip>
+                                        <div>
+                                            <button
+                                            
+                                            title="Registrar pago"
+                                            kendoButton
+                                            themeColor="warning"
+                                            fillMode="solid"
+                                            rounded="large"
+                                            size="large"
+                                            class="p-2 me-1 ms-1"
+                                            container="body"
+                                            placement="top"
+                                            (click)="openModalResgistrarPagoFur(dataItem)"
+                                            >
+                                                <span class="k-icon k-i-dollar k-icon-20"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </kendo-grid-command-column>
+                            <kendo-grid-column
+                              title="Código FUR"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="codigo"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Proveedor FUR"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="nombreProveedor"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Proveedor Comprobante"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="nombreProveedorComprobante"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Producto"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="nombreProducto"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Centro Costo"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="nombreCentroCosto"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Nro Cuenta"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="150"
+                              field="numeroCuenta"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Descripción Cuenta"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="250"
+                              field="descripcionCuenta"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Cantidad"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="250"
+                              field="cantidad"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Moneda Origen FUR"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="nombreMonedaFur"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Total Origen"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="precioTotalSoles"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Total Dolares"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="precioTotalDolares"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Total Origen Real"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="pagoMonedaOrigen"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Total Dolares Real"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="pagoDolares"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Comprobante"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="600"
+                              field="numeroComprobante"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Nro Rec"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="600"
+                              field="numeroRecibo"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Descripción"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="descripcion"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Nro Comprobante"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="600"
+                              field="numeroComprobante"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Moneda Origen"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="nombreMonedaPagoRealizado"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Pagado Origen"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="pagoMonedaOrigen"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Pagado Dolares"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="pagoDolares"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="usuario Solicitud"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="usuario"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            </kendo-grid-column>
+                            <kendo-grid-column
+                              title="Fecha"
+                              headerClass="justify-content-center k-grid-header "
+                              [width]="200"
+                              field="fechaModificacion"
+                              [locked]="false"
+                              [sticky]="false"
+                              [filterable]="true"
+                              [hidden]="false"
+                            >
+                            <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                               <kendo-grid-date-filter-menu
+                                  [column]="column"
+                                  [format]="'dd-MM-yyyy'"
+                                  [filter]="filter"
+                                  [placeholder]="'dia-mes-año'"
+                                  [filterService]="filterService"
+                                  >
+                              </kendo-grid-date-filter-menu>
+                            </ng-template>
+                            <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem
+                          >
+                          {{finanzasService.fechaTemplate(dataItem.fechaModificacion,true)}}
+                          </ng-template>
+                            </kendo-grid-column>
+                            <ng-template
+                            kendoPagerTemplate
+                            let-totalPages="totalPages"
+                            let-currentPage="currentPage"
+                            >
+                              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                              <kendo-pager-numeric-buttons
+                                [buttonCount]="5"
+                              ></kendo-pager-numeric-buttons>
+                              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                              <kendo-pager-input></kendo-pager-input>
+                              <kendo-pager-info></kendo-pager-info>
+                              <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+
+                            </ng-template>
+                        </kendo-grid>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

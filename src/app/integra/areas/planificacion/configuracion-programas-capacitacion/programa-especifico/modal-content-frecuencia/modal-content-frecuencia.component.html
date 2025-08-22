@@ -1,0 +1,646 @@
+<!-- #region Modal Frecuencia -->
+<div class="modal-header">
+  <h2 class="modal-title w-100 mb-0 fw-bold">Asignar Frecuencia</h2>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div
+  class="modal-body px-4 k-form k-form-horizontal"
+  [formGroup]="formFrecuencia"
+>
+  <div class="row my-2">
+    <div class="col-md-6">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>
+            Fecha Inicio Modulo
+            <span class="text-danger fw-bold">*</span>
+          </span>
+        </label>
+        <kendo-datepicker formControlName="fechaInicio"> </kendo-datepicker>
+        <kendo-formerror>Fecha Inicio es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+    <div class="col-md-6" *ngIf="itemsClosureFrecuencia.showFechaFin">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          Fecha Fin Modulo
+        </label>
+        <kendo-datepicker formControlName="fechaFin"> </kendo-datepicker>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row my-2">
+    <div class="col-md-6 k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span
+            >Frecuencia Modulo<span class="text-danger fw-bold">*</span></span
+          >
+        </label>
+        <kendo-dropdownlist
+          [data]="combosModulo.frecuencia"
+          textField="nombre"
+          valueField="id"
+          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+          [valuePrimitive]="true"
+          formControlName="frecuencia"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Frecuencia Modulo es requerido</kendo-formerror>
+      </kendo-formfield>
+    </div>
+  </div>
+  <ng-container *ngIf="itemsClosureFrecuencia.showEnvioCorreoConfirmacion">
+    <div class="row my-1">
+      <div class="col-sm-12 col-md-12">
+        <fieldset class="k-form-fieldset k-form-horizontal">
+          <legend class="k-form-legend">Correo Confirmación</legend>
+          <div class="row">
+            <div class="col-12 k-form-horizontal check-integra">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="check_mf_aplicaEnvioCorreoConfirmacion"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Aplicar Envio Correo de Confirmación
+                </label>
+                <input
+                  #check_mf_aplicaEnvioCorreoConfirmacion
+                  formControlName="aplicaEnvioCorreoConfirmacion"
+                  type="checkbox"
+                  kendoCheckBox
+                />
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="txt_mf_valorCorreoConfirmacion"
+                  [style.width.px]="150"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Anticipación Envio<br />WhatsApp:
+                </label>
+                <kendo-numerictextbox
+                  #txt_mf_valorCorreoConfirmacion
+                  formControlName="valorCreacionSesion"
+                  format="n0"
+                  placeholder="<Valor>"
+                  [disabled]="!check_mf_aplicaEnvioCorreoConfirmacion.checked"
+                >
+                </kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-dropdownlist
+                [data]="sourceOpcionFrecuencia"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="tipoCorreoConfirmacion"
+                [valuePrimitive]="true"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioCorreoConfirmacion.checked"
+              ></kendo-dropdownlist>
+            </div>
+            <div class="col-md-4">
+              <kendo-dropdownlist
+                [data]="combosModulo.plantillaCorreo"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="plantillaCorreoConfirmacion"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioCorreoConfirmacion.checked"
+              ></kendo-dropdownlist>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="itemsClosureFrecuencia.showCreacionSesionWebinar">
+    <div class="row my-1">
+      <div class="col-sm-12 col-md-12">
+        <fieldset class="k-form-fieldset k-form-horizontal">
+          <legend class="k-form-legend">Creación Sesion</legend>
+          <div class="row">
+            <div class="col-12 k-form-horizontal check-integra">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="check_mf_aplicaCreacionSesion"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Aplicar Creación de Sesiones
+                </label>
+                <input
+                  #check_mf_aplicaCreacionSesion
+                  formControlName="aplicaCreacionSesion"
+                  type="checkbox"
+                  kendoCheckBox
+                />
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [style.width.px]="150"
+                  [for]="txt_mf_valorCreacionSesion"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Anticipación&nbsp;de&nbsp;Creación<br />de la Sesión:
+                </label>
+                <kendo-numerictextbox
+                  #txt_mf_valorCreacionSesion
+                  formControlName="valorCreacionSesion"
+                  placeholder="<Valor>"
+                  format="n0"
+                  [disabled]="!check_mf_aplicaCreacionSesion.checked"
+                >
+                </kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-dropdownlist
+                [data]="sourceOpcionFrecuencia"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="tipoCreacionSesion"
+                [valuePrimitive]="true"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaCreacionSesion.checked"
+              ></kendo-dropdownlist>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="itemsClosureFrecuencia.showCreacionEnvioCorreo">
+    <div class="row my-1">
+      <div class="col-sm-12 col-md-12">
+        <fieldset class="k-form-fieldset k-form-horizontal">
+          <legend class="k-form-legend">Envio Correo</legend>
+          <div class="row">
+            <div class="col-12 k-form-horizontal check-integra">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="check_mf_aplicaEnvioCorreo"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Aplicar Envio de Correo
+                </label>
+                <input
+                  #check_mf_aplicaEnvioCorreo
+                  formControlName="aplicaEnvioCorreo"
+                  type="checkbox"
+                  kendoCheckBox
+                />
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="txt_mf_valorEnvioCorreo"
+                  [style.width.px]="150"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Anticipación de Envio<br />Correo:
+                </label>
+                <kendo-numerictextbox
+                  #txt_mf_valorEnvioCorreo
+                  formControlName="valorEnvioCorreo"
+                  placeholder="<Valor>"
+                  format="n0"
+                  [disabled]="!check_mf_aplicaEnvioCorreo.checked"
+                >
+                </kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-dropdownlist
+                [data]="sourceOpcionFrecuencia2"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="tipoEnvioCorreo"
+                [valuePrimitive]="true"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioCorreo.checked"
+              ></kendo-dropdownlist>
+            </div>
+            <div class="col-md-4">
+              <kendo-dropdownlist
+                [data]="combosModulo.plantillaCorreo"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="plantillaEnvioCorreo"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioCorreo.checked"
+              ></kendo-dropdownlist>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="itemsClosureFrecuencia.showCreacionEnvioWhatsApp">
+    <div class="row my-1">
+      <div class="col-sm-12 col-md-12">
+        <fieldset class="k-form-fieldset k-form-horizontal">
+          <legend class="k-form-legend">Envio Whatsapp</legend>
+          <div class="row">
+            <div class="col-12 k-form-horizontal check-integra">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="check_mf_aplicaEnvioWhatsapp"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Aplicar Envio de WhatApps
+                </label>
+                <input
+                  #check_mf_aplicaEnvioWhatsapp
+                  formControlName="aplicaEnvioWhatsapp"
+                  type="checkbox"
+                  kendoCheckBox
+                />
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="txt_mf_valorEnvioWhatsapp"
+                  [style.width.px]="150"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Anticipación Envio<br />WhatsApp:
+                </label>
+                <kendo-numerictextbox
+                  #txt_mf_valorEnvioWhatsapp
+                  formControlName="valorEnvioWhatsapp"
+                  placeholder="<Valor>"
+                  format="n0"
+                  [disabled]="!check_mf_aplicaEnvioWhatsapp.checked"
+                >
+                </kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-dropdownlist
+                [data]="sourceOpcionFrecuencia2"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="tipoEnvioWhatsapp"
+                [valuePrimitive]="true"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioWhatsapp.checked"
+              ></kendo-dropdownlist>
+            </div>
+            <div class="col-md-4">
+              <kendo-dropdownlist
+                [data]="combosModulo.plantillaWhatsApp"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="plantillaEnvioWhatsapp"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioWhatsapp.checked"
+              ></kendo-dropdownlist>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="itemsClosureFrecuencia.showCreacionEnvioCorreoDocente">
+    <div class="row my-1">
+      <div class="col-sm-12 col-md-12">
+        <fieldset class="k-form-fieldset k-form-horizontal check-integra">
+          <legend class="k-form-legend">Envio Correo Docente</legend>
+          <div class="row">
+            <div class="col-12 k-form-horizontal">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="check_mf_aplicaEnvioCorreoDocente"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Aplicar Envio de Correo Docente
+                </label>
+                <input
+                  #check_mf_aplicaEnvioCorreoDocente
+                  formControlName="aplicaEnvioCorreoDocente"
+                  type="checkbox"
+                  kendoCheckBox
+                />
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="txt_md_valorEnvioCorreoDocente"
+                  [style.width.px]="150"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Anticipación de Envio<br />Correo:
+                </label>
+                <kendo-numerictextbox
+                  #txt_md_valorEnvioCorreoDocente
+                  formControlName="valorEnvioCorreoDocente"
+                  placeholder="<Valor>"
+                  format="n0"
+                  [disabled]="!check_mf_aplicaEnvioCorreoDocente.checked"
+                >
+                </kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-dropdownlist
+                [data]="sourceOpcionFrecuencia2"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="tipoEnvioCorreoDocente"
+                [valuePrimitive]="true"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioCorreoDocente.checked"
+              ></kendo-dropdownlist>
+            </div>
+            <div class="col-md-4">
+              <kendo-dropdownlist
+                [data]="combosModulo.plantillaCorreo"
+                textField="nombre"
+                valueField="id"
+                style="margin-top: 0.9em !important"
+                formControlName="plantillaEnvioCorreoDocente"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                [disabled]="!check_mf_aplicaEnvioCorreoDocente.checked"
+              ></kendo-dropdownlist>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </ng-container>
+  <div class="row">
+    <div class="col-md-6">
+      <kendo-formfield orientation="horizontal">
+        <label
+          [for]="txt_mf_nroSesiones"
+          class="k-label pt-0 d-flex align-items-start text-start"
+        >
+          Nro Sesiones Modulo
+        </label>
+        <div class="input-group mb-3 d-flex">
+          <kendo-numerictextbox
+            #txt_mf_nroSesiones
+            formControlName="nroSesiones"
+            class="col"
+            [min]="0"
+            format="n0"
+            placeholder="<Valor>"
+          >
+          </kendo-numerictextbox>
+          <div class="input-group-append col-auto">
+            <button
+              kendoButton
+              themeColor="success"
+              icon="plus"
+              (click)="createSesionForm()"
+            ></button>
+          </div>
+        </div>
+      </kendo-formfield>
+    </div>
+  </div>
+  <div class="row mt-2" *ngIf="itemsClosureFrecuencia.swowSesionModulos">
+    <div class="col-12">
+      <div class="card" formArrayName="sesionesFrecuencia">
+        <div class="card-header mb-0">
+          <h2>Sesiones Modulos</h2>
+        </div>
+        <div class="card-body">
+          <ng-container
+            *ngFor="let control of sesionesFrecuencia.controls; let i = index"
+          >
+            <div class="row" [formGroupName]="i">
+              <div class="col-12">
+                <div class="row">
+                  <h3>Sesion {{ i + 1 }}</h3>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="row mb-2">
+                      <div class="col">Dia</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label class="k-label">
+                          <input
+                            type="radio"
+                            value="0"
+                            kendoRadioButton
+                            formControlName="dia"
+                          />
+                          <span class="ms-2">Domingo</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label class="k-label">
+                          <input
+                            type="radio"
+                            value="1"
+                            kendoRadioButton
+                            formControlName="dia"
+                          />
+                          <span class="ms-2">Lunes</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label class="k-label">
+                          <input
+                            type="radio"
+                            value="2"
+                            kendoRadioButton
+                            formControlName="dia"
+                          />
+                          <span class="ms-2">Martes</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label class="k-label">
+                          <input
+                            type="radio"
+                            value="3"
+                            kendoRadioButton
+                            formControlName="dia"
+                          />
+                          <span class="ms-2">Miercoles</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label class="k-label">
+                          <input
+                            type="radio"
+                            value="4"
+                            kendoRadioButton
+                            formControlName="dia"
+                          />
+                          <span class="ms-2">Jueves</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label class="k-label">
+                          <input
+                            type="radio"
+                            value="5"
+                            kendoRadioButton
+                            formControlName="dia"
+                          />
+                          <span class="ms-2">Viernes</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <label class="k-label">
+                          <input
+                            type="radio"
+                            value="6"
+                            kendoRadioButton
+                            formControlName="dia"
+                          />
+                          <span class="ms-2">Sábado</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="row">
+                      <div class="col-12 k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label
+                            class="k-label pt-0 d-flex align-items-start text-start"
+                          >
+                            <span
+                              >Hora del día<span class="text-danger fw-bold"
+                                >*</span
+                              ></span
+                            >
+                          </label>
+                          <kendo-timepicker
+                            format="hh:mm a"
+                            formControlName="hora"
+                          ></kendo-timepicker>
+                          <kendo-formerror
+                            >Hora del día es requerido</kendo-formerror
+                          >
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label
+                            class="k-label pt-0 d-flex align-items-start text-start"
+                          >
+                            <span
+                              >Duración<span class="text-danger fw-bold"
+                                >*</span
+                              ></span
+                            ><br />(horas)
+                          </label>
+                          <kendo-numerictextbox
+                            formControlName="duracion"
+                            placeholder="<Valor>"
+                            format="n0"
+                          >
+                          </kendo-numerictextbox>
+                          <kendo-formerror
+                            >Duración es requerido</kendo-formerror
+                          >
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="k-form-buttons m-0">
+    <button
+      *ngIf="itemsClosureFrecuencia.showBtnCrearCronograma"
+      themeColor="primary"
+      size="medium"
+      class="w-100"
+      icon="save"
+      kendoButton
+      (click)="guardarFrecuencia()"
+    >
+      Crear Cronograma
+    </button>
+    <button
+      *ngIf="itemsClosureFrecuencia.showBtnModificarCronograma"
+      themeColor="primary"
+      size="medium"
+      class="w-100"
+      icon="save"
+      kendoButton
+      (click)="modificarFrecuencia()"
+    >
+      Modificar Cronograma
+    </button>
+    <button
+      themeColor="error"
+      size="medium"
+      class="w-100"
+      icon="cancel"
+      kendoButton
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>
+<loading [loading]="loadingFrecuencia"></loading>
+<!-- #endregion Cronograma-->

@@ -1,0 +1,769 @@
+<div class="row">
+  <div class="card" style="padding: 0px">
+    <div class="card-header bg-color-material pb-0">
+      <h3 class="text-white mb-2">Solicitudes Cambios de Cronograma</h3>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <kendo-grid
+          style="padding-left: 0px; max-height: 500px"
+          [loading]="loaderGrid"
+          [columnMenu]="{ filter: true }"
+          [kendoGridBinding]="gridCambioCronograma.data"
+          [sortable]="true"
+          [resizable]="true"
+          [pageable]="{
+            buttonCount: 5,
+            info: true,
+            type: 'numeric',
+            pageSizes: true,
+            previousNext: true,
+            position: 'bottom'
+          }"
+          [pageSize]="10"
+        >
+        <ng-template
+        kendoGridToolbarTemplate
+        class="bg-danger"
+      >
+        <button mat-stroked-button
+        (click)="ObtenerSolicitudCambioCronogrma(userService.userData.idPersonal)">
+            <mat-icon>refresh</mat-icon>
+        </button>
+      </ng-template>
+
+          <kendo-grid-column
+            title="Nro"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#27ae60',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="100"
+            field="version"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Matricula"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#27ae60',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="130"
+            field="codigoMatricula"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+
+
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Solicidato por"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#27ae60',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="130"
+            field="nombreSolicitante"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Cambios"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#27ae60',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="130"
+            field="cambios"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <ng-container *ngFor="let item of dataItem.listaCambios; let i=index">
+                  <div class="row">
+                    <span class="col">{{ i + 1 }}. {{item}}</span>
+                  </div>
+              </ng-container>
+            </ng-template>
+
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            title="Fecha"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#27ae60',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="100"
+            field="fecha"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ fechaTemplate(dataItem.fecha) }}
+          </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            title="Observacion"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#27ae60',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="100"
+            field="observacion"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            title="Acciones"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white'
+            }"
+            [width]="100"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+              <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                <button
+                  kendoButton
+                  themeColor="primary"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  title="Visualizar"
+                  (click)="
+                    abrirModalCronogramaFinal(dataItem.idMatriculaCabecera)
+                  "
+                >
+                  <span class="k-icon k-i-eye k-icon-20"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            title="Aprobar"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white'
+            }"
+            [width]="100"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem"      let-rowIndex="rowIndex">
+              <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                <button
+                  kendoButton
+                  themeColor="success"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  title="Aprobar"
+                  (click)="AprobarCronograma(dataItem,rowIndex)"
+                >
+                  <span class="k-icon k-i-checkmark k-icon-20"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            title="Rechazar"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white'
+            }"
+            [width]="100"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem"   let-rowIndex="rowIndex">
+              <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                <button
+                kendoButton
+                themeColor="error"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="p-2 me-1 ms-1"
+                container="body"
+                placement="top"
+                title="Rechazar"
+                  (click)="RechazarCronogra(dataItem,rowIndex)"
+                >
+                  <span class="k-icon k-i-x k-icon-20"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <ng-template kendoGridNoRecordsTemplate>
+            <div>
+              <kendo-badge-container>
+                <kendo-icon name="cloud" size="large"></kendo-icon>
+                <kendo-badge position="inside">
+                  <kendo-icon name="close" style="color: red"></kendo-icon>
+                </kendo-badge>
+              </kendo-badge-container>
+            </div>
+            <p>No hay registros cargados!</p>
+          </ng-template>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal  -->
+<ng-template #modalCronogramaFinal let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+
+  <div class="k-loading-panel" *ngIf="loaderGeneral">
+    <div class="k-loading-panel-mask"></div>
+    <div class="k-loading-panel-wrapper">
+      <!-- tamano de loading -->
+      <mat-spinner diameter="50"></mat-spinner>
+      <div class="k-loading-panel-text fs-5 text-primary"></div>
+    </div>
+  </div>
+
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos Cambio de Cronograma
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body p-4">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="CPC-div_sombra" *ngIf=""></div>
+        <div class="card">
+          <div class="card-header bg-color-material pb-0">
+            <h3 class="text-white mb-2">Cronograma</h3>
+          </div>
+          <div class="card-body p-4">
+            <kendo-grid
+
+            [kendoGridBinding]="gridCronograma.data"
+            [sortable]="true"
+            [pageSize]="20"
+            [resizable]="false"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+
+            >
+              <kendo-grid-column
+                title="Cuota"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="60"
+                field="nroCuota"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px">
+                  {{ dataItem.nroCuota}}
+                </div>
+              </ng-template>
+
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Sub-Cuota"
+                field="nroSubCuota"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="60"
+                field="nroSubCuota"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              > <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px">
+                  {{ dataItem.nroSubCuota }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Tipo de Cuota"
+                field="tipoCuota"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="150"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px ">
+                  {{ dataItem.tipoCuota }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                title="Fecha de Vencimiento"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="80"
+                field="fechaVencimiento"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+                ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px ">
+                  {{ dataItem.fechaVencimiento | date: 'yyyy-MM-dd' }}
+                </div>
+              </ng-template>
+
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Total"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="100"
+                field="totalPagar"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px ">
+                  {{ dataItem.totalPagar }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Monto"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="100"
+                field="cuota"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px ">
+                  {{ dataItem.cuota }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Mora"
+                field="mora"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="80"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px">
+                  {{ dataItem.mora }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Saldo"
+                field="saldo"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="100"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px">
+                  {{ dataItem.saldo }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+              title="Moneda"
+              field="moneda"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#3382a9',
+                color: 'white',
+                'font-size': 'x-small'
+              }"
+              [width]="100"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div style="font-size: 10px">
+                {{ dataItem.moneda }}
+              </div>
+            </ng-template>
+            </kendo-grid-column>
+              <ng-template kendoGridNoRecordsTemplate>
+                <div>
+                  <kendo-badge-container>
+                    <kendo-icon name="cloud" size="medium"></kendo-icon>
+                    <kendo-badge position="inside">
+                      <kendo-icon
+                        name="close"
+                        size="small"
+                        style="color: red"
+                      ></kendo-icon>
+                    </kendo-badge>
+                  </kendo-badge-container>
+                </div>
+                <p style="font-size: x-small">No hay registros cargados!</p>
+              </ng-template>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-md-6">
+        <div class="CPC-div_sombra" *ngIf=""></div>
+        <div class="card">
+          <div class="card-header bg-color-material pb-0">
+            <h3 class="text-white mb-2">Cronograma con cambios</h3>
+          </div>
+          <div class="card-body p-4">
+            <kendo-grid
+            [kendoGridBinding]="gridCronogramaCambio.data"
+            [sortable]="true"
+            [pageSize]="20"
+            [resizable]="false"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+
+            >
+              <kendo-grid-column
+                title="Cuota"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="60"
+                field="nroCuota"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px" [ngStyle]="{'background-color': dataItem.existe==false?'yellow':'' }">
+                  {{ dataItem.nroCuota}}
+                </div>
+              </ng-template>
+
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Sub-Cuota"
+                field="nroSubCuota"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="60"
+                field="nroSubCuota"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              > <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: small" >
+                  {{ dataItem.nroSubCuota }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Tipo de Cuota"
+                field="tipoCuota"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="150"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px " [ngStyle]="{'background-color': dataItem.existe==false?'yellow':'' }">
+                  {{ dataItem.tipoCuota }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                title="Fecha de Vencimiento"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="80"
+                field="fechaVencimiento"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+                ><ng-template kendoGridCellTemplate let-dataItem>
+                  <div style="font-size: 10px " [ngStyle]="{'background-color': dataItem.existe==false?'yellow':'' }">
+                    {{ dataItem.fechaVencimiento | date: 'yyyy-MM-dd' }}
+                  </div>
+
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Total"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="100"
+                field="totalPagar"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px ">
+                  {{ dataItem.totalPagar }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Monto"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="100"
+                field="cuota"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px " [ngStyle]="{'background-color': dataItem.existe==false?'yellow':'' }">
+                  {{ dataItem.cuota }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Mora"
+                field="mora"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="80"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              ><ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px" [ngStyle]="{'background-color': dataItem.existe==false?'yellow':'' }">
+                  {{ dataItem.mora }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Saldo"
+                field="saldo"
+                headerClass="justify-content-center k-grid-header "
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white',
+                  'font-size': 'x-small'
+                }"
+                [width]="100"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [hidden]="false"
+              >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: 10px"[ngStyle]="{'background-color': dataItem.existe==false?'yellow':'' }">
+                  {{ dataItem.saldo }}
+                </div>
+              </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+              title="Moneda"
+              field="moneda"
+              headerClass="justify-content-center k-grid-header "
+              [headerStyle]="{
+                'background-color': '#3382a9',
+                color: 'white',
+                'font-size': 'x-small'
+              }"
+              [width]="100"
+              [locked]="false"
+              [sticky]="false"
+              [filterable]="true"
+              [hidden]="false"
+            >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div style="font-size: 10px">
+                {{ dataItem.moneda }}
+              </div>
+            </ng-template>
+            </kendo-grid-column>
+              <ng-template kendoGridNoRecordsTemplate>
+                <div>
+                  <kendo-badge-container>
+                    <kendo-icon name="cloud" size="medium"></kendo-icon>
+                    <kendo-badge position="inside">
+                      <kendo-icon
+                        name="close"
+                        size="small"
+                        style="color: red"
+                      ></kendo-icon>
+                    </kendo-badge>
+                  </kendo-badge-container>
+                </div>
+                <p style="font-size: x-small">No hay registros cargados!</p>
+              </ng-template>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        themeColor="success"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Regresar
+      </button>
+    </div>
+  </div>
+</ng-template>

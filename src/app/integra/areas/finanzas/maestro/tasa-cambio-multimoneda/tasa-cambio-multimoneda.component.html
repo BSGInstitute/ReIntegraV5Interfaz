@@ -1,0 +1,402 @@
+<ng-template #modalTasaCambioMultimoneda let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModal }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body" >
+    <form class="k-form" [formGroup]="formGroupTasaCambioMultimoneda" >
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="idMoneda" class="k-label">
+                <span
+                  > Moneda :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+                  [disabled]="nuevo"
+                  formControlName="idMoneda"
+                  class="d-flex"
+                  size="small"
+                  #idMoneda
+                  [data]="listaMonedaTem"
+                  textField="nombrePlural"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="filterMoneda($event)"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione un tipo de moneda</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("idMoneda") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="dolarAMoneda" class="k-label">
+                <span
+                  > Dolar a Moneda :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-numerictextbox
+              #dolarAMoneda
+              orientation="horizontal"
+              [style.width.px]="170"
+              formControlName="dolarAMoneda"
+              [min]="0"
+              [autoCorrect]="true"
+              >
+              </kendo-numerictextbox>
+              <kendo-formhint>Ingrese el cambio de dolar a moneda</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("dolarAMoneda") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="monedaADolar" class="k-label">
+                <span
+                  > Moneda a Dolar  :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-numerictextbox
+              #monedaADolar
+              orientation="horizontal"
+              [style.width.px]="170"
+              formControlName="monedaADolar"
+              [min]="0"
+              [autoCorrect]="true"
+              >
+              </kendo-numerictextbox>
+              <kendo-formhint>Ingrese el cambio de menda a dolar</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("monedaADolar") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="estado"
+                text="Tipo de Tiempo :"
+              ></kendo-label>
+              <kendo-switch
+                [disabled]="nuevo"
+                #estado
+                formControlName="tipoTiempo"
+                size="medium"
+                trackRounded="full"
+                thumbRounded="full"
+                onLabel="Periodo"
+                offLabel="Fecha"
+                style="width: 85px;"
+                (valueChange)="onChangeTipoTiempo($event)"
+              >
+              </kendo-switch>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row" *ngIf="periodo">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal" >
+              <label [for]="idMoneda" class="k-label">
+                <span
+                  > Periodo :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idPeriodo"
+                  class="d-flex"
+                  size="small"
+                  #idMoneda
+                  [data]="listaPeriodo"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+              <kendo-formhint>Seleccione un periodo</kendo-formhint>
+              <kendo-formerror>{{ getErrorMessage("idPeriodo") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row" *ngIf="!periodo">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="dropdownlist" class="k-label">
+                  <span
+                  >Fecha :
+                  <strong class="text-danger">*</strong></span
+                >
+              </label>
+              <kendo-datepicker
+                [disabled]="nuevo"
+                formControlName="fecha"
+                [incompleteDateValidation]="true"
+                calendarType="classic"
+                [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                placeholder="dia-mes-año"
+                ></kendo-datepicker>
+                <kendo-formhint>Seleccione una fecha</kendo-formhint>
+                <kendo-formerror>{{ getErrorMessage("fecha") }} </kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="accionModal()"
+    >
+      {{ btnModalNombre }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+
+<div class="">
+    <div class="row">
+      <div class="col-1fa-rotate-270">
+        <div class="card">
+          <div class="card-header bg-color-material">
+            <h1 class="text-white">Tasas de Cambio Multi Moneda</h1>
+          </div>
+          <div class="card-body p-4">
+            <div class="card">
+              <div class="card-header bg-color-material pb-0">
+                <h3 class="text-white mb-2">Filtro de Búsqueda</h3>
+              </div>
+              <div class="card-body p-4">
+                <div class="row col-md-12">
+                    <div class="col-md-5 k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="dropdownlist" class="k-label">
+                              <span
+                              >Moneda :
+                              </span>
+                          </label>
+                          <kendo-dropdownlist
+                            [formControl]="monedaBuscar"
+                              class="d-flex"
+                              size="medium"
+                              #dropdownlist
+                              [data]="listaMonedaTem"
+                              textField="nombrePlural"
+                              valueField="id"
+                              [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                              [valuePrimitive]="true"
+                              [filterable]="true"
+                              (filterChange)="filterMoneda($event)"
+                          >
+                          </kendo-dropdownlist>
+                          
+                        </kendo-formfield>  
+                    </div>
+                    <div class="col-md-5 k-form-horizontal">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="dropdownlist" class="k-label">
+                              <span
+                              >Fecha :
+                              </span>
+                          </label>
+                          <kendo-datepicker
+                            [formControl]="fechaBuscar"
+                            culture="es-ES"
+                            calendarType="classic"
+                            [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                            placeholder="dia-mes-año"
+                            ></kendo-datepicker>
+                          
+                        </kendo-formfield>  
+                    </div>
+                    <div class="col-md-2">
+                      <button
+                          kendoButton 
+                          icon="k-icon k-i-search k-icon-20"
+                          type="button"
+                          themeColor="primary"
+                          (click)="filtrar()"
+                          >
+                          Buscar
+                      </button>
+                    </div>     
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <kendo-grid
+              [kendoGridBinding]="listaTasaCambioMultimoneda"
+              [loading]="loader"
+              [pageSize]="5"
+              [sortable]="true"
+              [reorderable]="true"
+              [resizable]="true"
+              [columnMenu]="{ filter: true }"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"      
+              [sort]="gridState.sort"                    
+              >
+              <ng-template kendoGridToolbarTemplate class="bg-danger">
+                  
+                  <button mat-stroked-button
+                  (click)="gridEventsResponse({action:'reload'})">
+                      <mat-icon>refresh</mat-icon>
+                  </button>
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <button 
+                  kendoGridAddCommand 
+                  [themeColor]="'primary'" 
+                  (click)="gridEventsResponse({action:'add'})">
+                    + Nuevo
+                  </button>
+                </ng-template>
+                <kendo-grid-column
+                    [width]="10"field="id"[hidden]="true">
+                  </kendo-grid-column>
+                <kendo-grid-column
+                    title="Moneda"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="nombreMoneda"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Dolar a Moneda"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="300"
+                    field="dolarAMoneda"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                  title="Moneda a Dolar"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="300"
+                  field="monedaADolar"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  title="Fecha"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="300"
+                  field="fecha"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem >
+                    {{
+                      finanzasService.fechaTemplate(dataItem.fecha)
+                    }}
+                  </ng-template>
+                </kendo-grid-column>
+                  <kendo-grid-command-column
+                  [sticky]="true"
+                  title="Acciones"
+                  [width]="150"
+                  headerClass="justify-content-center text-center k-grid-header-command"
+                  >
+                  <ng-template 
+                  kendoGridCellTemplate 
+                  let-dataItem="dataItem" 
+                  let-rowIndex="rowIndex"
+                  >
+                      <div class="w-100 d-flex justify-content-center" style="padding:20px" kendoTooltip>
+                          <button
+                          title="Editar"
+                          kendoButton
+                          themeColor="warning"
+                          fillMode="solid"
+                          rounded="large"
+                          size="large"
+                          class="p-2 me-1 ms-1"
+                          container="body"
+                          placement="top"
+                          (click)="gridEventsResponse({action:'edit',dataItem:dataItem})"
+                          >
+                          <span class="k-icon k-i-pencil k-icon-20"></span>
+                          </button>
+
+                          <button
+                          title="Eliminar"
+                          kendoButton
+                          themeColor="error"
+                          fillMode="solid"
+                          rounded="large"
+                          size="large"
+                          class="p-2 me-1 ms-1"
+                          container="body"
+                          placement="top"
+                          (click)="gridEventsResponse({action:'remove',dataItem:dataItem})"
+                          >
+                          <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                      </div>
+                  </ng-template>
+                  </kendo-grid-command-column>
+                  <ng-template kendoGridNoRecordsTemplate>
+                      <div>
+                        <kendo-badge-container>
+                          <kendo-icon name="cloud" size="large"></kendo-icon>
+                          <kendo-badge position="inside">
+                            <kendo-icon name="close" style="color: red;" ></kendo-icon>
+                          </kendo-badge>
+                        </kendo-badge-container>
+                      </div>
+                      <p>No hay registros cargados!</p>
+                  </ng-template>
+              </kendo-grid>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,513 @@
+<div class="card border-primary" #reporte>
+  <div class="card-header pb-0 bg-color-material">
+    <div class="col text-aling-center">
+      <h2 class="mb-3 text-white">Lista de Tipo Descuento</h2>
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <form class="k-form k-form-horizontal">
+      <div class="row">
+        <div class="col-sm-12 my-2">
+          <kendo-grid
+            [kendoGridBinding]="gridTipoDescuentoPrograma.data"
+            [loading]="gridTipoDescuentoPrograma.loading"
+            [selectable]="true"
+            [sortable]="true"
+            [resizable]="true"
+            [pageable]="{
+              buttonCount: 5,
+              info: true,
+              type: 'numeric',
+              pageSizes: true,
+              previousNext: true,
+              position: 'bottom'
+            }"
+            [skip]="0"
+            [pageSize]="15"
+            filterable="menu"
+          >
+            <ng-template kendoGridToolbarTemplate>
+              <div class="row col-md-12">
+                <div class="col-md-12 text-end">
+                  <button
+                    type="button"
+                    class="btn btn-success text-white"
+                    (click)="abrirModalDetalleInsertar()"
+                  >
+                    Nuevo
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template
+              kendoPagerTemplate
+              let-totalPages="totalPages"
+              let-currentPage="currentPage"
+            >
+              <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+              <kendo-pager-numeric-buttons
+                [buttonCount]="5"
+              ></kendo-pager-numeric-buttons>
+              <kendo-pager-next-buttons></kendo-pager-next-buttons>
+              <kendo-pager-input></kendo-pager-input>
+              <kendo-pager-info></kendo-pager-info>
+              <kendo-pager-page-sizes
+                [pageSizes]="cantidadItems"
+              ></kendo-pager-page-sizes>
+            </ng-template>
+
+            <kendo-grid-column
+              field="codigo"
+              title="Codigo"
+              [width]="200"
+              [headerClass]="'justify-content-center'"
+            >
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="contains"
+                >
+                  <kendo-filter-contains-operator
+                    text="Contiene"
+                  ></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column
+              field="descripcion"
+              title="Descripcion"
+              [width]="200"
+              [headerClass]="'justify-content-center'"
+            >
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="contains"
+                >
+                  <kendo-filter-contains-operator
+                    text="Contiene"
+                  ></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="formula"
+              title="Formula"
+              [width]="200"
+              [headerClass]="'justify-content-center'"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div *ngIf="dataItem.formula == 1">Sin descuento</div>
+                <div *ngIf="dataItem.formula == 2">Matricula</div>
+                <div *ngIf="dataItem.formula == 3">Cuotas</div>
+                <div *ngIf="dataItem.formula == 4">Ambos</div>
+                <div *ngIf="dataItem.formula == 5">General</div>
+                <div *ngIf="dataItem.formula == 6">Contado Normal</div>
+              </ng-template>
+
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="contains"
+                >
+                  <kendo-filter-contains-operator
+                    text="Contiene"
+                  ></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-command-column
+              title="Acciones"
+              [headerStyle]="{ color: '#5f75bd' }"
+              [width]="200"
+              [headerClass]="'justify-content-center'"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <button
+                  kendoButton
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Editar"
+                  (click)="abrirModalDetalleActualizar(dataItem)"
+                >
+                  <span class="k-icon k-i-pencil k-icon-20"></span>
+                </button>
+
+                <button
+                  kendoButton
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="configurar"
+                  (click)="abrirModalAsociarPrograma(dataItem.id)"
+                >
+                  <span class="k-icon k-i-zoom-in k-icon-20"></span>
+                </button>
+
+                <button
+                  kendoButton
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Eliminar"
+                  (click)="eliminar(dataItem)"
+                >
+                  <span class="k-icon k-i-x k-icon-20"></span>
+                </button>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Edicion -->
+<ng-template #modalTipoDescuentoEditar let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos del Tipo Descuento
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formAreaEditar">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="codigo"
+              text="codigo:"
+            >
+            </kendo-label>
+            <kendo-textbox #codigo formControlName="codigo" required>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("codigo")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="descripcion"
+              text="Descripcion:"
+            >
+            </kendo-label>
+            <kendo-textbox #descripcion formControlName="descripcion" required>
+            </kendo-textbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("descripcion")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="formula"
+              text="formula:"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #formula
+              textField="nombre"
+              valueField="id"
+              formControlName="formula"
+              [data]="dataFormulaTipoDescuento"
+              placeholder="<Seleccione>"
+              [valuePrimitive]="true"
+            ></kendo-dropdownlist>
+            <kendo-formerror>{{
+              getErrorMessageEditar("formula")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div
+        *ngIf="formula.value == 5"
+        kendoGridFocusable
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="porcentajeGeneral"
+              text="Porcentaje General:"
+            >
+            </kendo-label>
+            <kendo-numerictextbox
+              [min]="0"
+              [defaultValue]="0"
+              #porcentajeGeneral
+              formControlName="porcentajeGeneral"
+            >
+            </kendo-numerictextbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("porcentajeGeneral")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div
+        *ngIf="
+          formula.value == 2 ||
+          formula.value == 4
+        "
+        kendoGridFocusable
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="porcentajeMatricula"
+              text="Porcentaje Matricula:"
+            >
+            </kendo-label>
+            <kendo-numerictextbox
+              [min]="0"
+              [defaultValue]="0"
+              #porcentajeMatricula
+              formControlName="porcentajeMatricula"
+            >
+            </kendo-numerictextbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("porcentajeMatricula")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div
+        *ngIf="
+          formula.value == 2 ||
+          formula.value == 4
+        "
+        kendoGridFocusable
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="fraccionesMatricula"
+              text="Fracciones Matricula:"
+            >
+            </kendo-label>
+            <kendo-numerictextbox
+              [min]="0"
+              [defaultValue]="0"
+              #fraccionesMatricula
+              formControlName="fraccionesMatricula"
+            >
+            </kendo-numerictextbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("fraccionesMatricula")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div
+        *ngIf="
+          formula.value == 3 ||
+          formula.value == 4
+        "
+        kendoGridFocusable
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="porcentajeCuotas"
+              text="Porcentaje Cuota:"
+            >
+            </kendo-label>
+            <kendo-numerictextbox
+              [min]="0"
+              [defaultValue]="0"
+              #porcentajeCuotas
+              formControlName="porcentajeCuotas"
+            >
+            </kendo-numerictextbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("porcentajeCuotas")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div
+        *ngIf="
+          formula.value == 3 ||
+          formula.value == 4
+        "
+        kendoGridFocusable
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="cuotasAdicionales"
+              text="Cuotas Adicionales:"
+            >
+            </kendo-label>
+            <kendo-numerictextbox
+              [min]="0"
+              [defaultValue]="0"
+              #cuotasAdicionales
+              formControlName="cuotasAdicionales"
+            >
+            </kendo-numerictextbox>
+            <kendo-formerror>{{
+              getErrorMessageEditar("cuotasAdicionales")
+            }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="d-flex align-items-end"
+              [for]="idsAsesorCoordinador"
+              text="Tipo Personal:"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #idsAsesorCoordinador
+              textField="nombre"
+              valueField="nombre"
+              formControlName="idsAsesorCoordinador"
+              [valuePrimitive]="true"
+              [data]="dataAgendaTipoUsuario"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+
+    <div class="row my-2">
+      <div class="text-end">
+        <ng-container *ngIf="isNew">
+          <button
+            class="btn btn-primary mx-1"
+            [disabled]="formAreaEditar.invalid"
+            (click)="insertar()"
+          >
+            <span class="px-1">Nuevo</span>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!isNew">
+          <button
+            class="btn btn-primary mx-1"
+            [disabled]="formAreaEditar.invalid"
+            (click)="actualizar()"
+          >
+            <span class="px-1">Actualizar</span>
+          </button>
+        </ng-container>
+
+        <button class="btn btn-danger" (click)="limpiarCamposForm()">
+          <span class="px-1">Cancelar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Modal Edicion -->
+
+<!-- Modal Edicion -->
+<ng-template #modalTipoDescuentoAsociar let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Programa General Asociados
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close"></button>
+  </div>
+  
+  <div class="modal-body">
+    <div class="row mb-3">
+      <div class="col-sm-12 col-md-12 k-form-horizontal">
+        <kendo-formfield orientation="horizontal">
+          <kendo-label
+            class="d-flex align-items-end"
+            [for]="idlistaPGeneral"
+            text="Programa General:"
+          >
+          </kendo-label>
+          <kendo-multiselect
+            #idlistaPGeneral
+            textField="nombre"
+            valueField="id"
+            [filterable]="true"
+            [valuePrimitive]="true"
+            [formControl]="formControlIdsPgeneral"
+            [data]="dataPGeneral"
+          ></kendo-multiselect>
+        </kendo-formfield>
+      </div>
+    </div>
+    <div class="row my-2">
+      <div class="text-end">
+        <button
+          class="btn btn-primary mx-1"
+          (click)="actualizarAsociar()"
+        >
+          <span class="px-1">Actualizar</span>
+        </button>
+        <button class="btn btn-danger" (click)="limpiarCamposForm()">
+          <span class="px-1">Cancelar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Modal Edicion -->

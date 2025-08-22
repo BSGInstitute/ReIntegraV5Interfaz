@@ -1,0 +1,1119 @@
+<ng-container class="row">
+  <!-- FILTRO PROGRAMACION AUTOMATICA/MANUAL -->
+  <form
+    [formGroup]="formFiltroAgenda"
+    class="col-12"
+    *ngIf="
+      ['ProgramacionAutomatica', 'ProgramacionManual'].includes(tab.nombreTab)
+    "
+  >
+    <ng-container *ngIf="toggleFiltro">
+      <div class="row mt-2">
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal" class="col">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropDownListContacto"
+              text="Contacto"
+            ></kendo-label>
+            <kendo-dropdownlist
+              #dropDownListContacto
+              formControlName="idAlumno"
+              [data]="dataContacto"
+              [defaultItem]="{ nombreCompleto: 'Todos', id: null }"
+              [valuePrimitive]="true"
+              textField="nombreCompleto"
+              valueField="id"
+              [virtual]="virtual"
+              [disabled]="!(esCoordinadora$ | async)"
+              [filterable]="true"
+              (filterChange)="filterContacto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiselectPerAsignado"
+              text="Asesor"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiselectPerAsignado
+              [data]="personalAsignadoFiltro"
+              [kendoDropDownFilter]="filterSettings"
+              [disabled]="!(esCoordinadora$ | async)"
+              textField="nombres"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idAsesor"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-2 col-md-2 d-flex justify-content-end">
+          <button
+            kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="primary"
+            (click)="filtrarAgenda()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </form>
+  <!-- END FILTRO PROGRAMACION AUTOMATICA -->
+  <!-- FILTRO PROGRAMACION MANUALS -->
+  <form
+    [formGroup]="formFiltroAgenda"
+    class="col-12"
+    *ngIf="
+      ['NoProg1Solicitud', 'NoProgMas1Solicitud', 'VencidasIpIcPf'].includes(
+        tab.nombreTab
+      )
+    "
+  >
+    <ng-container *ngIf="tab.toggleFiltro">
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiselectPerAsignado"
+              text="Asesor"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiselectPerAsignado
+              [data]="personalAsignadoFiltro"
+              [kendoDropDownFilter]="filterSettings"
+              textField="nombres"
+              valueField="id"
+              [virtual]="virtual"
+              [disabled]="!(esCoordinadora$ | async)"
+              formControlName="idAsesor"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+        <div class="col-auto">
+          <button
+            kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="primary"
+            (click)="filtrarAgenda()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </form>
+  <!-- END FILTRO PROGRAMACION MANUAL -->
+  <!-- FILTRO WORKSHOP -->
+  <form
+    [formGroup]="formFiltroAgenda"
+    class="col-12"
+    *ngIf="['Workshop', 'PreLanzamiento'].includes(tab.nombreTab)"
+  >
+    <ng-container *ngIf="tab.toggleFiltro">
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboListaTipoDato"
+              text="Tipo de Dato"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboListaTipoDato
+              [data]="filtrosAgenda.listaTipoDato"
+              [virtual]="virtual"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              formControlName="idTipoDato"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboEstado"
+              text="Estado"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboEstado
+              [data]="filtrosAgenda.listaEstadoOcurrencia"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idEstado"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-3 col-md-3 k-form-horizontal mb-3">
+          <kendo-formfield
+            orientation="horizontal"
+            *ngIf="tab.nombreTab == 'Workshop'"
+          >
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiCategoriaDato"
+              text="Categoria Dato"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiCategoriaDato
+              [data]="filtrosAgenda.listaCategoriaOrigen"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idCategoriaOrigen"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+          <kendo-formfield
+            orientation="horizontal"
+            *ngIf="tab.nombreTab == 'PreLanzamiento'"
+          >
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboListaOrigen"
+              text="Origen"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboListaOrigen
+              [data]="filtrosAgenda.listaOrigen"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              [virtual]="virtual"
+              valueField="id"
+              formControlName="idOrigen"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropCentroCosto"
+              text="Centro de Costo"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #dropCentroCosto
+              [data]="dataCentroCosto"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [filterable]="true"
+              formControlName="idCentroCosto"
+              [virtual]="virtual"
+              (filterChange)="filterCentroCosto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="k-checkbox-label" [for]="comboFase" text="Fase">
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboFase
+              [data]="filtrosAgenda.listaFaseOportunidad"
+              [defaultItem]="{ codigo: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="codigo"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idFaseOportunidad"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-3 col-md-3 k-form-horizontal mb-3">
+          <div class="row" *ngIf="tab.nombreTab == 'Workshop'">
+            <div class="col-12 d-flex justify-content-end">
+              <button
+                kendoButton
+                class="send-button"
+                icon="search"
+                style="height: 35px"
+                themeColor="primary"
+                (click)="filtrarAgenda()"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+          <kendo-formfield
+            orientation="horizontal"
+            *ngIf="tab.nombreTab == 'PreLanzamiento'"
+          >
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiCategoriaDato"
+              text="Categoria Dato"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiCategoriaDato
+              [data]="filtrosAgenda.listaCategoriaOrigen"
+              textField="nombre"
+              valueField="id"
+              formControlName="idCategoriaOrigen"
+              [virtual]="virtual"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mt-2 d-flex">
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiselectPerAsignado"
+              text="Asesor"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiselectPerAsignado
+              [data]="personalAsignadoFiltro"
+              [kendoDropDownFilter]="filterSettings"
+              [disabled]="!(esCoordinadora$ | async)"
+              textField="nombres"
+              valueField="id"
+              formControlName="idAsesor"
+              [virtual]="virtual"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal" class="col">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropDownListContacto"
+              text="Contacto"
+            ></kendo-label>
+            <kendo-dropdownlist
+              #dropDownListContacto
+              [data]="dataContacto"
+              [filterable]="true"
+              [defaultItem]="{ nombreCompleto: 'Todos', id: null }"
+              [valuePrimitive]="true"
+              textField="nombreCompleto"
+              valueField="id"
+              formControlName="idAlumno"
+              [virtual]="virtual"
+              (filterChange)="filterContacto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-3 col-md-3 d-flex justify-content-end">
+          <button
+            *ngIf="tab.nombreTab == 'PreLanzamiento'"
+            kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="primary"
+            (click)="filtrarAgenda()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </form>
+  <!-- END FILTRO WORKSHOP -->
+  <!-- FILTRO NO PROG ALTAS Y MEDIAS, VENCIDAS IS M, RN2, VENTA CRUZADA -->
+  <form
+    [formGroup]="formFiltroAgenda"
+    class="col-12"
+    *ngIf="
+      ['NoProgAltasMedias', 'VencidasIsM', 'RN2-B', 'RN2-A', 'VentaCruzada'].includes(
+        tab.nombreTab
+      )
+    "
+  >
+    <ng-container *ngIf="tab.toggleFiltro">
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboEstado"
+              text="Estado"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboEstado
+              [data]="filtrosAgenda.listaEstadoOcurrencia"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idEstado"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboListaTipoDato"
+              text="Tipo de Dato"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboListaTipoDato
+              [data]="filtrosAgenda.listaTipoDato"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idTipoDato"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-3 col-md-3 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboListaProbabilidad"
+              text="Probabilidad Act."
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboListaProbabilidad
+              [data]="filtrosAgenda.listaProbabilidadRegistro"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idProbabilidad"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield
+            orientation="horizontal"
+            *ngIf="tab.nombreTab != 'RN2-B' && tab.nombreTab != 'RN2-A'"
+          >
+            <kendo-label class="k-checkbox-label" [for]="comboFase" text="Fase">
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboFase
+              [data]="filtrosAgenda.listaFaseOportunidad"
+              [defaultItem]="{ codigo: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="codigo"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idFaseOportunidad"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+          <kendo-formfield
+            *ngIf="tab.nombreTab == 'RN2-B' || tab.nombreTab == 'RN2-A'"
+            orientation="horizontal"
+            class="col"
+          >
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropDownListContacto"
+              text="Contacto"
+            ></kendo-label>
+            <kendo-dropdownlist
+              #dropDownListContacto
+              [data]="dataContacto"
+              [filterable]="true"
+              [defaultItem]="{ nombreCompleto: 'Todos', id: null }"
+              [valuePrimitive]="true"
+              textField="nombreCompleto"
+              valueField="id"
+              formControlName="idAlumno"
+              [virtual]="virtual"
+              (filterChange)="filterContacto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropCentroCosto"
+              text="Centro de Costo"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #dropCentroCosto
+              [data]="dataCentroCosto"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [filterable]="true"
+              formControlName="idCentroCosto"
+              [virtual]="virtual"
+              (filterChange)="filterCentroCosto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-3 col-md-3 k-form-horizontal mb-3">
+          <kendo-formfield
+            orientation="horizontal"
+            *ngIf="
+              tab.nombreTab == 'NoProgAltasMedias' ||
+              tab.nombreTab == 'VentaCruzada'
+            "
+          >
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiCategoriaDato"
+              text="Categoria Dato"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiCategoriaDato
+              [data]="filtrosAgenda.listaCategoriaOrigen"
+              textField="nombre"
+              valueField="id"
+              formControlName="idCategoriaOrigen"
+              [virtual]="virtual"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+          <kendo-formfield
+            orientation="horizontal"
+            *ngIf="tab.nombreTab == 'VencidasIsM' || tab.nombreTab == 'RN2-B' || tab.nombreTab == 'RN2-A'"
+          >
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboListaOrigen"
+              text="Origen"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboListaOrigen
+              [data]="filtrosAgenda.listaOrigen"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idOrigen"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mt-2 d-flex">
+        <div class="col-sm-4 col-md-4 k-form-horizontal">
+          <kendo-formfield
+            *ngIf="tab.nombreTab != 'RN2-B' && tab.nombreTab != 'RN2-A'"
+            orientation="horizontal"
+            class="col"
+          >
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropDownListContacto"
+              text="Contacto"
+            ></kendo-label>
+            <kendo-dropdownlist
+              #dropDownListContacto
+              [data]="dataContacto"
+              [filterable]="true"
+              [defaultItem]="{ nombreCompleto: 'Todos', id: null }"
+              [valuePrimitive]="true"
+              textField="nombreCompleto"
+              valueField="id"
+              formControlName="idAlumno"
+              [virtual]="virtual"
+              (filterChange)="filterContacto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiselectPerAsignado"
+              text="Asesor"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiselectPerAsignado
+              [data]="personalAsignadoFiltro"
+              [kendoDropDownFilter]="filterSettings"
+              textField="nombres"
+              [disabled]="!(esCoordinadora$ | async)"
+              valueField="id"
+              formControlName="idAsesor"
+              [virtual]="virtual"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-3 col-md-3 k-form-horizontal mb-3">
+          <button
+            *ngIf="
+              tab.nombreTab == 'NoProgAltasMedias' ||
+              tab.nombreTab == 'VentaCruzada'
+            "
+            kendoButton
+            class="send-button"
+            style="height: 35px"
+            icon="search"
+            themeColor="primary"
+            (click)="filtrarAgenda()"
+          >
+            Buscar
+          </button>
+          <ng-container
+            *ngIf="tab.nombreTab == 'VencidasIsM' || tab.nombreTab == 'RN2-B' || tab.nombreTab == 'RN2-A'"
+          >
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="k-checkbox-label"
+                [for]="multiCategoriaDato"
+                text="Categoria Dato"
+              >
+              </kendo-label>
+              <kendo-multiselect
+                #multiCategoriaDato
+                [data]="filtrosAgenda.listaCategoriaOrigen"
+                textField="nombre"
+                valueField="id"
+                formControlName="idCategoriaOrigen"
+                [virtual]="virtual"
+                [valuePrimitive]="true"
+              ></kendo-multiselect>
+            </kendo-formfield>
+          </ng-container>
+        </div>
+      </div>
+      <div
+        class="row"
+        *ngIf="
+          tab.nombreTab != 'NoProgAltasMedias' &&
+          tab.nombreTab != 'VentaCruzada'
+        "
+      >
+        <div class="col-12 d-flex justify-content-end">
+          <button
+            kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="primary"
+            (click)="filtrarAgenda()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </form>
+  <!-- END FILTRO NO PROG ALTAS Y MEDIAS, VENCIDAS IS M, RN2, VENTA CRUZADA -->
+  <!-- FILTRO REALIZADAS -->
+  <form
+    [formGroup]="formFiltroAgenda"
+    class="col-12"
+    *ngIf="['Realizadas'].includes(tab.nombreTab)"
+  >
+    <ng-container *ngIf="tab.toggleFiltro">
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboEstado"
+              text="Estado"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboEstado
+              [data]="filtrosAgenda.listaEstadoOcurrencia"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idEstado"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label class="k-checkbox-label" [for]="comboFase" text="Fase">
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboFase
+              [data]="filtrosAgenda.listaFaseOportunidad"
+              [defaultItem]="{ codigo: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="codigo"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idFaseOportunidad"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dateCalendar"
+              text="Fecha"
+            >
+            </kendo-label>
+            <kendo-datepicker #dateCalendar formControlName="fecha">
+            </kendo-datepicker>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal" class="col">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropDownListContacto"
+              text="Contacto"
+            ></kendo-label>
+            <kendo-dropdownlist
+              #dropDownListContacto
+              [data]="dataContacto"
+              [filterable]="true"
+              [defaultItem]="{ nombreCompleto: 'Todos', id: null }"
+              [valuePrimitive]="true"
+              textField="nombreCompleto"
+              valueField="id"
+              formControlName="idAlumno"
+              [virtual]="virtual"
+              (filterChange)="filterContacto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboListaTipoDato"
+              text="Tipo de Dato"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboListaTipoDato
+              [data]="filtrosAgenda.listaTipoDato"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idTipoDato"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="dropCentroCosto"
+              text="Centro de Costo"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #dropCentroCosto
+              [data]="dataCentroCosto"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [filterable]="true"
+              [virtual]="virtual"
+              formControlName="idCentroCosto"
+              (filterChange)="filterCentroCosto($event)"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row mt-2 d-flex">
+        <div class="col-sm-4 col-md-4 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="comboListaProbabilidad"
+              text="Probabilidad Act."
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #comboListaProbabilidad
+              [data]="filtrosAgenda.listaProbabilidadRegistro"
+              [defaultItem]="{ nombre: '<Todos>', id: null }"
+              [valuePrimitive]="true"
+              textField="nombre"
+              valueField="id"
+              [virtual]="virtual"
+              formControlName="idProbabilidad"
+            >
+            </kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiselectPerAsignado"
+              text="Asesor"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiselectPerAsignado
+              [data]="personalAsignadoFiltro"
+              [kendoDropDownFilter]="filterSettings"
+              textField="nombres"
+              [disabled]="!(esCoordinadora$ | async)"
+              valueField="id"
+              formControlName="idAsesor"
+              [virtual]="virtual"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+        <div class="col-sm-4 col-md-4 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiCategoriaDato"
+              text="Categoria Dato"
+            >
+            </kendo-label>
+            <kendo-multiselect
+              #multiCategoriaDato
+              [data]="filtrosAgenda.listaCategoriaOrigen"
+              textField="nombre"
+              valueField="id"
+              formControlName="idCategoriaOrigen"
+              [virtual]="virtual"
+              [valuePrimitive]="true"
+            ></kendo-multiselect>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 mb-3 d-flex justify-content-end">
+          <button
+            kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="primary"
+            (click)="filtrarAgenda()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </form>
+  <!-- END REALIZADAS -->
+  <!-- FILTRO  MENSAJES RECIBIDOS -->
+    <form
+    [formGroup]="formFiltroAgenda"
+    class="col-12"
+    *ngIf="
+      tab.nombreTab == 'Whatsapp' || tab.nombreTab == 'Correos'
+    "
+  >
+    <ng-container *ngIf="tab.toggleFiltro">
+      <div class="row mt-2 d-flex justify-content-end">
+        <div class="col-sm-5 col-md-5 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <kendo-label
+              class="k-checkbox-label"
+              [for]="multiselectPerAsignado"
+              text="Asesor"
+            >
+            </kendo-label>
+            <kendo-dropdownlist
+              #multiselectPerAsignado
+              [data]="personalAsignadoFiltro"
+              [kendoDropDownFilter]="filterSettings"
+              textField="nombres"
+              valueField="id"
+              [disabled]="!(esCoordinadora$ | async)"
+              formControlName="idAsesorMR"
+              [valuePrimitive]="true"
+            ></kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="col-auto">
+          <button
+            kendoButton
+            class="send-button"
+            icon="search"
+            style="height: 35px"
+            themeColor="primary"
+            (click)="filtrarAgenda()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </form>
+  <!-- END FILTRO MENSAJES RECIBIDOS -->
+</ng-container>
+
+<div class="row mt-3">
+  <div class="col-12">
+    <ng-container *ngIf="!(esMarcadorActivo$ | async)">
+      <kendo-grid
+        #grid
+        [data]="gridAgenda.view"
+        [loading]="gridAgenda.loading"
+        (dataStateChange)="gridAgenda.onStateChange($event)"
+        [resizable]="gridAgenda.resizable"
+        [pageable]="gridAgenda.pageable"
+        [filterable]="gridAgenda.filterable"
+        [pageSize]="gridAgenda.gridState.take"
+        [skip]="gridAgenda.gridState.skip"
+        [sort]="gridAgenda.gridState.sort"
+        [height]="gridAgenda.height"
+        [rowClass]="rowCallback"
+      >
+        <kendo-grid-column
+          *ngFor="let item of gridAgenda.columns"
+          [field]="item.field"
+          [title]="item.title"
+          [width]="item.width"
+          [headerClass]="item?.headerClass"
+        >
+          <ng-template
+            kendoGridHeaderTemplate
+            let-column
+            let-columnIndex="columnIndex"
+          >
+            <div
+              class="w-100 text-center text-overflow-hidden"
+              [innerHTML]="item?.title"
+            ></div>
+          </ng-template>
+          <ng-template
+            kendoGridCellTemplate
+            let-dataItem
+            let-rowIndex="rowIndex"
+          >
+            <ng-container [ngSwitch]="item.field">
+              <ng-container *ngSwitchCase="'centroCosto'">
+                <div class="row">
+                  <span class="col-12 text-wrap color-centro-costo">
+                    {{ dataItem.centroCosto }}
+                  </span>
+                  <span class="col-12 text-wrap"
+                    >Fase:
+                    <span style="font-weight: 590">{{
+                      dataItem.codigoFase
+                    }}</span></span
+                  >
+                  <span class="col-12 text-wrap"
+                    >Categoria:
+                    <span style="font-weight: 590">{{
+                      dataItem.categoriaNombre
+                    }}</span></span
+                  >
+                  <span class="col-12 text-wrap">
+                    Prob. Actual:
+                    <span style="font-weight: 590">{{
+                      dataItem.probabilidadActualDesc != null
+                        ? dataItem.probabilidadActualDesc
+                        : "-"
+                    }}</span>
+                  </span>
+                </div>
+              </ng-container>
+              <ng-container *ngSwitchCase="'ultimaFechaProgramada'">
+                <div class="row text-wrap">
+                  <span class="col-12">
+                    {{ dataItem.ultimaFechaProgramada | date : "dd/MM/yyyy" }}
+                  </span>
+                  <span class="col-12">
+                    {{ dataItem.ultimaFechaProgramada | date : "HH:mm" }}
+                  </span>
+                </div>
+              </ng-container>
+              <ng-container *ngSwitchCase="'diasSinContactoManhana'">
+                <div class="row">
+                  <span class="col-12 text-center">
+                    {{ dataItem.diasSinContactoManhana }} ({{
+                      dataItem.actividadesManhana
+                    }})
+                  </span>
+                </div>
+              </ng-container>
+              <ng-container *ngSwitchCase="'diasSinContactoTarde'">
+                <div class="row">
+                  <span class="col-12 text-center">
+                    {{ dataItem.diasSinContactoTarde }} ({{
+                      dataItem.actividadesTarde
+                    }})
+                  </span>
+                </div>
+              </ng-container>
+              <ng-container *ngSwitchCase="'ultimoComentario'">
+                <div class="row grid-comentario">
+                  <span
+                    container="body"
+                    triggers="click:blur"
+                    placement="top"
+                    [ngbTooltip]="dataItem.ultimoComentario"
+                    class="col-12 text-start text-overflow-hidden"
+                  >
+                    {{ dataItem.ultimoComentario }}
+                  </span>
+                </div>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                <div class="w-100 text-wrap text-start">
+                  {{ dataItem[item.field] }}
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-command-column
+          title="Ejecutar"
+          [width]="90"
+          headerClass="header-grid-integra text-white"
+          [sticky]="true"
+          [hidden]="esMarcadorActivo$ | async"
+        >
+          <ng-template
+            kendoGridCellTemplate
+            let-isNew="isNew"
+            let-dataItem="dataItem"
+          >
+            <div class="w-100 d-flex justify-content-center">
+              <ng-container *ngIf="getIndexGridData(dataItem)">
+                <button
+                  kendoButton
+                  themeColor="base"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  [style]="{
+                    background: dataItem.color ?? '#ffc107',
+                    color: '#ffffff'
+                  }"
+                  class="p-2 me-1 ms-1"
+                  (click)="cargarFicha(dataItem)"
+                  [disabled]="estadoAbrirFicha"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Abrir Ficha"
+                >
+                  <span class="k-icon k-i-login k-icon-20"></span>
+                </button>
+              </ng-container>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+        <kendo-grid-command-column
+          *ngIf="(esCoordinadora$ | async) && tab.nombreTab != 'MensajesRecibidos'"
+          [sticky]="true"
+          title="Cronograma"
+          [width]="90"
+          headerClass="header-grid-integra text-white"
+        >
+          <ng-template
+            kendoGridCellTemplate
+            let-isNew="isNew"
+            let-dataItem="dataItem"
+          >
+            <div class="w-100 d-flex justify-content-center">
+              <button
+                kendoButton
+                themeColor="success"
+                fillMode="solid"
+                rounded="large"
+                size="large"
+                class="p-2 me-1 ms-1"
+                container="body"
+                placement="top"
+                (click)="abrirCronogramaPago(dataItem)"
+                [disabled]="estadoAbrirFicha"
+                ngbTooltip="Abrir Cronograma"
+              >
+                <span class="k-icon k-i-menu" style="font-size: 16px"></span>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+        <ng-template kendoPagerTemplate>
+          <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+          <kendo-pager-numeric-buttons
+            [buttonCount]="10"
+          ></kendo-pager-numeric-buttons>
+          <kendo-pager-next-buttons></kendo-pager-next-buttons>
+          <kendo-pager-input></kendo-pager-input>
+          <kendo-pager-info></kendo-pager-info>
+          <kendo-pager-page-sizes
+            [pageSizes]="pageSizes"
+          ></kendo-pager-page-sizes>
+          <div class="w-100 text-end">
+            <button
+              kendoButton
+              icon="reload"
+              fillMode="flat"
+              themeColor="secondary"
+              (click)="filtrarAgenda()"
+            ></button>
+          </div>
+        </ng-template>
+      </kendo-grid>
+    </ng-container>
+  </div>
+</div>

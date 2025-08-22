@@ -1,0 +1,902 @@
+<mat-expansion-panel [expanded]="true" (opened)="panelOpenState = true" (closed)="!panelOpenState = false" class="mt-2">
+  <mat-expansion-panel-header class="enuciadoHeader">
+    <mat-panel-title> Resumen académico {{tipoAvance ?  "(asincrónico)" : "(sincrónico)" }} </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div class="row" style="justify-content: center;">
+    <div class="col-4 d-inline-flex flex-column">
+      <div class="card mb-3 cards">
+        <div class="card-header fondoNaranja">
+          Información de matrícula
+        </div>
+        <div class="card-body">
+          <div class="row mt-2 mb-4 text-center" *ngFor="let entry of datosAvanceInformacionMatricula | keyvalue">
+            <ng-container *ngIf="entry.value">
+              <div style="font-size: 1.3em;">
+                <span>{{ entry.key }}</span>
+                <br>
+                <span style="color: #ff6113;">{{ entry.value }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="card cards flex-grow-1">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+          <div class="row text-center" style="font-size: 1.3em;">
+            <span>
+              <button *ngIf="this.rowActual.centroCosto.toUpperCase().includes('AONLINE')" type="button"
+                class="btn botonCambio" (click)="abrirModalSolicitudCambio(7)"
+                title="Solicitar Cambio Esquemas Evaluacion">
+                <fa-icon [icon]="['fas', 'random']"></fa-icon>
+              </button>
+              Fecha de término programada
+            </span>
+            <span style="color: rgb(17 199 73);">
+              {{
+                        this.rowActual.centroCosto.toUpperCase().includes('AONLINE') ?
+                        formInformacionAvanceAonline.get('fechaTerminoProgramada').value :
+                        formInformacionAvanceOnline.get('fechaFin').value
+                      }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-7">
+      <div class="card mb-3 cards">
+        <div class="card-header fondoAzul">
+          Avance académico a la fecha
+        </div>
+        <div class="card-body">
+          <div class="row" style="align-items: center; justify-content: center;">
+            <div class="col-4">
+              <circle-progress [radius]="60" [percent]="porcentajeAvance" [outerStrokeWidth]="16" [innerStrokeWidth]="6"
+                [outerStrokeColor]="'#0079ff'" [innerStrokeColor]="'#faf7f7'" [animation]="true"
+                [animationDuration]="300"
+                [subtitle]="this.rowActual.centroCosto.toUpperCase().includes(' ONLINE') ? 'Tasa de asistencia' : 'Progreso' ">
+              </circle-progress>
+            </div>
+            <div class="col-4">
+              <div class="row" style="text-align: center; font-size: 1.2em;">
+                <div *ngIf="this.rowActual.centroCosto.toUpperCase().includes('AONLINE')">
+                  <span style="color: #0079ff;">
+                    Total Acumulado: {{formInformacionAvanceAonline.get('realAFecha').value}}
+                  </span>
+                  <hr>
+                  <span>
+                    Total Programado: {{formInformacionAvanceAonline.get('programadoaFecha').value}}
+                  </span>
+                </div>
+                <div *ngIf="this.rowActual.centroCosto.toUpperCase().includes(' ONLINE')">
+                  <span style="color: #0079ff;">
+                    Asistencias: {{formInformacionAvanceOnline.get('sesionesConAsistencia').value}}
+                  </span>
+                  <hr>
+                  <span>
+                    Sesiones dictadas: {{formInformacionAvanceOnline.get('sesionesDictadas').value}}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="col-4" *ngIf="this.rowActual.centroCosto.toUpperCase().includes(' ONLINE')">
+              <div class="row card mb-2 p-1"
+                style="align-items: center; background-color: #d5ffe1; margin-left: 5px; margin-right: 5px; border: none;">
+                <div class="row" style="align-items:center">
+                  <div class="col-2" style="margin-right: 7%;">
+                    <span _ngcontent-dlm-c1476="" class="row" style="color: rgb(72, 255, 90);font-size: 1.5em;">
+                      {{totalActividades}}
+                    </span>
+                  </div>
+                  <div class="col-9">
+                    <span>
+                      Total de Actividades
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+              <div class="row card p-1"
+                style="align-items: center; background-color: #ffd9c7; margin-left: 5px; margin-right: 5px; border: none;">
+                <div class="row" style="align-items:center">
+                  <span class="col-2" style="margin-right: 7%;">
+                    <span _ngcontent-dlm-c1476="" class="row" style="color:#ff9767 ;font-size: 1.5em;">
+                      {{totalActividadesPendientes}}
+                    </span>
+                  </span>
+                  <div class="col-9">
+                    <span>
+                      Actividades Pendientes
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card cards" style="padding: 10px">
+        <div class="card-header" style="border: none; background-color: white; font-weight: bold; font-size: 1.1em;">
+          {{this.rowActual.centroCosto.toUpperCase().includes(' ONLINE') ? 'Información de la última sesión' : 'Avance acumulado en horas:'}}
+        </div>
+        <div class="row" style="align-items: center;">
+          <div class="card-body" *ngIf="this.rowActual.centroCosto.toUpperCase().includes(' ONLINE')">
+            <div class="row" style="justify-content: center; text-align: center;">
+              <div class="col-3 m-2">
+                <div class="card" style="background-color: #cbe4ff;">
+                  <div class="row">
+                    <span class="mb-2">¿Asistió?</span>
+                    <br>
+                    <p style="font-size:2em; color: #0079ff; border-color: transparent;">
+                      {{formInformacionAvanceOnline.get('asistenciaUltimaSesion').value}}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4 m-2">
+                <div class="card" style="background-color: #ffd9c7;">
+                  <div class="row">
+                    <span class="mb-2">Ultima sesión dictada</span>
+                    <br>
+                    <p style="font-size:1.5em; color: #ff6d29; border-color: transparent;">
+                      {{formInformacionAvanceOnline.get('ultimaSesionDictada').value}}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-3 m-2">
+                <div class="card" style="background-color: #d5ffe1; border-color: transparent;">
+                  <div class="row">
+                    <span class="mb-2">Próxima sesión</span>
+                    <br>
+                    <p style="font-size:1.5em; color: #11c86f;">
+                      {{formInformacionAvanceOnline.get('proximaSesion').value}}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="this.rowActual.centroCosto.toUpperCase().includes('AONLINE')">
+            <div class="card-body d-flex justify-content-evenly">
+              <div class="d-flex justify-content-evenly p-3 align-items-center"
+                style="background-color: #cbe4ff; border-radius: 15px; max-width: 30%;">
+                <strong _ngcontent-dlm-c1476="" style="color:#0079ff;font-size: 1.5em;margin-right:10px">
+                  {{this.formInformacionAvanceAonline.get('realUltimaSemana').value +"hrs"}}
+                </strong>
+                <span>En la última semana</span>
+              </div>
+              <div class="d-flex justify-content-evenly p-3 align-items-center"
+                style="background-color: #ffd9c7;border-radius: 15px; max-width: 30%;">
+                <strong _ngcontent-dlm-c1476="" style="color:#ff6117 ;font-size: 1.5em;margin-right:10px">
+                  {{this.formInformacionAvanceAonline.get('realUtimas2Semanas').value+"hrs"}}
+                </strong>
+                <span>En las últimas dos semanas</span>
+              </div>
+              <div class="d-flex justify-content-evenly p-3 align-items-center"
+                style="background-color: #d5ffe1;border-radius: 15px; max-width: 30%;">
+                <strong _ngcontent-dlm-c1476="" style="color:#11c747 ;font-size: 1.5em;margin-right:10px">
+                  {{this.formInformacionAvanceAonline.get('realUltimas4Semanas').value +"hrs"}}
+                </strong>
+                <span>En el último mes</span>
+              </div>
+            </div>
+            <div class="espcialBoxAvance">
+              <span>Esperado semanal: {{this.formInformacionAvanceAonline.get('esperadoSemanal').value}}hrs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-expansion-panel>
+
+<!--
+<div class="card" [ngClass]="{ expanded: isExpanded }" *ngIf="tipoAvance">
+    <div class="card-header bg-atencion text-white py-2">
+      <div class="row">
+        <div class="col">
+          <h2 class="m-1">AVANCE (Modalidad online asincrónico)</h2>
+        </div>
+        <div class="col-auto">
+          <button
+            class="btn btn-default"
+            type="button"
+            (click)="toggleExpansion()"
+          >
+            <fa-icon
+              style="color: white"
+              [icon]="
+                isExpanded ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']
+              "
+              class="fa-lg"
+            >
+            </fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body my-2" [hidden]="!isExpanded">
+      <div
+        class="k-form k-form-horizontal"
+        [formGroup]="formInformacionAvanceAonline"
+      >
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="card col-5 m-1">
+            <div class="col-sm-12 ">
+              <fieldset class="k-form-fieldset">
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <b><label
+                        [for]="fechaMatricula"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Fecha Matricula
+                      </label></b>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #fechaMatricula
+                          class="custom-fill-mode idisabled"
+                          formControlName="fechaMatricula"
+                          [readonly]="true"
+                          class="col"
+                          [disabled]="true"
+                          size="small"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                    <b><label
+                        [for]="fechaPrimerAcceso"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Fecha Primer Acceso
+                      </label></b>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #fechaPrimerAcceso
+                          class="custom-fill-mode idisabled"
+                          formControlName="fechaPrimerAcceso"
+                          [readonly]="true"
+                          class="col"
+                          [disabled]="true"
+                          size="small"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                    <b><label
+                        [for]="fechaUltimoAcceso"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Fecha Último Acceso
+                      </label></b>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #fechaUltimoAcceso
+                          class="custom-fill-mode idisabled"
+                          formControlName="fechaUltimoAcceso"
+                          [readonly]="true"
+                          class="col"
+                          [disabled]="true"
+                          size="small"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                    <b><label
+                        [for]="fechaTerminoProgramada"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Fecha Termino Programada
+                      </label></b>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #fechaTerminoProgramada
+                          class="custom-fill-mode idisabled"
+                          formControlName="fechaTerminoProgramada"
+                          [readonly]="true"
+                          class="col"
+                          [disabled]="true"
+                          size="small"
+                        />
+                        <button type="button" class="btn botonSolicitud" style="background-color:#FFA114; border-radius: 70%; " id="btn_EsquemaEvaluacion"
+                        (click)="abrirModalSolicitudCambio(7)" title="Solicitar Cambio Esquemas Evaluacion">
+                        <fa-icon [icon]="['fas', 'random']" ></fa-icon>
+                      </button>
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div class="card col-5 m-1">
+            <div class="col-sm-12 ">
+              <fieldset class="k-form-fieldset">
+                <b><legend class="k-form-legend">Avance</legend></b>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="programadoaFecha"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Programado a la fecha
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #programadoaFecha
+                          class="custom-fill-mode idisabled"
+                          formControlName="programadoaFecha"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="realAFecha"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Real a la fecha
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #realAFecha
+                          class="custom-fill-mode idisabled"
+                          formControlName="realAFecha"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="esperadoSemanal"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Esperado semanal (Horas)
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #esperadoSemanal
+                          class="custom-fill-mode idisabled"
+                          formControlName="esperadoSemanal"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="realUltimaSemana"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Real última semana (Horas)
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #realUltimaSemana
+                          class="custom-fill-mode idisabled"
+                          formControlName="realUltimaSemana"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="realUtimas2Semanas"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Real últimas dos semanas (Horas)
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #realUtimas2Semanas
+                          class="custom-fill-mode idisabled"
+                          formControlName="realUtimas2Semanas"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="realUltimas4Semanas"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Real útimas cuatro semanas (Horas)
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #realUltimas4Semanas
+                          class="custom-fill-mode idisabled"
+                          formControlName="realUltimas4Semanas"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div class="col-1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card my-2" [ngClass]="{ expanded: isExpanded }" *ngIf="!tipoAvance">
+    <div class="card-header bg-atencion text-white">
+      <div class="row">
+        <div class="col">
+          <h2 class="m-1">AVANCE (Modalidad online sincrónico y presencial)</h2>
+        </div>
+        <div class="col-auto">
+          <button
+            class="btn btn-default"
+            s
+            type="button"
+            (click)="toggleExpansion()"
+          >
+            <fa-icon
+              style="color: white"
+              [icon]="
+                isExpanded ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']
+              "
+              class="fa-lg"
+            >
+            </fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" [hidden]="!isExpanded">
+      <div
+        class="k-form k-form-horizontal"
+        [formGroup]="formInformacionAvanceOnline"
+      >
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="card col-5 m-1">
+            <div class="col-sm-12">
+              <fieldset class="k-form-fieldset">
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                  <b><label
+                        [for]="fechaMatricula"
+                        class="k-label pt-0 d-flex align-items-start text-start font-weight-bold"
+                      >
+                        Fecha Matricula
+                      </label></b>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #fechaMatricula
+                          class="custom-fill-mode idisabled"
+                          formControlName="fechaMatricula"
+                          [readonly]="true"
+                          class="col"
+                          [disabled]="true"
+                          size="small"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <b><label
+                        [for]="fechaInicio"
+                        class="k-label pt-0 d-flex align-items-start text-start font-weight-bold"
+                      >
+                        Fecha Inicio
+                      </label></b>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #fechaInicio
+                          class="custom-fill-mode idisabled"
+                          formControlName="fechaInicio"
+                          [readonly]="true"
+                          class="col"
+                          [disabled]="true"
+                          size="small"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <b>
+                        <label
+                          [for]="fechaFin"
+                          class="k-label pt-0 d-flex align-items-start text-start font-weight-bold"
+                        >
+                          Fecha Fin
+                        </label>
+                      </b>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #fechaFin
+                          class="custom-fill-mode idisabled form-control"
+                          formControlName="fechaFin"
+                          [readonly]="true"
+                          size="small"
+                        />
+                        <button
+                        type="button"
+                        class="btn botonSolicitud"
+                        style="background-color:#FFA114; border-radius: 70%;"
+                        id="btn_EsquemaEvaluacion"
+                        (click)="abrirModalSolicitudCambio(7)"
+                        title="Solicitar Cambio Esquemas Evaluacion"
+                      >
+                        <fa-icon [icon]="['fas', 'random']"></fa-icon>
+                      </button>
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div class="card col-5 m-1">
+            <div class="col-sm-12">
+              <fieldset class="k-form-fieldset">
+                <b><legend class="k-form-legend">Avance</legend></b>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="sesionesDictadas"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Sesiones dictadas al momento
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #sesionesDictadas
+                          class="custom-fill-mode idisabled"
+                          formControlName="sesionesDictadas"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="sesionesConAsistencia"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Sesiones con asistencia al momento
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #sesionesConAsistencia
+                          class="custom-fill-mode idisabled"
+                          formControlName="sesionesConAsistencia"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="tasaAsistencia"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Tasa de asistencia (%)
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #tasaAsistencia
+                          class="custom-fill-mode idisabled"
+                          formControlName="tasaAsistencia"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="ultimaSesionDictada"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Última sesión dictada
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #ultimaSesionDictada
+                          class="custom-fill-mode idisabled"
+                          formControlName="ultimaSesionDictada"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="asistenciaUltimaSesion"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Asistencia última sesion
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #asistenciaUltimaSesion
+                          class="custom-fill-mode idisabled"
+                          formControlName="asistenciaUltimaSesion"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-1">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="proximaSesion"
+                        class="k-label pt-0 d-flex align-items-start text-start"
+                      >
+                        Próxima sesión programada
+                      </label>
+                      <div class="input-group d-flex">
+                        <input
+                          kendoTextBox
+                          #proximaSesion
+                          class="custom-fill-mode idisabled"
+                          formControlName="proximaSesion"
+                          [readonly]="true"
+                          style="height: 2rem"
+                          class="col"
+                          [disabled]="true"
+                        />
+                      </div>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div class="col-1"></div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+
+
+
+<ng-template #modalSolicitudCambio let-modal>
+  <div class="modal-header" style="background-color: #2e6ea6">
+    <h2 class="modal-title m-0 px-3" id="modal-basic-title" style="color: #ffffff">
+      {{tituloModalSolicitudCambio}}
+    </h2>
+  </div>
+  <div class="modal-body ps-4 pe-4">
+    <form [formGroup]="formSolicitudes">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group row" id="seccionCambioGeneral" *ngIf="verCambioGeneral">
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong><label id="lblValorNuevo"></label> </strong></h3>
+            </div>
+            <div class="col-8 ">
+              <input type="text" class="form-control input-sm" id="inputValor" name="inputValor"
+                placeholder="Valor Nuevo" required data-required-msg="Ingrese Categoria" style="width: 100%;" />
+            </div>
+          </div>
+          <div class="form-group row " id="seccionFechaFinalizacion" *ngIf="verFechaFinalizacion">
+            <div class="col-4" style="text-align: right;">
+              <h3 id="Categoria"><strong>Nueva Fecha Finalizacion</strong></h3>
+            </div>
+            <div class="col-8 ">
+              <kendo-datepicker #FechaFinalizacion format="dd/MM/yyyy" [formatPlaceholder]="{
+                              year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'
+                            }" formControlName="nuevaFechaFinalizacion"></kendo-datepicker>
+            </div>
+          </div>
+          <div class="form-group row " id="seccionCambioVersion" *ngIf="verCambioVersion">
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Nueva Version</strong></h3>
+            </div>
+            <div class="col-8 ">
+              <input type="text" class="form-control input-sm" id="inputValorVersion" name="inputValorVersion"
+                placeholder="Valor Nuevo" required data-required-msg="Ingrese Categoria" style="width: 100%;" />
+            </div>
+          </div>
+          <div class="form-group row " id="seccionCambioEstado" *ngIf="verEstado">
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Nuevo Estado</strong></h3>
+            </div>
+            <div class="col-8 ">
+              <kendo-dropdownlist #nuevoEstado [data]="dataEstadoMatricula" textField="estadoMatricula" valueField="id"
+                [defaultItem]="{ id: null, estadoMatricula: 'Seleccione Estado' }" formControlName="idEstadoMatricula"
+                [filterable]="true" [kendoDropDownFilter]="filterSettings_estados"
+                (valueChange)="generarDataSubEstado($event)">
+                <kendo-formerror>Seleccione un Estado Matricula</kendo-formerror>
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div class="form-group row " id="seccionCambioCategoria" *ngIf="verCategoriaAlumno">
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Nueva Categoria</strong></h3>
+            </div>
+            <div class="col-8 ">
+              <kendo-dropdownlist #nuevaCategoria [data]="objetoCategoriaAlumno" textField="nombre" valueField="id"
+                [defaultItem]="{ id: null, nombre: 'Seleccione Categoria' }" formControlName="idCategoriaAlumno">
+                <kendo-formerror>Seleccione una Categoria</kendo-formerror>
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div class="form-group row " id="seccionCambioSubEstado" *ngIf="verSubEstado">
+            <div class="col-1"></div>
+            <div class="col-3 " id="lblSubEstado">
+              <h3 id="Categoria"><strong>Nuevo Sub Estado</strong></h3>
+            </div>
+            <div class="col-8 " id="SeccionConSubEstado" *ngIf="conSubEstado">
+              <kendo-dropdownlist #nuevoSubEstadoMatricula [data]="dataComboSubEstadoMatricula" textField="nombre"
+                valueField="id" [filterable]="true" [kendoDropDownFilter]="filterSettings_subEstado"
+                [defaultItem]="{ id: null, nombre: 'Seleccione Sub Estado' }" formControlName="idSubEstadoMatricula">
+                <kendo-formerror>Seleccione un Sub Estado</kendo-formerror>
+              </kendo-dropdownlist>
+            </div>
+            <div class="col-8 " id="SeccionSinSubEstado" *ngIf="!conSubEstado">
+              <input type="text" class="form-control input-sm" id="inputValorSubEstadoSin" name="inputValorSubEstadoSin"
+                placeholder="Valor Nuevo" required data-required-msg="Ingrese Categoria" style="width: 100%;" disabled
+                value="{{textoSubEstado}}" />
+            </div>
+          </div>
+          <div class="form-group row  " id="seccionCambioCentroCosto" *ngIf="verCentroCosto">
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Categoria"><strong>Nuevo Centro de Costo</strong></h3>
+            </div>
+            <div class="col-8 ">
+              <kendo-dropdownlist #multiselectPerAsignado [data]="dataCentroCosto"
+                [defaultItem]="{ id: null, nombre: 'Seleccione Centro de Costo' }" textField="nombre" valueField="id"
+                [filterable]="true" formControlName="idCentroCosto" (filterChange)="filterByCentroCosto($event)">
+              </kendo-dropdownlist>
+            </div>
+          </div>
+          <div class="form-group row " id="seccionCambioAdjuntar" *ngIf="verAdjuntarComprobante">
+            <div class="col-1"></div>
+            <div class="col-sm-10  demo-section k-content">
+              <input name="inputAdjuntarComprobante" id="inputAdjuntarComprobante" type="file" aria-label="files" />
+            </div>
+          </div>
+
+          <div class="form-group row" id="SeccionComentario">
+            <div class="col-1"></div>
+            <div class="col-3">
+              <h3 id="Comentario"><strong>Comentario: </strong></h3>
+            </div>
+
+            <div class="col-sm-8">
+              <textarea rows="3" cols="4" type="text" class="form-control myeditablediv1"
+                id="inputComentarioSolicitante" name="inputComentarioSolicitante" placeholder="Comentario"
+                style="width: 100%" formControlName="comentarioSolicitud"></textarea>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer justify-content-center">
+    <button mat-button class="btn-sap-hover-effect"
+      style="border: 1px solid #0079FF; background-color: #0079FF; color: white" [disabled]="buttonSolicitud"
+      (click)="registrarSolicitudOperaciones()">
+      Aceptar
+    </button>
+    <button class="btn-sap-hover-effect" mat-button
+      style="border: 1px solid #0079FF; background-color: white; color: #0079FF"
+      (click)="limpiarModalSolicitudCambio()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

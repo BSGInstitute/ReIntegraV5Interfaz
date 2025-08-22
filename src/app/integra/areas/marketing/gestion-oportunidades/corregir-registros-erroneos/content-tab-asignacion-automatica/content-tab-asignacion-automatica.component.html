@@ -1,0 +1,537 @@
+<div *ngIf="tab.indexTab==0">
+  <div class="card-body p-4">
+    <div class="row">
+      <div class="col">
+        <kendo-grid
+          [data]="gridFormularioRegistrosImportados.view"
+          [loading]="gridFormularioRegistrosImportados.loading"
+          (remove)="gridFormularioRegistrosImportados.removeHandler($event)"
+          (dataStateChange)="
+          gridFormularioRegistrosImportados.onStateChange($event)
+          "
+          [filterable]="gridFormularioRegistrosImportados.filterable"
+          [sortable]="gridFormularioRegistrosImportados.sortable"
+          [resizable]="gridFormularioRegistrosImportados.resizable"
+          [pageable]="gridFormularioRegistrosImportados.pageable"
+          [skip]="gridFormularioRegistrosImportados.gridState.skip"
+          [pageSize]="gridFormularioRegistrosImportados.gridState.take"
+          [sort]="gridFormularioRegistrosImportados.gridState.sort"
+        >
+          <kendo-grid-column
+            *ngFor="let item of gridFormularioRegistrosImportados.columns"
+            [field]="item.field"
+            [title]="item.title"
+            [filterable]="item.filterable"
+            [headerClass]="item.headerClass"
+            [width]="item.width"
+          >
+            <ng-template
+              kendoGridFilterMenuTemplate
+              let-filter
+              let-column="column"
+              let-filterService="filterService"
+            >
+              <kendo-grid-string-filter-menu
+                [column]="column"
+                [filter]="filter"
+                [filterService]="filterService"
+                [extra]="false"
+                operator="eq"
+              >
+                <kendo-filter-eq-operator
+                  text="Igual a"
+                ></kendo-filter-eq-operator>
+              </kendo-grid-string-filter-menu>
+            </ng-template>
+          </kendo-grid-column>
+
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="tab.indexTab==1">
+  <div class="card-body p-4">
+    <div class="row">
+      <div class="col">
+        <kendo-grid
+          [data]="gridFormularioRegistrosErroneos.view"
+          [loading]="gridFormularioRegistrosErroneos.loading"
+          (remove)="gridFormularioRegistrosErroneos.removeHandler($event)"
+          (dataStateChange)="
+          gridFormularioRegistrosErroneos.onStateChange($event)
+          "
+          [filterable]="gridFormularioRegistrosErroneos.filterable"
+          [sortable]="gridFormularioRegistrosErroneos.sortable"
+          [resizable]="gridFormularioRegistrosErroneos.resizable"
+          [pageable]="gridFormularioRegistrosErroneos.pageable"
+          [skip]="gridFormularioRegistrosErroneos.gridState.skip"
+          [pageSize]="gridFormularioRegistrosErroneos.gridState.take"
+          [sort]="gridFormularioRegistrosErroneos.gridState.sort"
+        >
+        <kendo-grid-command-column
+            title="Editar"
+            [width]="140"
+            [headerClass]="'header-grid-integra'"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+              <div class="w-100 d-flex justify-content-center">
+                <button
+                  kendoGridRemoveCommand
+                  themeColor="error"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Eliminar"
+                >
+                  <span class="k-icon k-i-delete k-icon-20"></span>
+                </button>
+                <button
+                  kendoButton
+                  themeColor="warning"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  (click)="abrirModalErroneo(dataItem)"
+                  placement="top"
+                  ngbTooltip="Editar"
+                >
+                  <span class="k-icon k-i-edit k-icon-20"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+          <kendo-grid-column
+            *ngFor="let item of gridFormularioRegistrosErroneos.columns"
+            [field]="item.field"
+            [title]="item.title"
+            [filterable]="item.filterable"
+            [headerClass]="item.headerClass"
+            [width]="item.width"
+          >
+            <ng-template
+              kendoGridFilterMenuTemplate
+              let-filter
+              let-column="column"
+              let-filterService="filterService"
+            >
+              <kendo-grid-string-filter-menu
+                [column]="column"
+                [filter]="filter"
+                [filterService]="filterService"
+                [extra]="false"
+                operator="eq"
+              >
+                <kendo-filter-eq-operator
+                  text="Igual a"
+                ></kendo-filter-eq-operator>
+              </kendo-grid-string-filter-menu>
+            </ng-template>
+          </kendo-grid-column>
+
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalRegistroError let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registro Erróneo
+    </h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="ListaErrores!=undefined" style="display: flex;align-items:center;justify-content: center;">
+      <div  class="card"  style="text-align:center;background: #D63D3D;color:white;width: 40%;">
+        Descripcion del error:
+      <div *ngFor="let item of ListaErrores">
+        {{item.descripcion}}
+      </div>
+      </div>
+    </div>
+    <form class="k-form k-form-horizontal" [formGroup]="formRegistroError">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="nombre1" class="k-label">
+                  <span>Nombre 1<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #nombre1
+                  size="medium"
+                  placeholder="Nombre1"
+                  formControlName="nombre1"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="nombre2" class="k-label">
+                  <span>Nombre 2<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #nombre2
+                  size="medium"
+                  placeholder="Nombre 2"
+                  formControlName="nombre2"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="apellidoPaterno" class="k-label">
+                  <span>Apellido Paterno<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #apellidoPaterno
+                  size="medium"
+                  placeholder="Apellido Paterno"
+                  formControlName="apellidoPaterno"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="apellidoMaterno" class="k-label">
+                  <span>Apellido Materno<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #apellidoMaterno
+                  size="medium"
+                  placeholder="Apellido Materno"
+                  formControlName="apellidoMaterno"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div><div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="telefono" class="k-label">
+                  <span>Teléfono<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #telefono
+                  size="medium"
+                  placeholder="Teléfono"
+                  formControlName="telefono"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="celular" class="k-label">
+                  <span>Celular<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #celular
+                  size="medium"
+                  placeholder="Celular"
+                  formControlName="celular"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="email" class="k-label">
+                  <span>Email<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #email
+                  size="medium"
+                  placeholder="Email"
+                  formControlName="email"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idPais" class="k-label">
+                  <span>País<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idPais
+                (selectionChange)="FiltrarCiudad($event)"
+                formControlName="idPais"
+                class="d-flex"
+                size="medium"
+                [data]="filtrosGenerales.listaPais"
+                [defaultItem]="{
+                  nombre: 'Seleccione un País...',
+                  id: null
+                }"
+                textField="nombrePais"
+                valueField="id"
+                [valuePrimitive]="true"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idCiudad" class="k-label">
+                  <span>Ciudad<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idCiudad
+                formControlName="idCiudad"
+                class="d-flex"
+                size="medium"
+                [data]="listaCiudadesPorPais"
+                [defaultItem]="{
+                  nombre: 'Seleccione una Ciudad...',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idAreaFormacion" class="k-label">
+                  <span>Área de formación<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idAreaFormacion
+                formControlName="idAreaFormacion"
+                class="d-flex"
+                size="medium"
+                [data]="filtrosGenerales.listaAreaFormacion"
+                [defaultItem]="{
+                  nombre: 'Ninguno',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idAreaTrabajo" class="k-label">
+                  <span>Área de trabajo<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idAreaTrabajo
+                formControlName="idAreaTrabajo"
+                class="d-flex"
+                size="medium"
+                [data]="filtrosGenerales.listaAreaTrabajo"
+                [defaultItem]="{
+                  nombre: 'Ninguno',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idIndustria" class="k-label">
+                  <span>Industria<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idIndustria
+                formControlName="idIndustria"
+                class="d-flex"
+                size="medium"
+                [data]="filtrosGenerales.listaIndustria"
+                [defaultItem]="{
+                  nombre: 'Ninguno',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idCargo" class="k-label">
+                  <span>Cargo<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idCargo
+                formControlName="idCargo"
+                class="d-flex"
+                size="medium"
+                [data]="filtrosGenerales.listaCargo"
+                [defaultItem]="{
+                  nombre: 'Ninguno',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="nombrePrograma" class="k-label">
+                  <span>Programa <span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #nombrePrograma
+                  size="medium"
+                  placeholder="Programa"
+                  formControlName="nombrePrograma"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idCentroCosto" class="k-label">
+                  <span>Centro de costo<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idCentroCosto
+                formControlName="idCentroCosto"
+                class="d-flex"
+                size="medium"
+                [data]="filtrosGenerales.listaCentroCosto"
+                [defaultItem]="{
+                  nombre: 'Ninguno',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="tipodato" class="k-label">
+                  <span>Tipo de dato <span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #tipodato
+                  size="medium"
+                  placeholder="Tipo Dato"
+                  formControlName="tipodato"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="idCategoriaDato" class="k-label">
+                  <span>Origen<span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-dropdownlist
+                #idCategoriaDato
+                formControlName="idCategoriaDato"
+                class="d-flex"
+                size="medium"
+                [data]="filtrosGenerales.listaCategoriaDato"
+                [defaultItem]="{
+                  nombre: 'Ninguno',
+                  id: null
+                }"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-sm-12 col-md-12">
+              <kendo-formfield orientation="horizontal">
+                <label [for]="codigoFase" class="k-label">
+                  <span>Fase Oportunidad <span class="text-danger fw-bold"></span></span>
+                </label>
+                <kendo-textbox
+                  #codigoFase
+                  size="medium"
+                  placeholder="Fase Oportunidad"
+                  formControlName="codigoFase"
+                  [clearButton]="true"
+                  inputValidSpaceDir
+                >
+                </kendo-textbox>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        themeColor="tertiary"
+        (click)="CorregirError()"
+      >
+        Guardar Corrección
+      </button>
+
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

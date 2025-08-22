@@ -1,0 +1,755 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Banco de Preguntas</h1>
+        </div>
+
+        <kendo-tabstrip
+          (tabSelect)="onTabSelect($event)"
+          class="p-0"
+          [keepTabContent]="true"
+          [animate]="false">
+          <kendo-tabstrip-tab
+            title="SINCRÓNICOS"
+            [selected]="true">
+            <ng-template kendoTabContent>
+              <div class="card-body p-4">
+                <div class="row">
+                  <div class="col">
+                    <ng-template
+                      #cellTemplateGridCategoriaEncuesta
+                      let-dataItem="dataItem"
+                      let-field="field"
+                      let-itemValue="itemValue">
+                      <ng-container
+                        *ngIf="field == 'preguntaObligatoria'; else gridTempDefault">
+                        {{ itemValue ? "Sí" : "No" }}
+                      </ng-container>
+                      <ng-template #gridTempDefault>
+                        {{ itemValue }}
+                      </ng-template>
+                    </ng-template>
+                    <k-grid-edit
+                      [gridData]="listaPregunta"
+                      [loader]="loader"
+                      [columns]="gridPreguntaOnline.columns"
+                      [commands]="gridPreguntaOnline.comands"
+                      [readOnlyColumns]="gridPreguntaOnline.readOnlyColumns"
+                      [gridConfig]="gridPreguntaOnline.gridConfig"
+                      [gridState]="gridPreguntaOnline.gridState"
+                      [commandAdd]="'external'"
+                      [commandEdit]="'external'"
+                      (OnGridEvents)="gridEventsResponse($event)"
+                      [cellTemplateRef]="cellTemplateGridCategoriaEncuesta">
+                    </k-grid-edit>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+      
+          <kendo-tabstrip-tab
+            title="ASINCRÓNICOS">
+            <ng-template kendoTabContent>
+              <div class="card-body p-4">
+                <div class="row">
+                  <div class="col">
+                    <ng-template
+                      #cellTemplateGridCategoriaEncuestaAsincronica
+                      let-dataItem="dataItem"
+                      let-field="field"
+                      let-itemValue="itemValue">
+                      <ng-container
+                        *ngIf="field == 'preguntaObligatoria'; else gridTempDefault">
+                        {{ itemValue ? "Sí" : "No" }}
+                      </ng-container>
+                      <ng-template #gridTempDefault>
+                        {{ itemValue }}
+                      </ng-template>
+                    </ng-template>
+                    <k-grid-edit
+                      [gridData]="listaPreguntaAsincronica"
+                      [loader]="loaderAsincronica"
+                      [columns]="gridPreguntaAOnline.columns"
+                      [commands]="gridPreguntaAOnline.comands"
+                      [readOnlyColumns]="gridPreguntaAOnline.readOnlyColumns"
+                      [gridConfig]="gridPreguntaAOnline.gridConfig"
+                      [gridState]="gridPreguntaAOnline.gridState"
+                      [commandAdd]="'external'"
+                      [commandEdit]="'external'"
+                      (OnGridEvents)="gridEventsResponseAsincronica($event)"
+                      [cellTemplateRef]="cellTemplateGridCategoriaEncuestaAsincronica">
+                    </k-grid-edit>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pregunta Sincrónica -->
+<ng-template #modalPreguntaEncuesta let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModalPregunta }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')">
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupPreguntaEncuesta">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-9">
+            <div class="row">
+              <div
+                class="col-6"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;">
+                <div class="col-4">
+                  <label [for]="dropdownlistCategoria" class="k-label">
+                    <span
+                      >Categoria : <strong class="text-danger">*</strong></span>
+                  </label>
+                </div>
+                <div class="col-8">
+                  <kendo-formfield
+                    class="custom-rqsc-remove-max-width-formfield"
+                    orientation="horizontal">
+                    <kendo-dropdownlist
+                      formControlName="idPreguntaEncuestaCategoria"
+                      class="d-flex"
+                      size="small"
+                      #dropdownlistCategoria
+                      [data]="listaCategoria"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: 'Seleccionar' }"
+                      [valuePrimitive]="true">
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div
+                class="col-6"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;">
+                <div class="col-3">
+                  <label [for]="dropdownlist" class="k-label">
+                    <span>Tipo : <strong class="text-danger">*</strong></span>
+                  </label>
+                </div>
+                <div class="col-9">
+                  <kendo-formfield
+                    class="custom-rqsc-remove-max-width-formfield"
+                    orientation="horizontal">
+                    <kendo-dropdownlist
+                      formControlName="idPreguntaEncuestaTipo"
+                      class="d-flex"
+                      size="small"
+                      #dropdownlist
+                      [data]="listaTipo"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: 'Seleccionar' }"
+                      [valuePrimitive]="true">
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-2">
+                <label [for]="txtPregunta" class="k-label">
+                  <span>Pregunta : <strong class="text-danger">*</strong></span>
+                </label>
+              </div>
+              <div class="col-10">
+                <kendo-formfield
+                  class="custom-rqsc-remove-max-width-formfield"
+                  class="custom-rqsc-remove-max-width-formfield"
+                  orientation="horizontal">
+                  <kendo-textarea
+                    #txtPregunta
+                    formControlName="pregunta"
+                    size="none"
+                    [style.width.%]="100"
+                    rounded="large"
+                    fillMode="solid"
+                    resizable="none">
+                    <kendo-textarea-suffix
+                      class="custom-styling"
+                    ></kendo-textarea-suffix>
+                  </kendo-textarea>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div
+              *ngIf="this.formGroupPreguntaEncuesta.get('activarDescripcion').value"
+              class="row mt-2">
+              <div class="col-2">
+                <label [for]="textAreaDesc" class="k-label">
+                  <span>
+                    Descripcion : <strong class="text-danger">*</strong>
+                  </span>
+                </label>
+              </div>
+              <div class="col-10">
+                <kendo-formfield
+                  class="custom-rqsc-remove-max-width-formfield"
+                  class="custom-rqsc-remove-max-width-formfield"
+                  orientation="horizontal">
+                  <kendo-textarea
+                    #textAreaDesc
+                    formControlName="descripcion"
+                    size="none"
+                    [style.width.%]="100"
+                    rounded="large"
+                    fillMode="solid"
+                    resizable="none">
+                    <kendo-textarea-suffix
+                      class="custom-styling">
+                    </kendo-textarea-suffix>
+                  </kendo-textarea>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="row mt-2">
+              <div class="col-4">
+                <label class="k-label">
+                  <span>Agregar Decripcion </span>
+                </label>
+              </div>
+              <div class="col-8">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-switch
+                    formControlName="activarDescripcion"
+                    onLabel="SI"
+                    offLabel="NO"
+                    style="width: 65px"
+                    (click)="logSwitch()">
+                  </kendo-switch>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-4">
+                <label class="k-label">
+                  <span>Pregunta Requerida </span>
+                </label>
+              </div>
+              <div class="col-8">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-switch
+                    formControlName="preguntaObligatoria"
+                    onLabel="SI"
+                    offLabel="NO"
+                    style="width: 65px">
+                  </kendo-switch>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-4">
+                <label class="k-label">
+                  <span>Pregunta Activa : </span>
+                </label>
+              </div>
+              <div class="col-8">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-switch
+                    formControlName="preguntaActiva"
+                    onLabel="SI"
+                    offLabel="NO"
+                    style="width: 65px">
+                  </kendo-switch>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="">
+            <div class="row">
+              <div class="col-1fa-rotate-270">
+                <div class="card-body p-4">
+                  <div class="row">
+                    <div class="col">
+                      <!-- <ng-template #cellTemplateGridRespuesta let-dataItem="dataItem" let-field="field"
+                          let-itemValue="itemValue">
+                          <ng-template #gridTempDefault>
+                            {{ itemValue }}
+                          </ng-template> 
+                        </ng-template>-->
+                      <k-grid-edit
+                        [gridData]="listaRespuesta"
+                        [loader]="loader"
+                        [columns]="gridRespuesta.columns"
+                        [commands]="gridRespuesta.comands"
+                        [readOnlyColumns]="gridRespuesta.readOnlyColumns"
+                        [gridConfig]="gridRespuesta.gridConfig"
+                        [gridState]="gridRespuesta.gridState"
+                        [commandAdd]="'external'"
+                        [commandEdit]="'external'"
+                        (OnGridEvents)="gridEventsRespuesta($event)">
+                      </k-grid-edit>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="actionModal()">
+      {{ btnModalNombre }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+<!-- End Modal Pregunta Sincrónica -->
+
+<!-- Modal Pregunta Asincrónica -->
+<ng-template #modalPreguntaEncuestaAsincronica let-modal>
+  <app-loader *ngIf="loaderModalAsincronica"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModalPregunta }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')">
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupPreguntaEncuestaAsincronica">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col-9">
+            <div class="row">
+              <div
+                class="col-6"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;">
+                <div class="col-4">
+                  <label [for]="dropdownlistaTipoRespuesta" class="k-label">
+                    <span
+                      >Tipo Respuesta : <strong class="text-danger">*</strong></span>
+                  </label>
+                </div>
+                <div class="col-8">
+                  <kendo-formfield
+                    class="custom-rqsc-remove-max-width-formfield"
+                    orientation="horizontal">
+                    <kendo-dropdownlist
+                      formControlName="idTipoRespuesta"
+                      class="d-flex"
+                      size="small"
+                      #dropdownlistaTipoRespuesta
+                      [data]="listaTipoRespuesta"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: 'Seleccionar' }"
+                      [valuePrimitive]="true">
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div
+                class="col-6"
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;">
+                <div class="col-3">
+                  <label [for]="dropdownlist" class="k-label">
+                    <span>Tipo : <strong class="text-danger">*</strong></span>
+                  </label>
+                </div>
+                <div class="col-9">
+                  <kendo-formfield
+                    class="custom-rqsc-remove-max-width-formfield"
+                    orientation="horizontal">
+                    <kendo-dropdownlist
+                      formControlName="idPreguntaTipo"
+                      class="d-flex"
+                      size="small"
+                      #dropdownlist
+                      [data]="listaPreguntaTipo"
+                      textField="nombre"
+                      valueField="id"
+                      [defaultItem]="{ id: null, nombre: 'Seleccionar' }"
+                      [valuePrimitive]="true">
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-2">
+                <label [for]="txtPregunta" class="k-label">
+                  <span>Pregunta : <strong class="text-danger">*</strong></span>
+                </label>
+              </div>
+              <div class="col-10">
+                <kendo-formfield
+                  class="custom-rqsc-remove-max-width-formfield"
+                  class="custom-rqsc-remove-max-width-formfield"
+                  orientation="horizontal">
+                  <kendo-textarea
+                    #txtPregunta
+                    formControlName="enunciadoPregunta"
+                    size="none"
+                    [style.width.%]="100"
+                    rounded="large"
+                    fillMode="solid"
+                    resizable="none">
+                    <kendo-textarea-suffix
+                      class="custom-styling"
+                    ></kendo-textarea-suffix>
+                  </kendo-textarea>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div
+              *ngIf="this.formGroupPreguntaEncuestaAsincronica.get('activarDescripcionAsincronica').value"
+              class="row mt-2">
+              <div class="col-2">
+                <label [for]="textAreaDesc" class="k-label">
+                  <span>
+                    Descripcion : <strong class="text-danger">*</strong>
+                  </span>
+                </label>
+              </div>
+              <div class="col-10">
+                <kendo-formfield
+                  class="custom-rqsc-remove-max-width-formfield"
+                  class="custom-rqsc-remove-max-width-formfield"
+                  orientation="horizontal">
+                  <kendo-textarea
+                    #textAreaDesc
+                    formControlName="descripcionAsincronica"
+                    size="none"
+                    [style.width.%]="100"
+                    rounded="large"
+                    fillMode="solid"
+                    resizable="none">
+                    <kendo-textarea-suffix
+                      class="custom-styling">
+                    </kendo-textarea-suffix>
+                  </kendo-textarea>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="row mt-2">
+              <div class="col-4">
+                <label class="k-label">
+                  <span>Agregar Decripcion </span>
+                </label>
+              </div>
+              <div class="col-8">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-switch
+                    formControlName="activarDescripcionAsincronica"
+                    onLabel="SI"
+                    offLabel="NO"
+                    style="width: 65px"
+                    (click)="logSwitch()">
+                  </kendo-switch>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-4">
+                <label class="k-label">
+                  <span>Pregunta Requerida </span>
+                </label>
+              </div>
+              <div class="col-8">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-switch
+                    formControlName="preguntaObligatoriaAsincronica"
+                    onLabel="SI"
+                    offLabel="NO"
+                    style="width: 65px">
+                  </kendo-switch>
+                </kendo-formfield>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-4">
+                <label class="k-label">
+                  <span>Pregunta Activa : </span>
+                </label>
+              </div>
+              <div class="col-8">
+                <kendo-formfield orientation="horizontal">
+                  <kendo-switch
+                    formControlName="preguntaActivaAsincronica"
+                    onLabel="SI"
+                    offLabel="NO"
+                    style="width: 65px">
+                  </kendo-switch>
+                </kendo-formfield>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="">
+            <div class="row">
+              <div class="col-1fa-rotate-270">
+                <div class="card-body p-4">
+                  <div class="row">
+                    <div class="col">
+                      <k-grid-edit
+                        [gridData]="listaRespuestaAsincronica"
+                        [loader]="loaderAsincronica"
+                        [columns]="gridRespuestaAsincronica.columns"
+                        [commands]="gridRespuestaAsincronica.comands"
+                        [readOnlyColumns]="gridRespuestaAsincronica.readOnlyColumns"
+                        [gridConfig]="gridRespuestaAsincronica.gridConfig"
+                        [gridState]="gridRespuestaAsincronica.gridState"
+                        [commandAdd]="'external'"
+                        [commandEdit]="'external'"
+                        (OnGridEvents)="gridEventsRespuestaAsincronica($event)">
+                      </k-grid-edit>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="actionModalAsincronica()">
+      {{ btnModalNombre }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+<!-- End Modal Pregunta Asincrónica -->
+
+<!-- Modal Respuesta Sincrónica -->
+<ng-template #modalRespuesta let-modal>
+  <app-loader *ngIf="loaderModalRespuesta"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModalRespuesta }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')">
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formRespuesta">
+      <fieldset class="k-form-fieldset">
+        <div class="form-group">
+          <label for="orden">Orden</label>
+          <kendo-numerictextbox
+            id="orden"
+            formControlName="orden"
+            [min]="0"
+            [step]="1"
+            [format]="'n0'"
+            class="form-control">
+          </kendo-numerictextbox>
+          <div
+            *ngIf="formRespuesta.get('orden').invalid && formRespuesta.get('orden').touched"
+            class="text-danger">
+            Debe ingresar orden.
+          </div>
+        </div>
+
+        <!-- Campo Respuesta (Kendo Textarea) -->
+        <div class="form-group">
+          <label for="respuesta">Respuesta</label>
+          <kendo-textarea
+            id="respuesta"
+            formControlName="respuesta"
+            [style.width.%]="100"
+            placeholder="Ingrese la respuesta">
+          </kendo-textarea>
+          <div
+            *ngIf="formRespuesta.get('respuesta').invalid && formRespuesta.get('respuesta').touched"
+            class="text-danger">
+            Debe ingresar respuesta.
+          </div>
+        </div>
+
+        <!-- Campo Puntaje (Kendo Numeric Textbox) -->
+        <div class="form-group">
+          <label for="puntaje">Puntaje</label>
+          <kendo-numerictextbox
+            id="puntaje"
+            formControlName="puntaje"
+            [min]="0"
+            [max]="100"
+            [step]="1"
+            [format]="'n0'"
+            class="form-control"
+            type="number">
+          </kendo-numerictextbox>
+          <div
+            *ngIf="formRespuesta.get('puntaje').invalid && formRespuesta.get('puntaje').touched"
+            class="text-danger">
+            Debe ingresar un puntaje.
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="actionModalRespuesta()">
+      {{ btnModalNombreRespuesta }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+<!-- Fin Modal Respuesta Sincrónica -->
+
+<!-- Modal Respuesta Asincrónica -->
+<ng-template #modalRespuestaAsincronica let-modal>
+  <app-loader *ngIf="loaderModalRespuestaAsincronica"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ nombreModalRespuesta }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')">
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formRespuestaAsincronica">
+      <fieldset class="k-form-fieldset">
+        <div class="form-group">
+          <label for="nroOrden">Nro. Orden</label>
+          <kendo-numerictextbox
+            id="nroOrden"
+            formControlName="nroOrden"
+            [min]="0"
+            [step]="1"
+            [format]="'n0'"
+            class="form-control">
+          </kendo-numerictextbox>
+          <div
+            *ngIf="formRespuestaAsincronica.get('nroOrden').invalid && formRespuestaAsincronica.get('nroOrden').touched"
+            class="text-danger">
+            Debe ingresar orden.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="enunciadoRespuesta">Respuesta</label>
+          <kendo-textarea
+            id="enunciadoRespuesta"
+            formControlName="enunciadoRespuesta"
+            [style.width.%]="100"
+            placeholder="Ingrese la respuesta">
+          </kendo-textarea>
+          <div
+            *ngIf="formRespuestaAsincronica.get('enunciadoRespuesta').invalid && formRespuestaAsincronica.get('enunciadoRespuesta').touched"
+            class="text-danger">
+            Debe ingresar respuesta.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="puntaje">Puntaje</label>
+          <kendo-numerictextbox
+            id="puntaje"
+            formControlName="puntaje"
+            [min]="0"
+            [max]="100"
+            [step]="1"
+            [format]="'n0'"
+            class="form-control"
+            type="number">
+          </kendo-numerictextbox>
+          <div
+            *ngIf="formRespuestaAsincronica.get('puntaje').invalid && formRespuestaAsincronica.get('puntaje').touched"
+            class="text-danger">
+            Debe ingresar un puntaje.
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="actionModalRespuestaAsincronica()">
+      {{ btnModalNombreRespuesta }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+<!-- Fin Modal Respuesta Asincrónica -->

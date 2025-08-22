@@ -1,0 +1,197 @@
+<kendo-window
+  title=""
+  *ngIf="showSoftphone$ | async"
+  (close)="close()"
+  [minWidth]="280"
+  [rezisable]="false"
+  [maxWidth]="270"
+  [width]="270"
+  [left]="60"
+  [top]="220"
+>
+  <kendo-window-titlebar class="p-0">
+    <div class="k-window-title"></div>
+    <button kendoWindowCloseAction></button>
+  </kendo-window-titlebar>
+  <div class="">
+    <div class="row my-1">
+      <div class="col-12 p-0 m-0">
+        <div class="input-group input-group-lg">
+          <button
+            *ngIf="showDialPadIcon$ | async"
+            class="btn ps-1 pe-2"
+            type="button"
+            (click)="togglePhoneContact()"
+          >
+            <img src="../../../../assets/img/dialpad.png" alt="" />
+          </button>
+
+          <div class="form-control output text-center px-1">
+            {{ output$ | async }}
+          </div>
+          <button
+            *ngIf="showBackspace$ | async"
+            class="btn pe-1 ps-2"
+            type="button"
+            (click)="backspace()"
+          >
+            <fa-icon [icon]="['fas', 'delete-left']"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2" *ngIf="flagDialPadContact">
+      <div class="rowd d-flex justify-content-center">
+        <div class="digit" (click)="clickNum('1')">
+          1
+          <div class="sub">&nbsp;</div>
+        </div>
+        <div class="digit" (click)="clickNum('2')">
+          2
+          <div class="sub">ABC</div>
+        </div>
+        <div class="digit" (click)="clickNum('3')">
+          3
+          <div class="sub">DEF</div>
+        </div>
+        <div style="clear: both"></div>
+      </div>
+      <div class="rowd d-flex justify-content-center">
+        <div class="digit" id="four" (click)="clickNum('4')">
+          4
+          <div class="sub">GHI</div>
+        </div>
+        <div class="digit" id="five" (click)="clickNum('5')">
+          5
+          <div class="sub">JKL</div>
+        </div>
+        <div class="digit" (click)="clickNum('6')">
+          6
+          <div class="sub">MNO</div>
+        </div>
+        <div style="clear: both"></div>
+      </div>
+      <div class="rowd d-flex justify-content-center">
+        <div class="digit" (click)="clickNum('7')">
+          7
+          <div class="sub">PQRS</div>
+        </div>
+        <div class="digit" (click)="clickNum('8')">
+          8
+          <div class="sub">TUV</div>
+        </div>
+        <div class="digit" (click)="clickNum('9')">
+          9
+          <div class="sub">WXYZ</div>
+        </div>
+        <div style="clear: both"></div>
+      </div>
+      <div class="rowd d-flex justify-content-center">
+        <div class="digit" (click)="clickNum('*')">
+          *
+          <div class="sub">&nbsp;</div>
+        </div>
+        <div class="digit" (click)="clickNum('0')">
+          0
+          <div class="sub">&nbsp;</div>
+        </div>
+        <div class="digit" (click)="clickNum('#')">
+          #
+          <div class="sub">&nbsp;</div>
+        </div>
+        <div style="clear: both"></div>
+      </div>
+    </div>
+    <div class="row my-2" *ngIf="!flagDialPadContact">
+      <img src="../../../../assets/img/emptyprofile.jpg" alt="" class="" />
+    </div>
+    <div class="row mb-1">
+      <div class="col-12 d-flex justify-content-center">
+        <button
+          *ngIf="
+            esWolkbox ||
+            ((showBtnHang$ | async) && (showBtnHangMarcador$ | async))
+          "
+          kendoButton
+          fillMode="solid"
+          rounded="large"
+          size="medium"
+          themeColor="error"
+          class="mx-2"
+          [style.width.px]="60"
+          (click)="hang()"
+        >
+          <fa-icon [icon]="['fas', 'phone-slash']"></fa-icon>
+        </button>
+        <kendo-switch
+          class="mx-3"
+          [(ngModel)]="autoAnswer"
+          *ngIf="showBtnAutoAnswer$ | async"
+        ></kendo-switch>
+        <!-- <button
+          *ngIf="showBtnCall"
+          kendoButton
+          fillMode="solid"
+          rounded="large"
+          size="medium"
+          themeColor="success"
+          class="mx-2"
+          [style.width.px]="60"
+          (click)="call()"
+        >
+          <fa-icon [icon]="['fas', 'phone']"></fa-icon>
+        </button> -->
+      </div>
+    </div>
+    <div class="row my-1" *ngIf="showBtnAutoAnswer$ | async">
+      <div class="col-12 fs-7 d-flex justify-content-center">Auto Answer</div>
+    </div>
+    <div class="row my-1" *ngIf="showCallControls">
+      <div class="col-12 d-flex justify-content-center">
+        <button
+          kendoButton
+          fillMode="solid"
+          rounded="large"
+          size="medium"
+          themeColor="primary"
+          class="mx-2"
+          [style.width.px]="60"
+          (click)="hang()"
+        >
+          Mute
+        </button>
+        <button
+          kendoButton
+          fillMode="solid"
+          rounded="large"
+          size="medium"
+          themeColor="primary"
+          class="mx-2"
+          [style.width.px]="60"
+          (click)="hang()"
+        >
+          Hold
+        </button>
+        <button
+          kendoButton
+          fillMode="solid"
+          rounded="large"
+          size="medium"
+          themeColor="primary"
+          class="mx-2"
+          [style.width.px]="60"
+          (click)="hang()"
+        >
+          Transfer
+        </button>
+      </div>
+    </div>
+    <div class="row outputbot mt-2">
+      <div class="col-12 text-center">
+        <p>{{ timerTimbrado }}</p>
+        <p>{{ state$ | async }}</p>
+        <p>{{ callState$ | async }}</p>
+      </div>
+    </div>
+  </div>
+</kendo-window>

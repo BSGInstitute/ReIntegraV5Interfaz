@@ -1,0 +1,217 @@
+<kendo-grid
+  #grid
+  class="k-header k-with-icon k-filterable"
+  style="width: 100%"
+  [data]="gridView"
+
+  (edit)="editHandler($event)"
+  (cancel)="cancelHandler($event)"
+  (save)="saveHandler($event)"
+  (remove)="removeHandler($event)"
+  (add)="addHandler($event)"
+  (pageChange)="pageChange($event)"
+  (sortChange)="sortChange($event)"
+  (dataStateChange)="dataStateChange($event)"
+
+  (cellClick)="cellClickHandler($event)"
+  (cellClose)="cellCloseHandler($event)"
+
+  [sort]="gridState?.sort"
+  [skip]="gridState?.skip"
+  [pageSize]="gridState?.take"
+  [filter]="gridState?.filter"
+
+  [pageable]="gridConfigData?.pageable"
+  [sortable]="gridConfigData?.sortable"
+  [resizable]="gridConfigData?.resizable"
+  [columnMenu]="gridConfigData?.columnMenu"
+  [selectable]="gridConfigData?.selectable"
+  [navigable]="gridConfigData?.navigable"
+  [filterable]="gridConfigData?.filterable"
+  kendoGridSelectBy="id"
+  [(selectedKeys)]="mySelection"
+  [cellSelected]="isCellSelected"
+  [columnMenu]="gridConfigData.columnMenu"
+  [height]="gridConfigData.height"
+  [rowSelected]="isRowSelected"
+
+
+  (detailExpand)="expandHandler($event)"
+  (detailCollapse)="collapseHandler($event)"
+>
+  <ng-template kendoGridToolbarTemplate *ngIf="toolbarTemplate" class="bg-danger">
+    <div>
+      {{ textAddCommand }}
+    </div>
+  </ng-template>
+  <ng-container *ngFor="let item of columns; let i = index">
+    <kendo-grid-column
+      [headerClass]="item.headerClass"
+      [width]="item.width"
+      [field]="item.field"
+      [locked]="item.locked"
+      [sticky]="item.sticky"
+      [filterable]="item.filterable"
+      [hidden]="false"
+    >
+      <ng-template kendoGridHeaderTemplate let-column let-columnIndex="columnIndex">
+        <div class="col text-center" [style]="{'white-space': 'nowrap','text-overflow': 'ellipsis', 'overflow': 'hidden'}"[innerHTML]="item.title">
+          <!-- {{item.title}} -->
+        </div>
+      </ng-template>
+      <ng-template
+        kendoGridEditTemplate
+        let-column="column"
+        let-dataItem="dataItem"
+        let-formGroup="formGroup"
+        let-isNew="isNew"
+      >
+        <ng-template #defaultEditTemplate let-itemValue>
+          <kendo-textbox
+            #input
+            class="d-flex"
+            size="medium"
+            [clearButton]="true"
+            [formControl]="formGroup.get(column.field)"
+          >
+          </kendo-textbox>
+        </ng-template>
+        <ng-container
+          [ngTemplateOutlet]="cellTemplateEditRef || defaultEditTemplate"
+          [ngTemplateOutletContext]="{
+            index: i,
+            column: column,
+            formGroup: formGroup,
+            dataItem: dataItem,
+            isNew: isNew
+          }"
+        >
+        </ng-container>
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <div [ngClass]="item.columnClass" [style]="{'white-space': 'nowrap','text-overflow': 'ellipsis'}">
+          <ng-template #defaultTemplate let-itemValue>{{
+            itemValue
+          }}
+          </ng-template>
+          <ng-container
+            [ngTemplateOutlet]="cellTemplateRef || defaultTemplate"
+            [ngTemplateOutletContext]="{
+              $implicit: dataItem[item.field],
+              index: i,
+              dataItem: dataItem,
+              field: item.field,
+              itemValue: dataItem[item.field]
+            }"
+          >
+          </ng-container>
+        </div>
+      </ng-template>
+
+
+
+    </kendo-grid-column>
+      <ng-template *ngIf="rowDetail == true" kendoGridDetailTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-template #defaultDetailTemplate let-itemValue>
+          {{ dataItem | json }}
+        </ng-template>
+        <ng-container
+          [ngTemplateOutlet]="rowTemplateDetailRef || defaultDetailTemplate"
+          [ngTemplateOutletContext]="{
+            index: i,
+            rowIndex: rowIndex,
+            dataItem: dataItem
+          }"
+        >
+        </ng-container>
+      </ng-template>
+
+  </ng-container>
+  <ng-container *ngFor="let comand of commands; let i = index">
+    <kendo-grid-command-column
+      [headerClass]="comand.headerClass"
+      [width]="comand.width"
+      [title]="comand.title"
+      [locked]="comand.locked"
+      [sticky]="comand.sticky"
+      [class]="comand.columnClass"
+    >
+      <ng-template
+        kendoGridCellTemplate
+        let-dataItem
+        let-rowIndex="rowIndex"
+        let-isNew="isNew"
+      >
+        <div class="col d-flex justify-content-center">
+          <ng-container *ngFor="let option of comand.commands">
+            <ng-container *ngIf="option.kendoCommand == true">
+              <button
+                *ngIf="option.name == 'kendoEditCommand'"
+                kendoGridEditCommand
+                [themeColor]="option.themeColor"
+                [fillMode]="option.fillMode"
+                [rounded]="option.rounded"
+                [size]="option.size"
+                class="p-2 me-1 ms-1"
+              >
+                <span [class]="option.classIcon"></span>{{ option.text }}
+              </button>
+            </ng-container>
+            <ng-container *ngIf="option.kendoCommand == true">
+              <button
+                *ngIf="option.name == 'kendoRemoveCommand'"
+                kendoGridRemoveCommand
+                [themeColor]="option.themeColor"
+                [fillMode]="option.fillMode"
+                [rounded]="option.rounded"
+                [size]="option.size"
+                class="p-2 me-1 ms-1"
+              >
+                <span [class]="option.classIcon"></span>{{ option.text }}
+              </button>
+            </ng-container>
+            <ng-container *ngIf="option.kendoCommand == true">
+              <button
+                *ngIf="option.name == 'kendoEditCommand'"
+                kendoGridSaveCommand
+                [disabled]="formGroup?.invalid"
+                [themeColor]="'primary'"
+                [fillMode]="option.fillMode"
+                [rounded]="option.rounded"
+                [size]="option.size"
+                class="p-2 me-1 ms-1"
+              >
+                <span class="k-icon k-i-save k-icon-20"></span>
+              </button>
+              <button
+                *ngIf="option.name == 'kendoEditCommand'"
+                kendoGridCancelCommand
+                [themeColor]="'secondary'"
+                [fillMode]="option.fillMode"
+                [rounded]="option.rounded"
+                [size]="option.size"
+                class="p-2 me-1 ms-1"
+              >
+                <span class="k-icon k-i-cancel k-icon-20"></span>{{ option.text }}
+              </button>
+            </ng-container>
+            <ng-container *ngIf="option.kendoCommand == false">
+              <button
+                kendoButton
+                [themeColor]="option.themeColor"
+                [fillMode]="option.fillMode"
+                [rounded]="option.rounded"
+                [size]="option.size"
+                (click)="eventoPersonalizado(option.event, dataItem, i)"
+                class="p-2 me-1 ms-1">
+                <span [class]="option.classIcon"></span>{{ option.text }}
+              </button>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-template>
+    </kendo-grid-command-column>
+  </ng-container>
+</kendo-grid>
+
+<div *ngIf="loader" class="k-i-loading"></div>

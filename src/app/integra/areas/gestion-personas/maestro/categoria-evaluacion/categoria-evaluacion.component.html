@@ -1,0 +1,190 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">(M) Categoria evaluación</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridCronograma
+              [kendoGridBinding]="gridCategoriaEvaluacion.data"
+              [loading]="gridCategoriaEvaluacion.loading"
+              [resizable]="true"
+              filterable="menu"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{ pageSizes: [5, 10, 20] }"
+            >
+              <!-- filterable="menu" -->
+              <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+                <kendo-grid-spacer></kendo-grid-spacer>
+
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="abrirModal(modalCategoriaEvaluacion, true)"
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+              </kendo-grid-column>
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="contains"
+                >
+                  <kendo-filter-contains-operator
+                    text="Contiene"
+                  ></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="50"
+                [headerClass]="'header-grid-integra justify-content-center'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <div class="w-100 d-flex justify-content-center">
+                    <button
+                      kendoGridEditCommand
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                      (click)="
+                        abrirModal(modalCategoriaEvaluacion, false, dataItem)
+                      "
+                    >
+                      <span class="k-icon k-i-pencil k-icon-20"></span>
+                    </button>
+
+                    <button
+                      kendoButton
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                      (click)="eliminar(dataItem.id)"
+                    >
+                      <span class="k-icon k-i-x k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+              <ng-template kendoPagerTemplate>
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="10"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="pageSizes"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="obtener()"
+                  ></button>
+                </div>
+              </ng-template>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- -----------------------Modal Crear Nuevo/Actualizar ---------------------- -->
+<ng-template #modalCategoriaEvaluacion let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registro de categoria de evaluacion
+    </h1>
+  </div>
+
+  <div class="modal-body p-3">
+    <form [formGroup]="formCategoriaEvaluacion">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="nombre" class="d-flex align-items-start">
+              <span><b>Nombre</b><strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox #nombre formControlName="nombre" >
+            </kendo-textbox>
+            <kendo-formerror>
+              <span *ngIf="formCategoriaEvaluacion.get('nombre').hasError('required')">
+                Error: Nombre es requerido
+              </span>
+              <span *ngIf="formCategoriaEvaluacion.get('nombre').hasError('maxlength')">
+                Error: Maximo 50 caracteres. Escribiste
+                {{ formCategoriaEvaluacion.get("nombre").value.length }} caracteres
+              </span>
+            </kendo-formerror>
+            <kendo-formhint>50 caracteres como máximo</kendo-formhint>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="guardar()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="actualizar()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>

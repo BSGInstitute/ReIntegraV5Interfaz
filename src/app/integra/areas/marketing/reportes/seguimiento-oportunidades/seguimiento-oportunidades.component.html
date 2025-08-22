@@ -1,0 +1,424 @@
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">
+            Reporte de Seguimiento de Oportunidades
+          </h3>
+        </div>
+
+        <div style="border: 1px solid #8c8c8c; padding: 15px">
+          <form [formGroup]="formulario">
+            <div
+              class="cont"
+              style="display: flex; justify-content: space-between"
+            >
+            <kendo-formfield orientation="horizontal" style="flex-basis: 30%">
+                <kendo-label class="d-flex align-items-start" [for]="asesores" text="Asesores"></kendo-label>
+                <kendo-multiselect
+                  #asesores
+                  formControlName="asesores"
+                  [data]="listaAsesores"
+                  textField="nombres"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                ></kendo-multiselect>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal" style="flex-basis: 30%">
+                <kendo-label class="d-flex align-items-start" [for]="centroC" text="Centro de Costos"></kendo-label>
+                <kendo-multiselect
+                  #centroC
+                  formControlName="centroC"
+                  [data]="listaCentroCostos"
+                  textField="nombre"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                ></kendo-multiselect>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal" style="flex-basis: 30%">
+                <kendo-label class="d-flex align-items-start" [for]="faseO" text="Fase Oportunidad Actual:"></kendo-label>
+                <kendo-multiselect
+                  #faseO
+                  formControlName="faseO"
+                  [data]="listaFaseOportunidad"
+                  textField="codigo"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                ></kendo-multiselect>
+              </kendo-formfield>
+              
+              
+            </div>
+
+            <div
+              class="cont"
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 15px;
+                margin-bottom: 15px;
+              "
+            >
+              <kendo-formfield orientation="horizontal"  style="flex-basis: 30%">
+                <kendo-label
+                  class="d-flex align-items-start"
+                  [for]="fec"
+                  text="Tipo Fecha"
+                >
+                </kendo-label>
+                <kendo-dropdownlist
+                  #fec
+                  formControlName="fec"
+                  [data]="listaTipoFecha"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="nombre"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                ></kendo-dropdownlist>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal" style="flex-basis: 30%">
+                <kendo-label
+                  class="d-flex align-items-start"
+                  [for]="fecI"
+                  text="Fecha Inicio"
+                >
+                </kendo-label>
+                <kendo-datepicker
+                  formControlName="fechaInicio"
+                  #fecI
+                ></kendo-datepicker>
+              </kendo-formfield>
+              <kendo-formfield orientation="horizontal" style="flex-basis: 30%">
+                <kendo-label
+                  class="d-flex align-items-start"
+                  [for]="fecf"
+                  text="Fecha Fin"
+                >
+                </kendo-label>
+                <kendo-datepicker
+                  formControlName="fechaFin"
+                  #fecf
+                ></kendo-datepicker>
+              </kendo-formfield>
+            </div>
+
+            <div
+              style="display: flex; justify-content: flex-end; margin-top: 5px"
+            >
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                (click)="buscar()"
+              >
+                Buscar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col">
+              <kendo-grid
+                [kendoGridBinding]="listaReporte"
+                [pageSize]="10"
+                [sortable]="true"
+                [resizable]="true"
+                [filterable]="true"
+                [pageable]="{
+                  buttonCount: 5,
+                  info: true,
+                  type: 'numeric',
+                  pageSizes: true,
+                  previousNext: true,
+                  position: 'bottom'
+                }"
+                (detailExpand)="gridEventsResponse($event)"
+                [loading]="loader"
+                [selectable]="true"
+                [reorderable]="true"
+              >
+              <ng-template kendoGridToolbarTemplate class="bg-danger color">
+                <button
+                  kendoButton 
+                  icon="k-icon k-i-file-excel k-icon-20"
+                  type="button"
+                  themeColor="tertiary"
+                  (click)="excelexport.save()"
+                  >
+                  Exportar a Excel
+                </button>
+                <kendo-excelexport 
+                [data]="listaReporte" 
+                fileName="SeguimientoOportunidades.xlsx" #excelexport>
+                  <kendo-excelexport-column field="idAlumno" title="IdAlumno">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="nombreCentroCosto" title="Centro de Costo">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="nombreCompletoAlumno" title="Contacto">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="asesor" title="Asesor">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="codigoFaseOportunidad" title="fase">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="nombreTipoDato" title="Tipo Dato">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="nombreCategoriaOrigen" title="Categoria Dato">
+                  </kendo-excelexport-column>
+                  <kendo-excelexport-column field="nombreGrupo" title="Grupo">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="nombrePais" title="Pais">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="fechaCreacion" title="Fecha Creacion Oportunidad">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="fechaRegistroCampania" title="Fecha Registro Campaña">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="estadoUltimaActividad" title="Estado Ultima Actividad">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="fechaProgramada" title="Fecha Ultima Actividad">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="probabilidadNuevoValor" title="Probabilidad Nuevo Valor">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="probabilidadNuevo" title="Probabilidad Nueva">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="diasSinContactoManhana" title="BIC Mañana">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="diasSinContactoTarde" title="BIC Tarde">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="sentinel" title="C.C.R">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="interaccion" title="Interaccion">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="urlOrigen" title="Url Origen">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="usuarioCreacion" title="Usuario Creacion">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="nombreCampania" title="Nombre Campaña">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="facebookNombreAnuncio" title="Nombre Anuncio">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="moneda" title="Moneda">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="montoTotal" title="Monto Total">
+                </kendo-excelexport-column>
+                <kendo-excelexport-column field="totalPago" title="Pago Mes">
+                </kendo-excelexport-column>
+
+                </kendo-excelexport>
+                <kendo-grid-spacer></kendo-grid-spacer>
+              </ng-template>
+                <kendo-grid-column
+                  field="idAlumno"
+                  title="IdAlumno"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombreCentroCosto"
+                  title="Centro de Costo"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+
+                <kendo-grid-column
+                  field="nombreCompletoAlumno"
+                  title="Contacto"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="asesor"
+                  title="Asesor."
+                  [filterable]="true"
+                  [width]="200"
+                >
+                  -
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="codigoFaseOportunidad"
+                  title="Fase"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombreTipoDato"
+                  title="Tipo Dato"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombreCategoriaOrigen"
+                  title="Categoria Dato"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombreGrupo"
+                  title="Grupo"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombrePais"
+                  title="Pais"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="fechaCreacion"
+                  title="Fecha Creacion Oportunidad"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="fechaRegistroCampania"
+                  title="Fecha Registro Campaña"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="estadoUltimaActividad"
+                  title="Estado Ultima Actividad"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="fechaProgramada"
+                  title="Fecha Ultima Actividad"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="probabilidadNuevoValor"
+                  title="Probabilidad Nuevo Valor"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="probabilidadNuevo"
+                  title="Probabilidad Nueva"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="diasSinContactoManhana"
+                  title="BIC Mañana"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="diasSinContactoTarde"
+                  title="BIC Tarde"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="sentinel"
+                  title="C.C.R"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="interaccion"
+                  title="Interaccion"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="urlOrigen"
+                  title="Url Origen"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="usuarioCreacion"
+                  title="Usuario Creacion"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="nombreCampania"
+                  title="Nombre Campaña"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="facebookNombreAnuncio"
+                  title="Nombre Anuncio"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="idBusqueda"
+                  title="Id Busqueda"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="moneda"
+                  title="Moneda"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="montoTotal"
+                  title="Monto Total"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="totalPago"
+                  title="Pago Mes"
+                  [filterable]="true"
+                  [width]="200"
+                >
+                </kendo-grid-column>
+                <ng-template kendoGridDetailTemplate let-dataItem>
+                  <app-desglosable-seguimiento-oportunidades
+                    [row]="dataItem"
+                  ></app-desglosable-seguimiento-oportunidades>
+                </ng-template>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

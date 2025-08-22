@@ -1,0 +1,581 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">
+            Generacion de Reporte de Estado de Cuenta por Proveedor
+          </h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-md-8 element">
+              <div class="row" style="margin: 2%">
+                <div class="col-md-8 w-100">
+                  <div class="row"  style="margin-bottom: 2%;">
+                    <div class="col-md-5" style="margin-left: 5%">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="padding-bottom: 5%"
+                      >
+                        <label
+                          [for]="sedes"
+                          class="k-label"
+                          style="margin-bottom: 5px"
+                        >
+                          <span>Empresa(s): :</span>
+                        </label>
+
+                        <kendo-multiselect
+                          #sedes
+                          [formControl]="sede"
+                          [data]="itemSede"
+                          class="d-flex"
+                          size="medium"
+                          textField="nombre"
+                          [valuePrimitive]="true"
+                          valueField="indice"
+                          placeholder="< Todos >"
+                          [filterable]="true"
+                          (filterChange)="Sedes($event)"
+                        >
+                        </kendo-multiselect>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-5" style="margin-left: 5%">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="padding-bottom: 5%"
+                      >
+                        <label
+                          [for]="dropdownlist"
+                          class="k-label"
+                          style="margin-bottom: 5px"
+                        >
+                          <span>Estado : </span>
+                        </label>
+                        <kendo-dropdownlist
+                          [formControl]="estado"
+                          class="d-flex center"
+                          size="medium"
+                          #dropdownlist
+                          [data]="listaEstado"
+                          textField="nombre"
+                          valueField="id"
+                          [defaultItem]="{
+                            id: null,
+                            nombre: '< Seleccionar >'
+                          }"
+                          [valuePrimitive]="false"
+                          (selectionChange)="SeleccionEstado($event)"
+                        >
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+               
+                  
+                  <div
+                    class="row"
+                    [formGroup]="formReporteEstadoCuentaProveedor"
+                    style="margin-bottom: 2%;"
+                  >
+                    <div class="col-md-5" style="margin-left: 5%">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="padding-bottom: 5%"
+                      >
+                        <label
+                          [for]="dropdownlist"
+                          class="k-label"
+                          style="margin-bottom: 5px"
+                        >
+                          <span>Proveedor : </span>
+                        </label>
+                        <kendo-autocomplete
+                          #proveedor
+                          [data]="proveedorTemp"
+                          valueField="nombre"
+                          formControlName="proveedor"
+                          placeholder="<ingrese Proveedor>"
+                          [filterable]="true"
+                          (filterChange)="filtroProveedor($event)"
+                          [style]="'background-color: #FFF4B9'"
+                        >
+                          <ng-template
+                            kendoAutoCompleteItemTemplate
+                            let-dataItem
+                          >
+                            <span (click)="selectItemProveedor(dataItem)">{{
+                              dataItem.nombre
+                            }}</span>
+                          </ng-template>
+                        </kendo-autocomplete>
+                      </kendo-formfield>
+                    </div>
+                    <div class="col-md-5" style="margin-left: 5%">
+                      <kendo-formfield
+                        orientation="horizontal"
+                        style="padding-bottom: 5%"
+                      >
+                        <label
+                          [for]="dropdownlist"
+                          class="k-label"
+                          style="margin-bottom: 5px"
+                        >
+                          <span>Cuenta Contable : </span>
+                        </label>
+                        <kendo-autocomplete
+                          #cuenta
+                          [data]="planContableTemp"
+                          valueField="nombre"
+                          formControlName="cuenta"
+                          placeholder="<ingrese cuenta contable>"
+                          [filterable]="true"
+                          (filterChange)="filtroCuentaContable($event)"
+                          [style]="'background-color: #FFF4B9'"
+                        >
+                          <ng-template
+                            kendoAutoCompleteItemTemplate
+                            let-dataItem
+                          >
+                            <span
+                              (click)="selectItemCuentaContable(dataItem)"
+                              >{{ dataItem.nombre }}</span
+                            >
+                          </ng-template>
+                        </kendo-autocomplete>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                     
+                        <div
+                          class="row"
+                          [formGroup]="formReporteEstadoCuentaProveedor"
+                          style="margin-bottom: 2%;"
+                        >
+                          <div class="col-md-5" style="margin-left: 5%">
+                            <kendo-formfield
+                              orientation="horizontal"
+                              style="padding-bottom: 5%"
+                            >
+                              <label [for]="dropdownlist" class="k-label">
+                                <span>Fecha Inicio Emisión: </span>
+                              </label>
+                              <kendo-datepicker
+                                formControlName="fechaInicio"
+                                culture="es-ES"
+                                calendarType="classic"
+                                [format]="{
+                                  displayFormat: 'dd-MM-yyyy',
+                                  inputFormat: 'dd-MM-yyyy'
+                                }"
+                                placeholder="dia-mes-año"
+                              ></kendo-datepicker>
+                            </kendo-formfield>
+                          </div>
+                          <div class="col-md-5" style="margin-left: 5%">
+                            <kendo-formfield
+                              orientation="horizontal"
+                              style="padding-bottom: 5%"
+                            >
+                              <label [for]="dropdownlist" class="k-label">
+                                <span>Fecha Fin Emisión: </span>
+                              </label>
+                              <kendo-datepicker
+                                formControlName="fechaFin"
+                                culture="es-ES"
+                                calendarType="classic"
+                                [format]="{
+                                  displayFormat: 'dd-MM-yyyy',
+                                  inputFormat: 'dd-MM-yyyy'
+                                }"
+                                placeholder="dia-mes-año"
+                              ></kendo-datepicker>
+                            </kendo-formfield>
+                          </div>
+                        </div>
+                     
+                        <div class="col-md-4">
+                          <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-6">
+                              <button
+                                style="margin-top: 1.5rem"
+                                kendoButton
+                                icon="k-icon k-i-search k-icon-20"
+                                type="button"
+                                themeColor="primary"
+                                (click)="GenerarReporte()"
+                              >
+                                Generar Reporte
+                              </button>
+                            </div>
+                            <div class="col-md-4"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+     
+            <br />
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-header bg-color-material col-md-12">
+                  <div class="row col-md-12">
+                    <div div class="col-md-12" style="text-align: left">
+                      <div class="row">
+                        <div class="col-md-7">
+                          <button
+                            kendoButton
+                            style="margin-right: 1rem"
+                            icon="k-icon k-i-file-excel k-icon-20"
+                            type="button"
+                            themeColor="tertiary"
+                            (click)="excelexport.save()"
+                          >
+                            Exportar a Excel
+                          </button>
+
+                          <kendo-excelexport
+                            [data]="listaGrilla"
+                            fileName="ReporteEstadoCuentaProveedor-REC.xlsx"
+                            #excelexport
+                          >
+                            <kendo-excelexport-column field="empresaSede" title="Sede">
+                            </kendo-excelexport-column>
+                            <!-- <kendo-excelexport-column field="fur" title="FUR">
+                            </kendo-excelexport-column> -->
+                            <kendo-excelexport-column field="rucProveedor" title="RUC">
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="nombreProveedor"
+                              title="Razon Social"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="numeroCuenta"
+                              title="Numero De Cuenta"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="descripcionCuenta"
+                              title="Nombre De Cuenta"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="numeroComprobante"
+                              title="Comprobante (Serie - Numero)"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="nombreMoneda"
+                              title="Moneda"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="montoBoleta"
+                              title="Monto En Boleta"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="montoPagado"
+                              title="Monto Pagado"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="montoPendiente"
+                              title="Monto Pendiente"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="estado"
+                              title="Estado"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="numeroCuentaCorriente"
+                              title="Cuenta Corriente"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="numeroRecibo"
+                              title="Recibo"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="tipoPago"
+                              title="Tipo de Pago"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="fechaPagoBanco"
+                              title="Fecha de Pago"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="mesPagoBanco"
+                              title="Mes de Pago"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="fechaEmisionComprobante"
+                              title="Fecha de Emision"
+                            >
+                            </kendo-excelexport-column>
+                            <kendo-excelexport-column
+                              field="fechaVencimientoComprobante"
+                              title="Fecha de Vencimiento"
+                            >
+                            </kendo-excelexport-column>
+                          </kendo-excelexport>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <kendo-grid
+                  [kendoGridBinding]="listaGrilla"
+                  [loading]="loader"
+                  [pageSize]="5"
+                  [sortable]="true"
+                  [reorderable]="true"
+                  [resizable]="true"
+                  [columnMenu]="{ filter: true }"
+                  [pageable]="{
+                    buttonCount: 5,
+                    info: true,
+                    type: 'numeric',
+                    pageSizes: true,
+                    previousNext: true,
+                    position: 'bottom'
+                  }"
+                >
+                  <kendo-grid-column
+                    title="Sede"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="empresaSede"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [class]="'cellCustomClass'"
+                  >
+                  </kendo-grid-column>
+                  <!-- <kendo-grid-column
+                    title="FUR"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="codigoFur"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column> -->
+                  <kendo-grid-column
+                    title="RUC"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="rucProveedor"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Razon Social"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="nombreProveedor"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Numero de Cuenta"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="numeroCuenta"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Nombre de Cuenta"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="descripcionCuenta"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Comprobante (Serie - Numero)"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="numeroComprobante"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Moneda"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="nombreMoneda"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Monto En Boleta"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="montoBoleta"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Monto Pagado"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="montoPagado"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Monto Pendiente"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="montoPendiente"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Estado"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="estado"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+
+                  <kendo-grid-column
+                    title="Cuenta Corriente"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="numeroCuentaCorriente"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Recibo"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="numeroRecibo"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Tipo de Pago"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="tipoPago"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Fecha de Pago"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="fechaPagoBanco"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                      {{finanzasService.fechaTemplate(dataItem.fechaPagoBanco) }}
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Mes de Pago"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="mesPagoBanco"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Fecha de Emision"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="fechaEmisionComprobante"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                      {{finanzasService.fechaTemplate(dataItem.fechaEmisionComprobante) }}
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Fecha de Vencimiento"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="fechaVencimientoComprobante"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                      {{finanzasService.fechaTemplate(dataItem.fechaVencimientoComprobante) }}
+                    </ng-template>
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

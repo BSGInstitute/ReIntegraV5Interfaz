@@ -1,0 +1,386 @@
+<div class="contenedor">
+  <diV class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">
+            Filtro para consultas en Asignacion Manual de Oportunidad
+          </h3>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <!-- <app-punto-de-corte></app-punto-de-corte> -->
+              <div class="content-tab">
+                <ng-container>
+                  <form
+                    class="k-form k-form-horizontal"
+                    [formGroup]="formRevertiCambioFase"
+                  >
+                    <div class="row my-2">
+                      <div class="col-sm-12 col-md-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="asesores" class="k-label">
+                            Asesores:
+                          </label>
+                          <kendo-multiselect
+                            #asesores
+                            formControlName="asesores"
+                            [data]="filtros.filtroPersonal"
+                            [filterable]="true"
+                            [valuePrimitive]="true"
+                            textField="nombre"
+                            valueField="id"
+                            [kendoDropDownFilter]="filterSettings"
+             
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+                      <div class="col-sm-12 col-md-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="centrocosto" class="k-label">
+                            Centro Costo:
+                          </label>
+                          <kendo-multiselect
+                            #centrocosto
+                            formControlName="centroCosto"
+                            [data]="filtros.filtroCentroCosto"
+                            [filterable]="true"
+                            [kendoDropDownFilter]="filterSettings"
+                            [valuePrimitive]="true"
+
+                            textField="nombre"
+                            valueField="id"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+
+                    <div class="row my-2">
+                      <div class="col-sm-12 col-md-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="tipodato" class="k-label">
+                             Tipo Dato:
+                          </label>
+                          <kendo-multiselect
+                            #tipodato
+                            formControlName="tipoDato"
+                            [data]="filtros.filtroTipoDato"
+                            [filterable]="true"
+                            [kendoDropDownFilter]="filterSettings"
+                            [valuePrimitive]="true"
+
+                            textField="nombre"
+                            valueField="id"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+                      <div class="col-sm-12 col-md-6">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="origen" class="k-label">
+                            Origen:
+                          </label>
+                          <kendo-multiselect
+                            #origen
+                            formControlName="origen"
+                            [data]="filtros.filtroOrigen"
+                            [filterable]="true"
+                            [kendoDropDownFilter]="filterSettings"
+                            [valuePrimitive]="true"
+
+                            textField="nombre"
+                            valueField="id"
+                          >
+                          </kendo-multiselect>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                      <div class="row my-2">
+                        <div class="col-sm-12 col-md-6">
+                          <kendo-formfield orientation="horizontal">
+                            <label [for]="contacto" class="k-label">
+                              Filtro Contacto
+                            </label>
+                            <kendo-textbox
+                            #contacto
+                            [style.width.px]="310"
+                            formControlName="filtroContacto"
+                            placeholder=""
+                            [filterable]="true"
+                            [valuePrimitive]="true"
+                          >
+                          </kendo-textbox>
+                          </kendo-formfield>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                          <kendo-formfield orientation="horizontal">
+                            <label [for]="faseOportunidad" class="k-label">
+                               Fase Oportunidad
+                            </label>
+                            <kendo-multiselect
+                            #faseOportunidad
+                            formControlName="faseOportunidad"
+                            [data]="filtros.filtroFaseOportunidad"
+                            [filterable]="true"
+                            (filterChange)="
+                              filterChangeForm($event, 'filtroFaseOportunidad')
+                            "
+                            [valuePrimitive]="true"
+                            textField="codigo"
+                            valueField="id"
+                            [kendoDropDownFilter]="filterSettings"
+                          >
+                          </kendo-multiselect>
+                          </kendo-formfield>
+                        </div>
+                      </div>
+
+                    <div class="row my-3">
+                      <div class="col-12 d-flex justify-content-end">
+                        <button
+                          class="btn btn-sm btn-primary"
+                          (click)="ObenerOportunidades()"
+
+                        >
+                          Buscar
+                          <fa-icon
+                            [icon]="['fas', 'search']"
+                            class="fa-lg"
+                          ></fa-icon>
+                        </button>
+
+                      </div>
+                    </div>
+                  </form>
+
+
+                  <div class="">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="card">
+                          <div class="card-header bg-color-material pb-0">
+                            <h3 class="text-white mb-2">Lista de Oportunidades</h3>
+                          </div>
+                          <div class="card-body p-4">
+                            <div class="row">
+                              <div class="col">
+                                <kendo-grid
+                        [loading]="loader"
+                        [data]="listaGrilla"
+                        filterable="menu"
+                        [sortable]="true"
+                        [resizable]="true"
+                        [pageable]="{
+                          buttonCount:10,
+                          info: true,
+                          type: 'numeric',
+                          pageSizes: true,
+                          previousNext: true,
+                          position: 'bottom'
+                        }"
+                        [skip]="gridRevertirCambioFase.gridState.skip"
+                        [pageSize]="15"
+                        [pageSize]="
+                        gridRevertirCambioFase.gridState.take
+                        "
+
+                        kendoGridSelectBy="id"
+                        [(selectedKeys)]="mySelection"
+                        [sort]="gridRevertirCambioFase.gridState.sort"
+                        [filter]="gridRevertirCambioFase.gridState.filter"
+                        (dataStateChange)="
+                        gridRevertirCambioFase.onStateChange($event)
+                        "
+                        [selectable]="{
+                          checkboxOnly: true,
+                          mode: 'multiple'
+                        }"
+                        [height]="800"
+                        [filterable]="'row'"
+                        (detailExpand)="gridEventsResponse($event)"
+                      >
+                        <ng-template kendoGridToolbarTemplate>
+                          <button
+                            kendoButton
+                            icon="reload"
+                            fillMode="flat"
+                            themeColor="base"
+                            class="text-white"
+                          ></button>
+
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                        </ng-template>
+
+
+                        <kendo-grid-column
+                          field="oportunidad"
+                          title="Oportunidad"
+                          [width]="270"
+                          headerClass="headerGridChat"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-column
+                          field="asesor"
+                          title=" Asesor"
+                          [width]="270"
+                          headerClass="headerGridChat"
+                        >
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="alumno"
+                          title="Alumno"
+                          [width]="270"
+                          headerClass="headerGridChat"
+                        >
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                          field="faseOportunidad"
+                          title="Fase"
+                          [width]="270"
+                          headerClass="headerGridChat"
+                          [filterable]="false"
+                        >
+                        </kendo-grid-column>
+
+                        <kendo-grid-column
+                        field="tipoDato"
+                        title="Tipo Dato"
+                        [width]="270"
+                        [valuePrimitive]=""
+                        headerClass="headerGridChat"
+                      >
+                      </kendo-grid-column>
+                        <kendo-grid-column
+                          field="origen"
+                          title="Origen"
+                          [width]="270"
+                          headerClass="headerGridChat"
+                        >
+                        </kendo-grid-column>
+                        <kendo-grid-command-column
+                        title="Editar"
+                        [width]="150"
+                        headerClass="header-grid-single"
+                      >
+                        <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem="dataItem"
+                          let-row="row"
+                        >
+                          <div
+                            class="w-100 d-flex justify-content-center"
+                          >
+                            <button
+
+                              kendoButton
+                              themeColor="warning"
+                              fillMode="solid"
+                              rounded="large"
+                              size="large"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Editar"
+                              (click)="abrirModalEditarCambioFace(modalRevertirCambioFace, dataItem)"
+                            >
+                              <span
+                                class="k-icon k-i-edit k-icon-20"
+                              ></span>
+                            </button>
+
+                          </div>
+                        </ng-template>
+                      </kendo-grid-command-column>
+                      <ng-template kendoGridDetailTemplate let-dataItem>
+                       <app-desglosable-revertir-cambio-fase *ngIf="dataItem.listaDetalle!=undefined" [row]="dataItem.listaDetalle"></app-desglosable-revertir-cambio-fase>
+                      </ng-template>
+                      </kendo-grid>
+                              </div>
+                            </div>
+                          </div>
+
+
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </diV>
+</div>
+
+<ng-template #modalRevertirCambioFace let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">Revertir Cambio de Fase:</h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row k-form k-form-horizontal" [formGroup]="formRevertir">
+      <div class="col-sm-12 col-md-12">
+        <kendo-formfield orientation="horizontal">
+          <label [for]="fechaProgramada" class="k-label">
+            <span
+              >Fecha programada
+              <span class="text-danger fw-bold"
+              ></span
+            ></span>
+          </label>
+
+            <kendo-datetimepicker
+              #fechaProgramada
+            [readOnlyInput]="readOnlyInput"
+            [value]="value"
+            formControlName="fechaProgramada"
+            format="yyyy-MM-dd"
+            >
+            </kendo-datetimepicker>
+
+
+          <kendo-grid-spacer></kendo-grid-spacer>
+
+          <div class="col-sm-12">
+            <label id="inputModal1" class="control-label"> </label>
+          </div>
+        </kendo-formfield>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button
+        kendoButton
+        *ngIf="cambioFace"
+        themeColor="primary"
+        (click)="revertir()"
+      >
+        Revertir
+      </button>
+      <button
+        themeColor="error"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+

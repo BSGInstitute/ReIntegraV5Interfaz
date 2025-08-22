@@ -1,0 +1,284 @@
+<!-- #region Modal PgeneralPerfilContacto -->
+<div class="modal-header bg-light text-dark text-center py-2">
+  <h2 class="modal-title w-100 mb-0">
+    Asignar Programas Generales a {{ dataItemPgeneral.nombre }}
+  </h2>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body px-4 k-form k-form-horizontal">
+  <div class="card">
+    <div class="card-body">
+      <kendo-grid
+        [kendoGridBinding]="gridProgramasHijos.data"
+        [loading]="gridProgramasHijos.loading"
+        (edit)="gridProgramasHijos.editHandler($event)"
+        (save)="gridProgramasHijos.saveHandler($event)"
+        (remove)="gridProgramasHijos.removeHandler($event)"
+        filterable="menu"
+      >
+        <ng-template kendoGridToolbarTemplate>
+          <h3 class="mb-0">Lista cursos del Programa General</h3>
+          <kendo-grid-spacer></kendo-grid-spacer>
+          <button
+            kendoButton
+            themeColor="success"
+            type="button"
+            icon="plus"
+            (click)="onClickAsignarNuevoPrograma(modalAgregarCurso)"
+          >
+            Asignar nuevo programa
+          </button>
+        </ng-template>
+        <kendo-grid-column
+          field="idTroncalGeneral"
+          title="Id"
+          class="text-center"
+          [width]="60"
+          [filterable]="true"
+          [editable]="false"
+          headerClass="pg-header-grid justify-content-center"
+        ></kendo-grid-column>
+        <kendo-grid-column
+          field="orden"
+          title="Orden"
+          class="text-center"
+          [width]="60"
+          editor="numeric"
+          headerClass="pg-header-grid justify-content-center header-grid-integra"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.orden ?? "Ingrese el Nro Orden" }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="nombre"
+          title="Nombre"
+          [width]="100"
+          [filterable]="true"
+          filter="text"
+          headerClass="pg-header-grid justify-content-center"
+        ></kendo-grid-column>
+        <kendo-grid-column
+          [hidden]="!esProgramaInstituto"
+          field="idModulo"
+          title="Modulo"
+          class="text-center"
+          [width]="100"
+          [editable]="true"
+          headerClass="pg-header-grid justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              dataItem.idModulo != null && dataItem.idModulo != 0
+                ? obtenerNombreModulo(dataItem.idModulo)
+                : "Seleccione Módulo"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idModulo')"
+              class="d-flex"
+              size="medium"
+              [data]="pgeneralService.combosModulo.moduloPrograma"
+              textField="nombre"
+              valueField="id"
+              [kendoDropDownFilter]="filterSettings"
+              [valuePrimitive]="true"
+            ></kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          [hidden]="!esProgramaInstituto"
+          field="idCiclo"
+          title="Ciclo"
+          class="text-center"
+          [width]="100"
+          [editable]="true"
+          headerClass="pg-header-grid justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              dataItem.idCiclo != null && dataItem.idCiclo != false
+                ? obtenerNombreCiclo(dataItem.idCiclo)
+                : "Seleccione Ciclo"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-dropdownlist
+              [formControl]="formGroup.get('idCiclo')"
+              class="d-flex"
+              size="medium"
+              [data]="pgeneralService.combosModulo.cicloPrograma"
+              textField="nombre"
+              valueField="id"
+              [kendoDropDownFilter]="filterSettings"
+              [valuePrimitive]="true"
+            ></kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          field="versiones"
+          title="Version"
+          [width]="100"
+          [editable]="true"
+          headerClass="pg-header-grid justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container
+              *ngIf="
+                dataItem.versiones != null && dataItem.versiones.length > 0
+              "
+            >
+              <ul>
+                <li *ngFor="let item of dataItem.versiones">
+                  {{ obtenerNombreVersionPrograma(item) }}
+                </li>
+              </ul>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                dataItem.versiones == null || dataItem.versiones.length == 0
+              "
+            >
+              Seleccione Version
+            </ng-container>
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+            <kendo-multiselect
+              [formControl]="formGroup.get('versiones')"
+              class="d-flex"
+              size="medium"
+              [data]="pgeneralService.combosModulo.versionPrograma"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+              placeholder="Seleccione..."
+            ></kendo-multiselect>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column
+          title="Acciones"
+          [width]="100"
+          headerClass="pg-header-grid justify-content-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+            <div class="row justify-content-center">
+              <div kendoTooltip class="col-auto mx-1 p-0">
+                <button
+                  kendoGridEditCommand
+                  themeColor="warning"
+                  icon="pencil"
+                  title="Editar"
+                ></button>
+              </div>
+              <div kendoTooltip class="col-auto mx-1 p-0">
+                <button
+                  kendoGridRemoveCommand
+                  themeColor="error"
+                  icon="trash"
+                  title="Eliminar"
+                ></button>
+              </div>
+              <div kendoTooltip class="col-auto mx-1 p-0">
+                <button
+                  kendoGridSaveCommand
+                  themeColor="primary"
+                  icon="save"
+                  [disabled]="gridProgramasHijos.formGroup?.invalid"
+                  title="Guardar"
+                ></button>
+              </div>
+              <div kendoTooltip class="col-auto mx-1 p-0">
+                <button
+                  kendoGridCancelCommand
+                  themeColor="secondary"
+                  icon="cancel"
+                  title="Cancelar"
+                ></button>
+              </div>
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="k-form-buttons m-0">
+    <button
+      themeColor="error"
+      icon="close"
+      kendoButton
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+</div>
+
+<ng-template #modalAgregarCurso let-modal>
+  <div class="modal-header py-2 bg-success text-white text-center">
+    <h2 class="modal-title mb-0 w-100 text-center text-white">
+      Agregar programa general como Curso
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="col-sm-12 col-md-12 mb-2">
+      <kendo-formfield>
+        <label [for]="pgeneral" class="k-label fw-bold w-auto">
+          <span> Programa General<strong> *</strong></span>
+        </label>
+        <kendo-dropdownlist
+          #pgeneral
+          [formControl]="formControlIdPgeneralNuevo"
+          [data]="pgeneralService.combosModulo.pGeneral"
+          textField="nombre"
+          valueField="id"
+          [kendoDropDownFilter]="filterSettings"
+          [defaultItem]="{
+            id: null,
+            nombre: '<Seleccionar>'
+          }"
+          [popupSettings]="{ popupClass: 'pg-popup-success' }"
+          class="pg-dropDown-success"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Seleccione un programa</kendo-formerror>
+      </kendo-formfield>
+    </div>
+    <loading [loading]="loaderModal"></loading>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 w-100 justify-content-end">
+      <button
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="agregarNuevoCurso()"
+      >
+        Guardar
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        icon="cancel"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

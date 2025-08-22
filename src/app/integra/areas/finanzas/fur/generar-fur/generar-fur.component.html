@@ -1,0 +1,1067 @@
+<ng-template #modalFur let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{nombreModal}}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formGroupGenerarFUR">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idCiudad" class="k-label t_font">
+                  <span
+                  >Ciudad de Sede :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idCiudad"
+                  class="d-flex"
+                  size="small"
+                  #idCiudad
+                  [data]="listaCiudadSede"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true" 
+                  (selectionChange)="BuscarEmpresa($event)">
+                  <ng-template kendoDropDownListNoDataTemplate>
+                    <h4>
+                      <span class="k-icon k-i-exclamation-circle"></span><br /><br />
+                      No existen datos!
+                    </h4>
+                  </ng-template>
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idProducto" class="k-label t_font">
+                  <span
+                  >Producto/Servicio :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idProducto"
+                  class="d-flex"
+                  size="small"
+                  #idProducto
+                  [data]="listaServicios"
+                  textField="producto"
+                  valueField="idProducto"
+                  [defaultItem]="{idProducto:null,producto:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  (selectionChange)="CargarCuenta($event)"
+                  (blur)="CalcularTotal()"
+                  
+              >
+              </kendo-dropdownlist>
+              <ng-template kendoDropDownListNoDataTemplate>
+                <h4>
+                  <span class="k-icon k-i-exclamation-circle"></span><br /><br />
+                  Selecciona un proveedor!
+                </h4>
+              </ng-template>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="IdEmpresa" class="k-label t_font">
+                  <span
+                  >Empresa :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idEmpresa"
+                  class="d-flex"
+                  size="small"
+                  #IdEmpresa
+                  [data]="listaEmpresa"
+                  textField="razonSocial"
+                  valueField="id"
+                  [defaultItem]="{id:null,razonSocial:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  
+              >
+              <ng-template kendoDropDownListNoDataTemplate>
+                <h4>
+                  <span class="k-icon k-i-exclamation-circle"></span><br /><br />
+                  Seleccione una Ciudad de Sede!
+                </h4>
+              </ng-template>
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+          
+          <div class="col k-form-horizontal col-md-6" style="margin-top: 0.8rem;">
+              <div class="row">
+                <div class="col-md-4" style="padding: 0;">
+                  <label class="k-label t_font"
+                      style="padding-top: 3px;"
+                      >
+                        <span
+                        >Cuenta Asociada :
+                        <strong class="text-danger">*</strong></span>
+                    </label>
+                </div>
+                <div class="col-md-4" style="padding: 0;">
+                  <kendo-textbox
+                  fillMode="outline"
+                  [disabled]="true"
+                    class="d-flex t_font"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="cuenta"
+                    [required]="true"
+                    [style.height.px]="25"
+                  >
+                  </kendo-textbox>   
+                </div>
+                <div class="col-md-4">
+                  <kendo-textbox
+                  fillMode="outline"
+                  [disabled]="true"
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="numeroCuenta"
+                    [required]="true"
+                  >
+                  </kendo-textbox>
+                </div>
+                
+              </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idFurTipoPedido" class="k-label t_font">
+                  <span
+                  >Tipo Pedido :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idFurTipoPedido"
+                  class="d-flex"
+                  size="small"
+                  #idFurTipoPedido
+                  [data]="listaPedido"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+              <ng-template kendoDropDownListNoDataTemplate>
+                <h4>
+                  <span class="k-icon k-i-exclamation-circle"></span><br /><br />
+                  No existen datos!
+                </h4>
+              </ng-template>
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6" style="margin-top:1rem;">
+            <div class="row" style="margin-left:0.5rem;">
+              <div class="col-md-2" style="padding: 0;">
+                <label class="k-label t_font"
+                    style="padding-top: 3px;"
+                    >
+                      <span
+                      >Cantidad :
+                      <strong class="text-danger">*</strong></span>
+                  </label>
+              </div>
+              <div class="col-md-3" style="padding: 0;">
+                <kendo-numerictextbox
+                  class="d-flex t_font"
+                  size="small"
+                  [min]="0"
+                  formControlName="cantidad"
+                  [required]="true"
+                  (valueChange)="CalcularTotal()"
+                  (blur)="CalcularTotal()"
+                >
+                </kendo-numerictextbox>   
+              </div>
+              <div class="col-md-2" >
+                <label class="k-label t_font"
+                    style="padding-top: 3px;"
+                    >
+                      <span
+                      >Unidad :
+                      <strong class="text-danger">*</strong></span>
+                  </label>
+              </div>
+              <div class="col-md-5">
+                <kendo-dropdownlist
+                fillMode="outline"
+                  [disabled]="true"
+                  formControlName="idProductoPresentacion"
+                  class="d-flex"
+                  size="small"
+                  #idProductoPresentacion
+                  [data]="listaPresentacionP"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+
+              </kendo-dropdownlist>
+              </div>
+              
+            </div>
+          
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6" style="margin-top: 0.8rem;">
+            <div class="row">
+              <div class="col-md-9" style="padding: 0px;">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label  class="k-label t_font" style="margin-top: 0.3rem;margin-left: 0.5rem;">
+                      <span
+                      >Fecha Ejecucion:
+                      <strong class="text-danger">*</strong></span>
+                    </label>
+                  </div>
+                  <div class="col-md-6">
+                    <kendo-datepicker
+                      #fechaLimite
+                      formControlName="fechaLimite"
+                      [incompleteDateValidation]="true"
+                      calendarType="classic"
+                      [format]="{displayFormat: 'dd-MM-yyyy',inputFormat: 'dd-MM-yyyy'}"
+                      placeholder="dia-mes-año"
+                      (blur)="CalcularSemana()"
+                      (valueChange)="CalcularSemana()"
+                      [min]="nivelAcceso==1 || nivelAcceso==2 ? min : fechaMin"
+                    ></kendo-datepicker>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3" style="margin-top: 0.2rem;">
+                <kendo-textbox
+                fillMode="outline"
+                    [disabled]="true"
+                    class="d-flex"
+                    size="small"
+                    [clearButton]="true"
+                    formControlName="numeroSemana"
+                    [required]="true"
+                  >
+                  </kendo-textbox>
+              </div>
+            </div>
+            
+          </div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label t_font">
+                  <span
+                  >Pago en Moneda Real :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+              fillMode="outline"
+                  [disabled]="true"
+                  formControlName="idMonedaPagoReal"
+                  class="d-flex "
+                  size="small"
+                  #idMonedaPagoReal
+                  [data]="listaMoneda"
+                  textField="nombrePlural"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombrePlural:'Seleccionar'}"
+                  [valuePrimitive]="true"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="centroCosto" class="k-label t_font">
+                  <span
+                  >Centro de Costo:
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  
+                  formControlName="idCentroCosto"
+                  class="d-flex"
+                  size="small"
+                  #centroCosto
+                  [data]="listaCentroCosto"
+                  textField="nombre"
+                  valueField="id"
+                  [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="BuscarCentroCosto($event)"
+              >
+
+              </kendo-dropdownlist>                                     
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="descripcion" class="k-label t_font">
+                  <span
+                  > Descripción:
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-textarea
+                    #descripcion
+                    [style.width.%]="100"
+                    resizable="auto"
+                    [maxlength]="250"
+                    formControlName="descripcion"
+                >
+                </kendo-textarea>                                    
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="idProveedor" class="k-label t_font">
+                  <span
+                  >Proveedor :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-dropdownlist
+                  formControlName="idProveedor"
+                  class="d-flex"
+                  size="small"
+                  #idProveedor
+                  [data]="listaProveedor"
+                  textField="razonSocial"
+                  valueField="id"
+                  [defaultItem]="{id:null,razonSocial:'Seleccionar'}"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="BuscarProveedor($event)"
+                  (selectionChange)="BuscarServicios($event)"
+              >
+
+              </kendo-dropdownlist>                                     
+            </kendo-formfield>
+          </div>
+          <div class="col k-form-horizontal col-md-6" style="margin-top:1rem;">
+            <div class="row" style="margin-left:0.5rem;">
+              <div class="col-md-2" style="padding: 0;">
+                <label class="k-label t_font"
+                    style="padding-top: 3px;"
+                    >
+                      <span
+                      >Moneda<br>Original :
+                      <strong class="text-danger">*</strong></span>
+                  </label>
+              </div>
+              <div class="col-md-3" style="padding: 0;">
+                <kendo-numerictextbox
+                fillMode="outline"
+                  [disabled]="true"
+                  class="d-flex t_font"
+                  size="small"
+                  [min]="0"
+                  formControlName="precioUnitarioMonedaOrigen"
+                  [required]="true"
+                  [style.height.px]="25"
+                >
+                </kendo-numerictextbox>   
+              </div>
+              <div class="col-md-2" >
+                <label class="k-label t_font"
+                    style="padding-top: 3px;"
+                    >
+                      <span
+                      >Dolares :
+                      <strong class="text-danger">*</strong></span>
+                  </label>
+              </div>
+              <div class="col-md-5">
+                <kendo-numerictextbox
+                fillMode="outline"
+                [disabled]="true" 
+                  class="d-flex"
+                  size="small"
+                  [min]="0"
+                  formControlName="precioUnitarioDolares"
+                  [required]="true"
+                >
+                </kendo-numerictextbox> 
+              </div>
+              
+            </div>
+          
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"></div>
+          <div class="col k-form-horizontal col-md-6">
+            <kendo-formfield orientation="horizontal">
+              <label [for]="" class="k-label t_font">
+                  <span
+                  >Total Efectivo :
+                  <strong class="text-danger">*</strong></span>
+              </label>
+              <kendo-numerictextbox
+              fillMode="outline"
+                [disabled]="true"
+                  class="d-flex"
+                  size="small"
+                  [min]="0"
+                  formControlName="precioTotalMonedaOrigen"
+                  [required]="true"
+                >
+                </kendo-numerictextbox> 
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+    <br>
+  </div>
+  <div class="modal-footer">
+    <div
+        style="width:fit-content;justify-content:center;display:flex"  kendoTooltip
+      >
+        <div [title]="ObtenerMensajeBoton(generarFurTemp)">
+          <button
+            [disabled]="editarDisable"
+            type="button"
+            class="btn btn-primary"
+            (click)="accionModal()"
+          >
+          {{nombreBTN}}
+          </button>
+        </div>
+      </div>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+
+<div class="">
+    <div class="row">
+      <div class="col-1fa-rotate-270">
+        <div class="card">
+          <div class="card-header bg-color-material">
+            <h1 class="text-white"> Generación de FUR's </h1>
+          </div>
+          <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-2 k-form-horizontal" >
+                    <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                      <label [for]="dropdownlist" class="k-label t_font">
+                          <span
+                          >Área :
+                          </span>
+                      </label>
+                      <kendo-dropdownlist
+                          [disabled]="!((parametro.idRol==1 ||  parametro.idRol==2) || parametro.idArea==3 || parametro.idRol==19)"
+                          [style.width.px]="130"
+                          [formControl]="area"
+                          class="d-flex"
+                          size="medium"
+                          #dropdownlist
+                          [data]="listaAreas"
+                          textField="codigo"
+                          valueField="id"
+                          [defaultItem]="{id:null,codigo:'Seleccionar'}"
+                          [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>  
+                </div>
+                <div class="col-md-2 k-form-horizontal" >
+                    <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                      <label [for]="dropdownlist" class="k-label t_font">
+                          <span
+                          >Ciudad :
+                          </span>
+                      </label>
+                      <kendo-dropdownlist
+                          [style.width.px]="150"
+                          [formControl]="ciudad"
+                          class="d-flex"
+                          size="medium"
+                          #dropdownlist
+                          [data]="listaCiudadSede"
+                          textField="nombre"
+                          valueField="id"
+                          [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                          [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>  
+                </div>
+                <div class="col-md-2 k-form-horizontal" >
+                    <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                      <label [for]="dropdownlist" class="k-label t_font">
+                          <span
+                          >Año :
+                          </span>
+                      </label>
+                      <kendo-numerictextbox
+                        [formControl]="anio"
+                        orientation="horizontal"
+                        [style.width.px]="130"
+                        [autoCorrect]="true"
+                        [min]="1999"
+                        [max]="9999"
+                        [format]="'0'"
+                        [decimals]="0"
+                        [spinners]="false"                      
+                        >
+                        </kendo-numerictextbox>               
+                    </kendo-formfield>  
+                </div>
+                <div class="col-md-2 k-form-horizontal" >
+                    <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                      <label [for]="dropdownlist" class="k-label t_font">
+                          <span
+                          >Semana :
+                          </span>
+                      </label>
+                      <kendo-numerictextbox
+                        [formControl]="semana"
+                        orientation="horizontal"
+                        [style.width.px]="130"
+                        [min]="1"
+                        [max]="99"
+                        [decimals]="0"
+                        [format]="'0'"
+                        [autoCorrect]="true" 
+                        [maxlength]="2"                       
+                        >
+                        </kendo-numerictextbox>  
+                    </kendo-formfield>  
+                </div>
+                <div class="col-md-2 k-form-horizontal" >
+                    <kendo-formfield orientation="horizontal" style="padding-bottom: 5%;">
+                      <label [for]="dropdownlist" class="k-label t_font">
+                          <span
+                          >Estado :
+                          </span>
+                      </label>
+                      <kendo-dropdownlist
+                          [style.width.px]="150"
+                          [formControl]="estado"
+                          class="d-flex"
+                          size="medium"
+                          #dropdownlist
+                          [data]="listaEstadosAp"
+                          textField="nombre"
+                          valueField="id"
+                          [defaultItem]="{id:null,nombre:'Seleccionar'}"
+                          [valuePrimitive]="true"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>  
+                </div>
+                <div class="col-md-1" style="padding-left: 2rem;">
+                    <button
+                        
+                          kendoButton 
+                          icon="k-icon k-i-search k-icon-20"
+                          type="button"
+                          themeColor="primary"
+                          (click)="Buscar()"
+                          >
+                          Buscar
+                    </button>
+                </div>
+            </div>
+            <br>
+            <ng-container *ngIf="resetar">
+              <kendo-grid
+              id="my-grid"
+              style="max-height: 700px;"
+              [kendoGridBinding]="listaGenerarFur"
+              [loading]="loader"
+              filterable="menu"
+              [pageSize]="10"
+              [sortable]="true"
+              [reorderable]="true"
+              [resizable]="true"
+              [pageable]="true"
+              kendoGridSelectBy="id"
+              [(selectedKeys)]="listaSeleccion"
+              [selectable]="{ enabled: true, checkboxOnly: true }"
+              (filterChange)="limpiarSeleccion()"
+              >
+                <ng-template kendoGridToolbarTemplate class="bg-danger" $kendo-component-bg="#3f51b5">
+                  <button 
+                  kendoButton 
+                  icon="reload" 
+                  type="button"
+                  themeColor="secondary" 
+                  style="margin-right: 1rem;"
+                  (click)="RefrescarGrilla()"
+                  >
+                  </button>
+                  
+                  <button
+                    kendoButton 
+                    icon="k-icon k-i-file-excel k-icon-20"
+                    type="button"
+                    themeColor="tertiary"
+                    (click)="excelexport.save()"
+                    >
+                    Exportar a Excel
+                  </button>
+                  <kendo-excelexport 
+                  [data]="listaGenerarFur" 
+                  fileName="FURS.xlsx" #excelexport>
+                  <kendo-excelexport-column field="faseAprobacion1" title="Estado" [hidden]="hidenEstado">
+                  </kendo-excelexport-column>
+                    <kendo-excelexport-column field="codigo" title="Código Fur">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="razonSocial" title="Proveedor">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="producto" title="Producto">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="centroCosto" title="Centro de Costo">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="centroCosto" title="Centro de Costo Padre">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="cantidad" title="Cantidad">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="monedaPagoReal" title="Moneda">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="precioUnitarioMonedaOrigen" title="Precio-Unitario ORIGEN">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="numeroSemana" title="Numero Semana">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="descripcion" title="Descripción">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="fechaLimite" title="Fecha Ejecución Gasto">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="fechaCreacion" title="Fecha de Creación">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="fechaModificacion" title="Fecha de Modificación">
+                    </kendo-excelexport-column>
+                    <kendo-excelexport-column field="usuarioModificacion" title="Usuario de Modificación">
+                    </kendo-excelexport-column>
+                    
+                  </kendo-excelexport>
+                  <ng-container *ngIf="hidenBuscarCodigo">
+                    <button
+                      kendoButton 
+                      icon="k-icon k-i-search k-icon-20"
+                      type="button"
+                      themeColor="primary"
+                      (click)="BuscarPorCodigo()"
+                      >
+                      Buscar
+                    </button>
+                    <kendo-textbox
+                        [formControl]="codigoFur"
+                        class="d-flex center"
+                        size="medium"
+                        #dropdownlist
+                        placeholder="    < Código FUR >  "
+                    >
+                    </kendo-textbox>
+                  </ng-container>
+                    
+                  <kendo-grid-spacer></kendo-grid-spacer>
+                  <button
+                    kendoButton 
+                    icon="k-icon k-i-filter-clear k-icon-20"
+                    type="button"
+                    themeColor="info"
+                    (click)="limpiarGrilla()"
+                    >
+                    Resetear Filtros
+                  </button>
+                  <ng-container *ngIf="botonesExtra">
+                    <button
+                          kendoButton 
+                          icon="k-icon k-i-check-outline k-icon-20"
+                          type="button"
+                          themeColor="success"
+                          (click)="aprobarFurProyectado()"
+                          >
+                          Aprobar FUR's
+                        </button>
+                        <button
+                          kendoButton 
+                          icon="k-icon k-i-x-outline k-icon-20"
+                          type="button"
+                          themeColor="error"
+                          (click)="eliminarListaFur()"
+                          >
+                          Eliminar FUR's
+                        </button>
+                  </ng-container>
+                  <button
+                    kendoButton 
+                    type="button"
+                    themeColor="primary"
+                    (click)="ControlAccionesGrilla('nuevo')"
+                    >
+                    + Agregar FUR
+                  </button>
+                </ng-template>
+                <kendo-grid-checkbox-column
+                [width]="45"
+                [headerClass]="{ 'text-center': true }"
+                [class]="{ 'text-center': true }"
+                [resizable]="false"
+                [columnMenu]="false"
+                [showSelectAll]="true"
+                [sticky]="true"
+                [hidden]="!botonesExtra"  
+                >
+                </kendo-grid-checkbox-column>
+                <kendo-grid-column
+                  title="Estado"
+                  headerClass="justify-content-center k-grid-header "
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white'
+                  }"
+                  [width]="150"
+                  field="faseAprobacion1"
+                  [locked]="false"
+                  [sticky]="true"
+                  [filterable]="true"
+                  [hidden]="hidenEstado"  
+                  >
+                </kendo-grid-column>
+                <kendo-grid-column
+                    title="Código FUR"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="codigo"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Proveedor"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="200"
+                    field="razonSocial"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Producto"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="producto"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Centro de Costo Padre"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="centroCosto"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Moneda"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="monedaPagoReal"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Precio Unitario ORIGEN"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="150"
+                    field="precioUnitarioMonedaOrigen"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Precio Total ORIGEN"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="precioTotalMonedaOrigen"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Numero de Semana"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="250"
+                    field="numeroSemana"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Descripción"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="200"
+                    field="descripcion"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Fecha Ejecución Gasto"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="200"
+                    field="fechaLimite"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                    <kendo-grid-date-filter-menu
+                        [column]="column"
+                        [format]="'dd-MM-yyyy'"
+                        [filter]="filter"
+                        [placeholder]="'dia-mes-año'"
+                        [filterService]="filterService"
+                        >
+                    </kendo-grid-date-filter-menu>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem> 
+                    {{finanzasService.fechaTemplate(dataItem.fechaLimite)}}
+                  </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                    title="Fecha de Creación"
+                    headerClass="justify-content-center k-grid-header "
+                    [width]="200"
+                    field="fechaCreacion"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white'
+                    }"
+                  >
+                  <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                    <kendo-grid-date-filter-menu
+                        [column]="column"
+                        [format]="'dd-MM-yyyy'"
+                        [filter]="filter"
+                        [placeholder]="'dia-mes-año'"
+                        [filterService]="filterService"
+                        >
+                    </kendo-grid-date-filter-menu>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem> 
+                    {{finanzasService.fechaTemplate(dataItem.fechaCreacion)}}
+                  </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column
+                  title="Fecha de Modificación"
+                  headerClass="justify-content-center k-grid-header "
+                  [width]="200"
+                  field="fechaModificacion"
+                  [locked]="false"
+                  [sticky]="false"
+                  [filterable]="true"
+                  [hidden]="false"
+                  [headerStyle]="{
+                    'background-color': '#3382a9',
+                    color: 'white'
+                  }"
+                >
+                <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+                  <kendo-grid-date-filter-menu
+                      [column]="column"
+                      [format]="'dd-MM-yyyy'"
+                      [filter]="filter"
+                      [placeholder]="'dia-mes-año'"
+                      [filterService]="filterService"
+                      >
+                  </kendo-grid-date-filter-menu>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem> 
+                  {{finanzasService.fechaTemplate(dataItem.fechaModificacion)}}
+                </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                title="Usuario de Modificación"
+                headerClass="justify-content-center k-grid-header "
+                [width]="200"
+                field="usuarioModificacion"
+                [locked]="false"
+                [sticky]="false"
+                [filterable]="true"
+                [headerStyle]="{
+                  'background-color': '#3382a9',
+                  color: 'white'
+                }"
+                [hidden]="false"
+              >
+              </kendo-grid-column>
+                  <kendo-grid-command-column
+                  [sticky]="true"
+                  title="Acciones"
+                  [width]="150"
+                  headerClass="justify-content-center text-center k-grid-header-command"
+                    >
+                    <ng-template 
+                    kendoGridCellTemplate 
+                    let-isNew="isNew" 
+                    let-dataItem="dataItem" 
+                    let-rowIndex="rowIndex"
+                    >
+                      <div class="w-100 d-flex justify-content-center" kendoTooltip>
+                        <div
+                          style="width:fit-content;justify-content:center;display:flex" 
+                        >
+                        <div [title]="ObtenerMensajeBoton(dataItem)">
+                          
+                        </div>
+                        <button
+                        kendoButton
+                        themeColor="warning"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        (click)="ControlAccionesGrilla('editar',dataItem,rowIndex)"
+                        
+                      >
+                        <span class="k-icon k-i-edit k-icon-20"></span>
+                      </button>
+                        <button
+                        title="Eliminar"
+                        kendoButton
+                        themeColor="error"
+                        fillMode="solid"
+                        rounded="large"
+                        size="large"
+                        class="p-2 me-1 ms-1"
+                        container="body"
+                        placement="top"
+                        (click)="ControlAccionesGrilla('eliminar',dataItem,rowIndex)"
+                      >
+                        <span class="k-icon k-i-delete k-icon-20"></span>
+                      
+                      </button>
+                         
+                        </div>
+                        
+                      </div>
+                    </ng-template>
+  
+                    </kendo-grid-command-column>
+                    <ng-template
+                    kendoPagerTemplate
+                    let-totalPages="totalPages"
+                    let-currentPage="currentPage"
+                    >
+                      <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                      <kendo-pager-numeric-buttons
+                        [buttonCount]="5"
+                      ></kendo-pager-numeric-buttons>
+                      <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                      <kendo-pager-input></kendo-pager-input>
+                      <kendo-pager-info></kendo-pager-info>
+                      <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+                    </ng-template>
+              </kendo-grid>
+            </ng-container>
+            
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

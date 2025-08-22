@@ -1,0 +1,286 @@
+<div class="pg-contenedor-tab container">
+  <form [formGroup]="formFiltro" class="row g-3 align-items-center">
+    <!-- Programa Específico -->
+    <div class="col-md-6">
+      <kendo-formfield orientation="horizontal" class="w-100">
+        <label class="k-label me-2 text-nowrap">
+          <span>Programa Específico</span>
+        </label>
+        <kendo-dropdownlist
+          [data]="combosPEspecifico"
+          textField="nombrePEspecifico"
+          valueField="idPEspecifico"
+          [defaultItem]="{
+            idPEspecifico: null,
+            nombrePEspecifico: '<Seleccione>'
+          }"
+          [valuePrimitive]="true"
+          formControlName="idPEspecifico"
+          class="pg-dropDown w-100"
+          [kendoDropDownFilter]="filterSettings"
+        ></kendo-dropdownlist>
+      </kendo-formfield>
+    </div>
+    <!-- Modalidad -->
+    <div class="col-md-6">
+      <kendo-formfield orientation="horizontal" class="w-100">
+        <label class="k-label me-2 text-nowrap">
+          <span>Modalidad</span>
+        </label>
+        <kendo-dropdownlist
+          [data]="DataModalidad"
+          textField="nombre"
+          valueField="id"
+          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+          [valuePrimitive]="true"
+          formControlName="idModalidad"
+          class="pg-dropDown w-100"
+          [kendoDropDownFilter]="filterSettings"
+        ></kendo-dropdownlist>
+      </kendo-formfield>
+    </div>
+  </form>
+</div>
+<br />
+<div class="d-flex justify-content-end">
+  <button class="btn btn-success" (click)="generarReporte()">
+    <i class="k-icon k-i-search"></i> Buscar
+  </button>
+</div>
+<br />
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Testimonios</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridCronograma
+              [kendoGridBinding]="gridTestimonio.data"
+              [loading]="gridTestimonio.loading"
+              [resizable]="true"
+              filterable="menu"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{ pageSizes: [5, 10, 20] }"
+            >
+              <!-- filterable="menu" -->
+
+              <kendo-grid-column
+                field="nombreAlumno"
+                title="Nombre"
+                [width]="200"
+                headerClass="justify-content-center"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="respuesta26"
+                title="26. ¿Cuál cree Ud. que es la principal fortaleza del programa cursado?"
+                [width]="220"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="respuesta27"
+                title="27.¿Cuál cree Ud. que es la principal debilidad del programa cursado?"
+                [width]="220"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="observacionesC5"
+                title="¿Qué necesitamos para llegar a una puntuación de 5 estrellas?"
+                [width]="200"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="respuestaBeneficio"
+                title="¿Qué beneficio pudo obtener a partir de su participación en el programa?"
+                [width]="220"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="promedioTotal"
+                title="Promedio Total"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="testimonio"
+                title="Testimonio Visible PW"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                headerClass="justify-content-center"
+                field="visiblePW"
+                title="Estado"
+                [width]="100"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{ dataItem.visiblePW ? "Visible" : "" }}
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Acciones"
+                [headerStyle]="{ color: '#5f75bd' }"
+                [width]="90"
+                [headerClass]="'justify-content-center'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    themeColor="warning"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Editar"
+                    (click)="
+                      abrirModalTestimonio(
+                        modalComentarioPWTestimonio,
+                        dataItem
+                      )
+                    "
+                  >
+                    <span class="k-icon k-i-pencil k-icon-20"></span>
+                  </button>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #modalComentarioPWTestimonio let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Comentario Portal Web
+    </h1>
+  </div>
+
+  <div class="modal-body p-3">
+    <form [formGroup]="formComentarioTestimonio">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="Respuesta" class="d-flex align-items-start">
+              <span
+                ><b>Respuesta<br />Asociada</b
+                ><strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <kendo-multiselect
+              #Respuesta
+              formControlName="idRespuesta"
+              [data]="dataRespuestasAsociadas"
+              textField="nombre"
+              valueField="id"
+              placeholder="Seleccione Respuesta ..."
+              [defaultItem]="{
+                id: 0,
+                nombre: 'Seleccionar Respuesta ...'
+              }"
+              [kendoDropDownFilter]="filterSettings"
+            ></kendo-multiselect>
+            <kendo-formerror>Tiene que asignar una respuesta</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="nombre" class="d-flex align-items-start">
+              <span
+                ><b>Testimonio</b><strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <kendo-textbox
+              #nombre
+              formControlName="testimonio"
+              inputValidSpaceDir
+            >
+            </kendo-textbox>
+            <kendo-formerror
+              >El campo Testimonio Pw es obligatorio</kendo-formerror
+            >
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="nombre" class="d-flex align-items-start">
+              <span
+                ><b>Visible en Portal</b
+                ><strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <input
+              type="checkbox"
+              #checked
+              formControlName="visiblePW"
+              kendoCheckBox
+              style="
+                transform: scale(1.5);
+                accent-color: #007bff;
+                border: 2px solid #007bff;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+              "
+            />
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="Guardar()"
+      [disabled]="enProcesoSolicitud"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>

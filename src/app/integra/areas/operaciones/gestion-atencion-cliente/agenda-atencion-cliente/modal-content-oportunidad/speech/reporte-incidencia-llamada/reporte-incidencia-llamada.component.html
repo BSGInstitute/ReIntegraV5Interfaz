@@ -1,0 +1,290 @@
+<!-- <div class="card mt-3" id="scrolto2">
+  <div class="card-header bg-atencion text-white">
+    <h2 class="m-1">Reporte de incidencia en la llamada</h2>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-12 col-md-6">
+        <div class="row">
+          <div class="col-12">
+            <ul class="w-100">
+              <ng-container *ngFor="let item of migajas; let i = index">
+                <a *ngIf="i == migajas.length - 1" class="list-group-item fw-bold" [style.margin-left.px]="i * 20"
+                  (click)="onClickMigaja(item, i)" style="cursor: pointer;">
+                  {{ item.nombre }}
+                  <fa-icon [icon]="['fas', 'reply']" class="fa-lg"></fa-icon>
+                </a>
+                <a *ngIf="i != migajas.length - 1" (click)="onClickMigaja(item, i)" class="list-group-item"
+                  [style.margin-left.px]="i * 20" style="cursor: pointer;">
+                  {{ item.nombre }}
+                </a>
+              </ng-container>
+              <div class="row">
+                <div class="col-12">
+                  <ul class="list-group w-100" [style.margin-left.px]="(migajas.length - 1) * 15">
+                    <ng-container *ngFor="let item of arbolOcurrencia">
+                      <a (click)="onClickItemOcurrencia(item, 1)"
+                        class="list-group-item item_ocurrencia text-dark nivel-0" style="font-weight: 500"
+                        style="cursor: pointer;" [ngStyle]="
+                          item.toggle
+                            ? {
+                                color: item.tieneOcurrencias
+                                  ? '#73b35e'
+                                  : '#26589f',
+                                'text-decoration': 'underline'
+                              }
+                            : { color: '##232b2b' }
+                        ">
+                        <fa-icon [icon]="[
+                            'fas',
+                            item.toggle ? 'folder-open' : 'folder'
+                          ]" class="fa-lg" style="color: '#5A79E1'" *ngIf="item.tieneOcurrencias"></fa-icon>
+                        <fa-icon [icon]="['fas', 'file-text']" class="fa-lg" style="color: '#999999'"
+                          *ngIf="!item.tieneOcurrencias"></fa-icon>
+                        <span class="ms-2" [ngClass]="{'ocurrencia-selected': item.seleccionado}">
+                          {{ item.nombreOcurrencia.trim() }}
+                        </span>
+                      </a>
+                    </ng-container>
+                  </ul>
+                </div>
+              </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <span [innerHtml]="tituloPlantilla"></span>
+          </div>
+          <div class="card-body">
+            <span [innerHtml]="cuerpoPlantilla"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row my-2" *ngIf="btnProgramarActividad.show">
+      <div class="block">
+        <button class="btn btn-primary text-white w-100" (click)="programarActividad()">
+          Programar Actividad
+        </button>
+      </div>
+    </div>
+    <div class="row my-2" *ngIf="btnCerrarOportunidad.show">
+      <div class="block">
+        <button (click)="cerrarOportunidad()" class="btn btn-danger text-white w-100">
+          Cerrar Seguimiento
+        </button>
+      </div>
+    </div>
+    <div class="row my-2" *ngIf="btnCrearOportunidad.show">
+      <div class="block">
+        <button (click)="crearOportunidad()" class="btn btn-success text-white w-100">
+          Crear Oportunidad
+        </button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!-- Modal Form Programa -->
+<ng-template #modalFormPrograma let-modal>
+  <!-- <div class="modal-content">
+    <div class="modal-header" style=" background-color: #11C744;">
+        <h2 class="modal-title mb-0 text-center" style="color:white ;">Agregar compromiso de pago</h2>
+    </div>
+    <div class="modal-body">
+        <div class="text-center mb-3">Complete todos los campos para agregar el compromiso de pago</div>
+        
+        <div class="d-flex justify-content-between align-items-center">
+            <span style="width: 30%">Fecha:</span>
+            <mat-form-field appearance="outline" style="width: 70%">
+                <mat-label>Elige una fecha</mat-label>
+                <input matInput [matDatepicker]="picker" [min]="minDate" [(ngModel)]="modalCompromiso_fechaCompromiso">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-hint>día/mes/año</mat-hint>
+            </mat-form-field>
+        </div>
+        <br/>
+        <div class="d-flex justify-content-between align-items-center">
+            <span style="width: 30%">Hora:</span>
+            <mat-form-field appearance="outline" style="width: 70%">
+                <mat-label>Hora</mat-label>
+                <input type="time" matInput [(ngModel)]="modalCompromiso_horaCompromiso" />
+                <mat-hint>hh:mm</mat-hint>
+                </mat-form-field>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <span style="width: 30%">Monto:</span>
+            <mat-form-field appearance="outline" style="width: 70%">
+                <mat-label>Monto</mat-label>
+                <input type="number" matInput [(ngModel)]="modalCompromiso_montoCompromiso"/>
+            </mat-form-field>
+        </div>
+        
+    </div>
+    <div class="modal-footer justify-content-center">
+        <button
+            mat-button
+            class="text-center py-2 px-3"
+            (click)="GuardarFechaCompromiso()"
+            style="background-color: #0079FF; color: white">Guardar</button>
+        <button
+        mat-button
+        class="text-center py-2 px-3"
+        (click)="CerrarSolicitudFechaCompromiso()"
+        style="border: 1px solid #0079FF; background-color: white; color: #0079FF"
+        >Cancelar</button>
+    </div>
+</div> -->
+
+  <div class="modal-header" style="background-color: #0079FF;">
+    <h3 class="modal-title m-0 px-3" style="color:white;">Programación de Siguiente Actividad</h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body px-5">
+    <form [formGroup]="formProgramarActividad">
+      <ng-container *ngIf="formGrupoFecha.show">
+        <div class="row">
+          <div class="col-md-12 text-center"><strong>{{ocurrenciaPadre}}</strong></div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">{{ocurrenciaHija}}</div>
+        </div>
+        <div class="row my-2 justify-content-center">
+          <div class="col-md-3">
+            <h3 class="m-0 k-label text-color-integra" style="text-align:end">
+              Fecha
+            </h3>
+          </div>
+          <div class="col-md-5">
+            <kendo-formfield>
+              <kendo-datepicker calendarType="classic" class="text-danger" placeholder="Fecha Programada"
+                formControlName="fechaProgramada" [disabledDates]="fechaProgramadaConfig.disabledDates"
+                [min]="fechaProgramadaConfig.min" [max]="fechaProgramadaConfig.max"
+                [format]="fechaProgramadaConfig.format" (valueChange)="changeFechaProgramada($event)">
+              </kendo-datepicker>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row my-2 justify-content-center">
+          <div class="col-md-3">
+            <h3 class="m-0 k-label text-color-integra" style="text-align:end">
+              Hora
+            </h3>
+          </div>
+          <div class="col-md-5">
+            <kendo-formfield>
+              <kendo-timepicker class="text-danger" [steps]="steps" format="HH:mm" placeholder="Hora Programada"
+                formControlName="horaProgramada"></kendo-timepicker>
+            </kendo-formfield>
+          </div>
+        </div>
+      </ng-container>
+    </form>
+  </div>
+  <div class="modal-footer justify-content-center">
+    <!-- <div class="k-form-buttons m-0">
+      <button class="btn btn-success text-white w-100">
+      Programar Actividad
+    </button>
+    </div>  -->
+
+    <button mat-button class="text-center btn-ril-hover-effect" style="border: 1px solid #0079FF; background-color: #0079FF; color: white"
+      (click)="guardarProgramacion()" *ngIf="formBtnProgramarActividad.show" [disabled]="btnModalProgramar">
+      Guardar
+    </button>
+    <button mat-button class="text-center btn-ril-hover-effect" (click)="modal.dismiss('Cross click')"
+      *ngIf="!formBtnCerrarActividad.show" style="border: 1px solid #0079FF; background-color: white; color: #0079FF">
+      Cerrar
+    </button>
+    <button (click)="cerrarActividad()" *ngIf="formBtnCerrarActividad.show" [disabled]="btnModalCerrarActividad"
+      themeColor="error" size="large" class="w-100 btn-ril-hover-effect" kendoButton>
+      Cerrar Actividad
+    </button>
+    <loading [loading]="loadingModal"></loading>
+  </div>
+</ng-template>
+<ng-template #modalCerrarOportunidad let-modal>
+  <div class="modal-header" style="background-color: #158fc6;">
+    <h3 class="modal-title" style="color:white; margin-block-end: -5px;">Programación de Actividades</h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-footer">
+    <button (click)="guardarProgramacion()" [disabled]="btnModalProgramar" themeColor="error" size="large" class="w-100 btn-ril-hover-effect"
+      kendoButton>
+      Cerrar Seguimiento
+    </button>
+    <loading [loading]="loadingModal"></loading>
+  </div>
+</ng-template>
+
+<!-- END Modal Form Programa  -->
+
+
+
+
+
+<div class="card mt-3" id="scrolto2">
+
+
+  <mat-expansion-panel class="mt-2" [expanded]="true">
+    <mat-expansion-panel-header class="enuciadoHeader">
+      <mat-panel-title> Reporte de incidencia en la llamada </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-card>
+      <div class="row ">
+        <div class="col-6">
+          <div class="row mx-2">
+            <mat-accordion >
+              <ng-container *ngFor="let item of arbolOcurrencia1; let i = index">
+                <mat-expansion-panel class="mt-2" [expanded]="false" style="width: 100%; padding: 0;" (opened)="verPlantillas(item)" (closed)="hideBtnProgramarActividad()">
+                  <mat-expansion-panel-header class="enuciadoHeader" [ngStyle]="{ 'background-color': colorPanel[i % colorPanel.length]}" style="width: 100%;">
+                    <mat-panel-title style="color: white;">
+                      {{ item.nombreOcurrencia.trim() }}
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <mat-expansion-panel-body style="padding: 0px;">
+                    <div [tabindex]="e" class="ocurrencia-link mt-2 mx-2" 
+                          (click)="ver(hijo)" 
+                          style="height: 50px;display: flex;
+                          align-items: center;
+                          padding: 10px;" 
+                          *ngFor="let hijo of arbolOcurrenciaHijos10[i]; let e = index ">
+                      {{ hijo.nombreOcurrencia }}
+                    </div>
+                  </mat-expansion-panel-body>
+                </mat-expansion-panel>
+              </ng-container>
+            </mat-accordion>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="row mx-2">
+
+            <mat-card class="example-card">
+              <mat-card-header>
+             <span [innerHTML]="tituloPlantilla" style="font-weight: bold;"></span>
+              </mat-card-header>
+              <mat-card-content>
+                <span [innerHtml]="cuerpoPlantilla"></span>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <div class="row my-4" *ngIf="btnProgramarActividad1.show" style="display: flex;justify-content: center;">
+          <div class="block" style="width: 450px;">
+            <button class="btn btn-primary text-white w-100 btn-ril-hover-effect" (click)="programarActividad()">
+              <img src="assets/img/iconsagendaatc/Grupo 4095.svg" alt="Icono" style="vertical-align: middle" class="tamano-icono" />
+              Programar Actividad
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </mat-expansion-panel>
+</div>

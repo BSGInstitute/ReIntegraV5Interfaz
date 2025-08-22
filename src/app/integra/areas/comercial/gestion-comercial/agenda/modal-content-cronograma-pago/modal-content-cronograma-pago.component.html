@@ -1,0 +1,489 @@
+<div class="modal-header modal-header-integra">
+  <h2 class="text-white fw-bold pb-0">Cronograma de Pagos</h2>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="border p-2 rounded">
+    <div class="row">
+      <div class="col-12" [formGroup]="formCronogramapago">
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="row mb-4">
+              <div class="col-md-4">Costo total sin descuento</div>
+              <div class="col-md-8">
+                <input
+                  kendoTextBox
+                  class="custom-fill-mode idisabled text-center"
+                  placeholder="Costo Total"
+                  formControlName="costoTotalSinDescuento"
+                  [readonly]="true"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="row mb-4">
+              <div class="col-md-4">Costo total con descuento</div>
+              <div class="col-md-8">
+                <input
+                  kendoTextBox
+                  class="custom-fill-mode idisabled text-center"
+                  placeholder="Costo Descuento"
+                  formControlName="costoTotalConDescuento"
+                  [readonly]="true"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="row mb-4">
+              <div class="col-md-4">Monto de Descuento Otorgado</div>
+              <div class="col-md-8">
+                <input
+                  kendoTextBox
+                  class="custom-fill-mode idisabled text-center"
+                  placeholder="Descuento Otorgado"
+                  formControlName="montoDescuentoOtorgado"
+                  [readonly]="true"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <kendo-label text="Montos Pago"></kendo-label>
+              </div>
+              <div class="col-md-8 combo-custom">
+                <kendo-dropdownlist
+                  class="dropCustomAgenda"
+                  [popupSettings]="{ popupClass: 'popupCustom' }"
+                  [data]="montoPagoFiltro"
+                  textField="nombre"
+                  valueField="id"
+                  formControlName="montoPago"
+                  (valueChange)="changeMontoPago($event)"
+                  [defaultItem]="{ nombre: '<Seleccione>', id: null }"
+                  [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <kendo-label text="Tipo de Descuento"></kendo-label>
+              </div>
+              <div class="col-md-8 combo-custom">
+                <kendo-dropdownlist
+                  class="dropCustomAgenda"
+                  [popupSettings]="{ popupClass: 'popupCustom' }"
+                  [data]="tipoDescuentoFiltro"
+                  textField="codigo"
+                  valueField="id"
+                  formControlName="tipoDescuento"
+                  (valueChange)="changeTipoDescuento($event)"
+                  [defaultItem]="{ codigo: '<Seleccione>', id: null }"
+                  [kendoDropDownFilter]="filterSettings"
+                >
+                </kendo-dropdownlist>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <kendo-label text="Seleccione Medio de pago"></kendo-label>
+              </div>
+              <div class="col-md-8">
+                <div class="input-group combo-custom d-flex">
+                  <kendo-dropdownlist
+                    class="col dropCustomAgenda"
+                    [popupSettings]="{ popupClass: 'popupCustom' }"
+                    [data]="dataMedioPago"
+                    textField="nombre"
+                    valueField="id"
+                    formControlName="medioPago"
+                    [defaultItem]="{ nombre: '<Seleccione>', id: 0 }"
+                    [valuePrimitive]="true"
+                    [kendoDropDownFilter]="filterSettings2"
+                  >
+                  </kendo-dropdownlist>
+                  <div class="input-group-append col-auto">
+                    <button
+                      kendoButton
+                      icon="reload"
+                      themeColor="success"
+                      (click)="actualizarMetodoPago()"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Actualizar Metodo de Pago"
+                      [disabled]="btnActualizarMetodoPagoDisabled"
+                    >
+                    Actualizar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="offset-sm-3 col-sm col-md m-3">
+        <span [innerHtml]="estadoSMS"></span>
+        <button
+          *ngIf="btnEnviarSMS.show"
+          class="btn btn-warning offset-sm-3"
+          style="margin-right: 95px"
+          [disabled]="btnEnviarSMS.disabled"
+          (click)="enviarSMS()"
+          type="button"
+        >
+          <span class="glyphicon glyphicon-comment"></span> Enviar SMS
+        </button>
+      </div>
+    </div>
+    <div
+      class="row"
+      *ngIf="detalleMontoPago != null && detalleMontoPago.length > 0"
+    >
+      <div class="m-2">
+        <div class="fw-bold mb-2">Incluye:</div>
+        <ng-container *ngFor="let linea of detalleMontoPago">
+          <div class="row">
+            <div class="col" [innerHTML]="linea.titulo"></div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-3">
+    <div class="card">
+      <div class="card-header cabecera_tab">
+        <span class="panel-title">Cronograma de Asesor: </span>
+      </div>
+      <div class="card-body">
+        <!--Inicio grilla-->
+        <ng-container *ngIf="gridDetalleCronogramaPago.data.length > 0">
+          <kendo-grid
+            [kendoGridBinding]="gridDetalleCronogramaPago.data"
+            [selectable]="true"
+            [loading]="gridDetalleCronogramaPago.loading"
+            (cellClick)="gridDetalleCronogramaPago.cellClickHandler($event)"
+            (cellClose)="gridDetalleCronogramaPago.cellCloseHandler($event)"
+          >
+            <kendo-grid-column
+              field="cuotaDescripcion"
+              title="Cuota"
+              [headerStyle]="{ color: '#5f75bd' }"
+              [width]="150"
+              [editable]="false"
+              class="text-center"
+              headerClass="justify-content-center fw-bold"
+            >
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="fechaPago"
+              title="Fecha de pago"
+              [headerStyle]="{ color: '#5f75bd' }"
+              [width]="150"
+              headerClass="justify-content-center fw-bold"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="text-center">
+                  {{ dataItem.fechaPago | date : "dd/MM/yyyy" }}
+                </div>
+              </ng-template>
+              <ng-template
+                kendoGridEditTemplate
+                let-formGroup="formGroup"
+                let-dataItem="dataItem"
+              >
+                <kendo-datepicker
+                  [formControl]="formGroup.get('fechaPago')"
+                  (valueChange)="modificacionFechaEnGrilla($event, dataItem)"
+                >
+                </kendo-datepicker>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column
+              field="montoCuotaDescuento"
+              title="Monto"
+              [headerStyle]="{ color: '#5f75bd' }"
+              [width]="150"
+              headerClass="justify-content-center fw-bold"
+              editor="numeric"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <div class="text-center">
+                  {{ dataItem.montoCuotaDescuento | number : "3.1-2" }}
+                </div>
+              </ng-template>
+              <ng-template kendoGridFooterTemplate let-column="column">
+                <ng-container *ngIf="cuadraSumatoria; else noCuadra">
+                  <div class="bg-success text-white text-center">
+                    Total&nbsp;:&nbsp;{{
+                      total["montoCuotaDescuento"].sum.toFixed(2)
+                    }}
+                  </div>
+                </ng-container>
+                <ng-template #noCuadra>
+                  <div class="bg-danger text-white text-center">
+                    Total&nbsp;:&nbsp;{{
+                      total["montoCuotaDescuento"].sum.toFixed(2)
+                    }}
+                  </div>
+                </ng-template>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-command-column
+              title="Fraccionar"
+              [width]="70"
+              [headerStyle]="{ color: '#5f75bd' }"
+              class="text-center"
+              headerClass="justify-content-center fw-bold"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <div class="text-center">
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Faccionar"
+                    (click)="abrirModalFraccionar(dataItem)"
+                  >
+                    <span class="k-icon k-i-files k-icon-20"></span>
+                  </button>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+            <kendo-grid-command-column
+              title="Eliminar"
+              [width]="70"
+              [headerStyle]="{ color: '#5f75bd' }"
+              class="text-center"
+              headerClass="justify-content-center fw-bold"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <div class="text-center">
+                  <button
+                    kendoButton
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Eliminar"
+                    (click)="abrirModalEliminar(dataItem)"
+                  >
+                    <span class="k-icon k-i-delete k-icon-20"></span>
+                  </button>
+                </div>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </ng-container>
+        <!--Fin grilla-->
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="k-form-buttons m-0">
+    <span>{{ estadoMensaje }}</span>
+    <!-- <button
+      kendoButton
+      [disabled]="btnGuardarDisabled"
+      class="mx-1"
+      themeColor="warning"
+      icon="save"
+      size="medium"
+      (click)="guardarCronograma()"
+    >
+      Guardar Cronograma
+    </button> -->
+    <button
+      kendoButton
+      [disabled]="btnAprobarDisabled || !formCronogramapago.valid"
+      themeColor="primary"
+      icon="save"
+      size="medium"
+      (click)="guardarCronograma()"
+    >
+      Aprobar
+    </button>
+    <button
+      *ngIf="btnElimnar.show"
+      kendoButton
+      themeColor="error"
+      size="medium"
+      icon="trash"
+      (click)="eliminarCronograma()"
+    >
+      Eliminar
+    </button>
+    <button
+      kendoButton
+      [disabled]="btnVerCronogramaPortalDisabled"
+      themeColor="warning"
+      icon="eye"
+      (click)="visualizarPortal()"
+      size="medium"
+    >
+      Ver Cronog. Portal Web
+    </button>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <ng-container *ngIf="showCronogramaPortal">
+        <div
+          class="htmlservice justify-content-center bg-danger"
+          [innerHtml]="vistaPortal"
+        ></div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<!-- Modal Fraccionar Cuotas -->
+<ng-template #modalFraccionarCuota let-modal>
+  <div class="modal-header">
+    <h2
+      class="modal-title m-0 px-3"
+      id="modal-basic-title"
+      style="color: #2e6ea6"
+    >
+      Ingrese Nro Sub-Cuotas
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="limpiarModalFraccionar()"
+    ></button>
+  </div>
+  <div class="modal-body ps-4 pe-4">
+    <form [formGroup]="formSubCuotas">
+      <div class="row mb-2">
+        <div class="col-sm-4 col-md-4">Nro Sub-Cuotas:</div>
+        <div class="col-sm-8 col-md-8">
+          <kendo-numerictextbox
+            fillMode="outline"
+            placeholder="Sub-Cuotas"
+            formControlName="nroSubCuotas"
+            [min]="0"
+          >
+          </kendo-numerictextbox>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons mt-0 mb-0">
+      <button
+        kendoButton
+        icon="edit"
+        themeColor="success"
+        (click)="dividirCuota()"
+      >
+        Fraccionar
+      </button>
+      <button
+        themeColor="error"
+        kendoButton
+        icon="cancel"
+        (click)="limpiarModalFraccionar()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- End Modal Fraccionar Cuotas -->
+<!-- Modal Eliminar Cuotas -->
+<ng-template #modalEliminarCuota let-modal>
+  <div class="modal-header">
+    <h2
+      class="modal-title m-0 px-3"
+      id="modal-basic-title"
+      style="color: #2e6ea6"
+    >
+      Eliminar Cuota
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body ps-4 pe-4">
+    <form [formGroup]="formEliminarCuota">
+      <div class="row mb-2">
+        <div class="col-sm-6 col-md-6">Monto:</div>
+        <div class="col-sm col-md">Asignar a:</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-sm col-md">
+          <kendo-textbox
+            fillMode="outline"
+            placeholder="Monto"
+            formControlName="monto"
+            [disabled]="true"
+          >
+          </kendo-textbox>
+        </div>
+        <div class="col-sm col-md">
+          <kendo-dropdownlist
+            #inputAsignar
+            [data]="dataAsignacionCuota"
+            textField="clave"
+            valueField="valor"
+            formControlName="asignarACuota"
+            [defaultItem]="{ clave: 'Seleccione', valor: null }"
+            [kendoDropDownFilter]="filterSettings"
+          >
+          </kendo-dropdownlist>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons mt-0 mb-0">
+      <button
+        kendoButton
+        icon="trash"
+        themeColor="primary"
+        (click)="eliminarCuota()"
+      >
+        Eliminar
+      </button>
+      <button
+        themeColor="error"
+        icon="cancel"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+<!-- End Modal Redactar Mensaje -->

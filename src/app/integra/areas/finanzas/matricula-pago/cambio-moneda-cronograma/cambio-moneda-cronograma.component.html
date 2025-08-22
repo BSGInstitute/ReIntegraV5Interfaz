@@ -1,0 +1,512 @@
+<div class="">
+  <div class="row">
+    <div class="col-1fa-rotate-270">
+      <div class="k-loading-panel" *ngIf="loaderGeneral">
+        <div class="k-loading-panel-mask"></div>
+        <div class="k-loading-panel-wrapper">
+          <mat-spinner></mat-spinner>
+          <div class="k-loading-panel-text fs-5 text-primary">Buscando...</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-color-material">
+          <h1 class="text-white">Cambio de Moneda</h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="card" style="padding: 0px">
+                <div class=""></div>
+                <div class="card-body p-4">
+                  <div class="k-loading-panel" *ngIf="loaderMatriculaFiltro">
+                    <div class="k-loading-panel-mask"></div>
+                    <div class="k-loading-panel-wrapper">
+                      <kendo-loader
+                        type="converging-spinner"
+                        themeColor="primary"
+                        size="large"
+                      >
+                      </kendo-loader>
+                      <div class="k-loading-panel-text fs-5 text-primary">
+                        Buscando...
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-10">
+                      <form
+                        class="k-form"
+                        [formGroup]="formMatriculaAlumno"
+                        style="padding-left: 5%"
+                      >
+                        <fieldset class="k-form-fieldset">
+                          <div class="row">
+                            <div class="col-md-12 k-form-horizontal">
+                              <kendo-formfield
+                                orientation="horizontal"
+                                style="margin: 0px !important"
+                              >
+                                <label
+                                  [for]="dropdownlist"
+                                  class="k-label"
+                                  style="margin-bottom: 5px"
+                                >
+                                  <span>Código de Alumno : </span>
+                                </label>
+                                <kendo-combobox
+                                  #dropdownlist
+                                  class="d-flex center"
+                                  [data]="listaCodigoAlumno"
+                                  size="medium"
+                                  formControlName="codigoMat"
+                                  [filterable]="true"
+                                  (filterChange)="filterCodigoMat($event)"
+                                  placeholder="< Ingrese el Código de Matrícula >"
+                                  textField="id"
+                                  valueField="id"
+                                  [valuePrimitive]="true"
+                                  (selectionChange)="
+                                    CargarDataMatricula($event)
+                                  "
+                                >
+                                </kendo-combobox>
+                              </kendo-formfield>
+                            </div>
+                          </div>
+                          <div class="row my-2">
+                            <div class="col-md-12 k-form-horizontal">
+                              <kendo-formfield
+                                orientation="horizontal"
+                                style="margin: 0px !important"
+                              >
+                                <label
+                                  class="k-label"
+                                  style="margin-bottom: 5px"
+                                >
+                                  <span>Alumno : </span>
+                                </label>
+                                <kendo-combobox
+                                  [data]="listaAlumno"
+                                  size="medium"
+                                  formControlName="alumno"
+                                  [filterable]="true"
+                                  (filterChange)="filterAlumno($event)"
+                                  placeholder="< Ingrese el Nombre del Alumno >"
+                                  textField="nombreCompleto"
+                                  valueField="id"
+                                  [virtual]="true"
+                                  [valuePrimitive]="true"
+                                  (selectionChange)="
+                                  CargarDataAlumno($event)
+                                "
+                                >
+                                </kendo-combobox>
+                              </kendo-formfield>
+                            </div>
+                          </div>
+                          <div class="row my-2">
+                            <div class="col-md-12 k-form-horizontal">
+                              <kendo-formfield
+                                orientation="horizontal"
+                                style="margin: 0px !important"
+                              >
+                                <label
+                                  class="k-label"
+                                  style="margin-bottom: 5px"
+                                >
+                                  <span>Programa : </span>
+                                </label>
+                                <kendo-combobox
+                                  formControlName="idPrograma"
+                                  class="d-flex center"
+                                  size="medium"
+                                  [data]="listaPrograma"
+                                  textField="nombre"
+                                  valueField="id"
+                                  [filterable]="true"
+                                  [filter]="true"
+                                  [valuePrimitive]="true"
+                                  (filterChange)="filterPrograma($event)"
+                                  (selectionChange)="cargarCodMat($event)"
+                                >
+                                </kendo-combobox>
+                              </kendo-formfield>
+                            </div>
+                          </div>
+                          <div
+                            class="row my-2 me-0 pe-0 d-flex justify-content-end"
+                          >
+                            <div class="col-md-auto">
+                              <button
+                                mat-raised-button
+                                color="primary"
+                                (click)="
+                                  ObtenerCambioMoneda()
+                                "
+                              >
+                                <mat-icon>loop</mat-icon>
+                                Cargar Matrícula
+                              </button>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </form>
+                    </div>
+                    <div class="col-md-1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+            <div class="row">
+              <div class="card" style="padding: 0px">
+                <div class="card-body p-4">
+                  <div class="row">
+                    <kendo-grid
+                      style="padding-left: 0px"
+                      [data]="gridCambioMoneda.view"
+                      [kendoGridBinding]="gridCambioMoneda.data"
+                      [loading]="loaderGridfinal"
+                      [resizable]="false"
+                      (cellClick)="cellClickHandler($event)"
+                      (cellClose)="cellCloseHandler($event)"
+                    >
+                      <ng-template kendoGridToolbarTemplate class="bg-danger">
+                        <div class="col-md-3 ">
+                        <kendo-label
+                          class="k-form"
+                          text="Moneda Actual:"
+                          [for]="input"
+                          style="padding-top: 5px;padding-right: 10px;"
+                        ></kendo-label>
+                        <input
+                          #input
+                          [readOnly]="true"
+                          style="background-color: rgb(236, 236, 236)"
+                          [formControl]="inputMoneda"
+                          [style.width.px]="200"
+                          [disabled]="true"
+                          placeholder="Moneda Actual"
+                          kendoTextBox
+                        />
+                        </div>
+                        <div class="col-md-4 ">
+                          <kendo-label
+                            class="k-form"
+                            text="Moneda Nueva:"
+                            style="padding-top: 5px;padding-right: 10px;"
+                          ></kendo-label>
+                          <kendo-dropdownlist
+                          #moneda
+                          size="medium"
+                          [formControl]="inputCambioMoneda"
+                          [clearButton]="true"
+                          class="d-flex center"
+                          [data]="listaMonedaTem"
+                          [filterable]="true"
+                          (filterChange)="filterMoneda($event)"
+                          textField="nombrePlural"
+                          valueField="id"
+                          [defaultItem]="{ id: null, nombrePlural: '< Seleccionar >' }"
+                          [valuePrimitive]="true"
+                          [style.width.%]="50"
+                        >
+                        </kendo-dropdownlist>
+                        </div>
+
+                        <div class="col-md-3 ">
+                          <kendo-label
+                            class="k-form"
+                            text="Valor:"
+                            style="padding-top: 5px;padding-right: 10px;"
+                            [for]="montoVenta"
+                          ></kendo-label>
+                          <kendo-numerictextbox
+                            #montoVenta
+                            [value]="0"
+                            [min]="0"
+                            [autoCorrect]="true"
+                            [formControl]="inputTC"
+                            required
+                          >
+                          </kendo-numerictextbox>
+                        </div>
+
+                        <kendo-spacer></kendo-spacer>
+                        <button class="btn btn-sm btn-primary" (click)="CalcularCambio()">
+                          <fa-icon
+                            [icon]="['fas', 'arrows-rotate']"
+                            class="me-1"
+                          ></fa-icon>
+                          Procesar
+                        </button>
+                      </ng-template>
+
+                      <kendo-grid-column
+                        title="Cuota"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white'
+                        }"
+                        [width]="100"
+                        field="nroCuota"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="SubCuota"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white'
+                        }"
+                        [width]="200"
+                        field="nroSubCuota"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Tipo de Cuota"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white'
+                        }"
+                        [width]="150"
+                        field="tipoCuota"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        title="Fecha Vencimiento"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white'
+                        }"
+                        [width]="150"
+                        field="fechaVencimiento"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                        <ng-template kendoGridCellTemplate let-dataItem>
+                          {{ fechaTemplate(dataItem.fechaVencimiento) }}
+                        </ng-template>
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Total"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white '
+                        }"
+                        [width]="100"
+                        field="totalPagar"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+
+
+                      <kendo-grid-column
+
+
+                        title="Monto"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white '
+                        }"
+
+
+                        [width]="100"
+                        field="cuota"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      <ng-template
+                      kendoGridEditTemplate
+                      let-dataItem="dataItem"
+                      let-formGroup="formGroup"
+                    >
+                      <kendo-numerictextbox
+                        size="small"
+                        [value]="0"
+                        [min]="0"
+                        [decimals]="2"
+                        [Format]="00"
+                        [formControl]="formGroup.get('cuota')"
+                      >
+                      </kendo-numerictextbox>
+                    </ng-template>
+
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Mora"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white '
+                        }"
+                        [width]="100"
+                        field="mora"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Saldo"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white '
+                        }"
+                        [width]="100"
+                        field="saldo"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                        title="Moneda"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white '
+                        }"
+                        [width]="100"
+                        field="moneda"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+                      <kendo-grid-column
+                      title="Monto Pagado"
+                      headerClass="justify-content-center k-grid-header "
+                      [headerStyle]="{
+                        'background-color': '#3382a9',
+                        color: 'white '
+                      }"
+                      [width]="100"
+                      field="montoPagado"
+                      [locked]="false"
+                      [sticky]="false"
+                      [filterable]="true"
+                      [hidden]="false"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                    title="Moneda Pago"
+                    headerClass="justify-content-center k-grid-header "
+                    [headerStyle]="{
+                      'background-color': '#3382a9',
+                      color: 'white '
+                    }"
+                    [width]="100"
+                    field="monedaPago"
+                    [locked]="false"
+                    [sticky]="false"
+                    [filterable]="true"
+                    [hidden]="false"
+                  >
+                  </kendo-grid-column>
+
+
+
+
+
+
+
+
+                      <kendo-grid-column
+                        title="Tipo Cambio"
+                        headerClass="justify-content-center k-grid-header "
+                        [headerStyle]="{
+                          'background-color': '#3382a9',
+                          color: 'white '
+                        }"
+                        [width]="100"
+                        field="tipoCambio"
+                        [locked]="false"
+                        [sticky]="false"
+                        [filterable]="true"
+                        [hidden]="false"
+                      >
+                      </kendo-grid-column>
+
+                      <ng-template kendoGridNoRecordsTemplate>
+                        <div>
+                          <kendo-badge-container>
+                            <kendo-icon name="cloud" size="large"></kendo-icon>
+                            <kendo-badge position="inside">
+                              <kendo-icon
+                                name="close"
+                                style="color: red"
+                              ></kendo-icon>
+                            </kendo-badge>
+                          </kendo-badge-container>
+                        </div>
+                        <p>No hay registros cargados!</p>
+                      </ng-template>
+                    </kendo-grid>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row my-2 me-0 pe-0 d-flex justify-content-end">
+              <div class="col-md-auto">
+                <div class="k-form-buttons m-0">
+                  <button mat-raised-button color="warn"
+                  (click)="cancelarCambios()"
+
+                 >
+                    <mat-icon>cancel</mat-icon>
+                    Cancelar Cambios
+                  </button>
+
+                  <button
+                  mat-raised-button    style="
+                  background-color: rgb(2, 118, 2);
+                  color: white"
+                  (click)="guardarCambioMoneda()"
+                 >
+                    <mat-icon>save</mat-icon>
+                    Guardar Cambios
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

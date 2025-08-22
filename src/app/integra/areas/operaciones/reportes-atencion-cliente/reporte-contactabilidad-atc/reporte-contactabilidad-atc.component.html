@@ -1,0 +1,978 @@
+<div class="card card-reporte border-primary" #reporte>
+  <div class="card-header" style="background-color: #337ab7;">
+    <h2>(R) Contactabilidad</h2>
+  </div>
+  <div class="card-body">
+    <div class="card card-reporte border-primary">
+      <div class="card-header" style="background-color: #337ab7;">
+        <h3 class="mb-2">Control Contactabilidad</h3>
+      </div>
+      <div class="panel-body">
+        <div class="container-fluid">
+          <div id="tab_programada_filtro">
+            <form
+              class="k-form k-form-horizontal"
+              [formGroup]="formContactabilidad"
+            >
+              <div class="row">
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      [for]="inputAsesor"
+                      text="Asesores"
+                      class="d-flex align-items-start"
+                      [style.width.px]="70"
+                    >
+                    </kendo-label>
+                    <kendo-multiselect
+                      #inputAsesor
+                      [data]="todosAsesores"
+                      textField="nombres"
+                      [loading]="loader"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [defaultItem]="{
+                        nombres: 'Todos los asesores',
+                        id: null
+                      }"
+                      formControlName="asesores"
+                      (filterChange)="filterAsesores($event)"
+                      [filterable]="true"
+                    >
+                    </kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Estado del Personal"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    >
+                    </kendo-label>
+
+                    <kendo-dropdownlist
+                      [data]="estadoAsesores"
+                      class="kendo-combo"
+                      textField="clave"
+                      valueField="valor"
+                      [valuePrimitive]="true"
+                      formControlName="estadoAsesores"
+                      [defaultItem]="{
+                        clave: 'Todo el Personal',
+                        valor: null
+                      }"
+                      (valueChange)="cambiarEstadoPersonal($event)"
+                    >
+                    </kendo-dropdownlist>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Fecha Inicio"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    ></kendo-label>
+
+                    <kendo-datepicker
+                      #fechaInicio
+                      formControlName="fechaInicio"
+                      format="dd-MM-yyyy"
+                        [formatPlaceholder]="{
+                          year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'
+                        }"
+                      [max]="fechaActual"
+                      [incompleteDateValidation]="true"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+
+                <div class="col-sm-12 col-md-3 my-2">
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label
+                      text="Fecha Fin"
+                      class="d-flex align-items-start"
+                      [style.width.px]="150"
+                    ></kendo-label>
+                    <kendo-datepicker
+                      formControlName="fechaFin"
+                      format="dd-MM-yyyy"
+                      [formatPlaceholder]="{
+                        year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'
+                      }"
+                      [incompleteDateValidation]="true"
+                      [min]="fechaInicio.value"
+                    ></kendo-datepicker>
+                    <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+                  </kendo-formfield>
+                </div>
+              </div>
+            </form>
+            <div style="text-align: right">
+              <div class="form-horizontal">
+                <div class="form-group">
+                  <div class="col-sm-12" style="margin-bottom: 5px;">
+                    <button
+                      kendoButton
+                      icon="search"
+                      themeColor="success"
+                      [disabled]="procesoEnvio"
+                      (click)="generarReporte()"
+                    >
+                      Buscar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="card card-reporte border-primary">
+      <div class="card-header" style="background-color: #337ab7;">
+        <h3>Reporte Cobertura</h3>
+      </div>
+      <div class="card-body">
+        <div class="container-fluid" id="container_fluid_causa">
+          <div
+            id="gridTasasContacto"
+            class="hidden-on-narrow"
+            style="text-align: center"
+          >
+            <kendo-grid
+              [kendoGridBinding]="gridContactabilidad.data"
+              [loading]="gridContactabilidad.loading"
+              [sortable]="true"
+              [selectable]="true"
+            >
+              <kendo-grid-column
+                field="hora"
+                title="Hora"
+                [width]="100"
+                [sticky]="true"
+                [filterable]="true"
+                class="text-center"
+                [headerClass]="'text-center'"
+                [headerClass]="'justify-content-center'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <strong>
+                    {{
+                      dataItem.hora == "0:00"
+                        ? "Antes de las 8:00"
+                        : dataItem.hora == "24:00"
+                        ? "Despues de las 20:00"
+                        : dataItem.hora
+                    }}</strong
+                  >
+                  <!-- {{ dataItem?hora}} -->
+                </ng-template>
+                <div class="text-center">
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    [style]="'justify-content-center'"
+                  >
+                    Total
+                  </ng-template>
+                </div>
+              </kendo-grid-column>
+              <kendo-grid-column-group
+                title="Total"
+                [columnMenu]="false"
+                [headerClass]="'justify-content-center'"
+              >
+                <kendo-grid-column
+                  field="totalAT"
+                  title="AT"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                  [class]="'text-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    [class]="'text-center'"
+                    ><div class="text-center">
+                      <div [innerHtml]="GraphicarColumnaTotal('total')"></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.totalAT"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="totalAE"
+                  title="AE"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaEjecutado('total')"
+                      ></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.totalAE"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="totalTC"
+                  title="IND"
+                  [width]="180"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <table
+                      class="table table-striped"
+                      style="text-align: center"
+                    >
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          TC: {{ dataItem.totalTC }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          TP : {{ dataItem.totalTP }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          TU : {{ dataItem.totalTUHora }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          TU(%) :{{ dataItem.totalTUPorcentaje }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Env.:{{ dataItem.totalCorreos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Rec.: {{ dataItem.totalRecibidos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Whastapps : {{ dataItem.totalWhatsapp }}
+                        </div>
+                      </div>
+                    </table>
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div [innerHtml]="GraphicarTotal('total')"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+
+              <kendo-grid-column-group
+                title="Peru"
+                [columnMenu]="false"
+                [headerClass]="'text-center'"
+                [headerClass]="'justify-content-center'"
+              >
+                <kendo-grid-column
+                  field="peruAT"
+                  title="AT"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center" style="text-align: center">
+                      <div [innerHtml]="GraphicarColumnaTotal('peru')"></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.peruAT"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="peruAE"
+                  title="AE"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaEjecutado('peru')"
+                      ></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.peruAE"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="peruTC"
+                  title="IND"
+                  [width]="180"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <table
+                      class="table table-striped"
+                      style="text-align: center"
+                    >
+                      <div class="row">
+                        <div class="col-12">TC:{{ dataItem.peruTC }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">TP :{{ dataItem.peruTP }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">TU :{{ dataItem.peruTUHora }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU(%) :{{ dataItem.peruTUPorcentaje }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Env.:{{ dataItem.peruCorreos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Rec.: {{ dataItem.peruRecibidos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Whastapps : {{ dataItem.peruWhatsapp }}
+                        </div>
+                      </div>
+                    </table>
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div [innerHtml]="GraphicarTotal('peru')"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+
+              <kendo-grid-column-group
+                title="Colombia"
+                [columnMenu]="false"
+                [headerClass]="'text-center'"
+                [headerClass]="'justify-content-center'"
+              >
+                <kendo-grid-column
+                  field="colombiaAT"
+                  title="AT"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaTotal('colombia')"
+                      ></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.colombiaAT"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="colombiaAE"
+                  title="AE"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.colombiaAE"></div>
+                    </div>
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaEjecutado('colombia')"
+                      ></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="colombiaTC"
+                  title="IND"
+                  [width]="180"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <table
+                      class="table table-striped"
+                      style="text-align: center"
+                    >
+                      <div class="row">
+                        <div class="col-12">TC:{{ dataItem.colombiaTC }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">TP :{{ dataItem.colombiaTP }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU :{{ dataItem.colombiaTUHora }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU(%) :{{ dataItem.colombiaTUPorcentaje }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Env.:{{ dataItem.colombiaCorreos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Rec.: {{ dataItem.colombiaRecibidos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Whastapps : {{ dataItem.colombiaWhatsapp }}
+                        </div>
+                      </div>
+                    </table>
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div [innerHtml]="GraphicarTotal('colombia')"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+              <kendo-grid-column-group
+                title="Bolivia"
+                [columnMenu]="false"
+                [headerClass]="'text-center'"
+                [headerClass]="'justify-content-center'"
+              >
+                <kendo-grid-column
+                  field="boliviaAT"
+                  title="AT"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div [innerHtml]="GraphicarColumnaTotal('bolivia')"></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.boliviaAT"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="boliviaAE"
+                  title="AE"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaEjecutado('bolivia')"
+                      ></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.boliviaAE"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="boliviaTC"
+                  title="IND"
+                  [width]="180"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <table
+                      class="table table-striped"
+                      style="text-align: center"
+                    >
+                      <div class="row">
+                        <div class="col-12">TC:{{ dataItem.boliviaTC }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">TP :{{ dataItem.boliviaTP }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU :{{ dataItem.boliviaTUHora }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU(%) :{{ dataItem.boliviaTUPorcentaje }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Env.:{{ dataItem.boliviaCorreos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Rec.: {{ dataItem.boliviaRecibidos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Whastapps : {{ dataItem.boliviaWhatsapp }}
+                        </div>
+                      </div>
+                    </table>
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div [innerHtml]="GraphicarTotal('bolivia')"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+
+              <kendo-grid-column-group
+                title="Mexico"
+                [columnMenu]="false"
+                [headerClass]="'text-center'"
+                [headerClass]="'justify-content-center'"
+              >
+                <kendo-grid-column
+                  field="mexicoAT"
+                  title="AT"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      <div [innerHtml]="GraphicarColumnaTotal('mexico')"></div>
+                    </div>
+                    <!-- <div [innerHtml]="GraphicarColumnaTotal('mexico')"></div> -->
+                    <!-- {{ column.field }}({{ columnIndex }}) -->
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.mexicoAT"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="mexicoAE"
+                  title="AE"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                    ><div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaEjecutado('mexico')"
+                      ></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.mexicoAE"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="mexicoTC"
+                  title="IND"
+                  [width]="180"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <table
+                      class="table table-striped"
+                      style="text-align: center"
+                    >
+                      <div class="row">
+                        <div class="col-12">TC:{{ dataItem.mexicoTC }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">TP :{{ dataItem.mexicoTP }}</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU :{{ dataItem.mexicoTUHora }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU(%) :{{ dataItem.mexicoTUPorcentaje }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Env.:{{ dataItem.mexicoCorreos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Rec.: {{ dataItem.mexicoRecibidos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Whastapps : {{ dataItem.mexicoWhatsapp }}
+                        </div>
+                      </div>
+                    </table>
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div [innerHtml]="GraphicarTotal('mexico')"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+
+
+
+              <kendo-grid-column-group
+              title="Chile"
+              [columnMenu]="false"
+              [headerClass]="'text-center'"
+              [headerClass]="'justify-content-center'"
+            >
+              <kendo-grid-column
+                field="chileAT"
+                title="AT"
+                [width]="100"
+                [headerClass]="'justify-content-center'"
+              >
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  ><div class="text-center">
+                    <div [innerHtml]="GraphicarColumnaTotal('chile')"></div>
+                  </div>
+                  <!-- <div [innerHtml]="GraphicarColumnaTotal('mexico')"></div> -->
+                  <!-- {{ column.field }}({{ columnIndex }}) -->
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <div [innerHtml]="dataItem.chileAT"></div>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="chileAE"
+                title="AE"
+                [width]="100"
+                [headerClass]="'justify-content-center'"
+              >
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  ><div class="text-center">
+                    <div
+                      [innerHtml]="GraphicarColumnaEjecutado('chile')"
+                    ></div>
+                  </div>
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <div [innerHtml]="dataItem.chileAE"></div>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="chileTC"
+                title="IND"
+                [width]="180"
+                [headerClass]="'justify-content-center'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <table
+                    class="table table-striped"
+                    style="text-align: center"
+                  >
+                    <div class="row">
+                      <div class="col-12">TC:{{ dataItem.chileTC }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">TP :{{ dataItem.chileTP }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        TU :{{ dataItem.chileTUHora }}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        TU(%) :{{ dataItem.chileTUPorcentaje }}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12" style="text-align: center">
+                        Correos Env.:{{ dataItem.chileCorreos }}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12" style="text-align: center">
+                        Correos Rec.: {{ dataItem.chileRecibidos }}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12" style="text-align: center">
+                        Whastapps : {{ dataItem.chileWhatsapp }}
+                      </div>
+                    </div>
+                  </table>
+                </ng-template>
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                >
+                  <div class="text-center">
+                    <div [innerHtml]="GraphicarTotal('chile')"></div>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid-column-group>
+
+
+
+
+              <kendo-grid-column-group
+                title="Otros Paises"
+                [columnMenu]="false"
+                [headerClass]="'text-center'"
+                [headerClass]="'justify-content-center'"
+              >
+                <kendo-grid-column
+                  field="otrosPaisesAT"
+                  title="AT"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaTotal('otrosPaises')"
+                      ></div>
+                    </div>
+                    <!-- {{GraphicarColumnaTotal('otrosPaises')}} -->
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.otrosPaisesAT"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="otrosPaisesAE"
+                  title="AE"
+                  [width]="100"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div
+                        [innerHtml]="GraphicarColumnaEjecutado('otrosPaises')"
+                      ></div>
+                    </div>
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <div class="text-center">
+                      <div [innerHtml]="dataItem.otrosPaisesAE"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="otrosPaisesTC"
+                  title="IND"
+                  [width]="180"
+                  [headerClass]="'justify-content-center'"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <table
+                      class="table table-striped"
+                      style="text-align: center"
+                    >
+                      <div class="row">
+                        <div class="col-12">
+                          TC:{{ dataItem.otrosPaisesTC }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TP :{{ dataItem.otrosPaisesTP }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU :{{ dataItem.otrosPaisesTUHora }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          TU(%) :{{ dataItem.otrosPaisesTUPorcentaje }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Env.:{{ dataItem.otrosPaisesCorreos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Correos Rec.: {{ dataItem.otrosPaisesRecibidos }}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center">
+                          Whastapps : {{ dataItem.otrosPaisesWhatsapp }}
+                        </div>
+                      </div>
+                    </table>
+                  </ng-template>
+                  <ng-template
+                    kendoGridFooterTemplate
+                    let-column
+                    let-columnIndex="columnIndex"
+                  >
+                    <div class="text-center">
+                      <div [innerHtml]="GraphicarTotal('otrosPaises')"></div>
+                    </div>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+
+
+
+
+
+
+            </kendo-grid>
+          </div>
+        </div>
+        <div style="font-weight: bold">
+          <span>AT: Numero Actividades Totales</span> <br />
+          <span>AE: Numero Actividades Ejecutadas Efectivas</span>
+          <br />
+          <span
+            >TP: Tiempo Contacto Promedio por Actividad Ejecutada por Hora en
+            Minutos</span
+          >
+          <br />
+          <span
+            >TU: Tiempo útil (Suma Tiempos Contacto / 60 mins) en Minutos</span
+          >
+          <br />
+          <span>TU(%): Tasa tiempo útil </span> <br />
+          <span>TI1: Total un Intento </span>
+          <br />
+          <span>TI2: Total dos Intentos </span>
+          <br />
+          <span>TI3: Total tres Intentos </span>
+          <br />
+          <span>TI+3: Total Mas de tres Intentos </span>
+          <br />
+        </div>
+      </div>
+      <div class="panel-footer"></div>
+    </div>
+    <br />
+
+  </div>
+</div>

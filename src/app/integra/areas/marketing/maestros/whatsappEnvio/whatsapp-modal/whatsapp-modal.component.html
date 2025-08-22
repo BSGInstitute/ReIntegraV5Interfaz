@@ -1,0 +1,363 @@
+<div class="titulo">Configuracion de Prioridades</div>
+<mat-dialog-content>
+  <div class="inre">
+    <h3>Nombre de la Prioridad</h3>
+    <div class="ver">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <mat-label>Nombre de la Prioridad</mat-label>
+        <input matInput [(ngModel)]="jsonEnvio.nombre" />
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="remitente">
+    <div class="tit">
+      <h3>Datos:</h3>
+    </div>
+    <div class="contenedor">
+      <div class="inre">
+        <h3>Prioridad</h3>
+        <div class="ver">
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Seleccione una prioridad</mat-label>
+            <mat-select [(ngModel)]="jsonEnvio.prioridad">
+              <ng-container *ngFor="let item of prioridades">
+                <mat-option [value]="item.Id">{{ item.Nombre }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <!-- <div class="inre">
+        <h3>Responsable</h3>
+        <div class="ver">
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Seleccione un Responsable</mat-label>
+            <mat-select [disabled]="false" [(ngModel)]="jsonEnvio.responsable">
+              <ng-container *ngFor="let item of listaResponsables">
+                <mat-option [value]="item.id">{{ item.nombres }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div> -->
+    </div>
+    <!-- <div class="contenedor">
+      <div class="inre">
+        <h3>Pais</h3>
+        <div class="ver">
+          <mat-form-field appearance="outline" style="width: 50%">
+            <mat-label>Seleccione el Pais</mat-label>
+            <mat-select [disabled]="false" [(ngModel)]="jsonEnvio.pais">
+              <ng-container *ngFor="let item of listaPaises">
+                <mat-option [value]="item.id">{{ item.nombrePais }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  
+
+  <div class="remitente">
+    <div class="tit">
+      <h3>Centro de Costo:</h3>
+    </div>
+    <div class="inre">
+    <div class="ver">
+      <mat-form-field class="example-full-width" appearance="outline">
+        <mat-label>Seleccione un centro de costo</mat-label>
+        <input
+          type="text"
+          placeholder="Pick one"
+          aria-label="Number"
+          matInput
+          [(ngModel)]="autoC"
+          (input)="OnChangesAuto()"
+          [matAutocomplete]="auto"
+        />
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="pruebas($event)"
+        >
+          <mat-option
+            *ngFor="let option of filteredOptions"
+            [value]="option.id"
+          >
+            {{ option.nombre }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    </div>
+  </div>
+
+  <div class="inre">
+    <h3>Area</h3>
+    <div class="ver">
+      <!-- <mat-form-field class="example-chip-list" appearance="fill">
+        <mat-label>Areas</mat-label>
+        <mat-chip-list #chipList aria-label="area selection">
+          <mat-chip *ngFor="let area of areas; let indx=index", (removed)="remove(area,indx)" >
+            {{ area }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+          <input
+            placeholder="New area..."
+            #areaInput
+            [formControl]="areaCtrl"
+            [matAutocomplete]="auto2"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="add($event)"
+           
+          />
+        </mat-chip-list>
+        <mat-autocomplete
+          #auto2="matAutocomplete"
+          (optionSelected)="selected($event)"
+        >
+          <mat-option
+            *ngFor="let area of filteredareas | async"
+            [value]="area.id"
+          >
+            {{ area.nombre }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field> -->
+
+      <ng-container *ngIf="selectArea == 'area'">
+        <mat-form-field class="example-chip-list">
+          <mat-chip-list #chipList>
+            <mat-chip
+              *ngFor="let area2 of areas2; let indx2 = index"
+              [selectable]="selectable"
+              [removable]="removable"
+              (removed)="remove2(area2, indx2)"
+            >
+              {{ area2.nombre }}
+              <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Nueva area..."
+              #areaInput2
+              [formControl]="areaCtrl2"
+              [matAutocomplete]="auto3"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="addOnBlur"
+              (matChipInputTokenEnd)="add2($event)"
+            />
+          </mat-chip-list>
+          <mat-autocomplete
+            #auto3="matAutocomplete"
+            (optionSelected)="selected2($event)"
+          >
+            <mat-option
+              *ngFor="let area2 of filteredareas2 | async"
+              [value]="area2"
+            >
+              {{ area2.nombre }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="selectArea == 'subarea'">
+        <div>
+          <mat-form-field class="example-chip-list">
+            <mat-chip-list #chipList2>
+              <mat-chip
+                *ngFor="let area2 of areas2; let indx2 = index"
+                [selectable]="selectable"
+                [removable]="removable"
+                (removed)="remove2(area2, indx2)"
+              >
+                {{ area2.nombre }}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Nueva area..."
+                #areaInput2
+                [formControl]="areaCtrl2"
+                [matAutocomplete]="auto3"
+                [matChipInputFor]="chipList2"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add2($event)"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #auto3="matAutocomplete"
+              (optionSelected)="selected2($event)"
+            >
+              <mat-option
+                *ngFor="let area2 of filteredareas2 | async"
+                [value]="area2"
+              >
+                {{ area2.nombre }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field class="example-chip-list">
+            <mat-chip-list #chipList>
+              <mat-chip
+                *ngFor="let area of areas; let indx = index"
+                [selectable]="selectable"
+                [removable]="removable"
+                (removed)="remove(area, indx)"
+              >
+                {{ area.nombre }}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Nueva subarea"
+                #areaInput
+                [formControl]="areaCtrl"
+                [matAutocomplete]="auto2"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add($event)"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #auto2="matAutocomplete"
+              (optionSelected)="selected($event)"
+            >
+              <mat-option
+                *ngFor="let area of listaAreaSubAreaBK"
+                [value]="area"
+              >
+                {{ area.nombre }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectArea == 'programaGeneral'">
+        <div>
+          <mat-form-field class="example-chip-list">
+            <mat-chip-list #chipList2>
+              <mat-chip
+                *ngFor="let area2 of areas2; let indx2 = index"
+                [selectable]="selectable"
+                [removable]="removable"
+                (removed)="remove2(area2, indx2)"
+              >
+                {{ area2.nombre }}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Nueva area..."
+                #areaInput2
+                [formControl]="areaCtrl2"
+                [matAutocomplete]="auto3"
+                [matChipInputFor]="chipList2"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add2($event)"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #auto3="matAutocomplete"
+              (optionSelected)="selected2($event)"
+            >
+              <mat-option
+                *ngFor="let area2 of filteredareas2 | async"
+                [value]="area2"
+              >
+                {{ area2.nombre }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field
+            class="example-chip-list"
+          >
+            <mat-chip-list #chipList>
+              <mat-chip
+                *ngFor="let area of areas; let indx = index"
+                [selectable]="selectable"
+                [removable]="removable"
+                (removed)="remove(area, indx)"
+              >
+                {{ area.nombre }}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Nueva subarea"
+                #areaInput
+                [formControl]="areaCtrl"
+                [matAutocomplete]="auto2"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add($event)"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #auto2="matAutocomplete"
+              (optionSelected)="selected($event)"
+            >
+              <mat-option
+                *ngFor="let area of listaAreaSubAreaBK "
+                [value]="area"
+              >
+                {{ area.nombre }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field class="example-chip-list">
+            <mat-chip-list #chipList3>
+              <mat-chip
+                *ngFor="let area3 of areas3; let indx3 = index"
+                [selectable]="selectable"
+                [removable]="removable"
+                (removed)="remove3(area3, indx3)"
+              >
+                {{ area3.nombre }}
+                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Nuevo Programa General"
+                #areaInput3
+                [formControl]="areaCtrl3"
+                [matAutocomplete]="auto4"
+                [matChipInputFor]="chipList3"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add3($event)"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #auto4="matAutocomplete"
+              (optionSelected)="selected3($event)"
+            >
+              <mat-option
+                *ngFor="let area3 of listaProgramaGeneralBK "
+                [value]="area3"
+              >
+                {{ area3.nombre }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<div class="crear">
+  <button mat-flat-button class="botonAgregar" (click)="crearLista()" [disabled]="listaCentroCosto == undefined">
+    Crear Lista
+  </button>
+</div>

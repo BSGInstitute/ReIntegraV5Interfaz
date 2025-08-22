@@ -1,0 +1,454 @@
+<div class="pt-5" style="background-color: #F7F8FA">
+    <div class="d-flex justify-content-center align-items-baseline">
+        <strong class="d-inline-block" style="margin-right: 15px;">Programa matriculado:</strong>
+        <mat-form-field appearance="outline" style="width: 50%">
+            <mat-label>Programa matriculado</mat-label>
+            <mat-select style="width: 100%" (selectionChange)="CargarCursosPrograma($event.value)" [(value)]="programaSeleccionado">
+              <mat-option *ngFor="let programa of listaProgramasMatriculado" [value]="programa">
+                  {{programa.pEspecifico}}
+                </mat-option>
+              </mat-select>
+          </mat-form-field>
+          <div style="background-color: #CBE4FF; padding: 15px; border-radius: 10px; align-self: start; margin-left: 15px;">
+            <img style="margin-right: 10px" src="assets/img/iconsagendaatc/reproductor-video-azul-icon.svg">
+            <span><strong style="color:#0079FF">Modalidad del Programa: </strong>{{programaSeleccionado.tipoModalidadPEspecifico}}</span>
+          </div>
+    </div>
+    <div>
+        <h2 style="background: #CBE4FF; color: #0079FF; font-weight: bold" class="px-5 py-2">Registro de calificaciones</h2>
+        <div class="px-5">
+            <div class="my-3" style="border-radius: 10px; background-color: #D5FFE1; width: fit-content; font-weight: bold; padding: 15px">Promedio Final: <span style="font-size: 1.3em; margin-left: 10px;">{{promedioGeneral == null ? 'Calculando...' : promedioGeneral + '/100'}}</span></div>
+          <table mat-table id="listaCursos"
+          [dataSource]="listaCursos" multiTemplateDataRows >
+            <ng-container matColumnDef="tablaCursos-nombre">
+                <th mat-header-cell *matHeaderCellDef> Curso </th>
+                <!-- <td mat-cell *matCellDef="let element"> {{element.tipo == "Online Asincronica" ? dataAsincronicosNombreGeneralYCriterios.get(element.idPEspecifico).nombrePGeneral : dataSincronicosNombreGeneral.get(element.idPEspecifico).nombrePGeneral}} </td> -->
+                <td mat-cell *matCellDef="let element"> {{element?.nombrePEspecifico}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCursos-fechaInicio">
+                <th mat-header-cell *matHeaderCellDef> Fecha Inicio </th>
+                <td mat-cell *matCellDef="let element"> {{element.fechaInicio == null ? 'No asignado' : (element.fechaInicio | date:'dd/MM/yyyy') }} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCursos-fechaTermino">
+                <th mat-header-cell *matHeaderCellDef> Fecha Termino </th>
+                <td mat-cell *matCellDef="let element"> {{element.fechaFin == null ? 'No asignado' : (element.fechaFin | date:'dd/MM/yyyy')}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCursos-modalidadCurso">
+                <th mat-header-cell *matHeaderCellDef> Modalidad Curso </th>
+                <td mat-cell *matCellDef="let element"> {{element.tipo}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCursos-avance">
+                <th mat-header-cell *matHeaderCellDef> Avance </th>
+                <td mat-cell *matCellDef="let element"> {{element.avance!=undefined ? element.avance+'%' : 'Calculando...'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCursos-promedio">
+                <th mat-header-cell *matHeaderCellDef> Promedio </th>
+                <!-- <td mat-cell *matCellDef="let element"> {{element.puntajePonderado == 0 ? 'Pendiente' : element.puntajePonderado+'/100'}} </td> -->
+                <td mat-cell *matCellDef="let element"> {{element.puntajePonderado == undefined ? 'Calculando...' : element.puntajePonderado+'/100'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCursos-opciones">
+                <th mat-header-cell *matHeaderCellDef> Opciones </th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="d-flex flex-column align-items-center justify-content-around" style="margin-right: 15px; padding: 10px 0">
+                            <button class="btn-pa-hover-effect" mat-button style="background-color: #FC7B24; height:fit-content; margin-bottom: 10px; width: 190px; color:white" *ngIf="element.tipoMatricula == 'Regular' && !element.nombrePGeneral.toUpperCase().includes('IRCA')" (click)="RecuperacionCurso(modalRecuperacion, element)">
+                                RECUPERACIÓN
+                            </button>
+                            <button class="btn-pa-hover-effect" mat-button style="background-color: #ffc107; height:fit-content;width: 190px;color: black" *ngIf="element.tipoMatricula == 'Regular' && !element.nombrePGeneral.toUpperCase().includes('IRCA')" (click)="RecuperacionSesion(modalRecuperacionSesion, element)">
+                                RECUPERACIÓN SESIÓN
+                            </button>
+                        </div>
+                        <button mat-button style="height:fit-content; margin-right: 25px;" (click)="expandedRow = expandedRow === element ? null : element">
+                            <mat-icon>{{expandedRow === element ? 'expand_less' : 'expand_more'}}</mat-icon>
+                        </button>
+                    </div>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCursos-detalleNotas">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="tablaCursosColumnsToDisplay.length">
+                    <div style="overflow: hidden" [@detailExpand]="element == expandedRow ? 'expanded' : 'collapsed'">
+     
+                        <ng-container *ngIf="element.tipo == 'Online Asincronica'; else tipoSincronico">
+                            <h2 *ngIf="element.criterios?.length == 0; else showTablaCriterios" style="border:1px solid black; border-radius: 10px; text-align:center"> 
+                                {{(element.tipoMatricula != 'Recuperacion') ? 'Migración de notas pendiente - Planificación' : 'Recongelamiento manual pendiente' }}
+                            </h2>
+                            <ng-template #showTablaCriterios>
+                                <ng-container *ngTemplateOutlet="mostrarTablaAsincronicos; context: {'data': element}"></ng-container>
+                            </ng-template>
+                        </ng-container>
+                        
+                        <ng-template #tipoSincronico>
+                        
+                                <h2 *ngIf="element.criterios?.length == 0; else mostrarCriteriosNoEstandarizados" style="border:1px solid black; border-radius: 10px; text-align:center">
+                                    {{(element.criteriosEstandarizados) ? 'Configuración de criterios pendientes - Planificación' : 'Migración de notas pendiente - Planificación' }}
+                                </h2>
+                                <ng-template #mostrarCriteriosNoEstandarizados>
+                                    <!-- <ng-container *ngIf="element.criteriosEstandarizados == false; else mostrarCriteriosEstandarizados"> -->
+                                    <ng-container *ngIf="element.criteriosEstandarizados == false;">
+                                        <h2 style="border:1px solid black; border-radius: 10px; text-align: center">
+                                            Criterios configurados por el docente
+                                        </h2>                                      
+                                        <!-- <ng-container *ngFor="let criterio of element.criterios">
+                                            <ng-container *ngIf="criterio.nombre.toLowerCase().includes('asistencia'); else otroCriterio">
+                                            </ng-container>
+                                            <ng-template #otroCriterio>
+                                                <ng-container *ngTemplateOutlet="criterioSinDataExtra; context: {'data': criterio}"></ng-container>
+                                            </ng-template>
+                                        </ng-container> -->
+                                    </ng-container>
+                                </ng-template>
+                                
+                                <!-- <ng-template #mostrarCriteriosEstandarizados> -->
+                                    <!-- <ng-container *ngFor="let criterio of element.criterios">
+                                        <ng-container *ngIf="criterio.nombre.toLowerCase().includes('asistencia'); else otroCriterioConDataExtra">
+                                            <ng-container *ngTemplateOutlet="criterioAsistenciaTabla; context: {'data': {'nombreCriterio': criterio.nombre ,'asistencias': element.asistencias, 'porcentaje': criterio.porcentaje, 'calificacionAsistencia': element.calificacionAsistencia}}"></ng-container>
+                                        </ng-container>
+                                        <ng-template #otroCriterioConDataExtra>
+                                            <ng-container *ngIf="criterio.dataEntregables != null; else otroCriterioSinDataExtra">
+                                                <ng-container *ngTemplateOutlet="criterioConDataExtra; context: {'data': criterio}"></ng-container>
+                                            </ng-container>
+                                        </ng-template>
+                                        <ng-template #otroCriterioSinDataExtra>
+                                            <ng-container *ngTemplateOutlet="criterioSinDataExtra; context: {'data': criterio}"></ng-container>
+                                        </ng-template>
+                                    </ng-container> -->
+                                <!-- </ng-template> -->
+                                 <ng-container *ngIf="element?.encuesta && cargoTablaEncuesta">
+                                    <ng-container  *ngTemplateOutlet="mostrarTablaEncuestas; context: {'data': element.encuesta}"></ng-container>
+                                 </ng-container>
+                                 <ng-container *ngIf="!cargoTablaEncuesta">
+                                    <div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+                                        <mat-spinner></mat-spinner>
+                                    </div>
+                                 </ng-container>
+                                <ng-container *ngIf="element.criterios?.length > 0">
+                                    <ng-container  *ngTemplateOutlet="mostrarTablaSincronicos; context: {'data': element}"></ng-container>
+                                </ng-container>
+                                <ng-container *ngIf="element.asistencias?.length > 0">
+                                    <ng-container *ngTemplateOutlet="criterioAsistenciaTabla; context: {'data': {'nombreCriterio': 'Asistencias', 'asistencias': element.asistencias}}"></ng-container>
+                                </ng-container>
+                        </ng-template>
+                    </div>
+                  </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="tablaCursosColumnsToDisplay"></tr>
+            <tr mat-row *matRowDef="let element; columns: tablaCursosColumnsToDisplay" style="height: 76px"></tr>  
+            <tr mat-row *matRowDef="let row; columns: ['tablaCursos-detalleNotas']" class="detail-row"></tr>  
+          </table>
+
+        </div>
+        <loading [loading]="isLoading"></loading>
+    </div>
+    
+</div>
+
+<ng-template #mostrarTablaEncuestas let-data="data">
+    <table mat-table [dataSource]="data" class="tablaEncuestas" style="margin-bottom: 25px !important; border-collapse: separate !important; border: 1px solid black;">
+        <ng-container matColumnDef="NombreEncuesta">
+            <th mat-header-cell *matHeaderCellDef>Encuestas</th>
+            <td mat-cell *matCellDef="let element" style="white-space: nowrap;">{{element.titulo}}</td>
+        </ng-container>
+        <ng-container matColumnDef="FechaEncuesta">
+            <th mat-header-cell *matHeaderCellDef>Fecha de encuesta(o Fecha de sesión para cursos sincrónicos)</th>
+            <td mat-cell *matCellDef="let element">{{element.fechaEncuesta}}</td>
+        </ng-container>
+        <ng-container matColumnDef="FechaEncuestaRealizada">
+            <th mat-header-cell *matHeaderCellDef>Fecha de llenado de encuesta</th>
+            <td mat-cell *matCellDef="let element">{{element.fechaEncuestaRealizada}}</td>
+        </ng-container>
+        <ng-container matColumnDef="Estatus">
+            <th mat-header-cell *matHeaderCellDef>Estatus</th>
+            <td mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.estatus == 'Pendiente'">
+                    <button style="background-color: red;" class="buttonEncuestas" (click)="openEncuestaDialog(element)">
+                        {{element.estatus}}
+                    </button>
+                </ng-container>
+                <ng-container *ngIf="element.estatus == 'Resuelto'">
+                    <button disabled style="background-color: #dfdfdf;color: black;" class="buttonEncuestas">
+                        {{element.estatus}}
+                    </button>
+                </ng-container>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="ComentariosAlumno">
+            <th mat-header-cell *matHeaderCellDef>Comentarios adicionales del alumno</th>
+            <td mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.idPEspecificoSesionEncuestaAlumno != 0; else mostrarComentarios">
+                    <button class="buttonEncuestas" (click)="openComentarioDialog(element)">
+                        Añadir 
+                    </button>
+                </ng-container>
+                <ng-template #mostrarComentarios>
+                    <button disabled class="buttonEncuestas" style="background-color: #dfdfdf;">
+                        Añadir
+                    </button>
+                </ng-template>
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="tablaEncuestasColumnas"></tr>
+        <tr mat-row *matRowDef="let element; columns:tablaEncuestasColumnas"></tr>
+    </table>
+</ng-template>
+
+<ng-template #mostrarTablaAsincronicos let-data="data">
+    <table class="detalleCursoAsincronico" mat-table [dataSource]="data.criterios" style="border-collapse: separate !important;border: 1px solid black;">
+        <ng-container matColumnDef="tablaCriterioAsincrono-criterio">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Criterios </th>
+            <td mat-cell *matCellDef="let element"> {{element.criterioEvaluacion}} </td>
+        </ng-container>
+        <ng-container matColumnDef="tablaCriterioAsincrono-porcentaje">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Porcentaje </th>
+            <td mat-cell *matCellDef="let element"> {{element.ponderacion+'%'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="tablaCriterioAsincrono-calificacionFinal">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Calificacion Final </th>
+            <td mat-cell *matCellDef="let element"> {{element.valor}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['tablaCriterioAsincrono-criterio','tablaCriterioAsincrono-porcentaje','tablaCriterioAsincrono-calificacionFinal']"></tr>
+        <tr mat-row *matRowDef="let element; columns: ['tablaCriterioAsincrono-criterio','tablaCriterioAsincrono-porcentaje','tablaCriterioAsincrono-calificacionFinal']"></tr>  
+    </table>
+</ng-template>
+
+<ng-template #mostrarTablaSincronicos let-data="data">
+    <table class="detalleCursoAsincronico" mat-table [dataSource]="data.criterios" style="border-collapse: separate !important;border: 1px solid black;">
+        <ng-container matColumnDef="tablaCriterioAsincrono-criterio">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Criterios </th>
+            <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+        </ng-container>
+        <ng-container matColumnDef="tablaCriterioAsincrono-porcentaje">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Porcentaje </th>
+            <td mat-cell *matCellDef="let element"> {{element.porcentaje+'%'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="tablaCriterioAsincrono-calificacionFinal">
+            <th mat-header-cell *matHeaderCellDef style="width:30%"> Calificacion Final </th>
+            <td mat-cell *matCellDef="let element"> {{element.calificacionFinal}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['tablaCriterioAsincrono-criterio','tablaCriterioAsincrono-porcentaje','tablaCriterioAsincrono-calificacionFinal']"></tr>
+        <tr mat-row *matRowDef="let element; columns: ['tablaCriterioAsincrono-criterio','tablaCriterioAsincrono-porcentaje','tablaCriterioAsincrono-calificacionFinal']"></tr>  
+    </table>
+</ng-template>
+
+<!-- Modals heredados de Cronograma de Evaluaciones -->
+<ng-template #modalRecuperacion let-modal>
+    <div class="modal-content">
+        <div class="modal-header" style="background-color: #FF6113; border: none !important">
+            <h3 class="modal-title mb-0" style="color:white;">RECUPERACIÓN PARA: <strong>{{objRecuperacion.curso}}</strong>
+            </h3>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex align-items-center">
+            <div class="col-4">
+                <h4 id="Evaluacion">Cursos Relacionados</h4>
+            </div>
+            <div class="col-8">
+                <mat-form-field appearance="outline" style="width: 100%" class="custom-select-pa-1268">
+                    <mat-label>Seleccione</mat-label>
+                    <mat-select #select [(ngModel)]="objRecuperacion.idPEspecifico">
+                      <mat-select-filter 
+                      *ngIf="select.focused"
+                      [array]="data_inputPEspecificoRelacionado" 
+                      [displayMember]="'nombre'" 
+                      [placeholder]="'Buscar...'"
+                      [noResultsMessage]="'Curso no encontrado.'"
+                      (filteredReturn)="inputPEspecificoRelacionado = $event"></mat-select-filter>
+          
+                      <mat-option *ngFor="let curso of inputPEspecificoRelacionado" [value]="curso.idPEspecifico">{{curso.nombre}}</mat-option>
+                      </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer justify-content-center">
+        <button mat-button class="text-center btn-pa-hover-effect" style="border: 1px solid #0079FF; background-color: #0079FF; color: white" (click)="GuardarRecuperarCurso()">Recuperar</button>
+        <button mat-button class="text-center btn-pa-hover-effect" style="border: 1px solid #0079FF; background-color: white; color: #0079FF" (click)="modal.close()">Cerrar</button>
+    </div>
+</ng-template>
+
+<ng-template #modalRecuperacionSesion let-modal>
+    <div class="modal-content">
+        <div class="modal-header" style="background-color: #ffc107; border: none !important">
+            <h3 class="modal-title mb-0" style="color: black;">RECUPERACIÓN SESIÓN PARA: <strong>{{objRecuperacion.curso}}</strong></h3>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex align-items-center">
+            <div class="col-4">
+                <h4>Cursos Disponibles</h4>
+            </div>
+            <div class="col-8">
+                <mat-form-field appearance="outline" style="width: 100%" class="custom-select-pa-1268">
+                    <mat-label>Seleccione</mat-label>
+                    <mat-select #select (valueChange)="mostrarsesiones($event)">
+                      <mat-select-filter
+                      *ngIf="select.focused"
+                      [array]="data_inputPEspecificoRelacionadoDisponible" 
+                      [displayMember]="'nombre'" 
+                      [placeholder]="'Buscar...'"
+                      [noResultsMessage]="'Curso no encontrado.'"
+                      (filteredReturn)="inputPEspecificoRelacionadoDisponible = $event"></mat-select-filter>
+                      
+                          <mat-option *ngFor="let curso of inputPEspecificoRelacionadoDisponible" [value]="curso.idPEspecifico">{{curso.nombre}}</mat-option>
+                        
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <h4>Listado Sesiones:</h4>
+            </div>
+            <div class="col-8">
+                <ol>
+                    <ng-container *ngFor="let item of sesiones; let i = index">
+                        <div class=" row">
+                            <li> 
+                                <input type="checkbox" class="form-check-input" [(ngModel)]="item.check"  />
+                                {{item.fechaInicio | date:'dd/MM/yyyy h:mm a' }}
+                            </li>
+                        </div>
+                    </ng-container>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer justify-content-center">
+        <button  mat-button class="text-center btn-pa-hover-effect" style="border: 1px solid #0079FF; background-color: #0079FF; color: white" (click)="GuardarRecuperarSesion()">Recuperar Sesión</button>
+        <button  mat-button class="text-center btn-pa-hover-effect" style="border: 1px solid #0079FF; background-color: white; color: #0079FF" (click)="modal.close()">Cerrar</button>
+    </div>
+</ng-template>
+
+<ng-template #criterioAsistenciaTabla let-data="data">
+    <div style="max-height: 350px; overflow-y: auto;">
+        <table class="detalleCursoAsincronico" mat-table [dataSource]="data.asistencias" style="margin-top: 25px !important; border-collapse: separate !important; border: 1px solid black;">
+            <ng-container matColumnDef="header-row-second-group1">
+                <th mat-header-cell *matHeaderCellDef colspan="3" style="background-color: #FFD9C7 !important;padding: 12px 24px !important"> {{data.nombreCriterio}} </th>
+            </ng-container>
+            <!-- <ng-container matColumnDef="header-row-second-group2">
+                <th mat-header-cell *matHeaderCellDef style="background-color: #FFD9C7 !important"> Porcentaje <br> {{data.porcentaje+'%'}} </th>
+            </ng-container>
+            <ng-container matColumnDef="header-row-second-group3">
+                <th mat-header-cell *matHeaderCellDef style="background-color: #FFD9C7 !important"> Calificación final del Criterio <br> {{data.calificacionAsistencia}} </th>
+            </ng-container> -->
+            <ng-container matColumnDef="tablaCriterio-criterio">
+                <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Sesión </th>
+                <td mat-cell *matCellDef="let element"> {{element.grupoSesion}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCriterio-porcentaje">
+                <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Fecha de Clase </th>
+                <td mat-cell *matCellDef="let element"> {{element.fechaHoraInicio | date:'dd/MM/yyyy'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tablaCriterio-calificacionFinal">
+                <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Asistencia </th>
+                <td mat-cell *matCellDef="let element"> {{element.asistio == null ? 'Pendiente' : element.asistio == 0 ? 'Faltó' : 'Asistió'}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['header-row-second-group1']"></tr>
+            <tr mat-header-row *matHeaderRowDef="['tablaCriterio-criterio','tablaCriterio-porcentaje','tablaCriterio-calificacionFinal']" style="height: min-content;"></tr>
+            <tr mat-row *matRowDef="let element; columns: ['tablaCriterio-criterio','tablaCriterio-porcentaje','tablaCriterio-calificacionFinal']"></tr>  
+        </table>
+    </div>
+</ng-template>
+
+<!-- Cuando se solicitó que las tablas para ambos tipos de criterios (Estandarizado y No Estandarizado) fueran identicas, este template quedó en desuso -->
+<ng-template #criterioSinDataExtra let-criterio="data">
+    <div class="d-flex" style="background-color: #d5ffe1;align-items: center;font-weight: bold;font-size: 17px;padding: 12px 24px;border-radius: 10px;margin-top: 25px; border: 1px solid black">
+        <div style="width: 20%">{{criterio.nombre}}</div>
+        <div style="text-align: center;width: 33%;">Porcentaje<br>{{criterio.porcentaje+'%'}}</div>
+        <div style="text-align: center;width: 47%;">Calificación final del Criterio<br><strong>{{criterio.calificacionFinal}}</strong></div>
+    </div>
+</ng-template>
+
+<!-- Cuando se solicitó que las tablas para ambos tipos de criterios (Estandarizado y No Estandarizado) fueran identicas, este template quedó en desuso -->
+<ng-template #criterioConDataExtra let-criterio="data">
+    <div style="max-height: 500px; overflow-y: auto;">
+    <table class="detalleCursoAsincronico" mat-table [dataSource]="criterio.dataEntregables" *ngIf="criterio.dataEntregables.length > 0; else criterioConDataExtraVacio" style="margin-top: 25px !important; border-collapse: separate !important; border: 1px solid black;">
+        <ng-container matColumnDef="header-row-second-group1">
+            <th mat-header-cell *matHeaderCellDef colspan="1" style="background-color: #d5ffe1 !important">{{criterio.nombre}}</th>
+        </ng-container>
+        <ng-container matColumnDef="header-row-second-group2">
+            <th mat-header-cell *matHeaderCellDef colspan="2" style="background-color: #d5ffe1 !important"> Porcentaje <br> {{criterio.porcentaje+'%'}} </th>
+        </ng-container>
+        <ng-container matColumnDef="header-row-second-group3">
+            <th mat-header-cell *matHeaderCellDef colspan="3" style="background-color: #d5ffe1 !important"> Calificación final del Criterio <br> {{criterio.calificacionFinal}} </th>
+        </ng-container>
+        <ng-container matColumnDef="c1">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important; width:20%"> Nombre Actividad </th>
+            <td mat-cell *matCellDef="let element"> {{element.titulo}} </td>
+        </ng-container>
+        <ng-container matColumnDef="c2">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Fecha Programada </th>
+            <td mat-cell *matCellDef="let element"> {{element.fechaProgramada | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="c3">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Fecha Ampliada </th>
+            <td mat-cell *matCellDef="let element"> {{element.fechaProgramadaSecundaria | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="c4">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Fecha de Entrega </th>
+            <td mat-cell *matCellDef="let element"> {{element.fechaEntregada | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="c5">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Estado de entrega </th>
+            <td mat-cell *matCellDef="let element"> {{element.estadoEntrega}} </td>
+        </ng-container>
+        <ng-container matColumnDef="c6">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Calificación </th>
+            <td mat-cell *matCellDef="let element"> {{element.calificacion}}/{{CalcularPuntajeMaximo(element)}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['header-row-second-group1','header-row-second-group2','header-row-second-group3']"></tr>
+        <tr mat-header-row *matHeaderRowDef="['c1','c2','c3','c4','c5','c6']" style="height: min-content;"></tr>
+        <tr mat-row *matRowDef="let element; columns: ['c1','c2','c3','c4','c5','c6']"></tr>  
+    </table>
+    <ng-template #criterioConDataExtraVacio>
+        <table class="detalleCursoAsincronico" mat-table [dataSource]="[0]" style="margin-top: 25px !important; border-collapse: separate !important; border: 1px solid black;">
+        <ng-container matColumnDef="header-row-second-group1">
+            <th mat-header-cell *matHeaderCellDef colspan="1" style="background-color: #d5ffe1 !important">{{criterio.nombre}}</th>
+        </ng-container>
+        <ng-container matColumnDef="header-row-second-group2">
+            <th mat-header-cell *matHeaderCellDef colspan="2" style="background-color: #d5ffe1 !important"> Porcentaje <br> {{criterio.porcentaje+'%'}} </th>
+        </ng-container>
+        <ng-container matColumnDef="header-row-second-group3">
+            <th mat-header-cell *matHeaderCellDef colspan="3" style="background-color: #d5ffe1 !important"> Calificación final del Criterio <br> {{criterio.calificacionFinal}} </th>
+        </ng-container>
+        <ng-container matColumnDef="c1">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important; width:20%"> Nombre Actividad </th>
+            <td mat-cell *matCellDef="let element" colspan="6" style="text-align:center !important; font-weight: bold !important"> - Aún no se han creado entregables - </td>
+        </ng-container>
+        <ng-container matColumnDef="c2">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Fecha Programada </th>
+        </ng-container>
+        <ng-container matColumnDef="c3">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Fecha Ampliada </th>
+        </ng-container>
+        <ng-container matColumnDef="c4">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Fecha de Entrega </th>
+        </ng-container>
+        <ng-container matColumnDef="c5">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Estado de entrega </th>
+        </ng-container>
+        <ng-container matColumnDef="c6">
+            <th mat-header-cell *matHeaderCellDef style="background-color: white !important; color:#707070 !important"> Calificación </th>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['header-row-second-group1','header-row-second-group2','header-row-second-group3']"></tr>
+        <tr mat-header-row *matHeaderRowDef="['c1','c2','c3','c4','c5','c6']" style="height: min-content;"></tr>
+        <tr mat-row *matRowDef="let element; columns: ['c1']"></tr>
+        </table>
+    </ng-template>
+    </div>
+</ng-template>
+
+<ng-template class="comentarioAlumno" #comentarioAlumno let-dialogRef="dialogRef">
+    <div class="custom-dialog-no-padding">
+        <div class="comentario-header" style="background-color: #0079FF; border: none !important">
+            Comentarios adicionales del alumno:
+        </div>
+        <div class="comentario-body">
+            <textarea [(ngModel)]="comentario" placeholder="Insertar el comentario del alumno...">{{comentario}}</textarea>
+        </div>
+        <div class="comentario-footer">
+            <button class="buttonEncuestas" style="border: 1px solid #0079FF; background-color: #0079FF; color: white" (click)="GuardarComentario()">Actualizar</button>
+            <button class="buttonEncuestas" style="border: 1px solid red; background-color: red; color: white" (click)="dialogRef.close(false)">Cerrar</button>
+        </div>
+    </div>
+</ng-template>

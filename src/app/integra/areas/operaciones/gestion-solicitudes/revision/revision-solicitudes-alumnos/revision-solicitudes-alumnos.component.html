@@ -1,0 +1,548 @@
+<div class="card border-primary mb-3">
+  <div class="card-header bg-color-material pb-0">
+    <div class="row">
+      <h2 class="mb-2 text-white" id="titulo">(G) Revisar Solicitud Alumnos</h2>
+    </div>
+  </div>
+  <div class="card-body p-4">
+    <div class="panel-body">
+      <div class="container-fluid">
+        <div id="tab_programada_filtro">
+          <form class="k-form k-form-horizontal" [formGroup]="formSolicitudAlumno">
+            <div class="row">
+              <div class="col-sm-12 col-md-4 my-2">
+                <div class="card-body my-card-body">
+                  <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Buscar Alumno</b></h3>
+                  <div class="row my-2">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <label [for]="tipoBusqueda" class="k-label">
+                          <span>Tipo de Busqueda<span class="text-danger fw-bold">*</span></span>
+                        </label>
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                        <kendo-dropdownlist #tipoBusqueda
+                          [data]="dataBusqueda"
+                          [(ngModel)]="tipoBusquedaSelect"
+                          textField="nombre"
+                          valueField="id"
+                          class="d-flex"
+                          size="medium"
+                          [defaultItem]="{ id: null, nombre: 'Todos' }"
+                          [valuePrimitive]="true"
+                          formControlName="tipoBusqueda"
+                          (valueChange)="tipoBusquedaChangue($event)">
+                          <kendo-formerror>Seleccione un dato</kendo-formerror>
+                        </kendo-dropdownlist>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row my-2">
+                    <div class="col-12">
+                      <div *ngIf="busquedaNombre">
+                        <kendo-formfield orientation="horizontal" style="margin: 0px !important">
+                          <kendo-label class="k-checkbox-label" [for]="alumno" text="Apellidos y Nombres"></kendo-label>
+                          <kendo-dropdownlist #alumno
+                            formControlName="alumno"
+                            [data]="dataContacto"
+                            [defaultItem]="{ nombreCompleto: 'Digite apellidos y nombres', id: null }"
+                            textField="nombreCompleto"
+                            valueField="id"
+                            [virtual]="virtual"
+                            [filterable]="true"
+                            (filterChange)="filterContacto($event)"
+                            (selectionChange)="CargarDataAlumno($event)">
+                            <ng-template kendoDropDownListNoDataTemplate>
+                              No se encontró al alumno
+                            </ng-template>
+                          </kendo-dropdownlist>
+                        </kendo-formfield>
+                      </div>
+                      <div *ngIf="busquedaNombre==false">
+                        <kendo-formfield orientation="horizontal">
+                          <label [for]="dataBusqueda" class="k-label">
+                            <span>Dato Busqueda<span class="text-danger fw-bold">*</span></span>
+                          </label>
+                          <kendo-grid-spacer></kendo-grid-spacer>
+                          <kendo-textbox #dataBusqueda [disabled]="disabled" class="d-flex" size="medium"
+                            placeholder="Dato Alumno... " formControlName="dataBusqueda" inputValidSpaceDir
+                            [(ngModel)]="datoAlumno" [maxlength]="325">
+                          </kendo-textbox>
+                          <kendo-formerror>Ingrese Dato de Alumno</kendo-formerror>
+                        </kendo-formfield>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row my-2">
+                    <div class="col-12 d-flex justify-content-end">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-4 my-2">
+                <div class="card-body my-card-body">
+                  <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Estado de Solicitud</b></h3>
+                  <kendo-formfield orientation="horizontal">
+                    <kendo-label text="Estado" class="d-flex align-items-start" [style.width.px]="150">
+                    </kendo-label>
+                    <kendo-multiselect #estados [data]="EstadosSolicitud" class="kendo-combo" textField="nombre"
+                      valueField="id" [valuePrimitive]="true" formControlName="estados" [placeholder]="'Todos'"
+                      [multi]="true">
+                    </kendo-multiselect>
+                  </kendo-formfield>
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-4 my-2">
+                <div class="card-body my-card-body">
+                  <h3 class="card-title" style="color:rgb(102, 68, 255)"><b>Fecha Registro</b></h3>
+                  <div class="row my-2">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label text="Fecha Inicio" class="d-flex align-items-start" [style.width.px]="150">
+                        </kendo-label>
+                        <kendo-datepicker #fechaInicio
+                          formControlName="fechaInicio"
+                          format="dd/MM/yyyy"
+                          [max]="fechaActual"
+                          [formatPlaceholder]="{year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'}"
+                          [incompleteDateValidation]="true">
+                        </kendo-datepicker>
+                        <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                  <div class="row my-2">
+                    <div class="col-12">
+                      <kendo-formfield orientation="horizontal">
+                        <kendo-label text="Fecha Termino" class="d-flex align-items-start" [style.width.px]="150">
+                        </kendo-label>
+                        <kendo-datepicker format="dd/MM/yyyy" formControlName="fechaFin"  [formatPlaceholder]="{
+                          year: 'año', month: 'mes', day: 'día',hour: 'h',minute: 'm',second: 's'
+                        }">
+                        </kendo-datepicker>
+                        <kendo-formerror>Fecha Termino no valido</kendo-formerror>
+                      </kendo-formfield>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-end mb-2">
+              <div class="col-auto">
+                <button kendoButton
+                  class="hoverButton"
+                  themeColor="success"
+                  (click)="buscarAlumno()"
+                  [disabled]="false">
+                    Buscar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-2">
+  <div class="card-header bg-color-material pb-0">
+    <h3 class="text-white mb-2">Lista Solicitudes</h3>
+  </div>
+  <div class="card-body">
+    <kendo-grid [kendoGridBinding]="dataSolicitudesAlumno" [pageSize]="20" [pageable]="true" [filterable]="true" [sortable]="true" [selectable]="true"
+      [resizable]="true" [loading]="loaderGrid">
+      <kendo-grid-column title="Codigo Alumno" field="codigoMatricula" headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Nombre Alumno" field="nombreAlumno" headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Prioridad" [filterable]="false"  field="prioridad" [class]="{ 'text-center': true }" headerClass="header-grid-single">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.prioridad === 'ALTA' ? 'A' : (dataItem.prioridad === 'BAJA' ? 'B' : (dataItem.prioridad === 'MEDIA' ? 'M' : dataItem.prioridad)) }}
+        </ng-template>
+     </kendo-grid-column>
+     <kendo-grid-column title="Tipo" [filterable]="false" field="tipo" [class]="{ 'text-center': true }" headerClass="header-grid-single">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{ 
+            dataItem.tipo === 'Solicitud de Alumno' ? 'SA' : 
+            (dataItem.tipo === 'Solicitud Interna' ? 'SI' : 
+            (dataItem.tipo === 'Reporte de Problema' ? 'RP' : 
+            (dataItem.tipo === 'Queja/Reclamo' ? 'QR' : dataItem.tipo))) 
+        }}
+    </ng-template>
+  </kendo-grid-column>
+      <kendo-grid-column title="Categoria" field="nombreSolicitudCategoria" headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Problema" field="nombreSubCategoria" headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Origen" field="controlSolicitudOrigen" headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Area Solicitante" field="areaSolicitante" [class]="{ 'text-center': true }"
+        headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Solicitante" field="nombreSolicitante" headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Estado" field="estadoSolicitud" headerClass="header-grid-single">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell
+            [column]="column"
+            [filter]="filter"
+            operator="contains">
+            <kendo-filter-contains-operator></kendo-filter-contains-operator>
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-command-column title="Revisión" [width]="210" headerClass="header-grid-single">
+        <ng-template kendoGridCellTemplate let-isNew="isNew" let-dataItem="dataItem" let-rowindex="rowindex">
+          <div class="w-50 d-flex justify-content-center">
+            <button kendoButton
+              themeColor="warning"
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1"
+              container="body"
+              placement="top"
+              ngbTooltip="Editar"
+              (click)="abrirModalDetalleSolicitud(dataItem)">
+              <span class="k-icon k-i-eye k-icon-20"></span>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+    <div class="card bg-info mt-4 mb-2 mx-auto" style="width: 600px;">
+      <div class="card-body justify-content-center text-center">
+        <div class="row">
+          <div class="col-sm-1"></div>
+          <div class="col-sm-3">
+            <div class="row text-white justify-content-center"><strong>PRIORIDAD</strong></div>
+            <div class="row text-white pl-2">A: Alta</div>
+            <div class="row text-white pl-2">M: Media</div>
+            <div class="row text-white pl-2">B: Baja</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="row text-white justify-content-center"><strong>TIPO</strong></div>
+            <div class="row text-white pl-2">SA: Solicitud Alumno</div>
+            <div class="row text-white pl-2">SI: Solicitud Interna</div>
+            <div class="row text-white pl-2">RP: Reporte del Problema</div>
+            <div class="row text-white pl-2">QR: Queja/Reclamo</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="row text-white justify-content-center"><strong>ESTADO</strong></div>
+            <div class="row text-white pl-2">Revisor: Responsable Revisor</div>
+            <div class="row text-white pl-2">RS: Responsable Solución</div>
+            <div class="row text-white pl-2">A: Asistente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #modalDetalleSolicitud let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h3>Detalle Solicitud</h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formCategoria">
+        <p style="font-size: 1rem">Configuración</p>
+        <hr style="margin: 8px 0">
+        <div class="row">
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Id:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('Id').value}}</p>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em; padding: 0 15px;" class="k-label">
+              <span>Prioridad:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('prioridad').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Tipo de Solicitud:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('tipoReporte').value}}</p>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em; padding: 0 15px;" class="k-label">
+              <span>Categoria:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('categoria').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Problema:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('subCategoria').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Origen:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('origenSolicitud').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Area solicitante:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('areaSolicitante').value}}</p>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em; padding: 0 15px;" class="k-label">
+              <span>Solicitante:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('solicitante').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Codigo Alumno:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('codigoAlumno').value}}</p>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em; padding: 0 15px;" class="k-label">
+              <span>Nombre Alumno:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('nombreAlumno').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Curso:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('curso').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Programa:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('programa').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;"  class="k-label">
+              <span>Centro de Costo:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('centroCosto').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Detalle Solicitud:</span>
+            </label>
+          </div>
+          <div class="col-10">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('detalleSolicitud').value}}</p>
+          </div>
+        </div>
+          <br />
+          <p style="font-size: 1rem">Detalle</p>
+          <hr style="margin: 8px 0">
+          <div class="row">
+          <ng-container *ngIf="nombreArchivoSolicitado !== null && nombreArchivoSolicitado !== undefined && nombreArchivoSolicitado !== ''">
+            <div class="col-2">
+              <label style="margin-top: 1em;" class="k-label">
+                <span>Archivo Solicitud:</span>
+              </label>
+            </div>
+            <div class="col-10">
+              <button kendoButton class="hoverButton" (click)="descargarArchivoSolicitud()" themeColor="tertiary" icon="download"
+              title="descargar">
+              Abrir Archivo
+              </button>
+            </div>
+            <div class="w-100"></div>
+          </ng-container>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Area Revision:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('areaRevision').value}}</p>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em; padding: 0 15px;" class="k-label">
+              <span>Personal revision:</span>
+            </label>
+          </div>  
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('personalRevision').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Area Solucion:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('areaSolucion').value}}</p>
+          </div>
+          <div class="col-2">
+            <label style="margin-top: 1em; padding: 0 15px;" class="k-label">
+              <span>Personal Solucion:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('personalSolucion').value}}</p>
+          </div>
+          <div class="w-100"></div>
+          <div class="col-2">
+            <label style="margin-top: 1em;" class="k-label">
+              <span>Fecha Registro:</span>
+            </label>
+          </div>
+          <div class="col-4">
+            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('fechaRegistro').value}}</p>
+          </div>
+          <div class="w-100"></div>
+        </div>
+    </form>
+    <div>
+      <br />
+      <div class="row">
+        <div class="col-2">
+          <label class="k-label">
+            <span>Archivo Solución:</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-fileselect #archivoBol themeColor="tertiary" [multiple]="false"
+            [(ngModel)]="inputArchivoSolucionAlumno"><kendo-fileselect-messages select="Seleccione" dropFilesHere="Suelta archivos aquí para seleccionar" clearSelectedFiles="Anular la selección">
+            </kendo-fileselect-messages></kendo-fileselect>
+        </div>
+        <div class="w-100"></div>
+        <br>
+        <div class="col-2">
+          <label class="k-label">
+            <span>Comentario:</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-textarea #descripcion class="textCom" [style.width.%]="100" resizable="auto" size="medium"
+            rounded="large" fillMode="solid" [maxlength]="800" [(ngModel)]="inputDetalle">
+            <kendo-textarea-suffix class="custom-styling">
+            </kendo-textarea-suffix>
+          </kendo-textarea>
+        </div>
+        <div class="w-100"></div>
+        <br>
+        <div class="col-2">
+          <label class="k-label">
+            <span>Estado:</span>
+          </label>
+        </div>
+        <div class="col-10">
+          <kendo-dropdownlist [data]="estadosRevision" [defaultItem]="{ id: 1, nombre: 'Por Revisar' }"
+            [(ngModel)]="idNuevoEstado" valueField="id" [valuePrimitive]="true" textField="nombre">
+          </kendo-dropdownlist>
+        </div>
+      </div>
+      <br />
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton class="hoverButton" themeColor="primary" (click)="actualizarDatosSolicitudAlumno()">
+        Guardar
+      </button>
+      <button themeColor="error" class="hoverButton" kendoButton (click)="modal.dismiss('Cross click')">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>

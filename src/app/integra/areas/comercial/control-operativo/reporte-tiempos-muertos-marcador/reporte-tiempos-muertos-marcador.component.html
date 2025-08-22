@@ -1,0 +1,335 @@
+<div class="content">
+  <div class="row">
+    <div class="col"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="text-white mb-2 text-center">(R) Reporte Tiempos Muertos</h2>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <form class="k-form k-form-horizontal" [formGroup]="formFiltro">
+        <div class="row">
+          <div class="col-sm-12 col-md-6 my-2">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                [for]="inputAsesor"
+                text="Asesores"
+                class="d-flex align-items-start"
+                [style.width.px]="70"
+              >
+              </kendo-label>
+              <kendo-dropdownlist
+                #inputAsesor
+                [data]="personalAsignado"
+                textField="nombres"
+                valueField="id"
+                [valuePrimitive]="true"
+                formControlName="asesores"
+                [kendoDropDownFilter]="filterSettings"
+                [filterable]="true"
+                [defaultItem]="{
+                  nombres: '<Todos>',
+                  id: null
+                }"
+              >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-12 col-md-3 my-2">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                text="Fecha Inicio"
+                class="d-flex align-items-start"
+                [style.width.px]="150"
+              ></kendo-label>
+
+              <kendo-datepicker
+                #fechaInicio
+                formControlName="fechaInicio"
+                format="yyyy-MM-dd"
+                [max]="fechaActual"
+                [incompleteDateValidation]="true"
+              ></kendo-datepicker>
+              <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+            </kendo-formfield>
+          </div>
+
+          <div class="col-sm-12 col-md-3 my-2">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                text="Fecha Fin"
+                class="d-flex align-items-start"
+                [style.width.px]="150"
+              ></kendo-label>
+              <kendo-datepicker
+                formControlName="fechaFin"
+                format="yyyy-MM-dd"
+                [incompleteDateValidation]="true"
+                [min]="fechaInicio.value"
+              ></kendo-datepicker>
+              <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row justify-content-end mb-2">
+          <div class="col-auto">
+            <button
+              kendoButton
+              icon="search"
+              themeColor="success"
+              [disabled]="btnBuscarDisabled"
+              (click)="generarReporte()"
+            >
+              Buscar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <!-- *ngIf="gridReporte.data.length > 0" -->
+            <kendo-grid
+              [kendoGridBinding]="gridReporte.data"
+              [loading]="gridReporte.loading"
+            >
+              <kendo-grid-column
+                field="hora"
+                title="Hora"
+                [width]="150"
+                [sticky]="true"
+                [filterable]="true"
+                class="text-center fw-bold"
+                headerClass="justify-content-center header-grid-integra text-white"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{
+                    dataItem.hora < 10
+                      ? "0" + dataItem.hora + ":00"
+                      : dataItem.hora + ":00"
+                  }}
+                </ng-template>
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class=""
+                >
+                  <div class="w-100 justify-content-center text-center">
+                    TOTAL
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="numVecesDetenido"
+                [width]="150"
+                headerClass="justify-content-center header-grid-integra"
+                class="text-center"
+              >
+                <ng-template kendoGridHeaderTemplate let-column>
+                  <div class="text-center w-100">
+                    Número de veces<br />
+                    que se detuvo
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="justify-content-center text-center"
+                >
+                  <ng-container *ngIf="gridReporte.data.length > 0">
+                    <div
+                      class="w-100 justify-content-center text-center fw-bold"
+                      style="font-size: 16px"
+                    >
+                      {{ totalNumVeces }}
+                    </div>
+                  </ng-container>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="tiempoTotalDetenido"
+                [width]="150"
+                headerClass="justify-content-center header-grid-integra"
+                class="text-center"
+              >
+                <ng-template kendoGridHeaderTemplate let-column>
+                  <div class="text-center w-100">
+                    Tiempo Total<br />
+                    que estuvo detenido
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{ dataItem.tiempoTotalDetenido }} min.
+                </ng-template>
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="justify-content-center text-center"
+                >
+                  <ng-container *ngIf="gridReporte.data.length > 0">
+                    <div
+                      class="w-100 justify-content-center text-center fw-bold"
+                      style="font-size: 16px"
+                    >
+                      {{ totalTiempoDetenido | number : "1.1-1" }} min.
+                    </div>
+                  </ng-container>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="perTiempoDetenido"
+                title="TOTAL"
+                [width]="200"
+                headerClass="justify-content-center header-grid-integra"
+                class="text-center"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  <div
+                    class="w-100 d-flex justify-content-center ctc-custom-table"
+                  >
+                    <table class="text-center w-auto">
+                      <tr>
+                        <td style="width: 200px">Tiempo Detenido(%)</td>
+                        <td style="width: 100px">
+                          {{ dataItem.perTiempoDetenido | number : "1.1-1" }}
+                          %
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="justify-content-center text-center"
+                >
+                  <div
+                    class="w-100 d-flex justify-content-center ctc-custom-table"
+                    *ngIf="gridReporte.data.length > 0"
+                  >
+                    <table class="text-center w-auto">
+                      <tr>
+                        <td style="width: 200px">Tiempo Detenido(%)</td>
+                        <td style="width: 100px">
+                          {{ totalPerTiempoDetenido | number : "1.1-1" }} %
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 200px">
+                          Tiempo Promedio<br />de cada detención
+                        </td>
+                        <td style="width: 100px">
+                          {{ totalTiempoPromedio | number : "1.1-1" }} min.
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <!-- *ngIf="gridReporte.data.length > 0" -->
+            <kendo-grid
+              [kendoGridBinding]="gridReporteTiemposPromedio.data"
+              [loading]="gridReporteTiemposPromedio.loading"
+            >
+              <kendo-grid-column
+                field="amd"
+                title="Estado identificado por el AMD"
+                [width]="150"
+                [sticky]="true"
+                [filterable]="true"
+                class="text-center fw-bold"
+                headerClass="justify-content-center header-grid-integra text-white"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="tipo"
+                title="Tipo de Actividad (Cantidad)"
+                [width]="150"
+                [sticky]="true"
+                [filterable]="true"
+                class="text-center fw-bold"
+                headerClass="justify-content-center header-grid-integra text-white"
+              >
+                  <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{ dataItem.tipo }} ({{dataItem.cantidad}})
+                </ng-template>
+              </kendo-grid-column>
+             
+              <kendo-grid-column
+              field="promedioMin"
+              [width]="150"
+              headerClass="justify-content-center header-grid-integra"
+              class="text-center"
+              >
+                <ng-template kendoGridHeaderTemplate let-column>
+                  <div class="text-center w-100">
+                    Tiempo Promedio  desde que acaba la <br />llamada hasta que se marca la ocurrencia
+                  </div>
+                </ng-template>
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem
+                  let-rowIndex="rowIndex"
+                >
+                  {{ dataItem.promedioMin }} min.
+                </ng-template>
+                <!-- <ng-template
+                  kendoGridFooterTemplate
+                  let-column
+                  let-columnIndex="columnIndex"
+                  class="justify-content-center text-center"
+                >
+                  <ng-container *ngIf="gridReporteTiemposPromedio.data.length > 0">
+                    <div
+                      class="w-100 justify-content-center text-center fw-bold"
+                      style="font-size: 16px"
+                    >
+                      {{ totalTiempoPromedioActividad | number : "1.1-1" }} min.
+                    </div>
+                  </ng-container>
+                </ng-template> -->
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

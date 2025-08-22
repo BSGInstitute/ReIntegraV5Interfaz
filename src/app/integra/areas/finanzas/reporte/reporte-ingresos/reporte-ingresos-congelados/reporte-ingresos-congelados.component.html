@@ -1,0 +1,222 @@
+<app-loader *ngIf="loader"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0" id="modal-basic-title">
+      Reporte Ingreso Congelado
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modalRef.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row" style="display:flex;justify-content: left;">
+      <div class="row k-form-horizontal" style="padding: 0px">
+        <kendo-formfield
+          orientation="horizontal"
+          style="margin-top: 0px !important"
+        >
+          <label
+            [for]="filtroRef"
+            class="k-label"
+            [style.width.px]="110"
+          >
+            Nombre filtro :
+          </label>
+          <kendo-textbox
+            #filtroRef
+            fillMode="outline"
+            [clearButton]="true"
+            [formControl]="filtro"
+            (valueChange)="filtroChange($event)"
+            [style.width.%]="35"
+          >
+          </kendo-textbox>
+        </kendo-formfield>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+        <kendo-grid
+          [kendoGridBinding]="listaReporteCongeladoFiltrado"
+          [loading]="false"
+          [pageSize]="10"
+          [resizable]="false"
+          [pageable]="{
+            buttonCount: 5,
+            info: true,
+            type: 'numeric',
+            pageSizes: true,
+            previousNext: true,
+            position: 'bottom'
+          }"
+        >
+        
+          <kendo-grid-column
+            title="Nombre Filtro"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="150"
+            field="nombreFiltro"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div style="font-size: small;text-align: center;">
+                {{ dataItem.nombreFiltro }}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Fecha Congelamiento"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="150"
+            field="fechaCongelamiento"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div style="font-size: small;text-align: center;">
+                {{ finanzasService.fechaTemplate(dataItem.fechaCongelamiento,true) }}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Usaurio Creacion"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="150"
+            field="usuarioCreacion"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <div style="font-size: small;text-align: center;">
+                    {{ dataItem.usuarioCreacion }}
+                  </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Detalle Congelado"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="150"
+            field="detalleCongelado"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div style="display:flex;justify-content: center;">
+                <button
+                title="Exportar a Excel"
+                  mat-raised-button
+                  class="btn-export-excel"
+                  (click)="generarExcel(excelexport,dataItem)"
+                >
+                  <span class="k-icon k-i-file-excel k-icon-20"></span>
+                  Exportar a Excel
+                </button>
+                <kendo-excelexport
+                        #excelexport
+                      >
+                        <kendo-excelexport-column
+                          field="tipo"
+                          title="Detalle"
+                          [locked]="true"
+                        >
+                        </kendo-excelexport-column>
+                        <kendo-excelexport-column
+                          field="valor"
+                          title="Total ($)"
+                          [locked]="true"
+                        >
+                        <ng-template kendoExcelExportFooterTemplate let-column="column">
+                          {{ 'TOTAL ($): ' + sumaFoter.toString() }}
+                        </ng-template>
+                        </kendo-excelexport-column>
+                      </kendo-excelexport>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column
+            title="Eliminar"
+            headerClass="justify-content-center k-grid-header "
+            [headerStyle]="{
+              'background-color': '#3382a9',
+              color: 'white',
+              'font-size': 'small'
+            }"
+            [width]="60"
+            field="id"
+            [locked]="false"
+            [sticky]="false"
+            [filterable]="true"
+            [hidden]="false"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <div kendoTooltip style="display:flex;justify-content: center;">
+                    <button
+                    title="Eliminar"
+                    mat-raised-button
+                    color="warn"
+                    (click)="eliminarCongelamiento(dataItem.id)"
+                  >
+                    <span class="k-icon k-i-delete k-icon-20"></span>
+                  </button>
+                </div>
+               
+            </ng-template>
+          </kendo-grid-column>
+          <ng-template kendoGridNoRecordsTemplate>
+            <div>
+              <kendo-badge-container>
+                <kendo-icon name="cloud" size="medium"></kendo-icon>
+                <kendo-badge position="inside">
+                  <kendo-icon
+                    name="close"
+                    size="small"
+                    style="color: red"
+                  ></kendo-icon>
+                </kendo-badge>
+              </kendo-badge-container>
+            </div>
+            <p style="font-size: small">No hay registros cargados!</p>
+          </ng-template>
+        </kendo-grid>
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modalRef.close('Close click')"
+    >
+      Cerrar
+    </button>
+  </div>

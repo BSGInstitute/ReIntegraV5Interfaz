@@ -1,0 +1,546 @@
+<div class="card border-primary" #reporte>
+    <div class="card-header pb-0 bg-color-material">
+      <div class="col text-aling-center">
+        <h2 class="mb-3 text-white">(M) Tipos de Documentos</h2>
+      </div>
+    </div>
+  
+    <div class="card-body p-0">
+      <div class="k-form k-form-horizontal">
+        <div class="row">
+          <div class="col-sm-12 my-2">
+            <kendo-grid
+              [kendoGridBinding]="gridTiposDocumentos.data"
+              [loading]="gridTiposDocumentos.loading"
+              [selectable]="true"
+              [sortable]="true"
+              [resizable]="true"
+              [pageable]="{
+                buttonCount: 5,
+                info: true,
+                type: 'numeric',
+                pageSizes: true,
+                previousNext: true,
+                position: 'bottom'
+              }"
+              [skip]="0"
+              [pageSize]="15"
+              filterable="menu"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <div class="row col-md-12">
+                  <div class="col-md-12 text-end">
+                    <button
+                      type="button"
+                      class="btn btn-success text-white"
+                      (click)="abrirModalDetalleInsertar()"
+                    >
+                      Nuevo
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+  
+              <ng-template
+                kendoPagerTemplate
+                let-totalPages="totalPages"
+                let-currentPage="currentPage"
+              >
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="5"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="cantidadItems"
+                ></kendo-pager-page-sizes>
+              </ng-template>
+  
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                [width]="150"
+                [headerClass]="'justify-content-center'"
+                [filterable]="true"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              
+              <kendo-grid-column
+                field="nombrePlantillaFrontal"
+                title="Plantilla Frontal"
+                [width]="150"
+                [headerClass]="'justify-content-center'"
+                [filterable]="false"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="nombrePlantillaPosterior"
+                title="Plantilla Posterior"
+                [width]="150"
+                [headerClass]="'justify-content-center'"
+                [filterable]="false"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+            
+              <kendo-grid-command-column
+                title="Acciones"
+                [headerStyle]="{ color: '#5f75bd' }"
+                [width]="80"
+                [headerClass]="'justify-content-center'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <button
+                    kendoGridEditCommand
+                    themeColor="warning"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Editar"
+                    (click)="abrirModalDetalleActualizar(dataItem)"
+                  >
+                    <span class="k-icon k-i-pencil k-icon-20"></span>
+                  </button>
+  
+                  <button
+                    kendoGridEditCommand
+                    themeColor="error"
+                    fillMode="solid"
+                    rounded="large"
+                    size="large"
+                    class="p-2 me-1 ms-1"
+                    container="body"
+                    placement="top"
+                    ngbTooltip="Eliminar"
+                    (click)="eliminar(dataItem)"
+                  >
+                    <span class="k-icon k-i-x k-icon-20"></span>
+                  </button>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Edicion -->
+  <ng-template #modalTipoDocumento let-modal>
+    <div class="modal-header bg-primary-header-modal">
+      <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+        Datos del Documento
+      </h3>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="limpiarCamposForm()"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formTipoDocumento">
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-12 k-form-horizontal ">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-end"
+                [style.width.px]="150"
+                [for]="nombre"
+                text="Nombre Documento:"
+              >
+              </kendo-label>
+              <kendo-textbox
+                #nombre
+                formControlName="nombre"
+                [style.width.px]="400"
+                placeholder="Nombre"
+                required
+              >
+              </kendo-textbox>
+              <kendo-formerror>{{
+                getErrorMessageEditar("nombre")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-6 col-md-6 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-end"
+                [style.width.px]="150"
+                [for]="plantillaFrontal"
+                text="Plantilla Frontal:"
+              >
+              </kendo-label>
+              <kendo-dropdownlist
+                #plantillaFrontal
+                [data]="listaPlantillaFrontal"
+                textField="nombre"
+                valueField="id"
+                formControlName="idPlantillaFrontal"
+                [filterable]="true"
+                [style.width.px]="350"
+                [valuePrimitive]="true"
+                (filterChange)="filtrarPortadaFrontal($event)"
+              ></kendo-dropdownlist>
+              <kendo-formerror>{{
+                getErrorMessageEditar("idPlantillaFrontal")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+          <div class="col-sm-6 col-md-6 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-end"
+                [style.width.px]="150"
+                [for]="nombre"
+                text="Plantilla Posterior:"
+              >
+              </kendo-label>
+              <kendo-dropdownlist
+                #plantillaFrontal
+                [data]="listaPlantillaPosterior"
+                textField="nombre"
+                valueField="id"
+                formControlName="idPlantillaPosterior"
+                [filterable]="true"
+                [style.width.px]="350"
+                [valuePrimitive]="true"
+                (filterChange)="filtrarPortadaPosterior($event)"
+              ></kendo-dropdownlist>
+              <kendo-formerror>{{
+                getErrorMessageEditar("idPlantillaPosterior")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <kendo-label
+                class="d-flex align-items-end"
+                [style.width.px]="150"
+                [for]="programaGeneral"
+                text="Programa General:"
+              >
+              </kendo-label>
+              <kendo-multiselect
+                #programaGeneral
+                formControlName="idsPGenerales"
+                [data]="listaProgramasGenerales"
+                [filterable]="true"
+                textField="nombre"
+                valueField="id"
+                placeholder="<Programas Generales>"
+                [valuePrimitive]="true"
+                [virtual]="{ itemHeight: 30 }"
+                (filterChange)="filtrarPgeneral($event)"
+              >
+              </kendo-multiselect>
+              <kendo-formerror>{{
+                getErrorMessageEditar("idsPGenerales")
+              }}</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-12 col-md-12 k-form-horizontal">
+            <div class="card border-primary" >
+              <div class="card-header pb-0 bg-color-material">
+                <div class="col text-aling-center">
+                  <h2 class="mb-3 text-white">Configuracion de condiciones para emitir documentos de alumnos</h2>
+                </div>
+              </div>
+            
+              <div class="card-body p-0">
+                <div class="row">
+                  <div class="col-sm-12 my-2">
+                    <kendo-grid
+                      [kendoGridBinding]="gridConfiguracionCondiciones.data"
+                      [loading]="gridConfiguracionCondiciones.loading"
+                      [selectable]="true"
+                      [resizable]="true"
+                      (cellClick)="gridConfiguracionCondiciones.cellClickHandler($event)"
+                      (cellClose)="gridConfiguracionCondiciones.cellCloseHandler($event)"
+                    >
+                      <kendo-grid-column
+                        field="modalidades"
+                        title="Modalidad Curso"
+                        [width]="150"
+                        [headerClass]="'justify-content-center'"
+                      >
+                      <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem>
+                          <ng-container *ngIf="dataItem.modalidades != null && dataItem.modalidades.length > 0; else elseTemplateModalidad">
+                            <ul>
+                              <li *ngFor="let item of dataItem.modalidades">
+                                {{item}}
+                              </li>
+                            </ul>
+                          </ng-container>
+                          <ng-template #elseTemplateModalidad>
+                            <div class="container text-center">
+                              <p>Seleccione Modalidades</p>
+                            </div>
+                          </ng-template>
+                        </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem
+                      >
+                        <kendo-multiselect
+                          [formControl]="formGroup.get('idsModalidad')"
+                          placeholder="Seleccione las Modalidades"
+                          [data]="listaModalidadesCursos"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                      </kendo-grid-column>
+                      
+                      <kendo-grid-column
+                        field="estadoMatricula"
+                        title="Estado Matricula"
+                        [width]="150"
+                        [headerClass]="'justify-content-center'"
+                      >
+                        <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem>
+                          <ng-container *ngIf="dataItem.estadoMatricula != null && dataItem.estadoMatricula.length > 0; else elseTemplateEstado">
+                            <ul>
+                              <li *ngFor="let item of dataItem.estadoMatricula">
+                                {{item}}
+                              </li>
+                            </ul>
+                          </ng-container>
+                          <ng-template #elseTemplateEstado>
+                            <div class="container text-center">
+                              <p>Seleccione Estado Matricula</p>
+                            </div>
+                          </ng-template>
+                        </ng-template>
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-formGroup="formGroup"
+                          let-dataItem
+                        >
+                          <kendo-multiselect
+                            [formControl]="formGroup.get('idsEstadoMatricula')"
+                            placeholder="Seleccione los Estados"
+                            [data]="listaEstadosMatricula"
+                            textField="nombre"
+                            valueField="id"
+                            [valuePrimitive]="true"
+                            (valueChange)="filtrarSubEstadoPorEstado($event)"
+                          >
+                          </kendo-multiselect>
+                        </ng-template>
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        field="subEstadoMatricula"
+                        title="SubEstado Matricula"
+                        [width]="240"
+                        [headerClass]="'justify-content-center'"
+                      >
+                        <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem>
+                          <ng-container *ngIf="dataItem.subEstadoMatricula != null && dataItem.subEstadoMatricula.length > 0; else elseTemplateSubEstado">
+                            <ul>
+                              <li *ngFor="let item of dataItem.subEstadoMatricula">
+                                {{item}}
+                              </li>
+                            </ul>
+                          </ng-container>
+                          <ng-template #elseTemplateSubEstado>
+                            <div class="container text-center">
+                              <p>Seleccione Sub EstadoMatricula</p>
+                            </div>
+                          </ng-template>
+                        </ng-template>
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-formGroup="formGroup"
+                          let-dataItem
+                        >
+                          <kendo-multiselect
+                            [formControl]="formGroup.get('idsSubEstadoMatricula')"
+                            placeholder="Seleccione los SubEstados"
+                            [data]="listaSubEstadosMatricula"
+                            textField="nombre"
+                            valueField="id"
+                            [valuePrimitive]="true"
+                          >
+                          </kendo-multiselect>
+                        </ng-template>
+                      </kendo-grid-column>
+                      
+                      <kendo-grid-column
+                        field="criterioNota"
+                        title="Criterio Nota"
+                        [width]="130"
+                        [headerClass]="'justify-content-center'"
+                      >
+                        <ng-template
+                          kendoGridCellTemplate
+                          let-dataItem>
+                          <ng-container *ngIf="dataItem.criterioNota != null; else elseTemplateCriterio">
+                            <p>{{dataItem.criterioNota}}</p>
+                          </ng-container>
+                          <ng-template #elseTemplateCriterio>
+                            <div class="container text-center">
+                              <p>Seleccione un Criterio</p>
+                            </div>
+                          </ng-template>
+                        </ng-template>
+                        <ng-template
+                          kendoGridEditTemplate
+                          let-formGroup="formGroup"
+                          let-dataItem
+                        >
+                          <kendo-dropdownlist
+                            [formControl]="formGroup.get('idCriterioNota')"
+                            placeholder="Seleccione los Critero"
+                            [data]="listaOperadoresComparacion"
+                            textField="nombre"
+                            valueField="id"
+                            [valuePrimitive]="true"
+                          >
+                          </kendo-dropdownlist>
+                        </ng-template>
+                      </kendo-grid-column>
+
+                      <kendo-grid-column
+                        field="tieneDeuda"
+                        title="Tiene Deuda"
+                        [width]="90"
+                        [headerClass]="'justify-content-center'"
+                      >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem>
+                        <ng-container *ngIf="dataItem.tieneDeuda; else elseTemplateConDeuda">
+                          <p>Si</p>
+                        </ng-container>
+                        <ng-template #elseTemplateConDeuda>
+                          <p>No</p>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem
+                      >
+                        <input 
+                          [formControl]="formGroup.get('tieneDeuda')"
+                          type="checkbox"
+                          kendoCheckBox />
+                      </ng-template>
+                      </kendo-grid-column>
+                    </kendo-grid>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+  
+      <div class="row my-2">
+        <div class="text-end">
+          <ng-container *ngIf="nuevoRegistro">
+            <button
+              class="btn btn-primary mx-1"
+              [disabled]="!validarGridFormGroup()"
+              (click)="insertar()"
+            >
+              <span class="px-1">Nuevo</span>
+            </button>
+          </ng-container>
+          <ng-container *ngIf="!nuevoRegistro">
+            <button
+              class="btn btn-primary mx-1"
+              [disabled]="!validarGridFormGroup()"
+              (click)="actualizar()"
+            >
+              <span class="px-1">Actualizar</span>
+            </button>
+          </ng-container>
+  
+          <button class="btn btn-danger" (click)="limpiarCamposForm()">
+            <span class="px-1">Cancelar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <loading [loading]="loaderModal"></loading>
+  </ng-template>
+  <!-- Modal Edicion -->
+  <loading [loading]="loaderModal"></loading>

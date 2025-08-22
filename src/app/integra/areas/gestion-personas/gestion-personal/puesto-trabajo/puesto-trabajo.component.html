@@ -1,0 +1,3719 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">(C) Puestos de trabajo</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridPuestoTrabajo
+              [kendoGridBinding]="gridPuestoTrabajo.data"
+              [loading]="gridPuestoTrabajo.loading"
+              (remove)="gridPuestoTrabajo.removeHandler($event)"
+              [resizable]="true"
+              [pageSize]="10"
+              [sortable]="true"
+              filterable="menu"
+              [pageable]="{ pageSizes: [10, 20, 30] }"
+            >
+              <!-- filterable="menu" -->
+              <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+                <button
+                  kendoButton
+                  icon="reload"
+                  fillMode="flat"
+                  themeColor="primary"
+                  (click)="this.obtener()"
+                ></button>
+
+                <kendo-grid-spacer></kendo-grid-spacer>
+
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="abrirModalNuevo(modalPuestoTrabajo, true, dataItem)"
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="personalAreaTrabajo"
+                title="Area de Trabajo"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="usuarioModificacion"
+                title="Usuario Modificacion"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="fechaModificacion"
+                title="Fecha Modificacion"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-command-column
+                title="Perfil de Puesto"
+                [width]="60"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <button
+                      kendoButton
+                      fillMode="solid"
+                      rounded="large"
+                      themeColor="primary"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="
+                        abrirModalPerfilPuestoTrabajo(
+                          modalPerfilPuestoTrabajo,
+                          false,
+                          dataItem
+                        )
+                      "
+                    >
+                      <span class="k-icon k-i-book k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+              <kendo-grid-command-column
+                title="Versión
+                de perfil
+                de puesto"
+                [width]="60"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <button
+                      kendoButton
+                      fillMode="solid"
+                      rounded="large"
+                      themeColor="success"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="
+                        abrirModalVersionPerfil(
+                          modalVersionesPerfilPuestoTrabajo,
+                          false,
+                          dataItem
+                        )
+                      "
+                    >
+                      <span class="k-icon k-i-arrow-rotate-cw k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+              <kendo-grid-command-column
+                title="ADI"
+                [width]="60"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <button
+                      kendoButton
+                      fillMode="solid"
+                      rounded="large"
+                      themeColor="primary"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="abrirModalADI(modAsignarModulo, false, dataItem)"
+                    >
+                      <span class="k-icon k-i-thumbnails-down k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+              <kendo-grid-command-column
+                title="Editar"
+                [width]="60"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- Editar -->
+                    <button
+                      kendoButton
+                      fillMode="solid"
+                      rounded="large"
+                      themeColor="warning"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                      (click)="
+                        abrirModalNuevo(modalPuestoTrabajo, false, dataItem)
+                      "
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+              <kendo-grid-command-column
+                title="Eliminar"
+                [width]="60"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridCellTemplate
+                  let-dataItem="dataItem"
+                  let-isNew="isNew"
+                >
+                  <div class="w-100 d-flex justify-content-center">
+                    <!-- Eliminar -->
+                    <button
+                      kendoButton
+                      themeColor="error"
+                      icon="trash"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      (click)="eliminar(dataItem.id)"
+                    ></button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- -----------------------Modal Crear Nuevo/Actualizar ---------------------- -->
+<ng-template #modalPuestoTrabajo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos del Puesto Trabajo
+    </h1>
+
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.close('Close click')"
+    ></button>
+  </div>
+
+  <div class="modal-body p-3">
+    <form [formGroup]="formDatosPuestoTrabajo">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="puestoTrabajo" class="d-flex align-items-start">
+              <span
+                ><b>Puesto Trabajo</b>
+                <strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <kendo-textbox #puestoTrabajo formControlName="nombre">
+            </kendo-textbox>
+            <kendo-formerror>El campo Nombre es obligatorio</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal">
+          <kendo-formfield orientation="horizontal">
+            <label
+              [for]="formAreaPuestoTrabajo"
+              class="k-label d-flex align-items-start text-start pt-0"
+              ><b> Area Trabajo<strong class="text-danger">*</strong>:</b>
+            </label>
+            <kendo-dropdownlist
+              #formAreaPuestoTrabajo
+              formControlName="idPersonalAreaTrabajo"
+              [data]="DataAreaTrabajo"
+              [defaultItem]="{
+                id: null,
+                nombre: '-Seleccione Programa General-'
+              }"
+              valueField="id"
+              textField="nombre"
+              size="small"
+              [valuePrimitive]="true"
+              [kendoDropDownFilter]="filterSettings"
+            ></kendo-dropdownlist>
+            <kendo-formerror>Seleccione una Area de Trabajo</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="guardar()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="actualizar()"
+    >
+      Actualizar
+    </button>
+    <button class="btn btn-danger" (click)="limpiarCamposForm()">
+      <span class="px-1">Cancelar</span>
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+
+<!-- -----------------------Modal Perfil de Puesto Trabajo ---------------------- -->
+
+<ng-template #modalPerfilPuestoTrabajo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registro de Perfil Puesto de Trabajo
+    </h1>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.close('Close click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12" id="tabpartnerPw">
+        <kendo-tabstrip [keepTabContent]="true">
+          <kendo-tabstrip-tab [selected]="true">
+            <ng-template kendoTabTitle>
+              <span>Datos Puesto de Trabajo</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <!-- CONTENT -->
+              <form
+                class="k-form k-form-horizontal"
+                [formGroup]="formPerfilPuestoTrabajo"
+                class="k-form"
+              >
+                <div class="row">
+                  <div class="col-sm-12 col-md-10">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="descripcion"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Descripcion de Puesto de Trabajo</b>
+                      </label>
+                      <kendo-textarea
+                        #descripcion
+                        formControlName="descripcion"
+                        resizable="none"
+                        [rows]="5"
+                      >
+                      </kendo-textarea>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12 col-md-10">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="objetivo"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Objetivos del Puesto de Trabajo</b>
+                      </label>
+                      <kendo-textarea
+                        #objetivo
+                        formControlName="objetivo"
+                        resizable="none"
+                        [rows]="5"
+                      >
+                      </kendo-textarea>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </form>
+              <br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Relaciones del puesto
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridRelacionesPuestoTrabajo
+                    [kendoGridBinding]="gridRelacionesPuestoTrabajo.data"
+                    [loading]="gridRelacionesPuestoTrabajo.loading"
+                    (remove)="gridRelacionesPuestoTrabajo.removeHandler($event)"
+                    (cancel)="gridRelacionesPuestoTrabajo.cancelHandler($event)"
+                    (save)="gridRelacionesPuestoTrabajo.saveHandler($event)"
+                    (add)="gridRelacionesPuestoTrabajo.addHandler($event)"
+                    (edit)="gridRelacionesPuestoTrabajo.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        fillMode="flat"
+                        themeColor="primary"
+                        icon="plus"
+                      >
+                        <!-- (click)="ObternerContactos()" -->
+                        Agregar
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="listaPuestoDependencia"
+                      title="Puesto de Dependencia"
+                      [width]="120"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.listaPuestoDependencia != null;
+                            else elseTemplateDependencia
+                          "
+                        >
+                          <ul
+                            *ngFor="let item of dataItem.listaPuestoDependencia"
+                          >
+                            <li>
+                              {{ item.nombre }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateDependencia>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione los Puestos
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="
+                            formGroup.get('listaPuestoDependencia')
+                          "
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataPuestoTrabajoRelacion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="false"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="listaPuestoRelacionInterna"
+                      title="Relación Interna"
+                      [width]="120"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.listaPuestoRelacionInterna != null;
+                            else elseTemplateInterna
+                          "
+                        >
+                          <ul
+                            *ngFor="
+                              let item of dataItem.listaPuestoRelacionInterna
+                            "
+                          >
+                            <li>{{ item.nombre }}</li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateInterna>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione las Relaciones
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="
+                            formGroup.get('listaPuestoRelacionInterna')
+                          "
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataAreaTrabajo"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="false"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="listaPuestoACargo"
+                      title="Puestos a Cargo"
+                      [width]="120"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.listaPuestoACargo != null;
+                            else elseTemplateCargo
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.listaPuestoACargo">
+                            <li>{{ item.nombre }}</li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateCargo>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione los Puestos
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="formGroup.get('listaPuestoACargo')"
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataPuestoTrabajo"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="false"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Comando"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            rounded="large"
+                            themeColor="warning"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            [disabled]="
+                              gridRelacionesPuestoTrabajo.formGroup?.invalid
+                            "
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                          </button>
+
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br />
+              <br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Funciones del puesto
+                </h3>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridFuncionPuesto
+                    [kendoGridBinding]="gridFuncionPuesto.data"
+                    [loading]="gridFuncionPuesto.loading"
+                    (remove)="gridFuncionPuesto.removeHandler($event)"
+                    (cancel)="gridFuncionPuesto.cancelHandler($event)"
+                    (save)="gridFuncionPuesto.saveHandler($event)"
+                    (add)="gridFuncionPuesto.addHandler($event)"
+                    (edit)="gridFuncionPuesto.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        fillMode="flat"
+                        themeColor="primary"
+                        icon="plus"
+                      >
+                        <!-- (click)="ObternerContactos()" -->
+                        Agregar
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="nroOrden"
+                      title="Nro Orden"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.nroOrden }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-numerictextbox
+                          [formControl]="formGroup.get('nroOrden')"
+                          [min]="0"
+                          [decimals]="0"
+                        ></kendo-numerictextbox>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="funcion"
+                      title="Funcion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <textarea
+                          [formControl]="formGroup.get('funcion')"
+                          rows="3"
+                          class="form-control"
+                        ></textarea>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="idPersonalTipoFuncion"
+                      title="Tipo Funcion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerDataTipoFuncion(dataItem.idPersonalTipoFuncion)
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataTipoFuncion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idPersonalTipoFuncion')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idFrecuenciaPuestoTrabajo"
+                      title="Frecuencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreFrecuencia(
+                            dataItem.idFrecuenciaPuestoTrabajo
+                          )
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataTipoFrecuencia"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="
+                            formGroup.get('idFrecuenciaPuestoTrabajo')
+                          "
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Comando"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            rounded="large"
+                            themeColor="warning"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            [disabled]="gridFuncionPuesto.formGroup?.invalid"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                          </button>
+
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Reportes</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Reportes del puesto
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridReportePuesto
+                    [kendoGridBinding]="gridReportePuesto.data"
+                    [loading]="gridReportePuesto.loading"
+                    (remove)="gridReportePuesto.removeHandler($event)"
+                    (cancel)="gridReportePuesto.cancelHandler($event)"
+                    (save)="gridReportePuesto.saveHandler($event)"
+                    (add)="gridReportePuesto.addHandler($event)"
+                    (edit)="gridReportePuesto.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        fillMode="flat"
+                        themeColor="primary"
+                        icon="plus"
+                      >
+                        <!-- (click)="ObternerContactos()" -->
+                        Agregar
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="nroOrden"
+                      title="Nro Orden"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.nroOrden }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-numerictextbox
+                          [formControl]="formGroup.get('nroOrden')"
+                          [min]="0"
+                          [decimals]="0"
+                        ></kendo-numerictextbox>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="reporte"
+                      title="Reporte"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <textarea
+                          [formControl]="formGroup.get('reporte')"
+                          rows="3"
+                          class="form-control"
+                        ></textarea>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="idFrecuenciaPuestoTrabajo"
+                      title="Frecuencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreFrecuencia(
+                            dataItem.idFrecuenciaPuestoTrabajo
+                          )
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataTipoFrecuencia"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="
+                            formGroup.get('idFrecuenciaPuestoTrabajo')
+                          "
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Comando"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            rounded="large"
+                            themeColor="warning"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            [disabled]="gridReportePuesto.formGroup?.invalid"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                          </button>
+
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Requerimiento</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Cursos Complementarios
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridCursoComplementario
+                    [kendoGridBinding]="gridCursoComplementario.data"
+                    [loading]="gridCursoComplementario.loading"
+                    (remove)="gridCursoComplementario.removeHandler($event)"
+                    (cancel)="gridCursoComplementario.cancelHandler($event)"
+                    (save)="gridCursoComplementario.saveHandler($event)"
+                    (add)="gridCursoComplementario.addHandler($event)"
+                    (edit)="gridCursoComplementario.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        fillMode="flat"
+                        themeColor="primary"
+                        icon="plus"
+                      >
+                        <!-- (click)="ObternerContactos()" -->
+                        Agregar
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="idTipoCompetenciaTecnica"
+                      title="Tipo Curso Complementario"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreTipoCursoComplementario(
+                            dataItem.idTipoCompetenciaTecnica
+                          )
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataTipoCursoComplementario"
+                          textField="nombre"
+                          valueField="idTipoCursoComplementario"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{
+                            idTipoCursoComplementario: null,
+                            nombre: '<Seleccione>'
+                          }"
+                          [formControl]="
+                            formGroup.get('idTipoCompetenciaTecnica')
+                          "
+                          (valueChange)="
+                            obtenerCursoComplementarioByTipo($event)
+                          "
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idCompetenciaTecnica"
+                      title="Curso Complementario"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreCursoComplementario(
+                            dataItem.idCompetenciaTecnica
+                          )
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataCursoComplementarioAux"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idCompetenciaTecnica')"
+                          [disabled]="
+                            !formGroup.get('idTipoCompetenciaTecnica')?.value
+                          "
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idNivelCompetenciaTecnica"
+                      title="Nivel Curso Complementario"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreNivelCursoComplementario(
+                            dataItem.idNivelCompetenciaTecnica
+                          )
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataNivelCursoComplementario"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="
+                            formGroup.get('idNivelCompetenciaTecnica')
+                          "
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Comando"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            rounded="large"
+                            themeColor="warning"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            [disabled]="
+                              gridCursoComplementario.formGroup?.invalid
+                            "
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                          </button>
+
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br /><br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Experiencia Laboral
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridExperienciaLaboral
+                    [kendoGridBinding]="gridExperienciaLaboral.data"
+                    [loading]="gridExperienciaLaboral.loading"
+                    (remove)="gridExperienciaLaboral.removeHandler($event)"
+                    (cancel)="gridExperienciaLaboral.cancelHandler($event)"
+                    (save)="gridExperienciaLaboral.saveHandler($event)"
+                    (add)="gridExperienciaLaboral.addHandler($event)"
+                    (edit)="gridExperienciaLaboral.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        fillMode="flat"
+                        themeColor="primary"
+                        icon="plus"
+                      >
+                        <!-- (click)="ObternerContactos()" -->
+                        Agregar
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="idExperiencia"
+                      title="Experiencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerNombreExperiencia(dataItem.idExperiencia) }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataExperiencia"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idExperiencia')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idTipoExperiencia"
+                      title="Tipo Experiencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerTipoExperiencia(dataItem.idTipoExperiencia) }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataTipoExperiencia"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idTipoExperiencia')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="nroPeriodo"
+                      title="Numero Minimo Periodo"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.nroPeriodo }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-numerictextbox
+                          [formControl]="formGroup.get('nroPeriodo')"
+                          [min]="0"
+                          [decimals]="0"
+                        ></kendo-numerictextbox>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idPeriodo"
+                      title="Periodo"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerNombrePeriodo(dataItem.idPeriodo) }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataPeriodo"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idPeriodo')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Comando"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            rounded="large"
+                            themeColor="warning"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            [disabled]="
+                              gridExperienciaLaboral.formGroup?.invalid
+                            "
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                          </button>
+
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br /><br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Caracteristicas Personales
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridCaracteristicasPersonales
+                    [kendoGridBinding]="gridCaracteristicasPersonales.data"
+                    [loading]="gridCaracteristicasPersonales.loading"
+                    (remove)="
+                      gridCaracteristicasPersonales.removeHandler($event)
+                    "
+                    (cancel)="
+                      gridCaracteristicasPersonales.cancelHandler($event)
+                    "
+                    (save)="gridCaracteristicasPersonales.saveHandler($event)"
+                    (add)="gridCaracteristicasPersonales.addHandler($event)"
+                    (edit)="gridCaracteristicasPersonales.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        fillMode="flat"
+                        themeColor="primary"
+                        icon="plus"
+                      >
+                        <!-- (click)="ObternerContactos()" -->
+                        Agregar
+                      </button>
+                    </ng-template>
+
+                    <kendo-grid-column
+                      field="idEdadMin"
+                      title="Edad Minima"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.idEdadMin }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-numerictextbox
+                          [formControl]="formGroup.get('idEdadMin')"
+                          [min]="0"
+                          [decimals]="0"
+                        ></kendo-numerictextbox>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idEdadMax"
+                      title="Edad Maxima"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.idEdadMax }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-numerictextbox
+                          [formControl]="formGroup.get('idEdadMax')"
+                          [min]="0"
+                          [decimals]="0"
+                        ></kendo-numerictextbox>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idSexo"
+                      title="Sexo"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerSexo(dataItem.idSexo) }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataSexo"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idSexo')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idEstadoCivil"
+                      title="Estado Civil"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerNombreEstadoCivil(dataItem.idEstadoCivil) }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataEstadoCivil"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idEstadoCivil')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Comando"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            rounded="large"
+                            themeColor="warning"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            [disabled]="
+                              gridCaracteristicasPersonales.formGroup?.invalid
+                            "
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                          </button>
+
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br /><br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Formacion Academica
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridFormacionAcademica
+                    [kendoGridBinding]="gridFormacionAcademica.data"
+                    [loading]="gridFormacionAcademica.loading"
+                    (remove)="gridFormacionAcademica.removeHandler($event)"
+                    (cancel)="gridFormacionAcademica.cancelHandler($event)"
+                    (save)="gridFormacionAcademica.saveHandler($event)"
+                    (add)="gridFormacionAcademica.addHandler($event)"
+                    (edit)="gridFormacionAcademica.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <ng-template kendoGridToolbarTemplate>
+                      <button
+                        kendoGridAddCommand
+                        fillMode="flat"
+                        themeColor="primary"
+                        icon="plus"
+                      >
+                        <!-- (click)="ObternerContactos()" -->
+                        Agregar
+                      </button>
+                    </ng-template>
+                    <kendo-grid-column
+                      field="idTipoFormacion"
+                      title="Tipo Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idTipoFormacion != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idTipoFormacion">
+                            <li>
+                              {{ ObtenerNombreTipoFormacion(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione Tipo Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="formGroup.get('idTipoFormacion')"
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataTipoFormacion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idNivelEstudio"
+                      title="Nivel de Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idNivelEstudio != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idNivelEstudio">
+                            <li>
+                              {{ ObtenerNombreNivelFormacion(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione las NivelFormacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="formGroup.get('idNivelEstudio')"
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataNivelFormacion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idAreaFormacion"
+                      title="Area Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreAreaFormacion(dataItem.idAreaFormacion)
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataAreaFormacion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idAreaFormacion')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template> -->
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idAreaFormacion != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idAreaFormacion">
+                            <li>
+                              {{ ObtenerNombreAreaFormacion(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione la Area Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="formGroup.get('idAreaFormacion')"
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataAreaFormacion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idCentroEstudio"
+                      title="Centro de Estudio"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idCentroEstudio != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idCentroEstudio">
+                            <li>
+                              {{ ObtenerNombreCentroEstudio(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione Centro Estudio
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="formGroup.get('idCentroEstudio')"
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataCentroEstudio"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreCentroEstudio(dataItem.idCentroEstudio)
+                        }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataCentroEstudio"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idCentroEstudio')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template> -->
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idGradoEstudio"
+                      title="Estado Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idGradoEstudio != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idGradoEstudio">
+                            <li>
+                              {{ ObtenerEstadoFormacion(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione Estado Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                      >
+                        <kendo-multiselect
+                          [formControl]="formGroup.get('idGradoEstudio')"
+                          class="d-flex"
+                          size="medium"
+                          [data]="DataEstadoFormacion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [kendoDropDownFilter]="filterSettings"
+                          [popupSettings]="{ popupClass: 'pg-popup' }"
+                          class="pg-dropDown"
+                        >
+                        </kendo-multiselect>
+                      </ng-template>
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerEstadoFormacion(dataItem.idEstadoFormacion) }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-dropdownlist
+                          [data]="DataEstadoFormacion"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                          [formControl]="formGroup.get('idEstadoFormacion')"
+                        >
+                        </kendo-dropdownlist>
+                      </ng-template> -->
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      title="Comando"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <div class="text-center">
+                          <button
+                            kendoGridEditCommand
+                            rounded="large"
+                            themeColor="warning"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Editar"
+                          >
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridSaveCommand
+                            themeColor="primary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            [disabled]="
+                              gridFormacionAcademica.formGroup?.invalid
+                            "
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Guardar"
+                          >
+                            <span class="k-icon k-i-save k-icon-20"></span>
+                          </button>
+                          <button
+                            kendoGridCancelCommand
+                            themeColor="secondary"
+                            fillMode="solid"
+                            rounded="large"
+                            size="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Cancelar"
+                          >
+                            <span class="k-icon k-i-cancel k-icon-20"></span>
+                          </button>
+
+                          <button
+                            kendoGridRemoveCommand
+                            themeColor="error"
+                            fillMode="solid"
+                            rounded="large"
+                            class="p-2 me-1 ms-1"
+                            container="body"
+                            placement="top"
+                            ngbTooltip="Eliminar"
+                          >
+                            <span class="k-icon k-i-trash k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Calificacion</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Configuracion Calificacion Evaluaciones
+                </h3>
+              </div>
+              <div class="modal-body">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="col-12 p-2 grid-speech">
+                      <kendo-grid
+                        #kgridEvaluacion
+                        [kendoGridBinding]="gridEvaluacion.data"
+                        [loading]="gridEvaluacion.loading"
+                        (detailExpand)="onDetailExpand($event)"
+                        [resizable]="true"
+                        [pageSize]="10"
+                        [sortable]="true"
+                        filterable="menu"
+                        [pageable]="{ pageSizes: [10, 20, 30] }"
+                      >
+                        <kendo-grid-column
+                          field="nombre"
+                          title="Evaluación"
+                          [width]="600"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            <div [class]="dataItem.class">
+                              {{ dataItem.nombre }}
+                            </div>
+                          </ng-template>
+                        </kendo-grid-column>
+                        <ng-template
+                          kendoGridDetailTemplate
+                          let-dataItemHijo="dataItem"
+                          let-formGroup="formListPuntaje"
+                        >
+                          <div class="row">
+                            <div class="col-12">
+                              <kendo-grid
+                                [kendoGridBinding]="
+                                  dataItemHijo.gridDetalleEvaluacion.data
+                                "
+                                [loading]="
+                                  dataItemHijo.gridDetalleEvaluacion.loading
+                                "
+                                (remove)="
+                                  dataItemHijo.gridDetalleEvaluacion.removeHandler(
+                                    $event
+                                  )
+                                "
+                                (cancel)="
+                                  dataItemHijo.gridDetalleEvaluacion.cancelHandler(
+                                    $event
+                                  )
+                                "
+                                (save)="
+                                  dataItemHijo.gridDetalleEvaluacion.saveHandler(
+                                    $event
+                                  )
+                                "
+                                (edit)="
+                                  dataItemHijo.gridDetalleEvaluacion.editHandler(
+                                    $event
+                                  )
+                                "
+                                (add)="
+                                  dataItemHijo.gridDetalleEvaluacion.addHandler(
+                                    $event
+                                  )
+                                "
+                                [loading]="false"
+                                [pageSize]="10"
+                                [pageable]="true"
+                                [resizable]="true"
+                              >
+                                <kendo-grid-column
+                                  field="nombreGrupo"
+                                  title="Evaluacion"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                  [editable]="false"
+                                >
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-dataItem="dataItem"
+                                  >
+                                    <!-- Si nombreGrupo está vacío, muestra nombreEvaluacion -->
+                                    {{
+                                      dataItem.nombreGrupo
+                                        ? dataItem.nombreGrupo
+                                        : dataItem.nombreEvaluacion
+                                    }}
+                                  </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column
+                                  field="esCalificable"
+                                  title="Aplica Calificación"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                  editor="boolean"
+                                >
+                                  <!-- Modo de solo lectura -->
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-childItem
+                                  >
+                                    <span>{{
+                                      childItem.esCalificable === true
+                                        ? "Sí"
+                                        : "No"
+                                    }}</span>
+                                  </ng-template>
+
+                                  <!-- Modo de edición -->
+                                  <ng-template
+                                    kendoGridEditTemplate
+                                    let-childItem="dataItem"
+                                    let-formGroup="formGroup"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      [checked]="childItem.esCalificable"
+                                      (change)="
+                                        childItem.esCalificable =
+                                          !childItem.esCalificable
+                                      "
+                                      [formControl]="
+                                        formGroup.get('esCalificable')
+                                      "
+                                    />
+                                  </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  field="idProcesoSeleccionRango"
+                                  title="Operador Evaluación"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                >
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-dataItemHijo
+                                  >
+                                    {{
+                                      dataItemHijo.rangoProcesoSeleccionRango
+                                    }}
+                                  </ng-template>
+
+                                  <ng-template
+                                    kendoGridEditTemplate
+                                    let-formGroup="formGroup"
+                                    let-dataItemHijo
+                                  >
+                                    <kendo-dropdownlist
+                                      [data]="DataRango"
+                                      textField="nombre"
+                                      valueField="id"
+                                      [defaultItem]="{
+                                        id: null,
+                                        nombre: '<Seleccione>'
+                                      }"
+                                      [valuePrimitive]="true"
+                                      [formControl]="
+                                        formGroup.get('idProcesoSeleccionRango')
+                                      "
+                                    >
+                                    </kendo-dropdownlist>
+                                  </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  field="calificaPorCentil"
+                                  title="Califica Centil"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                  editor="boolean"
+                                >
+                                  <!-- Modo de solo lectura -->
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-childItem
+                                  >
+                                    <span>{{
+                                      childItem.calificaPorCentil === true
+                                        ? "Sí"
+                                        : "No"
+                                    }}</span>
+                                  </ng-template>
+
+                                  <!-- Modo de edición -->
+                                  <ng-template
+                                    kendoGridEditTemplate
+                                    let-childItem="dataItem"
+                                    let-formGroup="formGroup"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      [checked]="childItem.calificaPorCentil"
+                                      (change)="
+                                        childItem.calificaPorCentil =
+                                          !childItem.calificaPorCentil
+                                      "
+                                      [formControl]="
+                                        formGroup.get('calificaPorCentil')
+                                      "
+                                    />
+                                  </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  field="puntaje"
+                                  title="Puntaje"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                >
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-dataItemHijo
+                                  >
+                                    {{ dataItemHijo.puntaje }}
+                                  </ng-template>
+                                  <ng-template
+                                    kendoGridEditTemplate
+                                    let-formGroup="formGroup"
+                                    let-dataItemHijo
+                                  >
+                                    <input
+                                      kendoTextBox
+                                      type="number"
+                                      [formControl]="formGroup.get('puntaje')"
+                                      placeholder="Editar puntaje"
+                                      min="0"
+                                    />
+                                  </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-command-column
+                                  title="Comando"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                >
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-dataItem
+                                  >
+                                    <div class="text-center">
+                                      <button
+                                        kendoGridEditCommand
+                                        rounded="large"
+                                        themeColor="warning"
+                                        size="large"
+                                        class="p-2 me-1 ms-1"
+                                        container="body"
+                                        placement="top"
+                                        ngbTooltip="Editar"
+                                      >
+                                        <span
+                                          class="k-icon k-i-edit k-icon-20"
+                                        ></span>
+                                      </button>
+                                      <button
+                                        kendoGridSaveCommand
+                                        themeColor="primary"
+                                        fillMode="solid"
+                                        rounded="large"
+                                        size="large"
+                                        class="p-2 me-1 ms-1"
+                                        [disabled]="
+                                          dataItemHijo.gridDetalleEvaluacion
+                                            .formGroup?.invalid
+                                        "
+                                        container="body"
+                                        placement="top"
+                                        ngbTooltip="Guardar"
+                                      >
+                                        <span
+                                          class="k-icon k-i-save k-icon-20"
+                                        ></span>
+                                      </button>
+                                      <button
+                                        kendoGridCancelCommand
+                                        themeColor="secondary"
+                                        fillMode="solid"
+                                        rounded="large"
+                                        size="large"
+                                        class="p-2 me-1 ms-1"
+                                        container="body"
+                                        placement="top"
+                                        ngbTooltip="Cancelar"
+                                      >
+                                        <span
+                                          class="k-icon k-i-cancel k-icon-20"
+                                        ></span>
+                                      </button>
+                                    </div>
+                                  </ng-template>
+                                </kendo-grid-command-column>
+                              </kendo-grid>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </kendo-grid>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="InsertarActualizarPerfilPuestoTrabajo()"
+    >
+      Guardar
+    </button>
+    <button class="btn btn-danger" (click)="limpiarCamposForm()">
+      <span class="px-1">Cancelar</span>
+    </button>
+  </div>
+</ng-template>
+
+<!-- -----------------------Modal Versiones de Perfil de Puesto de Trabajo ---------------------- -->
+<ng-template #modalVersionesPerfilPuestoTrabajo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Versiones Perfil Puesto de Trabajo
+    </h1>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.close('Close click')"
+    ></button>
+  </div>
+  <div class="content">
+    <div class="row">
+      <div class="col-12">
+        <kendo-grid
+          #kgridPuestoTrabajoVersiones
+          [kendoGridBinding]="gridPuestoTrabajoVersiones.data"
+          [loading]="gridPuestoTrabajoVersiones.loading"
+          (remove)="gridPuestoTrabajoVersiones.removeHandler($event)"
+          (cancel)="gridPuestoTrabajoVersiones.cancelHandler($event)"
+          (save)="gridPuestoTrabajoVersiones.saveHandler($event)"
+          (edit)="gridPuestoTrabajoVersiones.editHandler($event)"
+          (add)="gridPuestoTrabajoVersiones.addHandler($event)"
+          [selectable]="true"
+          [pageSize]="10"
+          [pageable]="true"
+          [resizable]="true"
+        >
+          <kendo-grid-column
+            field="puestoTrabajo"
+            title="Puesto de Trabajo"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="personal_Solicitud"
+            title="Usuario Solicitud"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="fechaSolicitud"
+            title="Fecha Solicitud"
+            [width]="120"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="personal_Aprobacion"
+            title="Usuario Aprobacion"
+            [width]="120"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+
+          <kendo-grid-column
+            field="fechaAprobacion"
+            title="Fecha Aprobacion"
+            [width]="150"
+            [headerClass]="'justify-content-center'"
+            [filterable]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="perfilPuestoTrabajoEstadoSolicitud"
+            title="Estado Solicitud"
+            [width]="150"
+            [headerClass]="'justify-content-center'"
+            [filterable]="false"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="esActual"
+            title="Perfil Actual"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="version"
+            title="Version"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-command-column
+            title="Ver Perfil"
+            [width]="60"
+            [headerClass]="'header-grid-integra'"
+          >
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem="dataItem"
+              let-isNew="isNew"
+            >
+              <div class="w-100 d-flex justify-content-center">
+                <!-- Editar -->
+                <button
+                  kendoButton
+                  fillMode="solid"
+                  rounded="large"
+                  themeColor="warning"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Ver"
+                  (click)="
+                    abrirModalPerfilPuestoTrabajoVersion(
+                      modalVerPerfilPuestoTrabajo,
+                      false,
+                      dataItem
+                    )
+                  "
+                >
+                  <span class="k-icon k-i-edit k-icon-20"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- -----------------------Modal para ver informacion de Perfil---------------------- -->
+<ng-template #modalVerPerfilPuestoTrabajo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registro de Perfil Puesto de Trabajo
+    </h1>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.close('Close click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12" id="tabpartnerPw">
+        <kendo-tabstrip [keepTabContent]="true">
+          <kendo-tabstrip-tab [selected]="true">
+            <ng-template kendoTabTitle>
+              <span>Datos Puesto de Trabajo</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <!-- CONTENT -->
+              <form
+                class="k-form k-form-horizontal"
+                [formGroup]="formPerfilPuestoTrabajo"
+                class="k-form"
+              >
+                <div class="row">
+                  <div class="col-sm-12 col-md-10">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="descripcion"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Descripción de Puesto de Trabajo</b>
+                      </label>
+                      <kendo-textarea
+                        #descripcion
+                        formControlName="descripcion"
+                        resizable="none"
+                        [rows]="5"
+                        [readonly]="true"
+                        class="readonly-textarea"
+                      >
+                      </kendo-textarea>
+                    </kendo-formfield>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12 col-md-10">
+                    <kendo-formfield orientation="horizontal">
+                      <label
+                        [for]="objetivo"
+                        class="k-label d-flex align-items-start text-start pt-0"
+                        ><b> Objetivos del Puesto de Trabajo</b>
+                      </label>
+                      <kendo-textarea
+                        #objetivo
+                        formControlName="objetivo"
+                        resizable="none"
+                        [rows]="5"
+                        [readonly]="true"
+                        class="readonly-textarea"
+                      >
+                      </kendo-textarea>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </form>
+              <br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Relaciones del puesto
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridRelacionesPuestoTrabajo
+                    [kendoGridBinding]="gridRelacionesPuestoTrabajo.data"
+                    [loading]="gridRelacionesPuestoTrabajo.loading"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <kendo-grid-column
+                      field="listaPuestoDependencia"
+                      title="Puesto de Dependencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.listaPuestoDependencia != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul
+                            *ngFor="let item of dataItem.listaPuestoDependencia"
+                          >
+                            <li>
+                              {{ ObtenerNombrePuestoDependencia(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione las Puestos
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="listaPuestoRelacionInterna"
+                      title="Relacion de Areas Internas"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.listaPuestoRelacionInterna != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul
+                            *ngFor="
+                              let item of dataItem.listaPuestoRelacionInterna
+                            "
+                          >
+                            <li>
+                              {{ ObtenerNombreAreaLista(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione las Puestos
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="listaPuestoACargo"
+                      title="Puestos a Cargo"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.listaPuestoACargo != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.listaPuestoACargo">
+                            <li>
+                              {{ ObtenerNombrePuestoTrabajoLista(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione las Puestos
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br />
+              <br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Funciones del puesto
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridFuncionPuesto
+                    [kendoGridBinding]="gridFuncionPuesto.data"
+                    [loading]="gridFuncionPuesto.loading"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <kendo-grid-column
+                      field="nroOrden"
+                      title="Nro Orden"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.nroOrden }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="funcion"
+                      title="Funcion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="idPersonalTipoFuncion"
+                      title="Tipo Funcion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerDataTipoFuncion(dataItem.idPersonalTipoFuncion)
+                        }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idFrecuenciaPuestoTrabajo"
+                      title="Frecuencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreFrecuencia(
+                            dataItem.idFrecuenciaPuestoTrabajo
+                          )
+                        }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Reportes</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Reportes del puesto
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridReportePuesto
+                    [kendoGridBinding]="gridReportePuesto.data"
+                    [loading]="gridReportePuesto.loading"
+                    (remove)="gridReportePuesto.removeHandler($event)"
+                    (cancel)="gridReportePuesto.cancelHandler($event)"
+                    (save)="gridReportePuesto.saveHandler($event)"
+                    (add)="gridReportePuesto.addHandler($event)"
+                    (edit)="gridReportePuesto.editHandler($event)"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <kendo-grid-column
+                      field="nroOrden"
+                      title="Nro Orden"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.nroOrden }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="reporte"
+                      title="Reporte"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <textarea
+                          [formControl]="formGroup.get('reporte')"
+                          rows="3"
+                          class="form-control"
+                        ></textarea>
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column
+                      field="idFrecuenciaPuestoTrabajo"
+                      title="Frecuencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{
+                          ObtenerNombreFrecuencia(
+                            dataItem.idFrecuenciaPuestoTrabajo
+                          )
+                        }}
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Requerimiento</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Cursos Complementarios
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridCursoComplementario
+                    [kendoGridBinding]="gridCursoComplementario.data"
+                    [loading]="gridCursoComplementario.loading"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <kendo-grid-column
+                      field="tipoCompetenciaTecnica"
+                      title="Tipo Curso Complementario"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="competenciaTecnica"
+                      title="Curso Complementario"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idNivelCompetenciaTecnica"
+                      title="Nivel Curso Complementario"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreNivelCursoComplementario(
+                            dataItem.idNivelCompetenciaTecnica
+                          )
+                        }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br /><br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Experiencia Laboral
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridExperienciaLaboral
+                    [kendoGridBinding]="gridExperienciaLaboral.data"
+                    [loading]="gridExperienciaLaboral.loading"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <kendo-grid-column
+                      field="idExperiencia"
+                      title="Experiencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerNombreExperiencia(dataItem.idExperiencia) }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idTipoExperiencia"
+                      title="Tipo Experiencia"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerTipoExperiencia(dataItem.idTipoExperiencia) }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="numeroMinimo"
+                      title="Numero Minimo Periodo"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.numeroMinimo }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="periodo"
+                      title="Periodo"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerNombrePeriodo(dataItem.idPeriodo) }}
+                      </ng-template> -->
+                    </kendo-grid-column>
+
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br /><br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Caracteristicas Personales
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridCaracteristicasPersonales
+                    [kendoGridBinding]="gridCaracteristicasPersonales.data"
+                    [loading]="gridCaracteristicasPersonales.loading"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <kendo-grid-column
+                      field="edadMinima"
+                      title="Edad Minima"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.idEdadMin }}
+                      </ng-template>
+                      <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-numerictextbox
+                          [formControl]="formGroup.get('idEdadMin')"
+                          [min]="0"
+                          [decimals]="0"
+                        ></kendo-numerictextbox>
+                      </ng-template> -->
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="edadMaxima"
+                      title="Edad Maxima"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ dataItem.edadMaxima }}
+                      </ng-template>
+                      <!-- <ng-template
+                        kendoGridEditTemplate
+                        let-formGroup="formGroup"
+                        let-dataItem="dataItem"
+                      >
+                        <kendo-numerictextbox
+                          [formControl]="formGroup.get('idEdadMax')"
+                          [min]="0"
+                          [decimals]="0"
+                        ></kendo-numerictextbox>
+                      </ng-template> -->
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idSexo"
+                      title="Sexo"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerSexo(dataItem.idSexo) }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idEstadoCivil"
+                      title="Estado Civil"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerNombreEstadoCivil(dataItem.idEstadoCivil) }}
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+              <br /><br />
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Formacion Academica
+                </h3>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <kendo-grid
+                    #kgridFormacionAcademica
+                    [kendoGridBinding]="gridFormacionAcademica.data"
+                    [loading]="gridFormacionAcademica.loading"
+                    [pageSize]="10"
+                    [pageable]="true"
+                    [resizable]="true"
+                    [pageable]="{ pageSizes: true }"
+                  >
+                    <kendo-grid-column
+                      field="idTipoFormacion"
+                      title="Tipo Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreTipoFormacion(dataItem.idTipoFormacion)
+                        }}
+                      </ng-template> -->
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idTipoFormacion != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idTipoFormacion">
+                            <li>
+                              {{ ObtenerNombreTipoFormacion(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione las Tipo Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idNivelEstudio"
+                      title="Nivel de Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreNivelFormacion(dataItem.idNivelFormacion)
+                        }}
+                      </ng-template> -->
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idNivelEstudio != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idNivelEstudio">
+                            <li>
+                              {{
+                                ObtenerNombreNivelFormacionLista(item) ?? "-"
+                              }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione las Nivel Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idAreaFormacion"
+                      title="Area Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreAreaFormacion(dataItem.idAreaFormacion)
+                        }}
+                      </ng-template>
+                    </kendo-grid-column> -->
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idAreaFormacion != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idAreaFormacion">
+                            <li>
+                              {{ ObtenerNombreAreaFormacion(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione Area Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idCentroEstudio"
+                      title="Centro de Estudio"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{
+                          ObtenerNombreCentroEstudio(dataItem.idCentroEstudio)
+                        }}
+                      </ng-template> -->
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idCentroEstudio != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idCentroEstudio">
+                            <li>
+                              {{ ObtenerNombreCentroEstudioLista(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione Area Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column
+                      field="idGradoEstudio"
+                      title="Estado Formacion"
+                      [width]="150"
+                      headerClass="justify-content-center"
+                    >
+                      <!-- <ng-template
+                        kendoGridCellTemplate
+                        let-dataItem="dataItem"
+                      >
+                        {{ ObtenerEstadoFormacion(dataItem.idEstadoFormacion) }}
+                      </ng-template> -->
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container
+                          *ngIf="
+                            dataItem.idGradoEstudio != null;
+                            else elseTemplateVersion
+                          "
+                        >
+                          <ul *ngFor="let item of dataItem.idGradoEstudio">
+                            <li>
+                              {{ ObtenerEstadoFormacionLista(item) ?? "-" }}
+                            </li>
+                          </ul>
+                        </ng-container>
+                        <ng-template #elseTemplateVersion>
+                          <div class="row">
+                            <div class="col-12 text-center">
+                              Seleccione Area Formacion
+                            </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <ng-template
+                      #pagerInfoTemplate
+                      let-from="from"
+                      let-to="to"
+                      let-total="total"
+                    >
+                      {{ from }} - {{ to }} of {{ total }} items
+                    </ng-template>
+                  </kendo-grid>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+          <kendo-tabstrip-tab>
+            <ng-template kendoTabTitle>
+              <span>Calificacion</span>
+            </ng-template>
+            <ng-template kendoTabContent *loadOnDemand>
+              <div class="modal-header bg-primary-header-modal">
+                <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+                  Configuracion Calificacion Evaluaciones
+                </h3>
+              </div>
+              <div class="modal-body">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="col-12 p-2 grid-speech">
+                      <kendo-grid
+                        #kgridEvaluacion
+                        [kendoGridBinding]="gridEvaluacion.data"
+                        [loading]="gridEvaluacion.loading"
+                        (detailExpand)="onDetailExpand($event)"
+                        [resizable]="true"
+                        [pageSize]="10"
+                        [sortable]="true"
+                        filterable="menu"
+                        [pageable]="{ pageSizes: [10, 20, 30] }"
+                      >
+                        <kendo-grid-column
+                          field="nombre"
+                          title="Evaluación"
+                          [width]="600"
+                        >
+                          <ng-template kendoGridCellTemplate let-dataItem>
+                            <div [class]="dataItem.class">
+                              {{ dataItem.nombre }}
+                            </div>
+                          </ng-template>
+                        </kendo-grid-column>
+                        <ng-template
+                          kendoGridDetailTemplate
+                          let-dataItemHijo="dataItem"
+                          let-formGroup="formListPuntaje"
+                        >
+                          <div class="row">
+                            <div class="col-12">
+                              <kendo-grid
+                                [kendoGridBinding]="
+                                  dataItemHijo.gridDetalleEvaluacion.data
+                                "
+                                [loading]="
+                                  dataItemHijo.gridDetalleEvaluacion.loading
+                                "
+                                (remove)="
+                                  dataItemHijo.gridDetalleEvaluacion.removeHandler(
+                                    $event
+                                  )
+                                "
+                                (cancel)="
+                                  dataItemHijo.gridDetalleEvaluacion.cancelHandler(
+                                    $event
+                                  )
+                                "
+                                (save)="
+                                  dataItemHijo.gridDetalleEvaluacion.saveHandler(
+                                    $event
+                                  )
+                                "
+                                (edit)="
+                                  dataItemHijo.gridDetalleEvaluacion.editHandler(
+                                    $event
+                                  )
+                                "
+                                (add)="
+                                  dataItemHijo.gridDetalleEvaluacion.addHandler(
+                                    $event
+                                  )
+                                "
+                                [loading]="false"
+                                [pageSize]="10"
+                                [pageable]="true"
+                                [resizable]="true"
+                              >
+                                <kendo-grid-column
+                                  field="nombreGrupo"
+                                  title="Evaluacion"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                  [editable]="false"
+                                >
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-dataItem="dataItem"
+                                  >
+                                    <!-- Si nombreGrupo está vacío, muestra nombreEvaluacion -->
+                                    {{
+                                      dataItem.nombreGrupo
+                                        ? dataItem.nombreGrupo
+                                        : dataItem.nombreEvaluacion
+                                    }}
+                                  </ng-template>
+                                </kendo-grid-column>
+
+                                <kendo-grid-column
+                                  field="esCalificable"
+                                  title="Aplica Calificación"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                  editor="boolean"
+                                >
+                                  <!-- Modo de solo lectura -->
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-childItem
+                                  >
+                                    <span>{{
+                                      childItem.esCalificable === true
+                                        ? "Sí"
+                                        : "No"
+                                    }}</span>
+                                  </ng-template>
+
+                                  <!-- Modo de edición -->
+                                  <ng-template
+                                    kendoGridEditTemplate
+                                    let-childItem="dataItem"
+                                    let-formGroup="formGroup"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      [checked]="childItem.esCalificable"
+                                      (change)="
+                                        childItem.esCalificable =
+                                          !childItem.esCalificable
+                                      "
+                                      [formControl]="
+                                        formGroup.get('esCalificable')
+                                      "
+                                    />
+                                  </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  field="idProcesoSeleccionRango"
+                                  title="Operador Evaluación"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                >
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-dataItemHijo
+                                  >
+                                    {{
+                                      dataItemHijo.rangoProcesoSeleccionRango
+                                    }}
+                                  </ng-template>
+
+                                  <ng-template
+                                    kendoGridEditTemplate
+                                    let-formGroup="formGroup"
+                                    let-dataItemHijo
+                                  >
+                                    <kendo-dropdownlist
+                                      [data]="DataRango"
+                                      textField="nombre"
+                                      valueField="id"
+                                      [defaultItem]="{
+                                        id: null,
+                                        nombre: '<Seleccione>'
+                                      }"
+                                      [valuePrimitive]="true"
+                                      [formControl]="
+                                        formGroup.get('idProcesoSeleccionRango')
+                                      "
+                                    >
+                                    </kendo-dropdownlist>
+                                  </ng-template>
+                                </kendo-grid-column>
+                                <kendo-grid-column
+                                  field="calificaPorCentil"
+                                  title="Califica Centil"
+                                  [width]="150"
+                                  headerClass="justify-content-center"
+                                  editor="boolean"
+                                >
+                                  <!-- Modo de solo lectura -->
+                                  <ng-template
+                                    kendoGridCellTemplate
+                                    let-childItem
+                                  >
+                                    <span>{{
+                                      childItem.calificaPorCentil === true
+                                        ? "Sí"
+                                        : "No"
+                                    }}</span>
+                                  </ng-template>
+
+                                  <!-- Modo de edición -->
+                                  <ng-template
+                                    kendoGridEditTemplate
+                                    let-childItem="dataItem"
+                                    let-formGroup="formGroup"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      [checked]="childItem.calificaPorCentil"
+                                      (change)="
+                                        childItem.calificaPorCentil =
+                                          !childItem.calificaPorCentil
+                                      "
+                                      [formControl]="
+                                        formGroup.get('calificaPorCentil')
+                                      "
+                                    />
+                                  </ng-template>
+                                </kendo-grid-column>
+                              </kendo-grid>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </kendo-grid>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-tabstrip-tab>
+        </kendo-tabstrip>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="esUsuarioAprobacionTmp"
+      type="button"
+      (click)="AprobarPerfil()"
+      class="btn btn-success"
+      [disabled]="enProcesoSolicitud"
+    >
+      Aprobar Perfil
+    </button>
+    <button
+      *ngIf="esUsuarioAprobacionTmp"
+      type="button"
+      class="btn btn-danger"
+      (click)="RechazarPerfil()"
+      [disabled]="enProcesoSolicitud"
+    >
+      Rechazar Perfil
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+<!-- -----------------------Modal para Asignar Modulos---------------------- -->
+<ng-template #modAsignarModulo let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Asignación de Interfaces
+    </h1>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.close('Close click')"
+    ></button>
+  </div>
+  <div class="modal-body p-3">
+    <div class="row">
+      <div class="col-12">
+        <kendo-grid
+          #kgridAsignacionInterfaz
+          [kendoGridBinding]="gridAsignacionInterfaz.data"
+          (edit)="gridAsignacionInterfaz.editHandler($event)"
+          [pageSize]="15"
+          [pageable]="true"
+          [resizable]="true"
+          [pageable]="{ pageSizes: true }"
+        >
+          <kendo-grid-column
+            field="moduloSistemaGrupo"
+            title="Area"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="nombreTipo"
+            title="Area"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="moduloSistema"
+            title="Interfaz"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+          </kendo-grid-column>
+          <kendo-grid-column
+            field="estado"
+            title="Asignado"
+            [width]="150"
+            headerClass="justify-content-center"
+          >
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <input
+                type="checkbox"
+                class="checkbox-estado"
+                [(ngModel)]="dataItem.estado"
+                (change)="onEstadoChange(dataItem)"
+              />
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="guardarCambiosModulos()"
+    >
+      Guardar
+    </button>
+  </div>
+</ng-template>

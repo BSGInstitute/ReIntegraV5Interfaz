@@ -1,0 +1,407 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <!-- ================= Filtros ================= -->
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">
+            (R) Evaluación de postulantes - Filtros de búsqueda de postulantes
+          </h2>
+        </div>
+
+        <div class="card-body k-form k-form-horizontal">
+          <form [formGroup]="formFiltro">
+            <div class="row">
+              <div class="col-sm-12 col-md-6">
+                <!-- Puesto -->
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label align-items-start"
+                        >Puesto de Trabajo:</label
+                      >
+                      <kendo-dropdownlist
+                        [data]="DataPuestoTrabajo"
+                        textField="nombre"
+                        valueField="id"
+                        formControlName="puestoTrabajo"
+                        [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"
+                        [popupSettings]="{ popupClass: 'rep-popup' }"
+                        [defaultItem]="{
+                          id: null,
+                          nombre: 'Todos los Puestos'
+                        }"
+                        (valueChange)="onPuestoChange($event)"
+                        class="rep-dropDown"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+
+                <!-- Proceso -->
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label align-items-start"
+                        >Proceso de Selección:</label
+                      >
+                      <kendo-dropdownlist
+                        [data]="DataProcesoSeleccionFiltrada"
+                        textField="nombre"
+                        valueField="id"
+                        formControlName="procesoSeleccion"
+                        [valuePrimitive]="true"
+                        [kendoDropDownFilter]="filterSettings"
+                        [popupSettings]="{ popupClass: 'rep-popup' }"
+                        [defaultItem]="{
+                          id: null,
+                          nombre: 'Todos los Procesos'
+                        }"
+                        [disabled]="disableProcSelect"
+                        class="rep-dropDown"
+                      >
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-12 col-md-6">
+                <!-- Fecha inicio -->
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label align-items-start"
+                        >Fecha Inicio Calificación Etapa:</label
+                      >
+                      <kendo-datepicker
+                        format="yyyy-MM-dd"
+                        formControlName="fechaInicio"
+                      ></kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                </div>
+
+                <!-- Fecha fin -->
+                <div class="row my-2">
+                  <div class="col-12">
+                    <kendo-formfield orientation="horizontal">
+                      <label class="k-label align-items-start"
+                        >Fecha Fin Calificación Etapa:</label
+                      >
+                      <kendo-datepicker
+                        format="yyyy-MM-dd"
+                        formControlName="fechaFin"
+                      ></kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer">
+          <div class="row justify-content-end">
+            <div class="col-auto">
+              <button
+                kendoButton
+                icon="search"
+                themeColor="success"
+                [disabled]="enProcesoSolicitud"
+                (click)="generarReporte()"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Reporte ================= -->
+      <div class="card mt-4">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">
+            Reporte Análisis de Proceso de Selección
+          </h2>
+        </div>
+
+        <div class="card-body">
+          <div class="row justify-content-center">
+            <div class="col-11">
+              <div class="card bg-warning text-white rounded p-3">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>N.T.P:</strong> Número Total de Postulantes
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.C:</strong> Número de Postulantes Contactados
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.A:</strong> Número de Postulantes Aprobados
+                  </div>
+                </div>
+                <div class="row mt-2">
+                  <div class="col-md-4">
+                    <strong>N.P.D:</strong> Número de Postulantes Desaprobados
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.P:</strong> Número de Postulantes en Proceso
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.Ab:</strong> Número de Postulantes Abandonados
+                  </div>
+                </div>
+                <div class="row mt-2">
+                  <div class="col-md-4">
+                    <strong>N.P.S.R:</strong> Número de Postulantes Sin Rendir
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mt-4">
+                <div class="card-header bg-color-material d-flex justify-content-between align-items-center">
+                  <h2 class="text-white mb-0">REPORTE DE ANÁLISIS DE PROCESO DE SELECCIÓN TOTALIZADO</h2>
+
+                  <button kendoButton icon="k-icon k-i-file-excel k-icon-20" type="button"
+                          themeColor="primary" (click)="exTotal.save()">
+                    Exportar a Excel
+                  </button>
+
+                  <kendo-excelexport
+                    [data]="gridAnalisisReporteTotalizado.data"
+                    fileName="Reporte_Analisis_Totalizado.xlsx"
+                    #exTotal>
+                    <kendo-excelexport-column field="nombreEtapa" title="Etapa"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="numeroPostulante" title="N.T.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="contactados" title="N.P.C"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="aprobados" title="N.P.A"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="desaprobados" title="N.P.D"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="enProceso" title="N.P.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="abandonados" title="N.P.Ab"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="sinRendir" title="N.P.S.R"></kendo-excelexport-column>
+                  </kendo-excelexport>
+                </div>
+
+                <div class="card-body" id="grillaTotalizado">
+                  <kendo-grid
+                    *ngIf="gridAnalisisReporteTotalizado"
+                    [kendoGridBinding]="gridAnalisisReporteTotalizado.data"
+                    [loading]="gridAnalisisReporteTotalizado.loading"
+                    [resizable]="true">
+                    <kendo-grid-column field="nombreEtapa" title="Etapa" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="numeroPostulante" title="N.T.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="contactados" title="N.P.C" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="aprobados" title="N.P.A" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="desaprobados" title="N.P.D" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="enProceso" title="N.P.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="abandonados" title="N.P.Ab" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="sinRendir" title="N.P.S.R" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <ng-template kendoGridNoRecordsTemplate>No hay datos para los filtros seleccionados.</ng-template>
+                  </kendo-grid>
+                  <loading [loading]="enProcesoSolicitud"></loading>
+                </div>
+              </div>
+              <div class="card mt-4">
+                <div class="card-header bg-color-material d-flex justify-content-between align-items-center">
+                  <h2 class="text-white mb-0">REPORTE DE ANÁLISIS DE PROCESO DE SELECCIÓN SEGÚN PROVEEDOR</h2>
+
+                  <button kendoButton icon="k-icon k-i-file-excel k-icon-20" type="button"
+                          themeColor="primary" (click)="exProvTot.save()">
+                    Exportar a Excel
+                  </button>
+
+                  <kendo-excelexport
+                    [data]="ExportAnalisisReporteTotalizadoAgrupado"
+                    [group]="groups"
+                    fileName="Reporte_Analisis_Totalizado_Segun_Proveedor.xlsx"
+                    #exProvTot>
+                    <kendo-excelexport-column field="nombreEtapa" title="Etapa"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="numeroPostulante" title="N.T.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="contactados" title="N.P.C"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="aprobados" title="N.P.A"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="desaprobados" title="N.P.D"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="enProceso" title="N.P.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="abandonados" title="N.P.Ab"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="sinRendir" title="N.P.S.R"></kendo-excelexport-column>
+                  </kendo-excelexport>
+                </div>
+
+                <div class="card-body" id="grillaProveedorTot">
+                  <kendo-grid
+                    *ngIf="gridAnalisisReporteTotalizadoAgrupado"
+                    [kendoGridBinding]="gridAnalisisReporteTotalizadoAgrupado.data"
+                    [group]="groups"
+                    [groupable]="false"
+                    [columnMenu]="false"
+                    [loading]="gridAnalisisReporteTotalizadoAgrupado.loading"
+                    [resizable]="true">
+                    <kendo-grid-column field="proveedor" [hidden]="true">
+                      <ng-template kendoGridGroupHeaderTemplate let-value="value">
+                        <strong>Proveedor:</strong> {{ value || 'SIN PROVEEDOR' }}
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="nombreEtapa" title="Etapa" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="numeroPostulante" title="N.T.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="contactados" title="N.P.C" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="aprobados" title="N.P.A" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="desaprobados" title="N.P.D" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="enProceso" title="N.P.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="abandonados" title="N.P.Ab" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="sinRendir" title="N.P.S.R" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <ng-template kendoGridNoRecordsTemplate>No hay datos para los filtros seleccionados.</ng-template>
+                  </kendo-grid>
+                  <loading [loading]="enProcesoSolicitud"></loading>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">
+            Reporte Análisis de Proceso de Selección
+          </h2>
+        </div>
+
+        <div class="card-body">
+          <div class="row justify-content-center">
+            <div class="col-11">
+              <div class="card bg-warning text-white rounded p-3">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>N.T.P:</strong> Número Total de Postulantes
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.C:</strong> Número de Postulantes Contactados
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.A:</strong> Número de Postulantes Aprobados
+                  </div>
+                </div>
+                <div class="row mt-2">
+                  <div class="col-md-4">
+                    <strong>N.P.D:</strong> Número de Postulantes Desaprobados
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.P:</strong> Número de Postulantes en Proceso
+                  </div>
+                  <div class="col-md-4">
+                    <strong>N.P.Ab:</strong> Número de Postulantes Abandonados
+                  </div>
+                </div>
+                <div class="row mt-2">
+                  <div class="col-md-4">
+                    <strong>N.P.S.R:</strong> Número de Postulantes Sin Rendir
+                  </div>
+                </div>
+              </div>
+              <div class="card mt-4">
+                <div class="card-header bg-color-material d-flex justify-content-between align-items-center">
+                  <h2 class="text-white mb-0">REPORTE ANÁLISIS DE PROCESO DE SELECCIÓN PORCENTAJES</h2>
+
+                  <button kendoButton icon="k-icon k-i-file-excel k-icon-20" type="button"
+                          themeColor="primary" (click)="exPct.save()">
+                    Exportar a Excel
+                  </button>
+
+                  <kendo-excelexport
+                    [data]="gridAnalisisReporteProveedor.data"
+                    fileName="Reporte_Analisis_Porcentajes.xlsx"
+                    #exPct>
+                    <kendo-excelexport-column field="nombreEtapa" title="Etapa"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="numeroPostulante" title="N.T.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="contactados" title="N.P.C"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="aprobados" title="N.P.A"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="desaprobados" title="N.P.D"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="enProceso" title="N.P.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="abandonados" title="N.P.Ab"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="sinRendir" title="N.P.S.R"></kendo-excelexport-column>
+                  </kendo-excelexport>
+                </div>
+
+                <div class="card-body">
+                  <kendo-grid
+                    *ngIf="gridAnalisisReporteProveedor"
+                    [kendoGridBinding]="gridAnalisisReporteProveedor.data"
+                    [loading]="gridAnalisisReporteProveedor.loading"
+                    [resizable]="true">
+                    <kendo-grid-column field="nombreEtapa" title="Etapa" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="numeroPostulante" title="N.T.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="contactados" title="N.P.C" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="aprobados" title="N.P.A" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="desaprobados" title="N.P.D" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="enProceso" title="N.P.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="abandonados" title="N.P.Ab" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="sinRendir" title="N.P.S.R" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <ng-template kendoGridNoRecordsTemplate>No hay datos para los filtros seleccionados.</ng-template>
+                  </kendo-grid>
+                  <loading [loading]="enProcesoSolicitud"></loading>
+                </div>
+              </div>
+
+              <div class="card mt-4">
+                <div class="card-header bg-color-material d-flex justify-content-between align-items-center">
+                  <h2 class="text-white mb-0">REPORTE DE ANÁLISIS DE PROCESO DE SELECCIÓN (PORCENTAJES) SEGÚN PROVEEDOR</h2>
+
+                  <button kendoButton icon="k-icon k-i-file-excel k-icon-20" type="button"
+                          themeColor="primary" (click)="exProvPct.save()">
+                    Exportar a Excel
+                  </button>
+
+                  <kendo-excelexport
+                    [data]="exportProveedorAgrupado"
+                    [group]="groups"
+                    fileName="Reporte_Analisis_Porcentajes_Segun_Proveedor.xlsx"
+                    #exProvPct>
+                    <kendo-excelexport-column field="nombreEtapa" title="Etapa"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="numeroPostulante" title="N.T.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="contactados" title="N.P.C"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="aprobados" title="N.P.A"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="desaprobados" title="N.P.D"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="enProceso" title="N.P.P"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="abandonados" title="N.P.Ab"></kendo-excelexport-column>
+                    <kendo-excelexport-column field="sinRendir" title="N.P.S.R"></kendo-excelexport-column>
+                  </kendo-excelexport>
+                </div>
+                <div class="card-body" id="grillaProveedorPct">
+                  <kendo-grid
+                    *ngIf="gridAnalisisReporteProveedorAgrupado"
+                    [kendoGridBinding]="gridAnalisisReporteProveedorAgrupado.data"
+                    [group]="groups"
+                    [groupable]="false"
+                    [columnMenu]="false"
+                    [loading]="gridAnalisisReporteProveedorAgrupado.loading"
+                    [resizable]="true">
+                    <kendo-grid-column field="proveedor" [hidden]="true">
+                      <ng-template kendoGridGroupHeaderTemplate let-value="value">
+                        <strong>Proveedor:</strong> {{ value || 'SIN PROVEEDOR' }}
+                      </ng-template>
+                    </kendo-grid-column>
+
+                    <kendo-grid-column field="nombreEtapa" title="Etapa" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="numeroPostulante" title="N.T.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="contactados" title="N.P.C" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="aprobados" title="N.P.A" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="desaprobados" title="N.P.D" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="enProceso" title="N.P.P" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="abandonados" title="N.P.Ab" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <kendo-grid-column field="sinRendir" title="N.P.S.R" [width]="150" [headerClass]="'header-grid-integra'"></kendo-grid-column>
+                    <ng-template kendoGridNoRecordsTemplate>No hay datos para los filtros seleccionados.</ng-template>
+                  </kendo-grid>
+                  <loading [loading]="enProcesoSolicitud"></loading>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
