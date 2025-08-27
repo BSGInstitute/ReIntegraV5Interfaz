@@ -17,6 +17,7 @@ export interface ICampaniaLinkedIn{
     fechaLeadTexto:String
     fechaIntegra:Date
     fechaIntegraTexto:String
+    idAlumno:number
 }
 
 

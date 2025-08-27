@@ -201,6 +201,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       'areaFormacion',
       'areaTrabajo',
       'industria',
+      'pais'
     ].includes(field);
     const control = args.formGroup.get(field);
 
@@ -216,6 +217,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       areaFormacion: args.formGroup.value.areaFormacion,
       areaTrabajo: args.formGroup.value.areaTrabajo,
       industria: args.formGroup.value.industria,
+      pais:args.formGroup.value.pais
     };
     Object.assign(args.dataItem, dto);
     this.enProcesoSolicitud = true;
@@ -245,6 +247,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     dataItem.areaFormacion = formGroup.value.areaFormacion;
     dataItem.areaTrabajo = formGroup.value.areaTrabajo;
     dataItem.industria = formGroup.value.industria;
+    dataItem.pais = formGroup.value.pais;
 
     this.kgridPartner.closeCell();
     this.enProcesoSolicitud = true;
@@ -254,6 +257,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       areaFormacion: formGroup.value.areaFormacion,
       areaTrabajo: formGroup.value.areaTrabajo,
       industria: formGroup.value.industria,
+      pais:formGroup.value.pais,
     };
     this._integraService
       .putJsonResponse(
@@ -284,6 +288,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       areaFormacion: new FormControl(dataItem.areaFormacion),
       areaTrabajo: new FormControl(dataItem.areaTrabajo),
       industria: new FormControl(dataItem.industria),
+      pais:new FormControl(dataItem.pais),
     });
   }
   estadoEnvio: boolean;

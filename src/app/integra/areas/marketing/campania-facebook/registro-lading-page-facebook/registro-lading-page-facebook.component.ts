@@ -253,8 +253,7 @@ abrirModalDetallesLead(leadId: string): void {
     // Configuración del modal
     const modalRef = this.modalService.open(ModalDetalleLeadFacebookComponent, {
       size: 'lg', // Modal grande
-      backdrop: 'static', // No se cierra al hacer clic fuera
-      keyboard: false, // No se cierra con ESC
+
       centered: true, // Centrado verticalmente
       scrollable: true // Permite scroll si el contenido es muy largo
     });
@@ -278,10 +277,6 @@ abrirModalDetallesLead(leadId: string): void {
   }
 }
 
-// ==========================================
-// MÉTODO EXISTENTE A REEMPLAZAR O MODIFICAR
-// ==========================================
-// Reemplaza tu método verRegistro() existente con este:
 
 /**
  * Método para manejar el clic en el botón "Ver" de un registro

@@ -34,8 +34,8 @@ export class WhatsappFacebookGrillaComponent implements OnInit {
   }
 
   public dias = [
-    { Value: 9, View: 'Hoy' },
-    { Value: 8, View: 'Ayer' },
+    { Value: 0, View: 'Hoy' },
+    { Value: 1, View: 'Ayer' },
     { Value: 2, View: 'Hace 2 días' },
     { Value: 3, View: 'Hace 3 días' },
     { Value: 4, View: 'Hace 4 días' },
