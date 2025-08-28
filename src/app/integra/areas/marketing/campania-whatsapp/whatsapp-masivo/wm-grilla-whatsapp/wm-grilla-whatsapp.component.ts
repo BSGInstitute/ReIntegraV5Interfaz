@@ -235,9 +235,8 @@ export class WmGrillaWhatsappComponent implements OnInit {
 
   verWhatsApp(dataItem: ChatWhatsAppMarketing) {
     const dialogRef = this.dialog.open(WmChatWhatsAppComponent, {
-      // maxWidth: '90%',
+      maxWidth: '90%',
       minWidth: '90%',
-      minHeight: '90%',
       maxHeight: '1900px',
       panelClass: 'wm-modal-container',
       data: {

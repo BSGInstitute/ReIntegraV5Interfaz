@@ -1,0 +1,653 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Preguntas de Evaluacion</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridCategoriaPregunta
+              [kendoGridBinding]="gridPregunta.data"
+              [loading]="gridPregunta.loading"
+              [resizable]="true"
+              filterable="menu"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{ pageSizes: [5, 10, 20] }"
+            >
+              <!-- filterable="menu" -->
+              <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
+                <kendo-grid-spacer></kendo-grid-spacer>
+
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="abrirModal(modalPregunta,true)"
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+              <kendo-grid-column
+                field="enunciado"
+                title="Enunciado Pregunta"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="componenteExamen"
+                title="Componente Examen"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+              </kendo-grid-column>  
+              <ng-template
+                kendoGridFilterMenuTemplate
+                let-filter
+                let-column="column"
+                let-filterService="filterService"
+              >
+                <kendo-grid-string-filter-menu
+                  [column]="column"
+                  [filter]="filter"
+                  [filterService]="filterService"
+                  [extra]="false"
+                  operator="contains"
+                >
+                  <kendo-filter-contains-operator
+                    text="Contiene"
+                  ></kendo-filter-contains-operator>
+                </kendo-grid-string-filter-menu>
+              </ng-template>
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="50"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <div class="w-100 d-flex justify-content-center">
+                    <button
+                      kendoGridEditCommand
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                      (click)="abrirModal(modalPregunta,false, dataItem)"
+                    >
+                      <span class="k-icon k-i-pencil k-icon-20"></span>
+                    </button>
+
+                    <button
+                      kendoButton
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                      (click)="eliminar(dataItem.id)"
+                    >
+                      <span class="k-icon k-i-x k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+              <ng-template kendoPagerTemplate>
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="10"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="pageSizes"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="obtener()"
+                  ></button>
+                </div>
+              </ng-template>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- -----------------------Modal Crear Nuevo/Actualizar ---------------------- -->
+<ng-template #modalPregunta let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Registro de categoria de pregunta
+    </h1>
+    <a 
+    type = "btn btn-sm"
+    (click)="modal.close('Close click')"  
+    >X</a>
+  </div>
+
+  <div class="modal-body px-4">
+  <form [formGroup]="formPregunta" class="k-form k-form-horizontal">
+    <div class="row">
+        <div class="col-md-12 tabPregunta" >
+    <kendo-tabstrip>
+      <!-- TAB 1: CATEGORÍA -->
+      <kendo-tabstrip-tab [selected]="true">
+        <ng-template kendoTabTitle>
+                CATEGORIA
+        </ng-template>
+        <ng-template kendoTabContent>
+          <div class="col-sm col-md m-6">
+                  <div class="row">
+                    <div class="col-12">
+            <kendo-formfield>
+              <label><b>Categoría de Pregunta</b><strong class="text-danger">*</strong></label>
+              <kendo-formerror>El campo es obligatorio</kendo-formerror>
+              <kendo-dropdownlist
+                [data]="DataCategoriaPregunta"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                formControlName="idPreguntaCategoria"
+                [defaultItem]="{
+                            id: null,
+                            nombre: '-Seleccione Sesión-'
+                          }"
+                >
+              </kendo-dropdownlist>
+            </kendo-formfield>
+            </div>
+            </div>
+            </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+
+      <!-- TAB 2: GENERAL -->
+      <kendo-tabstrip-tab title="GENERAL">
+        <ng-template kendoTabContent>
+            <div class="mb-3">
+              <label><b>Componente de Evaluación</b></label>
+              
+              <kendo-multiselect
+                [data]="DataExamen"
+                [textField]="'nombreExamen'"
+                [valueField]="'idExamen'"
+                [valuePrimitive]="true"
+                formControlName="listaExamen"
+                data-placeholder="Seleccione opcion"
+                >
+              
+              </kendo-multiselect>
+            </div>
+            <div class="mb-3">
+              <label><input 
+                kendoRadioButton
+                type="radio" formControlName="tipoCalificacion" value="automatica"
+                (change)="onChangeTipo('automatica')">
+    Calificación Automática</label><strong class="text-danger">*</strong>
+                
+              <kendo-dropdownlist
+                [data]="listaId1"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                formControlName="idTipoRespuesta"
+                [disabled]="tipoSeleccionado !== 'automatica'"
+                [defaultItem]="{
+                            id: null,
+                            nombre: '-Seleccione Sesión-'
+                          }">
+              </kendo-dropdownlist>
+                <kendo-formerror *ngIf="formPregunta.get('idTipoRespuesta')?.invalid 
+                        && (formPregunta.get('idTipoRespuesta')?.touched 
+                            || formPregunta.get('idTipoRespuesta')?.dirty)">
+              El campo es obligatorio
+              </kendo-formerror>
+
+            </div>
+            <div class="mb-3">
+              <label><input 
+                kendoRadioButton
+                type="radio" formControlName="tipoCalificacion" value="manual"
+           (change)="onChangeTipo('manual')">
+    Calificación Manual</label><strong class="text-danger">*</strong>
+              
+              <kendo-dropdownlist
+              [data]="listaId2"
+                textField="nombre"
+                valueField="id"
+              [valuePrimitive]="true"
+                formControlName="idTipoRespuesta"
+                [disabled]="tipoSeleccionado !== 'manual'"
+                [defaultItem]="{
+                            id: null,
+                            nombre: '-Seleccione Sesión-'
+                          }">
+              </kendo-dropdownlist>
+              <kendo-formerror *ngIf="formPregunta.get('idTipoRespuesta')?.invalid 
+                        && (formPregunta.get('idTipoRespuesta')?.touched 
+                            || formPregunta.get('idTipoRespuesta')?.dirty)">
+              El campo es obligatorio
+              </kendo-formerror>
+            </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+
+      <!-- TAB 3: PREGUNTA -->
+      <kendo-tabstrip-tab title="PREGUNTA">
+        <ng-template kendoTabContent>
+            <label><b>Enunciado</b></label>
+            <kendo-editor formControlName="enunciado" [style.height.px]="120"></kendo-editor>
+
+            <div class="row mt-3">
+              <div class="col-6">
+                <label><b>Calificación de la respuesta</b></label><strong class="text-danger">*</strong>
+                <kendo-dropdownlist
+                  [data]="DataTipoRespuestaCategoria"
+                  textField="nombre"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                  formControlName="idTipoRespuestaCalificacion"
+                  [defaultItem]="{
+                            id: null,
+                            nombre: '-Seleccione Sesión-'
+                          }">
+                </kendo-dropdownlist>
+                <kendo-formerror *ngIf="formPregunta.get('idTipoRespuestaCalificacion')?.invalid 
+                            && (formPregunta.get('idTipoRespuestaCalificacion')?.touched 
+                                || formPregunta.get('idTipoRespuestaCalificacion')?.dirty)">
+                El campo es obligatorio
+                </kendo-formerror>
+              </div>
+              <div class="col-6">
+                <label><b>Factor</b></label>
+                <input kendoTextBox type="number" formControlName="factorRespuesta" [disabled]="true" />
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-6">
+                <label><b>Tiempo (minutos)</b></label>
+                <input kendoTextBox type="number"   formControlName="minutosPorPregunta" class="py-2"/>
+              </div>
+              <div class="col-6 d-flex align-items-center">
+                <input type="checkbox" formControlName="respuestaAleatoria" class="me-2 " />
+                <label>Respuestas aleatorias</label>
+              </div>
+            </div>
+
+            <!-- GRID -->
+             <div class="d-flex flex-wrap align-items-center mb-3 small py-2" 
+                  style="gap: .75rem; background-color: #ffe5cc; padding: .5rem 1rem; border-radius: 6px;">
+  
+                  <span><b>N.O.R.</b> → Número Orden de Respuesta</span>
+                  <span><b>N.O.V</b> → Número Orden de Visualizacion</span>
+                  <span><b>M.P.F.R.</b> → Mensaje Positivo Feedback respuesta</span>
+                  <span><b>M.N.F.R.</b> → Mensaje Negativo Feedback respuesta</span>
+            </div>
+
+            <div class="card-body">
+                  <div class="col-12 bg-color-material pb-0">
+              <kendo-grid
+                [kendoGridBinding]="gridRespuestaPregunta.data"
+                [reziable]="true"
+                [loading]="gridRespuestaPregunta.loading"
+                (edit)="gridRespuestaPregunta.editHandler($event)"
+                      (cancel)="gridRespuestaPregunta.cancelHandler($event)"
+                      (save)="gridRespuestaPregunta.saveHandler($event)"
+                      (remove)="gridRespuestaPregunta.removeHandler($event)"
+                      (add)="gridRespuestaPregunta.addHandler($event)"
+                      (cellClick)="gridRespuestaPregunta.cellClickHandler($event)"
+                      (cellClose)="gridRespuestaPregunta.cellCloseHandler($event)"
+                      [pageable]="{
+                        buttonCount: 5,
+                        info: true,
+                        type: 'numeric',
+                        pageSizes: true,
+                        previousNext: true,
+                        position: 'bottom'
+                      }"
+                      [skip]="0"
+                      [pageSize]="5"
+                      filterable="menu"
+                [height]="200"
+                [resizable]="true">
+                <ng-template kendoGridToolbarTemplate>
+                        <button
+                          kendoGridAddCommand
+                          themeColor="info"
+                          icon="plus"
+                        >
+                          Añadir
+                        </button>
+                        <button kendoButton icon="upload" 
+                        (click)="abrirModalImportarExcel(modalImportarExcel)"
+                        themeColor="secondary">
+                        Importar CSV
+                        </button>
+              
+
+                        <kendo-grid-spacer></kendo-grid-spacer>
+                      </ng-template>
+                <kendo-grid-column
+                 field="respuestaCorrecta" 
+                 title="Respuesta Correcta"   
+                [data]="gridRespuestaPregunta.data"
+                [class]="{ 'text-center': true }"
+                >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                {{ dataItem.respuestaCorrecta ? 'Sí' : 'No' }}
+                </ng-template>
+                <ng-template kendoGridCellTemplate let-dataItem>
+                          <input 
+                           type="checkbox" 
+                            [checked]="dataItem.respuestaCorrecta" 
+                            disabled
+                            />
+                        </ng-template>
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <input 
+                          type="checkbox" 
+                          [formControl]="formGroup.get('respuestaCorrecta')" 
+                          />
+                        </ng-template>
+              </kendo-grid-column>
+                <kendo-grid-column 
+                field="nroOrden" 
+                title="N.O.R">
+             <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-numerictextbox
+                            [formControl]="formGroup.get('nroOrden')"
+                            size="medium"
+                            [value]="0"
+                            format="##"
+                            [step]="1"
+                            [min]="1"
+                          >
+                          </kendo-numerictextbox> 
+                          <div class="text-danger" style="font-size: 11px;" 
+                            *ngIf="formGroup.get('nroOrden')?.invalid 
+                              && (formGroup.get('nroOrden')?.touched || formGroup.get('nroOrden')?.dirty)">
+                            Requerido
+                          </div>
+                        </ng-template>
+              </kendo-grid-column>
+                <kendo-grid-column 
+                field="nroOrdenRespuesta" 
+                title="N.O.V">
+                
+                          
+              <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-numerictextbox
+                            [formControl]="formGroup.get('nroOrdenRespuesta')"
+                            size="medium"
+                            [value]="0"
+                            format="##"
+                            [step]="1"
+                            [min]="1"
+                          >
+                          </kendo-numerictextbox> 
+                          
+                        </ng-template>
+              </kendo-grid-column>
+                <kendo-grid-column 
+                field="enunciadoRespuesta" 
+                title="Enunciado Respuesta">
+              <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                        <kendo-textbox
+                          [formControl]="formGroup.get('enunciadoRespuesta')"
+                          size="medium"
+                          placeholder="Ingrese Enunciado"
+                        >
+                        </kendo-textbox>
+                      </ng-template>
+                
+              </kendo-grid-column>
+                <kendo-grid-column 
+                field="puntaje" 
+                title="Puntaje Respuesta">
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-numerictextbox
+                            [formControl]="formGroup.get('puntaje')"
+                            size="medium"
+                            [value]="0"
+                            format="##"
+                            [step]="1"
+                            [min]="1"
+                          >
+                          </kendo-numerictextbox> 
+                        </ng-template>
+              </kendo-grid-column>
+                <kendo-grid-column 
+                field="feedbackPositivo" title="M.P.F.R">
+              <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-textbox
+                            [formControl]="formGroup.get('feedbackPositivo')"
+                          >
+                          </kendo-textbox> 
+                        </ng-template>
+              </kendo-grid-column>
+                <kendo-grid-column 
+                field="feedbackNegativo" title="M.N.F.R">
+              <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                          <kendo-textbox
+                            [formControl]="formGroup.get('feedbackNegativo')"
+                          >
+                          </kendo-textbox> 
+                        </ng-template>
+              </kendo-grid-column>
+                <kendo-grid-column title="Eliminar">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <button
+                              kendoGridRemoveCommand
+                              kendoTooltip
+                              themeColor="error"
+                              fillMode="solid"
+                              icon="close"
+                              class="mx-1"
+                              container="body"
+                              placement="top"
+                              title="Eliminar respuesta"
+                            ></button>
+                            <button
+                              kendoGridSaveCommand
+                              themeColor="primary"
+                              fillMode="solid"
+                              rounded="large"
+                              icon="save"
+                              size="small"
+                              class="p-2 me-1 ms-1"
+                              [disabled]="gridRespuestaPregunta.formGroup?.invalid"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Guardar"
+                            >
+                            </button>
+                            <button
+                              kendoGridCancelCommand
+                              themeColor="secondary"
+                              fillMode="solid"
+                              icon="cancel"
+                              rounded="large"
+                              size="small"
+                              class="p-2 me-1 ms-1"
+                              container="body"
+                              placement="top"
+                              ngbTooltip="Cancelar"
+                            >
+                            </button>
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid>
+                  </div>
+            </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+
+      <!-- TAB 4: FEEDBACK -->
+      <kendo-tabstrip-tab title="FEEDBACK">
+  <ng-template kendoTabContent>
+    <!-- Contenedor 1 -->
+    <div class="feedback-box mb-3">
+      <h6 class="feedback-title">Activar feedback</h6>
+      <div class="ms-3">
+        <div class="form-check">
+          <input
+            type="checkbox"
+            formControlName="activarFeedBackRespuestaCorrecta"
+            class="form-check-input me-2"
+          />
+          <label class="form-check-label">Respuesta correcta</label>
+        </div>
+
+        <div class="form-check">
+          <input
+            type="checkbox"
+            formControlName="activarFeedBackRespuestaIncorrecta"
+            class="form-check-input me-2"
+          />
+          <label class="form-check-label">Respuesta incorrecta</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor 2 -->
+    <div class="feedback-box mb-3">
+      <h6 class="feedback-title">Mostrar feedback</h6>
+      <div class="ms-3">
+        <div class="form-check">
+          <input
+            type="checkbox"
+            formControlName="mostrarFeedbackInmediato"
+            class="form-check-input me-2"
+          />
+          <label class="form-check-label">De manera inmediata</label>
+        </div>
+
+        <div class="form-check">
+          <input
+            type="checkbox"
+            formControlName="mostrarFeedbackPorPregunta"
+            class="form-check-input me-2"
+          />
+          <label class="form-check-label">Al responder una pregunta</label>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</kendo-tabstrip-tab>
+
+
+      <!-- TAB 5: INTENTOS -->
+      <kendo-tabstrip-tab title="INTENTOS">
+        <ng-template kendoTabContent>
+            <label>Máx. Intentos</label>
+            <input kendoTextBox type="number" formControlName="numeroMaximoIntento"  />
+            <div class ="d-flex items-center gap-4 py-4 " >
+            <label>Activar feedback al número máximo de intentos</label>
+            <input type="checkbox" 
+            formControlName="activarFeedbackMaximoIntento" class="me-2" />
+          
+            </div>
+            <div class="col-6">
+                <label>Enunciado</label>
+                <input kendoTextBox 
+                formControlName="mensajeFeedback" />
+            </div>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </div></div>  
+  </form>
+  </div>
+
+  <div class="modal-footer">
+    <button 
+    *ngIf="isNew" 
+    type="button" 
+    class="btn btn-primary" 
+    (click)="guardar()"
+    [disabled]="enProcesoSolicitud">
+      Guardar
+    </button>
+    <button 
+    *ngIf="!isNew" 
+    type="button" 
+    class="btn btn-primary" 
+    (click)="actualizar()"
+    [disabled]="enProcesoSolicitud">
+      Actualizar
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')" [disabled]="enProcesoSolicitud">
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+
+
+<ng-template #modalImportarExcel let-modal>
+  <app-loader *ngIf="modalRespuesta"></app-loader>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      Importación de respuestas Excel
+    </h1>
+  </div>
+  <div class="modal-body px-4">
+    <form class="k-form k-form-horizontal">
+      <div class="row">
+        <div class="col-sm col-md m-6">
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <kendo-fileselect
+                #file
+                [autoUpload]="false"
+                [multiple]="false"
+                [restrictions]="{
+                  allowedExtensions: ['CSV'],
+                  maxFileSize: 2048000
+                }"
+                (select)="seleccionarAlmacenarArchivo($event)"
+                (remove)="deseleccionarAlmacenarArchivo()"
+              >
+              </kendo-fileselect>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn btn-primary"
+      style="color: white"
+      [disabled]=""
+      (click)="importarExcelRespuestas()"
+    >
+      Cargar
+    </button>
+    <button class="btn btn-danger" style="color: white" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

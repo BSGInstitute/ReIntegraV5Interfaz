@@ -13,32 +13,33 @@ export interface ChatWhatsAppMarketing {
   tiempo: string;
   fecha: string;
   pais: string;
+  rango?: string | null;
 }
 
 export interface ChatWhatsAppMarketingPorCelular {
-  idAlumnoUM: number
-  celularUM: string
-  celularUMEncriptado: string
-  emailUM: string
-  emailUMEncriptado: string
-  idPaisEmpresa: number
-  listaAlumnosPorCelular: ListaAlumnosPorCelular[]
-  mensajePorCelular: MensajePorCelular[]
+  idAlumnoUM: number;
+  celularUM: string;
+  celularUMEncriptado: string;
+  emailUM: string;
+  emailUMEncriptado: string;
+  idPaisEmpresa: number;
+  listaAlumnosPorCelular: ListaAlumnosPorCelular[];
+  mensajePorCelular: MensajePorCelular[];
 }
 
 export interface ListaAlumnosPorCelular {
-  idAlumno: number
-  email: string
-  fechaCreacion: string
+  idAlumno: number;
+  email: string;
+  fechaCreacion: string;
 }
 
 export interface MensajePorCelular {
-  estatus: number
-  tipo: number
-  idAlumnoCelular: number
-  celular: string
-  alumno: string
-  mensaje: string
-  personal: string
-  fechaMensaje: string
+  estatus: number;
+  tipo: number;
+  idAlumnoCelular: number;
+  celular: string;
+  alumno: string;
+  mensaje: string;
+  personal: string;
+  fechaMensaje: string;
 }

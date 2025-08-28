@@ -2646,6 +2646,20 @@ export const constApiGestionPersonal = {
   AreaFormacionInsertar: "/AreaFormacion/Insertar",
   AreaFormacionActualizar: "/AreaFormacion/Actualizar",
   AreaFormacionEliminar: "/AreaFormacion/Eliminar",
+
+
+
+  //Pregunta Evaluacion<s
+  ObtenerPreguntaEvaluacion: "/preguntum/Obtener",
+  ObtenerRespuestaPregunta: "/preguntum/ObtenerRespuestaPregunta",
+  ObtenerComboTipoPregunta:"/preguntum/ObtenerComboTipoPregunta",
+  ObtenerExamen:"/Examen/ObtenerEvaluacion",
+  ObtenerTipoRespuestaCategoria:"/Preguntum/ObtenerTipoRespuestaCategoria",
+  ObtenerRespuestaCSV:"/Preguntum/ImportarExcel/",
+  InsertarPreguntaEvaluacion:"/preguntum/InsertarPregunta/",
+  ActualizarPreguntaEvaluacion:"/preguntum/ActualizarPregunta",
+  EliminarPreguntaEvaluacion:"/preguntum/EliminarPregunta",
+
   //Maestro ContratoEstado
   ObtenerContratoEstado: "/ContratoEstado/Obtener",
   InsertarContratoEstado: "/ContratoEstado/Insertar",

@@ -205,7 +205,6 @@ export class WmChatWhatsAppComponent implements OnInit {
     this.loader = true;
     this.formAlumno.disable();
     this.obtenerCombos();
-    console.log(this.data);
     if (this.data.dataItem != null) {
       this.idPersonal = this.data.dataItem.idPersonal;
       this.celularAlumno = this.data.dataItem.celular;

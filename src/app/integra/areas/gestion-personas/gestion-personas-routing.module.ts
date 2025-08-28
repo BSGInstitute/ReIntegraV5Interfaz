@@ -44,6 +44,7 @@ import { ConsultaPersonalACargoComponent } from './gestion-personal/consulta-per
 import { ConfigurarProcesoSeleccionComponent } from './proceso-seleccion/configurar-proceso-seleccion/configurar-proceso-seleccion.component';
 import { ReporteAnalisisProcesoSeleccionComponent } from './gestion-personal/reporte-analisis-proceso-seleccion/reporte-analisis-proceso-seleccion.component';
 import { HabilitarExamenesComponent } from './proceso-seleccion/habilitar-examenes/habilitar-examenes.component';
+import { PreguntasEvaluacionComponent } from './proceso-seleccion/preguntas-evaluacion/preguntas-evaluacion.component';
 
 const routes: Routes = [
   { path: '', component: PersonalComponent },
@@ -90,6 +91,7 @@ const routes: Routes = [
   { path: 'ConfigurarProcesoSeleccion', component: ConfigurarProcesoSeleccionComponent },
   { path: 'MaestroPerfilPuestoTrabajoPersonalAprobacion', component: AprobacionPerfilesComponent },
   { path: 'ReporteAnalisisProcesoSeleccion', component: ReporteAnalisisProcesoSeleccionComponent },
+  {path: 'PreguntaEvaluacion',component : PreguntasEvaluacionComponent}
  // { path: '**', redirectTo: 'listado' },
 ];
 

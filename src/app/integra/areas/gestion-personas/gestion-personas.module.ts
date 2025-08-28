@@ -73,6 +73,7 @@ import { ConfigurarProcesoSeleccionComponent } from './proceso-seleccion/configu
 import { ReporteAnalisisProcesoSeleccionComponent } from './gestion-personal/reporte-analisis-proceso-seleccion/reporte-analisis-proceso-seleccion.component';
 import { GestionPersonalComponent } from './gestion-personal/gestion-personal/gestion-personal.component';
 import { HabilitarExamenesComponent } from './proceso-seleccion/habilitar-examenes/habilitar-examenes.component';
+import { PreguntasEvaluacionComponent } from './proceso-seleccion/preguntas-evaluacion/preguntas-evaluacion.component';
 
 @NgModule({
   declarations: [
@@ -144,6 +145,7 @@ import { HabilitarExamenesComponent } from './proceso-seleccion/habilitar-examen
     ReporteAnalisisProcesoSeleccionComponent,
     GestionPersonalComponent,
     HabilitarExamenesComponent,
+    PreguntasEvaluacionComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
