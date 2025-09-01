@@ -440,6 +440,30 @@ export class AsignacionDeDatosComponent implements OnInit {
     }
   }
 
+
+  ActualizarTopeAsignacionDiaria(e: KeyboardEvent, dataItem: any) {
+    if (e.key === 'Enter') {
+      this.integraService
+        .postJsonResponse(
+          constApiMarketing.ActualizarTopeAsignacionDiaria+'/'+dataItem.id+'/'+dataItem.topeAsignacionDiaria,null
+        )
+        .subscribe({
+          next: (response: HttpResponse<any>) => {
+          },
+          error: (error) => {
+            this. ObtenerBloqueAsesores();
+            this.alertaService.notificationError(error.error);
+          },
+          complete: () => {
+            this. ObtenerBloqueAsesores();
+          },
+        });
+
+    }
+  }
+
+
+
   ActualizarPrioridad(e: KeyboardEvent, dataItem: any) {
     if (e.key === 'Enter') {
       this.integraService
