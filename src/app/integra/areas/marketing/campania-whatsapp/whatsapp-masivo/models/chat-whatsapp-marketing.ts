@@ -25,6 +25,7 @@ export interface ChatWhatsAppMarketingPorCelular {
   idPaisEmpresa: number;
   listaAlumnosPorCelular: ListaAlumnosPorCelular[];
   mensajePorCelular: MensajePorCelular[];
+  rango?: string | null;
 }
 
 export interface ListaAlumnosPorCelular {

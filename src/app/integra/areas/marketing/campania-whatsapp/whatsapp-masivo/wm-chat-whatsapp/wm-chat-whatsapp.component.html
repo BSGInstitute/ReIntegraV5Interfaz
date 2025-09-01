@@ -1,11 +1,12 @@
-<!-- <ng-container *ngIf="loader == true">
+<ng-container *ngIf="loader">
   <div class="loading-indicator">
     <mat-progress-spinner
       mode="indeterminate"
       color="accent"
     ></mat-progress-spinner>
   </div>
-</ng-container> -->
+</ng-container>
+
 <div mat-dialog-title class="mb-3">
   <h2 class="text-white text-center fs-6 m-0" style="background-color: #128c7e">
     Chat Whatsapp
@@ -378,6 +379,18 @@
                               </button>
                             </div>
                           </div>
+                          <div class="row my-1">
+                            <div class="col-12">
+                              <button
+                                mat-button
+                                class="btn-capturar-registros w-100 py-1"
+                                type="button"
+                                (click)="abrirModalCapturarRegistrosIA()"
+                              >
+                                Capturar Registros IA
+                              </button>
+                            </div>
+                          </div>
                         </ng-container>
                         <ng-container *ngIf="editar == true">
                           <div class="row my-1">
@@ -630,9 +643,23 @@
             <div *ngIf="showCrearOportunidadContenedor" class="centrado-medio">
               <div class="content" #container>
                 <div class="datos">
-                  <h1>Datos del Contacto y Oportunidad - Crear</h1>
+                  <div class="d-flex justify-content-between p-3">
+                    <h1 class="text-dark fw-medium m-0">
+                      Datos del Contacto y Oportunidad - Crear
+                    </h1>
+                    <button
+                      mat-button=""
+                      type="button"
+                      (click)="emitirCapturarRegistrosIA()"
+                      class="btn-capturar-registros btn border-0 rounded-1 py-1 text-white"
+                      style="height: 41px; width: 175px"
+                    >
+                      Capturar Registros IA
+                    </button>
+                  </div>
                   <app-whatsapp-facebook-modal-oportunidad
                     [celularAlumno]="celularAlumno"
+                    [abrirModalTrigger]="abrirModalFlag"
                   >
                   </app-whatsapp-facebook-modal-oportunidad>
                 </div>
@@ -813,7 +840,7 @@
     </ng-container>
   </div>
 
-  <!-- Contenerdor Izquierdo - Chat WhatsApp -->
+  <!-- Contenerdor Derecho - Chat WhatsApp -->
   <div class="col-sm-4 col-md-4 h-100">
     <div class="chat-container">
       <div
@@ -826,7 +853,7 @@
             <div class="chat-name">{{ datosChat?.celularUMEncriptado }}</div>
           </div>
           <div class="fs-3 align-content-center me-3">
-            {{ data.dataItem.rango }}
+            {{ rangoProbabilidad }}
           </div>
         </div>
         <div class="chat-messages" #contentC id="content-chats">
@@ -1181,3 +1208,58 @@
   </div>
 </ng-template>
 <!-- End Modal Seleccion Archivos PDF/Imagenes -->
+
+<!-- Modal Extraer registros con IA -->
+<ng-template #modalExtraerRegistros let-modal style="z-index: 998">
+  <div class="modal-header bg-verdeModal">
+    <h3 class="modal-title m-0 p-0">Capturar Registros con IA</h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="formExtraccionRegistros">
+      <label for="rangoExtraccion" class="mb-4">
+        Selecciona el rango de antigüedad de los chats a enviar:
+      </label>
+      <mat-radio-group
+        id="rangoExtraccion"
+        class="d-flex flex-column gap-3 ms-3"
+        formControlName="rangoExtraccion"
+      >
+        <mat-radio-button
+          class="w-auto"
+          *ngFor="let rango of rangoExtraccionRegistros"
+          [value]="rango.value"
+        >
+          {{ rango.label }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      kendoButton
+      themeColor="tertiary"
+      [disabled]="
+        loader || formExtraccionRegistros.get('rangoExtraccion')?.invalid
+      "
+      (click)="extraerRegistros()"
+    >
+      Extraer Registros
+    </button>
+    <button
+      themeColor="error"
+      kendoButton
+      (click)="modal.dismiss('Cross click')"
+      [disabled]="loader"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
