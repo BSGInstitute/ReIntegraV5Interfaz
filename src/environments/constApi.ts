@@ -2082,6 +2082,7 @@ export const constApiMarketing = {
   ActualizarConfiguracionAsignacionRegular:
     "/AsignacionRegular/ActualizarConfiguracionAsignacionRegular",
   ActualizarTopeOportunidad: "/AsignacionRegular/ActualizarTopeOportunidad",
+  ActualizarTopeAsignacionDiaria: "/AsignacionRegular/ActualizarTopeAsignacionDiaria",
   ActualizarPrioridad: "/AsignacionRegular/ActualizarPrioridad",
   EliminarOrigenSectorPorParametro:
     "/AsignacionRegular/EliminarOrigenSectorPorParametro",
