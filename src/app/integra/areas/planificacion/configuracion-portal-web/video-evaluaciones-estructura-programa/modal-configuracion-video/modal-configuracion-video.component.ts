@@ -76,6 +76,7 @@ export class ModalConfiguracionVideoComponent implements OnInit {
     conImagenDiapositiva: [false],
     numeroFila: [0],
     videoIdBrightcove: [''],
+    videoIdVimeo:[''],
     imagenVideoNombre: [''],
     imagenVideoAncho: [0],
     imagenVideoAlto: [0],
@@ -85,7 +86,9 @@ export class ModalConfiguracionVideoComponent implements OnInit {
     imagenDiapositivaAncho: [],
     imagenDiapositivaAlto: [],
     imagenDiapositivaPosicionX: [],
-    imagenDiapositivaPosicionY: []
+    imagenDiapositivaPosicionY: [],
+    reproduccionVideo:[null],
+    descargaVideo:[null]
   });
 
   urlBase = environment.urlServicioAPI;
@@ -149,6 +152,7 @@ export class ModalConfiguracionVideoComponent implements OnInit {
                 conImagenDiapositiva: res != null ? res.body.conImagenDiapositiva : false,
                 numeroFila:           res != null ? res.body.numeroFila : 0,
                 videoIdBrightcove:    res != null ? res.body.videoIdBrightcove : '',
+                videoIdVimeo:    res != null ? res.body.videoIdVimeo : '',
                 imagenDiapositivaNombre:    res != null ? res.body.imagenDiapositivaNombre : '',
                 imagenDiapositivaAncho:     res != null ? Number(res.body.imagenDiapositivaAncho) : 0,
                 imagenDiapositivaAlto:      res != null ? Number(res.body.imagenDiapositivaAlto) : 0,
@@ -159,6 +163,8 @@ export class ModalConfiguracionVideoComponent implements OnInit {
                 imagenVideoAlto:      res != null ? Number(res.body.imagenDiapositivaAlto) : 0,
                 imagenVideoPosicionX: res != null ? Number(res.body.imagenDiapositivaPosicionX) : 0,
                 imagenVideoPosicionY: res != null ? Number(res.body.imagenDiapositivaPosicionY) : 0,
+                reproduccionVideo:res != null ? res.body.reproduccionVideo : 0,
+                descargaVideo:res != null ? res.body.descargaVideo : 0,
               });
               
               this.gridConfiguracionSecuenciaVideoDetalle.data = (res != null) ? res.body.sesionConfigurarVideos : [];

@@ -122,6 +122,7 @@ import { ReporteEncuestaDocenteComponent } from './reportes/reporte-encuesta-doc
 import { ConfigurarGrabacionesOnlineComponent } from './configuracion-portal-web/configurar-grabaciones-online/configurar-grabaciones-online/configurar-grabaciones-online.component';
 import { PgTestimonioComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-testimonio/pg-testimonio.component';
 import { PgValoracionesComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-valoraciones/pg-valoraciones.component';
+import { ModalConfiguracionReproduccionDescargaComponent } from './configuracion-portal-web/video-evaluaciones-estructura-programa/modal-configuracion-reproduccion-descarga/modal-configuracion-reproduccion-descarga.component';
 
 
 @NgModule({
@@ -243,6 +244,7 @@ import { PgValoracionesComponent } from './configuracion-programas-capacitacion/
     ConfigurarGrabacionesOnlineComponent,
     PgTestimonioComponent,
     PgValoracionesComponent,
+    ModalConfiguracionReproduccionDescargaComponent,
 
 
   ],

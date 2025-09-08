@@ -11,6 +11,7 @@ import { IntegraService } from '@shared/services/integra.service';
 import { ModalConfiguracionEvaluacionComponent } from './modal-configuracion-evaluacion/modal-configuracion-evaluacion.component';
 import { ModalConfiguracionProyectoComponent } from './modal-configuracion-proyecto/modal-configuracion-proyecto.component';
 import { ModalConfiguracionVideoComponent } from './modal-configuracion-video/modal-configuracion-video.component';
+import { ModalConfiguracionReproduccionDescargaComponent } from './modal-configuracion-reproduccion-descarga/modal-configuracion-reproduccion-descarga.component';
 interface FiltroVideoEvaluacion {
   idPgeneral: number[];
   idArea: number[];
@@ -222,7 +223,9 @@ export class VideoEvaluacionesEstructuraProgramaComponent implements OnInit {
           this.loaderModal = false;
         },
         error: (err) => {
-          this._alertaService.notificationWarning(`No existe informacion a mostrar`);
+          this._alertaService.notificationWarning(
+            `No existe informacion a mostrar`
+          );
           this.loaderModal = false;
         },
       });
@@ -293,6 +296,38 @@ export class VideoEvaluacionesEstructuraProgramaComponent implements OnInit {
         },
       });
   }
+
+  abirmodalConfigurarReproduccionyDescarga(
+    dataSource: ConfiguracionVideoPrincipal
+  ) {
+    this.loaderModal = true;
+    this._integraService
+      .getJsonResponse(
+        `${constApiPlanificacion.ConfigurarVideoProgramaObtenerConfiguracionProyecto}/${dataSource.idPgeneral}`
+      )
+      .subscribe({
+        next: (response: HttpResponse<ConfiguracionVideo[]>) => {
+          const modalRef = this._modalService.open(
+            ModalConfiguracionReproduccionDescargaComponent,
+            {
+              size: 'xl',
+              backdrop: 'static',
+              keyboard: false,
+            }
+          );
+          modalRef.componentInstance.configuracionVideoPrincipal = dataSource;
+          modalRef.componentInstance.modalContext = modalRef;
+          this.loaderModal = false;
+        },
+        error: (err) => {
+          this._alertaService.notificationWarning(
+            `No existe informacion a mostrar`
+          );
+          this.loaderModal = false;
+        },
+      });
+  }
+
   //Funciones de filtrado en cascada para el filtro
   filtrarAreaBusqueda(value: string): void {
     if (value.length >= 1) {
@@ -339,15 +374,15 @@ export class VideoEvaluacionesEstructuraProgramaComponent implements OnInit {
   }
   filtrarPgeneralBusqueda(value: string): void {
     if (value.length >= 1) {
-      this.listaPgeneral = this.listaCombos.pGenerals.filter((s) =>
-        s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      this.listaPgeneral = this.listaCombos.pGenerals.filter(
+        (s) => s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
       );
     } else this.listaPgeneral = this.listaCombos.pGenerals;
   }
   filtrarParnetsBusqueda(value: string): void {
     if (value.length >= 1) {
-      this.listaPartner = this.listaCombos.partnerPws.filter((s) =>
-        s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      this.listaPartner = this.listaCombos.partnerPws.filter(
+        (s) => s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
       );
     } else this.listaPartner = this.listaCombos.partnerPws;
   }
@@ -355,7 +390,8 @@ export class VideoEvaluacionesEstructuraProgramaComponent implements OnInit {
     let dataForm = this.formFiltro.getRawValue();
     let objetoCompleto: FiltroVideoEvaluacion = {
       idArea: dataForm.areas.length > 0 ? dataForm.areas.join(',') : null,
-      idSubArea: dataForm.subareas.length > 0 ? dataForm.subareas.join(',') : null,
+      idSubArea:
+        dataForm.subareas.length > 0 ? dataForm.subareas.join(',') : null,
       idPgeneral:
         dataForm.pgenerales.length > 0 ? dataForm.pgenerales.join(',') : null,
       idPartner:
