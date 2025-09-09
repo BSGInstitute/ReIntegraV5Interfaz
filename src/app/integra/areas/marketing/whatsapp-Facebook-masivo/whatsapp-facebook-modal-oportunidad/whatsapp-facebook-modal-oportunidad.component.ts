@@ -10,11 +10,20 @@ import { Subscription } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import {
   constApiComercial,
+  constApiMarketing,
   constApiPlanificacion,
 } from '@environments/constApi';
 import { IntegraService } from '@shared/services/integra.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  SimpleChanges,
+  ViewChild,
+  OnChanges,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { UserService } from '@shared/services/user.service';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IComboBase1 } from '@shared/models/interfaces/iglobal';
@@ -26,21 +35,35 @@ import {
   ITipoDatoCombo,
   IPaisZonaHoraria,
 } from '@comercial/models/interfaces/imodulo-creacion-oportunidad';
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  ChatWhatsAppMarketing,
+  ChatWhatsAppMarketingPorCelular,
+} from '@marketing/campania-whatsapp/whatsapp-masivo/models/chat-whatsapp-marketing';
+interface DataDialog {
+  chatPorCelular: ChatWhatsAppMarketingPorCelular[];
+  dataItem: ChatWhatsAppMarketing;
+}
 @Component({
   selector: 'app-whatsapp-facebook-modal-oportunidad',
   templateUrl: './whatsapp-facebook-modal-oportunidad.component.html',
 })
-export class WhatsappFacebookModalOportunidadComponent implements OnInit {
+export class WhatsappFacebookModalOportunidadComponent
+  implements OnInit, OnChanges
+{
   @Input() celularAlumno: string;
+  @ViewChild('modalExtraerRegistros') modalExtraerRegistros: DataDialog;
 
   constructor(
     private formBuilder: FormBuilder,
     private integraService: IntegraService,
     private alertaService: AlertaService,
-    private userService: UserService
+    private userService: UserService,
+    private modalService: NgbModal,
+    private cdRef: ChangeDetectorRef
   ) {}
   fechaFinal: any;
+  @Input() abrirModalTrigger: boolean = false; // recibe la señal
 
   dataCentroCosto: IComboBase1[] = [];
   dataCentroCostoModal: IComboBase1[] = [];
@@ -111,10 +134,26 @@ export class WhatsappFacebookModalOportunidadComponent implements OnInit {
   objErrorModal: any = {};
   btnGuardarDisabled: boolean = false;
   loadingModal: boolean = false;
+  loader: any = false;
+
+  formExtraccionRegistros: FormGroup;
+  rangoExtraccionRegistros = [
+    { label: '1 día', value: 1 },
+    { label: '2 días', value: 2 },
+    { label: '3 días', value: 3 },
+    { label: '4 días', value: 4 },
+    { label: '5 días', value: 5 },
+    { label: '6 días', value: 6 },
+    { label: '7 días', value: 7 },
+    { label: 'test', value: 220 },
+  ];
 
   ngOnInit(): void {
     this.obtenerDatosFiltroRegistrarOportunidad();
     this.formAgregarNuevo.get('celular').setValue(this.celularAlumno);
+    this.formExtraccionRegistros = this.formBuilder.group({
+      rangoExtraccion: [null, Validators.required],
+    });
   }
 
   get formRegistro(): IFormRegistroOportunidad {
@@ -720,5 +759,82 @@ export class WhatsappFacebookModalOportunidadComponent implements OnInit {
       error.push(this.objErrorModal[key]);
     }
     return error;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes['abrirModalTrigger'] &&
+      changes['abrirModalTrigger'].currentValue === true
+    ) {
+      this.abrirModalCapturarRegistrosIA();
+    }
+  }
+
+  modalRef: any;
+
+  abrirModalCapturarRegistrosIA() {
+    this.modalRef = this.modalService.open(this.modalExtraerRegistros, {
+      backdrop: 'static',
+    });
+  }
+
+  extraerRegistros() {
+    this.modalRef.close();
+    this.loader = true;
+
+    const valorSeleccionado =
+      this.formExtraccionRegistros.value.rangoExtraccion;
+
+    let jsonRequest = {
+      rango: valorSeleccionado,
+      celularAlumno: this.celularAlumno,
+    };
+
+    this.integraService
+      .postJsonResponse(
+        constApiMarketing.CapturarRegistrosModeloIA,
+        jsonRequest
+      )
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          console.log(response);
+          console.log('fir', this.formAgregarNuevo);
+
+          this.formAgregarNuevo.get('nombre1').setValue(response.body.nombres);
+          this.formAgregarNuevo
+            .get('apellidoPaterno')
+            .setValue(response.body.apellidos);
+          this.formAgregarNuevo
+            .get('idAFormacion')
+            .setValue(response.body.area_De_Formacion.id);
+          this.formAgregarNuevo.get('idCargo').setValue(response.body.cargo.id);
+          this.formAgregarNuevo
+            .get('idATrabajo')
+            .setValue(response.body.area_De_Trabajo.id);
+          this.formAgregarNuevo
+            .get('idIndustria')
+            .setValue(response.body.industria.id);
+
+          this.cdRef.detectChanges();
+          this.alertaService.swalFireOptions({
+            icon: 'success',
+            title: '¡Exitoso!',
+            text: 'Se capturaron los datos exitosamente.',
+          });
+          this.loader = false;
+
+          console.log('serc', this.formAgregarNuevo);
+        },
+        error: (error) => {
+          this.alertaService.swalFireOptions({
+            icon: 'warning',
+            title: 'Error de Comunicación',
+            text: 'Lo sentimos, no se pudo completar la acción.',
+          });
+          this.loader = false;
+          this.cdRef.detectChanges();
+          console.error('Error al extraer registros: ', error);
+        },
+      });
   }
 }

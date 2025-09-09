@@ -53,6 +53,7 @@ interface DataDialog {
 export class WmChatWhatsAppComponent implements OnInit {
   @ViewChild('contentC', { static: true }) containerRef!: ElementRef;
   @ViewChild('modalOportunidad') modalOportunidad: DataDialog;
+  @ViewChild('modalExtraerRegistros') modalExtraerRegistros: DataDialog;
   @ViewChild('modalSemaforoFinanciero') modalSemaforoFinanciero: any;
   @ViewChild('modalSeleccionarArchivo') modalSeleccionarArchivo: any;
   @ViewChildren(ExpansionPanelComponent)
@@ -69,7 +70,8 @@ export class WmChatWhatsAppComponent implements OnInit {
     public dialog: MatDialog,
     private notificationService: NotificationService,
     private cdRef: ChangeDetectorRef,
-    private whatsappFacebookService: WhatsappFacebookService
+    private whatsappFacebookService: WhatsappFacebookService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   usuario = JSON.parse(localStorage.getItem('userData'));
@@ -90,6 +92,18 @@ export class WmChatWhatsAppComponent implements OnInit {
       ],
     ],
   });
+
+  formExtraccionRegistros: FormGroup;
+  rangoExtraccionRegistros = [
+    { label: '1 día', value: 1 },
+    { label: '2 días', value: 2 },
+    { label: '3 días', value: 3 },
+    { label: '4 días', value: 4 },
+    { label: '5 días', value: 5 },
+    { label: '6 días', value: 6 },
+    { label: '7 días', value: 7 },
+  ];
+  abrirModalFlag = false;
 
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
@@ -123,6 +137,7 @@ export class WmChatWhatsAppComponent implements OnInit {
     let cant = event.length;
     this.counter = `${cant}/500`;
   }
+  rangoProbabilidad: string = '';
   counter: string = '';
   programaNombre: string = '';
   mostrarPrimerModal: boolean = false;
@@ -204,7 +219,6 @@ export class WmChatWhatsAppComponent implements OnInit {
   ngOnInit(): void {
     this.loader = true;
     this.formAlumno.disable();
-    this.obtenerCombos();
     if (this.data.dataItem != null) {
       this.idPersonal = this.data.dataItem.idPersonal;
       this.celularAlumno = this.data.dataItem.celular;
@@ -218,12 +232,17 @@ export class WmChatWhatsAppComponent implements OnInit {
         this.idAlumno = this.data.chatPorCelular[0].idAlumnoUM;
         this.datosChat = this.data.chatPorCelular[0];
         this.idPersonal = 4659;
+        this.rangoProbabilidad = this.data.chatPorCelular[0].rango;
       }
-
-      this.loader = false;
       this.alumnosPorCelular = this.datosChat.listaAlumnosPorCelular;
       this.mensajesWhats = this.datosChat.mensajePorCelular;
+      this.loader = false;
     }
+    this.obtenerCombos();
+
+    this.formExtraccionRegistros = this.formBuilder.group({
+      rangoExtraccion: [null, Validators.required],
+    });
   }
 
   ngAfterViewInit() {
@@ -238,6 +257,7 @@ export class WmChatWhatsAppComponent implements OnInit {
   onEdit() {
     this.editar = true;
     this.formAlumno.enable();
+    console.log('first', this.formAlumno);
   }
   onCancel() {
     this.editar = false;
@@ -268,14 +288,6 @@ export class WmChatWhatsAppComponent implements OnInit {
       });
   }
 
-  // private asignacionWhatsapp() {
-  //   this.integraService
-  //     .obtener(ASIGNACION_REGULAR.AsignacionAutomatizadaAsesorWhats)
-  //     .subscribe({
-  //       next: (response: HttpResponse<any>) => {},
-  //       error: (error) => {},
-  //     });
-  // }
   AsignacionWhatsapp() {
     this.integraService
       .obtener(constApiMarketing.AsignacionDatosWhats)
@@ -293,7 +305,7 @@ export class WmChatWhatsAppComponent implements OnInit {
       });
   }
   obtenerChatWhatsAppMarketingPorCelular() {
-    this.loader = false;
+    this.loader = true;
     this.integraService
       .obtener(
         `${WHATSAPP_MENSAJE_ENVIADO.ObtenerChatWhatsAppMarketingPorCelular}/${this.celularAlumno}`
@@ -305,12 +317,13 @@ export class WmChatWhatsAppComponent implements OnInit {
           this.mensajesWhats = this.datosChat.mensajePorCelular;
           this.idPais = this.datosChat.idPaisEmpresa;
           this.idAlumnoEnvio = this.datosChat.idAlumnoUM;
+          this.rangoProbabilidad = this.datosChat.rango;
 
           setTimeout(() => {
             this.containerRef.nativeElement.scrollTop =
               this.containerRef.nativeElement.scrollHeight;
+            this.loader = false;
           }, 1000);
-          this.loader = false;
         },
         error: (error) => {
           this.loader = false;
@@ -326,7 +339,6 @@ export class WmChatWhatsAppComponent implements OnInit {
       .obtener(WHATSAPP_MENSAJE_ENVIADO.ObtenerCombosAtributosAlumno)
       .subscribe({
         next: (response: HttpResponse<ComboModuloWhatsapp>) => {
-          this.loader = false;
           this.listaAreaFormacion = response.body.comboAreaFormacion;
           this.listaAreaTrabajo = response.body.comboAreaTrabajo;
           this.listaCargo = response.body.comboCargo;
@@ -334,10 +346,7 @@ export class WmChatWhatsAppComponent implements OnInit {
           this.listaTamanioEmpresa = response.body.comboTamanioEmpresa;
         },
         error: (error) => {
-          this.loader = false;
-        },
-        complete: () => {
-          this.loader = false;
+          console.error('Error al obtener combos: ', error);
         },
       });
   }
@@ -347,7 +356,6 @@ export class WmChatWhatsAppComponent implements OnInit {
       .obtener(`${WHATSAPP_MENSAJE_ENVIADO.ObtenerPersonalOportunidad}`)
       .subscribe({
         next: (response: HttpResponse<Combo[]>) => {
-          this.loader = false;
           this.dataAsesorModal = response.body;
           const asesorPorDefecto = this.dataAsesorModal.find(
             (asesor: any) => asesor.id === 125
@@ -360,17 +368,13 @@ export class WmChatWhatsAppComponent implements OnInit {
           } else {
           }
         },
-        error: (error) => {
-          this.loader = false;
-        },
-        complete: () => {
-          this.loader = false;
-        },
+        error: (error) => console.error('Error al obtener asesor: ', error),
       });
   }
   alumno: AlumnoWhatsapp = {};
 
   obtenerDatosAlumnoWhatsApp(idAlumno: number) {
+    this.loader = true;
     this.integraService
       .obtener(
         `${WHATSAPP_MENSAJE_ENVIADO.ObtenerDatosAlumnoWhatsApp}/${idAlumno}`
@@ -407,6 +411,8 @@ export class WmChatWhatsAppComponent implements OnInit {
               .get('tamanioEmpresa')
               .setValue(this.alumno.idTamanioEmpresaAgenda);
           }
+
+          this.loader = false;
         },
         error: (error) => {
           this.loader = false;
@@ -504,10 +510,6 @@ export class WmChatWhatsAppComponent implements OnInit {
       });
   }
 
-  selectChat(e: any) {}
-
-  mensajePrueba: any;
-
   convertToAscii(text: string): string {
     let result = '';
 
@@ -521,7 +523,6 @@ export class WmChatWhatsAppComponent implements OnInit {
         result += `&#${asciiCode};`;
       }
     }
-    this.mensajePrueba = result;
     return result;
   }
 
@@ -571,8 +572,10 @@ export class WmChatWhatsAppComponent implements OnInit {
   onExpandedChange(e: boolean, item: ListaAlumnosPorCelular) {
     this.idAlumnoInput = item.idAlumno;
     this.idAlumnoExpansion = item.idAlumno;
-    this.obtenerHistorialAlumno(item.idAlumno);
-    this.obtenerDatosAlumnoWhatsApp(item.idAlumno);
+    if (item.idAlumno != 0) {
+      this.obtenerHistorialAlumno(item.idAlumno);
+      this.obtenerDatosAlumnoWhatsApp(item.idAlumno);
+    }
     this.obtenerAsesor();
   }
 
@@ -1644,7 +1647,6 @@ export class WmChatWhatsAppComponent implements OnInit {
               fechaCreacion: new Date(),
               idAlumno: objeto.idAlumno,
               estadoMensaje: 1,
-              // nombrePersonal: this.nombrePersonal,
             };
             this.obtenerChatWhatsAppMarketingPorCelular();
             this.loaderChatWhatsapp = false;
@@ -1657,7 +1659,6 @@ export class WmChatWhatsAppComponent implements OnInit {
           this.loaderChatWhatsapp = false;
         },
       });
-    // this.consultaBloqueoRedactar();
   }
 
   onDragOver(event: DragEvent) {
@@ -1689,10 +1690,107 @@ export class WmChatWhatsAppComponent implements OnInit {
     }
   }
 
-  // -------------------------
-
   // Abrir modal para crear oportunidad cuando NO HAY EMAIL REGISTRADO
   toggleCrearOportunidadContenedor() {
     this.showCrearOportunidadContenedor = !this.showCrearOportunidadContenedor;
+  }
+
+  abrirModalCapturarRegistrosIA() {
+    this.modalRef = this.modalService.open(this.modalExtraerRegistros, {
+      backdrop: 'static',
+    });
+  }
+
+  extraerRegistros() {
+    this.modalRef.close();
+    this.loader = true;
+
+    const valorSeleccionado =
+      this.formExtraccionRegistros.value.rangoExtraccion;
+
+    let jsonRequest = {
+      rango: valorSeleccionado,
+      celularAlumno: this.celularAlumno,
+    };
+
+    this.integraService
+      .postJsonResponse(
+        constApiMarketing.CapturarRegistrosModeloIA,
+        jsonRequest
+      )
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          console.log(response);
+          this.onEdit();
+
+          if (this.formAlumno.get('nombre1').value == '') {
+            this.formAlumno.get('nombre1').setValue(response.body.nombres);
+          }
+          if (this.formAlumno.get('apellidoPaterno').value == '') {
+            this.formAlumno
+              .get('apellidoPaterno')
+              .setValue(response.body.apellidos);
+          }
+          if (
+            this.formAlumno.get('areaFormacion').value == 0 ||
+            this.formAlumno.get('areaFormacion').value == 153 ||
+            this.formAlumno.get('areaFormacion').value == 3
+          ) {
+            this.formAlumno
+              .get('areaFormacion')
+              .setValue(response.body.area_De_Formacion.id);
+          }
+          if (
+            this.formAlumno.get('cargo').value == 0 ||
+            this.formAlumno.get('cargo').value == 24
+          ) {
+            this.formAlumno.get('cargo').setValue(response.body.cargo.id);
+          }
+          if (
+            this.formAlumno.get('areaTrabajo').value == 0 ||
+            this.formAlumno.get('areaTrabajo').value == 27 ||
+            this.formAlumno.get('areaTrabajo').value == 29
+          ) {
+            this.formAlumno
+              .get('areaTrabajo')
+              .setValue(response.body.area_De_Trabajo.id);
+          }
+          if (
+            this.formAlumno.get('industria').value == 0 ||
+            this.formAlumno.get('industria').value == 22 ||
+            this.formAlumno.get('industria').value == 48
+          ) {
+            this.formAlumno
+              .get('industria')
+              .setValue(response.body.industria.id);
+          }
+
+          this.cdr.detectChanges();
+          this.alertaService.swalFireOptions({
+            icon: 'success',
+            title: '¡Exitoso!',
+            text: 'Se capturaron los datos exitosamente.',
+          });
+          this.loader = false;
+        },
+        error: (error) => {
+          this.alertaService.swalFireOptions({
+            icon: 'warning',
+            title: 'Error de Comunicación',
+            text: 'Lo sentimos, no se pudo completar la acción.',
+          });
+          this.loader = false;
+          this.cdr.detectChanges();
+          console.error('Error al extraer registros: ', error);
+        },
+      });
+  }
+
+  emitirCapturarRegistrosIA() {
+    this.abrirModalFlag = true;
+
+    setTimeout(() => {
+      this.abrirModalFlag = false;
+    }, 100);
   }
 }

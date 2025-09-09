@@ -134,9 +134,10 @@ export class WhatsappMasivoComponent implements OnInit {
         next: (response: HttpResponse<ChatWhatsAppMarketingPorCelular[]>) => {
           this.grilla = response.body;
           const dialogRef = this.dialog.open(WmChatWhatsAppComponent, {
-            minWidth: '1200px',
-            maxHeight: '90vh',
-            panelClass: 'dialog-gestor',
+            maxWidth: '90%',
+            minWidth: '90%',
+            maxHeight: '1900px',
+            panelClass: 'wm-modal-container',
             data: {
               chatPorCelular: response.body,
             },
@@ -184,7 +185,6 @@ export class WhatsappMasivoComponent implements OnInit {
       width: '450px',
       maxWidth: '500px',
       maxHeight: '100vh',
-      height: '60px',
       panelClass: 'custom-dialog-container',
     });
 

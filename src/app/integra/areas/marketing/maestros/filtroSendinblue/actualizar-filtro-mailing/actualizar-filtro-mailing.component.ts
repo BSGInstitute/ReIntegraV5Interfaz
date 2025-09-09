@@ -720,8 +720,8 @@ export class ActualizarFiltroMailingComponent implements OnInit {
     this.filtrado.usuario = this.usuarioLog.usuario;
     console.log(this.filtrado);
 
-    // this.integraService
-    this.integraReplicaService
+    this.integraService
+    // this.integraReplicaService
       .insertar(constApiMarketing.FiltradoDatosMailing, this.filtrado)
       .subscribe({
         next: (response: HttpResponse<any>) => {

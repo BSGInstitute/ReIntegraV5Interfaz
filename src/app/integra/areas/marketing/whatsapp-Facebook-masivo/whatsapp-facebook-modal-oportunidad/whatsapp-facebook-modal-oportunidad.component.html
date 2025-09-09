@@ -1,3 +1,12 @@
+<ng-container *ngIf="loader">
+  <div class="loading-indicator">
+    <mat-progress-spinner
+      mode="indeterminate"
+      color="accent"
+    ></mat-progress-spinner>
+  </div>
+</ng-container>
+
 <div class="modal-body p-3 pt-1">
   <form class="k-form k-form-horizontal" [formGroup]="formAgregarNuevo">
     <!-- Errors -->
@@ -719,5 +728,60 @@
     </button>
   </div>
 </div>
+
+<!-- Modal Extraer registros con IA -->
+<ng-template #modalExtraerRegistros let-modal style="z-index: 998">
+  <div class="modal-header bg-verdeModal">
+    <h3 class="modal-title m-0 p-0">Capturar Registros con IA</h3>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="formExtraccionRegistros">
+      <label for="rangoExtraccion" class="mb-4">
+        Selecciona el rango de antigüedad de los chats a enviar:
+      </label>
+      <mat-radio-group
+        id="rangoExtraccion"
+        class="d-flex flex-column gap-3 ms-3"
+        formControlName="rangoExtraccion"
+      >
+        <mat-radio-button
+          class="w-auto"
+          *ngFor="let rango of rangoExtraccionRegistros"
+          [value]="rango.value"
+        >
+          {{ rango.label }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      kendoButton
+      themeColor="tertiary"
+      [disabled]="
+        loader || formExtraccionRegistros.get('rangoExtraccion')?.invalid
+      "
+      (click)="extraerRegistros()"
+    >
+      Extraer Registros
+    </button>
+    <button
+      themeColor="error"
+      kendoButton
+      (click)="modal.dismiss('Cross click')"
+      [disabled]="loader"
+    >
+      Cancelar
+    </button>
+  </div>
+</ng-template>
 
 <loading [loading]="loadingModal"></loading>
