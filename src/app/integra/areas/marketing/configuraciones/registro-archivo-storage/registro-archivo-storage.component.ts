@@ -124,7 +124,7 @@ export class RegistroArchivoStorageComponent implements OnInit {
 
   guardarRegistroArchivo() {
  console.log(this.formRegistroArchivoStorage.getRawValue());
-
+ 
  const archivoPrincipal = this.formRegistroArchivoStorage.get('archivos').value;
 
  if (!archivoPrincipal) {
@@ -141,6 +141,9 @@ export class RegistroArchivoStorageComponent implements OnInit {
     let formData = new FormData();
     console.log(this.formRegistroArchivoStorage.getRawValue());
     let dataFormulario = this.formRegistroArchivoStorage.getRawValue();
+    dataFormulario.idSubContenedor =  this.registroArchivoCombos.listadoContenedores
+        .find(s => s.idContenedor == contenedor)
+        ?.idSubcontenedor ?? null;
     this.integraService
       .obtenerPorPathParams(
         constApiMarketing.UrlSubContenedorObtenerRutaSubContenedor,
@@ -215,9 +218,6 @@ export class RegistroArchivoStorageComponent implements OnInit {
               'archivoPeAqp',
               <File>dataFormulario.archivoPeAqp[0]
             );
-
-          // if (validator.validate()) {
-          //   displayLoading($('#modalArchivoCreacion'));
           console.log('insertarFormData');
           this.integraService
             .insertarFormData(
@@ -236,19 +236,15 @@ export class RegistroArchivoStorageComponent implements OnInit {
                   this.idPersonal,
                   contenedor,
                   '-9999'
-                ); //valores
-                // hideLoading($('#modalArchivoCreacion'));
-                // NotificacionModule.showMensajeExitoso(
-                //   'Se subio exitosamente el archivo'
-                // );
-                // _recargarGridMain();
-                // _clearFieldsForm();
+                ); 
               },
               error: (error) => {
                 this.alertaService.mensajeError(error);
+                this.btnGuardarDisable = false;
               },
               complete: () => {
                 this.mostrarMensajeExitoso();
+                this.btnGuardarDisable = false;
               },
             });
         },
@@ -315,9 +311,6 @@ export class RegistroArchivoStorageComponent implements OnInit {
       controlName
     );
   }
-
-
-
 
   getShowSuccessIcon(controlName: string): boolean {
     let formControl: FormControl = this.formRegistroArchivoStorage.get(
