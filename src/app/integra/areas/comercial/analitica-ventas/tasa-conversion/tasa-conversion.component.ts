@@ -9,6 +9,7 @@ import {
   AggregateResult,
 } from '@progress/kendo-data-query';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import Swal from 'sweetalert2';
 import { AlertaService } from '@shared/services/alerta.service';
 import { constApiComercial } from '@environments/constApi';
@@ -93,6 +94,7 @@ export class TasaConversionComponent implements OnInit {
   constructor(
     private userService: UserService,
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     private alertaService: AlertaService
   ) {}
@@ -241,7 +243,7 @@ export class TasaConversionComponent implements OnInit {
     this.loader = true;
     this.index1 = 0;
 
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(
         constApiComercial.ReporteTasaConversionConsolidadaGenerarReporteTasas,
         formmatoPrueba

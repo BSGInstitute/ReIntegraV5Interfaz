@@ -1,6 +1,7 @@
 import { data } from './../../../../models/agenda-tab-bandeja-entrada';
 import { Asesores } from './../../models/aprobacion-visualizacion-datos';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
@@ -53,6 +54,7 @@ export class IndicadoresOperativosComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private userService: UserService,
     private _snackBar: MatSnackBar
   ) {}
@@ -560,7 +562,7 @@ llenarCombos(recursos:IReporteOperacionesCombos) {
     })),
       (this.procesoEnvio = true);
 
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(
         constApiOperaciones.ReporteOperacionesGenerarReporteIndicadoresOperativos,
         parametro2

@@ -6,6 +6,7 @@ import {
   DropDownListComponent,
 } from '@progress/kendo-angular-dropdowns';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { constApiComercial, constApiGlobal } from '@environments/constApi';
@@ -88,6 +89,7 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private modalService: NgbModal,
     private alertarService: AlertaService,
     public sanitizer: DomSanitizer,
@@ -309,7 +311,7 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
         estadoFiltroHora: parametro.filtroPorHora,
         idEstadoOcurrencia: parametro.estadoActividad,
       };
-      this.integraService
+      this.integraReplicaService
         .obtenerPorFiltro(
           constApiComercial.ReporteActividadesRealizadasTresCxGenerarReporte,
           parametro2
