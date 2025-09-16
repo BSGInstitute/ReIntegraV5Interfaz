@@ -724,7 +724,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
       });
   }
   generarReporteV2IntegraAsync() {
-    this.integraReplicaService
+    this.integraService
       .postJsonResponse(
         constApiComercial.ReporteCambioDeFaseTresCxGenerarReporteV2IntegraAsync,
         JSON.stringify(this.filtroForm)
