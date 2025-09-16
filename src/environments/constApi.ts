@@ -3357,6 +3357,8 @@ export const constApiPlanificacion = {
   ConfigurarEvaluacionTrabajoActualizar:
     "/ConfigurarEvaluacionTrabajo/Actualizar",
   ConfigurarEvaluacionTrabajoEliminar: "/ConfigurarEvaluacionTrabajo/Eliminar", //DELETE
+  ConfigurarVideoProgramaActualizarDescargaReproduccionVideo:"/ConfigurarVideoPrograma/ActualizarDescargaReproduccionVideo", //Put
+  ConfigurarVideoProgramaActualizarObtenerConteosdeVideosTipo:"/ConfigurarVideoPrograma/ObtenerConteosdeVideosTipo", //Put
 
   //Modulo Pgeneral
   ProgramaGeneralObtenerCombosModuloAsync:

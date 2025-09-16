@@ -40,6 +40,7 @@ export interface RegistroArchivoCombo {
   listadoContenedores: {
     idContenedor: number;
     contenedor: string;
+    idSubcontenedor:number;
     aplicaSubcontenedores: boolean;
     aplicaSubidaMultiple: boolean;
     aplicaValidacion: boolean;
