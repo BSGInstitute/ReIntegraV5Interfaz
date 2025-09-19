@@ -17,6 +17,7 @@ import { datePipeTransform } from '@shared/functions/date-pipe';
 import { ComboPaisDTO } from '@shared/models/combo';
 import { Parametro } from '@shared/models/parametro';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { UserService } from '@shared/services/user.service';
 import { map } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -36,6 +37,7 @@ export class RegistrarFurPagoComponent implements OnInit {
 
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     public finanzasService:FinanzasServiceService,
@@ -181,7 +183,7 @@ export class RegistrarFurPagoComponent implements OnInit {
   //// Funciones para la Obtencion de Datos---------INICIO----------------------
   obtenerDatosGrilla(parametro:FiltroBusqueda){//Obtiene Los Datos para la Grilla
     this.loader=true
-    this.integraService.obtenerPorFiltro(constApiFinanzas.RegistrarPagoFurObtenerDatos,parametro)
+    this.integraReplicaService.obtenerPorFiltro(constApiFinanzas.RegistrarPagoFurObtenerDatos,parametro)
     .subscribe({
       next: (response:HttpResponse<RegistrarPagoFur[]> ) => {
         console.log(response)

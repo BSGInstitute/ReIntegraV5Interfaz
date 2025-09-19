@@ -13,6 +13,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AgendaOperacionesService } from '@operaciones/services/agenda/agenda-operaciones.service';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { UserService } from '@shared/services/user.service';
 import { TabStripModule } from '@progress/kendo-angular-layout';
 import { SelectEvent } from '@progress/kendo-angular-layout';
@@ -47,6 +48,7 @@ export class ControlCobranzaComponent implements OnInit {
   constructor(
     private userService: UserService,
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private modalService: NgbModal,
     private alertaService: AlertaService,
     private formBuilder: FormBuilder
@@ -226,7 +228,7 @@ export class ControlCobranzaComponent implements OnInit {
     };
     console.log('DataLista', temp);
 
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(
         constApiOperaciones.GenerarReporteControlCobraznza,
         JSON.stringify(temp)

@@ -6,13 +6,14 @@ import { IAgendaDatosAlumno, IAlumnoAccesos, IAlumnoInformacion, IDatosAvanceAOn
 import { constApiComercial, constApiFinanzas, constApiGlobal, constApiOperaciones, constApiPlanificacion } from '@environments/constApi';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { AgendaOperacionesService } from './agenda-operaciones.service';
 
 @Injectable()
 export class AgendaAlumnoOperacionesService {
 
-  constructor(private integraService: IntegraService, private alertaService: AlertaService) { }
+  constructor(private integraService: IntegraService, private alertaService: AlertaService, private integraReplicaService: IntegraReplicaService,) { }
 
   public subEstadoMatricula$: ReplaySubject<any> = new ReplaySubject<
     { id: number; idEstadoMatricula: number; nombre: string }[]
@@ -529,7 +530,7 @@ export class AgendaAlumnoOperacionesService {
   }
 
   obtenerDatosCobranza() {
-    this.integraService
+    this.integraReplicaService
     .getJsonResponse(
       `${constApiComercial.AgendaInformacionActividadObtenerDatosCobranzaAlumno}/${this.rowActual.idMatriculaCabecera}`
     )
