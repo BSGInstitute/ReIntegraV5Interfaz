@@ -2,6 +2,7 @@ import { constApiFinanzas, constApiOperaciones } from '@environments/constApi';
 import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { AgendaOperacionesService } from './agenda-operaciones.service';
 import { Subject, ReplaySubject } from 'rxjs';
@@ -23,7 +24,7 @@ import {
 import { KendoGrid } from '@shared/models/kendo-grid';
 @Injectable()
 export class AgendaBandejaCorreoOperacionesService {
-  constructor(private integraService: IntegraService) {}
+  constructor(private integraService: IntegraService, private integraReplicaService: IntegraReplicaService,) {}
   
   private agendaService: AgendaOperacionesService;
   private subscriptions: Subscription = new Subscription();
@@ -223,7 +224,7 @@ export class AgendaBandejaCorreoOperacionesService {
     let filtro = this.getFiltroBase(this.gridBandejaEnviados.gridState);
     filtro.idAsesor = idPersonal;
     this.gridBandejaEnviados.loading = true;
-    this.integraService
+    this.integraReplicaService
     .postJsonResponse(constApiComercial.CorreoObtenerCorreosEnviadosPorAsesor, JSON.stringify(filtro))
     .subscribe({
       next: (response: HttpResponse<any>) => {
