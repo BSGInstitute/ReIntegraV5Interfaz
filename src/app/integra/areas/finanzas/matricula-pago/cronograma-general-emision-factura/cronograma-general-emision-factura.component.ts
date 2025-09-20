@@ -74,6 +74,40 @@ loader = false;
   listaTipoCfdiType: any[] = [
     {clave: 'I', nombre: "Ingreso"},
   ]
+
+  // Metodo para formatear input en mayúsculas y sin tildes
+  formatInput(event: Event, form: FormGroup, controlName: string): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value || '';
+
+    // 1. Eliminar tildes
+    value = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // 2. Convertir a mayúsculas
+    value = value.toUpperCase();
+    // 3. Actualizar el valor del control del formulario
+    form.get(controlName)?.setValue(value, { emitEvent: false });
+
+    input.value = value;
+  }
+
+  // Metodo para eliminar los espacios antes, después y mas de 2 en medio del contenido
+  eliminarEspaciosFormulario(formulario: any): any {
+    if (Array.isArray(formulario)) {
+      return formulario.map(item => this.eliminarEspaciosFormulario(item)); 
+    } else if (formulario !== null && typeof formulario === 'object') {
+      const resultado: Record<string, any> = {}; 
+      for (const clave in formulario) {
+        if (formulario.hasOwnProperty(clave)) {
+          resultado[clave] = typeof formulario[clave] === 'string'
+            ? formulario[clave].trim().replace(/\s+/g, ' ') // Elimina los espacios antes y después, y reemplaza los múltiples espacios por uno solo
+            : this.eliminarEspaciosFormulario(formulario[clave]); 
+        }
+      }
+      return resultado;
+    }
+    return formulario;
+  }
+
   //real
   formCrearFacturaFacturama = this.formBuilder.group({
     // Datos generales
@@ -353,13 +387,11 @@ idVendedor: number = 35943;
     this.inicializarFormularios()
     this.inicializarFormularioCliente()
     this.obtenerListaFormaPagoFacturama()
-  this.obtenerListaRegimenFiscalFacturama()
-  this.obtenerListaUsoCfdiFacturama()
-  this.ObtenerListaCiudades()
-  this.ObtenerListaCiudades()
-   this.ReplicarValorTotalPrecio()
-
-
+    this.obtenerListaRegimenFiscalFacturama()
+    this.obtenerListaUsoCfdiFacturama()
+    this.ObtenerListaCiudades()
+    this.ObtenerListaCiudades()
+    this.ReplicarValorTotalPrecio()
   }
 
   inicializarFormularios(): void {
@@ -375,31 +407,6 @@ idVendedor: number = 35943;
 
   seleccionarEstudiante(estudiante: any): void {
     this.estudianteSeleccionado = estudiante
-  }
-
-  cargarEstudiantesConfigurados(): void {
-    this.estudiantesConfigurados = [
-      {
-        codigoMatricula: "12345",
-        nombre: "Juan Perez",
-        configuradoParaFactura: true,
-        datosFacturacion: {
-          tipoFactura: "individual",
-          rfc: "XAXX010101000",
-          razonSocial: "Juan Perez SA de CV",
-          regimenFiscal: "601",
-          usoCFDI: "G03",
-          metodoPago: "PUE",
-          formaPago: "01",
-        },
-      },
-      {
-        codigoMatricula: "67890",
-        nombre: "Maria Gomez",
-        configuradoParaFactura: false,
-        datosFacturacion: null,
-      },
-    ]
   }
 
   // Actualizar lista de estudiantes configurados
@@ -873,11 +880,11 @@ validarYGuardar(): void {
 
 
   guardarFacturaInterna(): void {
-    const datosFormulario = this.formCrearFacturaFacturama.value;
+    const dataFormulario = this.formCrearFacturaFacturama.value;
     const codigo = this.estudianteSeleccionado.codigoMatricula;
     const idCronograma = this.idCronogramaPagoDetalleFinal;
 
-
+    const datosFormulario = this.eliminarEspaciosFormulario(dataFormulario);
 
     const jsonGuardar = {
       factura: {
@@ -1114,8 +1121,6 @@ prepararFacturaGlobal(): void {
     this.obtenerFacturasPendientesEnvio(); // ← Esta función ya está perfecta
     this.dialog.open(this.modalFacturacionMasiva, {
       width: "1100px",
-      maxHeight: "90vh",
-      panelClass: "custom-dialog",
     });
   }
 
@@ -1123,8 +1128,6 @@ prepararFacturaGlobal(): void {
     this.btenerFacturasPendientesEnvioSiigo(); // ← Esta función ya está perfecta
     this.dialog.open(this.modalFacturacionMasivaSiigo, {
       width: "1100px",
-      maxHeight: "90vh",
-      panelClass: "custom-dialog",
     });
   }
 
@@ -1985,12 +1988,13 @@ validarYGuardarFacturaGlobal(): void {
   });
 }
 
-
   //factura global
   guardarFacturaInternaGlobal(): void {
-    const datosFormulario = this.formFacturaGlobal.value;
+    const dataFormulario = this.formFacturaGlobal.value;
     const codigo = this.estudianteSeleccionado.codigoMatricula;
     const idCronograma = this.idCronogramaPagoDetalleFinal;
+
+    const datosFormulario = this.eliminarEspaciosFormulario(dataFormulario);
 
     const jsonGuardar = {
       factura: {
@@ -2587,6 +2591,55 @@ const idsFacturas = this.estudiantesSeleccionadosMasivos
         event.preventDefault();
       }
     }
+
+    //Metodo para eliminar listado de facturas seleccionadas
+    eliminarFacturas(){
+      Swal.fire({
+            title: '¿Está seguro(a) de eliminar las facturas seleccionadas?',
+            icon: 'warning',
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Eliminar',
+          }).then((result) => {
+            if (result.isConfirmed && this.estudiantesSeleccionadosMasivos.length>0) {
+              this.loader= true;
+              const idsFacturas = this.estudiantesSeleccionadosMasivos
+                .map((compuesto) => {
+                  const [codigo, index] = compuesto.split("_");
+                  return this.facturasPendientes.find(
+                    (f) =>
+                      f.codigoMatricula === codigo &&
+                      this.facturasPendientes.indexOf(f) === parseInt(index, 10),
+                  )?.idFactura;
+                })
+                .filter((id) => !!id);
+              const request = {
+                idsFacturas,
+              };
+
+              this.integraService.postJsonResponse(`${constApiFinanzas.EliminarFacturasPendientesFacturama}`, request).subscribe({
+                next: () => {
+                  Swal.fire({
+                        title: "Eliminadas Correctamente!", 
+                        icon: "success"
+                      });
+                  this.loader = false;
+
+                  this.obtenerFacturasPendientesEnvio();
+                },
+                error: (error) => {
+                  this.loader = false;
+                  console.error("Error al enviar facturas masivas:", error);
+                  Swal.fire({
+                        title: "Error al eliminar facturas",
+                        icon: "error"
+                      });
+                }
+              });
+            }
+          });
+    }
 }
 
 interface IDatosCrearFactSiigo{
@@ -2627,10 +2680,6 @@ interface ICrearFacturaDeVentaSiigo {
   items: ItemDTO[],
   pagos: IPagoDTO[]
 }
-interface DatosCompletosDTO{
-  factura: ICrearFacturaDeVentaSiigo,
-  cliente: ICrearClienteSiigo
-}
 
 interface IDocumentoDTO{
   id: number
@@ -2668,3 +2717,5 @@ interface ICrearClienteSiigo{
   contactoApellido: string,
   contactoEmail: string
 }
+
+

@@ -4586,6 +4586,7 @@ export const constApiFinanzas = {
   EnviarFacturasMasivas: "/FacturamaApi/EnviarFacturasMasivas",
   ListarPendientesEnvio: "/FacturamaApi/ListarPendientesEnvio",
   EnviarFacturasMasivasLote: "/FacturamaApi/EnviarFacturasMasivasLote",
+  EliminarFacturasPendientesFacturama: "/FacturamaApi/EliminarFacturasPendientesFacturama",
   GuardarFacturaGlobalInterna: "/FacturamaApi/GuardarFacturaGlobalInterna",
   ObtenerIdFacturaGlobal: "/FacturamaApi/ObtenerIdFacturaGlobal",
   EnviarFacturaGlobalApi: "/FacturamaApi/EnviarFacturaGlobalApi",

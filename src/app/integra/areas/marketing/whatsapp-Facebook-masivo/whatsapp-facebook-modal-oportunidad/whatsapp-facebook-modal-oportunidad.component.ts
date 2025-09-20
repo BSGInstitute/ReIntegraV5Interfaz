@@ -145,7 +145,6 @@ export class WhatsappFacebookModalOportunidadComponent
     { label: '5 días', value: 5 },
     { label: '6 días', value: 6 },
     { label: '7 días', value: 7 },
-    { label: 'test', value: 220 },
   ];
 
   ngOnInit(): void {
