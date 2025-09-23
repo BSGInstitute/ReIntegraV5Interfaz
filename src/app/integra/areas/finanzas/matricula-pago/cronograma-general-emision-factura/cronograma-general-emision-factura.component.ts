@@ -115,6 +115,7 @@ loader = false;
     PaymentForm: ['', Validators.required],
     PaymentMethod: ['', Validators.required],
     ExpeditionPlace: ['', Validators.required],
+    Date: ['', Validators.required],
 
     // GlobalInformation
     // Periodicity: ['', Validators.required],
@@ -168,7 +169,7 @@ loader = false;
     PaymentForm: ['', Validators.required],
     PaymentMethod: ['', Validators.required],
     ExpeditionPlace: ['', Validators.required],
-
+    Date: ['', Validators.required],
 
     Periodicity: ['', Validators.required],
     Months: ['', Validators.required],
@@ -254,6 +255,7 @@ loader = false;
     { clave: '12', nombre: 'Diciembre' },
   ];
 
+  listaFechasdeEmision: { value: string, label: string }[] = [];
 
   dataDepartamentos: any[];
   dataCiudades: any[];
@@ -394,6 +396,25 @@ idVendedor: number = 35943;
     this.ReplicarValorTotalPrecio()
   }
 
+  generarFechasDeEmision() {
+    const today = new Date();
+    const oneHourBefore = new Date(today);
+    oneHourBefore.setHours(today.getHours() - 1);
+
+    const oneDayBefore = new Date(today);
+    oneDayBefore.setDate(today.getDate() - 1);
+
+    const twoDaysBefore = new Date(today);
+    twoDaysBefore.setDate(today.getDate() - 2);
+
+    this.listaFechasdeEmision = [
+      { value: oneHourBefore.toISOString(), label: 'Fecha actual' },
+      { value: oneDayBefore.toISOString(), label: '1 día antes' },
+      { value: twoDaysBefore.toISOString(), label: '2 días antes' }
+    ];
+  }
+
+  
   inicializarFormularios(): void {
     this.formFiltro = this.formBuilder.group({
       fechaInicio: [null],
@@ -529,6 +550,7 @@ abrirModalFactura(dataItem: any, idCronograma?: number): void {
       Periodicity: "04",
       Months: (new Date().getMonth() + 1).toString().padStart(2, '0'),
       Year: new Date().getFullYear().toString(),
+      Date: this.listaFechasdeEmision[0].value,
       //: "PÚBLICO EN GENERAL",
       ReceiverRfc: "XAXX010101000",
       CfdiUse: "S01",
@@ -562,6 +584,7 @@ setearValoresPorDefectoFacturaGlobalApi(): void {
       Periodicity: "04",
       Months: (new Date().getMonth() + 1).toString().padStart(2, '0'),
       Year: new Date().getFullYear().toString(),
+      Date: this.listaFechasdeEmision[0].value,
       //: "PÚBLICO EN GENERAL",
       ReceiverRfc: "XAXX010101000",
       CfdiUse: "S01",
@@ -631,7 +654,8 @@ setearValoresPorDefectoFacturaGlobalApi(): void {
               PaymentForm: factura.paymentForm || '',
               PaymentMethod: factura.paymentMethod || '',
               ExpeditionPlace: factura.expeditionPlace || '',
-              codigoMat: codigo
+              codigoMat: codigo,
+              Date: this.listaFechasdeEmision[0].value,
             });
 
             // Llenar productos si hay
@@ -689,6 +713,7 @@ this.formCrearFacturaFacturama.patchValue({
 continuarADetalles(): void {
   this.dialog.closeAll();
   this.limpiarFormularioFacturaGlobal();
+  this.generarFechasDeEmision();
 
   const codigo = this.estudianteSeleccionado.codigoMatricula;
   const idCronograma = this.idCronogramaPagoDetalleFinal;
@@ -700,15 +725,6 @@ continuarADetalles(): void {
   //  this.productosAgregados = [];
    // this.calcularTotalesGenerales();
   } else {
-    // this.dialog.open(this.modalFacturaGlobal, {
-    //   width: "90%",
-    //   maxWidth: "1200px",
-    //   disableClose: true,
-    //   panelClass: "factura-global-dialog",
-    // });
-
-    //this.setearValoresPorDefectoFacturaGlobal();
-
     this.integraService.getJsonResponse(`${constApiFinanzas.ObtenerFacturaPorCodigoMatricula}/${codigo}`)
       .subscribe({
         next: (resp: HttpResponse<any>) => {
@@ -720,6 +736,10 @@ continuarADetalles(): void {
 
           const detalleActual = this.cronogramasPorAlumno[codigo]?.find(d => d.id === idCronograma);
           const mismoCronograma = Number(idCronogramaSP) === Number(idCronograma);
+
+          this.formCrearFacturaFacturama.patchValue({
+              Date: this.listaFechasdeEmision[0].value,
+            });
 
           if (cliente && factura) {
             this.formCrearFacturaFacturama.patchValue({
@@ -892,6 +912,7 @@ validarYGuardar(): void {
         PaymentForm: datosFormulario.PaymentForm,
         PaymentMethod: datosFormulario.PaymentMethod,
         Currency: "MXN",
+        Date: datosFormulario.Date,
         ExpeditionPlace: datosFormulario.ExpeditionPlace || '',
         Receiver: {
           Name: datosFormulario.ReceiverName,
@@ -947,7 +968,6 @@ validarYGuardar(): void {
         }
       }
     };
-
 
     // this.integraService.postJsonResponse(`${constApiFinanzas.GuardarFacturaInterna}?codigoMatricula=${codigo}`, jsonGuardar)
     this.integraService.postJsonResponse(
@@ -2002,6 +2022,7 @@ validarYGuardarFacturaGlobal(): void {
         PaymentForm: datosFormulario.PaymentForm,
         PaymentMethod: datosFormulario.PaymentMethod,
         Currency: "MXN",
+        Date: datosFormulario.Date,
         ExpeditionPlace: datosFormulario.ExpeditionPlace || '03800',
         GlobalInformation: {
           Periodicity: datosFormulario.Periodicity,
