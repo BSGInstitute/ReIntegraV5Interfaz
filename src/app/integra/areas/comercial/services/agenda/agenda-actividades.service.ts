@@ -785,7 +785,7 @@ export class AgendaActividadesService {
   }
   obtenerRN2(filtro: any) {
     this._agendaService.agendaInicializarService.gridRN2.loading = true;
-    let sub$ = this._integraService
+    let sub$ = this._integraReplicaService
       .postJsonResponse(
         `${constApiComercial.AgendaObtenerActividadFiltradaPorAsesorRN2}/6/${this._agendaService.areaTrabajo}`,
         JSON.stringify(filtro)
@@ -810,7 +810,7 @@ export class AgendaActividadesService {
   }
   obtenerRN2A(filtro: any) {
     this._agendaService.agendaInicializarService.gridRN2A.loading = true;
-    let sub$ = this._integraService
+    let sub$ = this._integraReplicaService
       .postJsonResponse(
         `${constApiComercial.AgendaObtenerActividadFiltradaPorAsesorRN2A}/53/${this._agendaService.areaTrabajo}`,
         JSON.stringify(filtro)
