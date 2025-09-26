@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { constApiComercial } from '@environments/constApi';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { AgendaService } from './agenda.service';
 import { BehaviorSubject, ReplaySubject, Subscription, Observable } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
@@ -39,6 +40,7 @@ import {
 export class AgendaActividadesService {
   constructor(
     private _integraService: IntegraService,
+    private _integraReplicaService: IntegraReplicaService,
     private _alertaService: AlertaService
   ) {}
 
@@ -783,7 +785,7 @@ export class AgendaActividadesService {
   }
   obtenerRN2(filtro: any) {
     this._agendaService.agendaInicializarService.gridRN2.loading = true;
-    let sub$ = this._integraService
+    let sub$ = this._integraReplicaService
       .postJsonResponse(
         `${constApiComercial.AgendaObtenerActividadFiltradaPorAsesorRN2}/6/${this._agendaService.areaTrabajo}`,
         JSON.stringify(filtro)
@@ -808,7 +810,7 @@ export class AgendaActividadesService {
   }
   obtenerRN2A(filtro: any) {
     this._agendaService.agendaInicializarService.gridRN2A.loading = true;
-    let sub$ = this._integraService
+    let sub$ = this._integraReplicaService
       .postJsonResponse(
         `${constApiComercial.AgendaObtenerActividadFiltradaPorAsesorRN2A}/53/${this._agendaService.areaTrabajo}`,
         JSON.stringify(filtro)
@@ -921,7 +923,7 @@ export class AgendaActividadesService {
         idPersonal = this._agendaService.idPersonal;
    }
     this._agendaService.agendaInicializarService.gridWhatsapp.loading = true;
-    let sub$ = this._integraService
+    let sub$ = this._integraReplicaService
       .getJsonResponse(
         `${constApiComercial.AgendaObtenerMensajesRecibidosComercial}/${idPersonal}`
       )

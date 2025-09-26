@@ -2,6 +2,7 @@ import { constApiComercial, constApiFinanzas, constApiOperaciones } from '@envir
 import { Injectable } from '@angular/core';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { AgendaOperacionesService } from './agenda-operaciones.service';
 import { ReplaySubject } from 'rxjs';
@@ -12,6 +13,7 @@ import { HttpResponse } from '@angular/common/http';
 export class AgendaInicializarOperacionesService {
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private alertaService: AlertaService
   ) {}
   public EsCoordinadora: boolean = true;
@@ -1815,7 +1817,7 @@ this.gridContestanCortan.getDataStateChance$().subscribe({
     }
     this.gridMensajesRecibidosWhatsApp.loading = true;
     // http://localhost:63048/api/WhatsAppMensajes/WhatsAppUltimoMensajeRecibidosPorOportunidad
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(
         `${constApiOperaciones.WhatsAppMensajeRecibidoWhatsAppUltimoMensajeRecibidosPorOportunidad}`,
         JSON.stringify(filtro)

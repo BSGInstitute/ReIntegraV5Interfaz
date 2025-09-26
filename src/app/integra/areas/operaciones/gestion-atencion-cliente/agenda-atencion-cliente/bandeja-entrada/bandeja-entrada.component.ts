@@ -1,6 +1,7 @@
 import { IComboBase1 } from './../../../../../../shared/models/interfaces/iglobal';
 import { IPlantillaMailingAgenda, IPlantillaMailing, IPlantillaEmailMandrill, IFiltroBandejaCorreo, ICorreoBody, IDescargarDocumento } from './../../../../comercial/models/interfaces/iagenda-bandeja-entrada';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { constApiOperaciones, constApiComercial } from '@environments/constApi';
 import { HttpResponse } from '@angular/common/http';
@@ -31,6 +32,7 @@ export class BandejaEntradaComponent implements OnInit {
     private modalService: NgbModal,
     private formBuilder: FormBuilder,
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private userService: UserService,
     private alertaService: AlertaService,
   ) { }
@@ -497,7 +499,7 @@ export class BandejaEntradaComponent implements OnInit {
 
     };
 
-    this.integraService
+    this.integraReplicaService
         .postJsonResponse(constApiComercial.CorreoObtenerCorreosEnviadosPorAsesor, filtro)
         .subscribe({
           next: (response: HttpResponse<any>) => {
