@@ -8,6 +8,7 @@ import { datePipeTransform } from '@shared/functions/date-pipe';
 import { Parametro } from '@shared/models/parametro';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,6 +21,7 @@ export class ReporteControlDocumentoComponent implements OnInit {
 
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     private alertService:AlertaService,
@@ -158,7 +160,7 @@ export class ReporteControlDocumentoComponent implements OnInit {
     dataForm.fechaInicio = this.checkedTemp=='fecha'?datePipeTransform(dataForm.fechaInicio ,'yyyy-MM-ddT00:00:00','en-US'):null,
     dataForm.fechaFin = this.checkedTemp=='fecha'?datePipeTransform(dataForm.fechaFin ,'yyyy-MM-ddT23:59:00','en-US'):null
     this.loader=true
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(constApiFinanzas.ObtenerReporteControlDocumentos,dataForm)
       .subscribe({
         next: (response) => {

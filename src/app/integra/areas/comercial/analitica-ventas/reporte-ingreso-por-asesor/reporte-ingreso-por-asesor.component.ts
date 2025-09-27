@@ -1,6 +1,7 @@
 import { DatosPersonal } from './../../../models/global/personal';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { constApiComercial } from '@environments/constApi';
@@ -34,6 +35,7 @@ import { IFiltro } from '../../models/interfaces/iagenda-informacion-actividad-o
 export class ReporteIngresoPorAsesorComponent implements OnInit {
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder
   ) {}
   loading: boolean = true;
@@ -232,7 +234,7 @@ export class ReporteIngresoPorAsesorComponent implements OnInit {
             periodoInicio: this.formFiltro.periodoInicio.toString(),
             tipoPeriodo: this.formFiltro.tipoPeriodo,
           };
-          this.integraService
+          this.integraReplicaService
             .postJsonResponse(
               constApiComercial.ReporteTasaConversionConsolidadaGenerarReporteGraficas,
               JSON.stringify(filtro)

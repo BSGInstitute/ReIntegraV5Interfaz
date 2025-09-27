@@ -8,6 +8,7 @@ import {
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { constApiComercial } from '@environments/constApi';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import {
@@ -126,6 +127,7 @@ export class ContactabilidadTresCxComponent implements OnInit {
 
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private alertaService: AlertaService,
     private formBuilder: FormBuilder,
     private userService: UserService
@@ -241,7 +243,7 @@ export class ContactabilidadTresCxComponent implements OnInit {
     this.gridTasasMinutos.loading = true;
     this.limpiarGrilla();
     this.flagfooter = false;
-    this.integraService
+    this.integraReplicaService
       .obtenerPorFiltro(
         constApiComercial.ReporteContactabilidadTresCxGenerarReportev2,
         param

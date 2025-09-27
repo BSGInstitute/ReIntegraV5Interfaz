@@ -49,6 +49,7 @@ import { TabComercial } from '@comercial/models/clases/tabsComercial';
 import { SharedService } from '@shared/services/shared.service';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { HttpResponse } from '@angular/common/http';
 import { constApiComercial } from '@environments/constApi';
 import { ResultadoBusquedaFicha } from '@integra/models/agenda';
@@ -99,6 +100,7 @@ export class AgendaComponent implements OnInit {
     private _sharedService: SharedService,
     private route: ActivatedRoute,
     private _integraService: IntegraService,
+    private _integraReplicaService: IntegraReplicaService,
     private _router: Router,
     private _ringoverSDKService: RingoverSDKService,
    
@@ -657,7 +659,7 @@ export class AgendaComponent implements OnInit {
       return;
     }
     this.loadingBusqueda = true;
-    this._integraService
+    this._integraReplicaService
       .postJsonResponse(
         constApiComercial.AgendaActividadBuscarFichaPorCelular,
         JSON.stringify(celularLimpio)
