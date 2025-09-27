@@ -2442,6 +2442,16 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
       arregloTemp.push(obj);
     }
 
+    faseTemporal = controlCambiodeFase.filter(
+      (item) => item.faseOrigen == 'Otros'
+    );
+    if (faseTemporal.length != 0) {
+      arregloTemp.push(faseTemporal[0]);
+    } else {
+      obj.faseOrigen = 'Otros';
+      arregloTemp.push(obj);
+    }
+
     // faseTemporal = controlCambiodeFase.filter(
     //   (item) => item.faseOrigen == 'BNC-1'
     // );
@@ -2468,6 +2478,10 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
       (arregloTemp[3].actividadesEjecutadas /
         arregloTemp[3].actividadesTotales) *
       100;
+    let contactabilidadOtros =
+      (arregloTemp[4].actividadesEjecutadas /
+        arregloTemp[4].actividadesTotales) *
+      100;
     // let contactabilidadBNC_1 =
     //   (arregloTemp[4].actividadesEjecutadas /
     //     arregloTemp[4].actividadesTotales) *
@@ -2480,6 +2494,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].actividadesEjecutadas,
         IP: arregloTemp[2].actividadesEjecutadas,
         PF: arregloTemp[3].actividadesEjecutadas || 0,
+        Otros: arregloTemp[4].actividadesEjecutadas || 0,
         // BNC_1: arregloTemp[4].actividadesEjecutadas || 0,
       },
       {
@@ -2488,6 +2503,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].actividadesProgramadasAutomaticas,
         IP: arregloTemp[2].actividadesProgramadasAutomaticas,
         PF: arregloTemp[3].actividadesProgramadasAutomaticas,
+        Otros: arregloTemp[4].actividadesProgramadasAutomaticas,
         // BNC_1: arregloTemp[4].actividadesProgramadasAutomaticas,
       },
       {
@@ -2496,6 +2512,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].actividadesProgramadasManuales,
         IP: arregloTemp[2].actividadesProgramadasManuales,
         PF: arregloTemp[3].actividadesProgramadasManuales,
+        Otros: arregloTemp[4].actividadesProgramadasManuales,
         // BNC_1: arregloTemp[4].actividadesProgramadasManuales,
       },
       {
@@ -2504,6 +2521,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].actividadesTotales,
         IP: arregloTemp[2].actividadesTotales,
         PF: arregloTemp[3].actividadesTotales,
+        Otros: arregloTemp[4].actividadesTotales,
         // BNC_1: arregloTemp[4].actividadesProgramadasManuales,
       },
       {
@@ -2520,6 +2538,9 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         PF: !isNaN(contactabilidadPF)
           ? `${contactabilidadPF.toFixed(0)}%`
           : '0%',
+        Otros: !isNaN(contactabilidadOtros)
+          ? `${contactabilidadOtros.toFixed(0)}%`
+          : '0%',
         // BNC_1: !isNaN(contactabilidadBNC_1)
         //   ? `${contactabilidadBNC_1.toFixed(0)}%`
         //   : '0%',
@@ -2530,6 +2551,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: (arregloTemp[1].minPromedioEjecutadas / 60).toFixed(1),
         IP: (arregloTemp[2].minPromedioEjecutadas / 60).toFixed(1),
         PF: (arregloTemp[3].minPromedioEjecutadas / 60).toFixed(1),
+        Otros: (arregloTemp[4].minPromedioEjecutadas / 60).toFixed(1),
         // BNC_1: (arregloTemp[4].minPromedioEjecutadas / 60).toFixed(1),
       },
       {
@@ -2538,6 +2560,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: (arregloTemp[1].minPromedioprogramadasmanuales / 60).toFixed(1),
         IP: (arregloTemp[2].minPromedioprogramadasmanuales / 60).toFixed(1),
         PF: (arregloTemp[3].minPromedioprogramadasmanuales / 60).toFixed(1),
+        Otros: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
         // BNC_1: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
       },
       {
@@ -2547,6 +2570,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].numIntentoLlamadasPromedio.toFixed(1),
         IP: arregloTemp[2].numIntentoLlamadasPromedio.toFixed(1),
         PF: arregloTemp[3].numIntentoLlamadasPromedio.toFixed(1),
+        Otros: arregloTemp[4].numIntentoLlamadasPromedio.toFixed(1),
         // BNC_1: arregloTemp[4].numIntentoLlamadasPromedio.toFixed(1),
       },
       {
@@ -2556,6 +2580,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].totalTimbradoAutomatica,
         IP: arregloTemp[2].totalTimbradoAutomatica,
         PF: arregloTemp[3].totalTimbradoAutomatica,
+        Otros: arregloTemp[4].totalTimbradoAutomatica,
         // BNC_1: arregloTemp[4].totalTimbradoAutomatica,
       },
       {
@@ -2565,6 +2590,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].tiempoUtil == null?'0 %':arregloTemp[1].tiempoUtil+' %',
         IP: arregloTemp[2].tiempoUtil == null?'0 %':arregloTemp[2].tiempoUtil+' %',
         PF: arregloTemp[3].tiempoUtil == null?'0 %':arregloTemp[3].tiempoUtil+' %',
+        Otros: arregloTemp[4].tiempoUtil == null?'0 %':arregloTemp[4].tiempoUtil+' %',
         // BNC_1: arregloTemp[4].totalTimbradoAutomatica,
       },
     ];
@@ -2577,6 +2603,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].programadasEjecutadasSinLlamada,
         IP: arregloTemp[2].programadasEjecutadasSinLlamada,
         PF: arregloTemp[3].programadasEjecutadasSinLlamada,
+        Otros: arregloTemp[4].programadasEjecutadasSinLlamada,
         // BNC_1: arregloTemp[4].programadasEjecutadasSinLlamada,
       },
       {
@@ -2585,6 +2612,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].programadasAutomaticasSinLlamada,
         IP: arregloTemp[2].programadasAutomaticasSinLlamada,
         PF: arregloTemp[3].programadasAutomaticasSinLlamada,
+        Otros: arregloTemp[4].programadasAutomaticasSinLlamada,
         // BNC_1: arregloTemp[4].programadasEjecutadasSinLlamada,
       },
       {
@@ -2593,6 +2621,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IT: arregloTemp[1].programadasManualesSinLlamada,
         IP: arregloTemp[2].programadasManualesSinLlamada,
         PF: arregloTemp[3].programadasManualesSinLlamada,
+        Otros: arregloTemp[4].programadasManualesSinLlamada,
         // BNC_1: arregloTemp[4].programadasEjecutadasSinLlamada,
       },
     ]
@@ -2651,6 +2680,16 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         obj.faseOrigen = 'PF';
         arregloTemp.push(obj);
       }
+
+      faseTemporal = controlCambiodeFase.filter(
+        (item) => item.faseOrigen == 'Otros'
+      );
+      if (faseTemporal.length != 0) {
+        arregloTemp.push(faseTemporal[0]);
+      } else {
+        obj.faseOrigen = 'Otros';
+        arregloTemp.push(obj);
+      }
   
       // faseTemporal = controlCambiodeFase.filter(
       //   (item) => item.faseOrigen == 'BNC-1'
@@ -2678,6 +2717,10 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         (arregloTemp[3].actividadesEjecutadas /
           arregloTemp[3].actividadesTotales) *
         100;
+      let contactabilidadOtros =
+        (arregloTemp[4].actividadesEjecutadas /
+          arregloTemp[4].actividadesTotales) *
+        100;
       // let contactabilidadBNC_1 =
       //   (arregloTemp[4].actividadesEjecutadas /
       //     arregloTemp[4].actividadesTotales) *
@@ -2691,6 +2734,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
           IT: arregloTemp[1].programadasEjecutadasOtroMedio,
           IP: arregloTemp[2].programadasEjecutadasOtroMedio,
           PF: arregloTemp[3].programadasEjecutadasOtroMedio,
+          Otros: arregloTemp[4].programadasEjecutadasOtroMedio,
           // BNC_1: arregloTemp[4].programadasEjecutadasSinLlamada,
         },
         {
@@ -2699,6 +2743,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
           IT: arregloTemp[1].programadasAutomaticasOtroMedio,
           IP: arregloTemp[2].programadasAutomaticasOtroMedio,
           PF: arregloTemp[3].programadasAutomaticasOtroMedio,
+          Otros: arregloTemp[4].programadasAutomaticasOtroMedio,
           // BNC_1: arregloTemp[4].programadasEjecutadasSinLlamada,
         },
         {
@@ -2707,6 +2752,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
           IT: arregloTemp[1].programadasManualesOtroMedio,
           IP: arregloTemp[2].programadasManualesOtroMedio,
           PF: arregloTemp[3].programadasManualesOtroMedio,
+          Otros: arregloTemp[4].programadasManualesOtroMedio,
           // BNC_1: arregloTemp[4].programadasEjecutadasSinLlamada,
         },
       ]
