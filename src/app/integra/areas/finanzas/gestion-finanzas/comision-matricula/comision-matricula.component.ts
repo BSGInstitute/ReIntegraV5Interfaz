@@ -7,6 +7,7 @@ import { ComboAsesoresVenta, ReporteComisionMatriculaGrilla } from '@integra/mod
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { datePipeTransform } from '@shared/functions/date-pipe';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,6 +19,7 @@ export class ComsionMatriculaComponent implements OnInit {
 
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     public finanzasService:FinanzasServiceService
@@ -134,7 +136,7 @@ export class ComsionMatriculaComponent implements OnInit {
             idEstadoComision: this.estado.value,
             idSubEstadoComision: this.subestado.value==null?0:this.subestado.value
           }
-          this.integraService.obtenerPorFiltro(constApiFinanzas.ReporteComisionPorMatriculaGenerarReporte,dataEnvio)
+          this.integraReplicaService.obtenerPorFiltro(constApiFinanzas.ReporteComisionPorMatriculaGenerarReporte,dataEnvio)
           .subscribe({
             next: (response:HttpResponse<ReporteComisionMatriculaGrilla[]>) => {
               this.loader=false

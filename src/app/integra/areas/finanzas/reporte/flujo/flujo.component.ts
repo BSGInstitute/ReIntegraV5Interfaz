@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { datePipeTransform } from '@shared/functions/date-pipe';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import * as FileSaver from 'file-saver';
 
 @Component({
@@ -19,6 +20,7 @@ export class FlujoComponent implements OnInit {
 
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     private alertService:AlertaService,
@@ -76,7 +78,7 @@ export class FlujoComponent implements OnInit {
         fechaInicio: datePipeTransform(dataFiltro.fechaInicio ,'yyyy-MM-ddT00:00:00','en-US'),
         fechaFin: datePipeTransform(dataFiltro.fechaFin ,'yyyy-MM-ddT23:59:00','en-US'),
       }
-      this.integraService
+      this.integraReplicaService
       .postJsonResponse(constApiFinanzas.ObtenerReporteFlujos,envio)
       .subscribe({
         next: (response) => {

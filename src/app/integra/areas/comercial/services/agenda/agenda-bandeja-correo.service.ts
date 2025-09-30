@@ -8,6 +8,7 @@ import { constApiComercial } from '@environments/constApi';
 import { Injectable } from '@angular/core';
 import { AgendaService } from './agenda.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { IFiltroBandejaCorreo } from '@comercial/models/interfaces/iagenda-bandeja-entrada';
 import { AlertaService } from '@shared/services/alerta.service';
@@ -22,6 +23,7 @@ import { AlertaService } from '@shared/services/alerta.service';
 export class AgendaBandejaCorreoService {
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private alertaService: AlertaService
   ) {}
 
@@ -193,7 +195,7 @@ export class AgendaBandejaCorreoService {
     filtro.idAsesor = idPersonal;
     this.gridBandejaEnviados.loading = true;
 
-    let sub$ = this.integraService
+    let sub$ = this.integraReplicaService
       .postJsonResponse(
         constApiComercial.CorreoObtenerCorreosEnviadosPorAsesor,
         JSON.stringify(filtro)

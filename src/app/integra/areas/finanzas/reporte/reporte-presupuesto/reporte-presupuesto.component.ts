@@ -11,6 +11,7 @@ import { SelectAllCheckboxState } from '@progress/kendo-angular-grid';
 import { datePipeTransform } from '@shared/functions/date-pipe';
 import { Parametro } from '@shared/models/parametro';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import Swal from 'sweetalert2';
 import {  process} from "@progress/kendo-data-query";
 
@@ -24,6 +25,7 @@ export class ReportePresupuestoComponent implements OnInit {
 
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     public finanzasService: FinanzasServiceService
   ) { }
@@ -299,7 +301,7 @@ export class ReportePresupuestoComponent implements OnInit {
       dataForm.idsPeridoProgramacionOriginal=dataForm.idsPeridoProgramacionOriginal.toString()
     else  dataForm.idsPeridoProgramacionOriginal=null
     this.loader=true
-    this.integraService.postJsonResponse(constApiFinanzas.ObtenerReportePresupuestoFinanzas,dataForm).subscribe({
+    this.integraReplicaService.postJsonResponse(constApiFinanzas.ObtenerReportePresupuestoFinanzas,dataForm).subscribe({
       next: (response: HttpResponse<any[]>) => {
           response.body.forEach((e:any)=>{
             e.fechaLimiteFur=e.fechaLimiteFur!=null?new Date(e.fechaLimiteFur):e.fechaLimiteFur

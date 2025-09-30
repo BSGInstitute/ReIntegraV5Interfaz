@@ -316,7 +316,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
    * Obtiene los combos para el reporte
    */
   obtenerCombosCambioFase() {
-    this.integraService
+    this.integraReplicaService
       .getJsonResponse(constApiComercial.ReporteCambioDeFaseObtenerCombo)
       .subscribe({
         next: (resp: HttpResponse<IComboReporteCambioFase>) => {
@@ -2956,7 +2956,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
     //     },
     //   });
     //Cambio a produccion
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(
         constApiComercial.ReporteCambioDeFaseTresCxGenerarAcumuladoTiempoContactoEfectivo,
         JSON.stringify(this.filtroForm)
@@ -3412,7 +3412,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
    */
   obtenerControlOportunidadPredictiva() {
     this.gridControlOportunidadPredictiva.loading = true;
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(
         constApiComercial.ReporteCambioDeFaseTresCxObtenerControlOportunidadPredictiva,
         JSON.stringify(this.filtroForm)

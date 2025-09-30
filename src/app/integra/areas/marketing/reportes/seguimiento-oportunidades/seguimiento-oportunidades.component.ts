@@ -9,6 +9,7 @@ import {
   constApiComercial,
 } from '@environments/constApi';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 
@@ -20,6 +21,7 @@ import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 export class SeguimientoOportunidadesComponent implements OnInit {
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     private dialog: MatDialog
@@ -91,7 +93,7 @@ export class SeguimientoOportunidadesComponent implements OnInit {
         FaseOportunidadDestino: [] as any ,
       }
 
-      this.integraService
+      this.integraReplicaService
       .postJsonResponse(
         constApiMarketing.GenerarReporteFechaCreacionRegistro, jsonEnvio
       )

@@ -9,6 +9,7 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { IntegraService } from '@shared/services/integra.service';
+import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { AlertaService } from '@shared/services/alerta.service';
 import { constApiComercial } from '@environments/constApi';
 import { datePipeTransform, getFechaFin, getFechaInicio } from '@shared/functions/date-pipe';
@@ -61,6 +62,7 @@ import { ComboPersonalVentas } from '@shared/models/interfaces/ipersonal';
 export class TasaConversionConsolidadaComponent implements OnInit {
   constructor(
     private integraService: IntegraService,
+    private integraReplicaService: IntegraReplicaService,
     private formBuilder: FormBuilder,
     private alertaService: AlertaService,
     private userService: UserService
@@ -504,7 +506,7 @@ export class TasaConversionConsolidadaComponent implements OnInit {
     this.loading = true;
     this.btnBuscarDisabled = true;
     // this.generarReporteTemp(); //!Solo para realizar pruebas
-    this.integraService
+    this.integraReplicaService
       .postJsonResponse(
         constApiComercial.ReporteTasaConversionConsolidadaGenerarReporte,
         JSON.stringify(filtro)
