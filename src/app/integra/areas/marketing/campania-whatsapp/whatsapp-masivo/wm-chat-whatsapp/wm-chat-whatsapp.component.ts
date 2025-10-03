@@ -105,6 +105,8 @@ export class WmChatWhatsAppComponent implements OnInit {
     { label: '7 días', value: 7 },
   ];
   abrirModalFlag = false;
+  originalValues: { [key: string]: any } = {};
+  mostrarOriginales: boolean = false;
 
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
@@ -692,18 +694,6 @@ export class WmChatWhatsAppComponent implements OnInit {
   }
 
   GuardarCambiosAlumno() {
-    if (this.idPais === 51) {
-      // if (this.dni && !/^\d{8}$/.test(this.dni)) {
-      //   // Verifica que el DNI tenga exactamente 8 números solo si no está vacío
-      //   Swal.fire(
-      //     'Error!',
-      //     'El DNI debe ser un número de 8 caracteres para Perú.',
-      //     'error'
-      //   );
-      //   this.loader = false;
-      //   return;
-      // }
-    }
     this.loader = true;
     var jsonEnvio = {
       id: this.alumno.id,
@@ -774,6 +764,9 @@ export class WmChatWhatsAppComponent implements OnInit {
           }
         },
       });
+
+    this.originalValues = {};
+    this.mostrarOriginales = false;
   }
 
   verificaSemaforo(dniValue: string) {
@@ -1847,50 +1840,44 @@ export class WmChatWhatsAppComponent implements OnInit {
       )
       .subscribe({
         next: (response: HttpResponse<any>) => {
-          console.log(response);
           this.onEdit();
+          this.mostrarOriginales = true;
 
-          if (this.formAlumno.get('nombre1').value == '') {
-            this.formAlumno.get('nombre1').setValue(response.body.nombres);
-          }
-          if (this.formAlumno.get('apellidoPaterno').value == '') {
-            this.formAlumno
-              .get('apellidoPaterno')
-              .setValue(response.body.apellidos);
-          }
-          if (
-            this.formAlumno.get('areaFormacion').value == 0 ||
-            this.formAlumno.get('areaFormacion').value == 153 ||
-            this.formAlumno.get('areaFormacion').value == 3
-          ) {
-            this.formAlumno
-              .get('areaFormacion')
-              .setValue(response.body.area_De_Formacion.id);
-          }
-          if (
-            this.formAlumno.get('cargo').value == 0 ||
-            this.formAlumno.get('cargo').value == 24
-          ) {
-            this.formAlumno.get('cargo').setValue(response.body.cargo.id);
-          }
-          if (
-            this.formAlumno.get('areaTrabajo').value == 0 ||
-            this.formAlumno.get('areaTrabajo').value == 27 ||
-            this.formAlumno.get('areaTrabajo').value == 29
-          ) {
-            this.formAlumno
-              .get('areaTrabajo')
-              .setValue(response.body.area_De_Trabajo.id);
-          }
-          if (
-            this.formAlumno.get('industria').value == 0 ||
-            this.formAlumno.get('industria').value == 22 ||
-            this.formAlumno.get('industria').value == 48
-          ) {
-            this.formAlumno
-              .get('industria')
-              .setValue(response.body.industria.id);
-          }
+          const campos = {
+            nombre1: response.body.nombres,
+            apellidoPaterno: response.body.apellidos,
+            areaFormacion: response.body.area_De_Formacion.id,
+            cargo: response.body.cargo.id,
+            areaTrabajo: response.body.area_De_Trabajo.id,
+            industria: response.body.industria.id,
+          } as const;
+
+          type CampoKey = keyof typeof campos;
+
+          (Object.keys(campos) as CampoKey[]).forEach((key) => {
+            const control = this.formAlumno.get(key);
+
+            if (!control) {
+              console.warn(`El control '${key}' no existe en el FormGroup.`);
+              return;
+            }
+
+            const nuevoValor = campos[key];
+            const anterior = control.value;
+
+            // Guardamos siempre el valor anterior para mostrar "Antes"
+            this.originalValues[key] = anterior;
+
+            // Validamos: si es string vacío, no actualizamos
+            if (typeof nuevoValor === 'string') {
+              if (nuevoValor.trim() !== '') {
+                control.setValue(nuevoValor);
+              }
+            } else {
+              // Para valores numéricos o IDs
+              control.setValue(nuevoValor);
+            }
+          });
 
           this.cdr.detectChanges();
           this.alertaService.swalFireOptions({
@@ -1911,6 +1898,13 @@ export class WmChatWhatsAppComponent implements OnInit {
           console.error('Error al extraer registros: ', error);
         },
       });
+  }
+
+  getNombreDesdeLista(
+    lista: { id: number; nombre: string }[],
+    id: number
+  ): string {
+    return lista.find((item) => item.id === id)?.nombre ?? 'Desconocido';
   }
 
   emitirCapturarRegistrosIA() {
