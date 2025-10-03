@@ -38,6 +38,7 @@ import {
 import { IMensajesWhatsapp } from '@operaciones/models/interfaces/ihistorial-mensaje-recibido';
 import { WhatsAppMensajeArchivo } from '@marketing/whatsapp-Facebook-masivo/whatsapp-facebook-oportunidad/whatsapp-facebook-oportunidad.component';
 import { WhatsappFacebookService } from '@marketing/services/whatsapp-facebook.service';
+import { el } from 'date-fns/locale';
 
 interface DataDialog {
   chatPorCelular: ChatWhatsAppMarketingPorCelular[];
@@ -215,6 +216,7 @@ export class WmChatWhatsAppComponent implements OnInit {
   modalArchivoRef: NgbModalRef;
   dragOver: boolean = false;
   loaderChatWhatsapp: boolean = false;
+  indexPanelAbierto: number = -1;
 
   ngOnInit(): void {
     this.loader = true;
@@ -226,6 +228,11 @@ export class WmChatWhatsAppComponent implements OnInit {
       this.AsignacionWhatsapp();
       this.obtenerChatWhatsAppMarketingPorCelular();
       this.obtenerAsesor();
+      this.mostrarModalMotivoDerivacion(
+        this.data.dataItem.requiereDerivacion,
+        this.data.dataItem.estadoInteraccion,
+        this.data.dataItem.mensajeParaAsesor
+      );
     } else if (this.data.chatPorCelular != null) {
       if (this.data.chatPorCelular.length > 0) {
         this.celularAlumno = this.data.chatPorCelular[0].celularUM;
@@ -243,6 +250,111 @@ export class WmChatWhatsAppComponent implements OnInit {
     this.formExtraccionRegistros = this.formBuilder.group({
       rangoExtraccion: [null, Validators.required],
     });
+  }
+
+  mostrarModalMotivoDerivacion(
+    requiereDerivacion: boolean,
+    estadoInteraccion: string,
+    mensajeParaAsesor: string
+  ) {
+    if (requiereDerivacion) {
+      Swal.fire({
+        text: mensajeParaAsesor,
+        confirmButtonText: 'OK',
+      }).then((result) => {
+        // Si el perfil esta completo, se abre el panel del alumno
+        if (result.isConfirmed && estadoInteraccion.toLowerCase() === 'fin') {
+          this.indexPanelAbierto = 0;
+          const alumno = this.alumnosPorCelular[0];
+          this.onExpandedChange(true, alumno);
+
+          if (this.alumnosPorCelular[0].idAlumno > 0) {
+            setTimeout(() => {
+              this.onEdit();
+              this.ObtenerDatosExtraidosInteraccionAutomatica();
+            });
+          } else {
+            this.ObtenerDatosExtraidosInteraccionAutomatica();
+          }
+        }
+      });
+    }
+  }
+
+  ObtenerDatosExtraidosInteraccionAutomatica() {
+    this.loader = true;
+    this.integraService
+      .obtener(
+        `${WHATSAPP_MENSAJE_ENVIADO.ObtenerDatosExtraidosInteraccionAutomatica}/${this.celularAlumno}`
+      )
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          const datosExtraidos = response.body.datos_extraidos;
+
+          if (
+            this.formAlumno.get('nombre1').value == '' &&
+            datosExtraidos.nombre != null
+          ) {
+            this.formAlumno.get('nombre1').setValue(datosExtraidos.nombre);
+            console.log('in nombre1');
+          }
+
+          if (
+            this.formAlumno.get('apellidoPaterno').value == '' &&
+            datosExtraidos.apellido != null
+          ) {
+            this.formAlumno
+              .get('apellidoPaterno')
+              .setValue(datosExtraidos.apellido);
+          }
+
+          if (
+            (this.formAlumno.get('areaFormacion').value == 0 ||
+              this.formAlumno.get('areaFormacion').value == 153 ||
+              this.formAlumno.get('areaFormacion').value == 3) &&
+            datosExtraidos.idAFormacion != null
+          ) {
+            this.formAlumno
+              .get('areaFormacion')
+              .setValue(datosExtraidos.idAFormacion);
+          }
+
+          if (
+            (this.formAlumno.get('cargo').value == 0 ||
+              this.formAlumno.get('cargo').value == 24) &&
+            datosExtraidos.idCargo != null
+          ) {
+            this.formAlumno.get('cargo').setValue(datosExtraidos.idCargo);
+          }
+
+          if (
+            (this.formAlumno.get('areaTrabajo').value == 0 ||
+              this.formAlumno.get('areaTrabajo').value == 27 ||
+              this.formAlumno.get('areaTrabajo').value == 29) &&
+            datosExtraidos.idATrabajo != null
+          ) {
+            this.formAlumno
+              .get('areaTrabajo')
+              .setValue(datosExtraidos.idATrabajo);
+          }
+
+          if (
+            (this.formAlumno.get('industria').value == 0 ||
+              this.formAlumno.get('industria').value == 22 ||
+              this.formAlumno.get('industria').value == 48) &&
+            datosExtraidos.idIndustria != null
+          ) {
+            this.formAlumno
+              .get('industria')
+              .setValue(datosExtraidos.idIndustria);
+          }
+
+          this.loader = false;
+        },
+        error: (error) => {
+          this.loader = false;
+        },
+      });
   }
 
   ngAfterViewInit() {
@@ -613,6 +725,21 @@ export class WmChatWhatsAppComponent implements OnInit {
       archivado: true,
     };
 
+    if (this.data?.dataItem?.requiereDerivacion) {
+      this.integraService
+        .postJsonResponse(
+          `${constApiMarketing.ValidarGuardadoDatosInteraccionAutomatica}/${this.celularAlumno}`,
+          null
+        )
+        .subscribe({
+          next: (response: HttpResponse<any>) => {
+            console.log('Validacion: ', response);
+          },
+          error: (error) => {
+            console.log(error);
+          },
+        });
+    }
     this.integraService
       .postJsonResponse(constApiMarketing.ActualizarAlumnoWhatsapp, jsonEnvio)
       .subscribe({
@@ -1792,5 +1919,62 @@ export class WmChatWhatsAppComponent implements OnInit {
     setTimeout(() => {
       this.abrirModalFlag = false;
     }, 100);
+  }
+
+  desactivarInteraccionIA() {
+    Swal.fire({
+      title:
+        '¿Desea desactivar la interacción automática del Asistente Whatsapp?',
+      icon: 'warning',
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Desactivar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loader = true;
+
+        // Buscar el idCampaniaGeneralDetalleWhatsApp más reciente que sea distinto de 0
+        const ultimaCampania = this.historialAlumno.find(
+          (item: any) => item.idCampaniaGeneralDetalleWhatsApp !== 0
+        );
+
+        if (ultimaCampania) {
+          const idCampania = ultimaCampania.idCampaniaGeneralDetalleWhatsApp;
+          this.integraService
+            .postJsonResponse(
+              `${constApiMarketing.DesactivarInteraccionAutomaticaWhatsapp}/${this.celularAlumno}/${idCampania}`,
+              null
+            )
+            .subscribe({
+              next: (response: HttpResponse<any>) => {
+                Swal.fire({
+                  title: response.body.descripcion,
+                  icon: 'success',
+                });
+                this.loader = false;
+                console.log(response);
+              },
+              error: (error) => {
+                this.loader = false;
+                console.error(
+                  'Error al desactivar la interacipon automática:',
+                  error
+                );
+                Swal.fire({
+                  title: 'Error al desactivar la interacipon automática',
+                  icon: 'error',
+                });
+              },
+            });
+        } else {
+          Swal.fire({
+            title: 'No se encontró una campaña válida.',
+            icon: 'error',
+          });
+          this.loader = false;
+        }
+      }
+    });
   }
 }

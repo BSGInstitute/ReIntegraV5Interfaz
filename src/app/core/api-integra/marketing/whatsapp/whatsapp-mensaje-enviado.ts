@@ -14,6 +14,8 @@ export const WHATSAPP_MENSAJE_ENVIADO = {
     '/WhatsAppMensajeEnviado/ObtenerPersonalOportunidad',
   ObtenerDatosAlumnoWhatsApp:
     '/WhatsAppMensajeEnviado/ObtenerDatosAlumnoWhatsApp',
+  ObtenerDatosExtraidosInteraccionAutomatica:
+    '/WhatsAppMensajeEnviado/ObtenerDatosExtraidosInteraccionAutomatica',
   ArchivarChatMasivo: '/WhatsAppMensajeEnviado/ArchivarChatMasivo',
   DesuscribirChatMasivo: '/WhatsAppMensajeEnviado/DesuscribirChatMasivo',
 };

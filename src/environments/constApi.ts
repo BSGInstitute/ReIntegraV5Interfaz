@@ -2309,6 +2309,8 @@ export const constApiMarketing = {
   ObtenerIdAsesorActual: "/WhatsAppMensajeEnviado/ObtenerIdAsesorActual",
   ObtenerModeloPredictivoPorAlumnoYPrograma: "/WhatsAppMensajeEnviado/ObtenerModeloPredictivoPorAlumnoYPrograma",
   CapturarRegistrosModeloIA: "/WhatsAppMensajeEnviado/CapturarRegistrosModeloIA",
+  DesactivarInteraccionAutomaticaWhatsapp: "/WhatsAppMensajeEnviado/DesactivarInteraccionAutomaticaWhatsapp",
+  ValidarGuardadoDatosInteraccionAutomatica: "/WhatsAppMensajeEnviado/ValidarGuardadoDatosInteraccionAutomatica",
 
 
 
