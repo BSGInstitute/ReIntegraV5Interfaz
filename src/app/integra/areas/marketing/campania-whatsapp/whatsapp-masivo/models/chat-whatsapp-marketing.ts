@@ -14,6 +14,10 @@ export interface ChatWhatsAppMarketing {
   fecha: string;
   pais: string;
   rango?: string | null;
+  estadoInteraccion?: string | null;
+  requiereDerivacion?: boolean | null;
+  mensajeParaAsesor?: string | null;
+  tipoMensajeDetectado?: string | null;
 }
 
 export interface ChatWhatsAppMarketingPorCelular {

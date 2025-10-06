@@ -80,14 +80,20 @@ loader = false;
     const input = event.target as HTMLInputElement;
     let value = input.value || '';
 
-    // 1. Eliminar tildes
-    value = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    // 2. Convertir a mayúsculas
-    value = value.toUpperCase();
-    // 3. Actualizar el valor del control del formulario
-    form.get(controlName)?.setValue(value, { emitEvent: false });
+    const accentMap: { [key: string]: string } = {
+      'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
+      'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+      'ü': 'u', 'Ü': 'U'
+    };
+    let processedValue = '';
+    for (const char of value) {
+      processedValue += accentMap[char] || char;
+    }
 
-    input.value = value;
+    processedValue = processedValue.toUpperCase();
+
+    form.get(controlName)?.setValue(processedValue, { emitEvent: false });
+    input.value = processedValue;
   }
 
   // Metodo para eliminar los espacios antes, después y mas de 2 en medio del contenido

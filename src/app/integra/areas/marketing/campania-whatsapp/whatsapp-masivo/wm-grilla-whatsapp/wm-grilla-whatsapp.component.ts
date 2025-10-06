@@ -269,4 +269,18 @@ export class WmGrillaWhatsappComponent implements OnInit {
       }
     });
   }
+
+  getColorClaseTipoMensaje(tipo: string): string {
+    switch (tipo) {
+      case 'Interesado':
+        return 'color-amarillo';
+      case 'No Interesado':
+      case 'Spam':
+        return 'color-rojo';
+      case 'Complejo':
+        return 'color-verde';
+      default:
+        return ''; // sin estilo si no coincide
+    }
+  }
 }
