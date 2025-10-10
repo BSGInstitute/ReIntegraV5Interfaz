@@ -231,7 +231,7 @@ export class SeguimientoOportunidadesTresCxComponent implements OnInit {
     const idPersonal = this.userService.userData.idPersonal;
     let asesores: number[] = [];
     let filtroPersonal = [
-      213,5276,5895,6007,5878,5895,201,6044,5726,5739,109,4659,6108
+      213,5276,5895,6007,5878,5895,201,6044,5726,5739,109,4659,6108,135
     ];
 
     if (datosFormFiltro.asesores.length == 0) {

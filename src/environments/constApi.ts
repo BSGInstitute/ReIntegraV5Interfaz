@@ -2309,6 +2309,8 @@ export const constApiMarketing = {
   ObtenerIdAsesorActual: "/WhatsAppMensajeEnviado/ObtenerIdAsesorActual",
   ObtenerModeloPredictivoPorAlumnoYPrograma: "/WhatsAppMensajeEnviado/ObtenerModeloPredictivoPorAlumnoYPrograma",
   CapturarRegistrosModeloIA: "/WhatsAppMensajeEnviado/CapturarRegistrosModeloIA",
+  DesactivarInteraccionAutomaticaWhatsapp: "/WhatsAppMensajeEnviado/DesactivarInteraccionAutomaticaWhatsapp",
+  ValidarGuardadoDatosInteraccionAutomatica: "/WhatsAppMensajeEnviado/ValidarGuardadoDatosInteraccionAutomatica",
 
 
 
@@ -4586,6 +4588,7 @@ export const constApiFinanzas = {
   EnviarFacturasMasivas: "/FacturamaApi/EnviarFacturasMasivas",
   ListarPendientesEnvio: "/FacturamaApi/ListarPendientesEnvio",
   EnviarFacturasMasivasLote: "/FacturamaApi/EnviarFacturasMasivasLote",
+  EliminarFacturasPendientesFacturama: "/FacturamaApi/EliminarFacturasPendientesFacturama",
   GuardarFacturaGlobalInterna: "/FacturamaApi/GuardarFacturaGlobalInterna",
   ObtenerIdFacturaGlobal: "/FacturamaApi/ObtenerIdFacturaGlobal",
   EnviarFacturaGlobalApi: "/FacturamaApi/EnviarFacturaGlobalApi",

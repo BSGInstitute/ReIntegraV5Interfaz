@@ -958,10 +958,10 @@ export class InformacionClienteComponent implements OnInit {
           //solo en peru se añade el 51 delante mas
           if (this.DatosOportunidad.anexo3CX == '1208') {
             //Yesica Palomino
-            prefijo = '72351';
+            prefijo = '050151';
           } else if (this.DatosOportunidad.anexo3CX == '1225') {
             //Douglas Henriquez
-            prefijo = '70551';
+            prefijo = '050151';
           } else if (this.DatosOportunidad.anexo3CX == '1206') {
             //Jorge Alonso Peña Jauregui (1206)
             prefijo = '050151';//prefijo = '72551';
@@ -994,7 +994,7 @@ export class InformacionClienteComponent implements OnInit {
             prefijo = '050151';//prefijo = '70751';
           } else if (this.DatosOportunidad.anexo3CX == '1325') {
             //Paola Lozano
-            prefijo = '70851';
+            prefijo = '050151';//prefijo = '70851';
           } else if (this.DatosOportunidad.anexo3CX == '') {
             //
             prefijo = '050151';//prefijo = '050151';//prefijo = '70951';
