@@ -98,7 +98,7 @@ export class FormularioLandingPageComponent implements OnInit {
     IdProgramaGeneral: ['', [Validators.required]],
     IdPlantilla: ['', [Validators.required]],
     IdCategoriaOrigen: ['', [Validators.required]],
-    Cabecera: [],
+    Cabecera: [''],
     Titulo: ['',
     [
       Validators.required,

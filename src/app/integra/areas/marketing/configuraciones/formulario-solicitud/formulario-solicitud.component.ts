@@ -7,7 +7,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { constApiMarketing } from '@environments/constApi';
+import { constApiMarketing, constApiPlanificacion } from '@environments/constApi';
 import {
   campoContacto,
   FormularioSolicitud,
@@ -758,4 +758,67 @@ export class FormularioSolicitudComponent implements OnInit {
       size: 'lg',
     });
   }
+
+  industriaCombo: any[] = [];
+  cargoCombo: any[] = [];
+  areaTrabajoCombo: any[] = [];
+  areaFormacionCombo: any[] = [];
+
+  // Obtener Industria Combo
+  obtenerIndustriaCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.IndustriaObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.industriaCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError("Error al cargar Industria");
+        },
+      });
+  }
+
+  // Obtener Cargo Combo
+  obtenerCargoCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.CargoObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.cargoCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError("Error al cargar Cargo");
+        },
+      });
+  }
+
+  // Obtener Area Trabajo Combo
+  obtenerAreaTrabajoCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.AreaTrabajoObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.areaTrabajoCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError("Error al cargar Area de Trabajo");
+        },
+      });
+  }
+
+  // Obtener Area Formacion Combo
+  obtenerAreaFormacionCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.AreaFormacionObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.areaFormacionCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError("Error al cargar Area de Formación");
+        },
+      });
+  }
+
+
 }
