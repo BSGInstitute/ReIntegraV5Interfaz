@@ -135,15 +135,23 @@ export class RegistroArchivoStorageComponent implements OnInit {
  }
 
     let contenedor = this.formRegistroArchivoStorage.get('idContenedor').value;
+    let subcontenedor = this.formRegistroArchivoStorage.get('idSubContenedor').value;
     this.btnGuardarDisable = true;
     let rutaCompleta: string = '';
     let rutaBlob: string = '';
     let formData = new FormData();
     console.log(this.formRegistroArchivoStorage.getRawValue());
     let dataFormulario = this.formRegistroArchivoStorage.getRawValue();
-    dataFormulario.idSubContenedor =  this.registroArchivoCombos.listadoContenedores
+    if(subcontenedor!=null || subcontenedor!=0){
+      dataFormulario.idSubContenedor =  this.registroArchivoCombos.listadoSubContenedores
+              .find(s => s.idSubcontenedor == subcontenedor)
+              ?.idSubcontenedor ?? null;
+    }
+    else{
+      dataFormulario.idSubContenedor =  this.registroArchivoCombos.listadoContenedores
         .find(s => s.idContenedor == contenedor)
         ?.idSubcontenedor ?? null;
+    }
     this.integraService
       .obtenerPorPathParams(
         constApiMarketing.UrlSubContenedorObtenerRutaSubContenedor,
