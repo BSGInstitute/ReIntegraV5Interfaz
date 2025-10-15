@@ -367,6 +367,7 @@ export class FormularioSolicitudComponent implements OnInit {
           siempre: e.siempre,
           inteligente: e.inteligente,
           probabilidad: e.probabilidad,
+          opciones: this.esCampoConOpciones(e.nombre) ? e.opciones : undefined
         });
       });
 
@@ -375,7 +376,6 @@ export class FormularioSolicitudComponent implements OnInit {
         campo: campos,
       };
 
-      console.log(jsonEnvio);
       this.integraService
         .insertar(
           constApiMarketing.FormularioSolicitudInsertarFormularioSolicitud,
@@ -438,6 +438,7 @@ export class FormularioSolicitudComponent implements OnInit {
           siempre: e.siempre,
           inteligente: e.inteligente,
           probabilidad: e.probabilidad,
+          opciones: this.esCampoConOpciones(e.nombre) ? e.opciones : undefined
         });
       });
 
@@ -446,7 +447,6 @@ export class FormularioSolicitudComponent implements OnInit {
         campo: campos,
       };
 
-      console.log(jsonEnvio);
       this.integraService
         .actualizar(
           constApiMarketing.FormularioSolicitudActualizarFormularioSolicitud,
@@ -699,6 +699,10 @@ export class FormularioSolicitudComponent implements OnInit {
     this.dataEditTemporal = dataItem;
     // alert(`se abrio el modal ${JSON.stringify(data)}`);
     this.isNew = isNew;
+    this.obtenerIndustriaCombo();
+    this.obtenerCargoCombo();
+    this.obtenerAreaTrabajoCombo();
+    this.obtenerAreaFormacionCombo();
     if (!isNew) {
       this.gridCampoFormulario.dataItemEditTemp = dataItem;
       this.integraService
@@ -707,11 +711,18 @@ export class FormularioSolicitudComponent implements OnInit {
         )
         .subscribe({
           next: (response: any) => {
-            console.log(response);
             this.gridCampoFormulario.data = response.body;
             let idsCampos: number[] = [];
             response.body.forEach((element: any) => {
-              idsCampos.push(element.idCampoContacto);
+            element.opciones = element.opciones || 'all';
+
+            if (element.opciones !== 'all') {
+              const idsSeleccionados = element.opciones.split(',').map((id: string) => parseInt(id, 10));
+              const combo = this.obtenerComboPorNombre(element.nombre);
+              element.opcionesSeleccionadas = combo.filter((item: any) => idsSeleccionados.includes(item.id));
+            } else {
+              element.opcionesSeleccionadas = [];
+            }
             });
 
             const formularioRespuesta = {
@@ -748,6 +759,8 @@ export class FormularioSolicitudComponent implements OnInit {
           siempre: false,
           inteligente: false,
           probabilidad: false,
+          opciones: 'all',
+          opcionesSeleccionadas: []
         };
         this.gridCampoFormulario.data.push(campoNuevo);
       });
@@ -820,5 +833,35 @@ export class FormularioSolicitudComponent implements OnInit {
       });
   }
 
+  esCampoConOpciones(nombre: string): boolean {
+    return ['industria', 'area trabajo', 'cargo', 'area formacion'].includes(
+      nombre.toLowerCase()
+    );
+  }
 
+  // Retorna el combo correspondiente al nombre
+  obtenerComboPorNombre(nombre: string): any[] {
+    switch (nombre.toLowerCase()) {
+      case 'industria':
+        return this.industriaCombo;
+      case 'cargo':
+        return this.cargoCombo;
+      case 'area trabajo':
+        return this.areaTrabajoCombo;
+      case 'area formacion':
+        return this.areaFormacionCombo;
+      default:
+        return [];
+    }
+  }
+
+  // Actualiza el valor del campo "opciones" (como string)
+  onOpcionesChange(dataItem: any): void {
+    if (!dataItem.opcionesSeleccionadas || dataItem.opcionesSeleccionadas.length === 0) {
+      dataItem.opciones = 'all';
+    } else {
+      const ids = dataItem.opcionesSeleccionadas.map((opt: any) => opt.id);
+      dataItem.opciones = ids.join(',');
+    }
+  }
 }
