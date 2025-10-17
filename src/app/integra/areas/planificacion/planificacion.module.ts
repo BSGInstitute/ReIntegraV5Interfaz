@@ -123,6 +123,7 @@ import { ConfigurarGrabacionesOnlineComponent } from './configuracion-portal-web
 import { PgTestimonioComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-testimonio/pg-testimonio.component';
 import { PgValoracionesComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-valoraciones/pg-valoraciones.component';
 import { ModalConfiguracionReproduccionDescargaComponent } from './configuracion-portal-web/video-evaluaciones-estructura-programa/modal-configuracion-reproduccion-descarga/modal-configuracion-reproduccion-descarga.component';
+import { PgProblemasClienteV2Component } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-problemas-cliente-v2/pg-problemas-cliente-v2.component';
 
 
 @NgModule({
@@ -245,6 +246,7 @@ import { ModalConfiguracionReproduccionDescargaComponent } from './configuracion
     PgTestimonioComponent,
     PgValoracionesComponent,
     ModalConfiguracionReproduccionDescargaComponent,
+    PgProblemasClienteV2Component,
 
 
   ],
