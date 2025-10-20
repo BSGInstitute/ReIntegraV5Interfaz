@@ -3813,6 +3813,20 @@ export const constApiPlanificacion = {
   ReporteEncuestaGuardarTestimonio: "/ReporteEncuestasSincronico/GuardarTestimonio",
   ReporteEncuestaActualizarValoracionVisiblePw: "/ReporteEncuestasSincronico/ActualizarValoracionVisiblePw",
 
+ //ProgramaGeneralProblemaFactor
+  ProgramaGeneralProblemaFactorObtener:"/ProgramaGeneralProblemaFactor/Obtener",
+  ProgramaGeneralProblemaFactorInsertar:"/ProgramaGeneralProblemaFactor/Insertar",
+  ProgramaGeneralProblemaFactorActualizar:"/ProgramaGeneralProblemaFactor/Actualizar",
+  ProgramaGeneralProblemaFactorEliminar:"/ProgramaGeneralProblemaFactor/Eliminar",
+  ProgramageneralproblemaFactorDetalleObtener:"/ProgramageneralproblemaFactorDetalle/Obtener",
+  ProgramageneralproblemaFactorDetalleInsertar:"/ProgramageneralproblemaFactorDetalle/Insertar",
+  ProgramageneralproblemaFactorDetalleActualizar:"/ProgramageneralproblemaFactorDetalle/Actualizar",
+  ProgramageneralproblemaFactorDetalleEliminar:"/ProgramageneralproblemaFactorDetalle/Eliminar",
+  ProgramageneralproblemaFactorSolucionObtener:"/ProgramageneralproblemaFactorSolucion/Obtener",
+  ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
+  ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",
+  ProgramageneralproblemaFactorSolucionEliminar:"/ProgramageneralproblemaFactorSolucion/Eliminar",
+ 
 };
 
 export const constApiFinanzas = {

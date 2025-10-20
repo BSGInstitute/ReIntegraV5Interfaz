@@ -78,6 +78,7 @@ import { ReporteEncuestaDocenteComponent } from './reportes/reporte-encuesta-doc
 
 import { ConfigurarGrabacionesOnlineComponent } from './configuracion-portal-web/configurar-grabaciones-online/configurar-grabaciones-online/configurar-grabaciones-online.component';
 import { BsgCelularesComponent } from './maestros/bsgcelulares/bsgcelulares.component';
+import { ProblemaClienteConfiguracionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/problema-cliente-configuracion.component';
 
 const routes: Routes = [
   {
@@ -275,7 +276,8 @@ const routes: Routes = [
       { path: 'ReporteEncuestaIntermediaSincronico', component: ReporteEncuestaIntermediaSincronicoComponent,},
       { path: 'ReporteEncuestaFinalSincronico', component: ReporteEncuestaFinalSincronicoComponent,},
       { path: 'ReporteEncuestaDocente', component:ReporteEncuestaDocenteComponent,},
-      { path: 'GrabacionesClasesOnline', component: ConfigurarGrabacionesOnlineComponent}
+      { path: 'GrabacionesClasesOnline', component: ConfigurarGrabacionesOnlineComponent},
+      { path: 'ProblemaClienteConfiguracion', component: ProblemaClienteConfiguracionComponent}
     ],
   },
 ];

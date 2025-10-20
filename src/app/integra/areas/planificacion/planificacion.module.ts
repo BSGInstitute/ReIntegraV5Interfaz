@@ -124,6 +124,11 @@ import { PgTestimonioComponent } from './configuracion-programas-capacitacion/pr
 import { PgValoracionesComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-valoraciones/pg-valoraciones.component';
 import { ModalConfiguracionReproduccionDescargaComponent } from './configuracion-portal-web/video-evaluaciones-estructura-programa/modal-configuracion-reproduccion-descarga/modal-configuracion-reproduccion-descarga.component';
 import { PgProblemasClienteV2Component } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-problemas-cliente-v2/pg-problemas-cliente-v2.component';
+import { ProblemaClienteConfiguracionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/problema-cliente-configuracion.component';
+import { ProgramaGeneralProblemaFactorComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor/programa-general-problema-factor.component';
+import { ProgramaGeneralProblemaFactorDetalleComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-detalle/programa-general-problema-factor-detalle.component';
+import { ProgramaGeneralProblemaFactorSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-solucion/programa-general-problema-factor-solucion.component';
+import { ProgramaGeneralProblemaFactorSubSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-sub-solucion/programa-general-problema-factor-sub-solucion.component';
 
 
 @NgModule({
@@ -247,6 +252,11 @@ import { PgProblemasClienteV2Component } from './configuracion-programas-capacit
     PgValoracionesComponent,
     ModalConfiguracionReproduccionDescargaComponent,
     PgProblemasClienteV2Component,
+    ProblemaClienteConfiguracionComponent,
+    ProgramaGeneralProblemaFactorComponent,
+    ProgramaGeneralProblemaFactorDetalleComponent,
+    ProgramaGeneralProblemaFactorSolucionComponent,
+    ProgramaGeneralProblemaFactorSubSolucionComponent,
 
 
   ],
