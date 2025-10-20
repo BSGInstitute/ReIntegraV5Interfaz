@@ -41,8 +41,9 @@ export class ProgramaGeneralProblemaFactorSolucionComponent implements OnInit {
       { text: 'All', value: 'all' },
     ];
     formProblemaFactorSolucion: FormGroup = this._formBuilder.group({
-      nombre: [null, Validators.required],
+      descripcion: [null, Validators.required],
       titulo: [null],
+      subtitulo: [null],
     });
   
     ngOnInit(): void {
