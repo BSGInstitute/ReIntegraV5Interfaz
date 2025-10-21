@@ -1118,7 +1118,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
     }
   }
   AbrirModalCaso3(idOportunidad: number) {
-    console.log('ID Oportunidad seleccionado:', idOportunidad);
     this.loader = true;
     this.esFlujoDesdeAbrirModalCaso3 = true;
     this.esDesdeAbrirModalCaso3 = true;
@@ -1298,43 +1297,21 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
             this.aptitud = respuesta.apto;
             this.mensaje = respuesta.mensaje;
 
-            if (
-              this.probabilidadNivel === null ||
-              this.probabilidadNivel === ''
-            ) {
-              this.alertaService.mensajeWarning(
-                'El Centro de Costo no tiene Probabilidad'
-              );
-              this.loader = false;
-              return;
-            }
-            if (this.probabilidadNivel === 'Muy Alta') {
-              this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.mostrarTercerModal = true;
+            this.asesorSeleccionado = this.idAsesorActual;
+            this.esComboDisabled = this.idAsesorActual !== 125;
+            this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
 
-              this.mostrarTercerModal = true;
+            this.alertaService.mensajeExitosomkt(
+              'El Centro de Costo se Cargo Exitosamente'
+            );
 
-              this.asesorSeleccionado = this.idAsesorActual;
-              this.esComboDisabled = this.idAsesorActual !== 125;
-              this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
-              this.alertaService.mensajeExitosomkt(
-                'El Centro de Costo se Cargo Exitosamente'
-              );
-
-              setTimeout(() => {
-                document
-                  .getElementById('idModalCaso3')
-                  ?.scrollIntoView({ behavior: 'smooth' });
-              }, 180);
-            } else if (
-              this.probabilidadNivel === 'Media' ||
-              this.probabilidadNivel === 'Alta'
-            ) {
-              Swal.fire(
-                'Notificación',
-                `La probabilidad es ${this.probabilidadNivel}. No es apta para ser trabajada.`,
-                'warning'
-              );
-            }
+            setTimeout(() => {
+              document
+                .getElementById('idModalCaso3')
+                ?.scrollIntoView({ behavior: 'smooth' });
+            }, 180);
 
             this.cdRef.detectChanges();
           } else {

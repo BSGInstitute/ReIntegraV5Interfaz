@@ -371,7 +371,6 @@ export class WmChatWhatsAppComponent implements OnInit {
   onEdit() {
     this.editar = true;
     this.formAlumno.enable();
-    console.log('first', this.formAlumno);
   }
   onCancel() {
     this.editar = false;
@@ -1118,7 +1117,6 @@ export class WmChatWhatsAppComponent implements OnInit {
         constApiMarketing.ObtenerProgramaPorOportunidadWhatsapp,
         JSON.stringify(idOportunidad)
       )
-
       .subscribe({
         next: (response: any) => {
           if (response.body && response.body.length > 0) {
@@ -1138,7 +1136,7 @@ export class WmChatWhatsAppComponent implements OnInit {
                 idArea,
                 idPGeneral
               );
-              this.esDesdeActualizarCentroCosto = false; //
+              this.esDesdeActualizarCentroCosto = false;
             } else if (this.esDesdeAbrirModalCaso3) {
               this.ValidarProbabilidadOportunidadesModal3(
                 idOportunidad,
@@ -1200,8 +1198,6 @@ export class WmChatWhatsAppComponent implements OnInit {
               this.esBotonAsignarDisabled = false;
             }
             if (this.probabilidadNivel === 'Muy Alta') {
-              //  const idAsesorActual = response.body.idAsesor || 0;
-              //const idAsesorActual = this.idAsesorActual || response.body.idAsesor;
               const idAsesorActual = this.idAsesorActual || 125;
 
               this.esComboDisabled = idAsesorActual !== 125;
@@ -1594,43 +1590,21 @@ export class WmChatWhatsAppComponent implements OnInit {
             this.aptitud = respuesta.apto;
             this.mensaje = respuesta.mensaje;
 
-            if (
-              this.probabilidadNivel === null ||
-              this.probabilidadNivel === ''
-            ) {
-              this.alertaService.mensajeWarning(
-                'El Centro de Costo no tiene Probabilidad'
-              );
-              this.loader = false;
-              return;
-            }
-            if (this.probabilidadNivel === 'Muy Alta') {
-              this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.mostrarTercerModal = true;
+            this.asesorSeleccionado = this.idAsesorActual;
+            this.esComboDisabled = this.idAsesorActual !== 125;
+            this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
 
-              this.mostrarTercerModal = true;
+            this.alertaService.mensajeExitosomkt(
+              'El Centro de Costo se Cargo Exitosamente'
+            );
 
-              this.asesorSeleccionado = this.idAsesorActual;
-              this.esComboDisabled = this.idAsesorActual !== 125;
-              this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
-              this.alertaService.mensajeExitosomkt(
-                'El Centro de Costo se Cargo Exitosamente'
-              );
-
-              setTimeout(() => {
-                document
-                  .getElementById('idModalCaso3')
-                  ?.scrollIntoView({ behavior: 'smooth' });
-              }, 180);
-            } else if (
-              this.probabilidadNivel === 'Media' ||
-              this.probabilidadNivel === 'Alta'
-            ) {
-              Swal.fire(
-                'Notificación',
-                `La probabilidad es ${this.probabilidadNivel}. No es apta para ser trabajada.`,
-                'warning'
-              );
-            }
+            setTimeout(() => {
+              document
+                .getElementById('idModalCaso3')
+                ?.scrollIntoView({ behavior: 'smooth' });
+            }, 180);
 
             this.cdRef.detectChanges();
           } else {
@@ -1712,7 +1686,6 @@ export class WmChatWhatsAppComponent implements OnInit {
     let formData = new FormData();
     let documentoValido = ['application/pdf'];
     let imagenValida = ['image/png', 'image/jpeg'];
-    console.log('Adjuntando archivo');
     let waType = '';
     if (documentoValido.includes(this.archivoTemporal.type)) {
       waType = 'document';

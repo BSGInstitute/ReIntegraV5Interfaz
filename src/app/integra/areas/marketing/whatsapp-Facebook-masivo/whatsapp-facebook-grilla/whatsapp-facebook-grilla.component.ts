@@ -29,7 +29,6 @@ export class WhatsappFacebookGrillaComponent implements OnInit {
   selectedRowIndex: number | null = null;
 
   ngOnInit(): void {
-    console.log(this.tab, this.dia);
     this.obtenerGrillass();
   }
 
