@@ -1,1 +1,318 @@
-<p>programa-general-problema-factor-sub-solucion works!</p>
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">Registro de Sub Soluciones</h2>
+        </div>
+
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              [kendoGridBinding]="padres"
+              [loading]="griProblemaFactorSubSolucion.loading"
+              [resizable]="true"
+              filterable="menu"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{ pageSizes: [5, 10, 20] }"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="abrirModal(modalProblemaFactorSubSolucion, true)"
+                >
+                  Nuevo (grilla)
+                </button>
+              </ng-template>
+
+              <kendo-grid-column field="solucion" title="Solución" [width]="320"></kendo-grid-column>
+              <kendo-grid-column field="orden" title="Orden" [width]="120"></kendo-grid-column>
+
+              <kendo-grid-command-column title="Opciones" [width]="160">
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <button
+                    kendoButton
+                    themeColor="warning"
+                    class="me-1"
+                    ngbTooltip="Editar"
+                    (click)="abrirModal(modalProblemaFactorSubSolucion, false, dataItem)"
+                  >
+                    <span class="k-icon k-i-pencil"></span>
+                  </button>
+                  <button
+                    kendoButton
+                    themeColor="error"
+                    ngbTooltip="Eliminar padre + hijos"
+                    (click)="eliminarPadre(dataItem)"
+                  >
+                    <span class="k-icon k-i-x"></span>
+                  </button>
+                </ng-template>
+              </kendo-grid-command-column>
+
+        
+              <ng-template kendoGridDetailTemplate let-dataItem>
+                <kendo-grid
+                  [kendoGridBinding]="getChildren(dataItem)"
+                  [resizable]="true"
+                  [sortable]="true"
+                  [pageable]="false"
+                  [scrollable]="'none'"
+                  class="ms-3"
+                >
+                  <kendo-grid-column field="solucion" title="Sub-solución" [width]="420"></kendo-grid-column>
+                  <kendo-grid-column field="orden" title="Orden" [width]="120"></kendo-grid-column>
+                  <kendo-grid-command-column title="Acciones" [width]="120">
+                    <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                      <button
+                        kendoButton
+                        themeColor="error"
+                        ngbTooltip="Eliminar hijo"
+                        (click)="eliminarHijo(dataItem)"
+                      >
+                        <span class="k-icon k-i-x"></span>
+                      </button>
+                    </ng-template>
+                  </kendo-grid-command-column>
+                </kendo-grid>
+              </ng-template>
+
+              <ng-template kendoPagerTemplate>
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons [buttonCount]="10"></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="obtenerSubSoluciones()"
+                  ></button>
+                </div>
+              </ng-template>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ----------------------- Modal: Crear/Actualizar ---------------------- -->
+<ng-template #modalProblemaFactorSubSolucion let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0">Registro de Sub Soluciones</h1>
+  </div>
+
+  <div class="modal-body p-3 overflow-auto">
+
+    <div class="row align-items-center mb-3">
+      <div class="col-auto">
+        <label class="col-form-label mb-0"><b>Solución:</b></label>
+      </div>
+      <div class="col">
+        <kendo-dropdownlist
+          [data]="dataComboSoluciones"
+          [filterable]="true"
+          [valuePrimitive]="true"
+          textField="subTitulo"
+          valueField="id"
+          [defaultItem]="defaultSolucionItem"
+          [(ngModel)]="selectedSolucionId"
+          (valueChange)="onSolucionChange($event)" 
+          [ngModelOptions]="{standalone: true}"
+        >
+        </kendo-dropdownlist>
+      </div>
+      <div class="col-auto">
+        <button
+          kendoButton
+          icon="plus"
+          themeColor="primary"
+          class="ms-2"
+          (click)="addRootRow()"
+          [disabled]="!selectedSolucionId || enProcesoSolicitud"
+        >
+          Agregar padre
+        </button>
+        <button
+          kendoButton
+          icon="trash"
+          fillMode="flat"
+          class="ms-2"
+          (click)="clearDraft()"
+          [disabled]="draftParents.length === 0 || enProcesoSolicitud"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <kendo-grid
+      #draftGrid
+      [kendoGridBinding]="draftParents"
+      [resizable]="true"
+      [navigable]="true"
+      [pageable]="false"
+      [scrollable]="'none'"
+    >
+      <kendo-grid-column field="nivel" title="Nivel" [width]="80">
+        <ng-template kendoGridCellTemplate>1</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="orden" title="Orden" [width]="120">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <kendo-numerictextbox
+            [(ngModel)]="dataItem.orden"
+            (valueChange)="onParentOrderChange(dataItem, $event)"
+            [ngModelOptions]="{standalone: true}"
+            [format]="'n0'"
+            [min]="1"
+            [readonly]="enProcesoSolicitud"
+          ></kendo-numerictextbox>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="solucion" title="Solución" [width]="520">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <kendo-textbox
+            [(ngModel)]="dataItem.solucion"
+            [ngModelOptions]="{standalone: true}"
+            class="w-100"
+            [readonly]="enProcesoSolicitud"
+          ></kendo-textbox>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-command-column title="Acciones" [width]="200">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+          <button
+            kendoButton
+            icon="plus"
+            (click)="addChildRow(dataItem); expandParentRow(rowIndex)"
+            [disabled]="enProcesoSolicitud"
+            ngbTooltip="Agregar hijo"
+          ></button>
+          <button
+            kendoButton
+            icon="trash"
+            fillMode="flat"
+            themeColor="error"
+            (click)="removeRow(dataItem)"
+            class="ms-1"
+            [disabled]="enProcesoSolicitud"
+            ngbTooltip="Quitar padre"
+          ></button>
+        </ng-template>
+      </kendo-grid-command-column>
+
+      <ng-template kendoGridDetailTemplate let-dataItem let-rowIndex="rowIndex">
+        <div class="ms-3">
+          <div class="mb-2">
+            <button
+              kendoButton
+              icon="plus"
+              (click)="addChildRow(dataItem); expandParentRow(rowIndex)"
+              [disabled]="enProcesoSolicitud"
+            >
+              Agregar hijo
+            </button>
+          </div>
+
+          <kendo-grid
+            [kendoGridBinding]="getDraftChildrenByParent(dataItem)"
+            [resizable]="true"
+            [pageable]="false"
+            [scrollable]="'none'"
+          >
+            <kendo-grid-column field="nivel" title="Nivel" [width]="80">
+              <ng-template kendoGridCellTemplate>2</ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column field="orden" title="Orden" [width]="120">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <kendo-numerictextbox
+                  [value]="dataItem.orden"
+                  [readonly]="true"
+                  [format]="'n0'"
+                ></kendo-numerictextbox>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column field="solucion" title="Sub-solución" [width]="460">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-container *ngIf="dataItem.isEditing || dataItem.isNew; else viewChild">
+                  <kendo-textbox
+                    [(ngModel)]="dataItem.solucion"
+                    [ngModelOptions]="{standalone: true}"
+                    class="w-100"
+                    [readonly]="enProcesoSolicitud"
+                  ></kendo-textbox>
+                </ng-container>
+                <ng-template #viewChild>
+                  {{ dataItem.solucion }}
+                </ng-template>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-command-column title="Acciones" [width]="160">
+              <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <ng-container *ngIf="dataItem.isEditing || dataItem.isNew; else editBtns">
+                  <button kendoButton icon="check" themeColor="primary" (click)="finishEditChild(dataItem)" [disabled]="enProcesoSolicitud"></button>
+                  <button kendoButton icon="close" fillMode="flat" class="ms-1" (click)="cancelEditChild(dataItem)" [disabled]="enProcesoSolicitud"></button>
+                </ng-container>
+                <ng-template #editBtns>
+                  <button kendoButton icon="pencil" (click)="editChild(dataItem)" [disabled]="enProcesoSolicitud" ngbTooltip="Editar"></button>
+                  <button
+                    kendoButton
+                    icon="trash"
+                    fillMode="flat"
+                    themeColor="error"
+                    (click)="removeRow(dataItem)"
+                    class="ms-1"
+                    [disabled]="enProcesoSolicitud"
+                    ngbTooltip="Quitar hijo (draft)"
+                  ></button>
+                </ng-template>
+              </ng-template>
+            </kendo-grid-command-column>
+          </kendo-grid>
+        </div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud || draft.length===0 || hasDraftErrors(true)"
+      (click)="guardarDraft()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud || draft.length===0 || hasDraftErrors(false)"
+      (click)="actualizarDraft()"
+    >
+      Actualizar
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')" [disabled]="enProcesoSolicitud">
+      Cancelar
+    </button>
+  </div>
+
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>

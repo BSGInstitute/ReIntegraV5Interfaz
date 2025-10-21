@@ -13,7 +13,7 @@ interface formProgramaGeneralProblemaFactorSolucion {
   id: number;
   descripcion: string;
   titulo: string;
-  subtitulo: string;
+  subTitulo: string;
 }
 @Component({
   selector: 'app-programa-general-problema-factor-solucion',
@@ -43,7 +43,7 @@ export class ProgramaGeneralProblemaFactorSolucionComponent implements OnInit {
     formProblemaFactorSolucion: FormGroup = this._formBuilder.group({
       descripcion: [null, Validators.required],
       titulo: [null],
-      subtitulo: [null],
+      subTitulo: [null],
     });
   
     ngOnInit(): void {
@@ -98,7 +98,7 @@ export class ProgramaGeneralProblemaFactorSolucionComponent implements OnInit {
     asignarValoresToForm(dataItem: ProgramaGeneralProblemaFactorSolucion) {
       this.formProblemaFactorSolucion.get('descripcion')!.setValue(dataItem.descripcion);
       this.formProblemaFactorSolucion.get('titulo')!.setValue(dataItem.titulo);
-      this.formProblemaFactorSolucion.get('subtitulo')!.setValue(dataItem.subtitulo);
+      this.formProblemaFactorSolucion.get('subTitulo')!.setValue(dataItem.subTitulo);
     }
     /* --------------------------------Procesar Categoria Pregunta ------------------------------ */
   
@@ -107,7 +107,7 @@ export class ProgramaGeneralProblemaFactorSolucionComponent implements OnInit {
         id: this.isNew ? 0 : this.dataItemTemp.id,
         descripcion: this.ProblemaSolucionForm.descripcion,
         titulo: this.ProblemaSolucionForm.titulo,
-        subtitulo: this.ProblemaSolucionForm.subtitulo,
+        subTitulo: this.ProblemaSolucionForm.subTitulo,
       };
       return problemaSolucion;
     }

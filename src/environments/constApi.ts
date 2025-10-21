@@ -3826,7 +3826,11 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
   ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",
   ProgramageneralproblemaFactorSolucionEliminar:"/ProgramageneralproblemaFactorSolucion/Eliminar",
- 
+  ProgramageneralproblemaFactorSubSolucionObtener:"/ProgramageneralproblemaFactorSubSolucion/Obtener",
+  ProgramageneralproblemaFactorSubSolucionInsertar:"/ProgramageneralproblemaFactorSubSolucion/Insertar",
+  ProgramageneralproblemaFactorSubSolucionActualizar:"/ProgramageneralproblemaFactorSubSolucion/Actualizar",
+  ProgramageneralproblemaFactorSubSolucionEliminar:"/ProgramageneralproblemaFactorSubSolucion/Eliminar",
+  ProgramageneralproblemaFactorSubSolucionObtenerPorIdProgramaGeneralProblemaFactorSolucion:"/ProgramageneralproblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion",
 };
 
 export const constApiFinanzas = {
