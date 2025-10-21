@@ -6,7 +6,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import Swal from 'sweetalert2';
-import { PageSizeItem, GridComponent } from '@progress/kendo-angular-grid';
+import { PageSizeItem, GridComponent, RowArgs } from '@progress/kendo-angular-grid';
 import { constApiPlanificacion } from '@environments/constApi';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -16,10 +16,10 @@ interface ComboBase { id: number; subTitulo: string; }
 
 interface SubSolucionDTO {
   id: number;
-  idProgramaGeneralProblemaFactorSolucion: number | null; 
+  idProgramaGeneralProblemaFactorSolucion: number | null;
   solucion: string;
-  orden: number; 
-  nivel: number;  
+  orden: number;
+  nivel: number;
 }
 
 interface DraftRow {
@@ -32,6 +32,7 @@ interface DraftRow {
   parentTempId?: string;
   isNew?: boolean;
   isEditing?: boolean;
+  expanded?: boolean; // <- controla si el padre está expandido
 }
 
 @Component({
@@ -79,7 +80,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
 
   ngOnInit(): void {
     this.obtenerSubSoluciones();
-    this.obtener();  
+    this.obtener();
     this.configurarGrid();
   }
 
@@ -115,7 +116,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       });
   }
 
-
   getChildren(padre: SubSolucionDTO): SubSolucionDTO[] {
     const all = (this.griProblemaFactorSubSolucion.data as SubSolucionDTO[]) ?? [];
     return all.filter(x =>
@@ -145,7 +145,8 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
         idSolucion: this.selectedSolucionId,
         solucion: dataItem.solucion,
         orden: dataItem.orden,
-        nivel: 1
+        nivel: 1,
+        expanded: false
       };
       this.draft.push(padre);
       if (dataItem.id) this.initialExistingIds.add(dataItem.id);
@@ -179,7 +180,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     });
   }
 
-
   onSolucionChange(id: number | null): void {
     this.selectedSolucionId = id;
     this.draft = [];
@@ -187,7 +187,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
 
     if (!id) return;
 
-    this.enProcesoSolicitud = true; 
+    this.enProcesoSolicitud = true;
 
     this._integraService
       .getJsonResponse(
@@ -196,17 +196,13 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       .subscribe({
         next: (resp: HttpResponse<SubSolucionDTO[]>) => {
           const data = resp.body ?? [];
-
           if (data.length === 0) {
-
             this.isNew = true;
             this.enProcesoSolicitud = false;
             return;
           }
 
-    
           this.isNew = false;
-
 
           const padres = data.filter(x => x.nivel === 1);
           padres.forEach(p => {
@@ -217,12 +213,12 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
               idSolucion: id,
               solucion: p.solucion,
               orden: p.orden,
-              nivel: 1
+              nivel: 1,
+              expanded: true
             };
             this.draft.push(padre);
             if (p.id) this.initialExistingIds.add(p.id);
 
-         
             data
               .filter(h => h.nivel === 2 && h.orden === p.orden && h.idProgramaGeneralProblemaFactorSolucion === id)
               .forEach(h => {
@@ -251,6 +247,19 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       });
   }
 
+  /* expand/collapse controlado por propiedad */
+  public isDetailExpanded = (args: RowArgs): boolean =>
+  !!(args.dataItem as DraftRow).expanded;
+
+  public onDetailExpand(args: RowArgs): void {
+    (args.dataItem as DraftRow).expanded = true;
+  }
+
+  public onDetailCollapse(args: RowArgs): void {
+    (args.dataItem as DraftRow).expanded = false;
+  }
+
+  /* ---------- Draft helpers ---------- */
   getDraftChildrenByParent(parent: DraftRow): DraftRow[] {
     return this.draft.filter(r => r.nivel === 2 && r.parentTempId === parent.tempId);
   }
@@ -267,7 +276,8 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       solucion: '',
       orden: this.nextParentOrder(),
       nivel: 1,
-      isNew: true
+      isNew: true,
+      expanded: false
     });
   }
 
@@ -282,6 +292,11 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       isNew: true,
       isEditing: true
     });
+  }
+
+  onAddChildAndExpand(parent: DraftRow): void {
+    this.addChildRow(parent);
+    parent.expanded = true;
   }
 
   editChild(child: DraftRow): void { child.isEditing = true; }
@@ -329,8 +344,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     this.getDraftChildrenByParent(parent).forEach(h => (h.orden = parent.orden));
   }
 
-  expandParentRow(rowIndex: number): void { this.draftGrid?.expandRow(rowIndex); }
-
   /* ---------- Guardar (batch insert) ---------- */
   guardarDraft(): void {
     if (this.hasDraftErrors(true)) {
@@ -352,7 +365,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
 
     this._integraService
       .postJsonResponse(
-        constApiPlanificacion.ProgramageneralproblemaFactorSubSolucionInsertar, // List<DTO>
+        constApiPlanificacion.ProgramageneralproblemaFactorSubSolucionInsertar,
         JSON.stringify(payload)
       )
       .subscribe({
@@ -398,7 +411,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
 
     const calls = [];
 
-
     if (updatePayload.length) {
       calls.push(
         this._integraService.putJsonResponse(
@@ -407,7 +419,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
         ).pipe(catchError(err => of(err)))
       );
     }
-    // Nuevos
+
     if (createPayload.length) {
       calls.push(
         this._integraService.postJsonResponse(
@@ -416,7 +428,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
         ).pipe(catchError(err => of(err)))
       );
     }
-    // Eliminados
+
     if (toDeleteIds.length) {
       calls.push(
         forkJoin(
@@ -450,8 +462,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     this._alertaService.notificationWarning(mensaje);
   }
 
-  /* ---------- Eliminar (grilla principal) ---------- */
-
+  /* ---------- Eliminar desde grilla principal ---------- */
   eliminarPadre(padre: SubSolucionDTO): void {
     const hijos = this.getChildren(padre);
     const ids = [padre.id, ...hijos.map(h => h.id)].filter(Boolean) as number[];
@@ -520,7 +531,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     this._alertaService.notificationWarning(mensaje);
   }
 }
-
 
 function rid(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);

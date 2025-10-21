@@ -54,7 +54,7 @@
                 </ng-template>
               </kendo-grid-command-column>
 
-        
+              <!-- detalle: hijos existentes -->
               <ng-template kendoGridDetailTemplate let-dataItem>
                 <kendo-grid
                   [kendoGridBinding]="getChildren(dataItem)"
@@ -113,7 +113,6 @@
   </div>
 
   <div class="modal-body p-3 overflow-auto">
-
     <div class="row align-items-center mb-3">
       <div class="col-auto">
         <label class="col-form-label mb-0"><b>Solución:</b></label>
@@ -127,7 +126,7 @@
           valueField="id"
           [defaultItem]="defaultSolucionItem"
           [(ngModel)]="selectedSolucionId"
-          (valueChange)="onSolucionChange($event)" 
+          (valueChange)="onSolucionChange($event)"
           [ngModelOptions]="{standalone: true}"
         >
         </kendo-dropdownlist>
@@ -156,6 +155,7 @@
       </div>
     </div>
 
+    <!-- Grilla de PADRES (draft) -->
     <kendo-grid
       #draftGrid
       [kendoGridBinding]="draftParents"
@@ -163,6 +163,9 @@
       [navigable]="true"
       [pageable]="false"
       [scrollable]="'none'"
+      [isDetailExpanded]="isDetailExpanded"
+      (detailExpand)="onDetailExpand($event)"
+      (detailCollapse)="onDetailCollapse($event)"
     >
       <kendo-grid-column field="nivel" title="Nivel" [width]="80">
         <ng-template kendoGridCellTemplate>1</ng-template>
@@ -181,23 +184,26 @@
         </ng-template>
       </kendo-grid-column>
 
+      <!-- textarea para Solución (padre) -->
       <kendo-grid-column field="solucion" title="Solución" [width]="520">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <kendo-textbox
+          <kendo-textarea
             [(ngModel)]="dataItem.solucion"
             [ngModelOptions]="{standalone: true}"
             class="w-100"
+            [rows]="3"
+            [autoSize]="true"
             [readonly]="enProcesoSolicitud"
-          ></kendo-textbox>
+          ></kendo-textarea>
         </ng-template>
       </kendo-grid-column>
 
       <kendo-grid-command-column title="Acciones" [width]="200">
-        <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
           <button
             kendoButton
             icon="plus"
-            (click)="addChildRow(dataItem); expandParentRow(rowIndex)"
+            (click)="onAddChildAndExpand(dataItem)"
             [disabled]="enProcesoSolicitud"
             ngbTooltip="Agregar hijo"
           ></button>
@@ -214,13 +220,14 @@
         </ng-template>
       </kendo-grid-command-column>
 
-      <ng-template kendoGridDetailTemplate let-dataItem let-rowIndex="rowIndex">
+      <!-- Subgrilla de HIJOS (draft) -->
+      <ng-template kendoGridDetailTemplate let-dataItem>
         <div class="ms-3">
           <div class="mb-2">
             <button
               kendoButton
               icon="plus"
-              (click)="addChildRow(dataItem); expandParentRow(rowIndex)"
+              (click)="onAddChildAndExpand(dataItem)"
               [disabled]="enProcesoSolicitud"
             >
               Agregar hijo
@@ -239,26 +246,25 @@
 
             <kendo-grid-column field="orden" title="Orden" [width]="120">
               <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-numerictextbox
-                  [value]="dataItem.orden"
-                  [readonly]="true"
-                  [format]="'n0'"
-                ></kendo-numerictextbox>
+                <kendo-numerictextbox [value]="dataItem.orden" [readonly]="true" [format]="'n0'"></kendo-numerictextbox>
               </ng-template>
             </kendo-grid-column>
 
+            <!-- textarea para Sub-solución (hijo) -->
             <kendo-grid-column field="solucion" title="Sub-solución" [width]="460">
               <ng-template kendoGridCellTemplate let-dataItem>
                 <ng-container *ngIf="dataItem.isEditing || dataItem.isNew; else viewChild">
-                  <kendo-textbox
+                  <kendo-textarea
                     [(ngModel)]="dataItem.solucion"
                     [ngModelOptions]="{standalone: true}"
                     class="w-100"
+                    [rows]="3"
+                    [autoSize]="true"
                     [readonly]="enProcesoSolicitud"
-                  ></kendo-textbox>
+                  ></kendo-textarea>
                 </ng-container>
                 <ng-template #viewChild>
-                  {{ dataItem.solucion }}
+                  <div style="white-space: pre-wrap;">{{ dataItem.solucion }}</div>
                 </ng-template>
               </ng-template>
             </kendo-grid-column>
@@ -297,18 +303,16 @@
       class="btn btn-primary"
       [disabled]="enProcesoSolicitud || draft.length===0 || hasDraftErrors(true)"
       (click)="guardarDraft()"
-    >
-      Guardar
-    </button>
+    >Guardar</button>
+
     <button
       *ngIf="!isNew"
       type="button"
       class="btn btn-primary"
       [disabled]="enProcesoSolicitud || draft.length===0 || hasDraftErrors(false)"
       (click)="actualizarDraft()"
-    >
-      Actualizar
-    </button>
+    >Actualizar</button>
+
     <button type="button" class="btn btn-danger" (click)="modal.close('Close click')" [disabled]="enProcesoSolicitud">
       Cancelar
     </button>

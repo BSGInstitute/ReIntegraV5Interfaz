@@ -208,7 +208,7 @@ export class ProgramaGeneralProblemaFactorComponent  implements OnInit {
     // Usar SweetAlert para mostrar un mensaje de confirmación
     this.enProcesoSolicitud = true;
     Swal.fire({
-      title: '¿Estás seguro de eliminar la Tipo Formacion?',
+      title: '¿Estás seguro de eliminar el Registro?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,

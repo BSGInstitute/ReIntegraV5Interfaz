@@ -17,10 +17,8 @@
               [pageSize]="10"
               [pageable]="{ pageSizes: [5, 10, 20] }"
             >
-              <!-- filterable="menu" -->
               <ng-template kendoGridToolbarTemplate let-dataItem="dataItem">
                 <kendo-grid-spacer></kendo-grid-spacer>
-
                 <button
                   kendoButton
                   icon="plus"
@@ -30,6 +28,7 @@
                   Nuevo
                 </button>
               </ng-template>
+
               <kendo-grid-column
                 field="descripcion"
                 title="Descripción Detalle"
@@ -37,20 +36,23 @@
                 [headerClass]="'header-grid-integra'"
               >
               </kendo-grid-column>
-               <kendo-grid-column
+
+              <kendo-grid-column
                 field="titulo"
                 title="Titulo"
                 [width]="150"
                 [headerClass]="'header-grid-integra'"
               >
               </kendo-grid-column>
-                <kendo-grid-column
+
+              <kendo-grid-column
                 field="subTitulo"
                 title="SubTitulo"
                 [width]="150"
                 [headerClass]="'header-grid-integra'"
               >
               </kendo-grid-column>
+
               <ng-template
                 kendoGridFilterMenuTemplate
                 let-filter
@@ -64,11 +66,10 @@
                   [extra]="false"
                   operator="contains"
                 >
-                  <kendo-filter-contains-operator
-                    text="Contiene"
-                  ></kendo-filter-contains-operator>
+                  <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
                 </kendo-grid-string-filter-menu>
               </ng-template>
+
               <kendo-grid-command-column
                 title="Opciones"
                 [width]="50"
@@ -108,17 +109,14 @@
                   </div>
                 </ng-template>
               </kendo-grid-command-column>
+
               <ng-template kendoPagerTemplate>
                 <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
-                <kendo-pager-numeric-buttons
-                  [buttonCount]="10"
-                ></kendo-pager-numeric-buttons>
+                <kendo-pager-numeric-buttons [buttonCount]="10"></kendo-pager-numeric-buttons>
                 <kendo-pager-next-buttons></kendo-pager-next-buttons>
                 <kendo-pager-input></kendo-pager-input>
                 <kendo-pager-info></kendo-pager-info>
-                <kendo-pager-page-sizes
-                  [pageSizes]="pageSizes"
-                ></kendo-pager-page-sizes>
+                <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
                 <div class="w-100 text-end">
                   <button
                     kendoButton
@@ -151,53 +149,68 @@
         <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
           <kendo-formfield orientation="horizontal">
             <label [for]="descripcion" class="d-flex align-items-start">
-              <span><b>Descripcion</b><strong class="text-danger">*</strong>:</span>
+              <span><b>Descripcion</b>:</span>
             </label>
-            <kendo-textbox #descripcion formControlName="descripcion" inputValidSpaceDir>
-            </kendo-textbox>
-            <kendo-formerror>El campo Descripcion es obligatorio</kendo-formerror>
+            <kendo-textbox #descripcion formControlName="descripcion" inputValidSpaceDir></kendo-textbox>
           </kendo-formfield>
         </div>
-         <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
           <kendo-formfield orientation="horizontal">
             <label [for]="titulo" class="d-flex align-items-start">
-              <span><b>Titulo</b><strong class="text-danger">*</strong>:</span>
+              <span><b>Titulo</b>:</span>
             </label>
-            <kendo-textbox #titulo formControlName="titulo" inputValidSpaceDir>
-            </kendo-textbox>
+            <kendo-textbox #titulo formControlName="titulo" inputValidSpaceDir></kendo-textbox>
           </kendo-formfield>
         </div>
-         <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
           <kendo-formfield orientation="horizontal">
             <label [for]="subtitulo" class="d-flex align-items-start">
-              <span><b>Subtitulo</b><strong class="text-danger">*</strong>:</span>
+              <span><b>Subtitulo</b>:</span>
             </label>
-            <kendo-textbox #subtitulo formControlName="subTitulo" inputValidSpaceDir>
-            </kendo-textbox>
+            <kendo-textbox #subtitulo formControlName="subTitulo" inputValidSpaceDir></kendo-textbox>
           </kendo-formfield>
         </div>
       </div>
+
+      <!-- ✅ Corrección: usa hasError('atLeastOne') o la notación con corchetes -->
+      <div
+        class="alert alert-warning py-2"
+        *ngIf="
+          formProblemaFactorSolucion.hasError('atLeastOne') &&
+          (formProblemaFactorSolucion.touched || formProblemaFactorSolucion.dirty)
+        "
+      >
+        Debe completar <strong>al menos un campo</strong> (Descripción, Título o Subtítulo).
+      </div>
+      <!-- Alternativa equivalente:
+      *ngIf="formProblemaFactorSolucion.errors?.['atLeastOne'] && (formProblemaFactorSolucion.touched || formProblemaFactorSolucion.dirty)"
+      -->
     </form>
   </div>
+
   <div class="modal-footer">
     <button
       *ngIf="isNew"
       type="button"
       class="btn btn-primary"
-      [disabled]="enProcesoSolicitud"
+      [disabled]="enProcesoSolicitud || formProblemaFactorSolucion.invalid"
       (click)="guardar()"
     >
       Guardar
     </button>
+
     <button
       *ngIf="!isNew"
       type="button"
       class="btn btn-primary"
-      [disabled]="enProcesoSolicitud"
+      [disabled]="enProcesoSolicitud || formProblemaFactorSolucion.invalid"
       (click)="actualizar()"
     >
       Actualizar
     </button>
+
     <button
       type="button"
       class="btn btn-danger"
@@ -207,5 +220,6 @@
       Cancelar
     </button>
   </div>
+
   <loading [loading]="enProcesoSolicitud"></loading>
 </ng-template>
