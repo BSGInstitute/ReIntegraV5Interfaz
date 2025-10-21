@@ -129,6 +129,7 @@ import { ProgramaGeneralProblemaFactorComponent } from './configuracion-programa
 import { ProgramaGeneralProblemaFactorDetalleComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-detalle/programa-general-problema-factor-detalle.component';
 import { ProgramaGeneralProblemaFactorSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-solucion/programa-general-problema-factor-solucion.component';
 import { ProgramaGeneralProblemaFactorSubSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-sub-solucion/programa-general-problema-factor-sub-solucion.component';
+import { PgGarantiaConfiabilidadComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-garantia-confiabilidad/pg-garantia-confiabilidad.component';
 
 
 @NgModule({
@@ -239,6 +240,7 @@ import { ProgramaGeneralProblemaFactorSubSolucionComponent } from './configuraci
     PgProblemasClienteComponent,
     PgResumenRequisitosCertificacionComponent,
     PgPresentacionArgumentoComponent,
+    PgGarantiaConfiabilidadComponent,
     CategoriaEncuestaOnlineComponent,
     PreguntaEncuestaOnlineComponent,
     EncuestaComponent,
