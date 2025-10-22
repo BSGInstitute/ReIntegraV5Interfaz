@@ -33,6 +33,7 @@ import { PlantillasOperacionesComponent } from './gestion-atencion-cliente/plant
 import { OrigenSolicitudComponent } from './gestion-solicitudes/maestros/origen-solicitud/origen-solicitud/origen-solicitud.component';
 import { EntregarBeneficiosAlumnosComponent } from './certificados-y-beneficios/entregar-beneficios-alumnos/entregar-beneficios-alumnos/entregar-beneficios-alumnos.component';
 import { ReporteCertificadoInstitutoComponent } from './reportes-atencion-cliente/reporte-certificado-instituto/reporte-certificado-instituto.component';
+import { CalificacionChatBotComponent } from './calificacion-chat-bot/registro-calificacion-chat-bot/calificacion-chat-bot.component';
 
 const routes: Routes = [
   {
@@ -72,6 +73,7 @@ const routes: Routes = [
       { path: 'OrigenSolicitud', component: OrigenSolicitudComponent},
       { path: 'BeneficioSolicitadoAlumno', component: EntregarBeneficiosAlumnosComponent},
       { path: 'ReporteCertificadoInstituto', component: ReporteCertificadoInstitutoComponent},
+      { path: 'CalificacionChatBot', component: CalificacionChatBotComponent},
       { path: '**', redirectTo: 'Retencion' },
     ]
   }

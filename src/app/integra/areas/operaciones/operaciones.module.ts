@@ -100,6 +100,10 @@ import { EntregarBeneficiosAlumnosComponent } from './certificados-y-beneficios/
 import { ReporteCertificadoInstitutoComponent } from './reportes-atencion-cliente/reporte-certificado-instituto/reporte-certificado-instituto.component';
 import { EnvioEncuestaOnlineComponent } from './gestion-atencion-cliente/agenda-atencion-cliente/modal-content-oportunidad/portal-academico/envio-encuesta-online/envio-encuesta-online/envio-encuesta-online.component';
 import { ComentarioEncuestaComponent } from './gestion-atencion-cliente/agenda-atencion-cliente/modal-content-oportunidad/portal-academico/comentario-encuesta/comentario-encuesta/comentario-encuesta.component';
+import { CalificacionChatBotComponent } from './calificacion-chat-bot/registro-calificacion-chat-bot/calificacion-chat-bot.component';
+import { ListaAlumnoComponent } from './calificacion-chat-bot/lista-alumno/lista-alumno.component';
+import { ChatsListComponent } from './calificacion-chat-bot/chats-list/chats-list.component';
+import { EvaluationFormComponent } from './calificacion-chat-bot/evaluation-form/evaluation-form.component';
 
 registerLocaleData(localeEs);
 @NgModule({
@@ -189,6 +193,10 @@ registerLocaleData(localeEs);
     ReporteCertificadoInstitutoComponent,
     EnvioEncuestaOnlineComponent,
     ComentarioEncuestaComponent,
+    CalificacionChatBotComponent,
+    ListaAlumnoComponent,
+    ChatsListComponent,
+    EvaluationFormComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [{ provide: LOCALE_ID, useValue: "es-ES" }],

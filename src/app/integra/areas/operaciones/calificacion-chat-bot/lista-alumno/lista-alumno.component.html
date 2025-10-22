@@ -1,0 +1,75 @@
+<div class="students-container">
+  <div class="filters-section">
+    <h2>Filtros</h2>
+    <div class="filters-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Buscar alumno</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de alumno</mat-label>
+        <mat-select [(ngModel)]="isRegisteredFilter" (ngModelChange)="applyFilters()">
+          <mat-option value="">Todos</mat-option>
+          <mat-option value="true">Registrado</mat-option>
+          <mat-option value="false">No Registrado</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado de calificación</mat-label>
+        <mat-select [(ngModel)]="isRatedFilter" (ngModelChange)="applyFilters()">
+          <mat-option value="">Todos</mat-option>
+          <mat-option value="true">Calificado</mat-option>
+          <mat-option value="false">No Calificado</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <h2>Alumnos</h2>
+    <table mat-table [dataSource]="filteredStudents" class="students-table">
+      <!-- Nombre Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nombre del Alumno</th>
+        <td mat-cell *matCellDef="let element">
+          <strong>{{ element.name }}</strong>
+          <span class="student-type" [ngClass]="{ registered: element.isRegistered, unregistered: !element.isRegistered }">
+            {{ getStudentType(element.isRegistered) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Total Chats Column -->
+      <ng-container matColumnDef="totalChats">
+        <th mat-header-cell *matHeaderCellDef>Total de Hilos</th>
+        <td mat-cell *matCellDef="let element">{{ element.totalChats }}</td>
+      </ng-container>
+
+      <!-- Average Rating Column -->
+      <ng-container matColumnDef="averageRating">
+        <th mat-header-cell *matHeaderCellDef>Promedio</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="rating" [ngClass]="getRatingColor(element.averageRating)">
+            {{ element.averageRating > 0 ? (element.averageRating | number: '1.1-1') : 'Sin calificar' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="primary" (click)="onSelectStudent(element)">
+            Ver Chats
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>
