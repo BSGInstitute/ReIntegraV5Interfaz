@@ -126,6 +126,8 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   formOportunidad: FormGroup = this.formBuilder.group({
     idCentroCosto: ['', Validators.required],
     idPersonalAsignado: [null],
+    activo: [false],
+    idOrigen: [0, Validators.required],
   });
 
   modalRef: any;
@@ -142,9 +144,9 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   previsualizacion: SafeHtml = '&nbsp;';
   modalPlantillaRef: NgbModalRef;
   nombrePersonal: string = 'Usuario';
-
   dragOver: boolean = false;
   showCrearOportunidadContenedor = false;
+  comboOrigen: Array<IComboBase1> = [];
 
   ngOnInit(): void {
     this.loader = true;
@@ -255,8 +257,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
       )
       .subscribe({
         next: (response: HttpResponse<any>) => {
-          console.log(response.body[0]);
-
           this.datosChat = response.body[0];
           this.alumnosPorCelular = this.datosChat.listaAlumnosPorCelular;
           this.mensajesWhats = this.datosChat.mensajePorCelular;
@@ -502,7 +502,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   }
 
   selectChat(e: any) {}
-
   mensajePrueba: any;
 
   convertToAscii(text: string): string {
@@ -935,9 +934,12 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   }
 
   abrirModalOPortunidad(modalOportunidad: any) {
+    this.ObtenerComboOrigen();
     this.isComboDisabled = true;
     this.formOportunidad.reset();
     this.formOportunidad.get('idPersonalAsignado')?.setValue(125);
+    this.formOportunidad.get('idOrigen')?.setValue(954);
+
     this.modalRef = this.modalService.open(this.modalOportunidad, {
       backdrop: 'static',
     });
@@ -1039,42 +1041,42 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
     this.esBotonAsignarDisabled = false;
 
     if (this.validFormTipoDato()) {
-      console.log(this.formOportunidad.getRawValue());
       this.loader = true;
-
       let dataForm = this.formOportunidad.getRawValue();
       let envio: IOportunidadFormularioWhatsapp = {
         idAlumno: this.idAlumno,
         idCentroCosto: dataForm.idCentroCosto,
         idPersonalAsignado: 125,
+        activo: dataForm.activo,
+        idOrigen: dataForm.idOrigen,
       };
-
       this.idAsesorActual = 125;
-      console.log(JSON.stringify(envio));
 
-      this.integraService
-        .postJsonResponse(constApiMarketing.CrearOportunidadWhatsapp, envio)
-        .subscribe({
-          next: (response: HttpResponse<any>) => {
-            const idOportunidad = Number(response.body);
-            console.log('Tipo de idOportunidad:', typeof idOportunidad);
-            if (!isNaN(idOportunidad)) {
-              this.idOportunidad = idOportunidad;
-              this.ObtenerProgramaPorOportunidadWhatsapp(idOportunidad);
-            } else {
-              console.error('idOportunidad no es un número válido.');
-            }
-            console.log(response);
-            console.log('Response body este es el id:', response.body);
-          },
-          error: (error) => {
-            this.alertaService.notificationError(error.error);
-          },
-          complete: () => {
-            this.modalRef.close('submitted');
-            this.loader = false;
-          },
-        });
+      console.log(envio);
+
+      // this.integraService
+      //   .postJsonResponse(constApiMarketing.CrearOportunidadWhatsapp, envio)
+      //   .subscribe({
+      //     next: (response: HttpResponse<any>) => {
+      //       const idOportunidad = Number(response.body);
+      //       console.log('Tipo de idOportunidad:', typeof idOportunidad);
+      //       if (!isNaN(idOportunidad)) {
+      //         this.idOportunidad = idOportunidad;
+      //         this.ObtenerProgramaPorOportunidadWhatsapp(idOportunidad);
+      //       } else {
+      //         console.error('idOportunidad no es un número válido.');
+      //       }
+      //       console.log(response);
+      //       console.log('Response body este es el id:', response.body);
+      //     },
+      //     error: (error) => {
+      //       this.alertaService.notificationError(error.error);
+      //     },
+      //     complete: () => {
+      //       this.modalRef.close('submitted');
+      //       this.loader = false;
+      //     },
+      //   });
     } else this.formOportunidad.markAllAsTouched();
   }
 
@@ -1768,5 +1770,18 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   // Abrir modal para crear oportunidad cuando NO HAY EMAIL REGISTRADO
   toggleCrearOportunidadContenedor() {
     this.showCrearOportunidadContenedor = !this.showCrearOportunidadContenedor;
+  }
+
+  ObtenerComboOrigen() {
+    this.integraService
+      .obtener(constApiMarketing.OrigenObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<Array<IComboBase1>>) => {
+          this.comboOrigen = response.body;
+        },
+        error: (error) => {
+          console.error('Error al obtener el combo de Origen:', error);
+        },
+      });
   }
 }

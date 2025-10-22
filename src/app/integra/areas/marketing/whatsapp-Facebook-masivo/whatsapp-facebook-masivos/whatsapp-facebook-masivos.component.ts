@@ -85,10 +85,6 @@ export class WhatsappFacebookMasivosComponent implements OnInit {
   }
 
   onChange(e: any, id: any) {
-    console.log(e);
-    console.log(id);
-    console.log(this.alumnosPorCelular);
-
     this.nombre = id.nombre1;
     this.nombre2 = id.nombre2;
     this.apellidoMaterno = id.apellidoMaterno;

@@ -39,6 +39,7 @@ import { IMensajesWhatsapp } from '@operaciones/models/interfaces/ihistorial-men
 import { WhatsAppMensajeArchivo } from '@marketing/whatsapp-Facebook-masivo/whatsapp-facebook-oportunidad/whatsapp-facebook-oportunidad.component';
 import { WhatsappFacebookService } from '@marketing/services/whatsapp-facebook.service';
 import { el } from 'date-fns/locale';
+import { IComboBase1 } from '@shared/models/interfaces/iglobal';
 
 interface DataDialog {
   chatPorCelular: ChatWhatsAppMarketingPorCelular[];
@@ -173,6 +174,8 @@ export class WmChatWhatsAppComponent implements OnInit {
   formOportunidad: FormGroup = this.formBuilder.group({
     idCentroCosto: ['', Validators.required],
     idPersonalAsignado: [null],
+    activo: [false],
+    idOrigen: [0, Validators.required],
   });
 
   modalRef: any;
@@ -219,6 +222,8 @@ export class WmChatWhatsAppComponent implements OnInit {
   dragOver: boolean = false;
   loaderChatWhatsapp: boolean = false;
   indexPanelAbierto: number = -1;
+
+  comboOrigen: Array<IComboBase1> = [];
 
   ngOnInit(): void {
     this.loader = true;
@@ -967,9 +972,11 @@ export class WmChatWhatsAppComponent implements OnInit {
   }
   isComboDisabled = true;
   abrirModalOPortunidad(modalOportunidad: any) {
+    this.ObtenerComboOrigen();
     this.isComboDisabled = true;
     this.formOportunidad.reset();
     this.formOportunidad.get('idPersonalAsignado')?.setValue(125);
+    this.formOportunidad.get('idOrigen')?.setValue(954);
 
     this.modalRef = this.modalService.open(this.modalOportunidad, {
       backdrop: 'static',
@@ -1079,33 +1086,39 @@ export class WmChatWhatsAppComponent implements OnInit {
         idAlumno: this.idAlumno,
         idCentroCosto: dataForm.idCentroCosto,
         idPersonalAsignado: 125,
+        activo: dataForm.activo,
+        idOrigen: dataForm.idOrigen,
       };
       this.idAsesorActual = 125;
 
-      this.integraService
-        .postJsonResponse(constApiMarketing.CrearOportunidadWhatsapp, envio)
-        .subscribe({
-          next: (response: HttpResponse<any>) => {
-            //Swal.fire('Success!', 'La Oportunidad se Creo Exitosamente', 'success');
-            // this.dialog.closeAll();
-            //this.loader=false;
-            const idOportunidad = Number(response.body);
-            if (!isNaN(idOportunidad)) {
-              this.idOportunidad = idOportunidad;
-              this.ObtenerProgramaPorOportunidadWhatsapp(idOportunidad);
-            } else {
-              console.error('idOportunidad no es un número válido.');
-            }
-          },
-          error: (error) => {
-            this.alertaService.notificationError(error.error);
-          },
-          complete: () => {
-            this.modalRef.close('submitted');
-            this.loader = false;
-            //this.alertaService.mensajeExitoso();
-          },
-        });
+      console.log('envio', envio);
+
+      this.integraService.postJsonResponse(
+        constApiMarketing.CrearOportunidadWhatsapp,
+        envio
+      );
+      //   .subscribe({
+      //     next: (response: HttpResponse<any>) => {
+      //       //Swal.fire('Success!', 'La Oportunidad se Creo Exitosamente', 'success');
+      //       // this.dialog.closeAll();
+      //       //this.loader=false;
+      //       const idOportunidad = Number(response.body);
+      //       if (!isNaN(idOportunidad)) {
+      //         this.idOportunidad = idOportunidad;
+      //         this.ObtenerProgramaPorOportunidadWhatsapp(idOportunidad);
+      //       } else {
+      //         console.error('idOportunidad no es un número válido.');
+      //       }
+      //     },
+      //     error: (error) => {
+      //       this.alertaService.notificationError(error.error);
+      //     },
+      //     complete: () => {
+      //       this.modalRef.close('submitted');
+      //       this.loader = false;
+      //       //this.alertaService.mensajeExitoso();
+      //     },
+      //   });
     } else this.formOportunidad.markAllAsTouched();
   }
 
@@ -1943,5 +1956,19 @@ export class WmChatWhatsAppComponent implements OnInit {
         }
       }
     });
+  }
+  // ---------------------------
+
+  ObtenerComboOrigen() {
+    this.integraService
+      .obtener(constApiMarketing.OrigenObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<Array<IComboBase1>>) => {
+          this.comboOrigen = response.body;
+        },
+        error: (error) => {
+          console.error('Error al obtener el combo de Origen:', error);
+        },
+      });
   }
 }
