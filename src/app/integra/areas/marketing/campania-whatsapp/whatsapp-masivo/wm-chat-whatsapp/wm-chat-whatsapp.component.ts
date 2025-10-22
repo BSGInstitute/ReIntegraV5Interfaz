@@ -173,7 +173,7 @@ export class WmChatWhatsAppComponent implements OnInit {
   EstadoAsignacion: number = 0;
   formOportunidad: FormGroup = this.formBuilder.group({
     idCentroCosto: ['', Validators.required],
-    idPersonalAsignado: [null],
+    idPersonalAsignado: [0, Validators.required],
     activo: [false],
     idOrigen: [0, Validators.required],
   });
@@ -970,10 +970,8 @@ export class WmChatWhatsAppComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: any) => {});
   }
-  isComboDisabled = true;
   abrirModalOPortunidad(modalOportunidad: any) {
     this.ObtenerComboOrigen();
-    this.isComboDisabled = true;
     this.formOportunidad.reset();
     this.formOportunidad.get('idPersonalAsignado')?.setValue(125);
     this.formOportunidad.get('idOrigen')?.setValue(954);
@@ -1085,7 +1083,7 @@ export class WmChatWhatsAppComponent implements OnInit {
       let envio: IOportunidadFormularioWhatsapp = {
         idAlumno: this.idAlumno,
         idCentroCosto: dataForm.idCentroCosto,
-        idPersonalAsignado: 125,
+        idPersonalAsignado: dataForm.idPersonalAsignado,
         activo: dataForm.activo,
         idOrigen: dataForm.idOrigen,
       };
@@ -1093,32 +1091,27 @@ export class WmChatWhatsAppComponent implements OnInit {
 
       console.log('envio', envio);
 
-      this.integraService.postJsonResponse(
-        constApiMarketing.CrearOportunidadWhatsapp,
-        envio
-      );
-      //   .subscribe({
-      //     next: (response: HttpResponse<any>) => {
-      //       //Swal.fire('Success!', 'La Oportunidad se Creo Exitosamente', 'success');
-      //       // this.dialog.closeAll();
-      //       //this.loader=false;
-      //       const idOportunidad = Number(response.body);
-      //       if (!isNaN(idOportunidad)) {
-      //         this.idOportunidad = idOportunidad;
-      //         this.ObtenerProgramaPorOportunidadWhatsapp(idOportunidad);
-      //       } else {
-      //         console.error('idOportunidad no es un número válido.');
-      //       }
-      //     },
-      //     error: (error) => {
-      //       this.alertaService.notificationError(error.error);
-      //     },
-      //     complete: () => {
-      //       this.modalRef.close('submitted');
-      //       this.loader = false;
-      //       //this.alertaService.mensajeExitoso();
-      //     },
-      //   });
+      this.integraService
+        .postJsonResponse(constApiMarketing.CrearOportunidadWhatsapp, envio)
+        .subscribe({
+          next: (response: HttpResponse<any>) => {
+            const idOportunidad = Number(response.body);
+            if (!isNaN(idOportunidad)) {
+              this.idOportunidad = idOportunidad;
+              this.ObtenerProgramaPorOportunidadWhatsapp(idOportunidad);
+            } else {
+              console.error('idOportunidad no es un número válido.');
+            }
+          },
+          error: (error) => {
+            this.alertaService.notificationError(error.error);
+          },
+          complete: () => {
+            this.modalRef.close('submitted');
+            this.loader = false;
+            //this.alertaService.mensajeExitoso();
+          },
+        });
     } else this.formOportunidad.markAllAsTouched();
   }
 

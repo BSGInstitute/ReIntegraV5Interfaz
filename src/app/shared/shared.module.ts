@@ -26,7 +26,6 @@ import { KGridFilterMenuComponent } from './utils/k-grid-filter-menu/k-grid-filt
 import { KLoadingComponent } from './utils/k-loading/k-loading.component';
 import { SendinBlueService } from './services/sendin-blue.service';
 
-
 import { KGridVerComponent } from './utils/k-grid-ver/k-grid-ver.component';
 import { MenuPruebaComponent } from './components/menu-prueba/menu-prueba.component';
 import { DropdownFilterDirective } from './directives/dropdown-filter.directive';
@@ -41,6 +40,7 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { ConfiguracionAgrupacionMatriculaComponent } from './components/configuracion-agrupacion-matricula/configuracion-agrupacion-matricula.component';
 import { KwComentarioAgendaComponent } from './components/kw-comentario-agenda/kw-comentario-agenda.component';
 import { UrlService } from './services/url.service';
+import { Nl2brPipePipe } from './Pipes/nl2br-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -68,11 +68,12 @@ import { UrlService } from './services/url.service';
     PageNotFoundComponent,
     FichaAlumnoAgendaOperacionesComponent,
     ModalComprobantePagComponent,
-    ModalPagosIvrComponent
-,    CustomDropDownListFilterComponent,
+    ModalPagosIvrComponent,
+    CustomDropDownListFilterComponent,
     SafeHtmlPipe,
     ConfiguracionAgrupacionMatriculaComponent,
-    KwComentarioAgendaComponent
+    KwComentarioAgendaComponent,
+    Nl2brPipePipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
@@ -81,13 +82,9 @@ import { UrlService } from './services/url.service';
     KendoAngularModule,
     AngularMaterialModule,
     SweetAlert2Module.forRoot(),
-    CKEditorModule
+    CKEditorModule,
   ],
-  providers:[
-    TokenService,
-    SendinBlueService,
-    UrlService
-  ],
+  providers: [TokenService, SendinBlueService, UrlService],
   exports: [
     ReferenciaElementoDirective,
     KTextBoxComponent,
@@ -114,7 +111,8 @@ import { UrlService } from './services/url.service';
     CustomDropDownListFilterComponent,
     SafeHtmlPipe,
     CKEditorModule,
-    KwComentarioAgendaComponent
+    KwComentarioAgendaComponent,
+    Nl2brPipePipe,
   ],
 })
 export class SharedModule {}
