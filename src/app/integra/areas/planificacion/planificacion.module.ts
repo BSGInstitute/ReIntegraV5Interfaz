@@ -123,6 +123,13 @@ import { ConfigurarGrabacionesOnlineComponent } from './configuracion-portal-web
 import { PgTestimonioComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-testimonio/pg-testimonio.component';
 import { PgValoracionesComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-valoraciones/pg-valoraciones.component';
 import { ModalConfiguracionReproduccionDescargaComponent } from './configuracion-portal-web/video-evaluaciones-estructura-programa/modal-configuracion-reproduccion-descarga/modal-configuracion-reproduccion-descarga.component';
+import { PgProblemasClienteV2Component } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-problemas-cliente-v2/pg-problemas-cliente-v2.component';
+import { ProblemaClienteConfiguracionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/problema-cliente-configuracion.component';
+import { ProgramaGeneralProblemaFactorComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor/programa-general-problema-factor.component';
+import { ProgramaGeneralProblemaFactorDetalleComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-detalle/programa-general-problema-factor-detalle.component';
+import { ProgramaGeneralProblemaFactorSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-solucion/programa-general-problema-factor-solucion.component';
+import { ProgramaGeneralProblemaFactorSubSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-sub-solucion/programa-general-problema-factor-sub-solucion.component';
+import { PgGarantiaConfiabilidadComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-garantia-confiabilidad/pg-garantia-confiabilidad.component';
 
 
 @NgModule({
@@ -233,6 +240,7 @@ import { ModalConfiguracionReproduccionDescargaComponent } from './configuracion
     PgProblemasClienteComponent,
     PgResumenRequisitosCertificacionComponent,
     PgPresentacionArgumentoComponent,
+    PgGarantiaConfiabilidadComponent,
     CategoriaEncuestaOnlineComponent,
     PreguntaEncuestaOnlineComponent,
     EncuestaComponent,
@@ -245,6 +253,12 @@ import { ModalConfiguracionReproduccionDescargaComponent } from './configuracion
     PgTestimonioComponent,
     PgValoracionesComponent,
     ModalConfiguracionReproduccionDescargaComponent,
+    PgProblemasClienteV2Component,
+    ProblemaClienteConfiguracionComponent,
+    ProgramaGeneralProblemaFactorComponent,
+    ProgramaGeneralProblemaFactorDetalleComponent,
+    ProgramaGeneralProblemaFactorSolucionComponent,
+    ProgramaGeneralProblemaFactorSubSolucionComponent,
 
 
   ],
