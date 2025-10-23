@@ -1,6 +1,7 @@
 export interface CampoContacto {
   id: number;
   nombre: string;
+  nombreLabel: string;
   tipoControl:  string
   valoresPreEstablecidos: number;
   procedimiento: string;
@@ -19,6 +20,7 @@ export interface CampoContactoCombo {
 export interface CampoContactoEnvio {
   id: number;
   nombre: string;
+  nombreLabel: string;
   tipoControl:  string
   valoresPreEstablecidos: number;
   procedimiento: string;
@@ -27,5 +29,4 @@ export interface CampoContactoEnvio {
   usuarioModificacion: string;
   fechaCreacion: string;
   fechaModificacion:  string;
-
 }

@@ -50,17 +50,19 @@ export class CampoContactoComponent implements OnInit {
     nombre: ['', [
       Validators.required,
       TextValidator.noStartSpace,
-      TextValidator.noEndSpace]
-    ],
+      TextValidator.noEndSpace]],
+    nombreLabel: ['', [
+      Validators.required,
+      TextValidator.noStartSpace,
+      TextValidator.noEndSpace]],
     tipoControl: ['', Validators.required],
     procedimiento: ['', [
       Validators.required,
       TextValidator.noStartSpace,
       TextValidator.noEndSpace]
     ],
-
-
   });
+
 /**
  * Variables
  */
@@ -100,12 +102,16 @@ export class CampoContactoComponent implements OnInit {
         required: 'Ingrese Nombre de Tipo Categoria Origen',
         noStartSpace: 'El Nombre no puede empezar con espacio',
         noEndSpace: 'El Nombre no puede terminar con espacio' },
-        tipoControl: { required: 'Ingrese una descripcion' },
-        procedimiento:{
+      nombreLabel: {
+        required: 'Ingrese el texto a mostrar en el Label',
+        noStartSpace: 'Este campo no puede empezar con espacio',
+        noEndSpace: 'Este campo no puede terminar con espacio' },
+      tipoControl: { required: 'Ingrese una descripcion' },
+      procedimiento:{
         required: 'Ingrese Nombre de Tipo Categoria Origen',
         noStartSpace: 'El Nombre no puede empezar con espacio',
         noEndSpace: 'El Nombre no puede terminar con espacio'}
-        //valoresPreEstablecidos: { required: 'Meta es obligatorio', min: 'El Valor de Meta no es valido' },
+      //valoresPreEstablecidos: { required: 'Meta es obligatorio', min: 'El Valor de Meta no es valido' },
     };
     let formControl: FormControl = this.formCampoContacto.get(controlName) as FormControl;
     if (formControl.hasError('required')) {
@@ -140,6 +146,7 @@ export class CampoContactoComponent implements OnInit {
     if(itemValue != null){
       item.id = itemValue.id;
       item.nombre = itemValue.nombre;
+      item.nombreLabel = itemValue.nombreLabel;
       item.tipoControl = itemValue.tipoControl;
       item.valoresPreEstablecidos = itemValue.valoresPreEstablecidos;
       item.procedimiento= itemValue.procedimiento;
@@ -159,6 +166,7 @@ export class CampoContactoComponent implements OnInit {
     let campoContactoEnvio: CampoContactoEnvio = {
       id: isNew ? 0 : dataItem.id,
       nombre: dataItem.nombre,
+      nombreLabel: dataItem.nombreLabel,
       tipoControl: dataItem.tipoControl,
       valoresPreEstablecidos: dataItem.valoresPreEstablecidos,
       procedimiento: dataItem.procedimiento,
