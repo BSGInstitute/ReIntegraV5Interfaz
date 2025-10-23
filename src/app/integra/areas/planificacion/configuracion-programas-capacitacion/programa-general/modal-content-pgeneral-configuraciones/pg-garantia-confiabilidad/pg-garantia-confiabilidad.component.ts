@@ -53,7 +53,7 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
   };
 
   formArgumento: FormGroup = this.formBuilder.group({
-    idArgumento: 0, // aquí guardamos el Id para actualizar
+    idArgumento: 0, 
     nombre: ['', [Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]],
     descripcion: '',
     esVisibleAgenda: false,
@@ -65,7 +65,7 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
   formDetalleSolucion: FormGroup = this.formBuilder.group({
     id: 0,
     detalle: ['', Validators.required],
-    motivacion: [null, Validators.required], // guarda el ID
+    motivacion: [null, Validators.required], 
   });
 
   ngOnInit(): void {
@@ -128,7 +128,6 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
       });
   }
 
-  // ------- abrir modales -------
   abrirModal(context: any, esNuevo: boolean, dataItem: any) {
     this.modalRef = this.modalService.open(context, {
       size: 'xxl',
@@ -360,7 +359,7 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
           const idEliminar = dataItem.id ?? dataItem.idArgumento ?? dataItem.idPresentacionArgumento ?? 0;
 
           this.integraService
-            .deleteJsonResponse(`${constApiPlanificacion.ProgramaGeneralPresentacionArgumentoEliminar}/${idEliminar}`)
+            .deleteJsonResponse(`${constApiPlanificacion.ProgramaGeneralArgumentoEliminar}/${idEliminar}`)
             .subscribe({
               next: (response: HttpResponse<boolean>) => {
                 this.gridArgumento.loading = false;
@@ -381,7 +380,6 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
       });
   }
 
-  // ======== Detalle / Motivación ========
   guardarDetalle() {
     if (this.formDetalleSolucion.invalid) {
       this.formDetalleSolucion.markAllAsTouched();
@@ -412,7 +410,6 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
     this.gridArgumentoDetalleSolucion.data.splice(index, 1);
   }
 
-  // para la grilla principal
   impresionModalidad(dataItem: any): string {
     const mods = dataItem?.modalidades ?? [];
     if (!Array.isArray(mods) || mods.length === 0) return '—';
