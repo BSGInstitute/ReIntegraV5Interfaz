@@ -1950,7 +1950,6 @@ export class WmChatWhatsAppComponent implements OnInit {
       }
     });
   }
-  // ---------------------------
 
   ObtenerComboOrigen() {
     this.integraService
