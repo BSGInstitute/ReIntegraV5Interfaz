@@ -3831,6 +3831,12 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorSubSolucionActualizar:"/ProgramageneralproblemaFactorSubSolucion/Actualizar",
   ProgramageneralproblemaFactorSubSolucionEliminar:"/ProgramageneralproblemaFactorSubSolucion/Eliminar",
   ProgramageneralproblemaFactorSubSolucionObtenerPorIdProgramaGeneralProblemaFactorSolucion:"/ProgramageneralproblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion",
+  //Programa Argumentos 
+  ProgramaGeneralArgumentoObtener: "/ProgramaGeneralArgumento/ObtenerProgramaGeneralArgumentoTodo",
+  ProgramaGeneralArgumentoObtenerMotivaciones: "/ProgramaGeneralArgumento/ObtenerMotivaciones",
+  ProgramaGeneralArgumentoInsertar: "/ProgramaGeneralArgumento/Insertar",
+  ProgramaGeneralArgumentoActualizar: "/ProgramaGeneralArgumento/Actualizar",
+  ProgramaGeneralArgumentoEliminar: "/ProgramaGeneralArgumento/Eliminar",
 };
 
 export const constApiFinanzas = {
