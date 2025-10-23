@@ -3813,6 +3813,30 @@ export const constApiPlanificacion = {
   ReporteEncuestaGuardarTestimonio: "/ReporteEncuestasSincronico/GuardarTestimonio",
   ReporteEncuestaActualizarValoracionVisiblePw: "/ReporteEncuestasSincronico/ActualizarValoracionVisiblePw",
 
+ //ProgramaGeneralProblemaFactor
+  ProgramaGeneralProblemaFactorObtener:"/ProgramaGeneralProblemaFactor/Obtener",
+  ProgramaGeneralProblemaFactorInsertar:"/ProgramaGeneralProblemaFactor/Insertar",
+  ProgramaGeneralProblemaFactorActualizar:"/ProgramaGeneralProblemaFactor/Actualizar",
+  ProgramaGeneralProblemaFactorEliminar:"/ProgramaGeneralProblemaFactor/Eliminar",
+  ProgramageneralproblemaFactorDetalleObtener:"/ProgramageneralproblemaFactorDetalle/Obtener",
+  ProgramageneralproblemaFactorDetalleInsertar:"/ProgramageneralproblemaFactorDetalle/Insertar",
+  ProgramageneralproblemaFactorDetalleActualizar:"/ProgramageneralproblemaFactorDetalle/Actualizar",
+  ProgramageneralproblemaFactorDetalleEliminar:"/ProgramageneralproblemaFactorDetalle/Eliminar",
+  ProgramageneralproblemaFactorSolucionObtener:"/ProgramageneralproblemaFactorSolucion/Obtener",
+  ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
+  ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",
+  ProgramageneralproblemaFactorSolucionEliminar:"/ProgramageneralproblemaFactorSolucion/Eliminar",
+  ProgramageneralproblemaFactorSubSolucionObtener:"/ProgramageneralproblemaFactorSubSolucion/Obtener",
+  ProgramageneralproblemaFactorSubSolucionInsertar:"/ProgramageneralproblemaFactorSubSolucion/Insertar",
+  ProgramageneralproblemaFactorSubSolucionActualizar:"/ProgramageneralproblemaFactorSubSolucion/Actualizar",
+  ProgramageneralproblemaFactorSubSolucionEliminar:"/ProgramageneralproblemaFactorSubSolucion/Eliminar",
+  ProgramageneralproblemaFactorSubSolucionObtenerPorIdProgramaGeneralProblemaFactorSolucion:"/ProgramageneralproblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion",
+  //Programa Argumentos 
+  ProgramaGeneralArgumentoObtener: "/ProgramaGeneralArgumento/ObtenerProgramaGeneralArgumentoTodo",
+  ProgramaGeneralArgumentoObtenerMotivaciones: "/ProgramaGeneralArgumento/ObtenerMotivaciones",
+  ProgramaGeneralArgumentoInsertar: "/ProgramaGeneralArgumento/Insertar",
+  ProgramaGeneralArgumentoActualizar: "/ProgramaGeneralArgumento/Actualizar",
+  ProgramaGeneralArgumentoEliminar: "/ProgramaGeneralArgumento/Eliminar",
 };
 
 export const constApiFinanzas = {
