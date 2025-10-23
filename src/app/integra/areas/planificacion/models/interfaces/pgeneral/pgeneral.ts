@@ -763,5 +763,14 @@ export interface PEspecificoByPGeneral
   idPEspecifico:number;
   nombrePEspecifico:string;
   idPGeneral:number;
+}
+
+
+
+export interface PGeneralArgumentoMotivacion
+{
+  id:number;
+  nombre:string;
+  idPGeneral:number;
 
 }
