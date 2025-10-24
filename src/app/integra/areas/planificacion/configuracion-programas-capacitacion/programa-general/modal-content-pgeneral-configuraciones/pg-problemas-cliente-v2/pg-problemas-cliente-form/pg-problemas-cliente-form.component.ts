@@ -18,13 +18,6 @@ interface IProblemaFactorSolucion{
   seleccionado?: boolean;
 }
 
-interface SubSolucionInterface {
-  id: number;
-  nombre: string;
-  seleccionado?: boolean;
-  subsoluciones: { id: number; nombre: string }[];
-}
-
 interface SubSolucionSeleccionadoInterface {
   id: number;
   nombre: string;

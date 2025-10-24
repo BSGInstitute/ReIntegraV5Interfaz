@@ -10,9 +10,37 @@ import { FormService } from '@shared/services/form.service';
 import { PgeneralService } from '@planificacion/services/pgeneral.service';
 
 import { CompuestoProblemaModalidadAlternoDTO } from '@planificacion/models/interfaces/pgeneral/pgeneral';
-import { PgProblemasClienteFormComponent } from './pg-problemas-cliente-form/pg-problemas-cliente-form.component';
 
-type Opcion = { id: number; nombre: string };
+interface IProblemaClienteSolucion {
+    problema: IProblemaCliente;
+    solucion: IProblemaSolucion;
+}
+
+interface IProblemaCliente {
+    problemaId:      number;
+    nombre:          string;
+    detalleId:       number;
+    detalle:         string;
+    detalleTituloId: string;
+    titulo:          string;
+}
+
+interface IProblemaSolucion {
+    solucionDescripcionId: number;
+    descripcion:           string;
+    solucionTituloId:      number;
+    titulo:                string;
+    subTituloId:           number;
+    subTitulo:             string;
+    subSoluciones:         IProblemaSubSolucion[];
+}
+
+interface IProblemaSubSolucion {
+    id:     number;
+    nombre: string;
+}
+
+
 
 @Component({
   selector: 'app-pg-problemas-cliente-v2',
@@ -22,7 +50,6 @@ type Opcion = { id: number; nombre: string };
 export class PgProblemasClienteV2Component implements OnInit {
   constructor(
     private integraService: IntegraService,
-    private formBuilder: FormBuilder,
     public activeModal: NgbActiveModal,
     private alertaService: AlertaService,
     private modalService: NgbModal,
@@ -31,237 +58,182 @@ export class PgProblemasClienteV2Component implements OnInit {
 
   @Input() pgeneralService!: PgeneralService;
 
-  listaProblemas = [
-      { id: 1, nombre: 'Error de conexión', descripcion: 'Falla al conectarse al servidor' },
-      { id: 2, nombre: 'Pantalla en blanco', descripcion: 'Interfaz no carga correctamente' }
-    ];
   mostrarModal = false;
+  mdSubSoluciones = false;
+  mdEliminar = false;
+  registroAEliminar: IProblemaClienteSolucion | null = null;
   esNuevo = true;
-  dataSeleccionada: any = null;
-  gridProblemasCliente = new KendoGrid<CompuestoProblemaModalidadAlternoDTO>();
+  dataSeleccionada: IProblemaClienteSolucion | null = null;
+  gridProblemasCliente: IProblemaClienteSolucion[] = [];
+  gridProblemasClienteSubSoluciones: IProblemaSolucion = {} as IProblemaSolucion;
 
- 
-  modalRef: any;
-  loaderModal = false;
-
-  formProblema: FormGroup = this.formBuilder.group({
-    id: 0,
-    idPGeneral: 0,
-
-    problemaId: [null, Validators.required],
-    detalleId: [null, Validators.required],
-    detalleTituloId: [null],
-    solucionTituloId: [null],
-    solucionSubTituloId: [null],
-    solucionDescripcionId: [null],
-
-
-    subSolucionesIds: [[] as number[]],
-  });
-
-  // ===== Combos (opciones) =====
-  ddlDefault: Opcion = { id: null as unknown as number, nombre: 'Seleccionar...' };
-
-  opcProblema: Opcion[] = [];
-  opcDetalle: Opcion[] = [];
-  opcDetalleTitulo: Opcion[] = [];
-  opcSolucionTitulo: Opcion[] = [];
-  opcSolucionSubTitulo: Opcion[] = [];
-  opcSolucionDescripcion: Opcion[] = [];
-
-  // ===== SubSoluciones (MultiSelect) =====
-  subSolucionesCatalogo: Opcion[] = [];
-  subSolucionesLoading = false;
 
   // ===== Ciclo de vida =====
   ngOnInit(): void {
     this.cargarGrid();
-    this.cargarCombosBasicos();
-    this.cargarSubSoluciones();
-  }
-
-  // ===== Helpers =====
-  get dataItemPgeneral() {
-    return this.pgeneralService?.dataItemPgeneral;
-  }
-  getErrorMessage(controlName: string): string {
-    const c: FormControl = this.formProblema.get(controlName) as FormControl;
-    return this.formService.errorMessage(c, controlName);
   }
 
   // ===== Grid =====
   cargarGrid() {
-    this.gridProblemasCliente.data = [];
-    this.pgeneralService.configuracionCliente$.subscribe((resp) => {
-      if (resp != null) {
-        this.gridProblemasCliente.data = resp.problemas ?? [];
+    this.gridProblemasCliente = [
+      {
+        "problema": {
+          "problemaId": 10,
+          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
+          "detalleId": 2,
+          "detalle": "Alta demanda y oportunidades",
+          "detalleTituloId": "alta demanda y oportunidades",
+          "titulo": "hola"
+        },
+        "solucion": {
+          "solucionDescripcionId": 4,
+          "descripcion": "",
+          "solucionTituloId": 0,
+          "titulo": "",
+          
+          "subTituloId": 5,
+          "subTitulo": "algo",
+          "subSoluciones": [
+           {
+              "id": 1,
+              "nombre": "impplementar opciones de financiamiento y apyo economico"
+           },
+          ]
+        }
+      },
+      {
+        "problema": {
+          "problemaId": 1,
+          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
+          "detalleId": 2,
+          "detalle": "Alta demanda y oportunidades",
+          "detalleTituloId": "alta demanda y oportunidades",
+          "titulo": "hola"
+        },
+        "solucion": {
+          "solucionDescripcionId": 4,
+          "descripcion": "",
+          "solucionTituloId": 0,
+          "titulo": "",
+          
+          "subTituloId": 5,
+          "subTitulo": "algo",
+          "subSoluciones": [
+           {
+              "id": 1,
+              "nombre": "otro mas"
+           },
+          ]
+        }
+      },
+      {
+        "problema": {
+          "problemaId": 100,
+          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
+          "detalleId": 2,
+          "detalle": "Alta demanda y oportunidades",
+          "detalleTituloId": "alta demanda y oportunidades",
+          "titulo": "hola"
+        },
+        "solucion": {
+          "solucionDescripcionId": 4,
+          "descripcion": "",
+          "solucionTituloId": 0,
+          "titulo": "",
+          
+          "subTituloId": 5,
+          "subTitulo": "algo",
+          "subSoluciones": [
+           {
+              "id": 1,
+              "nombre": "otro mas"
+           },
+          ]
+        }
+      },
+      {
+        "problema": {
+          "problemaId": 10000,
+          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
+          "detalleId": 2,
+          "detalle": "Alta demanda y oportunidades",
+          "detalleTituloId": "alta demanda y oportunidades",
+          "titulo": "hola"
+        },
+        "solucion": {
+          "solucionDescripcionId": 4,
+          "descripcion": "",
+          "solucionTituloId": 0,
+          "titulo": "",
+          
+          "subTituloId": 5,
+          "subTitulo": "algo",
+          "subSoluciones": [
+           {
+              "id": 1,
+              "nombre": "otro mas"
+           },
+          ]
+        }
       }
-    });
+    ];
   }
 
-  
-
-  abrirModal(data: any, esNuevo: boolean) {
+  abrirModal(data: IProblemaClienteSolucion, esNuevo: boolean) {
     this.dataSeleccionada = data;
     this.esNuevo = esNuevo;
     this.mostrarModal = true;
+  }
+
+  abrirModalSubSoluciones(data: IProblemaSolucion) {
+    this.gridProblemasClienteSubSoluciones = {} as IProblemaSolucion;
+    this.gridProblemasClienteSubSoluciones = data;
+    this.mdSubSoluciones = true;
   }
 
   cerrarModal(cerrado: boolean) {
     this.mostrarModal = !cerrado;
   }
 
-  guardarCambios(item: any) {
-    if (this.esNuevo) {
-      item.id = this.listaProblemas.length + 1;
-      this.listaProblemas.push(item);
-    } else {
-      const index = this.listaProblemas.findIndex(p => p.id === item.id);
-      if (index > -1) this.listaProblemas[index] = item;
-    }
-    this.mostrarModal = false;
+  // ======== Abrir modal de eliminación ========
+  abrirModalEliminar(dataItem: IProblemaClienteSolucion) {
+    this.registroAEliminar = dataItem;
+    this.mdEliminar = true;
   }
 
+  // ======== Cerrar modal de eliminación ========
+  cerrarModalEliminar(refrescar: boolean = false) {
+    this.mdEliminar = false;
+    this.registroAEliminar = null;
 
-
-  // ===== Cargar combos =====
-  private cargarCombosBasicos(): void {
-    const idPG = this.dataItemPgeneral?.id ?? 0;
-
-
-    const urls = {
-      problema: `/planif/fake/opciones/problemas/${idPG}`,
-      detalle: `/planif/fake/opciones/detalles/${idPG}`,
-      detTitulo: `/planif/fake/opciones/detalle-titulos/${idPG}`,
-      solTitulo: `/planif/fake/opciones/sol-titulos/${idPG}`,
-      solSubTitulo: `/planif/fake/opciones/sol-subtitulos/${idPG}`,
-      solDesc: `/planif/fake/opciones/sol-descripciones/${idPG}`,
-    };
-
-
-    this.loadCombo(urls.problema, this.getDummy('problema'), (data) => (this.opcProblema = data));
-    this.loadCombo(urls.detalle, this.getDummy('detalle'), (data) => (this.opcDetalle = data));
-    this.loadCombo(urls.detTitulo, this.getDummy('detalleTitulo'), (data) => (this.opcDetalleTitulo = data));
-    this.loadCombo(urls.solTitulo, this.getDummy('solTitulo'), (data) => (this.opcSolucionTitulo = data));
-    this.loadCombo(urls.solSubTitulo, this.getDummy('solSubTitulo'), (data) => (this.opcSolucionSubTitulo = data));
-    this.loadCombo(urls.solDesc, this.getDummy('solDesc'), (data) => (this.opcSolucionDescripcion = data));
-  }
-
-  private loadCombo(url: string, fallback: Opcion[], assign: (data: Opcion[]) => void) {
-    this.integraService.getJsonResponse(url).subscribe({
-      next: (resp: HttpResponse<Opcion[]>) => assign((resp.body ?? []).length ? (resp.body as Opcion[]) : fallback),
-      error: () => assign(fallback),
-    });
-  }
-
-  private getDummy(tipo: string): Opcion[] {
-    const make = (arr: string[]) => arr.map((n, i) => ({ id: 1000 + i, nombre: n }));
-    switch (tipo) {
-      case 'problema':
-        return make(['Problema A', 'Problema B', 'Problema C']);
-      case 'detalle':
-        return make(['Detalle 1', 'Detalle 2', 'Detalle 3']);
-      case 'detalleTitulo':
-        return make(['Tit Det 1', 'Tit Det 2']);
-      case 'solTitulo':
-        return make(['Tit Sol 1', 'Tit Sol 2']);
-      case 'solSubTitulo':
-        return make(['SubTit 1', 'SubTit 2', 'SubTit 3']);
-      case 'solDesc':
-        return make(['Desc 1', 'Desc 2', 'Desc 3']);
-      default:
-        return [];
+    if (refrescar) {
+      this.cargarGrid(); // opcional, si quisieras refrescar los datos luego de eliminar
     }
   }
 
-  private cargarSubSoluciones() {
-    this.subSolucionesLoading = true;
-    const idPG = this.dataItemPgeneral?.id ?? 0;
-    const url = `/planif/fake/subsoluciones/${idPG}`; // Reemplaza por tu endpoint real
+  // ======== Confirmar eliminación ========
+  confirmarEliminar() {
+    if (!this.registroAEliminar) return;
 
-    this.integraService.getJsonResponse(url).subscribe({
-      next: (resp: HttpResponse<Opcion[]>) => {
-        const body = resp.body ?? [];
-        this.subSolucionesCatalogo = body.length ? body : this.getDummySubSoluciones();
-        this.subSolucionesLoading = false;
-      },
-      error: () => {
-        this.subSolucionesCatalogo = this.getDummySubSoluciones();
-        this.subSolucionesLoading = false;
-      },
-    });
-  }
+    const idEliminar = this.registroAEliminar.problema.problemaId;
 
-  private getDummySubSoluciones(): Opcion[] {
-    return [
-      { id: 201, nombre: 'SubSolución 1' },
-      { id: 202, nombre: 'SubSolución 2' },
-      { id: 203, nombre: 'SubSolución 3' },
-      { id: 204, nombre: 'SubSolución 4' },
-      { id: 205, nombre: 'SubSolución 5' },
-      { id: 206, nombre: 'SubSolución 6' },
-    ];
-  }
+    // this.integraService.delete(`api/problema-cliente/${idEliminar}`)
+    //   .subscribe({
+    //     next: () => {
+    //       this.alertaService.exito('Registro eliminado correctamente');
+    //       this.cargarGrid();
+    //       this.cerrarModalEliminar();
+    //     },
+    //     error: () => this.alertaService.error('Error al eliminar el registro'),
+    //   });
 
-  // ===== Guardar =====
-  guardar() {
-    if (this.formProblema.invalid) {
-      this.formProblema.markAllAsTouched();
-      return;
-    }
-
-    const v = this.formProblema.value;
-
-
-    const subSolObjects = (v.subSolucionesIds as number[]).map((id) => ({
-      id,
-      nombre: this.subSolucionesCatalogo.find((s) => s.id === id)?.nombre ?? '',
-    }));
-
-    const payload = {
-      id: v.id ?? 0,
-      idPGeneral: v.idPGeneral ?? this.dataItemPgeneral?.id ?? 0,
-
-      problemaId: v.problemaId,
-      detalleId: v.detalleId,
-      detalleTituloId: v.detalleTituloId,
-      solucionTituloId: v.solucionTituloId,
-      solucionSubTituloId: v.solucionSubTituloId,
-      solucionDescripcionId: v.solucionDescripcionId,
-
-      subSolucionesIds: v.subSolucionesIds as number[], 
-      subSoluciones: subSolObjects,                  
-    };
-
-    this.loaderModal = true;
-    const url = this.esNuevo ? '/planif/fake/problemas/insertar' : '/planif/fake/problemas/actualizar';
-
-    this.integraService.postJsonResponse(url, JSON.stringify(payload)).subscribe({
-      next: (_resp: HttpResponse<any>) => {
-        this.loaderModal = false;
-        this.modalRef?.close();
-        this.alertaService.mensajeExitoso();
-        this.cargarGrid();
-      },
-      error: (err) => {
-        this.loaderModal = false;
-        this.alertaService.notificationError(
-          this.alertaService.getMessageErrorService(err) || 'No se pudo guardar'
-        );
-      },
-    });
+    const newList = this.gridProblemasCliente.filter(
+      (x) => x.problema.problemaId !== idEliminar
+    );
+    this.gridProblemasCliente = [...newList];
+    // this.alertaService.exito('Registro eliminado correctamente (dummy).');
+    this.cerrarModalEliminar(true);
   }
 
 
-  impresionModalidad(dataItem: CompuestoProblemaModalidadAlternoDTO): string {
-    return (dataItem.modalidades ?? []).map((x: any) => x.nombre).join(', ');
-  }
-
-
-  private resolveId(lista: Opcion[], rawId: any, rawNombre: any): number | null {
-    if (typeof rawId === 'number' && !isNaN(rawId)) return rawId;
-    if (rawNombre == null || rawNombre === '') return null;
-    const found = lista.find((x) => (x.nombre || '').toString().trim() === (rawNombre || '').toString().trim());
-    return found?.id ?? null;
-  }
 }
