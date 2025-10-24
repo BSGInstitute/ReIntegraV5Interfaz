@@ -9,7 +9,7 @@ import { IntegraService } from '@shared/services/integra.service';
 
 type Opcion = { id: number; nombre: string };
 
-interface IProblemaFactorSolucion{
+interface IProblemaFactorSolucion {
   id: number;
   idProgramaGeneralProblemaFactorSolucion: number;
   solucion: string;
@@ -35,14 +35,14 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   @Input() esNuevo = true;
   @Input() dataProblema: any = null;
   @Output() cerrado = new EventEmitter<void>();
-  @Input() idPGeneral!: number; 
+  @Input() idPGeneral!: number;
   ddlDefault: Opcion = { id: null as unknown as number, nombre: 'Seleccionar...' };
 
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
   opcDetalle: ProgramaGeneralProblemaFactorDetalle[] = [];
   opcSolucion: ProgramaGeneralProblemaFactorSolucion[] = [];
 
-  
+
   opcDetalleTitulo: ProgramaGeneralProblemaFactorDetalle[] = [];
 
   opcSolucionTitulo: ProgramaGeneralProblemaFactorSolucion[] = [];
@@ -51,7 +51,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   subSolucionesCatalogo: Opcion[] = [];
 
   formProblema: FormGroup;
-  
+
   mostrarCuadro = false;
 
   private registrosDisponiblesBase: IProblemaFactorSolucion[] = [];
@@ -64,7 +64,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     private formBuilder: FormBuilder,
     private integraService: IntegraService,
     private alertaService: AlertaService) {
-    
+
     this.formProblema = this.formBuilder.group({
       id: 0,
       idPGeneral: 0,
@@ -72,7 +72,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       detalleId: [null],
       detalleTituloId: [null],
       solucionTituloId: [null],
-      solucionSubTituloId: [null,Validators.required],
+      solucionSubTituloId: [null, Validators.required],
       solucionDescripcionId: [null],
       subSolucionesIds: [[] as number[]],
     });
@@ -84,30 +84,28 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     this.obtenerCombos();
     this.formProblema.get('problemaId')?.valueChanges.subscribe(id => {
       this.formProblema.patchValue({ detalleId: null });
-      this.limpiarSubniveles(['detalleTituloId', 'solucionTituloId', 'solucionSubTituloId', 'solucionDescripcionId']);
+      this.limpiarSubniveles(['detalleTituloId']);
     });
 
     this.formProblema.get('detalleId')?.valueChanges.subscribe(id => {
       this.cargarTitulos(id);
       this.formProblema.patchValue({ detalleTituloId: null });
-      this.limpiarSubniveles(['solucionTituloId', 'solucionSubTituloId', 'solucionDescripcionId']);
     });
 
-    this.formProblema.get('detalleTituloId')?.valueChanges.subscribe(id => {
-      this.cargarSolucionTitulos(id);
-      this.formProblema.patchValue({ solucionTituloId: null });
+    //Solucion
+     this.formProblema.get('solucionDescripcionId')?.valueChanges.subscribe(id => {
+      this.limpiarSubniveles(['solucionSubTituloId', 'solucionTituloId']);
+    });
+    this.formProblema.get('solucionTituloId')?.valueChanges.subscribe(id => {
       this.limpiarSubniveles(['solucionSubTituloId', 'solucionDescripcionId']);
     });
-    //Solucion
     this.formProblema.get('solucionSubTituloId')?.valueChanges.subscribe(id => {
-      this.cargarSolucionTitulos(id);
-      this.cargarSolucionDetalle(id);
-      if (id) {
-        this.mostrarCuadroSubtitulo(id);
-      }
-      this.limpiarSubniveles(['solucionTituloId','solucionDescripcionId']);
+      // if (id) {
+      //   this.mostrarCuadroSubtitulo(id);
+      // }
+      this.limpiarSubniveles(['solucionTituloId', 'solucionDescripcionId']);
     });
-    
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -127,8 +125,14 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
           this.opcDetalle = resp.body?.problemaFactorDetalle ?? [];
           this.opcSolucion = resp.body?.problemaFactorSolucion ?? [];
           if (this.opcSolucion.length > 0) {
-            this.opcSolucionSubTitulo = this.opcSolucion.filter(
+            this.opcSolucionDescripcion = this.opcSolucion.filter(
               s => s.descripcion && s.descripcion.trim().length > 0
+            );
+            this.opcSolucionTitulo = this.opcSolucion.filter(
+              s => s.titulo && s.titulo.trim().length > 0
+            );
+            this.opcSolucionSubTitulo = this.opcSolucion.filter(
+              s => s.subTitulo && s.subTitulo.trim().length > 0
             );
           }
         },
@@ -139,38 +143,38 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       });
   }
   ObtenerInformacionSubTitulo(id: number): void {
-  if (!id || id <= 0) {
-    this.alertaService.notificationWarning('Debe seleccionar un subtítulo válido antes de continuar.');
-    return;
-  }
-  this.integraService
-    .getJsonResponse(`/ProgramaGeneralProblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion/${id}`)
-    .subscribe({
-      next: (resp: HttpResponse<IProblemaFactorSolucion[]>) => {
-        const data = resp.body ?? [];
+    if (!id || id <= 0) {
+      this.alertaService.notificationWarning('Debe seleccionar un subtítulo válido antes de continuar.');
+      return;
+    }
+    this.integraService
+      .getJsonResponse(`/ProgramaGeneralProblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion/${id}`)
+      .subscribe({
+        next: (resp: HttpResponse<IProblemaFactorSolucion[]>) => {
+          const data = resp.body ?? [];
 
-        if (!Array.isArray(data) || data.length === 0) {
-          this.alertaService.notificationInfo('No se encontraron subsoluciones para el subtítulo seleccionado.');
+          if (!Array.isArray(data) || data.length === 0) {
+            this.alertaService.notificationInfo('No se encontraron subsoluciones para el subtítulo seleccionado.');
+            this.registrosDisponiblesBase = [];
+            this.mostrarCuadro = false;
+            return;
+          }
+
+          // Asignar los registros
+          this.registrosDisponiblesBase = data;
+
+          // Mostrar el cuadro y sincronizar
+          this.mostrarCuadro = true;
+          this.syncDisponiblesConBase();
+        },
+        error: (error) => {
+          const mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(`Error al obtener subsoluciones: ${mensaje}`);
           this.registrosDisponiblesBase = [];
           this.mostrarCuadro = false;
-          return;
-        }
-
-        // Asignar los registros
-        this.registrosDisponiblesBase = data;
-
-        // Mostrar el cuadro y sincronizar
-        this.mostrarCuadro = true;
-        this.syncDisponiblesConBase();
-      },
-      error: (error) => {
-        const mensaje = this.alertaService.getMessageErrorService(error);
-        this.alertaService.notificationWarning(`Error al obtener subsoluciones: ${mensaje}`);
-        this.registrosDisponiblesBase = [];
-        this.mostrarCuadro = false;
-      },
-    });
-}
+        },
+      });
+  }
 
   mostrarCuadroSubtitulo(id: number): void {
     if (!id || id <= 0) {
@@ -186,7 +190,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   limpiarSubniveles(campos: string[]) {
     campos.forEach(c => this.formProblema.patchValue({ [c]: null }));
   }
-  
+
 
   cargarTitulos(detalleId: number) {
     this.opcDetalleTitulo = detalleId ? this.opcDetalle.filter(d => d.id === detalleId) : [];
@@ -233,7 +237,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     //   registrosSeleccionados: seleccionados,
     //   fechaRegistro: new Date().toISOString(),
     // };
-    const nuevoFormatoSoluciones =  this.registrosSeleccionados.map(item => ({
+    const nuevoFormatoSoluciones = this.registrosSeleccionados.map(item => ({
       IdProgramaGeneralProblemaFactorSubSolucion: item.id
     }));
     if (nuevoFormatoSoluciones.length === 0) {
@@ -242,20 +246,23 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     }
 
     const dataTransformada = {
-      idPGeneral:this.idPGeneral,
+      idPGeneral: this.idPGeneral,
       IdProgramaGeneralProblemaFactor: formValues.problemaId,
       IdProgramaGeneralProblemaFactorDetalle: formValues.detalleId,
       AplicaNombreDetalle: formValues.detalleId != null,
       AplicaTituloDetalle: formValues.detalleTituloId != null,
-      AplicaPieDePagina: false, 
+      AplicaPieDePagina: false,
       AplicaDescripcionSolucion: formValues.solucionDescripcionId != null,
       AplicaTituloSolucion: formValues.solucionTituloId != null,
       AplicaSubTituloSolucion: formValues.solucionSubTituloId != null,
-      soluciones: nuevoFormatoSoluciones ,
+      soluciones: nuevoFormatoSoluciones,
     };
     this.integraService.postJsonResponse('/ProgramaGeneralProblemaDetalle/Insertar', dataTransformada)
       .subscribe({
-        next: resp => this.alertaService.notificationSuccess('Guardado correctamente.'),
+        next: (resp: HttpResponse<any>) => {
+          this.alertaService.notificationSuccess('Guardado correctamente.');
+          this.cerrar();
+        },
         error: err => this.alertaService.notificationError('Error al guardar.')
       });
   }
