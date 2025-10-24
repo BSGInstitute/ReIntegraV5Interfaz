@@ -69,10 +69,10 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       id: 0,
       idPGeneral: 0,
       problemaId: [null, Validators.required],
-      detalleId: [null, Validators.required],
+      detalleId: [null],
       detalleTituloId: [null],
       solucionTituloId: [null],
-      solucionSubTituloId: [null],
+      solucionSubTituloId: [null,Validators.required],
       solucionDescripcionId: [null],
       subSolucionesIds: [[] as number[]],
     });
@@ -98,22 +98,16 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       this.formProblema.patchValue({ solucionTituloId: null });
       this.limpiarSubniveles(['solucionSubTituloId', 'solucionDescripcionId']);
     });
-
-    this.formProblema.get('solucionDescripcionId')?.valueChanges.subscribe(id => {
-      this.cargarSolucionSubTitulos(id);
-      this.cargarSolucionTitulos(id);
-      this.formProblema.patchValue({ solucionSubTituloId: null });
-    this.limpiarSubniveles(['solucionTituloId','solucionSubTituloId']);
-    });
-
-    this.formProblema.get('solucionTituloId')?.valueChanges.subscribe(id => {
-      this.formProblema.patchValue({ solucionSubTituloId: null });
-      // this.limpiarSubniveles(['solucionDescripcionId']);
-    });
-
+    //Solucion
     this.formProblema.get('solucionSubTituloId')?.valueChanges.subscribe(id => {
-      this.mostrarCuadroSubtitulo(id);
+      this.cargarSolucionTitulos(id);
+      this.cargarSolucionDetalle(id);
+      if (id) {
+        this.mostrarCuadroSubtitulo(id);
+      }
+      this.limpiarSubniveles(['solucionTituloId','solucionDescripcionId']);
     });
+    
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -133,7 +127,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
           this.opcDetalle = resp.body?.problemaFactorDetalle ?? [];
           this.opcSolucion = resp.body?.problemaFactorSolucion ?? [];
           if (this.opcSolucion.length > 0) {
-            this.opcSolucionDescripcion = this.opcSolucion.filter(
+            this.opcSolucionSubTitulo = this.opcSolucion.filter(
               s => s.descripcion && s.descripcion.trim().length > 0
             );
           }
@@ -149,7 +143,6 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     this.alertaService.notificationWarning('Debe seleccionar un subtítulo válido antes de continuar.');
     return;
   }
-
   this.integraService
     .getJsonResponse(`/ProgramaGeneralProblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion/${id}`)
     .subscribe({
@@ -204,8 +197,8 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     this.opcSolucionTitulo = detalleTituloId ? this.opcSolucion.filter(s => s.id === detalleTituloId && s.titulo.length > 0) : [];
   }
 
-  cargarSolucionSubTitulos(solucionTituloId: number) {
-    this.opcSolucionSubTitulo = solucionTituloId ? this.opcSolucion.filter(s => s.id === solucionTituloId && s.subTitulo && s.subTitulo.length > 0) : [];
+  cargarSolucionDetalle(detalleId: number) {
+    this.opcSolucionDescripcion = detalleId ? this.opcSolucion.filter(s => s.id === detalleId && s.titulo.length > 0) : [];
   }
 
   cerrar() {
@@ -223,31 +216,48 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     const formValues = this.formProblema.value;
 
     // Estructuramos los registros seleccionados (con subregistros, si existen)
-    const seleccionados = this.registrosSeleccionados.map((item: any) => ({
-      id: item.id ?? null,
-      solucion: item.solucion ?? null,
-      subregistros: item.subregistros
-        ? item.subregistros.filter((s: any) => s.seleccionado).map((s: any) => ({
-            id: s.id,
-            nombre: s.nombre,
-          }))
-        : [],
-    }));
+    // const seleccionados = this.registrosSeleccionados.map((item: any) => ({
+    //   id: item.id ?? null,
+    //   solucion: item.solucion ?? null,
+    //   subregistros: item.subregistros
+    //     ? item.subregistros.filter((s: any) => s.seleccionado).map((s: any) => ({
+    //         id: s.id,
+    //         nombre: s.nombre,
+    //       }))
+    //     : [],
+    // }));
 
     // Estructura final a enviar
-    const dataFinal = {
-      ...formValues,
-      registrosSeleccionados: seleccionados,
-      fechaRegistro: new Date().toISOString(),
+    // const dataFinal = {
+    //   ...formValues,
+    //   registrosSeleccionados: seleccionados,
+    //   fechaRegistro: new Date().toISOString(),
+    // };
+    const nuevoFormatoSoluciones =  this.registrosSeleccionados.map(item => ({
+      IdProgramaGeneralProblemaDetalle: item.id,
+      IdProgramaGeneralProblemaFactorSolucion: item.idProgramaGeneralProblemaFactorSolucion
+    }));
+    if (nuevoFormatoSoluciones.length === 0) {
+      this.alertaService.notificationWarning('Por favor, debe tener asignado al menos un registro de solución.');
+      return;
+    }
+
+    const dataTransformada = {
+      idPGeneral: 1,
+      idProblema: formValues.problemaId,
+      idProblemaDetalle: formValues.detalleId,
+      detalleDescripcion: formValues.detalleId != null,
+      detalleTitulo: formValues.detalleTituloId != null,
+      solucionDescripcion: formValues.solucionDescripcionId != null,
+      solucionTitulo: formValues.solucionTituloId != null,
+      solucionSubTitulo: formValues.solucionSubTituloId != null,
+      soluciones: nuevoFormatoSoluciones ,
     };
-
-    // this.integraService.postJsonResponse('/ProgramaGeneralProblemaFactorSolucion/Guardar', dataFinal)
-    //   .subscribe({
-    //     next: resp => this.alertaService.notificationSuccess('Guardado correctamente.'),
-    //     error: err => this.alertaService.notificationError('Error al guardar.')
-    //   });
-
-    // Por ahora mostramos los datos en consola
+    this.integraService.postJsonResponse('/ProgramaGeneralProblemaFactorSubSolucion/Insertar', dataTransformada)
+      .subscribe({
+        next: resp => this.alertaService.notificationSuccess('Guardado correctamente.'),
+        error: err => this.alertaService.notificationError('Error al guardar.')
+      });
   }
 
 
