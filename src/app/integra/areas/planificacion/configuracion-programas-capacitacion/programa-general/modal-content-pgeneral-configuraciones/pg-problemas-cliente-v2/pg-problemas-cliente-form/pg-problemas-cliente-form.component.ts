@@ -3,9 +3,15 @@ import { Component, Input, OnChanges, OnInit, Output, SimpleChanges } from '@ang
 import { EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { constApiPlanificacion } from '@environments/constApi';
-import { IProgramaGeneralFactor, ProgramaGeneralProblemaFactor, ProgramaGeneralProblemaFactorDetalle, ProgramaGeneralProblemaFactorSolucion } from '@planificacion/models/interfaces/ProgramaGeneralProblemaFactor';
+import {
+  IProgramaGeneralFactor,
+  ProgramaGeneralProblemaFactor,
+  ProgramaGeneralProblemaFactorDetalle,
+  ProgramaGeneralProblemaFactorSolucion
+} from '@planificacion/models/interfaces/ProgramaGeneralProblemaFactor';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 type Opcion = { id: number; nombre: string };
 
@@ -36,19 +42,18 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   @Input() dataProblema: any = null;
   @Output() cerrado = new EventEmitter<void>();
   @Input() idPGeneral!: number;
+
   ddlDefault: Opcion = { id: null as unknown as number, nombre: 'Seleccionar...' };
 
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
   opcDetalle: ProgramaGeneralProblemaFactorDetalle[] = [];
   opcSolucion: ProgramaGeneralProblemaFactorSolucion[] = [];
 
-
   opcDetalleTitulo: ProgramaGeneralProblemaFactorDetalle[] = [];
 
   opcSolucionTitulo: ProgramaGeneralProblemaFactorSolucion[] = [];
   opcSolucionSubTitulo: ProgramaGeneralProblemaFactorSolucion[] = [];
   opcSolucionDescripcion: ProgramaGeneralProblemaFactorSolucion[] = [];
-  subSolucionesCatalogo: Opcion[] = [];
 
   formProblema: FormGroup;
 
@@ -63,8 +68,8 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   constructor(
     private formBuilder: FormBuilder,
     private integraService: IntegraService,
-    private alertaService: AlertaService) {
-
+    private alertaService: AlertaService
+  ) {
     this.formProblema = this.formBuilder.group({
       id: 0,
       idPGeneral: 0,
@@ -82,35 +87,58 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.obtenerCombos();
-    this.formProblema.get('problemaId')?.valueChanges.subscribe(id => {
-      this.formProblema.patchValue({ detalleId: null });
-      this.limpiarSubniveles(['detalleTituloId']);
-    });
 
-    this.formProblema.get('detalleId')?.valueChanges.subscribe(id => {
-      this.cargarTitulos(id);
-      this.formProblema.patchValue({ detalleTituloId: null });
-    });
+    // PROBLEMA -> resetea detalle y niveles (sin bucles)
+    this.formProblema.get('problemaId')!
+      .valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(() => {
+        // si quieres que cambie 'detalleId' y dispare su propio valueChanges,
+        // déjalo con emitEvent:true. Aquí ponemos false y limpiamos manualmente.
+        this.formProblema.patchValue({ detalleId: null }, { emitEvent: false });
+        this.cargarTitulos(null as any);
+        this.limpiarSubniveles(['detalleTituloId', 'solucionTituloId', 'solucionSubTituloId', 'solucionDescripcionId']);
+      });
 
-    //Solucion
-     this.formProblema.get('solucionDescripcionId')?.valueChanges.subscribe(id => {
-      this.limpiarSubniveles(['solucionSubTituloId', 'solucionTituloId']);
-    });
-    this.formProblema.get('solucionTituloId')?.valueChanges.subscribe(id => {
-      this.limpiarSubniveles(['solucionSubTituloId', 'solucionDescripcionId']);
-    });
-    this.formProblema.get('solucionSubTituloId')?.valueChanges.subscribe(id => {
-      // if (id) {
-      //   this.mostrarCuadroSubtitulo(id);
-      // }
-      this.limpiarSubniveles(['solucionTituloId', 'solucionDescripcionId']);
-    });
+    // DETALLE -> carga títulos y limpia (sin emitir)
+    this.formProblema.get('detalleId')!
+      .valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(id => {
+        this.cargarTitulos(id);
+        this.formProblema.patchValue({ detalleTituloId: null }, { emitEvent: false });
+        this.limpiarSubniveles(['solucionTituloId', 'solucionSubTituloId', 'solucionDescripcionId']);
+      });
 
+    // SOLUCIÓN DESCRIPCIÓN -> limpia otros dos (sin bucles)
+    this.formProblema.get('solucionDescripcionId')!
+      .valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(() => {
+        this.limpiarSubniveles(['solucionSubTituloId', 'solucionTituloId']);
+      });
+
+    // SOLUCIÓN TÍTULO -> limpia otros dos (sin bucles)
+    this.formProblema.get('solucionTituloId')!
+      .valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(() => {
+        this.limpiarSubniveles(['solucionSubTituloId', 'solucionDescripcionId']);
+      });
+
+    // SOLUCIÓN SUBTÍTULO -> abre cuadro y limpia (sin bucles)
+    this.formProblema.get('solucionSubTituloId')!
+      .valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(id => {
+        if (id) this.mostrarCuadroSubtitulo(id);
+        this.limpiarSubniveles(['solucionTituloId', 'solucionDescripcionId']);
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.dataProblema) {
-      this.formProblema.patchValue(this.dataProblema);
+      this.formProblema.patchValue(this.dataProblema, { emitEvent: false });
     } else if (!this.visible) {
       this.formProblema.reset();
     }
@@ -122,26 +150,21 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       .subscribe({
         next: (resp: HttpResponse<IProgramaGeneralFactor>) => {
           this.opcProblema = resp.body?.problemaFactor ?? [];
-          this.opcDetalle = resp.body?.problemaFactorDetalle ?? [];
+          this.opcDetalle  = resp.body?.problemaFactorDetalle ?? [];
           this.opcSolucion = resp.body?.problemaFactorSolucion ?? [];
           if (this.opcSolucion.length > 0) {
-            this.opcSolucionDescripcion = this.opcSolucion.filter(
-              s => s.descripcion && s.descripcion.trim().length > 0
-            );
-            this.opcSolucionTitulo = this.opcSolucion.filter(
-              s => s.titulo && s.titulo.trim().length > 0
-            );
-            this.opcSolucionSubTitulo = this.opcSolucion.filter(
-              s => s.subTitulo && s.subTitulo.trim().length > 0
-            );
+            this.opcSolucionDescripcion = this.opcSolucion.filter(s => s.descripcion && s.descripcion.trim().length > 0);
+            this.opcSolucionTitulo      = this.opcSolucion.filter(s => s.titulo && s.titulo.trim().length > 0);
+            this.opcSolucionSubTitulo   = this.opcSolucion.filter(s => s.subTitulo && s.subTitulo.trim().length > 0);
           }
         },
         error: (error) => {
-          let mensaje = this.alertaService.getMessageErrorService(error);
+          const mensaje = this.alertaService.getMessageErrorService(error);
           this.alertaService.notificationWarning(mensaje);
         },
       });
   }
+
   ObtenerInformacionSubTitulo(id: number): void {
     if (!id || id <= 0) {
       this.alertaService.notificationWarning('Debe seleccionar un subtítulo válido antes de continuar.');
@@ -160,10 +183,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
             return;
           }
 
-          // Asignar los registros
           this.registrosDisponiblesBase = data;
-
-          // Mostrar el cuadro y sincronizar
           this.mostrarCuadro = true;
           this.syncDisponiblesConBase();
         },
@@ -182,27 +202,36 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       this.mostrarCuadro = false;
       return;
     }
-
-    // Llama al servicio que cargará los datos y mostrará el cuadro si hay información
     this.ObtenerInformacionSubTitulo(id);
   }
 
-  limpiarSubniveles(campos: string[]) {
-    campos.forEach(c => this.formProblema.patchValue({ [c]: null }));
+  /** Resetea controles sin disparar valueChanges (evita bucles) */
+  private limpiarSubniveles(campos: string[]) {
+    const patch: any = {};
+    for (const c of campos) {
+      if (this.formProblema.get(c)?.value != null) {
+        patch[c] = null;
+      }
+    }
+    if (Object.keys(patch).length) {
+      this.formProblema.patchValue(patch, { emitEvent: false });
+    }
   }
-
 
   cargarTitulos(detalleId: number) {
     this.opcDetalleTitulo = detalleId ? this.opcDetalle.filter(d => d.id === detalleId) : [];
   }
 
-
   cargarSolucionTitulos(detalleTituloId: number) {
-    this.opcSolucionTitulo = detalleTituloId ? this.opcSolucion.filter(s => s.id === detalleTituloId && s.titulo.length > 0) : [];
+    this.opcSolucionTitulo = detalleTituloId
+      ? this.opcSolucion.filter(s => s.id === detalleTituloId && s.titulo.length > 0)
+      : [];
   }
 
   cargarSolucionDetalle(detalleId: number) {
-    this.opcSolucionDescripcion = detalleId ? this.opcSolucion.filter(s => s.id === detalleId && s.titulo.length > 0) : [];
+    this.opcSolucionDescripcion = detalleId
+      ? this.opcSolucion.filter(s => s.id === detalleId && s.titulo.length > 0)
+      : [];
   }
 
   cerrar() {
@@ -216,57 +245,39 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Obtenemos los valores del formulario
-    const formValues = this.formProblema.value;
+    const v = this.formProblema.value;
 
-    // Estructuramos los registros seleccionados (con subregistros, si existen)
-    // const seleccionados = this.registrosSeleccionados.map((item: any) => ({
-    //   id: item.id ?? null,
-    //   solucion: item.solucion ?? null,
-    //   subregistros: item.subregistros
-    //     ? item.subregistros.filter((s: any) => s.seleccionado).map((s: any) => ({
-    //         id: s.id,
-    //         nombre: s.nombre,
-    //       }))
-    //     : [],
-    // }));
-
-    // Estructura final a enviar
-    // const dataFinal = {
-    //   ...formValues,
-    //   registrosSeleccionados: seleccionados,
-    //   fechaRegistro: new Date().toISOString(),
-    // };
     const nuevoFormatoSoluciones = this.registrosSeleccionados.map(item => ({
       IdProgramaGeneralProblemaFactorSubSolucion: item.id
     }));
+
     if (nuevoFormatoSoluciones.length === 0) {
       this.alertaService.notificationWarning('Por favor, debe tener asignado al menos un registro de solución.');
       return;
     }
 
-    const dataTransformada = {
+    const payload = {
       idPGeneral: this.idPGeneral,
-      IdProgramaGeneralProblemaFactor: formValues.problemaId,
-      IdProgramaGeneralProblemaFactorDetalle: formValues.detalleId,
-      AplicaNombreDetalle: formValues.detalleId != null,
-      AplicaTituloDetalle: formValues.detalleTituloId != null,
+      IdProgramaGeneralProblemaFactor: v.problemaId,
+      IdProgramaGeneralProblemaFactorDetalle: v.detalleId,
+      AplicaNombreDetalle: v.detalleId != null,
+      AplicaTituloDetalle: v.detalleTituloId != null,
       AplicaPieDePagina: false,
-      AplicaDescripcionSolucion: formValues.solucionDescripcionId != null,
-      AplicaTituloSolucion: formValues.solucionTituloId != null,
-      AplicaSubTituloSolucion: formValues.solucionSubTituloId != null,
+      AplicaDescripcionSolucion: v.solucionDescripcionId != null,
+      AplicaTituloSolucion: v.solucionTituloId != null,
+      AplicaSubTituloSolucion: v.solucionSubTituloId != null,
       soluciones: nuevoFormatoSoluciones,
     };
-    this.integraService.postJsonResponse('/ProgramaGeneralProblemaDetalle/Insertar', dataTransformada)
+
+    this.integraService.postJsonResponse('/ProgramaGeneralProblemaDetalle/Insertar', payload)
       .subscribe({
-        next: (resp: HttpResponse<any>) => {
+        next: (_: HttpResponse<any>) => {
           this.alertaService.notificationSuccess('Guardado correctamente.');
           this.cerrar();
         },
-        error: err => this.alertaService.notificationError('Error al guardar.')
+        error: _ => this.alertaService.notificationError('Error al guardar.')
       });
   }
-
 
   // ===== SubSoluciones / selección =====
 
@@ -279,7 +290,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
   seleccionar(item: IProblemaFactorSolucion) {
     const yaPreSeleccionado = this.registrosPreSeleccionados.some(x => x.id === item.id);
-    const yaSeleccionado = this.registrosSeleccionados.some(x => x.id === item.id);
+    const yaSeleccionado    = this.registrosSeleccionados.some(x => x.id === item.id);
 
     if (!yaPreSeleccionado && !yaSeleccionado) {
       const subsoluciones = (item as any).subsoluciones?.map((s: any) => ({
@@ -297,7 +308,6 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
     item.seleccionado = false;
   }
-
 
   deseleccionar(item: any) {
     const index = this.registrosSeleccionados.findIndex(x => x.id === item.id);
@@ -346,9 +356,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     } as IProblemaFactorSolucion));
 
     const existentes = new Set(this.registrosDisponibles.map(d => d.id));
-    devueltos.forEach(r => {
-      if (!existentes.has(r.id)) this.registrosDisponibles.push(r);
-    });
+    devueltos.forEach(r => { if (!existentes.has(r.id)) this.registrosDisponibles.push(r); });
 
     this.registrosSeleccionados = [];
     this.registrosPreSeleccionados = [];
