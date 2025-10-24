@@ -35,7 +35,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   @Input() esNuevo = true;
   @Input() dataProblema: any = null;
   @Output() cerrado = new EventEmitter<void>();
-
+  @Input() idPGeneral!: number; 
   ddlDefault: Opcion = { id: null as unknown as number, nombre: 'Seleccionar...' };
 
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
@@ -234,8 +234,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     //   fechaRegistro: new Date().toISOString(),
     // };
     const nuevoFormatoSoluciones =  this.registrosSeleccionados.map(item => ({
-      IdProgramaGeneralProblemaDetalle: item.id,
-      IdProgramaGeneralProblemaFactorSolucion: item.idProgramaGeneralProblemaFactorSolucion
+      IdProgramaGeneralProblemaFactorSubSolucion: item.id
     }));
     if (nuevoFormatoSoluciones.length === 0) {
       this.alertaService.notificationWarning('Por favor, debe tener asignado al menos un registro de solución.');
@@ -243,17 +242,18 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     }
 
     const dataTransformada = {
-      idPGeneral: 1,
-      idProblema: formValues.problemaId,
-      idProblemaDetalle: formValues.detalleId,
-      detalleDescripcion: formValues.detalleId != null,
-      detalleTitulo: formValues.detalleTituloId != null,
-      solucionDescripcion: formValues.solucionDescripcionId != null,
-      solucionTitulo: formValues.solucionTituloId != null,
-      solucionSubTitulo: formValues.solucionSubTituloId != null,
+      idPGeneral:this.idPGeneral,
+      IdProgramaGeneralProblemaFactor: formValues.problemaId,
+      IdProgramaGeneralProblemaFactorDetalle: formValues.detalleId,
+      AplicaNombreDetalle: formValues.detalleId != null,
+      AplicaTituloDetalle: formValues.detalleTituloId != null,
+      AplicaPieDePagina: false, 
+      AplicaDescripcionSolucion: formValues.solucionDescripcionId != null,
+      AplicaTituloSolucion: formValues.solucionTituloId != null,
+      AplicaSubTituloSolucion: formValues.solucionSubTituloId != null,
       soluciones: nuevoFormatoSoluciones ,
     };
-    this.integraService.postJsonResponse('/ProgramaGeneralProblemaFactorSubSolucion/Insertar', dataTransformada)
+    this.integraService.postJsonResponse('/ProgramaGeneralProblemaDetalle/Insertar', dataTransformada)
       .subscribe({
         next: resp => this.alertaService.notificationSuccess('Guardado correctamente.'),
         error: err => this.alertaService.notificationError('Error al guardar.')

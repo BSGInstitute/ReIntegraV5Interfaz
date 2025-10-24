@@ -179,6 +179,10 @@ export class PgProblemasClienteV2Component implements OnInit {
     ];
   }
 
+  get dataItemPgeneral() {
+
+    return this.pgeneralService.dataItemPgeneral;
+  }
   abrirModal(data: IProblemaClienteSolucion, esNuevo: boolean) {
     this.dataSeleccionada = data;
     this.esNuevo = esNuevo;
