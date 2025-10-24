@@ -3831,6 +3831,8 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorSubSolucionActualizar:"/ProgramageneralproblemaFactorSubSolucion/Actualizar",
   ProgramageneralproblemaFactorSubSolucionEliminar:"/ProgramageneralproblemaFactorSubSolucion/Eliminar",
   ProgramageneralproblemaFactorSubSolucionObtenerPorIdProgramaGeneralProblemaFactorSolucion:"/ProgramageneralproblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion",
+
+  ProgramaGeneralProblemaFactorObtenerCombos: "/ProgramaGeneralProblemaFactor/ObtenerCombo",
 };
 
 export const constApiFinanzas = {

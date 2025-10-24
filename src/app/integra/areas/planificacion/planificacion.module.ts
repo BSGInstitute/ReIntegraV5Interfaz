@@ -130,6 +130,7 @@ import { ProgramaGeneralProblemaFactorDetalleComponent } from './configuracion-p
 import { ProgramaGeneralProblemaFactorSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-solucion/programa-general-problema-factor-solucion.component';
 import { ProgramaGeneralProblemaFactorSubSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-sub-solucion/programa-general-problema-factor-sub-solucion.component';
 import { PgGarantiaConfiabilidadComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-garantia-confiabilidad/pg-garantia-confiabilidad.component';
+import { PgProblemasClienteFormComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-problemas-cliente-v2/pg-problemas-cliente-form/pg-problemas-cliente-form.component';
 
 
 @NgModule({
@@ -259,6 +260,7 @@ import { PgGarantiaConfiabilidadComponent } from './configuracion-programas-capa
     ProgramaGeneralProblemaFactorDetalleComponent,
     ProgramaGeneralProblemaFactorSolucionComponent,
     ProgramaGeneralProblemaFactorSubSolucionComponent,
+    PgProblemasClienteFormComponent,
 
 
   ],

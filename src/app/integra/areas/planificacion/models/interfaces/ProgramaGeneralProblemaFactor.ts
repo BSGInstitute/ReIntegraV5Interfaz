@@ -23,3 +23,9 @@ export interface ProgramaGeneralProblemaFactorSubSolucion {
   Orden?: number;
   Nivel?: number;
 }
+
+export interface IProgramaGeneralFactor {
+    problemaFactor:         ProgramaGeneralProblemaFactor[];
+    problemaFactorDetalle:  ProgramaGeneralProblemaFactorDetalle[];
+    problemaFactorSolucion: ProgramaGeneralProblemaFactorSolucion[];
+}

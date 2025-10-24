@@ -10,6 +10,7 @@ import { FormService } from '@shared/services/form.service';
 import { PgeneralService } from '@planificacion/services/pgeneral.service';
 
 import { CompuestoProblemaModalidadAlternoDTO } from '@planificacion/models/interfaces/pgeneral/pgeneral';
+import { PgProblemasClienteFormComponent } from './pg-problemas-cliente-form/pg-problemas-cliente-form.component';
 
 type Opcion = { id: number; nombre: string };
 
@@ -30,13 +31,18 @@ export class PgProblemasClienteV2Component implements OnInit {
 
   @Input() pgeneralService!: PgeneralService;
 
-
+  listaProblemas = [
+      { id: 1, nombre: 'Error de conexión', descripcion: 'Falla al conectarse al servidor' },
+      { id: 2, nombre: 'Pantalla en blanco', descripcion: 'Interfaz no carga correctamente' }
+    ];
+  mostrarModal = false;
+  esNuevo = true;
+  dataSeleccionada: any = null;
   gridProblemasCliente = new KendoGrid<CompuestoProblemaModalidadAlternoDTO>();
 
  
   modalRef: any;
   loaderModal = false;
-  esNuevo = true;
 
   formProblema: FormGroup = this.formBuilder.group({
     id: 0,
@@ -93,61 +99,30 @@ export class PgProblemasClienteV2Component implements OnInit {
     });
   }
 
-  // ===== Abrir modal (insertar / editar) =====
-  abrirModal(context: any, esNuevo: boolean, dataItem?: any) {
+  
+
+  abrirModal(data: any, esNuevo: boolean) {
+    this.dataSeleccionada = data;
     this.esNuevo = esNuevo;
-
-    // Reset
-    this.formProblema.reset({
-      id: 0,
-      idPGeneral: this.dataItemPgeneral?.id ?? 0,
-
-      problemaId: null,
-      detalleId: null,
-      detalleTituloId: null,
-      solucionTituloId: null,
-      solucionSubTituloId: null,
-      solucionDescripcionId: null,
-      subSolucionesIds: [],
-    });
-
-    // Si es edición, preseleccionar
-    if (!esNuevo && dataItem) {
-      // Si tu item trae IDs, úsalos; si trae nombres, resolvemos ID por nombre.
-      const getId = (lista: Opcion[], idField: any, nameField: any) =>
-        this.resolveId(lista, idField, nameField);
-
-      const subIds = (dataItem.subSoluciones ?? [])
-        .map((s: any) => s?.id)
-        .filter((x: any) => typeof x === 'number');
-
-      this.formProblema.patchValue({
-        id: dataItem.id ?? 0,
-        idPGeneral: this.dataItemPgeneral?.id ?? 0,
-
-        problemaId: getId(this.opcProblema, dataItem.problemaId, dataItem.nombreProblema),
-        detalleId: getId(this.opcDetalle, dataItem.detalleId, dataItem.detalle),
-        detalleTituloId: getId(this.opcDetalleTitulo, dataItem.detalleTituloId, dataItem.detalleTitulo),
-        solucionTituloId: getId(this.opcSolucionTitulo, dataItem.solucionTituloId, dataItem.solucionTitulo),
-        solucionSubTituloId: getId(this.opcSolucionSubTitulo, dataItem.solucionSubTituloId, dataItem.solucionSubTitulo),
-        solucionDescripcionId: getId(this.opcSolucionDescripcion, dataItem.solucionDescripcionId, dataItem.solucionDescripcion),
-
-        subSolucionesIds: subIds,
-      });
-    }
-
-
-    if (!this.opcProblema.length) this.cargarCombosBasicos();
-    if (!this.subSolucionesCatalogo.length) this.cargarSubSoluciones();
-
-    // Abrir modal
-    this.modalRef = this.modalService.open(context, {
-      size: 'lg',
-      backdrop: 'static',
-      keyboard: false,
-      centered: true,
-    });
+    this.mostrarModal = true;
   }
+
+  cerrarModal(cerrado: boolean) {
+    this.mostrarModal = !cerrado;
+  }
+
+  guardarCambios(item: any) {
+    if (this.esNuevo) {
+      item.id = this.listaProblemas.length + 1;
+      this.listaProblemas.push(item);
+    } else {
+      const index = this.listaProblemas.findIndex(p => p.id === item.id);
+      if (index > -1) this.listaProblemas[index] = item;
+    }
+    this.mostrarModal = false;
+  }
+
+
 
   // ===== Cargar combos =====
   private cargarCombosBasicos(): void {
