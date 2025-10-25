@@ -1,6 +1,6 @@
 <kendo-dialog
   *ngIf="visible"
-  (close)="cerrar()"
+  (close)="cerrar(false)"
   [title]="esNuevo ? 'Nuevo Problema' : 'Editar Problema'"
   [width]="'1000px'"
   [height]="'auto'"
@@ -37,7 +37,7 @@
         <kendo-dropdownlist
           id="ddlDetalle"
           formControlName="detalleId"
-          [data]="opcDetalle"
+          [data]="detalleOptions"
           textField="nombre"
           valueField="id"
           [valuePrimitive]="true"
@@ -47,24 +47,23 @@
         ></kendo-dropdownlist>
       </kendo-formfield>
 
-      <!-- (Opcional) DETALLE - Título (si en tu flujo aplica; por ahora sin data y deshabilitado) -->
+      <!-- ====== DETALLE - Título (vinculado al Detalle) ====== -->
       <kendo-formfield orientation="horizontal">
         <label class="k-label" for="ddlDetalleTitulo">Título (Detalle):</label>
         <kendo-dropdownlist
           id="ddlDetalleTitulo"
           formControlName="detalleTituloId"
-          [data]="[]"
+          [data]="detalleTituloOptions"
           textField="titulo"
           valueField="id"
           [valuePrimitive]="true"
           [filterable]="true"
           [defaultItem]="{ id: null, titulo: 'Seleccionar…' }"
-          
           style="width:100%"
         ></kendo-dropdownlist>
       </kendo-formfield>
 
-      <!-- ====== SOLUCIÓN AGRUPADA ====== -->
+      <!-- ====== SOLUCIÓN (agrupado) ====== -->
 
       <!-- Descripción -->
       <kendo-formfield orientation="horizontal">
@@ -130,7 +129,8 @@
             <h4 class="m-0">Seleccionados</h4>
           </kendo-card-header>
           <kendo-card-body style="height: calc(100% - 50px); overflow-y: auto;">
-            <kendo-grid scrollable="scrollable"
+            <kendo-grid
+              scrollable="scrollable"
               [height]="400"
               [data]="registrosSeleccionados"
               [filterable]="false">
@@ -162,13 +162,6 @@
             <span class="k-icon k-i-arrow-60-left k-icon-24"></span>
           </button>
 
-          <!-- <button class="btn btn-danger"
-                  (click)="revertirADisponibles()"
-                  [disabled]="registrosSeleccionados.length === 0"
-                  title="Revertir a disponibles">
-            <span class="k-icon k-i-arrow-60-right k-icon-24"></span>
-          </button> -->
-
           <button class="btn btn-outline-danger"
                   (click)="revertirTodo()"
                   [disabled]="registrosSeleccionados.length === 0 && registrosPreSeleccionados.length === 0"
@@ -184,7 +177,6 @@
           </kendo-card-header>
           <kendo-card-body style="height: calc(100% - 50px); overflow-y: auto;">
             <kendo-grid [data]="registrosDisponibles" [filterable]="false" [height]="400" scrollable="scrollable">
-              <!-- Check standalone (sin ngModel en el form) -->
               <kendo-grid-column [width]="60">
                 <ng-template kendoGridCellTemplate let-dataItem>
                   <input
@@ -216,7 +208,7 @@
       <button kendoButton themeColor="primary" icon="save" (click)="guardar()">
         {{ esNuevo ? 'Guardar' : 'Actualizar' }}
       </button>
-      <button kendoButton themeColor="error" icon="close" (click)="cerrar()">
+      <button kendoButton themeColor="error" icon="close" (click)="cerrar(false)">
         Cancelar
       </button>
     </div>

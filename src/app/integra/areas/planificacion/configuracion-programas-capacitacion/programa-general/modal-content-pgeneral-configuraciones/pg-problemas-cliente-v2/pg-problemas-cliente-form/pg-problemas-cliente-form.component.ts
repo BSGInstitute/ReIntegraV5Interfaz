@@ -18,16 +18,13 @@ import {
 } from '@planificacion/models/interfaces/ProgramaGeneralProblemaFactor';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
-import { IProblemaClienteSolucion } from '../pg-problemas-cliente-v2.component';
-
-type Opcion = { id: number; nombre: string };
 
 interface ISubSolucionItem {
   id: number;
-  solucion?: string;   // nombre/etiqueta
-  nombre?: string;     // por si el API lo devuelve así
+  solucion?: string;
+  nombre?: string;
   seleccionado?: boolean;
-  // Puedes extender con más campos según tu API
+  asignacionId?: number | null;
 }
 
 @Component({
@@ -40,29 +37,49 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   @Input() esNuevo = true;
   @Input() dataProblema: any = null;
   @Input() idPGeneral!: number;
-  @Output() cerrado = new EventEmitter<void>();
 
-  // Combos raíz
+ 
+  @Output() cerrado = new EventEmitter<boolean>();
+
+
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
-  opcDetalle: ProgramaGeneralProblemaFactorDetalle[] = [];
 
-  // Base completa (sin filtrar) de soluciones
+
+  private opcDetalleAll: ProgramaGeneralProblemaFactorDetalle[] = [];
+  detalleOptions: ProgramaGeneralProblemaFactorDetalle[] = [];
+  detalleTituloOptions: ProgramaGeneralProblemaFactorDetalle[] = [];
+
+ 
   private opcSolucionBase: ProgramaGeneralProblemaFactorSolucion[] = [];
 
-  // Listas para los 3 dropdowns de solución
-  descOptions: ProgramaGeneralProblemaFactorSolucion[] = [];  
-  opcSolucionTituloFiltered: ProgramaGeneralProblemaFactorSolucion[] = [];
-  opcSolucionSubTituloFiltered: ProgramaGeneralProblemaFactorSolucion[] = []; 
 
-  // Form
+  descOptions: ProgramaGeneralProblemaFactorSolucion[] = [];               // únicas por descripción
+  opcSolucionTituloFiltered: ProgramaGeneralProblemaFactorSolucion[] = []; // únicas por título
+  opcSolucionSubTituloFiltered: ProgramaGeneralProblemaFactorSolucion[] = []; // únicas por subtítulo
+
+
   formProblema: FormGroup;
 
-  // Subsoluciones (panel dual)
+
   mostrarCuadro = false;
   private registrosDisponiblesBase: ISubSolucionItem[] = [];
   registrosDisponibles: ISubSolucionItem[] = [];
   registrosSeleccionados: ISubSolucionItem[] = [];
   registrosPreSeleccionados: ISubSolucionItem[] = [];
+
+  // Edición diferida (si combos no han cargado)
+  private combosListos = false;
+  private edicionPendiente:
+    | {
+        vals?: {
+          problemaId: number | null;
+          detalleId: number | null;
+          detalleTituloId: number | null;
+          solucionId: number | null;
+          subSolucionIds: number[];
+        };
+      }
+    | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -75,18 +92,14 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       problemaId: [null, Validators.required],
       detalleId: [null],
       detalleTituloId: [null],
-
-      // Solución
       solucionDescripcionId: [null],
       solucionTituloId: [null],
       solucionSubTituloId: [null],
-
-      // No se envían ids de solución en el payload final, solo flags y subsoluciones
       subSolucionesIds: [[] as number[]],
     });
   }
 
-  // ========= Helpers de texto / dedupe =========
+  // ========= Helpers =========
   private norm(s?: string | null): string {
     return (s ?? '').trim().toLowerCase();
   }
@@ -100,7 +113,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     const seen = new Set<string>();
     const out: T[] = [];
     for (const it of items) {
-      const key = this.norm(it[prop] as any);
+      const key = this.norm((it as any)[prop]);
       if (!key) continue;
       if (!seen.has(key)) {
         seen.add(key);
@@ -109,108 +122,113 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     }
     return out;
   }
-  private getById(id: number | null | undefined): ProgramaGeneralProblemaFactorSolucion | undefined {
+  private getById(
+    id: number | null | undefined
+  ): ProgramaGeneralProblemaFactorSolucion | undefined {
     if (id == null) return undefined;
-    return this.opcSolucionBase.find(x => x.id === id);
+    return this.opcSolucionBase.find((x) => x.id === id);
+  }
+
+  private toNum(v: any): number | null {
+    if (v === null || v === undefined || v === '') return null;
+    const n = Number(v);
+    if (!Number.isFinite(n) || n === 0) return null;
+    return n;
+  }
+
+  private getRegistroIdFromData(d: any): number | null {
+    return (
+      this.toNum(d?.id) ??
+      this.toNum(d?.Id) ??
+      this.toNum(d?.idProgramaGeneralProblemaDetalle) ??
+      this.toNum(d?.IdProgramaGeneralProblemaDetalle) ??
+      null
+    );
   }
 
   // ========= Ciclo de vida =========
   ngOnInit(): void {
     this.obtenerCombos();
 
-    // Cambia problema ⇒ limpia detalle y títulos, y reinicia subtítulo + subsoluciones
+
     this.formProblema.get('problemaId')?.valueChanges.subscribe(() => {
-      this.formProblema.patchValue({ detalleId: null, detalleTituloId: null }, { emitEvent: false });
-      // Si tuvieses un combo dependiente para títulos de detalle, límpialo aquí.
+      this.formProblema.patchValue(
+        { detalleId: null, detalleTituloId: null },
+        { emitEvent: false }
+      );
+      this.syncDetalleTituloLists();
+
+ 
+      this.formProblema.patchValue(
+        { solucionDescripcionId: null, solucionTituloId: null, solucionSubTituloId: null },
+        { emitEvent: false }
+      );
       this.resetSubtituloYSubsoluciones();
-      // Limpia también descripción/título de solución para evitar combinaciones residuales
-      this.formProblema.patchValue({ solucionDescripcionId: null, solucionTituloId: null }, { emitEvent: false });
+      this.onDescripcionChange(null);
       this.refreshSubtituloOptions();
     });
 
-    // Cambia detalle ⇒ carga títulos del detalle (si aplica) y limpia subtítulo + subsoluciones
-    this.formProblema.get('detalleId')?.valueChanges.subscribe(id => {
-      this.cargarTitulos(id);
-      this.formProblema.patchValue({ detalleTituloId: null }, { emitEvent: false });
-      this.resetSubtituloYSubsoluciones();
-      this.refreshSubtituloOptions();
+
+    this.formProblema.get('detalleId')?.valueChanges.subscribe((val) => {
+      const id = this.toNum(val);
+      if (id === null) {
+        this.formProblema.patchValue({ detalleTituloId: null }, { emitEvent: false });
+      }
+      this.syncDetalleTituloLists();
     });
 
-    // Cambia detalle-título ⇒ (si aplicara) refresca y limpia subtítulo + subsoluciones
-    this.formProblema.get('detalleTituloId')?.valueChanges.subscribe(() => {
-      this.resetSubtituloYSubsoluciones();
-      this.refreshSubtituloOptions();
+
+    this.formProblema.get('detalleTituloId')?.valueChanges.subscribe((val) => {
+      const id = this.toNum(val);
+      if (id === null) {
+        this.formProblema.patchValue({ detalleId: null }, { emitEvent: false });
+      }
+      this.syncDetalleTituloLists();
     });
 
     // === Solución: Descripción ===
-    this.formProblema.get('solucionDescripcionId')?.valueChanges.subscribe(id => {
-
+    this.formProblema.get('solucionDescripcionId')?.valueChanges.subscribe((id) => {
       this.resetSubtituloYSubsoluciones();
-      this.onDescripcionChange(id);
+      this.onDescripcionChange(this.toNum(id));
       this.evaluarCoincidenciaDescTitulo();
       this.refreshSubtituloOptions();
     });
 
     // === Solución: Título ===
-    this.formProblema.get('solucionTituloId')?.valueChanges.subscribe(id => {
-  
+    this.formProblema.get('solucionTituloId')?.valueChanges.subscribe(() => {
       this.resetSubtituloYSubsoluciones();
-      this.onTituloChange(id);
       this.evaluarCoincidenciaDescTitulo();
       this.refreshSubtituloOptions();
     });
 
     // === Solución: Subtítulo ===
-    this.formProblema.get('solucionSubTituloId')?.valueChanges.subscribe((id: number | null) => {
-      if (id) {
-        this.mostrarCuadroSubtitulo(id);
-      } else {
-        this.resetSubtituloYSubsoluciones();
-      }
-    });
-    
-    if (!this.esNuevo && this.dataProblema) {
-      this.cargarFormulario(this.dataProblema);
+    this.formProblema
+      .get('solucionSubTituloId')
+      ?.valueChanges.subscribe((id: number | null) => {
+        if (id) {
+          this.mostrarCuadroSubtitulo(id);
+        } else {
+          this.resetSubtituloYSubsoluciones();
+        }
+      });
+
+    // Edición si ya hay data y combos listos
+    if (!this.esNuevo && this.dataProblema && this.combosListos) {
+      this.aplicarEdicion(this.dataProblema);
     }
   }
 
-  cargarFormulario(data: IProblemaClienteSolucion): void {
-    this.formProblema.patchValue({
-      problemaId: data.problema.problemaId,
-      detalleId: data.problema.detalleId,
-      detalleTituloId: data.problema.detalleTituloId,
-      solucionDescripcionId: data.solucion.solucionDescripcionId,
-      solucionTituloId: data.solucion.solucionTituloId,
-      solucionSubTituloId: data.solucion.subTituloId,
-
-      // id: data.problema.problemaId,
-      // idPGeneral: this.idPGeneral,// todo: opcional con 0
-      // problemaId: data.problema.problemaId,
-      // detalleId: data.problema.detalleId,
-      // detalleTituloId: [null],
-
-      // // Solución
-      // solucionDescripcionId: [null],
-      // solucionTituloId: [null],
-      // solucionSubTituloId: [null],
-
-      // No se envían ids de solución en el payload final, solo flags y subsoluciones
-      subSolucionesIds: [[] as number[]],
-    });
-
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.dataProblema) {
-      this.formProblema.patchValue(this.dataProblema);
-      // reconstruye filtros si ya trae valores
-      const d = this.formProblema.value.solucionDescripcionId;
-      const t = this.formProblema.value.solucionTituloId;
-      this.onDescripcionChange(d);
-      this.onTituloChange(t);
-      this.refreshSubtituloOptions();
-    } else if (!this.visible) {
-      this.formProblema.reset();
+    if ('dataProblema' in changes) {
+      if (!this.esNuevo && this.dataProblema) {
+        if (!this.combosListos) {
+          this.edicionPendiente = { vals: this.adaptarEntrada(this.dataProblema) };
+        } else {
+          this.aplicarEdicion(this.dataProblema);
+        }
+      } else if (!this.visible) {
+        this.formProblema.reset();
+      }
     }
   }
 
@@ -221,22 +239,40 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       .subscribe({
         next: (resp: HttpResponse<IProgramaGeneralFactor>) => {
           const body = resp.body;
-          this.opcProblema = body?.problemaFactor ?? [];
-          this.opcDetalle = body?.problemaFactorDetalle ?? [];
+          this.opcProblema  = body?.problemaFactor ?? [];
+          this.opcDetalleAll = body?.problemaFactorDetalle ?? [];
           this.opcSolucionBase = body?.problemaFactorSolucion ?? [];
 
         
+          this.detalleOptions = [...this.opcDetalleAll];
+          this.detalleTituloOptions = [...this.opcDetalleAll];
+
+       
           this.descOptions = this.dedupeBy(
-            this.opcSolucionBase.filter(s => this.notEmpty(s.descripcion)),
+            this.opcSolucionBase.filter((s) => this.notEmpty(s.descripcion)),
             'descripcion'
           );
 
-      
+       
           this.opcSolucionTituloFiltered = [];
           this.opcSolucionSubTituloFiltered = [];
 
      
-          this.refreshSubtituloOptions();
+          this.syncDetalleTituloLists();
+
+       
+          const descId = this.toNum(this.formProblema.get('solucionDescripcionId')?.value);
+          this.onDescripcionChange(descId);
+          this.refreshSubtituloOptions(); 
+
+          this.combosListos = true;
+
+     
+          if (this.edicionPendiente?.vals) {
+            const vals = this.edicionPendiente.vals;
+            this.edicionPendiente = null;
+            this.aplicarValoresEdicion(vals);
+          }
         },
         error: (error) => {
           const mensaje = this.alertaService.getMessageErrorService(error);
@@ -245,11 +281,47 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       });
   }
 
-  // ========= Filtros agrupados =========
+  // ========= Sincronizar Detalle <-> Título(Detalle) =========
+
+  private syncDetalleTituloLists(): void {
+    const dId = this.toNum(this.formProblema.get('detalleId')?.value);
+    const tId = this.toNum(this.formProblema.get('detalleTituloId')?.value);
+    const ALL = [...this.opcDetalleAll];
+
+    if (dId === null && tId === null) {
+      this.detalleOptions = ALL;
+      this.detalleTituloOptions = ALL;
+      return;
+    }
+
+    if (dId !== null && tId === null) {
+      const match = this.opcDetalleAll.find((d) => d.id === dId);
+      this.detalleOptions = ALL;
+      this.detalleTituloOptions = match ? [match] : ALL;
+      return;
+    }
+
+    if (tId !== null && dId === null) {
+      const match = this.opcDetalleAll.find((d) => d.id === tId);
+      this.detalleOptions = match ? [match] : ALL;
+      this.detalleTituloOptions = ALL;
+      return;
+    }
+
+    const dMatch = this.opcDetalleAll.find((d) => d.id === dId);
+    const tMatch = this.opcDetalleAll.find((d) => d.id === tId);
+    this.detalleOptions = dMatch ? [dMatch] : ALL;
+    this.detalleTituloOptions = tMatch ? [tMatch] : ALL;
+  }
+
+  // ========= Filtros de Solución =========
   private onDescripcionChange(id: number | null): void {
     if (id == null) {
-      this.opcSolucionTituloFiltered = [];
-     
+      // SIN DESCRIPCIÓN: todos los títulos únicos
+      this.opcSolucionTituloFiltered = this.dedupeBy(
+        this.opcSolucionBase.filter((s) => this.notEmpty(s.titulo)),
+        'titulo'
+      );
       return;
     }
     const item = this.getById(id);
@@ -257,57 +329,47 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
     const descTxt = this.norm(item.descripcion);
 
-
     this.opcSolucionTituloFiltered = this.dedupeBy(
       this.opcSolucionBase.filter(
-        s => this.norm(s.descripcion) === descTxt && this.notEmpty(s.titulo)
+        (s) => this.norm(s.descripcion) === descTxt && this.notEmpty(s.titulo)
       ),
       'titulo'
     );
   }
 
-  private onTituloChange(id: number | null): void {
-    // Subtítulo se calcula en refreshSubtituloOptions()
-    // (si quieres mostrar títulos por descripción también aquí, mantén lo anterior)
-  }
-
-
   private refreshSubtituloOptions(): void {
-    const dId: number | null = this.formProblema.get('solucionDescripcionId')?.value ?? null;
-    const tId: number | null = this.formProblema.get('solucionTituloId')?.value ?? null;
+    const dId: number | null = this.toNum(this.formProblema.get('solucionDescripcionId')?.value);
+    const tId: number | null = this.toNum(this.formProblema.get('solucionTituloId')?.value);
 
-    const subNonEmpty = this.opcSolucionBase.filter(s => this.notEmpty(s.subTitulo));
+    const subNonEmpty = this.opcSolucionBase.filter((s) => this.notEmpty(s.subTitulo));
 
-
-    if (dId == null && tId == null) {
+    if (dId === null && tId === null) {
       this.opcSolucionSubTituloFiltered = this.dedupeBy(subNonEmpty, 'subTitulo');
       return;
     }
 
-    if (dId != null && tId == null) {
+    if (dId !== null && tId === null) {
       const d = this.getById(dId);
       if (!d) { this.opcSolucionSubTituloFiltered = []; return; }
       const descTxt = this.norm(d.descripcion);
       this.opcSolucionSubTituloFiltered = this.dedupeBy(
-        subNonEmpty.filter(s => this.norm(s.descripcion) === descTxt),
+        subNonEmpty.filter((s) => this.norm(s.descripcion) === descTxt),
         'subTitulo'
       );
       return;
     }
 
-    
-    if (tId != null && dId == null) {
+    if (tId !== null && dId === null) {
       const t = this.getById(tId);
       if (!t) { this.opcSolucionSubTituloFiltered = []; return; }
       const titTxt = this.norm(t.titulo);
       this.opcSolucionSubTituloFiltered = this.dedupeBy(
-        subNonEmpty.filter(s => this.norm(s.titulo) === titTxt),
+        subNonEmpty.filter((s) => this.norm(s.titulo) === titTxt),
         'subTitulo'
       );
       return;
     }
 
- 
     const d = this.getById(dId);
     const t = this.getById(tId);
     if (!d || !t) { this.opcSolucionSubTituloFiltered = []; return; }
@@ -316,38 +378,23 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
     this.opcSolucionSubTituloFiltered = this.dedupeBy(
       subNonEmpty.filter(
-        s => this.norm(s.descripcion) === descTxt && this.norm(s.titulo) === titTxt
+        (s) => this.norm(s.descripcion) === descTxt && this.norm(s.titulo) === titTxt
       ),
       'subTitulo'
     );
   }
 
-  
   private evaluarCoincidenciaDescTitulo(): void {
-    const dId: number | null = this.formProblema.get('solucionDescripcionId')?.value ?? null;
-    const tId: number | null = this.formProblema.get('solucionTituloId')?.value ?? null;
-
-    if (dId != null && tId != null && dId === tId) {
+    const dId: number | null = this.toNum(this.formProblema.get('solucionDescripcionId')?.value);
+    const tId: number | null = this.toNum(this.formProblema.get('solucionTituloId')?.value);
+    if (dId !== null && tId !== null && dId === tId) {
       this.resetSubtituloYSubsoluciones();
     }
   }
 
-  // ========= Otros (detalles) =========
-  cargarTitulos(detalleId: number | null): void {
-    // Si en tu flujo debes cargar títulos del detalle, hazlo aquí.
-    // (Dejamos vacío a propósito; no siempre se necesita)
-  }
-
-  cerrar(): void {
-    this.cerrado.emit();
-  }
-
   // ========= SubSoluciones =========
   private resetSubtituloYSubsoluciones(): void {
-    // Subtítulo a null (sin disparar valueChanges)
     this.formProblema.patchValue({ solucionSubTituloId: null }, { emitEvent: false });
-
-    // Oculta y limpia panel de subsoluciones
     this.mostrarCuadro = false;
     this.registrosDisponiblesBase = [];
     this.registrosDisponibles = [];
@@ -356,13 +403,16 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   }
 
   private syncDisponiblesConBase(): void {
-    const seleccionadosIds = new Set(this.registrosSeleccionados.map(r => r.id));
+    const seleccionadosIds = new Set(this.registrosSeleccionados.map((r) => r.id));
     this.registrosDisponibles = this.registrosDisponiblesBase
-      .filter(r => !seleccionadosIds.has(r.id))
-      .map(r => ({ ...r, seleccionado: false }));
+      .filter((r) => !seleccionadosIds.has(r.id))
+      .map((r) => ({ ...r, seleccionado: false }));
   }
 
-  mostrarCuadroSubtitulo(id: number): void {
+  mostrarCuadroSubtitulo(
+    id: number,
+    preselectPairs: Array<{ asignacionId: number | null; subSolucionId: number }> = []
+  ): void {
     if (!id || id <= 0) {
       this.mostrarCuadro = false;
       this.registrosDisponiblesBase = [];
@@ -370,22 +420,43 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       return;
     }
     this.integraService
-      .getJsonResponse(`/ProgramaGeneralProblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion/${id}`)
+      .getJsonResponse(
+        `/ProgramaGeneralProblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion/${id}`
+      )
       .subscribe({
         next: (resp: HttpResponse<any[]>) => {
-          const data = (resp.body ?? []).map(x => ({
-            id: x.id,
-            solucion: x.solucion ?? x.nombre ?? '',
-            seleccionado: false
-          })) as ISubSolucionItem[];
+          const data = (resp.body ?? []).map(
+            (x) =>
+              ({
+                id: x.id,
+                solucion: x.solucion ?? x.nombre ?? '',
+                seleccionado: false,
+              } as ISubSolucionItem)
+          );
 
           this.registrosDisponiblesBase = data;
           this.mostrarCuadro = data.length > 0;
+
+          if (preselectPairs.length > 0) {
+            const map = new Map(
+              preselectPairs.map((p) => [p.subSolucionId, p.asignacionId])
+            );
+            this.registrosSeleccionados = data
+              .filter((d) => map.has(d.id)) // d.id = Id de SUBSOLUCIÓN
+              .map((d) => ({
+                ...d,
+                asignacionId: map.get(d.id) ?? null, // Id de ASIGNACIÓN
+              }));
+          } else {
+            this.registrosSeleccionados = [];
+          }
           this.syncDisponiblesConBase();
         },
         error: (error) => {
           const mensaje = this.alertaService.getMessageErrorService(error);
-          this.alertaService.notificationWarning(`Error al obtener subsoluciones: ${mensaje}`);
+          this.alertaService.notificationWarning(
+            `Error al obtener subsoluciones: ${mensaje}`
+          );
           this.registrosDisponiblesBase = [];
           this.mostrarCuadro = false;
           this.syncDisponiblesConBase();
@@ -393,14 +464,14 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       });
   }
 
-  // === Botones/acciones panel (sin ngModel en el form) ===
   marcarPreseleccion(item: ISubSolucionItem, checked: boolean): void {
-    // úsalo desde (change) de un checkbox standalone
-    const yaPre = this.registrosPreSeleccionados.some(x => x.id === item.id);
+    const yaPre = this.registrosPreSeleccionados.some((x) => x.id === item.id);
     if (checked && !yaPre) {
       this.registrosPreSeleccionados.push({ ...item, seleccionado: true });
     } else if (!checked && yaPre) {
-      this.registrosPreSeleccionados = this.registrosPreSeleccionados.filter(x => x.id !== item.id);
+      this.registrosPreSeleccionados = this.registrosPreSeleccionados.filter(
+        (x) => x.id !== item.id
+      );
     }
   }
 
@@ -410,67 +481,47 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       return;
     }
     const nuevos = this.registrosPreSeleccionados.filter(
-      pre => !this.registrosSeleccionados.some(sel => sel.id === pre.id)
+      (pre) => !this.registrosSeleccionados.some((sel) => sel.id === pre.id)
     );
-    // Agrega
     this.registrosSeleccionados.push(...nuevos);
-    // Quita de disponibles
-    const idsPasados = new Set(nuevos.map(n => n.id));
-    this.registrosDisponibles = this.registrosDisponibles.filter(d => !idsPasados.has(d.id));
-    // Limpia preselección
+    const idsPasados = new Set(nuevos.map((n) => n.id));
+    this.registrosDisponibles = this.registrosDisponibles.filter(
+      (d) => !idsPasados.has(d.id)
+    );
     this.registrosPreSeleccionados = [];
   }
 
   deseleccionar(item: ISubSolucionItem): void {
-    const idx = this.registrosSeleccionados.findIndex(x => x.id === item.id);
+    const idx = this.registrosSeleccionados.findIndex((x) => x.id === item.id);
     if (idx >= 0) {
-      // devolver a disponibles si no existe ya
-      if (!this.registrosDisponibles.some(d => d.id === item.id)) {
+      if (!this.registrosDisponibles.some((d) => d.id === item.id)) {
         this.registrosDisponibles.push({ ...item, seleccionado: false });
       }
       this.registrosSeleccionados.splice(idx, 1);
     }
   }
 
-  revertirADisponibles(): void {
-    if (this.registrosSeleccionados.length === 0) {
-      this.alertaService.notificationInfo('No hay registros seleccionados para revertir.');
-      return;
-    }
-    const devueltos = this.registrosSeleccionados.map(sel => ({ ...sel, seleccionado: false }));
-    const existentes = new Set(this.registrosDisponibles.map(d => d.id));
-    devueltos.forEach(r => { if (!existentes.has(r.id)) this.registrosDisponibles.push(r); });
-    this.registrosSeleccionados = [];
-    this.registrosPreSeleccionados = [];
-  }
-
   revertirTodo(): void {
-    this.registrosDisponibles = this.registrosDisponiblesBase.map(r => ({ ...r, seleccionado: false }));
+    this.registrosDisponibles = this.registrosDisponiblesBase.map((r) => ({
+      ...r,
+      seleccionado: false,
+    }));
     this.registrosSeleccionados = [];
     this.registrosPreSeleccionados = [];
   }
 
-  // ========= Guardar =========
-  guardar(): void {
-    if (!this.formProblema.valid) {
-      this.formProblema.markAllAsTouched();
-      this.alertaService.notificationWarning('Por favor, completa los campos requeridos antes de guardar.');
-      return;
-    }
+  // ========= Insertar / Actualizar =========
 
+  private buildPayload(): any {
     const v = this.formProblema.value;
 
-    const solucionesPayload = this.registrosSeleccionados.map(it => ({
-      IdProgramaGeneralProblemaFactorSubSolucion: it.id
+    const Soluciones = this.registrosSeleccionados.map((it) => ({
+      Id: it.asignacionId ?? 0,
+      IdProgramaGeneralProblemaFactorSubSolucion: it.id,
     }));
 
-    if (solucionesPayload.length === 0) {
-      this.alertaService.notificationWarning('Por favor, debe tener asignado al menos un registro de solución.');
-      return;
-    }
-
-    const dataTransformada = {
-      idPGeneral: this.idPGeneral,
+    const payload: any = {
+      IdPGeneral: this.idPGeneral,
       IdProgramaGeneralProblemaFactor: v.problemaId,
       IdProgramaGeneralProblemaFactorDetalle: v.detalleId,
 
@@ -482,17 +533,212 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       AplicaTituloSolucion: v.solucionTituloId != null,
       AplicaSubTituloSolucion: v.solucionSubTituloId != null,
 
-      soluciones: solucionesPayload,
+      Soluciones,
     };
 
+
+    if (!this.esNuevo) {
+      const idRegistro = this.getRegistroIdFromData(this.dataProblema);
+      if (idRegistro != null) payload.Id = idRegistro;
+    }
+
+    return payload;
+  }
+
+  guardar(): void {
+    if (!this.formProblema.valid) {
+      this.formProblema.markAllAsTouched();
+      this.alertaService.notificationWarning(
+        'Por favor, completa los campos requeridos antes de guardar.'
+      );
+      return;
+    }
+
+    if (this.registrosSeleccionados.length === 0) {
+      this.alertaService.notificationWarning(
+        'Por favor, debe tener asignado al menos un registro de solución.'
+      );
+      return;
+    }
+
+    const payload = this.buildPayload();
+
+    if (this.esNuevo) {
+      this.insertar(payload);
+    } else {
+      this.actualizar(payload);
+    }
+  }
+
+  private insertar(payload: any): void {
     this.integraService
-      .postJsonResponse('/ProgramaGeneralProblemaDetalle/Insertar', dataTransformada)
+      .postJsonResponse('/ProgramaGeneralProblemaDetalle/Insertar', payload)
       .subscribe({
         next: () => {
           this.alertaService.notificationSuccess('Guardado correctamente.');
-          this.cerrar();
+          this.cerrar(true);
         },
         error: () => this.alertaService.notificationError('Error al guardar.'),
       });
+  }
+
+  private actualizar(payload: any): void {
+
+    this.integraService
+      .putJsonResponse('/ProgramaGeneralProblemaDetalle/Actualizar', payload)
+      .subscribe({
+        next: () => {
+          this.alertaService.notificationSuccess('Actualizado correctamente.');
+          this.cerrar(true);
+        },
+        error: () => this.alertaService.notificationError('Error al actualizar.'),
+      });
+  }
+
+  cerrar(refrescar = false): void {
+    this.cerrado.emit(refrescar);
+  }
+
+  // ========= EDICIÓN =========
+  private adaptarEntrada(data: any): {
+    problemaId: number | null;
+    detalleId: number | null;
+    detalleTituloId: number | null;
+    solucionId: number | null;
+    subSolucionIds: number[];
+  } {
+    const problemaId =
+      this.toNum(data?.problema?.problemaId) ??
+      this.toNum(data?.factor?.id) ??
+      this.toNum(data?.idProgramaGeneralProblemaFactor) ??
+      null;
+
+    const detalleId =
+      this.toNum(data?.problema?.detalleId) ??
+      this.toNum(data?.detalle?.id) ??
+      this.toNum(data?.idProgramaGeneralProblemaFactorDetalle) ??
+      null;
+
+    const detalleTituloId =
+      this.toNum(data?.problema?.detalleTituloId) ??
+      this.toNum(data?.detalle?.id) ??
+      detalleId;
+
+    const solucionId =
+      this.toNum(data?.solucion?.id) ??
+      this.toNum(data?.solucion?.solucionId) ??
+      this.toNum(data?.idProgramaGeneralProblemaFactorSolucion) ??
+      null;
+
+    const subSolucionIds = (Array.isArray(data?.subSoluciones) ? data.subSoluciones : [])
+      .map((x: any) =>
+        this.toNum(x?.idProgramaGeneralProblemaFactorSubSolucion ?? x?.id ?? x)
+      )
+      .filter((n: number | null) => n !== null) as number[];
+
+    return { problemaId, detalleId, detalleTituloId, solucionId, subSolucionIds };
+  }
+
+
+  private resolveDescOptionIdFromSolucion(solId: number | null): number | null {
+    if (solId == null) return null;
+    const base = this.getById(solId);
+    if (!base) return null;
+    const descTxt = this.norm(base.descripcion);
+    const opt = this.descOptions.find((o) => this.norm(o.descripcion) === descTxt);
+    return opt ? opt.id : null;
+  }
+
+
+  private resolveTituloOptionIdFromSolucion(solId: number | null): number | null {
+    if (solId == null) return null;
+    const base = this.getById(solId);
+    if (!base) return null;
+    const titTxt = this.norm(base.titulo);
+    const opt = this.opcSolucionTituloFiltered.find((o) => this.norm(o.titulo) === titTxt);
+    return opt ? opt.id : null;
+  }
+
+
+  private resolveSubtituloOptionIdFromSolucion(solId: number | null): number | null {
+    if (solId == null) return null;
+    const base = this.getById(solId);
+    if (!base) return null;
+    const subTxt = this.norm(base.subTitulo);
+    const opt = this.opcSolucionSubTituloFiltered.find(
+      (o) => this.norm(o.subTitulo) === subTxt
+    );
+    return opt ? opt.id : null;
+  }
+
+  private aplicarEdicion(data: any): void {
+    const vals = this.adaptarEntrada(data);
+    if (!this.combosListos) {
+      this.edicionPendiente = { vals };
+      return;
+    }
+    this.aplicarValoresEdicion(vals);
+  }
+
+  private aplicarValoresEdicion(vals: {
+    problemaId: number | null;
+    detalleId: number | null;
+    detalleTituloId: number | null;
+    solucionId: number | null;
+    subSolucionIds: number[];
+  }): void {
+    // Problema/Detalle
+    this.formProblema.patchValue(
+      {
+        problemaId: vals.problemaId,
+        detalleId: vals.detalleId,
+        detalleTituloId: vals.detalleTituloId,
+      },
+      { emitEvent: false }
+    );
+    this.syncDetalleTituloLists();
+
+    // Descripción (por texto, debido a dedupe)
+    const descOptId = this.resolveDescOptionIdFromSolucion(vals.solucionId);
+    this.formProblema.patchValue(
+      { solucionDescripcionId: descOptId, solucionTituloId: null, solucionSubTituloId: null },
+      { emitEvent: false }
+    );
+
+    this.onDescripcionChange(descOptId);
+    this.refreshSubtituloOptions();
+
+    // Título (por texto)
+    const tituloOptId = this.resolveTituloOptionIdFromSolucion(vals.solucionId);
+    this.formProblema.patchValue({ solucionTituloId: tituloOptId }, { emitEvent: false });
+    this.refreshSubtituloOptions();
+
+    // Subtítulo (por texto)
+    const subOptId = this.resolveSubtituloOptionIdFromSolucion(vals.solucionId);
+    this.formProblema.patchValue({ solucionSubTituloId: subOptId }, { emitEvent: false });
+
+    // ===== Preselección de subsoluciones con Id de ASIGNACIÓN =====
+    const preselectPairs =
+      (Array.isArray(this.dataProblema?.subSoluciones)
+        ? this.dataProblema.subSoluciones
+        : []
+      )
+        .map((x: any) => ({
+          asignacionId: this.toNum(x?.id) ?? null, // Id de ASIGNACIÓN
+          subSolucionId:
+            this.toNum(x?.idProgramaGeneralProblemaFactorSubSolucion) ??
+            this.toNum(x?.id) ??
+            0,
+        }))
+        .filter((p: any) => (p.subSolucionId ?? 0) > 0) as Array<{
+        asignacionId: number | null;
+        subSolucionId: number;
+      }>;
+
+    if (subOptId) {
+      this.mostrarCuadroSubtitulo(subOptId, preselectPairs);
+    } else {
+      this.resetSubtituloYSubsoluciones();
+    }
   }
 }

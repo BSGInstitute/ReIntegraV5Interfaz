@@ -1,10 +1,11 @@
-<!-- pg-problemas-cliente-v2.component.html -->
 <div class="pg-contenedor-tab pg-grid-problemas">
   <div class="row mt-3">
     <div class="col-12 pg-kgrid">
       <kendo-grid
         [kendoGridBinding]="gridProblemasCliente"
-        [selectable]="false" scrollable="none" filterable="menu"
+        [selectable]="false"
+        scrollable="none"
+        filterable="menu"
       >
         <ng-template kendoGridToolbarTemplate>
           <h3 class="mb-0 w-auto text-center">Problemas del Cliente</h3>
@@ -14,34 +15,53 @@
           </button>
         </ng-template>
 
+        <!-- ======= Problema ======= -->
         <kendo-grid-column-group title="Problema" headerClass="pg-group">
           <kendo-grid-column field="factor.nombre" title="Nombre" [width]="220"
             headerClass="pg-header-grid justify-content-center" class="text-start" [filterable]="true">
           </kendo-grid-column>
         </kendo-grid-column-group>
 
-
+        <!-- ======= Detalle (CORREGIDO) ======= -->
         <kendo-grid-column-group title="Detalle" headerClass="pg-group">
-          <kendo-grid-column field="" title="Detalle" [width]="300"
+          <!-- Detalle: nombre -->
+          <kendo-grid-column field="detalle.nombre" title="Detalle" [width]="300"
             headerClass="pg-header-grid justify-content-center" class="text-start" [filterable]="true">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem?.detalle?.nombre || '—' }}
+            </ng-template>
           </kendo-grid-column>
 
-          <kendo-grid-column field="factor.titulo" title="Titulo" [width]="220"
+          <!-- Título (Detalle): titulo -->
+          <kendo-grid-column field="detalle.titulo" title="Titulo" [width]="220"
             headerClass="pg-header-grid justify-content-center" class="text-start" [filterable]="true">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem?.detalle?.titulo || '—' }}
+            </ng-template>
           </kendo-grid-column>
         </kendo-grid-column-group>
 
-
+        <!-- ======= Solución ======= -->
         <kendo-grid-column-group title="Solución" headerClass="pg-group">
           <kendo-grid-column field="solucion.descripcion" title="Descripcion" [width]="300"
             headerClass="pg-header-grid justify-content-center" class="text-start" [filterable]="true">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem?.solucion?.descripcion || '—' }}
+            </ng-template>
           </kendo-grid-column>
+
           <kendo-grid-column field="solucion.titulo" title="Titulo" [width]="220"
             headerClass="pg-header-grid justify-content-center" class="text-start" [filterable]="true">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem?.solucion?.titulo || '—' }}
+            </ng-template>
           </kendo-grid-column>
 
           <kendo-grid-column field="solucion.subTitulo" title="SubTitulo" [width]="220"
             headerClass="pg-header-grid justify-content-center" class="text-start" [filterable]="true">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem?.solucion?.subTitulo || '—' }}
+            </ng-template>
           </kendo-grid-column>
 
           <kendo-grid-column title="Acciones" [width]="140"
@@ -50,13 +70,14 @@
               <div class="row justify-content-center">
                 <div kendoTooltip class="col-auto p-0 mx-1">
                   <button kendoGridEditCommand themeColor="warning" icon="plus" title="Sub Soluciones"
-                    (click)="abrirModalSubSoluciones(dataItem.subSoluciones)"></button>
+                          (click)="abrirModalSubSoluciones(dataItem.subSoluciones)"></button>
                 </div>
               </div>
             </ng-template>
           </kendo-grid-column>
         </kendo-grid-column-group>
 
+        <!-- ======= Acciones ======= -->
         <kendo-grid-column-group title="" headerClass="pg-group-empty">
           <kendo-grid-column title="Acciones" [width]="140"
             headerClass="pg-header-grid justify-content-center text-center">
@@ -64,11 +85,11 @@
               <div class="row justify-content-center">
                 <div kendoTooltip class="col-auto p-0 mx-1">
                   <button kendoGridEditCommand themeColor="warning" icon="pencil" title="Editar"
-                    (click)="abrirModal(dataItem, false)"></button>
+                          (click)="abrirModal(dataItem, false)"></button>
                 </div>
                 <div kendoTooltip class="col-auto p-0 mx-1">
                   <button kendoGridRemoveCommand themeColor="error" icon="trash" title="Eliminar"
-                   (click)="abrirModalEliminar(dataItem)"></button>
+                          (click)="abrirModalEliminar(dataItem)"></button>
                 </div>
               </div>
             </ng-template>
@@ -78,7 +99,6 @@
     </div>
   </div>
 </div>
-
 <!-- ================= MODAL SUB SOLUCIONES ================= -->
 <kendo-dialog *ngIf="mdSubSoluciones"
   (close)="mdSubSoluciones = false"
@@ -92,24 +112,9 @@
 
   <div class="modal-body">
     <div class="card mb-3 shadow-sm border-0 bg-light rounded-3 p-3">
-      <h5 class="fw-bold text-primary mb-2">Solución Seleccionada</h5>
-      <div class="row g-2">
-        <div class="col-12" *ngIf="(gridProblemasClienteSubSoluciones?.descripcion || '').length > 0">
-          <strong>Descripción:</strong>
-          <span> {{ gridProblemasClienteSubSoluciones?.descripcion }}</span>
-        </div>
-        <div class="col-md-6" *ngIf="(gridProblemasClienteSubSoluciones?.titulo || '').length > 0">
-          <strong>Título:</strong>
-          <span> {{ gridProblemasClienteSubSoluciones?.titulo }}</span>
-        </div>
-        <div class="col-md-6" *ngIf="(gridProblemasClienteSubSoluciones?.subTitulo || '').length > 0">
-          <strong>Subtítulo:</strong>
-          <span> {{ gridProblemasClienteSubSoluciones?.subTitulo }}</span>
-        </div>
-      </div>
+      <h2 class="fw-bold text-primary mb-2">SubSolución : </h2>
     </div>
 
-    <!-- Grilla con lookup de subsoluciones -->
     <kendo-grid
       [kendoGridBinding]="modalSubGridData"
       [selectable]="false"
@@ -133,7 +138,6 @@
   </div>
 </kendo-dialog>
 
-
 <!-- ================= MODAL CONFIRMACIÓN ELIMINACIÓN ================= -->
 <kendo-dialog *ngIf="mdEliminar" (close)="cerrarModalEliminar(false)"
   title="Confirmar Eliminación"
@@ -144,7 +148,7 @@
   <div class="modal-body text-center">
     <p class="fs-5 mb-3">
       ¿Está seguro de eliminar el problema
-      <strong class="text-danger" *ngIf="registroAEliminar?.problema?.nombre.length > 0">
+      <strong class="text-danger" *ngIf="registroAEliminar?.problema?.nombre?.length > 0">
         "{{ registroAEliminar?.problema?.nombre }}"
       </strong>?
     </p>
@@ -161,9 +165,11 @@
   </div>
 </kendo-dialog>
 
-
-<app-pg-problemas-cliente-form *ngIf="mostrarModal" [visible]="mostrarModal" [esNuevo]="esNuevo" [idPGeneral]="dataItemPgeneral?.id"
-  [dataProblema]="dataSeleccionada" (cerrado)="mostrarModal = false">
+<app-pg-problemas-cliente-form
+  *ngIf="mostrarModal"
+  [visible]="mostrarModal"
+  [esNuevo]="esNuevo"
+  [idPGeneral]="dataItemPgeneral?.id"
+  [dataProblema]="dataSeleccionada"
+  (cerrado)="onModalCerrado($event)">  
 </app-pg-problemas-cliente-form>
-
-

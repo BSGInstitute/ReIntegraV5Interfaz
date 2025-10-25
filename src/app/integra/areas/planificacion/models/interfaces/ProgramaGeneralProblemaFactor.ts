@@ -29,3 +29,20 @@ export interface IProgramaGeneralFactor {
     problemaFactorDetalle:  ProgramaGeneralProblemaFactorDetalle[];
     problemaFactorSolucion: ProgramaGeneralProblemaFactorSolucion[];
 }
+
+
+export interface ProblemaDetalleEditDTO {
+  id: number;
+  idPGeneral: number;
+  IdProgramaGeneralProblemaFactor: number;
+  IdProgramaGeneralProblemaFactorDetalle: number | null;
+  AplicaTituloDetalle: boolean;
+  AplicaNombreDetalle: boolean;
+  AplicaPieDePagina: boolean;
+  IdProgramaGeneralProblemaFactorSolucion: number | null;
+  AplicaDescripcionSolucion: boolean;
+  AplicaTituloSolucion: boolean;
+  AplicaSubTituloSolucion: boolean;
+  soluciones?: { IdProgramaGeneralProblemaFactorSubSolucion: number }[];
+  SubSoluciones?: { IdProgramaGeneralProblemaFactorSubSolucion: number }[];
+}

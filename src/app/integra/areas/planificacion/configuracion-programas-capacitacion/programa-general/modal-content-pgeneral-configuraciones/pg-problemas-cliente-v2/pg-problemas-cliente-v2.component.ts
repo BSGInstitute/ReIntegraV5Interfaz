@@ -1,41 +1,24 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  FormControl,
-} from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpResponse } from '@angular/common/http';
 
-import { KendoGrid } from '@shared/models/kendo-grid';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import { FormService } from '@shared/services/form.service';
 import { PgeneralService } from '@planificacion/services/pgeneral.service';
 import { constApiPlanificacion } from '@environments/constApi';
-import { CompuestoProblemaModalidadAlternoDTO } from '@planificacion/models/interfaces/pgeneral/pgeneral';
-import { F } from '@angular/cdk/keycodes';
 
-export interface IProblemaClienteSolucion {
-  problema: IProblemaCliente;
-  solucion: IProblemaSolucion;
-}
-
-interface IProblemaCliente {
-  problemaId: number;
-  nombre: string;
-  detalleId: number;
-  detalle: string;
-  detalleTituloId: string;
-  titulo: string;
-}
 interface SubSolucionDTO {
   id: number;
   idProgramaGeneralProblemaFactorSolucion: number | null;
   solucion: string;
   orden: number;
   nivel: number;
+}
+
+interface IProblemaSubSolucion {
+  id: number;
+  nombre: string;
 }
 
 interface IProblemaSolucion {
@@ -46,11 +29,6 @@ interface IProblemaSolucion {
   subTituloId: number;
   subTitulo: string;
   subSoluciones: IProblemaSubSolucion[];
-}
-
-interface IProblemaSubSolucion {
-  id: number;
-  nombre: string;
 }
 
 @Component({
@@ -72,14 +50,13 @@ export class PgProblemasClienteV2Component implements OnInit {
   mostrarModal = false;
   mdSubSoluciones = false;
   mdEliminar = false;
-  registroAEliminar: IProblemaClienteSolucion | null = null;
+  registroAEliminar: any = null;
   esNuevo = true;
-  dataSeleccionada: IProblemaClienteSolucion | null = null;
-  gridProblemasCliente: IProblemaClienteSolucion[] = [];
+  dataSeleccionada: any = null;
+  gridProblemasCliente: any[] = [];
   gridProblemasClienteSubSoluciones: IProblemaSolucion =
     {} as IProblemaSolucion;
 
-  // ===== Ciclo de vida =====
   ngOnInit(): void {
     this.cargarGrid();
     this.obtenerSubSoluciones();
@@ -104,7 +81,6 @@ export class PgProblemasClienteV2Component implements OnInit {
               next: (resp: HttpResponse<any>) => {
                 const programas = resp.body;
                 const resultado = this.transformarData(programas, combos);
-                console.log('resultado', resultado);
                 this.gridProblemasCliente = resultado;
               },
               error: (error) => {
@@ -120,6 +96,7 @@ export class PgProblemasClienteV2Component implements OnInit {
         },
       });
   }
+
   ProblemaFactorSubSolucion: SubSolucionDTO[] = [];
   obtenerSubSoluciones(): void {
     this.integraService
@@ -136,6 +113,7 @@ export class PgProblemasClienteV2Component implements OnInit {
         },
       });
   }
+
   transformarData(programas: any, combos: any) {
     const resultado = programas.map((p: any) => {
       const factor = combos.problemaFactor.find(
@@ -153,6 +131,7 @@ export class PgProblemasClienteV2Component implements OnInit {
         factor,
         detalle,
         solucion,
+        subSoluciones: p.subSoluciones ?? [],
       };
     });
     return resultado;
@@ -161,7 +140,14 @@ export class PgProblemasClienteV2Component implements OnInit {
   get dataItemPgeneral() {
     return this.pgeneralService.dataItemPgeneral;
   }
-  abrirModal(data: IProblemaClienteSolucion, esNuevo: boolean) {
+
+  onModalCerrado(refrescar: boolean) {
+    this.mostrarModal = false;
+    if (refrescar) {
+      this.cargarGrid(); 
+    }
+  }
+  abrirModal(data: any, esNuevo: boolean) {
     this.dataSeleccionada = data;
     this.esNuevo = esNuevo;
     this.mostrarModal = true;
@@ -169,7 +155,6 @@ export class PgProblemasClienteV2Component implements OnInit {
 
   modalSubGridData: Array<{ idSubSolucion: number; solucion: string }> = [];
   abrirModalSubSoluciones(data: any) {
-    // limpia estado
     this.modalSubGridData = [];
     this.gridProblemasClienteSubSoluciones = {
       solucionDescripcionId: null as any,
@@ -184,19 +169,12 @@ export class PgProblemasClienteV2Component implements OnInit {
     let ids: number[] = [];
 
     if (Array.isArray(data)) {
-      // Recibiste directamente el array de subSoluciones
       ids = data
         .map((x: any) =>
-          Number(
-            x?.idProgramaGeneralProblemaFactorSubSolucion ??
-              x?.id ?? // fallback por si viniera con otra forma
-              x
-          )
+          Number(x?.idProgramaGeneralProblemaFactorSubSolucion ?? x?.id ?? x)
         )
         .filter((n) => Number.isFinite(n));
-      // Cabecera vacía (no tenemos info de descripción/título)
     } else if (data) {
-      // Recibiste la fila completa
       const sol = data.solucion ?? {};
       this.gridProblemasClienteSubSoluciones = {
         solucionDescripcionId: sol.solucionDescripcionId ?? null,
@@ -211,16 +189,11 @@ export class PgProblemasClienteV2Component implements OnInit {
       const arr = data.subSoluciones ?? sol.subSoluciones ?? [];
       ids = (Array.isArray(arr) ? arr : [])
         .map((x: any) =>
-          Number(
-            x?.idProgramaGeneralProblemaFactorSubSolucion ??
-              x?.id ?? // fallback
-              x
-          )
+          Number(x?.idProgramaGeneralProblemaFactorSubSolucion ?? x?.id ?? x)
         )
         .filter((n) => Number.isFinite(n));
     }
 
-    // Arma el datasource visible (id + nombre resuelto)
     this.modalSubGridData = ids.map((id) => ({
       idSubSolucion: id,
       solucion: this.getNombreSubSolucion(id),
@@ -228,6 +201,7 @@ export class PgProblemasClienteV2Component implements OnInit {
 
     this.mdSubSoluciones = true;
   }
+
   private getNombreSubSolucion(id: number): string {
     const item = this.ProblemaFactorSubSolucion.find((s) => s.id === id);
     return (item?.solucion ?? '').trim() || '(Sin nombre)';
@@ -237,29 +211,26 @@ export class PgProblemasClienteV2Component implements OnInit {
     this.mostrarModal = !cerrado;
   }
 
-  // ======== Abrir modal de eliminación ========
-  abrirModalEliminar(dataItem: IProblemaClienteSolucion) {
+  abrirModalEliminar(dataItem: any) {
     this.registroAEliminar = dataItem;
     this.mdEliminar = true;
   }
 
-  // ======== Cerrar modal de eliminación ========
   cerrarModalEliminar(refrescar: boolean = false) {
     this.mdEliminar = false;
     this.registroAEliminar = null;
-
-    if (refrescar) {
-      this.cargarGrid(); // opcional, si quisieras refrescar los datos luego de eliminar
-    }
+    if (refrescar) this.cargarGrid();
   }
 
-  // ======== Confirmar eliminación ========
   confirmarEliminar() {
     if (!this.registroAEliminar) return;
+    const id =
+      this.registroAEliminar.problema?.problemaId ??
+      this.registroAEliminar.idProgramaGeneralProblemaFactor;
 
-    const id = this.registroAEliminar.problema.problemaId;
     this.gridProblemasCliente = this.gridProblemasCliente.filter(
-      (x) => x.problema.problemaId !== id
+      (x: any) =>
+        (x.problema?.problemaId ?? x.idProgramaGeneralProblemaFactor) !== id
     );
 
     this.cerrarModalEliminar();
