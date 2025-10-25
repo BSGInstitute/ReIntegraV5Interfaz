@@ -31,6 +31,42 @@ interface IProblemaSolucion {
   subSoluciones: IProblemaSubSolucion[];
 }
 
+interface ICGridProblemaCliente {
+  id: number;
+  idPGeneral: number;
+  idProgramaGeneralProblemaFactor: number;
+  idProgramaGeneralProblemaFactorDetalle: number;
+  idProgramaGeneralProblemaFactorSolucion: number;
+  idProgramaGeneralProblemaFactorSubSolucion: number;
+  factor: {
+    id:number;
+    nombre:string;
+  };
+  detalle: {
+    id:number;
+    nombre:string;
+    titulo:string;
+  };
+  solucion: {
+    id:number;
+    descripcion:string;
+    titulo:string;
+    subTitulo:string;
+  };
+  subSoluciones:ICGridProblemaClienteSubSoluciones[];
+  aplicaDescripcionSolucion: boolean;
+  aplicaNombreDetalle: boolean;
+  aplicaPieDePagina: boolean;
+  aplicaSubTituloSolucion: boolean;
+  aplicaTituloDetalle: boolean;
+  aplicaTituloSolucion: boolean;
+}
+interface ICGridProblemaClienteSubSoluciones {
+  id: number;
+  idProgramaGeneralProblemaDetalle: number;
+  idProgramaGeneralProblemaFactorSubSolucion: number;
+}
+
 @Component({
   selector: 'app-pg-problemas-cliente-v2',
   templateUrl: './pg-problemas-cliente-v2.component.html',
@@ -211,7 +247,8 @@ export class PgProblemasClienteV2Component implements OnInit {
     this.mostrarModal = !cerrado;
   }
 
-  abrirModalEliminar(dataItem: any) {
+  abrirModalEliminar(dataItem: ICGridProblemaCliente) {
+    console.log('eliminar', dataItem);
     this.registroAEliminar = dataItem;
     this.mdEliminar = true;
   }
@@ -223,16 +260,24 @@ export class PgProblemasClienteV2Component implements OnInit {
   }
 
   confirmarEliminar() {
-    if (!this.registroAEliminar) return;
-    const id =
-      this.registroAEliminar.problema?.problemaId ??
-      this.registroAEliminar.idProgramaGeneralProblemaFactor;
-
-    this.gridProblemasCliente = this.gridProblemasCliente.filter(
-      (x: any) =>
-        (x.problema?.problemaId ?? x.idProgramaGeneralProblemaFactor) !== id
-    );
-
-    this.cerrarModalEliminar();
+    if (!this.registroAEliminar || !this.registroAEliminar.id) return;
+    const idEliminar = this.registroAEliminar.id;
+    this.integraService
+      .postJsonResponse('/ProgramaGeneralProblemaDetalle/Eliminar', { id: idEliminar })
+      .subscribe({
+        next: (res: HttpResponse<any>) => {
+          const resultado = res.body;
+          if (resultado === true) {
+            this.gridProblemasCliente = this.gridProblemasCliente.filter(
+              (x: any) => x.id !== idEliminar
+            );
+            this.alertaService.notificationSuccess('Eliminado correctamente.');
+            this.cerrarModalEliminar();
+          } else {
+            this.alertaService.notificationError('No se pudo eliminar.');
+          }
+        },
+        error: () => this.alertaService.notificationError('Error al guardar.'),
+      });
   }
 }
