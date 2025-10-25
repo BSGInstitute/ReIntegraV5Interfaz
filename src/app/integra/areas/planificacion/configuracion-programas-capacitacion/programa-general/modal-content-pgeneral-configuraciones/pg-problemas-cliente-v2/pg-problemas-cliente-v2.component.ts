@@ -83,6 +83,7 @@ export class PgProblemasClienteV2Component implements OnInit {
 
   @Input() pgeneralService!: PgeneralService;
   gridLoading = true;
+  loadingDelete = false;
   mostrarModal = false;
   mdSubSoluciones = false;
   mdEliminar = false;
@@ -263,6 +264,7 @@ export class PgProblemasClienteV2Component implements OnInit {
   confirmarEliminar() {
     if (!this.registroAEliminar || !this.registroAEliminar.id) return;
     const idEliminar = this.registroAEliminar.id;
+    this.loadingDelete = true;
     this.integraService
       .postJsonResponse('/ProgramaGeneralProblemaDetalle/Eliminar', { id: idEliminar })
       .subscribe({
@@ -273,6 +275,7 @@ export class PgProblemasClienteV2Component implements OnInit {
               (x: any) => x.id !== idEliminar
             );
             this.alertaService.notificationSuccess('Eliminado correctamente.');
+            this.loadingDelete = false;
             this.cerrarModalEliminar();
           } else {
             this.alertaService.notificationError('No se pudo eliminar.');
