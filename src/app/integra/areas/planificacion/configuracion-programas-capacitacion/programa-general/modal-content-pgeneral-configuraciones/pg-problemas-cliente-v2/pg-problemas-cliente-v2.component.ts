@@ -82,7 +82,7 @@ export class PgProblemasClienteV2Component implements OnInit {
   ) {}
 
   @Input() pgeneralService!: PgeneralService;
-
+  gridLoading = true;
   mostrarModal = false;
   mdSubSoluciones = false;
   mdEliminar = false;
@@ -115,6 +115,7 @@ export class PgProblemasClienteV2Component implements OnInit {
             )
             .subscribe({
               next: (resp: HttpResponse<any>) => {
+                this.gridLoading = false;
                 const programas = resp.body;
                 const resultado = this.transformarData(programas, combos);
                 this.gridProblemasCliente = resultado;
