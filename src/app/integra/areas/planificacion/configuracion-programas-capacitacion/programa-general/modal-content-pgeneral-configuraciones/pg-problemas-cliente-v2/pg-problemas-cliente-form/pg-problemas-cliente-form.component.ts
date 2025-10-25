@@ -18,6 +18,7 @@ import {
 } from '@planificacion/models/interfaces/ProgramaGeneralProblemaFactor';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { IProblemaClienteSolucion } from '../pg-problemas-cliente-v2.component';
 
 type Opcion = { id: number; nombre: string };
 
@@ -167,6 +168,36 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
         this.resetSubtituloYSubsoluciones();
       }
     });
+    
+    if (!this.esNuevo && this.dataProblema) {
+      this.cargarFormulario(this.dataProblema);
+    }
+  }
+
+  cargarFormulario(data: IProblemaClienteSolucion): void {
+    this.formProblema.patchValue({
+      problemaId: data.problema.problemaId,
+      detalleId: data.problema.detalleId,
+      detalleTituloId: data.problema.detalleTituloId,
+      solucionDescripcionId: data.solucion.solucionDescripcionId,
+      solucionTituloId: data.solucion.solucionTituloId,
+      solucionSubTituloId: data.solucion.subTituloId,
+
+      // id: data.problema.problemaId,
+      // idPGeneral: this.idPGeneral,// todo: opcional con 0
+      // problemaId: data.problema.problemaId,
+      // detalleId: data.problema.detalleId,
+      // detalleTituloId: [null],
+
+      // // Solución
+      // solucionDescripcionId: [null],
+      // solucionTituloId: [null],
+      // solucionSubTituloId: [null],
+
+      // No se envían ids de solución en el payload final, solo flags y subsoluciones
+      subSolucionesIds: [[] as number[]],
+    });
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {

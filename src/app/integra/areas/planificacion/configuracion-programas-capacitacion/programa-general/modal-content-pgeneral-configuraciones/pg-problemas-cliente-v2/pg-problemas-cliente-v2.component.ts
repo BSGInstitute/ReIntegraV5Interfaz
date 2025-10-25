@@ -8,10 +8,11 @@ import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import { FormService } from '@shared/services/form.service';
 import { PgeneralService } from '@planificacion/services/pgeneral.service';
-
+import { constApiPlanificacion } from '@environments/constApi';
 import { CompuestoProblemaModalidadAlternoDTO } from '@planificacion/models/interfaces/pgeneral/pgeneral';
+import { F } from '@angular/cdk/keycodes';
 
-interface IProblemaClienteSolucion {
+export interface IProblemaClienteSolucion {
     problema: IProblemaCliente;
     solucion: IProblemaSolucion;
 }
@@ -75,108 +76,76 @@ export class PgProblemasClienteV2Component implements OnInit {
 
   // ===== Grid =====
   cargarGrid() {
-    this.gridProblemasCliente = [
-      {
-        "problema": {
-          "problemaId": 10,
-          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
-          "detalleId": 2,
-          "detalle": "Alta demanda y oportunidades",
-          "detalleTituloId": "alta demanda y oportunidades",
-          "titulo": "hola"
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.ProgramaGeneralProblemaFactorObtenerCombos)
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          const combos = resp.body;
+          this.integraService
+            .getJsonResponse(`/ProgramaGeneralProblemaDetalle/Obtener/${this.dataItemPgeneral!.id}`)
+            .subscribe({
+              next: (resp: HttpResponse<any>) => {
+                const programas = resp.body;
+                const resultado = this.transformarData(programas, combos);
+                console.log('resultado', resultado);
+                this.gridProblemasCliente = resultado;
+              },
+              error: (error) => {
+                const mensaje = this.alertaService.getMessageErrorService(error);
+                this.alertaService.notificationWarning(mensaje);
+              },
+            });
         },
-        "solucion": {
-          "solucionDescripcionId": 4,
-          "descripcion": "",
-          "solucionTituloId": 0,
-          "titulo": "",
-          
-          "subTituloId": 5,
-          "subTitulo": "algo",
-          "subSoluciones": [
-           {
-              "id": 1,
-              "nombre": "impplementar opciones de financiamiento y apyo economico"
-           },
-          ]
-        }
-      },
-      {
-        "problema": {
-          "problemaId": 1,
-          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
-          "detalleId": 2,
-          "detalle": "Alta demanda y oportunidades",
-          "detalleTituloId": "alta demanda y oportunidades",
-          "titulo": "hola"
+        error: (error) => {
+          const mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
         },
-        "solucion": {
-          "solucionDescripcionId": 4,
-          "descripcion": "",
-          "solucionTituloId": 0,
-          "titulo": "",
+      });
+    
+    
+        
+    // this.gridProblemasCliente = [
+    //   {
+    //     "problema": {
+    //       "problemaId": 10,
+    //       "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
+    //       "detalleId": 2,
+    //       "detalle": "Alta demanda y oportunidades",
+    //       "detalleTituloId": "alta demanda y oportunidades",
+    //       "titulo": "hola"
+    //     },
+    //     "solucion": {
+    //       "solucionDescripcionId": 4,
+    //       "descripcion": "",
+    //       "solucionTituloId": 0,
+    //       "titulo": "",
           
-          "subTituloId": 5,
-          "subTitulo": "algo",
-          "subSoluciones": [
-           {
-              "id": 1,
-              "nombre": "otro mas"
-           },
-          ]
-        }
-      },
-      {
-        "problema": {
-          "problemaId": 100,
-          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
-          "detalleId": 2,
-          "detalle": "Alta demanda y oportunidades",
-          "detalleTituloId": "alta demanda y oportunidades",
-          "titulo": "hola"
-        },
-        "solucion": {
-          "solucionDescripcionId": 4,
-          "descripcion": "",
-          "solucionTituloId": 0,
-          "titulo": "",
-          
-          "subTituloId": 5,
-          "subTitulo": "algo",
-          "subSoluciones": [
-           {
-              "id": 1,
-              "nombre": "otro mas"
-           },
-          ]
-        }
-      },
-      {
-        "problema": {
-          "problemaId": 10000,
-          "nombre": "no estoy serguro de que las clases online sean tan efectivas como las presenciales",
-          "detalleId": 2,
-          "detalle": "Alta demanda y oportunidades",
-          "detalleTituloId": "alta demanda y oportunidades",
-          "titulo": "hola"
-        },
-        "solucion": {
-          "solucionDescripcionId": 4,
-          "descripcion": "",
-          "solucionTituloId": 0,
-          "titulo": "",
-          
-          "subTituloId": 5,
-          "subTitulo": "algo",
-          "subSoluciones": [
-           {
-              "id": 1,
-              "nombre": "otro mas"
-           },
-          ]
-        }
-      }
-    ];
+    //       "subTituloId": 5,
+    //       "subTitulo": "algo",
+    //       "subSoluciones": [
+    //        {
+    //           "id": 1,
+    //           "nombre": "impplementar opciones de financiamiento y apyo economico"
+    //        },
+    //       ]
+    //     }
+    //   }
+    // ];
+  }
+  transformarData(programas: any, combos: any) {
+    const resultado = programas.map((p: any) => {
+      const factor = combos.problemaFactor.find((f: any) => f.id === p.idProgramaGeneralProblemaFactor);
+      const detalle = combos.problemaFactorDetalle.find((d: any) => d.id === p.idProgramaGeneralProblemaFactorDetalle);
+      const solucion = combos.problemaFactorSolucion.find((s: any) => s.id === p.idProgramaGeneralProblemaFactorSolucion);
+
+      return {
+        ...p,
+        factor,
+        detalle,
+        solucion,
+      };
+    });
+    return resultado;
   }
 
   get dataItemPgeneral() {
@@ -218,25 +187,11 @@ export class PgProblemasClienteV2Component implements OnInit {
   // ======== Confirmar eliminación ========
   confirmarEliminar() {
     if (!this.registroAEliminar) return;
-
-    const idEliminar = this.registroAEliminar.problema.problemaId;
-
-    // this.integraService.delete(`api/problema-cliente/${idEliminar}`)
-    //   .subscribe({
-    //     next: () => {
-    //       this.alertaService.exito('Registro eliminado correctamente');
-    //       this.cargarGrid();
-    //       this.cerrarModalEliminar();
-    //     },
-    //     error: () => this.alertaService.error('Error al eliminar el registro'),
-    //   });
-
-    const newList = this.gridProblemasCliente.filter(
-      (x) => x.problema.problemaId !== idEliminar
-    );
-    this.gridProblemasCliente = [...newList];
-    // this.alertaService.exito('Registro eliminado correctamente (dummy).');
-    this.cerrarModalEliminar(true);
+  
+    const id = this.registroAEliminar.problema.problemaId;
+    this.gridProblemasCliente = this.gridProblemasCliente.filter(x => x.problema.problemaId !== id);
+  
+    this.cerrarModalEliminar();
   }
 
 
