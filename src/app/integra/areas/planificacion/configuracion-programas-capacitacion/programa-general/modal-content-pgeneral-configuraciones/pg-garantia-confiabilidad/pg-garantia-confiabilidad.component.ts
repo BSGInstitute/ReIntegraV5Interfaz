@@ -217,9 +217,8 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
   obtener() {
     this.gridArgumento.data = [];
     this.gridArgumento.loading = true;
-
     this.integraService
-      .getJsonResponse(constApiPlanificacion.ProgramaGeneralArgumentoObtener)
+      .getJsonResponse(`${constApiPlanificacion.ProgramaGeneralArgumentoObtener}/${this.dataItemPgeneral.id}`)
       .subscribe({
         next: (resp: HttpResponse<CompuestoArgumentoModalidadAlternoDTO[]>) => {
           this.gridArgumento.data = resp.body ?? [];
