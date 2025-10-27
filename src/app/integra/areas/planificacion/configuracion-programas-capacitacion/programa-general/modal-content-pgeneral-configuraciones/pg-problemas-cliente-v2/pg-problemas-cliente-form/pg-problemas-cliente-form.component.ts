@@ -41,7 +41,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
  
   @Output() cerrado = new EventEmitter<boolean>();
 
-
+  formLoader: boolean = false;
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
 
 
@@ -148,8 +148,9 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
   // ========= Ciclo de vida =========
   ngOnInit(): void {
+    this.formLoader = true;
     this.obtenerCombos();
-
+    this.formLoader = false;
 
     this.formProblema.get('problemaId')?.valueChanges.subscribe(() => {
       this.formProblema.patchValue(
@@ -239,6 +240,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       .subscribe({
         next: (resp: HttpResponse<IProgramaGeneralFactor>) => {
           const body = resp.body;
+          this.formLoader = false;
           this.opcProblema  = body?.problemaFactor ?? [];
           this.opcDetalleAll = body?.problemaFactorDetalle ?? [];
           this.opcSolucionBase = body?.problemaFactorSolucion ?? [];
@@ -546,11 +548,13 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   }
 
   guardar(): void {
+    this.formLoader = true;
     if (!this.formProblema.valid) {
       this.formProblema.markAllAsTouched();
       this.alertaService.notificationWarning(
         'Por favor, completa los campos requeridos antes de guardar.'
       );
+      this.formLoader = false;
       return;
     }
 
@@ -558,6 +562,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       this.alertaService.notificationWarning(
         'Por favor, debe tener asignado al menos un registro de solución.'
       );
+      this.formLoader = false;
       return;
     }
 
@@ -576,6 +581,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       .subscribe({
         next: () => {
           this.alertaService.notificationSuccess('Guardado correctamente.');
+          this.formLoader = false;
           this.cerrar(true);
         },
         error: () => this.alertaService.notificationError('Error al guardar.'),
@@ -589,6 +595,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       .subscribe({
         next: () => {
           this.alertaService.notificationSuccess('Actualizado correctamente.');
+          this.formLoader = false;
           this.cerrar(true);
         },
         error: () => this.alertaService.notificationError('Error al actualizar.'),
