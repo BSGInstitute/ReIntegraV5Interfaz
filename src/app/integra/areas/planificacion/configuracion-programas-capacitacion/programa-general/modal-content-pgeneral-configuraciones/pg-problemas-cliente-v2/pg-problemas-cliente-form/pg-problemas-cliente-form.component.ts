@@ -43,19 +43,25 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
   formLoader: boolean = false;
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
+  opcProblemaFiltro: ProgramaGeneralProblemaFactor[] = [];
 
 
   private opcDetalleAll: ProgramaGeneralProblemaFactorDetalle[] = [];
   detalleOptions: ProgramaGeneralProblemaFactorDetalle[] = [];
+  detalleOptionsFiltro : ProgramaGeneralProblemaFactorDetalle[] = [];
   detalleTituloOptions: ProgramaGeneralProblemaFactorDetalle[] = [];
+  detalleTituloOptionsFiltro : ProgramaGeneralProblemaFactorDetalle[] = [];
 
  
   private opcSolucionBase: ProgramaGeneralProblemaFactorSolucion[] = [];
 
 
   descOptions: ProgramaGeneralProblemaFactorSolucion[] = [];               // únicas por descripción
+  descOptionsFiltro: ProgramaGeneralProblemaFactorSolucion[] = []; // filtradas por descripción
   opcSolucionTituloFiltered: ProgramaGeneralProblemaFactorSolucion[] = []; // únicas por título
+  opcSolucionTituloFilteredFiltro: ProgramaGeneralProblemaFactorSolucion[] = []; // filtradas por título
   opcSolucionSubTituloFiltered: ProgramaGeneralProblemaFactorSolucion[] = []; // únicas por subtítulo
+  opcSolucionSubTituloFilteredFiltro: ProgramaGeneralProblemaFactorSolucion[] = [];
 
 
   formProblema: FormGroup;
@@ -242,12 +248,15 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
           const body = resp.body;
           this.formLoader = false;
           this.opcProblema  = body?.problemaFactor ?? [];
+          this.opcProblemaFiltro = body?.problemaFactor ?? [];
           this.opcDetalleAll = body?.problemaFactorDetalle ?? [];
           this.opcSolucionBase = body?.problemaFactorSolucion ?? [];
 
         
           this.detalleOptions = [...this.opcDetalleAll];
+          this.detalleOptionsFiltro = [...this.opcDetalleAll];
           this.detalleTituloOptions = [...this.opcDetalleAll];
+          this.detalleTituloOptionsFiltro = [...this.opcDetalleAll];
 
        
           this.descOptions = this.dedupeBy(
@@ -255,11 +264,14 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
             'descripcion'
           );
 
+          this.descOptionsFiltro = this.descOptions;
+
        
           this.opcSolucionTituloFiltered = [];
+          this.opcSolucionTituloFilteredFiltro = [];
           this.opcSolucionSubTituloFiltered = [];
+          this.opcSolucionSubTituloFilteredFiltro = [];
 
-     
           this.syncDetalleTituloLists();
 
        
@@ -324,6 +336,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
         this.opcSolucionBase.filter((s) => this.notEmpty(s.titulo)),
         'titulo'
       );
+      this.opcSolucionTituloFilteredFiltro = this.opcSolucionTituloFiltered;
       return;
     }
     const item = this.getById(id);
@@ -337,6 +350,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       ),
       'titulo'
     );
+    this.opcSolucionTituloFilteredFiltro = this.opcSolucionTituloFiltered;
   }
 
   private refreshSubtituloOptions(): void {
@@ -347,34 +361,37 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
 
     if (dId === null && tId === null) {
       this.opcSolucionSubTituloFiltered = this.dedupeBy(subNonEmpty, 'subTitulo');
+      this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered;
       return;
     }
 
     if (dId !== null && tId === null) {
       const d = this.getById(dId);
-      if (!d) { this.opcSolucionSubTituloFiltered = []; return; }
+      if (!d) { this.opcSolucionSubTituloFiltered = []; this.opcSolucionSubTituloFilteredFiltro = []; return; }
       const descTxt = this.norm(d.descripcion);
       this.opcSolucionSubTituloFiltered = this.dedupeBy(
         subNonEmpty.filter((s) => this.norm(s.descripcion) === descTxt),
         'subTitulo'
       );
+      this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered;
       return;
     }
 
     if (tId !== null && dId === null) {
       const t = this.getById(tId);
-      if (!t) { this.opcSolucionSubTituloFiltered = []; return; }
+      if (!t) { this.opcSolucionSubTituloFiltered = []; this.opcSolucionSubTituloFilteredFiltro = []; return; }
       const titTxt = this.norm(t.titulo);
       this.opcSolucionSubTituloFiltered = this.dedupeBy(
         subNonEmpty.filter((s) => this.norm(s.titulo) === titTxt),
         'subTitulo'
       );
+      this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered;
       return;
     }
 
     const d = this.getById(dId);
     const t = this.getById(tId);
-    if (!d || !t) { this.opcSolucionSubTituloFiltered = []; return; }
+    if (!d || !t) { this.opcSolucionSubTituloFiltered = []; this.opcSolucionSubTituloFilteredFiltro = []; return; }
     const descTxt = this.norm(d.descripcion);
     const titTxt = this.norm(t.titulo);
 
@@ -384,6 +401,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       ),
       'subTitulo'
     );
+    this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered;
   }
 
   private evaluarCoincidenciaDescTitulo(): void {
@@ -663,6 +681,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     if (!base) return null;
     const titTxt = this.norm(base.titulo);
     const opt = this.opcSolucionTituloFiltered.find((o) => this.norm(o.titulo) === titTxt);
+    this.opcSolucionTituloFilteredFiltro = opt ? [opt] : [];
     return opt ? opt.id : null;
   }
 
@@ -675,6 +694,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     const opt = this.opcSolucionSubTituloFiltered.find(
       (o) => this.norm(o.subTitulo) === subTxt
     );
+    this.opcSolucionSubTituloFilteredFiltro = opt ? [opt] : [];
     return opt ? opt.id : null;
   }
 
@@ -746,6 +766,69 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       this.mostrarCuadroSubtitulo(subOptId, preselectPairs);
     } else {
       this.resetSubtituloYSubsoluciones();
+    }
+  }
+
+  onFilterChangeProblema(value: any) {
+    if (value.length >= 1) {
+      this.opcProblemaFiltro = this.opcProblema.filter(
+        (s: any) =>
+          s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.opcProblemaFiltro = this.opcProblema;
+    }
+  }
+
+  onFilterChangeProblemaDetalle(value: any) {
+    if (value.length >= 1) {
+      this.detalleOptionsFiltro = this.detalleOptions.filter(
+        (s: any) =>
+          s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.detalleOptionsFiltro = this.detalleOptions;
+    }
+  }
+
+  onFilterChangeDetalleTitulo(value: any) {
+    if (value.length >= 1) {
+      this.detalleTituloOptionsFiltro = this.detalleTituloOptions.filter(
+        (s: any) =>
+          s.titulo.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.detalleTituloOptionsFiltro = this.detalleTituloOptions;
+    }
+  }
+  onFilterChangeSolucionDescripcion(value: any) {
+    if (value.length >= 1) {
+      this.descOptionsFiltro = this.descOptions.filter(
+        (s: any) =>
+          s.descripcion.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.descOptionsFiltro = this.descOptions;
+    }
+  }
+  onFilterChangeSolucionTitulo(value: any) {
+    if (value.length >= 1) {
+      this.opcSolucionTituloFilteredFiltro = this.opcSolucionTituloFiltered.filter(
+        (s: any) =>
+          s.titulo.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.opcSolucionTituloFilteredFiltro = this.opcSolucionTituloFiltered;
+    }
+  }
+  onFilterChangeSolucionSubTitulo(value: any) {
+    if (value.length >= 1) {
+      this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered.filter(
+        (s: any) =>
+          s.subTitulo.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered;
     }
   }
 }
