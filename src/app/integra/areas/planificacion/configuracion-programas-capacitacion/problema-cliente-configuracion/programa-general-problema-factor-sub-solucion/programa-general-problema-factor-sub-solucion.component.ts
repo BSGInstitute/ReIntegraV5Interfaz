@@ -57,6 +57,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
   isNew = true;
 
   dataComboSoluciones: ComboBase[] = [];
+  dataComboSolucionesFiltro: ComboBase[] = [];
   selectedSolucionId: number | null = null;
   defaultSolucionItem: ComboBase = { id: null as any, subTitulo: 'Seleccione Solución' };
 
@@ -91,6 +92,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       .subscribe({
         next: (resp: HttpResponse<ComboBase[]>) => {
           this.dataComboSoluciones = resp.body ?? [];
+          this.dataComboSolucionesFiltro = this.dataComboSoluciones;
         },
         error: (error) => {
           const mensaje = this._alertaService.getMessageErrorService(error);
@@ -178,6 +180,16 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       size: 'xl',
       modalDialogClass: 'modal-xxl modal-dialog-scrollable'
     });
+  }
+  onFilterChangeComboSoluciones(value: any){
+    if (value.length >= 1) {
+      this.dataComboSolucionesFiltro = this.dataComboSoluciones.filter(
+        (s: any) =>
+          s.subTitulo.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.dataComboSolucionesFiltro = this.dataComboSoluciones;
+    }
   }
 
   onSolucionChange(id: number | null): void {
