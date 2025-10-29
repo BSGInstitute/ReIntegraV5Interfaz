@@ -190,13 +190,12 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
   }
   onFilterChangeComboSoluciones(value: any){
     if (value.length >= 1) {
-      const subTitulo = this.filtroPrioridadComboSoluciones();
-      this.dataComboSolucionesFiltro = subTitulo.filter(
+      this.dataComboSolucionesFiltro = this.dataComboSoluciones.filter(
         (s: any) =>
           s.subTitulo.toLowerCase().indexOf(value.toLowerCase()) !== -1
       );
     } else {
-      this.dataComboSolucionesFiltro = this.filtroPrioridadComboSoluciones();
+      this.dataComboSolucionesFiltro = this.dataComboSoluciones;
     }
   }
 
