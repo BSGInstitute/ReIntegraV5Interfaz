@@ -42,6 +42,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   @Output() cerrado = new EventEmitter<boolean>();
 
   formLoader: boolean = false;
+  todosSeleccionadosCheckedDisponibles = false;
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
   opcProblemaFiltro: ProgramaGeneralProblemaFactor[] = [];
   filtroSolucionCuadro: string = '';
@@ -497,6 +498,17 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       );
     }
   }
+  marcarPreSeleccionarTodos(checked: boolean): void {
+    this.todosSeleccionadosCheckedDisponibles = checked;
+    this.registrosDisponiblesFiltro.forEach(item => {
+      item.seleccionado = checked;
+      this.marcarPreseleccion(item, checked);
+    });
+
+    if (!checked) {
+      this.registrosPreSeleccionados = [];
+    }
+  }
 
   pasarASeleccionados(): void {
     if (this.registrosPreSeleccionados.length === 0) {
@@ -836,14 +848,5 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     } else {
       this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered;
     }
-  }
-
-  onFilterChangeCuadroDisponible(event: any) {
-    const valor = event.target.value.toLowerCase();
-    this.registrosDisponiblesFiltro = this.registrosDisponibles.filter(
-      r =>
-        (r.solucion && r.solucion.toLowerCase().includes(valor)) ||
-        (r.nombre && r.nombre.toLowerCase().includes(valor))
-    );
   }
 }
