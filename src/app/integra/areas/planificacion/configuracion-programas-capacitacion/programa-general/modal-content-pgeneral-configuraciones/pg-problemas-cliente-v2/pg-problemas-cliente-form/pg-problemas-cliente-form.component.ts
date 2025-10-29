@@ -44,7 +44,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   formLoader: boolean = false;
   opcProblema: ProgramaGeneralProblemaFactor[] = [];
   opcProblemaFiltro: ProgramaGeneralProblemaFactor[] = [];
-
+  filtroSolucionCuadro: string = '';
 
   private opcDetalleAll: ProgramaGeneralProblemaFactorDetalle[] = [];
   detalleOptions: ProgramaGeneralProblemaFactorDetalle[] = [];
@@ -70,6 +70,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
   mostrarCuadro = false;
   private registrosDisponiblesBase: ISubSolucionItem[] = [];
   registrosDisponibles: ISubSolucionItem[] = [];
+  registrosDisponiblesFiltro: ISubSolucionItem[] = [];
   registrosSeleccionados: ISubSolucionItem[] = [];
   registrosPreSeleccionados: ISubSolucionItem[] = [];
 
@@ -418,6 +419,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     this.mostrarCuadro = false;
     this.registrosDisponiblesBase = [];
     this.registrosDisponibles = [];
+    this.registrosDisponiblesFiltro = [];
     this.registrosSeleccionados = [];
     this.registrosPreSeleccionados = [];
   }
@@ -427,6 +429,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     this.registrosDisponibles = this.registrosDisponiblesBase
       .filter((r) => !seleccionadosIds.has(r.id))
       .map((r) => ({ ...r, seleccionado: false }));
+    this.registrosDisponiblesFiltro = this.registrosDisponibles;
   }
 
   mostrarCuadroSubtitulo(
@@ -508,6 +511,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     this.registrosDisponibles = this.registrosDisponibles.filter(
       (d) => !idsPasados.has(d.id)
     );
+    this.registrosDisponiblesFiltro = this.registrosDisponibles;
     this.registrosPreSeleccionados = [];
   }
 
@@ -516,6 +520,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     if (idx >= 0) {
       if (!this.registrosDisponibles.some((d) => d.id === item.id)) {
         this.registrosDisponibles.push({ ...item, seleccionado: false });
+        this.registrosDisponiblesFiltro = this.registrosDisponibles;
       }
       this.registrosSeleccionados.splice(idx, 1);
     }
@@ -526,6 +531,7 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       ...r,
       seleccionado: false,
     }));
+    this.registrosDisponiblesFiltro = this.registrosDisponibles;
     this.registrosSeleccionados = [];
     this.registrosPreSeleccionados = [];
   }
@@ -830,5 +836,14 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
     } else {
       this.opcSolucionSubTituloFilteredFiltro = this.opcSolucionSubTituloFiltered;
     }
+  }
+
+  onFilterChangeCuadroDisponible(event: any) {
+    const valor = event.target.value.toLowerCase();
+    this.registrosDisponiblesFiltro = this.registrosDisponibles.filter(
+      r =>
+        (r.solucion && r.solucion.toLowerCase().includes(valor)) ||
+        (r.nombre && r.nombre.toLowerCase().includes(valor))
+    );
   }
 }
