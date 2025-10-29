@@ -37,6 +37,7 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
 
   dataMotivaciones: PGeneralArgumentoMotivacion[] = [];
   motivacionesView: Array<{ id: number; nombre: string; idPGeneral: number }> = [];
+  motivacionesViewFiltro: Array<{ id: number; nombre: string; idPGeneral: number }> = [];
 
   subscriptions$: Subscription = new Subscription();
   loaderModal = false;
@@ -120,6 +121,7 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
         next: (resp: HttpResponse<PGeneralArgumentoMotivacion[]>) => {
           this.dataMotivaciones = resp.body ?? [];
           this.motivacionesView = this.normalizeMotivaciones(this.dataMotivaciones);
+          this.motivacionesViewFiltro = this.motivacionesView;
         },
         error: (error) => {
           const mensaje = this.alertaService.getMessageErrorService(error);
@@ -413,5 +415,16 @@ export class PgGarantiaConfiabilidadComponent implements OnInit {
     const mods = dataItem?.modalidades ?? [];
     if (!Array.isArray(mods) || mods.length === 0) return '—';
     return mods.map((m: any) => m?.nombre).filter(Boolean).join(', ');
+  }
+
+  onFilterChangeMotivacion(value: any) {
+    if (value.length >= 1) {
+      this.motivacionesViewFiltro = this.motivacionesView.filter(
+        (s: any) =>
+          s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.motivacionesViewFiltro = this.motivacionesView;
+    }
   }
 }
