@@ -9,11 +9,12 @@
         <div class="card-body p-4" id="grillaAgendaTab">
           <div class="col-12">
             <kendo-grid
-              [kendoGridBinding]="padres"
+              #kgriProblemaFactorSubSolucion
+              [kendoGridBinding]="solucionesGroups"
               [loading]="griProblemaFactorSubSolucion.loading"
               [resizable]="true"
-              filterable="menu"
               [sortable]="true"
+              filterable="menu"
               [pageSize]="10"
               [pageable]="{ pageSizes: [5, 10, 20] }"
             >
@@ -28,56 +29,132 @@
                   Nuevo (grilla)
                 </button>
               </ng-template>
-
-              <kendo-grid-column field="solucion" title="Solución" [width]="320"></kendo-grid-column>
-              <kendo-grid-column field="orden" title="Orden" [width]="120"></kendo-grid-column>
-
-              <kendo-grid-command-column title="Opciones" [width]="160">
-                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
-                  <button
-                    kendoButton
-                    themeColor="warning"
-                    class="me-1"
-                    ngbTooltip="Editar"
-                    (click)="abrirModal(modalProblemaFactorSubSolucion, false, dataItem)"
+              <kendo-grid-column
+                field="nombre"
+                title="Solución"
+                [headerClass]="'header-grid-integra'"
+                [width]="420"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
                   >
-                    <span class="k-icon k-i-pencil"></span>
-                  </button>
-                  <button
-                    kendoButton
-                    themeColor="error"
-                    ngbTooltip="Eliminar padre + hijos"
-                    (click)="eliminarPadre(dataItem)"
-                  >
-                    <span class="k-icon k-i-x"></span>
-                  </button>
+                    <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
                 </ng-template>
-              </kendo-grid-command-column>
-
-              <!-- detalle: hijos existentes -->
+              </kendo-grid-column>
               <ng-template kendoGridDetailTemplate let-dataItem>
                 <kendo-grid
-                  [kendoGridBinding]="getChildren(dataItem)"
+                  [kendoGridBinding]="getPadresBySolucion(dataItem.solucionId)"
                   [resizable]="true"
                   [sortable]="true"
+                  filterable="menu"
                   [pageable]="false"
                   [scrollable]="'none'"
                   class="ms-3"
                 >
-                  <kendo-grid-column field="solucion" title="Sub-solución" [width]="420"></kendo-grid-column>
-                  <kendo-grid-column field="orden" title="Orden" [width]="120"></kendo-grid-column>
-                  <kendo-grid-command-column title="Acciones" [width]="120">
+                  <kendo-grid-column
+                    field="solucion"
+                    title="Sub Solución Padre"
+                    [width]="520"
+                  >
+                    <ng-template
+                      kendoGridFilterMenuTemplate
+                      let-filter
+                      let-column="column"
+                      let-filterService="filterService"
+                    >
+                      <kendo-grid-string-filter-menu
+                        [column]="column"
+                        [filter]="filter"
+                        [filterService]="filterService"
+                        [extra]="false"
+                        operator="contains"
+                      >
+                        <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+                      </kendo-grid-string-filter-menu>
+                    </ng-template>
+                  </kendo-grid-column>
+
+                  <kendo-grid-command-column title="Acciones" [width]="160">
                     <ng-template kendoGridCellTemplate let-dataItem="dataItem">
                       <button
                         kendoButton
+                        themeColor="warning"
+                        class="me-1"
+                        ngbTooltip="Editar"
+                        (click)="abrirModal(modalProblemaFactorSubSolucion, false, dataItem)"
+                      >
+                        <span class="k-icon k-i-pencil"></span>
+                      </button>
+                      <button
+                        kendoButton
                         themeColor="error"
-                        ngbTooltip="Eliminar hijo"
-                        (click)="eliminarHijo(dataItem)"
+                        ngbTooltip="Eliminar padre + hijos"
+                        (click)="eliminarPadre(dataItem)"
                       >
                         <span class="k-icon k-i-x"></span>
                       </button>
                     </ng-template>
                   </kendo-grid-command-column>
+
+  
+                  <ng-template kendoGridDetailTemplate let-dataItem>
+                    <kendo-grid
+                      [kendoGridBinding]="getChildren(dataItem)"
+                      [resizable]="true"
+                      [sortable]="true"
+                      [pageable]="false"
+                      filterable="menu"
+                      [scrollable]="'none'"
+                      class="ms-3"
+                    >
+                      <kendo-grid-column
+                        field="solucion"
+                        title="Sub Solución Hijo"
+                        [width]="520"
+                      >
+                        <ng-template
+                          kendoGridFilterMenuTemplate
+                          let-filter
+                          let-column="column"
+                          let-filterService="filterService"
+                        >
+                          <kendo-grid-string-filter-menu
+                            [column]="column"
+                            [filter]="filter"
+                            [filterService]="filterService"
+                            [extra]="false"
+                            operator="contains"
+                          >
+                            <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
+                          </kendo-grid-string-filter-menu>
+                        </ng-template>
+                      </kendo-grid-column>
+
+                      <kendo-grid-command-column title="Acciones" [width]="120">
+                        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                          <button
+                            kendoButton
+                            themeColor="error"
+                            ngbTooltip="Eliminar hijo"
+                            (click)="eliminarHijo(dataItem)"
+                          >
+                            <span class="k-icon k-i-x"></span>
+                          </button>
+                        </ng-template>
+                      </kendo-grid-command-column>
+                    </kendo-grid>
+                  </ng-template>
                 </kendo-grid>
               </ng-template>
 
@@ -106,7 +183,6 @@
   </div>
 </div>
 
-<!-- ----------------------- Modal: Crear/Actualizar ---------------------- -->
 <ng-template #modalProblemaFactorSubSolucion let-modal>
   <div class="modal-header bg-primary-header-modal">
     <h1 class="modal-title m-0 p-0">Registro de Sub Soluciones</h1>
@@ -128,7 +204,7 @@
           [defaultItem]="defaultSolucionItem"
           [(ngModel)]="selectedSolucionId"
           (valueChange)="onSolucionChange($event)"
-          [ngModelOptions]="{standalone: true}"
+          [ngModelOptions]="{ standalone: true }"
         >
         </kendo-dropdownlist>
       </div>
@@ -156,7 +232,6 @@
       </div>
     </div>
 
-    <!-- Grilla de PADRES (draft) -->
     <kendo-grid
       #draftGrid
       [kendoGridBinding]="draftParents"
@@ -177,20 +252,18 @@
           <kendo-numerictextbox
             [(ngModel)]="dataItem.orden"
             (valueChange)="onParentOrderChange(dataItem, $event)"
-            [ngModelOptions]="{standalone: true}"
+            [ngModelOptions]="{ standalone: true }"
             [format]="'n0'"
             [min]="1"
             [readonly]="enProcesoSolicitud"
           ></kendo-numerictextbox>
         </ng-template>
       </kendo-grid-column>
-
-      <!-- textarea para Solución (padre) -->
       <kendo-grid-column field="solucion" title="Solución" [width]="520">
         <ng-template kendoGridCellTemplate let-dataItem>
           <kendo-textarea
             [(ngModel)]="dataItem.solucion"
-            [ngModelOptions]="{standalone: true}"
+            [ngModelOptions]="{ standalone: true }"
             class="w-100"
             [rows]="3"
             [autoSize]="true"
@@ -220,8 +293,6 @@
           ></button>
         </ng-template>
       </kendo-grid-command-column>
-
-      <!-- Subgrilla de HIJOS (draft) -->
       <ng-template kendoGridDetailTemplate let-dataItem>
         <div class="ms-3">
           <div class="mb-2">
@@ -244,20 +315,12 @@
             <kendo-grid-column field="nivel" title="Nivel" [width]="80">
               <ng-template kendoGridCellTemplate>2</ng-template>
             </kendo-grid-column>
-
-            <kendo-grid-column field="orden" title="Orden" [width]="120">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-numerictextbox [value]="dataItem.orden" [readonly]="true" [format]="'n0'"></kendo-numerictextbox>
-              </ng-template>
-            </kendo-grid-column>
-
-            <!-- textarea para Sub-solución (hijo) -->
             <kendo-grid-column field="solucion" title="Sub-solución" [width]="460">
               <ng-template kendoGridCellTemplate let-dataItem>
                 <ng-container *ngIf="dataItem.isEditing || dataItem.isNew; else viewChild">
                   <kendo-textarea
                     [(ngModel)]="dataItem.solucion"
-                    [ngModelOptions]="{standalone: true}"
+                    [ngModelOptions]="{ standalone: true }"
                     class="w-100"
                     [rows]="3"
                     [autoSize]="true"
@@ -265,7 +328,7 @@
                   ></kendo-textarea>
                 </ng-container>
                 <ng-template #viewChild>
-                  <div style="white-space: pre-wrap;">{{ dataItem.solucion }}</div>
+                  <div style="white-space: pre-wrap">{{ dataItem.solucion }}</div>
                 </ng-template>
               </ng-template>
             </kendo-grid-column>
@@ -273,11 +336,30 @@
             <kendo-grid-command-column title="Acciones" [width]="160">
               <ng-template kendoGridCellTemplate let-dataItem="dataItem">
                 <ng-container *ngIf="dataItem.isEditing || dataItem.isNew; else editBtns">
-                  <button kendoButton icon="check" themeColor="primary" (click)="finishEditChild(dataItem)" [disabled]="enProcesoSolicitud"></button>
-                  <button kendoButton icon="close" fillMode="flat" class="ms-1" (click)="cancelEditChild(dataItem)" [disabled]="enProcesoSolicitud"></button>
+                  <button
+                    kendoButton
+                    icon="check"
+                    themeColor="primary"
+                    (click)="finishEditChild(dataItem)"
+                    [disabled]="enProcesoSolicitud"
+                  ></button>
+                  <button
+                    kendoButton
+                    icon="close"
+                    fillMode="flat"
+                    class="ms-1"
+                    (click)="cancelEditChild(dataItem)"
+                    [disabled]="enProcesoSolicitud"
+                  ></button>
                 </ng-container>
                 <ng-template #editBtns>
-                  <button kendoButton icon="pencil" (click)="editChild(dataItem)" [disabled]="enProcesoSolicitud" ngbTooltip="Editar"></button>
+                  <button
+                    kendoButton
+                    icon="pencil"
+                    (click)="editChild(dataItem)"
+                    [disabled]="enProcesoSolicitud"
+                    ngbTooltip="Editar"
+                  ></button>
                   <button
                     kendoButton
                     icon="trash"
@@ -302,19 +384,28 @@
       *ngIf="isNew"
       type="button"
       class="btn btn-primary"
-      [disabled]="enProcesoSolicitud || draft.length===0 || hasDraftErrors(true)"
+      [disabled]="enProcesoSolicitud || draft.length === 0 || hasDraftErrors(true)"
       (click)="guardarDraft()"
-    >Guardar</button>
+    >
+      Guardar
+    </button>
 
     <button
       *ngIf="!isNew"
       type="button"
       class="btn btn-primary"
-      [disabled]="enProcesoSolicitud || draft.length===0 || hasDraftErrors(false)"
+      [disabled]="enProcesoSolicitud || draft.length === 0 || hasDraftErrors(false)"
       (click)="actualizarDraft()"
-    >Actualizar</button>
+    >
+      Actualizar
+    </button>
 
-    <button type="button" class="btn btn-danger" (click)="modal.close('Close click')" [disabled]="enProcesoSolicitud">
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
       Cancelar
     </button>
   </div>

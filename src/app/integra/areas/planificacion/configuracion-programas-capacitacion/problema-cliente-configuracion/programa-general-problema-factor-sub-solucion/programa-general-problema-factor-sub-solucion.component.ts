@@ -11,8 +11,12 @@ import { constApiPlanificacion } from '@environments/constApi';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-/* ---------- Interfaces ---------- */
-interface ComboNoBase { id: number; subTitulo: string; titulo?: string; descripcion?: string; }
+interface ComboNoBase {
+  id: number;
+  subTitulo?: string;
+  titulo?: string;
+  descripcion?: string;
+}
 interface ComboBase { id: number; subTitulo: string; }
 
 interface SubSolucionDTO {
@@ -33,7 +37,12 @@ interface DraftRow {
   parentTempId?: string;
   isNew?: boolean;
   isEditing?: boolean;
-  expanded?: boolean; // <- controla si el padre está expandido
+  expanded?: boolean;
+}
+
+interface SolucionGroup {
+  solucionId: number;
+  nombre: string;
 }
 
 @Component({
@@ -67,6 +76,27 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
 
   private initialExistingIds = new Set<number>();
 
+
+  private solucionNombreMap = new Map<number, string>();
+
+  get solucionesGroups(): SolucionGroup[] {
+    const all = (this.griProblemaFactorSubSolucion.data as SubSolucionDTO[]) ?? [];
+    const ids = new Set<number>();
+    all.forEach(r => {
+      if (r.idProgramaGeneralProblemaFactorSolucion != null) {
+        ids.add(r.idProgramaGeneralProblemaFactorSolucion);
+      }
+    });
+
+    const groups: SolucionGroup[] = Array.from(ids).map(id => ({
+      solucionId: id,
+      nombre: this.nombreSolucionPorId(id)
+    }));
+
+    groups.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    return groups;
+  }
+
   get padres(): SubSolucionDTO[] {
     return (this.griProblemaFactorSubSolucion.data as SubSolucionDTO[]).filter(x => x.nivel === 1);
   }
@@ -82,24 +112,50 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
 
   ngOnInit(): void {
     this.obtenerSubSoluciones();
-    this.obtener();
+    this.obtener();  
     this.configurarGrid();
   }
 
-  /* ---------- Datos generales ---------- */
+  private normalize(value?: string | null): string | null {
+    if (value == null) return null;
+    const v = String(value).trim();
+    if (!v) return null;
+    const lower = v.toLowerCase();
+    if (lower === 'vacio' || lower === 'vacío') return null;
+    return v;
+  }
+
+  private pickNombre(sol: ComboNoBase): string {
+    const sub = this.normalize(sol.subTitulo);
+    const tit = this.normalize(sol.titulo);
+    const des = this.normalize(sol.descripcion);
+    return sub ?? tit ?? des ?? '(Sin descripción)';
+  }
+
+  private nombreSolucionPorId(id: number): string {
+    return this.solucionNombreMap.get(id) ?? `Solución #${id}`;
+  }
+
+
   obtener(): void {
     this._integraService
       .getJsonResponse(constApiPlanificacion.ProgramageneralproblemaFactorSolucionObtener)
       .subscribe({
         next: (resp: HttpResponse<ComboNoBase[]>) => {
           const rpta = resp.body ?? [];
-          if(rpta.length > 0){
-            this.dataComboSoluciones = this.filtroPrioridadComboSoluciones(rpta);
-            this.dataComboSolucionesFiltro = this.dataComboSoluciones;
-          } else {
-            this.dataComboSoluciones = [];
-            this.dataComboSolucionesFiltro = [];
-          }
+
+ 
+          this.dataComboSoluciones = rpta.map((s) => ({
+            id: s.id,
+            subTitulo: this.pickNombre(s)
+          }));
+          this.dataComboSolucionesFiltro = this.dataComboSoluciones;
+
+
+          this.solucionNombreMap.clear();
+          this.dataComboSoluciones.forEach(c => {
+            if (c?.id != null) this.solucionNombreMap.set(c.id, c.subTitulo);
+          });
         },
         error: (error) => {
           const mensaje = this._alertaService.getMessageErrorService(error);
@@ -107,6 +163,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
         },
       });
   }
+
 
   obtenerSubSoluciones(): void {
     this.griProblemaFactorSubSolucion.loading = true;
@@ -125,20 +182,28 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       });
   }
 
+  getPadresBySolucion(solucionId: number): SubSolucionDTO[] {
+    const all = (this.griProblemaFactorSubSolucion.data as SubSolucionDTO[]) ?? [];
+    return all
+      .filter(x => x.nivel === 1 && x.idProgramaGeneralProblemaFactorSolucion === solucionId)
+      .sort((a, b) => a.orden - b.orden);
+  }
+
   getChildren(padre: SubSolucionDTO): SubSolucionDTO[] {
     const all = (this.griProblemaFactorSubSolucion.data as SubSolucionDTO[]) ?? [];
-    return all.filter(x =>
-      x.nivel === 2 &&
-      x.orden === padre.orden &&
-      x.idProgramaGeneralProblemaFactorSolucion === padre.idProgramaGeneralProblemaFactorSolucion
-    );
+    return all
+      .filter(x =>
+        x.nivel === 2 &&
+        x.orden === padre.orden &&
+        x.idProgramaGeneralProblemaFactorSolucion === padre.idProgramaGeneralProblemaFactorSolucion
+      )
+      .sort((a, b) => a.orden - b.orden);
   }
 
   configurarGrid(): void {
     this.griProblemaFactorSubSolucion.habilitarEstadoNewRow = true;
   }
 
-  /* ---------- Modal (crear/editar) ---------- */
   abrirModal(context: any, isNew: boolean, dataItem?: SubSolucionDTO): void {
     this.isNew = isNew;
     this.draft = [];
@@ -188,38 +253,16 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       modalDialogClass: 'modal-xxl modal-dialog-scrollable'
     });
   }
+
   onFilterChangeComboSoluciones(value: any){
-    if (value.length >= 1) {
+    if (value?.length >= 1) {
+      const v = String(value).toLowerCase();
       this.dataComboSolucionesFiltro = this.dataComboSoluciones.filter(
-        (s: any) =>
-          s.subTitulo.toLowerCase().indexOf(value.toLowerCase()) !== -1
+        (s: any) => s.subTitulo.toLowerCase().indexOf(v) !== -1
       );
     } else {
       this.dataComboSolucionesFiltro = this.dataComboSoluciones;
     }
-  }
-
-  private normalize(value?: string | null): string | null {
-    if (!value) return null;
-    const v = value.trim();
-    if (!v) return null;
-    const lower = v.toLowerCase();
-    if (lower === 'vacio' || lower === 'vacío') return null;
-    return v;
-  }
-
-  filtroPrioridadComboSoluciones(rpta: ComboNoBase[] = [] ): ComboBase[] {
-    return rpta.map((s: ComboNoBase) => {
-      const nombre =
-        this.normalize(s.subTitulo) ??
-        this.normalize(s.titulo) ??
-        this.normalize(s.descripcion) ??
-      '(Sin descripción)';
-      return {
-        id: s.id,
-        subTitulo: nombre
-      };
-    });
   }
 
   onSolucionChange(id: number | null): void {
@@ -289,9 +332,8 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       });
   }
 
-  /* expand/collapse controlado por propiedad */
   public isDetailExpanded = (args: RowArgs): boolean =>
-  !!(args.dataItem as DraftRow).expanded;
+    !!(args.dataItem as DraftRow).expanded;
 
   public onDetailExpand(args: RowArgs): void {
     (args.dataItem as DraftRow).expanded = true;
@@ -301,7 +343,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     (args.dataItem as DraftRow).expanded = false;
   }
 
-  /* ---------- Draft helpers ---------- */
   getDraftChildrenByParent(parent: DraftRow): DraftRow[] {
     return this.draft.filter(r => r.nivel === 2 && r.parentTempId === parent.tempId);
   }
@@ -385,8 +426,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     }
     this.getDraftChildrenByParent(parent).forEach(h => (h.orden = parent.orden));
   }
-
-  /* ---------- Guardar (batch insert) ---------- */
   guardarDraft(): void {
     if (this.hasDraftErrors(true)) {
       this._alertaService.mensajeIcon('Selecciona la Solución y verifica campos/órdenes.');
@@ -416,7 +455,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       });
   }
 
-  /* ---------- Actualizar (create/update/delete) ---------- */
   actualizarDraft(): void {
     if (this.hasDraftErrors(false)) {
       this._alertaService.mensajeIcon('Verifica campos/órdenes.');
@@ -504,7 +542,6 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     this._alertaService.notificationWarning(mensaje);
   }
 
-  /* ---------- Eliminar desde grilla principal ---------- */
   eliminarPadre(padre: SubSolucionDTO): void {
     const hijos = this.getChildren(padre);
     const ids = [padre.id, ...hijos.map(h => h.id)].filter(Boolean) as number[];
