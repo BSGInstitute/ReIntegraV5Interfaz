@@ -16,11 +16,11 @@ import { ModalidadCursoAlternoDTO, PGeneralArgumentoMotivacion } from '@planific
 import { CompuestoArgumentoModalidadAlternoDTO } from '@planificacion/models/interfaces/programaGeneralArgumento';
 
 @Component({
-  selector: 'app-pg-garantia-confiabilidad',
-  templateUrl: './pg-garantia-confiabilidad.component.html',
-  styleUrls: ['./pg-garantia-confiabilidad.component.scss']
+  selector: 'app-pg-argumento-motivacion',
+  templateUrl: './pg-argumento-motivacion.component.html',
+  styleUrls: ['./pg-argumento-motivacion.component.scss']
 })
-export class PgGarantiaConfiabilidadComponent implements OnInit {
+export class PgArgumentoMotivacionComponent implements OnInit {
   constructor(
     private integraService: IntegraService,
     private formBuilder: FormBuilder,

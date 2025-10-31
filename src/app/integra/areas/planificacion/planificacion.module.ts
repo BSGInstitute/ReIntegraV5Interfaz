@@ -129,7 +129,7 @@ import { ProgramaGeneralProblemaFactorComponent } from './configuracion-programa
 import { ProgramaGeneralProblemaFactorDetalleComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-detalle/programa-general-problema-factor-detalle.component';
 import { ProgramaGeneralProblemaFactorSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-solucion/programa-general-problema-factor-solucion.component';
 import { ProgramaGeneralProblemaFactorSubSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-sub-solucion/programa-general-problema-factor-sub-solucion.component';
-import { PgGarantiaConfiabilidadComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-garantia-confiabilidad/pg-garantia-confiabilidad.component';
+import { PgArgumentoMotivacionComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-argumento-motivacion/pg-argumento-motivacion.component';
 import { PgProblemasClienteFormComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-problemas-cliente-v2/pg-problemas-cliente-form/pg-problemas-cliente-form.component';
 
 
@@ -241,7 +241,7 @@ import { PgProblemasClienteFormComponent } from './configuracion-programas-capac
     PgProblemasClienteComponent,
     PgResumenRequisitosCertificacionComponent,
     PgPresentacionArgumentoComponent,
-    PgGarantiaConfiabilidadComponent,
+    PgArgumentoMotivacionComponent,
     CategoriaEncuestaOnlineComponent,
     PreguntaEncuestaOnlineComponent,
     EncuestaComponent,
