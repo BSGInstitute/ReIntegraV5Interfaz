@@ -217,7 +217,7 @@
                     themeColor="warning"
                     icon="pencil"
                     title="Editar"
-                    (click)="abrirModalArgumento(modalArgumento, false, dataItem, rowIndex)"
+                    (click)="abrirModalArgumento(modalArgumentoEditar, false, dataItem, rowIndex)"
                   ></button>
                 </div>
                 <div kendoTooltip class="col-auto p-0 mx-1">
@@ -256,9 +256,62 @@
     </div>
   </div>
 </ng-template>
-
 <!-- Modal Detalle/Motivación -->
 <ng-template #modalArgumento let-modal>
+  <div class="modal-header py-2 bg-light text-success text-center">
+    <h2 class="modal-title mb-0 w-100">Detalle y Motivación</h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="card mb-3">
+      <div class="card-header">Motivación</div>
+      <div class="card-body">
+        <kendo-dropdownlist [formControl]="motivacionSeleccionada" [data]="motivacionesViewFiltro" textField="nombre"
+          valueField="id" [valuePrimitive]="true" [defaultItem]="{ id: null, nombre: 'Seleccionar motivación...' }"
+          style="width:100%"></kendo-dropdownlist>
+      </div>
+    </div>
+
+    <div class="card">
+      <kendo-grid [data]="argumentos.controls" scrollable="none">
+        <ng-template kendoGridToolbarTemplate class="w-full" style="justify-content: space-between;">
+          <button kendoButton icon="plus" themeColor="success" (click)="agregarArgumentoMotivacion()">
+            Agregar
+          </button>
+          <button kendoButton icon="plus" themeColor="secondary" (click)="obtenerDatos()">
+            Registrar
+          </button>
+        </ng-template>
+
+        <kendo-grid-column title="Detalle" [width]="280">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div [formGroup]="dataItem">
+              <textarea kendoTextArea formControlName="detalle" rows="2" placeholder="Ingrese detalle..."
+                style="width:100%"></textarea>
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column title="Motivación" [width]="220">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.get('motivacion')?.get('nombre')?.value }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column title="Acciones" [width]="120">
+          <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+            <button kendoButton icon="trash" themeColor="error"
+              (click)="eliminarArgumentoMotivacion(rowIndex)"></button>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Modal Detalle/Motivación -->
+<ng-template #modalArgumentoEditar let-modal>
   <div class="modal-header py-2 bg-light text-success text-center">
     <h2 class="modal-title mb-0 w-100">Detalle y Motivación</h2>
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { KendoGrid } from '@shared/models/kendo-grid';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
@@ -21,6 +21,9 @@ import { CompuestoArgumentoModalidadAlternoDTO } from '@planificacion/models/int
   styleUrls: ['./pg-argumento-motivacion.component.scss']
 })
 export class PgArgumentoMotivacionComponent implements OnInit {
+  formArgumentoMotivacion: FormArray;
+  motivacionSeleccionada = this.formBuilder.control(null, Validators.required);
+
   constructor(
     private integraService: IntegraService,
     private formBuilder: FormBuilder,
@@ -28,7 +31,9 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     private alertaService: AlertaService,
     private modalService: NgbModal,
     private formService: FormService
-  ) {}
+  ) {
+    this.formArgumentoMotivacion = this.formBuilder.array([]);
+  }
 
   @Input() pgeneralService: PgeneralService;
 
@@ -426,5 +431,77 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     } else {
       this.motivacionesViewFiltro = this.motivacionesView;
     }
+  }
+  /*--------------- FORM MASIVO DETALLE Y MOTIVACION ----------------*/
+  get argumentos(): FormArray {
+    return this.formArgumentoMotivacion;
+  }
+   agregarArgumentoMotivacion(): void {
+    const idMotivacion = this.motivacionSeleccionada.value;
+    if (!idMotivacion) return;
+
+    const motivacion = this.motivacionesViewFiltro.find(m => m.id === idMotivacion);
+    if (!motivacion) return;
+
+    const nuevoArgumento = this.formBuilder.group({
+      detalle: ['', Validators.required],
+      motivacion: this.formBuilder.group({
+        id: [motivacion.id],
+        nombre: [motivacion.nombre],
+      }),
+    });
+
+    this.argumentos.push(nuevoArgumento);
+  }
+
+  eliminarArgumentoMotivacion(index: number): void {
+    this.argumentos.removeAt(index);
+  }
+  obtenerDatos() {
+    if (this.argumentos.length === 0) {
+      this.alertaService.notificationWarning('No hay argumentos para guardar.');
+      return;
+    }
+    const argumentosCompletos = this.argumentos.value.filter(
+      (item: any) => item.detalle && item.detalle.trim() !== ''
+    );
+
+    const argumentosIncompletos = this.argumentos.length - argumentosCompletos.length;
+
+    if (argumentosIncompletos > 0) {
+      this.alertaService.notificationWarning(
+        `Hay ${argumentosIncompletos} argumento(s) sin detalle. Complételos antes de guardar.`
+      );
+      return;
+    }
+
+    const nuevosItems = this.argumentos.value.map((item: any) => ({
+      id: 0,
+      detalle: item.detalle,
+      motivacion: {
+        id: item.motivacion.id,
+        idPGeneral: this.dataItemPgeneral?.id ?? 0,
+        nombre: item.motivacion.nombre,
+      },
+    }));
+
+    console.log('Datos generados:', nuevosItems);
+
+    if (this.esNuevoDetalleSolucion) {
+      this.gridArgumentoDetalleSolucion.data = [
+        ...(this.gridArgumentoDetalleSolucion.data || []),
+        ...nuevosItems,
+      ];
+    } else {
+      this.gridArgumentoDetalleSolucion.data.splice(
+        this.indexArgumentoGridTemp,
+        1,
+        ...nuevosItems
+      );
+    }
+    this.argumentos.clear();
+    this.motivacionSeleccionada.reset(null);
+    this.modalRefArgumento?.close();
+    this.alertaService.mensajeIcon('Guardado', 'Argumentos agregados correctamente', 'success');
   }
 }
