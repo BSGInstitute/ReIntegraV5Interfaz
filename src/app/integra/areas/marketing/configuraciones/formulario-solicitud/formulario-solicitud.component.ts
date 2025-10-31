@@ -7,7 +7,10 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { constApiMarketing } from '@environments/constApi';
+import {
+  constApiMarketing,
+  constApiPlanificacion,
+} from '@environments/constApi';
 import {
   campoContacto,
   FormularioSolicitud,
@@ -37,12 +40,11 @@ export class FormularioSolicitudComponent implements OnInit {
     private alertaService: AlertaService,
     private modalService: NgbModal
   ) {}
-  usuario = JSON.parse(localStorage.getItem('userData'))
+  usuario = JSON.parse(localStorage.getItem('userData'));
   //this.usuario.userName
   //this.usuario.areaTrabajo
   //this.usuario.idRol
   //this.usuario.idPersonal
-
 
   successIcon: string = iconInputValidation;
 
@@ -332,7 +334,6 @@ export class FormularioSolicitudComponent implements OnInit {
     }
   }
 
-
   /**
    * Funcion que permitira  crear nuevo registro en el mmodal.
    */
@@ -340,7 +341,7 @@ export class FormularioSolicitudComponent implements OnInit {
   crearFormularioSolicitud() {
     console.log(this.formFormularioSolicitud.getRawValue());
     if (this.validFormFormularioSolicitud()) {
-      // this.loaderModal = true;
+      this.loaderModal = true;
       let datosFormulario = this.formFormularioSolicitud.getRawValue();
       let formularioSolicitud: any = {
         id: 0,
@@ -351,11 +352,11 @@ export class FormularioSolicitudComponent implements OnInit {
         idCampania: datosFormulario.campania?.id,
         proveedor: datosFormulario.proveedor,
         idFormularioSolicitudTextoBoton:
-        datosFormulario.idFormularioSolicitudTextoBoton,
+          datosFormulario.idFormularioSolicitudTextoBoton,
         tipoSegmento: 0,
         codigoSegmento: 'FRLPG',
         tipoEvento: 0,
-        usuario:this.usuario.userName,
+        usuario: this.usuario.userName,
       };
       let campos: any[] = [];
       let contador: number = 0;
@@ -367,6 +368,9 @@ export class FormularioSolicitudComponent implements OnInit {
           siempre: e.siempre,
           inteligente: e.inteligente,
           probabilidad: e.probabilidad,
+          listaOpcion: this.esCampoConOpciones(e.nombre)
+            ? e.opciones
+            : undefined,
         });
       });
 
@@ -375,7 +379,6 @@ export class FormularioSolicitudComponent implements OnInit {
         campo: campos,
       };
 
-      console.log(jsonEnvio);
       this.integraService
         .insertar(
           constApiMarketing.FormularioSolicitudInsertarFormularioSolicitud,
@@ -410,7 +413,7 @@ export class FormularioSolicitudComponent implements OnInit {
   actualizarFormularioSolicitud() {
     console.log(this.formFormularioSolicitud.getRawValue());
     if (this.validFormFormularioSolicitud()) {
-      // this.loaderModal = true;
+      this.loaderModal = true;
       let dataOriginal = this.dataEditTemporal;
       let datosFormulario = this.formFormularioSolicitud.getRawValue();
       let formularioSolicitud: any = {
@@ -426,7 +429,7 @@ export class FormularioSolicitudComponent implements OnInit {
         tipoSegmento: dataOriginal.tipoSegmento,
         codigoSegmento: dataOriginal.codigoSegmento,
         tipoEvento: dataOriginal.tipoEvento,
-        usuario:this.usuario.userName,
+        usuario: this.usuario.userName,
       };
       let campos: any[] = [];
       let contador: number = 0;
@@ -438,6 +441,12 @@ export class FormularioSolicitudComponent implements OnInit {
           siempre: e.siempre,
           inteligente: e.inteligente,
           probabilidad: e.probabilidad,
+          listaOpcion:
+            this.esCampoConOpciones(e.nombre) &&
+            Array.isArray(e.opcionesSeleccionadas) &&
+            e.opcionesSeleccionadas.length > 0
+              ? e.opcionesSeleccionadas.map((item: any) => item.id).join(',')
+              : '-1',
         });
       });
 
@@ -445,8 +454,6 @@ export class FormularioSolicitudComponent implements OnInit {
         formulario: formularioSolicitud,
         campo: campos,
       };
-
-      console.log(jsonEnvio);
       this.integraService
         .actualizar(
           constApiMarketing.FormularioSolicitudActualizarFormularioSolicitud,
@@ -470,10 +477,6 @@ export class FormularioSolicitudComponent implements OnInit {
         });
     } else this.formFormularioSolicitud.markAllAsTouched();
   }
-
-
-
-
 
   /**
    * Funcion que permitira  Eleminar datos de grilla.
@@ -697,8 +700,11 @@ export class FormularioSolicitudComponent implements OnInit {
     let data = { dataItem: dataItem, isNew: isNew };
     console.log({ dataItem: dataItem, isNew: isNew });
     this.dataEditTemporal = dataItem;
-    // alert(`se abrio el modal ${JSON.stringify(data)}`);
     this.isNew = isNew;
+    this.obtenerIndustriaCombo();
+    this.obtenerCargoCombo();
+    this.obtenerAreaTrabajoCombo();
+    this.obtenerAreaFormacionCombo();
     if (!isNew) {
       this.gridCampoFormulario.dataItemEditTemp = dataItem;
       this.integraService
@@ -707,11 +713,24 @@ export class FormularioSolicitudComponent implements OnInit {
         )
         .subscribe({
           next: (response: any) => {
-            console.log(response);
             this.gridCampoFormulario.data = response.body;
             let idsCampos: number[] = [];
             response.body.forEach((element: any) => {
               idsCampos.push(element.idCampoContacto);
+
+              const valorOpciones = element.valorOpciones;
+              const combo = this.obtenerComboPorNombre(element.nombre);
+
+              if (!valorOpciones || valorOpciones === '-1') {
+                element.opcionesSeleccionadas = [];
+              } else {
+                const idsSeleccionados = valorOpciones
+                  .split(',')
+                  .map((id: string) => parseInt(id, 10));
+                element.opcionesSeleccionadas = combo.filter((item: any) =>
+                  idsSeleccionados.includes(item.id)
+                );
+              }
             });
 
             const formularioRespuesta = {
@@ -725,6 +744,7 @@ export class FormularioSolicitudComponent implements OnInit {
               id: dataItem.idCampania,
               nombre: dataItem.nombreCampania,
             };
+
             this.dataCampania.push(campania);
             this.formFormularioSolicitud.get('campania').setValue(campania);
             this.formFormularioSolicitud.get('campos').setValue(idsCampos);
@@ -748,6 +768,8 @@ export class FormularioSolicitudComponent implements OnInit {
           siempre: false,
           inteligente: false,
           probabilidad: false,
+          tieneOpciones: true,
+          opcionesSeleccionadas: [],
         };
         this.gridCampoFormulario.data.push(campoNuevo);
       });
@@ -757,5 +779,101 @@ export class FormularioSolicitudComponent implements OnInit {
       backdrop: 'static',
       size: 'lg',
     });
+  }
+
+  industriaCombo: any[] = [];
+  cargoCombo: any[] = [];
+  areaTrabajoCombo: any[] = [];
+  areaFormacionCombo: any[] = [];
+
+  // Obtener Industria Combo
+  obtenerIndustriaCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.IndustriaObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.industriaCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError('Error al cargar Industria');
+        },
+      });
+  }
+
+  // Obtener Cargo Combo
+  obtenerCargoCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.CargoObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.cargoCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError('Error al cargar Cargo');
+        },
+      });
+  }
+
+  // Obtener Area Trabajo Combo
+  obtenerAreaTrabajoCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.AreaTrabajoObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.areaTrabajoCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError('Error al cargar Area de Trabajo');
+        },
+      });
+  }
+
+  // Obtener Area Formacion Combo
+  obtenerAreaFormacionCombo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.AreaFormacionObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.areaFormacionCombo = response.body;
+        },
+        error: () => {
+          this.alertaService.mensajeError('Error al cargar Area de Formación');
+        },
+      });
+  }
+
+  esCampoConOpciones(nombre: string): boolean {
+    return ['industria', 'area trabajo', 'cargo', 'area formacion'].includes(
+      nombre.toLowerCase()
+    );
+  }
+
+  // Retorna el combo correspondiente al nombre
+  obtenerComboPorNombre(nombre: string): any[] {
+    switch (nombre.toLowerCase()) {
+      case 'industria':
+        return this.industriaCombo;
+      case 'cargo':
+        return this.cargoCombo;
+      case 'area trabajo':
+        return this.areaTrabajoCombo;
+      case 'area formacion':
+        return this.areaFormacionCombo;
+      default:
+        return [];
+    }
+  }
+
+  // Actualiza el valor del campo "opciones" (como string)
+  onOpcionesChange(dataItem: any): void {
+    if (
+      !dataItem.opcionesSeleccionadas ||
+      dataItem.opcionesSeleccionadas.length === 0
+    ) {
+      dataItem.opciones = 'all';
+    } else {
+      const ids = dataItem.opcionesSeleccionadas.map((opt: any) => opt.id);
+      dataItem.opciones = ids.join(',');
+    }
   }
 }

@@ -268,9 +268,9 @@ export interface IOportunidadFormulario {
 }
 
 export interface IOportunidadFormularioWhatsapp {
-
   idAlumno: number;
   idCentroCosto: number;
   idPersonalAsignado: number;
-
+  activo?: boolean;
+  idOrigen?: string;
 }

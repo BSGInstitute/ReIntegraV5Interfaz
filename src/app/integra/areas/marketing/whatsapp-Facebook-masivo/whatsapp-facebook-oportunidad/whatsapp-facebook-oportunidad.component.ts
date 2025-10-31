@@ -76,7 +76,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   public esBotonAsignarDisabled: boolean = false;
   public esDesdeActualizarCentroCosto: boolean = false;
   public esDesdeCrearOportunidad: boolean = false;
-  isComboDisabled = true;
   loaderChatWhatsapp: boolean = false;
   loaderMensajes: boolean = false;
 
@@ -125,7 +124,9 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
 
   formOportunidad: FormGroup = this.formBuilder.group({
     idCentroCosto: ['', Validators.required],
-    idPersonalAsignado: [null],
+    idPersonalAsignado: [0, Validators.required],
+    activo: [false],
+    idOrigen: [0, Validators.required],
   });
 
   modalRef: any;
@@ -142,9 +143,9 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   previsualizacion: SafeHtml = '&nbsp;';
   modalPlantillaRef: NgbModalRef;
   nombrePersonal: string = 'Usuario';
-
   dragOver: boolean = false;
   showCrearOportunidadContenedor = false;
+  comboOrigen: Array<IComboBase1> = [];
 
   ngOnInit(): void {
     this.loader = true;
@@ -255,8 +256,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
       )
       .subscribe({
         next: (response: HttpResponse<any>) => {
-          console.log(response.body[0]);
-
           this.datosChat = response.body[0];
           this.alumnosPorCelular = this.datosChat.listaAlumnosPorCelular;
           this.mensajesWhats = this.datosChat.mensajePorCelular;
@@ -502,7 +501,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   }
 
   selectChat(e: any) {}
-
   mensajePrueba: any;
 
   convertToAscii(text: string): string {
@@ -935,9 +933,11 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   }
 
   abrirModalOPortunidad(modalOportunidad: any) {
-    this.isComboDisabled = true;
+    this.ObtenerComboOrigen();
     this.formOportunidad.reset();
     this.formOportunidad.get('idPersonalAsignado')?.setValue(125);
+    this.formOportunidad.get('idOrigen')?.setValue(954);
+
     this.modalRef = this.modalService.open(this.modalOportunidad, {
       backdrop: 'static',
     });
@@ -1039,18 +1039,18 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
     this.esBotonAsignarDisabled = false;
 
     if (this.validFormTipoDato()) {
-      console.log(this.formOportunidad.getRawValue());
       this.loader = true;
-
       let dataForm = this.formOportunidad.getRawValue();
       let envio: IOportunidadFormularioWhatsapp = {
         idAlumno: this.idAlumno,
         idCentroCosto: dataForm.idCentroCosto,
-        idPersonalAsignado: 125,
+        idPersonalAsignado: dataForm.idPersonalAsignado,
+        activo: dataForm.activo,
+        idOrigen: dataForm.idOrigen,
       };
-
       this.idAsesorActual = 125;
-      console.log(JSON.stringify(envio));
+
+      console.log(envio);
 
       this.integraService
         .postJsonResponse(constApiMarketing.CrearOportunidadWhatsapp, envio)
@@ -1118,7 +1118,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
     }
   }
   AbrirModalCaso3(idOportunidad: number) {
-    console.log('ID Oportunidad seleccionado:', idOportunidad);
     this.loader = true;
     this.esFlujoDesdeAbrirModalCaso3 = true;
     this.esDesdeAbrirModalCaso3 = true;
@@ -1298,43 +1297,21 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
             this.aptitud = respuesta.apto;
             this.mensaje = respuesta.mensaje;
 
-            if (
-              this.probabilidadNivel === null ||
-              this.probabilidadNivel === ''
-            ) {
-              this.alertaService.mensajeWarning(
-                'El Centro de Costo no tiene Probabilidad'
-              );
-              this.loader = false;
-              return;
-            }
-            if (this.probabilidadNivel === 'Muy Alta') {
-              this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.mostrarTercerModal = true;
+            this.asesorSeleccionado = this.idAsesorActual;
+            this.esComboDisabled = this.idAsesorActual !== 125;
+            this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
 
-              this.mostrarTercerModal = true;
+            this.alertaService.mensajeExitosomkt(
+              'El Centro de Costo se Cargo Exitosamente'
+            );
 
-              this.asesorSeleccionado = this.idAsesorActual;
-              this.esComboDisabled = this.idAsesorActual !== 125;
-              this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
-              this.alertaService.mensajeExitosomkt(
-                'El Centro de Costo se Cargo Exitosamente'
-              );
-
-              setTimeout(() => {
-                document
-                  .getElementById('idModalCaso3')
-                  ?.scrollIntoView({ behavior: 'smooth' });
-              }, 180);
-            } else if (
-              this.probabilidadNivel === 'Media' ||
-              this.probabilidadNivel === 'Alta'
-            ) {
-              Swal.fire(
-                'Notificación',
-                `La probabilidad es ${this.probabilidadNivel}. No es apta para ser trabajada.`,
-                'warning'
-              );
-            }
+            setTimeout(() => {
+              document
+                .getElementById('idModalCaso3')
+                ?.scrollIntoView({ behavior: 'smooth' });
+            }, 180);
 
             this.cdRef.detectChanges();
           } else {
@@ -1791,5 +1768,18 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   // Abrir modal para crear oportunidad cuando NO HAY EMAIL REGISTRADO
   toggleCrearOportunidadContenedor() {
     this.showCrearOportunidadContenedor = !this.showCrearOportunidadContenedor;
+  }
+
+  ObtenerComboOrigen() {
+    this.integraService
+      .obtener(constApiMarketing.OrigenObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<Array<IComboBase1>>) => {
+          this.comboOrigen = response.body;
+        },
+        error: (error) => {
+          console.error('Error al obtener el combo de Origen:', error);
+        },
+      });
   }
 }

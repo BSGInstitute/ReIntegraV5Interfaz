@@ -1,15 +1,16 @@
+<!-- pg-garantia-confiabilidad.component.html -->
 <div class="pg-contenedor-tab">
   <div class="row mt-3">
     <div class="col-12 pg-kgrid">
       <kendo-grid
-        [kendoGridBinding]="gridPresentacionArgumento.data"
-        [loading]="gridPresentacionArgumento.loading"
+        [kendoGridBinding]="gridArgumento.data"
+        [loading]="gridArgumento.loading"
         [selectable]="false"
-        scrollable="none"
+        scrollable="scrollable"
         filterable="menu"
       >
         <ng-template kendoGridToolbarTemplate>
-          <h3 class="mb-0 w-auto text-center">Garantia/Confiabilidad</h3>
+          <h3 class="mb-0 w-auto text-center">Argumentos por Motivación</h3>
           <kendo-grid-spacer></kendo-grid-spacer>
           <button
             kendoButton
@@ -21,48 +22,30 @@
             Nuevo
           </button>
         </ng-template>
+
         <kendo-grid-column
-          field="nombrePresentacionArgumento"
+          field="nombre"
           title="Argumento"
           class="text-start"
           [style]="{ width: '40%' }"
           [filterable]="true"
           headerClass="pg-header-grid justify-content-center "
         ></kendo-grid-column>
+
         <kendo-grid-column
           field="modalidades"
           title="Modalidad"
           class="text-start fw-bold"
-          [style]="{ width: '40%' }"
+          [style]="{ width: '35%' }"
           headerClass="pg-header-grid justify-content-center"
         >
           <ng-template kendoGridCellTemplate let-dataItem>
-            <ng-container
-              *ngIf="
-                dataItem.modalidades != null && dataItem.modalidades.length > 0
-              "
-            >
+            <ng-container *ngIf="dataItem.modalidades?.length > 0">
               {{ impresionModalidad(dataItem) }}
             </ng-container>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column
-          field="modalidades"
-          title="Motivacion"
-          class="text-start fw-bold"
-          [style]="{ width: '40%' }"
-          headerClass="pg-header-grid justify-content-center"
-        >
-          <ng-template kendoGridCellTemplate let-dataItem>
-            <ng-container
-              *ngIf="
-                dataItem.modalidades != null && dataItem.modalidades.length > 0
-              "
-            >
-              {{ impresionModalidad(dataItem) }}
-            </ng-container>
-          </ng-template>
-        </kendo-grid-column>
+
         <kendo-grid-column
           title="Acciones"
           [style]="{ width: '20%' }"
@@ -99,56 +82,42 @@
 <ng-template #modalInsertar let-modal>
   <div class="modal-header py-2 bg-success text-white text-center">
     <h2 class="modal-title mb-0 w-100" id="modal-basic-title">
-      {{
-        esNuevo
-          ? "Registro Garantia/Confiabilidad"
-          : "Actualizar Garantia/Confiabilidad"
-      }}
+      {{ esNuevo ? 'Registro de Argumentos por Motivación' : 'Actualizar Argumentos por Motivación' }}
     </h2>
-    <button
-      type="button"
-      class="btn-close"
-      aria-label="Close"
-      (click)="modal.dismiss('Cross click')"
-    ></button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
   </div>
+
   <div class="modal-body">
     <div class="card">
       <div class="card-body">
-        <form
-          class="k-form k-form-horizontal"
-          [formGroup]="formPresentacionArgumento"
-        >
+        <form class="k-form k-form-horizontal" [formGroup]="formArgumento">
           <kendo-formfield orientation="horizontal">
             <label [for]="nombre" class="k-label">
               <span>Nombre<strong> *</strong></span>
             </label>
             <kendo-textbox
               #nombre
-              formControlName="nombrePresentacionArgumento"
+              formControlName="nombre"
               inputValidSpaceDir
               placeholder="Ingrese nombre ..."
-            >
-            </kendo-textbox>
-            <kendo-formerror>{{
-              getErrorMessage("nombrePresentacionArgumento")
-            }}</kendo-formerror>
+            ></kendo-textbox>
+            <kendo-formerror>{{ getErrorMessage('nombre') }}</kendo-formerror>
           </kendo-formfield>
+
           <kendo-formfield orientation="horizontal">
             <label [for]="descripcionA" class="k-label">
-              <span>Descripcion</span>
+              <span>Descripción</span>
             </label>
-            <kendo-textbox
+            <kendo-textarea
               #descripcionA
-              formControlName="descripcionPresentacionArgumento"
-              inputValidSpaceDir
-              placeholder="Ingrese descripcion ..."
-            >
-            </kendo-textbox>
-            <kendo-formerror>{{
-              getErrorMessage("descripcionPresentacionArgumento")
-            }}</kendo-formerror>
+              formControlName="descripcion"
+              [rows]="3"
+              [resizable]="'vertical'"
+              placeholder="Ingrese descripción ..."
+              style="width: 100%"
+            ></kendo-textarea>
           </kendo-formfield>
+
           <kendo-formfield orientation="horizontal">
             <label [for]="modalidades" class="k-label">
               <span>Modalidad<strong> *</strong></span>
@@ -160,16 +129,12 @@
               textField="nombre"
               valueField="idModalidadCurso"
               placeholder="Seleccione Modalidad ..."
-              [defaultItem]="{
-                id: null,
-                nombre: 'Seleccionar Modalidad ...'
-              }"
+              [defaultItem]="{ id: null, nombre: 'Seleccionar Modalidad ...' }"
               [kendoDropDownFilter]="filterSettings"
             ></kendo-multiselect>
-            <kendo-formerror>{{
-              getErrorMessage("modalidades")
-            }}</kendo-formerror>
+            <kendo-formerror>{{ getErrorMessage('modalidades') }}</kendo-formerror>
           </kendo-formfield>
+
           <kendo-formfield orientation="horizontal">
             <label [for]="esVisibleAgenda" class="k-label">
               <span>Es Visible Agenda</span>
@@ -186,17 +151,18 @@
         </form>
       </div>
     </div>
+
     <div class="row mt-3">
       <div class="col-12 pg-kgrid">
         <kendo-grid
-          [kendoGridBinding]="gridPresentacionArgumentoDetalleSolucion.data"
-          [loading]="gridPresentacionArgumentoDetalleSolucion.loading"
+          [kendoGridBinding]="gridArgumentoDetalleSolucion.data"
+          [loading]="gridArgumentoDetalleSolucion.loading"
           [selectable]="false"
           scrollable="none"
           filterable="menu"
         >
           <ng-template kendoGridToolbarTemplate>
-            <h3 class="mb-0 w-auto text-center">Detalle y Solución</h3>
+            <h3 class="mb-0 w-auto text-center">Detalle y Motivación</h3>
             <kendo-grid-spacer></kendo-grid-spacer>
             <button
               kendoGridAddCommand
@@ -207,40 +173,35 @@
               Nuevo
             </button>
           </ng-template>
+
           <kendo-grid-column
             field="detalle"
             title="Detalle"
             class="text-center"
-            [width]="100"
+            [width]="180"
             [filterable]="true"
             headerClass="pg-header-grid justify-content-center "
           >
             <ng-template kendoGridCellTemplate let-dataItem>
-              <span [innerHTML]="dataItem.detalle"></span>
+              <span>{{ dataItem.detalle }}</span>
             </ng-template>
           </kendo-grid-column>
+
           <kendo-grid-column
-            field="solucion"
-            title="Solución"
+            field="motivacion"
+            title="Motivación"
             class="text-start"
-            [width]="100"
+            [width]="160"
             [filterable]="true"
             headerClass="pg-header-grid justify-content-center "
           >
             <ng-template kendoGridCellTemplate let-dataItem>
-              <span [innerHTML]="dataItem.solucion"></span>
+              <span>{{ dataItem.motivacion?.nombre }}</span>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column
-            title="Acciones"
-            [width]="100"
-            headerClass="pg-header-grid justify-content-center"
-          >
-            <ng-template
-              kendoGridCellTemplate
-              let-dataItem="dataItem"
-              let-rowIndex="rowIndex"
-            >
+
+          <kendo-grid-column title="Acciones" [width]="120" headerClass="pg-header-grid justify-content-center">
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
               <div class="row justify-content-center">
                 <div kendoTooltip class="col-auto p-0 mx-1">
                   <button
@@ -248,14 +209,7 @@
                     themeColor="warning"
                     icon="pencil"
                     title="Editar"
-                    (click)="
-                      abrirModalArgumento(
-                        modalArgumento,
-                        false,
-                        dataItem,
-                        rowIndex
-                      )
-                    "
+                    (click)="abrirModalArgumento(modalArgumento, false, dataItem, rowIndex)"
                   ></button>
                 </div>
                 <div kendoTooltip class="col-auto p-0 mx-1">
@@ -273,75 +227,80 @@
         </kendo-grid>
       </div>
     </div>
+
     <loading [loading]="loaderModal"></loading>
   </div>
+
   <div class="modal-footer">
     <div class="k-form-buttons m-0">
-      <button themeColor="primary" size="medium" icon="save" kendoButton     (click)="guardar()">
-        {{ esNuevo ? "Nuevo" : "Actualizar" }}
-      </button>
       <button
-        themeColor="error"
+        themeColor="primary"
         size="medium"
-        icon="close"
+        icon="save"
         kendoButton
-        (click)="modal.dismiss('Cross click')"
+        (click)="esNuevo ? insertar() : actualizar()"
       >
+        {{ esNuevo ? 'Nuevo' : 'Actualizar' }}
+      </button>
+      <button themeColor="error" size="medium" icon="close" kendoButton (click)="modal.dismiss('Cross click')">
         Cancelar
       </button>
     </div>
   </div>
 </ng-template>
 
-<!-- Modal para Editar -->
+<!-- Modal Detalle/Motivación -->
 <ng-template #modalArgumento let-modal>
   <div class="modal-header py-2 bg-light text-success text-center">
-    <h2 class="modal-title mb-0 w-100" id="modal-basic-title">
-      Detalle y Solución
-    </h2>
-    <button
-      type="button"
-      class="btn-close"
-      aria-label="Close"
-      (click)="modal.dismiss('Cross click')"
-    ></button>
+    <h2 class="modal-title mb-0 w-100">Detalle y Motivación</h2>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
   </div>
+
   <div class="modal-body">
     <form class="k-form k-form-horizontal" [formGroup]="formDetalleSolucion">
       <div class="card">
+        <div class="card-header">Motivación</div>
+        <div class="card-body">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="motivacion" class="k-label">
+              <span>Motivación<strong> *</strong></span>
+            </label>
+
+            <kendo-dropdownlist
+              #motivacion
+              formControlName="motivacion"
+              [data]="motivacionesViewFiltro"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              [filterable]="true"
+              (filterChange)="onFilterChangeMotivacion($event)"
+              [defaultItem]="{ id: null, nombre: 'Seleccionar motivación...' }"
+              placeholder="Seleccionar motivación..."
+              style="width:100%"
+            ></kendo-dropdownlist>
+
+            <kendo-formerror>{{ getErrorMessageDetalle('motivacion') }}</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="card mb-3">
         <div class="card-header">Detalle</div>
         <div class="card-body">
-          <kendo-editor
+          <kendo-textarea
             formControlName="detalle"
-            style="height: 100%; width: 100%"
-            [pasteCleanupSettings]="{
-              removeInvalidHTML: true,
-              convertMsLists: true,
-              removeMsClasses: true,
-              removeMsStyles: true
-            }"
-          >
-          </kendo-editor>
+            [rows]="6"
+            [resizable]="'vertical'"
+            placeholder="Escribe el detalle..."
+            style="width:100%"
+          ></kendo-textarea>
+          <kendo-formerror>{{ getErrorMessageDetalle('detalle') }}</kendo-formerror>
         </div>
       </div>
-      <div class="card mt-2">
-        <div class="card-header">Solución</div>
-        <div class="card-body">
-          <kendo-editor
-            formControlName="solucion"
-            style="height: 100%; width: 100%"
-            [pasteCleanupSettings]="{
-              removeInvalidHTML: true,
-              convertMsLists: true,
-              removeMsClasses: true,
-              removeMsStyles: true
-            }"
-          >
-          </kendo-editor>
-        </div>
-      </div>
+      
     </form>
   </div>
+
   <div class="modal-footer">
     <div class="k-form-buttons m-0">
       <button
@@ -350,16 +309,11 @@
         icon="save"
         kendoButton
         (click)="guardarDetalle()"
+        [disabled]="formDetalleSolucion.invalid"
       >
-        {{ this.esNuevoDetalleSolucion ? "Nuevo" : "Actualizar" }}
+        {{ esNuevoDetalleSolucion ? 'Nuevo' : 'Actualizar' }}
       </button>
-      <button
-        themeColor="error"
-        size="medium"
-        icon="close"
-        kendoButton
-        (click)="modal.dismiss('Cross click')"
-      >
+      <button themeColor="error" size="medium" icon="close" kendoButton (click)="modal.dismiss('Cross click')">
         Cancelar
       </button>
     </div>
