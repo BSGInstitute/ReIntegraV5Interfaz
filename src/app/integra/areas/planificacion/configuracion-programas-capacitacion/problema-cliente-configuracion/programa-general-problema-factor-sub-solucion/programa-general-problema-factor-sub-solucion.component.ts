@@ -12,6 +12,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 /* ---------- Interfaces ---------- */
+interface ComboNoBase { id: number; subTitulo: string; titulo?: string; descripcion?: string; }
 interface ComboBase { id: number; subTitulo: string; }
 
 interface SubSolucionDTO {
@@ -57,6 +58,7 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
   isNew = true;
 
   dataComboSoluciones: ComboBase[] = [];
+  dataComboSolucionesFiltro: ComboBase[] = [];
   selectedSolucionId: number | null = null;
   defaultSolucionItem: ComboBase = { id: null as any, subTitulo: 'Seleccione Solución' };
 
@@ -89,8 +91,15 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
     this._integraService
       .getJsonResponse(constApiPlanificacion.ProgramageneralproblemaFactorSolucionObtener)
       .subscribe({
-        next: (resp: HttpResponse<ComboBase[]>) => {
-          this.dataComboSoluciones = resp.body ?? [];
+        next: (resp: HttpResponse<ComboNoBase[]>) => {
+          const rpta = resp.body ?? [];
+          if(rpta.length > 0){
+            this.dataComboSoluciones = this.filtroPrioridadComboSoluciones(rpta);
+            this.dataComboSolucionesFiltro = this.dataComboSoluciones;
+          } else {
+            this.dataComboSoluciones = [];
+            this.dataComboSolucionesFiltro = [];
+          }
         },
         error: (error) => {
           const mensaje = this._alertaService.getMessageErrorService(error);
@@ -177,6 +186,39 @@ export class ProgramaGeneralProblemaFactorSubSolucionComponent implements OnInit
       scrollable: true,
       size: 'xl',
       modalDialogClass: 'modal-xxl modal-dialog-scrollable'
+    });
+  }
+  onFilterChangeComboSoluciones(value: any){
+    if (value.length >= 1) {
+      this.dataComboSolucionesFiltro = this.dataComboSoluciones.filter(
+        (s: any) =>
+          s.subTitulo.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    } else {
+      this.dataComboSolucionesFiltro = this.dataComboSoluciones;
+    }
+  }
+
+  private normalize(value?: string | null): string | null {
+    if (!value) return null;
+    const v = value.trim();
+    if (!v) return null;
+    const lower = v.toLowerCase();
+    if (lower === 'vacio' || lower === 'vacío') return null;
+    return v;
+  }
+
+  filtroPrioridadComboSoluciones(rpta: ComboNoBase[] = [] ): ComboBase[] {
+    return rpta.map((s: ComboNoBase) => {
+      const nombre =
+        this.normalize(s.subTitulo) ??
+        this.normalize(s.titulo) ??
+        this.normalize(s.descripcion) ??
+      '(Sin descripción)';
+      return {
+        id: s.id,
+        subTitulo: nombre
+      };
     });
   }
 

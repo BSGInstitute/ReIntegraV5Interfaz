@@ -3837,6 +3837,8 @@ export const constApiPlanificacion = {
   ProgramaGeneralArgumentoInsertar: "/ProgramaGeneralArgumento/Insertar",
   ProgramaGeneralArgumentoActualizar: "/ProgramaGeneralArgumento/Actualizar",
   ProgramaGeneralArgumentoEliminar: "/ProgramaGeneralArgumento/Eliminar",
+
+  ProgramaGeneralProblemaFactorObtenerCombos: "/ProgramaGeneralProblemaFactor/ObtenerCombo",
 };
 
 export const constApiFinanzas = {
