@@ -46,7 +46,6 @@ export class WhatsappFacebookModalPlantillaComponent implements OnInit {
   }
 
   //--------- Funciones -----------//
-
   obtenerCombos() {
     this.integraService
       .obtener(`${constApiMarketing.CombosPlantilla}`)
@@ -88,12 +87,6 @@ export class WhatsappFacebookModalPlantillaComponent implements OnInit {
 
   Enviar() {
     this.loader = true;
-    console.log(this.idPlantilla);
-    console.log(this.idCentroCosto);
-    console.log(this.celular);
-    console.log(this.idPais);
-    console.log(this.idPlantilla);
-    console.log(this.idAlumno);
 
     var jsonEnvio = {
       idPlantilla: this.idPlantilla,

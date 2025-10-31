@@ -39,6 +39,7 @@ import { IMensajesWhatsapp } from '@operaciones/models/interfaces/ihistorial-men
 import { WhatsAppMensajeArchivo } from '@marketing/whatsapp-Facebook-masivo/whatsapp-facebook-oportunidad/whatsapp-facebook-oportunidad.component';
 import { WhatsappFacebookService } from '@marketing/services/whatsapp-facebook.service';
 import { el } from 'date-fns/locale';
+import { IComboBase1 } from '@shared/models/interfaces/iglobal';
 
 interface DataDialog {
   chatPorCelular: ChatWhatsAppMarketingPorCelular[];
@@ -172,7 +173,9 @@ export class WmChatWhatsAppComponent implements OnInit {
   EstadoAsignacion: number = 0;
   formOportunidad: FormGroup = this.formBuilder.group({
     idCentroCosto: ['', Validators.required],
-    idPersonalAsignado: [null],
+    idPersonalAsignado: [0, Validators.required],
+    activo: [false],
+    idOrigen: [0, Validators.required],
   });
 
   modalRef: any;
@@ -219,6 +222,8 @@ export class WmChatWhatsAppComponent implements OnInit {
   dragOver: boolean = false;
   loaderChatWhatsapp: boolean = false;
   indexPanelAbierto: number = -1;
+
+  comboOrigen: Array<IComboBase1> = [];
 
   ngOnInit(): void {
     this.loader = true;
@@ -371,7 +376,6 @@ export class WmChatWhatsAppComponent implements OnInit {
   onEdit() {
     this.editar = true;
     this.formAlumno.enable();
-    console.log('first', this.formAlumno);
   }
   onCancel() {
     this.editar = false;
@@ -966,11 +970,11 @@ export class WmChatWhatsAppComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: any) => {});
   }
-  isComboDisabled = true;
   abrirModalOPortunidad(modalOportunidad: any) {
-    this.isComboDisabled = true;
+    this.ObtenerComboOrigen();
     this.formOportunidad.reset();
     this.formOportunidad.get('idPersonalAsignado')?.setValue(125);
+    this.formOportunidad.get('idOrigen')?.setValue(954);
 
     this.modalRef = this.modalService.open(this.modalOportunidad, {
       backdrop: 'static',
@@ -1079,17 +1083,18 @@ export class WmChatWhatsAppComponent implements OnInit {
       let envio: IOportunidadFormularioWhatsapp = {
         idAlumno: this.idAlumno,
         idCentroCosto: dataForm.idCentroCosto,
-        idPersonalAsignado: 125,
+        idPersonalAsignado: dataForm.idPersonalAsignado,
+        activo: dataForm.activo,
+        idOrigen: dataForm.idOrigen,
       };
       this.idAsesorActual = 125;
+
+      console.log('envio', envio);
 
       this.integraService
         .postJsonResponse(constApiMarketing.CrearOportunidadWhatsapp, envio)
         .subscribe({
           next: (response: HttpResponse<any>) => {
-            //Swal.fire('Success!', 'La Oportunidad se Creo Exitosamente', 'success');
-            // this.dialog.closeAll();
-            //this.loader=false;
             const idOportunidad = Number(response.body);
             if (!isNaN(idOportunidad)) {
               this.idOportunidad = idOportunidad;
@@ -1118,7 +1123,6 @@ export class WmChatWhatsAppComponent implements OnInit {
         constApiMarketing.ObtenerProgramaPorOportunidadWhatsapp,
         JSON.stringify(idOportunidad)
       )
-
       .subscribe({
         next: (response: any) => {
           if (response.body && response.body.length > 0) {
@@ -1138,7 +1142,7 @@ export class WmChatWhatsAppComponent implements OnInit {
                 idArea,
                 idPGeneral
               );
-              this.esDesdeActualizarCentroCosto = false; //
+              this.esDesdeActualizarCentroCosto = false;
             } else if (this.esDesdeAbrirModalCaso3) {
               this.ValidarProbabilidadOportunidadesModal3(
                 idOportunidad,
@@ -1200,8 +1204,6 @@ export class WmChatWhatsAppComponent implements OnInit {
               this.esBotonAsignarDisabled = false;
             }
             if (this.probabilidadNivel === 'Muy Alta') {
-              //  const idAsesorActual = response.body.idAsesor || 0;
-              //const idAsesorActual = this.idAsesorActual || response.body.idAsesor;
               const idAsesorActual = this.idAsesorActual || 125;
 
               this.esComboDisabled = idAsesorActual !== 125;
@@ -1594,43 +1596,21 @@ export class WmChatWhatsAppComponent implements OnInit {
             this.aptitud = respuesta.apto;
             this.mensaje = respuesta.mensaje;
 
-            if (
-              this.probabilidadNivel === null ||
-              this.probabilidadNivel === ''
-            ) {
-              this.alertaService.mensajeWarning(
-                'El Centro de Costo no tiene Probabilidad'
-              );
-              this.loader = false;
-              return;
-            }
-            if (this.probabilidadNivel === 'Muy Alta') {
-              this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.esFlujoDesdeAbrirModalCaso3 = true;
+            this.mostrarTercerModal = true;
+            this.asesorSeleccionado = this.idAsesorActual;
+            this.esComboDisabled = this.idAsesorActual !== 125;
+            this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
 
-              this.mostrarTercerModal = true;
+            this.alertaService.mensajeExitosomkt(
+              'El Centro de Costo se Cargo Exitosamente'
+            );
 
-              this.asesorSeleccionado = this.idAsesorActual;
-              this.esComboDisabled = this.idAsesorActual !== 125;
-              this.esBotonAsignarDisabled = this.idAsesorActual !== 125;
-              this.alertaService.mensajeExitosomkt(
-                'El Centro de Costo se Cargo Exitosamente'
-              );
-
-              setTimeout(() => {
-                document
-                  .getElementById('idModalCaso3')
-                  ?.scrollIntoView({ behavior: 'smooth' });
-              }, 180);
-            } else if (
-              this.probabilidadNivel === 'Media' ||
-              this.probabilidadNivel === 'Alta'
-            ) {
-              Swal.fire(
-                'Notificación',
-                `La probabilidad es ${this.probabilidadNivel}. No es apta para ser trabajada.`,
-                'warning'
-              );
-            }
+            setTimeout(() => {
+              document
+                .getElementById('idModalCaso3')
+                ?.scrollIntoView({ behavior: 'smooth' });
+            }, 180);
 
             this.cdRef.detectChanges();
           } else {
@@ -1712,7 +1692,6 @@ export class WmChatWhatsAppComponent implements OnInit {
     let formData = new FormData();
     let documentoValido = ['application/pdf'];
     let imagenValida = ['image/png', 'image/jpeg'];
-    console.log('Adjuntando archivo');
     let waType = '';
     if (documentoValido.includes(this.archivoTemporal.type)) {
       waType = 'document';
@@ -1970,5 +1949,18 @@ export class WmChatWhatsAppComponent implements OnInit {
         }
       }
     });
+  }
+
+  ObtenerComboOrigen() {
+    this.integraService
+      .obtener(constApiMarketing.OrigenObtenerCombo)
+      .subscribe({
+        next: (response: HttpResponse<Array<IComboBase1>>) => {
+          this.comboOrigen = response.body;
+        },
+        error: (error) => {
+          console.error('Error al obtener el combo de Origen:', error);
+        },
+      });
   }
 }
