@@ -1,6 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { KendoGrid } from '@shared/models/kendo-grid';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+  FormArray,
+} from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
@@ -12,13 +18,16 @@ import { FormService } from '@shared/services/form.service';
 import { PgeneralService } from '@planificacion/services/pgeneral.service';
 
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
-import { ModalidadCursoAlternoDTO, PGeneralArgumentoMotivacion } from '@planificacion/models/interfaces/pgeneral/pgeneral';
+import {
+  ModalidadCursoAlternoDTO,
+  PGeneralArgumentoMotivacion,
+} from '@planificacion/models/interfaces/pgeneral/pgeneral';
 import { CompuestoArgumentoModalidadAlternoDTO } from '@planificacion/models/interfaces/programaGeneralArgumento';
 
 @Component({
   selector: 'app-pg-argumento-motivacion',
   templateUrl: './pg-argumento-motivacion.component.html',
-  styleUrls: ['./pg-argumento-motivacion.component.scss']
+  styleUrls: ['./pg-argumento-motivacion.component.scss'],
 })
 export class PgArgumentoMotivacionComponent implements OnInit {
   formArgumentoMotivacion: FormArray;
@@ -41,8 +50,11 @@ export class PgArgumentoMotivacionComponent implements OnInit {
   gridArgumentoDetalleSolucion = new KendoGrid<any>();
 
   dataMotivaciones: PGeneralArgumentoMotivacion[] = [];
-  motivacionesView: Array<{ id: number; nombre: string; idPGeneral: number }> = [];
-  motivacionesViewFiltro: Array<{ id: number; nombre: string; idPGeneral: number }> = [];
+  motivacionesView: Array<{ id: number; nombre: string }> = [];
+  motivacionesViewFiltro: Array<{
+    id: number;
+    nombre: string;
+  }> = [];
 
   subscriptions$: Subscription = new Subscription();
   loaderModal = false;
@@ -59,8 +71,15 @@ export class PgArgumentoMotivacionComponent implements OnInit {
   };
 
   formArgumento: FormGroup = this.formBuilder.group({
-    idArgumento: 0, 
-    nombre: ['', [Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]],
+    idArgumento: 0,
+    nombre: [
+      '',
+      [
+        Validators.required,
+        TextValidator.noStartSpace,
+        TextValidator.noEndSpace,
+      ],
+    ],
     descripcion: '',
     esVisibleAgenda: false,
     modalidades: [[], Validators.required],
@@ -71,7 +90,7 @@ export class PgArgumentoMotivacionComponent implements OnInit {
   formDetalleSolucion: FormGroup = this.formBuilder.group({
     id: 0,
     detalle: ['', Validators.required],
-    motivacion: [null, Validators.required], 
+    motivacion: [null, Validators.required],
   });
 
   ngOnInit(): void {
@@ -98,19 +117,30 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     return this.pgeneralService.dataItemPgeneral;
   }
 
-  private normalizeMotivaciones(list: any[]): Array<{ id: number; nombre: string; idPGeneral: number }> {
+  private normalizeMotivaciones(
+    list: any[]
+  ): Array<{ id: number; nombre: string; idPGeneral: number }> {
     return (list || [])
       .map((m: any) => ({
-        id: Number(m?.id ?? m?.idMotivacion ?? m?.idmotivacion ?? m?.value ?? m?.codigo),
-        nombre: String(m?.nombre ?? m?.nombreMotivacion ?? m?.nombremotivacion ?? m?.label ?? m?.descripcion ?? '').trim(),
+        id: Number(
+          m?.id ?? m?.idMotivacion ?? m?.idmotivacion ?? m?.value ?? m?.codigo
+        ),
+        nombre: String(
+          m?.nombre ??
+            m?.nombreMotivacion ??
+            m?.nombremotivacion ??
+            m?.label ??
+            m?.descripcion ??
+            ''
+        ).trim(),
         idPGeneral: Number(m?.idPGeneral ?? this.dataItemPgeneral?.id ?? 0),
       }))
-      .filter(x => !!x.id && !!x.nombre);
+      .filter((x) => !!x.id && !!x.nombre);
   }
   private getMotivacionById(id: number | null | undefined) {
     if (id == null) return null;
     const num = Number(id);
-    return this.motivacionesView.find(x => x.id === num) ?? null;
+    return this.motivacionesView.find((x) => x.id === num) ?? null;
   }
   private coerceNumber(val: any): number | null {
     if (val == null || val === '') return null;
@@ -121,11 +151,15 @@ export class PgArgumentoMotivacionComponent implements OnInit {
   obtenerMotivaciones() {
     const idPG = this.pgeneralService.dataItemPgeneral?.id;
     this.integraService
-      .getJsonResponse(`${constApiPlanificacion.ProgramaGeneralArgumentoObtenerMotivaciones}/${idPG}`)
+      .getJsonResponse(
+        `${constApiPlanificacion.ProgramaGeneralArgumentoObtenerMotivaciones}`
+      )
       .subscribe({
         next: (resp: HttpResponse<PGeneralArgumentoMotivacion[]>) => {
           this.dataMotivaciones = resp.body ?? [];
-          this.motivacionesView = this.normalizeMotivaciones(this.dataMotivaciones);
+          this.motivacionesView = this.normalizeMotivaciones(
+            this.dataMotivaciones
+          );
           this.motivacionesViewFiltro = this.motivacionesView;
         },
         error: (error) => {
@@ -157,7 +191,11 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     this.esNuevo = esNuevo;
 
     if (dataItem && esNuevo === false) {
-      const idArg = dataItem.id ?? dataItem.idArgumento ?? dataItem.idPresentacionArgumento ?? 0;
+      const idArg =
+        dataItem.id ??
+        dataItem.idArgumento ??
+        dataItem.idPresentacionArgumento ??
+        0;
       const modalidadesPreSel = (dataItem.modalidades ?? []).map((m: any) => ({
         id: 0,
         idModalidadCurso: m.idModalidad,
@@ -165,20 +203,33 @@ export class PgArgumentoMotivacionComponent implements OnInit {
       }));
 
       const detalleRaw =
-        dataItem.ArgumentoDetalle ?? dataItem.argumentoDetalle ?? dataItem.presentacionArgumento ?? dataItem.Argumento ?? [];
+        dataItem.ArgumentoDetalle ??
+        dataItem.argumentoDetalle ??
+        dataItem.presentacionArgumento ??
+        dataItem.Argumento ??
+        [];
 
       const detalle = detalleRaw.map((r: any) => {
         const idMot = this.coerceNumber(r?.motivacion?.id);
         const mot = idMot
-          ? { id: idMot, idPGeneral: this.dataItemPgeneral?.id ?? 0, nombre: r?.motivacion?.nombre ?? '' }
-          : { id: null, idPGeneral: this.dataItemPgeneral?.id ?? 0, nombre: '' };
+          ? {
+              id: idMot,
+              idPGeneral: this.dataItemPgeneral?.id ?? 0,
+              nombre: r?.motivacion?.nombre ?? '',
+            }
+          : {
+              id: null,
+              idPGeneral: this.dataItemPgeneral?.id ?? 0,
+              nombre: '',
+            };
         return { id: r?.id ?? 0, detalle: r?.detalle ?? '', motivacion: mot };
       });
 
       this.formArgumento.patchValue({
         idArgumento: idArg,
         nombre: dataItem.nombre ?? dataItem.nombreArgumento ?? '',
-        descripcion: dataItem.descripcion ?? dataItem.descripcionArgumento ?? '',
+        descripcion:
+          dataItem.descripcion ?? dataItem.descripcionArgumento ?? '',
         modalidades: modalidadesPreSel,
         idPGeneral: this.dataItemPgeneral?.id ?? 0,
         ArgumentoDetalle: detalle,
@@ -189,35 +240,50 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     }
   }
 
-  abrirModalArgumento(context: any, esNuevoDetalleSolucion: boolean, dataItem: any, index: number) {
+  abrirModalArgumento(
+    context: any,
+    esNuevoDetalleSolucion: boolean,
+    dataItem: any,
+    index: number
+  ) {
     this.esNuevoDetalleSolucion = esNuevoDetalleSolucion;
 
     if (dataItem && !esNuevoDetalleSolucion) {
       const idMot = this.coerceNumber(dataItem?.motivacion?.id);
       this.formDetalleSolucion.setValue({
-        id: dataItem.id ?? 0,
-        detalle: dataItem.detalle ?? '',
+        id: dataItem?.id ?? 0,
+        detalle: dataItem?.detalle ?? '',
         motivacion: idMot,
       });
       this.indexArgumentoGridTemp = index;
     } else {
       this.formDetalleSolucion.reset({ id: 0, detalle: '', motivacion: null });
+      this.indexArgumentoGridTemp = 0;
     }
 
     this.modalRefArgumento = this.modalService.open(context, {
-      size: 'md',
+      size: 'lg',
       backdrop: 'static',
       keyboard: false,
       centered: true,
     });
   }
+  private refreshDetalleGrid() {
+    this.gridArgumentoDetalleSolucion.data = [
+      ...(this.gridArgumentoDetalleSolucion.data || []),
+    ];
+  }
 
   getErrorMessage(controlName: string): string {
-    const formControl: FormControl = this.formArgumento.get(controlName) as FormControl;
+    const formControl: FormControl = this.formArgumento.get(
+      controlName
+    ) as FormControl;
     return this.formService.errorMessage(formControl, controlName);
   }
   getErrorMessageDetalle(controlName: string): string {
-    const formControl: FormControl = this.formDetalleSolucion.get(controlName) as FormControl;
+    const formControl: FormControl = this.formDetalleSolucion.get(
+      controlName
+    ) as FormControl;
     return this.formService.errorMessage(formControl, controlName);
   }
 
@@ -225,7 +291,9 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     this.gridArgumento.data = [];
     this.gridArgumento.loading = true;
     this.integraService
-      .getJsonResponse(`${constApiPlanificacion.ProgramaGeneralArgumentoObtener}/${this.dataItemPgeneral.id}`)
+      .getJsonResponse(
+        `${constApiPlanificacion.ProgramaGeneralArgumentoObtener}/${this.dataItemPgeneral.id}`
+      )
       .subscribe({
         next: (resp: HttpResponse<CompuestoArgumentoModalidadAlternoDTO[]>) => {
           this.gridArgumento.data = resp.body ?? [];
@@ -240,35 +308,43 @@ export class PgArgumentoMotivacionComponent implements OnInit {
   }
 
   obtenerComboModalidad() {
-    this.dataModalidad = this.pgeneralService?.combosConfiguracionPlantilla?.modalidadCurso ?? [];
-    this.dataModalidad = this.dataModalidad.map((obj: ModalidadCursoAlternoDTO) => ({
-      id: 0,
-      idModalidadCurso: obj.id,
-      nombre: obj.nombre,
-    }));
+    this.dataModalidad =
+      this.pgeneralService?.combosConfiguracionPlantilla?.modalidadCurso ?? [];
+    this.dataModalidad = this.dataModalidad.map(
+      (obj: ModalidadCursoAlternoDTO) => ({
+        id: 0,
+        idModalidadCurso: obj.id,
+        nombre: obj.nombre,
+      })
+    );
   }
 
   private buildInsertPayload(): any {
-    const modalidades = (this.formArgumento.get('modalidades')?.value || []).map((item: any) => ({
+    const modalidades = (
+      this.formArgumento.get('modalidades')?.value || []
+    ).map((item: any) => ({
       id: 0,
       nombre: item.nombre,
       idModalidad: item.idModalidadCurso,
     }));
 
-    const argumentoDetalle = (this.gridArgumentoDetalleSolucion.data || []).map((r: any) => {
-      const mot = r?.motivacion && typeof r.motivacion === 'object'
-        ? r.motivacion
-        : this.getMotivacionById(this.coerceNumber(r?.motivacion));
-      return {
-        id: r?.id ?? 0,
-        detalle: r?.detalle ?? '',
-        motivacion: {
-          id: mot?.id ?? 0,
-          idPGeneral: this.dataItemPgeneral?.id ?? 0,
-          nombre: mot?.nombre ?? '',
-        }
-      };
-    });
+    const argumentoDetalle = (this.gridArgumentoDetalleSolucion.data || []).map(
+      (r: any) => {
+        const mot =
+          r?.motivacion && typeof r.motivacion === 'object'
+            ? r.motivacion
+            : this.getMotivacionById(this.coerceNumber(r?.motivacion));
+        return {
+          id: r?.id ?? 0,
+          detalle: r?.detalle ?? '',
+          motivacion: {
+            id: mot?.id ?? 0,
+            idPGeneral: this.dataItemPgeneral?.id ?? 0,
+            nombre: mot?.nombre ?? '',
+          },
+        };
+      }
+    );
 
     return {
       idPGeneral: this.dataItemPgeneral?.id ?? 0,
@@ -284,7 +360,7 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     const base = this.buildInsertPayload();
     return {
       ...base,
-      id: this.formArgumento.get('idArgumento')?.value ?? 0, 
+      id: this.formArgumento.get('idArgumento')?.value ?? 0,
     };
   }
 
@@ -298,7 +374,10 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     this.loaderModal = true;
 
     this.integraService
-      .postJsonResponse(constApiPlanificacion.ProgramaGeneralArgumentoInsertar, JSON.stringify(payload))
+      .postJsonResponse(
+        constApiPlanificacion.ProgramaGeneralArgumentoInsertar,
+        JSON.stringify(payload)
+      )
       .subscribe({
         next: (_: HttpResponse<any>) => {
           this.modalRef?.close();
@@ -323,14 +402,19 @@ export class PgArgumentoMotivacionComponent implements OnInit {
 
     const payload = this.buildUpdatePayload();
     if (!payload.id || payload.id <= 0) {
-      this.alertaService.notificationWarning('No se encontró el Id del argumento para actualizar.');
+      this.alertaService.notificationWarning(
+        'No se encontró el Id del argumento para actualizar.'
+      );
       return;
     }
 
     this.loaderModal = true;
 
     this.integraService
-      .postJsonResponse(constApiPlanificacion.ProgramaGeneralArgumentoActualizar, JSON.stringify(payload))
+      .postJsonResponse(
+        constApiPlanificacion.ProgramaGeneralArgumentoActualizar,
+        JSON.stringify(payload)
+      )
       .subscribe({
         next: (_: HttpResponse<any>) => {
           this.modalRef?.close();
@@ -362,10 +446,16 @@ export class PgArgumentoMotivacionComponent implements OnInit {
       .then((result) => {
         if (result.isConfirmed) {
           this.gridArgumento.loading = true;
-          const idEliminar = dataItem.id ?? dataItem.idArgumento ?? dataItem.idPresentacionArgumento ?? 0;
+          const idEliminar =
+            dataItem.id ??
+            dataItem.idArgumento ??
+            dataItem.idPresentacionArgumento ??
+            0;
 
           this.integraService
-            .deleteJsonResponse(`${constApiPlanificacion.ProgramaGeneralArgumentoEliminar}/${idEliminar}`)
+            .deleteJsonResponse(
+              `${constApiPlanificacion.ProgramaGeneralArgumentoEliminar}/${idEliminar}`
+            )
             .subscribe({
               next: (response: HttpResponse<boolean>) => {
                 this.gridArgumento.loading = false;
@@ -373,9 +463,17 @@ export class PgArgumentoMotivacionComponent implements OnInit {
                   const idIndice = this.gridArgumento.data.indexOf(dataItem);
                   this.gridArgumento.data.splice(idIndice, 1);
                   this.gridArgumento.loadView();
-                  this.alertaService.mensajeIcon('¡Eliminado!', 'El registro ha sido eliminado', 'success');
+                  this.alertaService.mensajeIcon(
+                    '¡Eliminado!',
+                    'El registro ha sido eliminado',
+                    'success'
+                  );
                 } else {
-                  this.alertaService.mensajeIcon('¡Error!', 'Ocurrió un problema al eliminar', 'warning');
+                  this.alertaService.mensajeIcon(
+                    '¡Error!',
+                    'Ocurrió un problema al eliminar',
+                    'warning'
+                  );
                 }
               },
               error: (error: any) => {
@@ -393,23 +491,42 @@ export class PgArgumentoMotivacionComponent implements OnInit {
     }
 
     const { id, detalle, motivacion } = this.formDetalleSolucion.value;
-    const mot = this.getMotivacionById(motivacion);
-    const motivacionObj = mot
-      ? { id: mot.id, idPGeneral: this.dataItemPgeneral?.id ?? 0, nombre: mot.nombre }
+
+    const motObj = this.getMotivacionById(this.coerceNumber(motivacion));
+    const motivacionObj = motObj
+      ? {
+          id: motObj.id,
+          idPGeneral: this.dataItemPgeneral?.id ?? 0,
+          nombre: motObj.nombre,
+        }
       : { id: 0, idPGeneral: this.dataItemPgeneral?.id ?? 0, nombre: '' };
 
-    const nuevoItem = { id: id || 0, detalle, motivacion: motivacionObj };
+    const nuevoItem = {
+      id: id || 0,
+      detalle: detalle ?? '',
+      motivacion: motivacionObj,
+    };
+
+    const actual = this.gridArgumentoDetalleSolucion.data || [];
 
     if (this.esNuevoDetalleSolucion) {
-      this.gridArgumentoDetalleSolucion.data = [ ...(this.gridArgumentoDetalleSolucion.data || []), nuevoItem ];
+      this.gridArgumentoDetalleSolucion.data = [...actual, nuevoItem];
     } else {
-      this.gridArgumentoDetalleSolucion.data.splice(this.indexArgumentoGridTemp, 1, nuevoItem);
+      const clone = [...actual];
+      clone[this.indexArgumentoGridTemp] = nuevoItem;
+      this.gridArgumentoDetalleSolucion.data = clone;
     }
 
-    this.formDetalleSolucion.reset({ id: 0, detalle: '', motivacion: null });
+    this.refreshDetalleGrid();
     this.modalRefArgumento?.close();
+    this.formDetalleSolucion.reset({ id: 0, detalle: '', motivacion: null });
+
     const nombreMot = motivacionObj?.nombre || '';
-    this.alertaService.mensajeIcon('Guardado', nombreMot ? `Motivación: ${nombreMot}` : 'Detalle agregado', 'success');
+    this.alertaService.mensajeIcon(
+      'Guardado',
+      nombreMot ? `Motivación: ${nombreMot}` : 'Detalle guardado',
+      'success'
+    );
   }
 
   eliminarArgumento(index: number) {
@@ -419,14 +536,16 @@ export class PgArgumentoMotivacionComponent implements OnInit {
   impresionModalidad(dataItem: any): string {
     const mods = dataItem?.modalidades ?? [];
     if (!Array.isArray(mods) || mods.length === 0) return '—';
-    return mods.map((m: any) => m?.nombre).filter(Boolean).join(', ');
+    return mods
+      .map((m: any) => m?.nombre)
+      .filter(Boolean)
+      .join(', ');
   }
 
   onFilterChangeMotivacion(value: any) {
     if (value.length >= 1) {
       this.motivacionesViewFiltro = this.motivacionesView.filter(
-        (s: any) =>
-          s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+        (s: any) => s.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
       );
     } else {
       this.motivacionesViewFiltro = this.motivacionesView;
@@ -436,11 +555,13 @@ export class PgArgumentoMotivacionComponent implements OnInit {
   get argumentos(): FormArray {
     return this.formArgumentoMotivacion;
   }
-   agregarArgumentoMotivacion(): void {
+  agregarArgumentoMotivacion(): void {
     const idMotivacion = this.motivacionSeleccionada.value;
     if (!idMotivacion) return;
 
-    const motivacion = this.motivacionesViewFiltro.find(m => m.id === idMotivacion);
+    const motivacion = this.motivacionesViewFiltro.find(
+      (m) => m.id === idMotivacion
+    );
     if (!motivacion) return;
 
     const nuevoArgumento = this.formBuilder.group({
@@ -462,20 +583,18 @@ export class PgArgumentoMotivacionComponent implements OnInit {
       this.alertaService.notificationWarning('No hay argumentos para guardar.');
       return;
     }
-    const argumentosCompletos = this.argumentos.value.filter(
-      (item: any) => item.detalle && item.detalle.trim() !== ''
+
+    const completos = this.argumentos.value.filter(
+      (i: any) => i.detalle && i.detalle.trim() !== ''
     );
-
-    const argumentosIncompletos = this.argumentos.length - argumentosCompletos.length;
-
-    if (argumentosIncompletos > 0) {
+    if (completos.length === 0) {
       this.alertaService.notificationWarning(
-        `Hay ${argumentosIncompletos} argumento(s) sin detalle. Complételos antes de guardar.`
+        'Todos los detalles están vacíos.'
       );
       return;
     }
 
-    const nuevosItems = this.argumentos.value.map((item: any) => ({
+    const nuevosItems = completos.map((item: any) => ({
       id: 0,
       detalle: item.detalle,
       motivacion: {
@@ -485,23 +604,152 @@ export class PgArgumentoMotivacionComponent implements OnInit {
       },
     }));
 
-    console.log('Datos generados:', nuevosItems);
+    // Agrega a la grilla "Detalle y Motivación" y fuerza el refresco
+    this.gridArgumentoDetalleSolucion.data = [
+      ...(this.gridArgumentoDetalleSolucion.data || []),
+      ...nuevosItems,
+    ];
+    this.gridArgumentoDetalleSolucion.data = [
+      ...this.gridArgumentoDetalleSolucion.data,
+    ];
 
-    if (this.esNuevoDetalleSolucion) {
-      this.gridArgumentoDetalleSolucion.data = [
-        ...(this.gridArgumentoDetalleSolucion.data || []),
-        ...nuevosItems,
-      ];
-    } else {
-      this.gridArgumentoDetalleSolucion.data.splice(
-        this.indexArgumentoGridTemp,
-        1,
-        ...nuevosItems
-      );
-    }
+    // Limpieza y cierre del modal
     this.argumentos.clear();
     this.motivacionSeleccionada.reset(null);
     this.modalRefArgumento?.close();
-    this.alertaService.mensajeIcon('Guardado', 'Argumentos agregados correctamente', 'success');
+
+    this.alertaService.mensajeIcon(
+      'Guardado',
+      'Argumentos agregados correctamente',
+      'success'
+    );
+  }
+
+  /*--------------- FORM GESTIONAR MOTIVACION ----------------*/
+
+  modalRefMotivaciones: any;
+  openMotivacionesModal(context: any) {
+    this.modalRefMotivaciones = this.modalService.open(context, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+    });
+  }
+
+  nuevaMotivacionDescripcion: string = '';
+  editId: number | null = null;
+  editDescripcion: string = '';
+
+  crearMotivacion() {
+    const descripcion = (this.nuevaMotivacionDescripcion || '').trim();
+    if (!descripcion) return;
+
+    const payload = { descripcion };
+
+    this.integraService
+      .postJsonResponse(
+        constApiPlanificacion.ProgramaMotivacionInsertar,
+        JSON.stringify(payload)
+      )
+      .subscribe({
+        next: (resp: any) => {
+          const nuevo = {
+            id: resp?.body?.id ?? Date.now(),
+            nombre: descripcion,
+          };
+
+          this.motivacionesViewFiltro = [nuevo, ...this.motivacionesViewFiltro];
+          this.nuevaMotivacionDescripcion = '';
+          this.alertaService.mensajeExitoso();
+        },
+        error: (e) =>
+          this.alertaService.notificationError(
+            this.alertaService.getMessageErrorService(e)
+          ),
+      });
+  }
+
+  // === Editar (preparar) ===
+  iniciarEdicion(row: { id: number; descripcion: string }) {
+    this.editId = row.id;
+    this.editDescripcion = row.descripcion;
+  }
+
+  // === Cancelar edición ===
+  cancelarEdicion() {
+    this.editId = null;
+    this.editDescripcion = '';
+  }
+
+  // === Guardar edición (actualizar) ===
+  guardarEdicion() {
+    const descripcion = (this.editDescripcion || '').trim();
+    if (!this.editId || !descripcion) return;
+
+    const payload = { id: this.editId, descripcion }; // <-- enviar descripcion
+
+    this.integraService
+      .postJsonResponse(
+        constApiPlanificacion.ProgramaMotivacionActualizar,
+        JSON.stringify(payload)
+      )
+      .subscribe({
+        next: () => {
+          // reemplazar y forzar change detection
+          this.motivacionesViewFiltro = this.motivacionesViewFiltro.map((m) =>
+            m.id === this.editId ? { ...m, descripcion } : m
+          );
+          this.cancelarEdicion();
+          this.alertaService.mensajeExitoso();
+        },
+        error: (e) =>
+          this.alertaService.notificationError(
+            this.alertaService.getMessageErrorService(e)
+          ),
+      });
+  }
+  eliminarMotivacion(item: { id: number; nombre: string }) {
+    if (!item?.id) return;
+
+    this.alertaService
+      .swalFireOptions({
+        title: '¿Eliminar motivación?',
+        text: `Se eliminará: "${item.nombre}"`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+      })
+      .then((result: any) => {
+        if (!result.isConfirmed) return;
+
+        this.integraService
+          .deleteJsonResponse(
+            `${constApiPlanificacion.ProgramaMotivacionEliminar}/${item.id}`
+          )
+          .subscribe({
+            next: (_: HttpResponse<boolean>) => {
+              this.motivacionesViewFiltro = this.motivacionesViewFiltro.filter(
+                (m) => m.id !== item.id
+              );
+              this.motivacionesView = this.motivacionesView.filter(
+                (m) => m.id !== item.id
+              );
+              if (this.editId === item.id) this.cancelarEdicion();
+              this.alertaService.mensajeIcon(
+                'Eliminado',
+                'Motivación eliminada correctamente',
+                'success'
+              );
+            },
+            error: (e) =>
+              this.alertaService.notificationError(
+                this.alertaService.getMessageErrorService(e)
+              ),
+          });
+      });
   }
 }

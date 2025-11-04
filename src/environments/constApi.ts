@@ -3822,6 +3822,7 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorDetalleInsertar:"/ProgramageneralproblemaFactorDetalle/Insertar",
   ProgramageneralproblemaFactorDetalleActualizar:"/ProgramageneralproblemaFactorDetalle/Actualizar",
   ProgramageneralproblemaFactorDetalleEliminar:"/ProgramageneralproblemaFactorDetalle/Eliminar",
+  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/ExistePorNombre",
   ProgramageneralproblemaFactorSolucionObtener:"/ProgramageneralproblemaFactorSolucion/Obtener",
   ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
   ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",
@@ -3833,11 +3834,13 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorSubSolucionObtenerPorIdProgramaGeneralProblemaFactorSolucion:"/ProgramageneralproblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion",
   //Programa Argumentos 
   ProgramaGeneralArgumentoObtener: "/ProgramaGeneralArgumento/ObtenerProgramaGeneralArgumentoTodo",
-  ProgramaGeneralArgumentoObtenerMotivaciones: "/ProgramaGeneralArgumento/ObtenerMotivaciones",
+  ProgramaGeneralArgumentoObtenerMotivaciones: "/ProgramaMotivacion/Obtener",
   ProgramaGeneralArgumentoInsertar: "/ProgramaGeneralArgumento/Insertar",
   ProgramaGeneralArgumentoActualizar: "/ProgramaGeneralArgumento/Actualizar",
   ProgramaGeneralArgumentoEliminar: "/ProgramaGeneralArgumento/Eliminar",
-
+  ProgramaMotivacionInsertar: "/ProgramaMotivacion/Insertar",
+  ProgramaMotivacionActualizar: "/ProgramaMotivacion/Actualizar",
+  ProgramaMotivacionEliminar: "/ProgramaMotivacion/Eliminar",
   ProgramaGeneralProblemaFactorObtenerCombos: "/ProgramaGeneralProblemaFactor/ObtenerCombo",
 };
 

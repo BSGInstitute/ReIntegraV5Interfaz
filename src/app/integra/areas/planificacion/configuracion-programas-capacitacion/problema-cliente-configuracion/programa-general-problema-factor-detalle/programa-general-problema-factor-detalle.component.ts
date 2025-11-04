@@ -114,49 +114,69 @@ export class ProgramaGeneralProblemaFactorDetalleComponent implements OnInit {
     this.griProblemaFactorDetalle.habilitarEstadoNewRow = true;
   }
 
-  /* ---------------Guardar Nuevo Categoria Pregunta ------------------------*/
+  /* ---------------Guardar ------------------------*/
   guardar() {
-    console.log(this.formProblemaFactorDetalle.value);
-    if (this.formProblemaFactorDetalle.valid) {
-      let jsonEnvio = this.procesarTipoFormacion();
-      this.griProblemaFactorDetalle.loading = true;
-
-      this.enProcesoSolicitud = true;
-      this._integraService
-        .postJsonResponse(
-          constApiPlanificacion.ProgramageneralproblemaFactorDetalleInsertar,
-          JSON.stringify(jsonEnvio)
-        )
-        .subscribe({
-          next: (resp: HttpResponse<ProgramaGeneralProblemaFactorDetalle>) => {
-            this.griProblemaFactorDetalle.loading = false;
-
-            this.enProcesoSolicitud = false;
-            this.griProblemaFactorDetalle.data.unshift(resp.body);
-            this.griProblemaFactorDetalle.loadData();
-            this.obtener();
-            this.modalRef.close();
-            this._alertaService.mensajeExitoso();
-          },
-          error: (error) => {
-            this.griProblemaFactorDetalle.loading = false;
-            this.enProcesoSolicitud = false;
-            this._alertaService.notificationWarning(error.message);
-            this._alertaService.swalFireOptions({
-              icon: 'error',
-              text: 'No se pudo guardar el Dato',
-            });
-          },
-        });
-    } else {
-      this.formProblemaFactorDetalle.markAllAsTouched();
-      this.griProblemaFactorDetalle.loading = false;
-      this.enProcesoSolicitud = false;
-      this._alertaService.mensajeIcon(
-        'Complete por favor los campos obligatorios!'
-      );
-    }
+  const nombre: string = (this.formProblemaFactorDetalle.get('nombre')?.value || '').trim();
+  if (!this.formProblemaFactorDetalle.valid || !nombre) {
+    this.formProblemaFactorDetalle.markAllAsTouched();
+    this.griProblemaFactorDetalle.loading = false;
+    this.enProcesoSolicitud = false;
+    this._alertaService.mensajeIcon('Complete por favor los campos obligatorios!');
+    return;
   }
+
+  this.griProblemaFactorDetalle.loading = true;
+  this.enProcesoSolicitud = true;
+  this._integraService
+    .postJsonResponse(
+      constApiPlanificacion.ProgramaGeneralProblemaFactorDetalleExistePorNombre,
+      JSON.stringify({ nombre }) 
+    )
+    .subscribe({
+      next: (respExiste: HttpResponse<any>) => {
+        const existe = respExiste?.body === true || respExiste?.body === 'true' || respExiste?.body === 1 || respExiste?.body === '1';
+        if (existe) {
+          this.griProblemaFactorDetalle.loading = false;
+          this.enProcesoSolicitud = false;
+          this._alertaService.notificationWarning('Ya existe un registro con ese nombre.');
+          return;
+        }
+
+        const jsonEnvio = this.procesarTipoFormacion();
+
+        this._integraService
+          .postJsonResponse(
+            constApiPlanificacion.ProgramageneralproblemaFactorDetalleInsertar,
+            JSON.stringify(jsonEnvio)
+          )
+          .subscribe({
+            next: (resp: HttpResponse<ProgramaGeneralProblemaFactorDetalle>) => {
+              this.griProblemaFactorDetalle.loading = false;
+              this.enProcesoSolicitud = false;
+              this.griProblemaFactorDetalle.data.unshift(resp.body as any);
+              this.griProblemaFactorDetalle.loadData();
+              this.obtener();
+              this.modalRef.close();
+              this._alertaService.mensajeExitoso();
+            },
+            error: (error) => {
+              this.griProblemaFactorDetalle.loading = false;
+              this.enProcesoSolicitud = false;
+              this._alertaService.notificationWarning(error.message);
+              this._alertaService.swalFireOptions({
+                icon: 'error',
+                text: 'No se pudo guardar el Dato',
+              });
+            },
+          });
+      },
+      error: (error) => {
+        this.griProblemaFactorDetalle.loading = false;
+        this.enProcesoSolicitud = false;
+        this._alertaService.notificationWarning(this._alertaService.getMessageErrorService(error));
+      },
+    });
+}
 
   /* -----------------------------------Actualizar ------------------------- */
 

@@ -771,6 +771,4 @@ export interface PGeneralArgumentoMotivacion
 {
   id:number;
   nombre:string;
-  idPGeneral:number;
-
 }
