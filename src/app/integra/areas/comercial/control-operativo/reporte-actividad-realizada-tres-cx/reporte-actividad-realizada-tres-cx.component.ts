@@ -78,6 +78,7 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
     { nombre: 'Reprogramación Automática', id: 2 },
     { nombre: 'Reprogramación Manual', id: 3 },
     { nombre: 'Contesta y corta', id: 208 },
+    { nombre: 'Contesta y corta (Solo Aplica Nueva Agenda)', id: 431 },
   ];
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
