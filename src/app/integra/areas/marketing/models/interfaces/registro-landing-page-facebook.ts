@@ -16,6 +16,7 @@ export interface RegistroLandigPagefacebook{
   centroCosto: string;
   categoria: string;
   campania: string;
+  campaniaActualizada: string;
   procesado:  boolean;
   formulario:  string;
   estadoOportunidad:  string;
