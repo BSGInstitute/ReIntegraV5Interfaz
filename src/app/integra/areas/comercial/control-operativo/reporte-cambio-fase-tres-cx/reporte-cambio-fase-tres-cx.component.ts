@@ -1342,6 +1342,10 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
       ((reporteTasaContacto.totalLlamadasEjecutadasConLlamada + reporteTasaContacto.totalLlamadasManual)/
         reporteTasaContacto.totalLlamadas) *
       100;
+    let tasaContactoEjecutadoContestaCorta =
+      ((reporteTasaContacto.totalLlamadasEjecutadasConLlamada + reporteTasaContacto.totalLlamadasManual + reporteTasaContacto.totalLlamadasContestaCorta)/
+        reporteTasaContacto.totalLlamadas) *
+      100;
     let cambioFaseEjecutada =
       (reporteTasaContactoConySinLlamada.cambiosFaseConLlamada /
         reporteTasaContacto.totalLlamadasEjecutadasConLlamada) *
@@ -1360,12 +1364,20 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         valor: reporteTasaContacto.totalLlamadasManual,
       },
       {
+        descripcion: 'Actividades reprogramadas Contesta y Corta',
+        valor: reporteTasaContacto.totalLlamadasContestaCorta,
+      },
+      {
         descripcion: 'Tasa de contacto ejecutadas',
         valor: !isNaN(tasaContacto) ? `${tasaContacto.toFixed(0)}%` : '0.0%',
       },
       {
         descripcion: 'Tasa de contacto (Ejecutadas+Manuales)',
         valor: !isNaN(tasaContactoEjecutadoManual) ? `${tasaContactoEjecutadoManual.toFixed(0)}%` : '0.0%',
+      },
+      {
+        descripcion: 'Tasa de contacto (Ejecutadas+Manuales+Contesta y Corta)',
+        valor: !isNaN(tasaContactoEjecutadoContestaCorta) ? `${tasaContactoEjecutadoContestaCorta.toFixed(0)}%` : '0.0%',
       },
       // {
       //   descripcion: 'Número de cambios de fase (solo con llamadas)',
