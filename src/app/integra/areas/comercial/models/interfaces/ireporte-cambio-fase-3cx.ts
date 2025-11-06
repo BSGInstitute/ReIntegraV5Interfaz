@@ -276,6 +276,7 @@ export interface IReporteTasaContacto {
   totalLlamadas: number;
   totalLlamadasEjecutadas: number;
   totalLlamadasManual: number;
+  totalLlamadasContestaCorta: number;
   totalLlamadasEjecutadasConLlamada: number;
 }
 export interface IReporteTasaContactoConySinLlamada {
