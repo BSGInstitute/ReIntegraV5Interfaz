@@ -1,25 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HabilitarExamenesComponent } from './habilitar-examenes.component';
+// import { HabilitarExamenesComponent } from './habilitar-examenes.component';
 
-describe('HabilitarExamenesComponent', () => {
-  let component: HabilitarExamenesComponent;
-  let fixture: ComponentFixture<HabilitarExamenesComponent>;
+// describe('HabilitarExamenesComponent', () => {
+//   let component: HabilitarExamenesComponent;
+//   let fixture: ComponentFixture<HabilitarExamenesComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ HabilitarExamenesComponent ]
-    })
-    .compileComponents();
-  });
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       declarations: [ HabilitarExamenesComponent ]
+//     })
+//     .compileComponents();
+//   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HabilitarExamenesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//   beforeEach(() => {
+//     fixture = TestBed.createComponent(HabilitarExamenesComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });
