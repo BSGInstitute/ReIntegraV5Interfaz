@@ -171,6 +171,9 @@ import { ModalMarcarTipoMensajeComponent } from './campania-whatsapp/whatsapp-ma
 import { WhatsappFacebookModalOportunidadComponent } from './whatsapp-Facebook-masivo/whatsapp-facebook-modal-oportunidad/whatsapp-facebook-modal-oportunidad.component';
 import { ModalDetalleLeadFacebookComponent } from './campania-facebook/registro-lading-page-facebook/modal-detalle-lead-facebook/modal-detalle-lead-facebook.component';
 import { FacebookLeadsRecuperacionDatosService } from '@shared/services/facebook-leads-recuperacion-datos.service';
+import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
+import { MessengerFacebookChatGrillaComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-grilla/messenger-facebook-chat-grilla.component';
+import { MessengerFacebookChatModalComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-modal/messenger-facebook-chat-modal.component';
 
 
 @NgModule({
@@ -342,7 +345,10 @@ import { FacebookLeadsRecuperacionDatosService } from '@shared/services/facebook
     ModalEnviarPlantillaComponent,
     ModalMarcarTipoMensajeComponent,
     WhatsappFacebookModalOportunidadComponent,
-    ModalDetalleLeadFacebookComponent
+    ModalDetalleLeadFacebookComponent,
+    MessengerFacebookChatComponent,
+    MessengerFacebookChatGrillaComponent,
+    MessengerFacebookChatModalComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

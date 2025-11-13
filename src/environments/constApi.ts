@@ -1314,7 +1314,6 @@ export const constApiOperaciones = {
 
 export const constApiMarketing = {
   ///Prueba
-
   EjecutarCampaniaGeneralEnvioWhatsApp:
     "/ConfiguracionWhatsApp/EjecutarCampaniaGeneralEnvioWhatsApp",
   EjecutarCampaniaGeneralEnvioWhatsAppBoton:
@@ -2391,6 +2390,9 @@ export const constApiMarketing = {
   EnviarMensajeApigraphWhatsappArchivo:
   "/CampaniaGeneralWhatsApp/WhatsAppMensajeArchivo/",
 
+  // MESSENGER FACEBOOK CHAT
+  ObtenerGrillaMessengerFacebookChat:
+    "/MessengerFacebookChat/ObtenerGrillaChats",
 
 };
 
