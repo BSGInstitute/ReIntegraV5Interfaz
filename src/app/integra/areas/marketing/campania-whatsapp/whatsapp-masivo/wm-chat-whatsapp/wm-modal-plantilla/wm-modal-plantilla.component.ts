@@ -36,6 +36,7 @@ export class WmModalPlantillaComponent implements OnInit {
   listaPais: any = [];
   idPais: any;
   idAlumno: any;
+  idPersonal: number;
 
   ngOnInit(): void {
     this.loader = true;
@@ -43,6 +44,7 @@ export class WmModalPlantillaComponent implements OnInit {
       this.listaIdAlumnos.push(e.idAlumno);
     });
     this.celular = this.data.celularUM;
+    this.idPersonal = this.data.idPersonal;
 
     this.obtenerCombos();
   }
@@ -102,7 +104,7 @@ export class WmModalPlantillaComponent implements OnInit {
       celularWhatsApp: this.celular,
       idPais: this.idPais,
       idAlumno: this.idAlumno,
-      idPersonal: 0,
+      idPersonal: this.idPersonal,
       usuario: '',
     };
     this.integraService
