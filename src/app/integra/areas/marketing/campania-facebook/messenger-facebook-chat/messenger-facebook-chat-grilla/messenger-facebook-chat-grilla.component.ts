@@ -1,27 +1,29 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { SortDescriptor, orderBy, filterBy, CompositeFilterDescriptor } from '@progress/kendo-data-query';
+import { ResumenMessengerFacebookChat } from '@marketing/models/interfaces/messenger-facebook-chat';
+import {
+  SortDescriptor,
+  orderBy,
+  filterBy,
+  CompositeFilterDescriptor,
+} from '@progress/kendo-data-query';
 
 @Component({
   selector: 'app-messenger-facebook-chat-grilla',
   templateUrl: './messenger-facebook-chat-grilla.component.html',
-  styleUrls: ['./messenger-facebook-chat-grilla.component.scss']
+  styleUrls: ['./messenger-facebook-chat-grilla.component.scss'],
 })
 export class MessengerFacebookChatGrillaComponent implements OnInit {
-
-  @Input() grillaResumenMessengerFacebookChat: ResumenMessengerFacebookChat[] = [];
+  @Input() grillaResumenMessengerFacebookChat: ResumenMessengerFacebookChat[] =
+    [];
   @Input() loading: boolean = false;
+  @Output() chatClicked = new EventEmitter<any>();
 
   public gridData: any[] = [];
-  @Output() chatClicked = new EventEmitter<any>();
-  abrirChat(data: any) {
-    this.chatClicked.emit(data);
-  }
   public sort: SortDescriptor[] = [];
   public filter: CompositeFilterDescriptor = { logic: 'and', filters: [] };
 
   ngOnInit(): void {
     this.loadGrid();
-    console.log("",this.grillaResumenMessengerFacebookChat);
   }
 
   ngOnChanges(): void {
@@ -48,15 +50,8 @@ export class MessengerFacebookChatGrillaComponent implements OnInit {
     this.filter = filter;
     this.loadGrid();
   }
-}
 
-
-export interface ResumenMessengerFacebookChat {
-  IdentificadorAmbitoPagina: string;
-  IdAlumno: number | null; 
-  NombreAlumno: string;
-  NombrePagina: string;
-  TipoMensaje: string;
-  Contenido: string | null;
-  FechaMensaje: Date; 
+  abrirChat(data: ResumenMessengerFacebookChat) {
+    this.chatClicked.emit(data.identificadorAmbitoPagina);
+  }
 }

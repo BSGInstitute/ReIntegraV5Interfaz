@@ -1,21 +1,44 @@
-<div
-  class="filtro-calendario-toolbar"
-  style="margin-bottom: 1rem; display: flex; align-items: center"
->
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="abrirDialogFiltroCalendario()"
-  >
-    Filtro Calendario
-  </button>
+<!------------- Título del módulo ------------->
+<div class="messenger-chat-title">Messenger Facebook Chat</div>
+
+<!------------- Fila búsqueda y filtro calendario ------------->
+<div class="busqueda-filtro-row bordered-row">
+  <div class="busqueda-chat-col">
+    <mat-form-field appearance="outline" class="busqueda-id-form">
+      <mat-label>ID Chat</mat-label>
+      <input
+        matInput
+        [(ngModel)]="busquedaId"
+        maxlength="30"
+        (input)="validarBusquedaId()"
+        placeholder="Ingrese ID"
+        autocomplete="off"
+      />
+      <button mat-icon-button matSuffix disabled>
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      class="busqueda-id-btn"
+      [disabled]="!busquedaIdValida"
+      (click)="abrirModalChat(busquedaId)"
+    >
+      Buscar Chat
+    </button>
+  </div>
+  <div class="filtro-calendario-col">
+    <button
+      mat-raised-button
+      class="filtro-calendario-btn"
+      (click)="abrirDialogFiltroCalendario()"
+    >
+      Filtro Fecha
+    </button>
+  </div>
 </div>
 
-<div
-  class="tipo-tabs-toolbar"
-  style="margin-bottom: 1rem; display: flex; gap: 1rem"
-></div>
-
+<!------------- Toolbar - Respondidos, Recibidos ------------->
 <div class="tipo-tabs-toolbar">
   <div class="reload-btn-container">
     <button
@@ -47,61 +70,37 @@
   </button>
 </div>
 
-<div
-  class="reload-toolbar"
-  style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem"
->
-  <!-- <button mat-icon-button color="primary" (click)="reloadGrilla()" matTooltip="Recargar">
-    <mat-icon>refresh</mat-icon>
-  </button> -->
-</div>
-
-<div
-  class="busqueda-chat-toolbar"
-  style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem"
->
-  <mat-form-field appearance="outline" style="width: 220px">
-    <mat-label>ID Chat</mat-label>
-    <input
-      matInput
-      [(ngModel)]="busquedaId"
-      maxlength="30"
-      (input)="validarBusquedaId()"
-      placeholder="Ingrese ID"
-      autocomplete="off"
-    />
-    <button mat-icon-button matSuffix disabled>
-      <mat-icon>search</mat-icon>
-    </button>
-  </mat-form-field>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="!busquedaIdValida"
-    (click)="buscarChatPorId()"
-  >
-    Buscar Chat
-  </button>
-</div>
-
+<!------------- Grilla de chats ------------->
 <app-messenger-facebook-chat-grilla
   [grillaResumenMessengerFacebookChat]="grillaResumenMessengerFacebookChat"
   [loading]="loading"
   (chatClicked)="abrirModalChat($event)"
 ></app-messenger-facebook-chat-grilla>
 
+<!------------- Componente modal - Detalles Chat ------------->
 <app-messenger-facebook-chat-modal
-  *ngIf="showModal"
-  [chatData]="chatData"
+  *ngIf="showModalChat"
+  [identificadorAmbitoPagina]="IdentificadorAmbitoPagina"
   (close)="cerrarModalChat()"
 ></app-messenger-facebook-chat-modal>
 
-<!-- Diálogo de filtro calendario -->
+<!------------- Dialog de filtro fecha ------------->
 <ng-template #dialogFiltroCalendario>
-  <h2 mat-dialog-title>Filtrar por Fecha</h2>
-  <mat-dialog-content>
-    <div style="display: flex; flex-direction: column; gap: 1rem">
-      <mat-form-field appearance="fill">
+  <h2 class="text-center" mat-dialog-title>Filtrar por Fecha</h2>
+  <mat-dialog-content style="width: 400px">
+    <div
+      style="display: flex; flex-direction: column; gap: 1.2rem; margin: 16px 0"
+    >
+      <div class="justify-content-center" style="display: flex; gap: 1rem">
+        <button style="padding: 0 50px" mat-stroked-button (click)="setHoy()">
+          Hoy
+        </button>
+        <button style="padding: 0 50px" mat-stroked-button (click)="setAyer()">
+          Ayer
+        </button>
+      </div>
+
+      <mat-form-field appearance="outline">
         <mat-label>Rango de fechas</mat-label>
         <mat-date-range-input [rangePicker]="picker">
           <input
@@ -118,10 +117,6 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
-      <div style="display: flex; gap: 1rem">
-        <button mat-stroked-button (click)="setHoy()">Hoy</button>
-        <button mat-stroked-button (click)="setAyer()">Ayer</button>
-      </div>
     </div>
   </mat-dialog-content>
   <mat-dialog-actions align="end">

@@ -1,7 +1,79 @@
-<div class="modal-backdrop">
-	<div class="modal-box">
-		<button class="modal-close" (click)="cerrar()">&#10005;</button>
-		<h2>Chat Messenger</h2>
-		<pre>{{ chatData | json }}</pre>
-	</div>
+<div class="modal-backdrop" (click)="close.emit()">
+  <div class="modal-box messenger-modal" (click)="$event.stopPropagation()">
+    <div class="modal-content-row">
+      <!-- Lado izquierdo: Formulario alumno (por ahora vacío) -->
+      <div class="modal-left">
+        <mat-accordion>
+          <mat-expansion-panel
+            *ngFor="let oportunidad of oportunidades; let idx = index"
+            [expanded]="panelOpenIndex === idx"
+            (expandedChange)="onPanelExpanded($event, idx)"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Oportunidad #{{ oportunidad.id }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="oportunidad-datos">
+              <div>
+                <strong>Nombre:</strong> {{ oportunidad.alumno.nombre }}
+              </div>
+              <div>
+                <strong>Correo:</strong> {{ oportunidad.alumno.correo }}
+              </div>
+              <div>
+                <strong>Teléfono:</strong> {{ oportunidad.alumno.telefono }}
+              </div>
+              <div>
+                <strong>Documento:</strong> {{ oportunidad.alumno.documento }}
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+      <!-- Línea divisoria -->
+      <div class="modal-divider"></div>
+      <!-- Lado derecho: Chat Messenger -->
+      <div class="modal-right chat-shadow">
+        <div class="chat-header">
+          <div class="chat-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Alumno&background=0695FF&color=fff&rounded=true"
+              alt="Perfil"
+            />
+          </div>
+          <div class="chat-code">23423423423</div>
+        </div>
+        <div class="chat-history">
+          <div
+            *ngFor="let msg of historialChats"
+            [ngClass]="{
+              'msg-row': true,
+              sent: msg.esMensajeSaliente,
+              received: !msg.esMensajeSaliente
+            }"
+          >
+            <div class="msg-bubble">
+              <span>{{ msg.contenido }}</span>
+              <div class="msg-time">
+                {{ msg.fechaEvento }}
+                <span *ngIf="msg.tipoMensaje">({{ msg.tipoMensaje }})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input
+            type="text"
+            class="chat-input"
+            [(ngModel)]="newMessage"
+            placeholder="Escribe un mensaje..."
+          />
+          <button class="chat-send-btn">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
