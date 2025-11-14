@@ -1,12 +1,140 @@
+<div
+  class="filtro-calendario-toolbar"
+  style="margin-bottom: 1rem; display: flex; align-items: center"
+>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="abrirDialogFiltroCalendario()"
+  >
+    Filtro Calendario
+  </button>
+</div>
+
+<div
+  class="tipo-tabs-toolbar"
+  style="margin-bottom: 1rem; display: flex; gap: 1rem"
+></div>
+
+<div class="tipo-tabs-toolbar">
+  <div class="reload-btn-container">
+    <button
+      class="reload-btn"
+      mat-icon-button
+      color="primary"
+      (click)="reloadGrilla()"
+      matTooltip="Recargar"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <button
+    mat-raised-button
+    class="tab-btn"
+    [class.selected]="tipo === 'saliente'"
+    (click)="cambiarTipo('saliente')"
+  >
+    Respondidos
+  </button>
+  <button
+    mat-raised-button
+    class="tab-btn"
+    [class.selected]="tipo === 'entrante'"
+    (click)="cambiarTipo('entrante')"
+  >
+    Recibidos
+  </button>
+</div>
+
+<div
+  class="reload-toolbar"
+  style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem"
+>
+  <!-- <button mat-icon-button color="primary" (click)="reloadGrilla()" matTooltip="Recargar">
+    <mat-icon>refresh</mat-icon>
+  </button> -->
+</div>
+
+<div
+  class="busqueda-chat-toolbar"
+  style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem"
+>
+  <mat-form-field appearance="outline" style="width: 220px">
+    <mat-label>ID Chat</mat-label>
+    <input
+      matInput
+      [(ngModel)]="busquedaId"
+      maxlength="30"
+      (input)="validarBusquedaId()"
+      placeholder="Ingrese ID"
+      autocomplete="off"
+    />
+    <button mat-icon-button matSuffix disabled>
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!busquedaIdValida"
+    (click)="buscarChatPorId()"
+  >
+    Buscar Chat
+  </button>
+</div>
+
 <app-messenger-facebook-chat-grilla
-	[grillaResumenMessengerFacebookChat]="grillaResumenMessengerFacebookChat"
-	[loading]="loading"
-	(chatClicked)="abrirModalChat($event)"
+  [grillaResumenMessengerFacebookChat]="grillaResumenMessengerFacebookChat"
+  [loading]="loading"
+  (chatClicked)="abrirModalChat($event)"
 ></app-messenger-facebook-chat-grilla>
 
 <app-messenger-facebook-chat-modal
-	*ngIf="showModal"
-	[chatData]="chatData"
-	(close)="cerrarModalChat()"
+  *ngIf="showModal"
+  [chatData]="chatData"
+  (close)="cerrarModalChat()"
 ></app-messenger-facebook-chat-modal>
 
+<!-- Diálogo de filtro calendario -->
+<ng-template #dialogFiltroCalendario>
+  <h2 mat-dialog-title>Filtrar por Fecha</h2>
+  <mat-dialog-content>
+    <div style="display: flex; flex-direction: column; gap: 1rem">
+      <mat-form-field appearance="fill">
+        <mat-label>Rango de fechas</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input
+            matStartDate
+            placeholder="Fecha inicio"
+            [(ngModel)]="dialogFechaInicio"
+          />
+          <input
+            matEndDate
+            placeholder="Fecha fin"
+            [(ngModel)]="dialogFechaFin"
+          />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+      <div style="display: flex; gap: 1rem">
+        <button mat-stroked-button (click)="setHoy()">Hoy</button>
+        <button mat-stroked-button (click)="setAyer()">Ayer</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cerrarDialogFiltroCalendario()">
+      Cancelar
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!puedeAplicarFiltro()"
+      (click)="aplicarFiltroCalendario()"
+    >
+      Aplicar
+    </button>
+  </mat-dialog-actions>
+</ng-template>

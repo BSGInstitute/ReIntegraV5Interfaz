@@ -2393,6 +2393,8 @@ export const constApiMarketing = {
   // MESSENGER FACEBOOK CHAT
   ObtenerGrillaMessengerFacebookChat:
     "/MessengerFacebookChat/ObtenerGrillaChats",
+  ObtenerHistorialChatPorPSID:
+    "/MessengerFacebookChat/ObtenerHistorialChatPorPSID",
 
 };
 
