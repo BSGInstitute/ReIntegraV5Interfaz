@@ -31,20 +31,34 @@
           </mat-expansion-panel>
         </mat-accordion>
       </div>
-      <!-- Línea divisoria -->
-      <div class="modal-divider"></div>
+
       <!-- Lado derecho: Chat Messenger -->
-      <div class="modal-right chat-shadow">
-        <div class="chat-header">
-          <div class="chat-profile">
-            <img
-              src="https://ui-avatars.com/api/?name=Alumno&background=0695FF&color=fff&rounded=true"
-              alt="Perfil"
-            />
-          </div>
-          <div class="chat-code">23423423423</div>
+      <div class="modal-right">
+        <div *ngIf="loaderReloadChat" class="modal-right-loader">
+          <mat-progress-spinner
+            diameter="60"
+            mode="indeterminate"
+            color="primary"
+          ></mat-progress-spinner>
         </div>
-        <div class="chat-history">
+
+        <div class="chat-header">
+          <div style="display: flex; align-items: center">
+            <mat-icon>account_circle</mat-icon>
+            <div class="chat-code" style="margin-left: 12px">
+              {{ identificadorAmbitoPagina }}
+            </div>
+          </div>
+          <button
+            mat-icon-button
+            class="reload-btn-modal"
+            (click)="reloadChats()"
+            matTooltip="Recargar Chats"
+          >
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+        <div class="chat-history" #chatHistory>
           <div
             *ngFor="let msg of historialChats"
             [ngClass]="{
@@ -55,9 +69,38 @@
           >
             <div class="msg-bubble">
               <span>{{ msg.contenido }}</span>
+              <!-- Adjuntos -->
+              <ng-container *ngIf="msg.tipoAdjunto && msg.urlAdjunto">
+                <ng-container
+                  *ngIf="msg.tipoAdjunto === 'image'; else otherAdjunto"
+                >
+                  <div class="msg-adjunto-img">
+                    <img
+                      [src]="msg.urlAdjunto"
+                      alt="Imagen adjunta"
+                      style="max-width: 220px; max-height: 180px"
+                    />
+                  </div>
+                </ng-container>
+                <ng-template #otherAdjunto>
+                  <div class="msg-adjunto-link" style="margin-top: 0.5rem">
+                    <a
+                      [href]="msg.urlAdjunto"
+                      target="_blank"
+                      rel="noopener"
+                      style="
+                        color: #0695ff;
+                        text-decoration: underline;
+                        word-break: break-all;
+                      "
+                    >
+                      {{ msg.urlAdjunto }}
+                    </a>
+                  </div>
+                </ng-template>
+              </ng-container>
               <div class="msg-time">
-                {{ msg.fechaEvento }}
-                <span *ngIf="msg.tipoMensaje">({{ msg.tipoMensaje }})</span>
+                {{ msg.fechaEvento | date : "short" }}
               </div>
             </div>
           </div>
