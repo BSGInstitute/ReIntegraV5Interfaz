@@ -30,6 +30,7 @@ export interface ChatWhatsAppMarketingPorCelular {
   listaAlumnosPorCelular: ListaAlumnosPorCelular[];
   mensajePorCelular: MensajePorCelular[];
   rango?: string | null;
+  idPersonal?: number | null;
 }
 
 export interface ListaAlumnosPorCelular {

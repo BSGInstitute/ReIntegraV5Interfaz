@@ -515,7 +515,6 @@ this.gridAsignacionmanualOportinidad.loading=true;
       return false;
     }
   }
-
   asignarAsesor(): any {
     this.loadingnModal=true;
     this.BtnAsignarFlag=true;
@@ -552,6 +551,16 @@ this.gridAsignacionmanualOportinidad.loading=true;
             console.log(response.body);
             this.loadingnModal = false;
             this.BtnAsignarFlag = false;
+            this.integraService
+              .postJsonResponse(
+                constApiMarketing.AsignarManualmenteAsesorCambioActividadCabeceraAgenda,
+                JSON.stringify({IdAsesor: dataForm.idAsesor})
+              )
+              .subscribe({
+                next: (response: HttpResponse<any>) => {
+                  console.log(response.body);
+                }
+              });
 
           },
           error: (error) => {

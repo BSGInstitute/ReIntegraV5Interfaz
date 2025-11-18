@@ -23,6 +23,9 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     private _integraService: IntegraService,
     private _alertaService: AlertaService,
     private _formBuilder: FormBuilder,
+    private _modalService: NgbModal,
+    private formService: FormService
+  ) { }
     private _modalService: NgbModal
   ) {}
 
@@ -312,20 +315,35 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
   }
 
   public cellCloseHandler(args: any): void {
+    const field = args.column.field as string;
+    const control = args.formGroup.get(field);
+
+    // Validar específicamente el campo urlPerfilLinkedIn
+    if (field === 'urlPerfilLinkedIn' && control?.invalid && control?.dirty) {
+      // Revertir al valor original
+      control.setValue(args.dataItem.urlPerfilLinkedIn);
+      control.markAsPristine();
+      this._alertaService.mensajeIcon(
+        'URL de LinkedIn inválida',
+        'Por favor ingrese una URL válida de LinkedIn (ejemplo: https://linkedin.com/in/usuario)',
+        'warning'
+      );
+      return;
+    }
+
     if (!args.formGroup.valid) {
       args.preventDefault();
       return;
     }
 
-    const field = args.column.field as string;
     const isEditableField = [
       'cargo',
       'areaFormacion',
       'areaTrabajo',
       'industria',
       'pais',
+      'urlPerfilLinkedIn'
     ].includes(field);
-    const control = args.formGroup.get(field);
 
     if (!isEditableField || !control?.dirty) return;
 
@@ -336,6 +354,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       areaTrabajo: args.formGroup.value.areaTrabajo,
       industria: args.formGroup.value.industria,
       pais: args.formGroup.value.pais,
+      urlPerfil: args.formGroup.value.urlPerfilLinkedIn,
     };
     Object.assign(args.dataItem, dto);
     this.enProcesoSolicitud = true;
@@ -359,11 +378,28 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
   }
 
   public saveHandler({ dataItem, formGroup }: any): void {
+    console.log('Data Item: ', dataItem);
+
+    // Validar el formulario antes de guardar
+    if (!formGroup.valid) {
+      const urlControl = formGroup.get('urlPerfilLinkedIn');
+      if (urlControl?.invalid) {
+        this._alertaService.mensajeIcon(
+          'URL de LinkedIn inválida',
+          'Por favor ingrese una URL válida de LinkedIn (ejemplo: https://linkedin.com/in/usuario)',
+          'warning'
+        );
+      }
+      return;
+    }
+
     dataItem.cargo = formGroup.value.cargo;
     dataItem.areaFormacion = formGroup.value.areaFormacion;
     dataItem.areaTrabajo = formGroup.value.areaTrabajo;
     dataItem.industria = formGroup.value.industria;
     dataItem.pais = formGroup.value.pais;
+    dataItem.urlPerfilLinkedIn = formGroup.value.urlPerfilLinkedIn;
+    console.log(formGroup)
 
     this.kgridPartner.closeCell();
     this.enProcesoSolicitud = true;
@@ -375,6 +411,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       areaTrabajo: formGroup.value.areaTrabajo,
       industria: formGroup.value.industria,
       pais: formGroup.value.pais,
+      urlPerfil: formGroup.value.urlPerfilLinkedIn,
     };
 
     this._integraService
@@ -402,6 +439,9 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       areaTrabajo: new FormControl(dataItem.areaTrabajo),
       industria: new FormControl(dataItem.industria),
       pais: new FormControl(dataItem.pais),
+      urlPerfilLinkedIn: new FormControl(dataItem.urlPerfilLinkedIn, [
+        Validators.pattern(/^(https?:\/\/)?((www|www\.)\.)?linkedin\.com\/in\/[\w-]{3,}[^\s]*$/)
+      ])
     });
   }
 
