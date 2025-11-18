@@ -88,38 +88,41 @@ export class MessengerFacebookChatComponent implements OnInit {
       });
   }
 
-  abrirModalChat(data: string) {
-    this.loading = true;
-    this.integraService
-      .postJsonResponse(`${constApiMarketing.ObtenerHistorialChatPorPSID}`, {
-        identificadorAmbitoPagina: data,
-      })
-      .subscribe({
-        next: (response: any) => {
-          // Si hay historial, abrir modal
-          if (response.body && response.body.length > 0) {
-            this.IdentificadorAmbitoPagina = data;
-            this.showModalChat = true;
-          } else {
-            this._alertaService.notificationError(
-              'No se encontró historial de chat para el identificador'
-            );
-          }
-          this.loading = false;
-        },
-        error: (err) => {
-          if (err.status === 404) {
-            this._alertaService.notificationError(
-              'No se encontró historial de chat para el identificador'
-            );
-          } else {
-            this._alertaService.notificationError(
-              'Error al buscar chat por ID'
-            );
-          }
-          this.loading = false;
-        },
-      });
+  abrirModalChat(data: string, origenBusqueda?: boolean) {
+    if (origenBusqueda) {
+      console.log('Abriendo chat desde grilla con ID:', data);
+      this.integraService
+        .postJsonResponse(`${constApiMarketing.ObtenerHistorialChatPorPSID}`, {
+          identificadorAmbitoPagina: data,
+        })
+        .subscribe({
+          next: (response: any) => {
+            if (response.body && response.body.length > 0) {
+              this.IdentificadorAmbitoPagina = data;
+              this.showModalChat = true;
+            } else {
+              this._alertaService.notificationError(
+                'No se encontró historial de chat para el identificador'
+              );
+            }
+          },
+          error: (err) => {
+            if (err.status === 404) {
+              this._alertaService.notificationError(
+                'No se encontró historial de chat para el identificador'
+              );
+            } else {
+              this._alertaService.notificationError(
+                'Error al buscar chat por ID'
+              );
+            }
+          },
+        });
+    } else {
+      console.log('Abriendo chat desde busqueda por ID:', data);
+      this.IdentificadorAmbitoPagina = data;
+      this.showModalChat = true;
+    }
   }
 
   cerrarModalChat() {

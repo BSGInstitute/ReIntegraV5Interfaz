@@ -4,31 +4,45 @@
       <!-- Lado izquierdo: Formulario alumno (por ahora vacío) -->
       <div class="modal-left">
         <mat-accordion>
-          <mat-expansion-panel
-            *ngFor="let oportunidad of oportunidades; let idx = index"
-            [expanded]="panelOpenIndex === idx"
-            (expandedChange)="onPanelExpanded($event, idx)"
+          <div
+            *ngIf="
+              alumnosPorPSID && alumnosPorPSID.length > 0;
+              else noAlumnoRegistrado
+            "
           >
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Oportunidad #{{ oportunidad.id }}
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="oportunidad-datos">
-              <div>
-                <strong>Nombre:</strong> {{ oportunidad.alumno.nombre }}
+            <mat-expansion-panel
+              *ngFor="let alumno of alumnosPorPSID; let idx = index"
+              [expanded]="panelOpenIndex === idx"
+              (expandedChange)="onPanelExpanded($event, idx)"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title
+                  >Alumno: {{ alumno.id }} | Email: {{ alumno.email }}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="oportunidad-datos">
+                <div><strong>Nombre:</strong> {{ alumno.nombre }}</div>
+                <div><strong>Correo:</strong> {{ alumno.correo }}</div>
+                <div><strong>Teléfono:</strong> {{ alumno.telefono }}</div>
+                <div><strong>Documento:</strong> {{ alumno.documento }}</div>
               </div>
-              <div>
-                <strong>Correo:</strong> {{ oportunidad.alumno.correo }}
+            </mat-expansion-panel>
+          </div>
+
+          <ng-template #noAlumnoRegistrado>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Sin Alumno Registrado </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="oportunidad-datos">
+                <app-whatsapp-facebook-modal-oportunidad
+                  [celularAlumno]="null"
+                  [abrirModalTrigger]="false"
+                >
+                </app-whatsapp-facebook-modal-oportunidad>
               </div>
-              <div>
-                <strong>Teléfono:</strong> {{ oportunidad.alumno.telefono }}
-              </div>
-              <div>
-                <strong>Documento:</strong> {{ oportunidad.alumno.documento }}
-              </div>
-            </div>
-          </mat-expansion-panel>
+            </mat-expansion-panel>
+          </ng-template>
         </mat-accordion>
       </div>
 
@@ -111,8 +125,9 @@
             class="chat-input"
             [(ngModel)]="newMessage"
             placeholder="Escribe un mensaje..."
+            (keydown.enter)="enviarMensajeTexto()"
           />
-          <button class="chat-send-btn">
+          <button class="chat-send-btn" (click)="enviarMensajeTexto()">
             <mat-icon>send</mat-icon>
           </button>
         </div>

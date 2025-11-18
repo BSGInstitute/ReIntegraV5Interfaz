@@ -2395,6 +2395,8 @@ export const constApiMarketing = {
     "/MessengerFacebookChat/ObtenerGrillaChats",
   ObtenerHistorialChatPorPSID:
     "/MessengerFacebookChat/ObtenerHistorialChatPorPSID",
+  EnviarMensajeTextoMessengerFacebook:
+    "/MessengerFacebookChat/EnviarMensajeTexto",
 
 };
 

@@ -18,3 +18,16 @@ export interface ChatMessengerFacebook {
   nombrePagina: string;
   idMessengerConfiguracionPagina: number;
 }
+
+export interface EnviarMensajeTextoMessengerFacebook {
+  PSID: string;
+  IdMessengerConfiguracionPagina?: number | null;
+  TipoMensaje: string;
+  Contenido?: string | null;
+  TipoAdjunto?: string | null;
+  URLAdjunto?: string | null;
+  MId?: string | null;
+  IdAlumno?: number | null;
+  IdPersonal?: number | null;
+  UsuarioCreacion?: string | null;
+}

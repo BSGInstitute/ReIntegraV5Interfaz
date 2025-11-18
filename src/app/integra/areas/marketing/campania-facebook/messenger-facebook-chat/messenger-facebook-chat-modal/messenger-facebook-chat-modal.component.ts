@@ -11,7 +11,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import { constApiMarketing } from '@environments/constApi';
-import { ChatMessengerFacebook } from '@marketing/models/interfaces/messenger-facebook-chat';
+import {
+  ChatMessengerFacebook,
+  EnviarMensajeTextoMessengerFacebook,
+} from '@marketing/models/interfaces/messenger-facebook-chat';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 @Component({
@@ -31,16 +34,23 @@ export class MessengerFacebookChatModalComponent
   newMessage: string = '';
   panelOpenIndex: number | null = null;
 
-  // MOCK
-  oportunidades: Array<{
-    id: number;
-    alumno: {
-      nombre: string;
-      correo: string;
-      telefono: string;
-      documento: string;
-    };
-  }> = [];
+  // MOCK TEMPORAL
+  alumnosPorPSID: any = [
+    // {
+    //   id: 101,
+    //   nombre: 'Juan Pérez',
+    //   correo: 'juan.perez@email.com',
+    //   telefono: '+51 999888777',
+    //   documento: 'DNI 12345678',
+    // },
+    // {
+    //   id: 102,
+    //   nombre: 'Juan Pérez',
+    //   correo: 'juan.perez@email.com',
+    //   telefono: '+51 999888777',
+    //   documento: 'DNI 12345678',
+    // },
+  ];
 
   constructor(
     private _alertaService: AlertaService,
@@ -56,29 +66,7 @@ export class MessengerFacebookChatModalComponent
     }
   }
 
-  ngOnInit(): void {
-    // Mock de oportunidades
-    this.oportunidades = [
-      {
-        id: 101,
-        alumno: {
-          nombre: 'Juan Pérez',
-          correo: 'juan.perez@email.com',
-          telefono: '+51 999888777',
-          documento: 'DNI 12345678',
-        },
-      },
-      {
-        id: 102,
-        alumno: {
-          nombre: 'Juan Pérez',
-          correo: 'juan.perez@email.com',
-          telefono: '+51 999888777',
-          documento: 'DNI 12345678',
-        },
-      },
-    ];
-  }
+  ngOnInit(): void {}
 
   ngAfterViewChecked(): void {
     if (this.shouldScrollChat && this.chatHistoryRef) {
@@ -92,6 +80,8 @@ export class MessengerFacebookChatModalComponent
 
   obtenerHistorialChatPorPSId(identificadorAmbitoPagina: string) {
     if (!identificadorAmbitoPagina) return;
+    this.loaderReloadChat = true;
+
     this.integraService
       .postJsonResponse(`${constApiMarketing.ObtenerHistorialChatPorPSID}`, {
         identificadorAmbitoPagina: identificadorAmbitoPagina,
@@ -100,8 +90,10 @@ export class MessengerFacebookChatModalComponent
         next: (data: any) => {
           this.historialChats = data.body as ChatMessengerFacebook[];
           this.shouldScrollChat = true;
+          this.loaderReloadChat = false;
         },
         error: (err) => {
+          this.loaderReloadChat = false;
           this._alertaService.notificationError('Error al buscar chat por ID');
           console.error('Error buscando chat por ID:', err);
         },
@@ -122,6 +114,38 @@ export class MessengerFacebookChatModalComponent
         error: (err) => {
           this._alertaService.notificationError('Error al buscar chat por ID');
           this.loaderReloadChat = false;
+        },
+      });
+  }
+
+  enviarMensajeTexto() {
+    const mensaje = this.newMessage?.trim();
+    if (!mensaje) return;
+
+    const payload: EnviarMensajeTextoMessengerFacebook = {
+      PSID: this.identificadorAmbitoPagina,
+      TipoMensaje: 'text',
+      Contenido: mensaje,
+      IdMessengerConfiguracionPagina:
+        this.historialChats[this.historialChats.length - 1]
+          ?.idMessengerConfiguracionPagina || null,
+    };
+
+    this.integraService
+      .postJsonResponse(
+        `${constApiMarketing.EnviarMensajeTextoMessengerFacebook}`,
+        payload
+      )
+      .subscribe({
+        next: (data: any) => {
+          this.newMessage = '';
+          this.reloadChats();
+          data.body.enviado
+            ? this._alertaService.notificationSuccess(data.body.mensaje)
+            : this._alertaService.notificationWarning(data.body.mensaje);
+        },
+        error: (err) => {
+          this._alertaService.notificationError('Error al enviar el mensaje');
         },
       });
   }
