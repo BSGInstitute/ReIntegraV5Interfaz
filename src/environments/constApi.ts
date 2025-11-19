@@ -2099,7 +2099,6 @@ export const constApiMarketing = {
     "/AsignacionManual/ObtenerOportunidades",
   AsignacionManualObtenerFiltros: "/AsignacionManual/ObtenerFiltros",
   AsignarManualmenteAsesorAsignarAsesor: "/AsignacionManual/AsignarAsesor",
-  AsignarManualmenteAsesorCambioActividadCabeceraAgenda: "/AsignacionManual/CambioActividadCabeceraAgenda",
   AsignarManualmenteCerrarOportunidadOD:
     "/AsignacionManual/CerrarOportunidadOD",
   AsignarManualmenteCerrarOportunidadOM:
