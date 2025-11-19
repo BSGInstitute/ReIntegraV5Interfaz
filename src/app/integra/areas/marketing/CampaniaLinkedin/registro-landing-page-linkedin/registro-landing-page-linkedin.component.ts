@@ -5,13 +5,14 @@ import { IntegraService } from '@shared/services/integra.service';
 import { AlertaService } from '@shared/services/alerta.service';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { datePipeTransform } from '@shared/functions/date-pipe';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { constApiMarketing } from '@environments/constApi';
 import {
   ICampaniaLinkedIn,
   IPendientesLinkedIn,
 } from '@marketing/models/interfaces/campania-linkedin';
 import { GridComponent, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { FormService } from '@shared/services/form.service';
 
 @Component({
   selector: 'app-registro-landing-page-linkedin',
@@ -26,8 +27,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     private _modalService: NgbModal,
     private formService: FormService
   ) { }
-    private _modalService: NgbModal
-  ) {}
+
 
   @ViewChild('kgridlinkedin') kgridlinkedin: GridComponent;
   @ViewChild('kgridPartner') kgridPartner: GridComponent;
