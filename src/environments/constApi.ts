@@ -3822,7 +3822,7 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorDetalleInsertar:"/ProgramageneralproblemaFactorDetalle/Insertar",
   ProgramageneralproblemaFactorDetalleActualizar:"/ProgramageneralproblemaFactorDetalle/Actualizar",
   ProgramageneralproblemaFactorDetalleEliminar:"/ProgramageneralproblemaFactorDetalle/Eliminar",
-  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/ExistePorNombre",
+  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/Existe",
   ProgramageneralproblemaFactorSolucionObtener:"/ProgramageneralproblemaFactorSolucion/Obtener",
   ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
   ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",

@@ -130,7 +130,7 @@ export class ProgramaGeneralProblemaFactorDetalleComponent implements OnInit {
   this._integraService
     .postJsonResponse(
       constApiPlanificacion.ProgramaGeneralProblemaFactorDetalleExistePorNombre,
-      JSON.stringify({ nombre }) 
+      JSON.stringify(nombre) 
     )
     .subscribe({
       next: (respExiste: HttpResponse<any>) => {
