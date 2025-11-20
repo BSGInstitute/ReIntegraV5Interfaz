@@ -3,6 +3,14 @@
     <div class="modal-content-row">
       <!-- Lado izquierdo: Formulario alumno (por ahora vacío) -->
       <div class="modal-left">
+        <div *ngIf="loaderdetalleAlumnosPorPSID" class="modal-right-loader">
+          <mat-progress-spinner
+            diameter="60"
+            mode="indeterminate"
+            color="primary"
+          ></mat-progress-spinner>
+        </div>
+
         <mat-accordion>
           <div
             *ngIf="
@@ -17,14 +25,54 @@
             >
               <mat-expansion-panel-header>
                 <mat-panel-title
-                  >Alumno: {{ alumno.id }} | Email: {{ alumno.email }}
+                  >Alumno: {{ alumno.idAlumno }} | Email: {{ alumno.email }} |
+                  Fecha: {{ alumno.fechaModificacionAlumno | date : "short" }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div class="oportunidad-datos">
-                <div><strong>Nombre:</strong> {{ alumno.nombre }}</div>
-                <div><strong>Correo:</strong> {{ alumno.correo }}</div>
-                <div><strong>Teléfono:</strong> {{ alumno.telefono }}</div>
-                <div><strong>Documento:</strong> {{ alumno.documento }}</div>
+                <app-whatsapp-facebook-modal-oportunidad
+                  [celularAlumno]="null"
+                  [abrirModalTrigger]="false"
+                  [identificadorAmbitoPagina]="identificadorAmbitoPagina"
+                  [idAlumnoMessenger]="alumno.idAlumno"
+                >
+                </app-whatsapp-facebook-modal-oportunidad>
+              </div>
+
+              <div class="oportunidad-datos mt-4 py-2 px-4">
+                <div class="text-center mb-2 fs-6">
+                  <strong>Historial de oportunidades creadas:</strong>
+                </div>
+                <table
+                  *ngIf="
+                    alumno.oportunidades && alumno.oportunidades.length > 0;
+                    else sinOportunidades
+                  "
+                  class="table table-bordered table-sm w-100 mt-2"
+                >
+                  <thead style="background-color: #ddd">
+                    <tr>
+                      <th scope="col" class="text-center">IdOportunidad</th>
+                      <th scope="col" class="text-center">Fecha Registro</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let oportunidad of alumno.oportunidades">
+                      <td class="text-center">
+                        {{ oportunidad.idOportunidad }}
+                      </td>
+                      <td class="text-center">
+                        {{
+                          oportunidad.fechaModificacionOportunidad
+                            | date : "short"
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ng-template #sinOportunidades>
+                  <span style="color: #777">Sin oportunidades registradas</span>
+                </ng-template>
               </div>
             </mat-expansion-panel>
           </div>
@@ -38,6 +86,7 @@
                 <app-whatsapp-facebook-modal-oportunidad
                   [celularAlumno]="null"
                   [abrirModalTrigger]="false"
+                  [identificadorAmbitoPagina]="identificadorAmbitoPagina"
                 >
                 </app-whatsapp-facebook-modal-oportunidad>
               </div>

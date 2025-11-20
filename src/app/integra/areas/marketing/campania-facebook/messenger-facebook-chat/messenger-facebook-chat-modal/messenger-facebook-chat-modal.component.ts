@@ -13,6 +13,7 @@ import {
 import { constApiMarketing } from '@environments/constApi';
 import {
   ChatMessengerFacebook,
+  DatosGeneralesAlumno,
   EnviarMensajeTextoMessengerFacebook,
 } from '@marketing/models/interfaces/messenger-facebook-chat';
 import { AlertaService } from '@shared/services/alerta.service';
@@ -30,27 +31,11 @@ export class MessengerFacebookChatModalComponent
   @ViewChild('chatHistory') chatHistoryRef: ElementRef;
   private shouldScrollChat = false;
   loaderReloadChat: boolean = false;
+  loaderdetalleAlumnosPorPSID: boolean = false;
   historialChats: ChatMessengerFacebook[] = [];
   newMessage: string = '';
   panelOpenIndex: number | null = null;
-
-  // MOCK TEMPORAL
-  alumnosPorPSID: any = [
-    // {
-    //   id: 101,
-    //   nombre: 'Juan Pérez',
-    //   correo: 'juan.perez@email.com',
-    //   telefono: '+51 999888777',
-    //   documento: 'DNI 12345678',
-    // },
-    // {
-    //   id: 102,
-    //   nombre: 'Juan Pérez',
-    //   correo: 'juan.perez@email.com',
-    //   telefono: '+51 999888777',
-    //   documento: 'DNI 12345678',
-    // },
-  ];
+  alumnosPorPSID: DatosGeneralesAlumno[] = [];
 
   constructor(
     private _alertaService: AlertaService,
@@ -66,7 +51,9 @@ export class MessengerFacebookChatModalComponent
     }
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.ObtenerDatosGeneralesAlumnosPorPSID();
+  }
 
   ngAfterViewChecked(): void {
     if (this.shouldScrollChat && this.chatHistoryRef) {
@@ -96,6 +83,31 @@ export class MessengerFacebookChatModalComponent
           this.loaderReloadChat = false;
           this._alertaService.notificationError('Error al buscar chat por ID');
           console.error('Error buscando chat por ID:', err);
+        },
+      });
+  }
+
+  ObtenerDatosGeneralesAlumnosPorPSID() {
+    if (!this.identificadorAmbitoPagina) return;
+    this.loaderdetalleAlumnosPorPSID = true;
+
+    this.integraService
+      .postJsonResponse(
+        `${constApiMarketing.ObtenerDatosGeneralesAlumnosPorPSID}`,
+        {
+          identificadorAmbitoPagina: this.identificadorAmbitoPagina,
+        }
+      )
+      .subscribe({
+        next: (data: any) => {
+          this.alumnosPorPSID = data.body as DatosGeneralesAlumno[];
+          this.loaderdetalleAlumnosPorPSID = false;
+        },
+        error: (err) => {
+          this.loaderdetalleAlumnosPorPSID = false;
+          this._alertaService.notificationError(
+            'Error al obtener detalle alumnos'
+          );
         },
       });
   }

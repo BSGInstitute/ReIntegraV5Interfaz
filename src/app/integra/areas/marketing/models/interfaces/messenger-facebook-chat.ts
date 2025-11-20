@@ -31,3 +31,14 @@ export interface EnviarMensajeTextoMessengerFacebook {
   IdPersonal?: number | null;
   UsuarioCreacion?: string | null;
 }
+
+export interface DatosGeneralesAlumno {
+  idAlumno: number;
+  email: string;
+  oportunidades: OportunidadDatoGeneral[];
+  fechaModificacionAlumno: Date;
+}
+export interface OportunidadDatoGeneral {
+  idOportunidad: number;
+  fechaModificacionOportunidad: Date;
+}
