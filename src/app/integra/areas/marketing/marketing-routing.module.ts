@@ -68,6 +68,7 @@ import { UsuariosWhatsappComponent } from './configuraciones/usuarios-whatsapp/u
 import { RegistroLandingPageLinkedinComponent } from './CampaniaLinkedin/registro-landing-page-linkedin/registro-landing-page-linkedin.component';
 import { FormulariosProgressiveProfilingComponent } from './configuraciones/formularios-progressive-profiling/formularios-progressive-profiling/formularios-progressive-profiling.component';
 import { CreacionOportunidadMasivaComponent } from './gestion-oportunidades/creacion-oportunidad-masiva/creacion-oportunidad-masiva.component';
+import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
 const routes: Routes = [
   {
     path: '',
@@ -316,7 +317,8 @@ const routes: Routes = [
       {path:'WhatsappFacebookMasivos',component:WhatsappFacebookMasivosComponent},
       {path:'whatsappConfiguracion',component:UsuariosWhatsappComponent},
       {path:'FormulariosProgressiveProfiling',component:FormulariosProgressiveProfilingComponent},
-      {path:'CreacionOportunidadMasiva',component:CreacionOportunidadMasivaComponent}
+      {path:'CreacionOportunidadMasiva',component:CreacionOportunidadMasivaComponent},
+      {path:'MessengerFacebookChat',component:MessengerFacebookChatComponent},
     ],
   },
 ];
