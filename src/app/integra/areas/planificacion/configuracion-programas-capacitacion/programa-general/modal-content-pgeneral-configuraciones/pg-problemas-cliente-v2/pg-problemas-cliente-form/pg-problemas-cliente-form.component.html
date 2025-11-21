@@ -4,7 +4,7 @@
   [title]="esNuevo ? 'Nuevo Problema' : 'Editar Problema'"
   [minWidth]="'350px'"
   [width]="'90vw'"
-  [maxWidth]="'1000px'"
+  [maxWidth]="'1200px'"
   [height]="'auto'"
   [maxHeight]="'90vh'"
   [draggable]="false"
@@ -12,216 +12,264 @@
   [keepCentered]="false"
 >
   <div>
-  <div class="modal-body" style="overflow-y: auto; max-height: 70vh; padding: 1rem;">
-    <form class="k-form k-form-horizontal" [formGroup]="formProblema">
-
-      <!-- ====== PROBLEMA ====== -->
-      <kendo-formfield orientation="horizontal">
-        <label class="k-label" for="ddlProblema">Nombre del Problema:</label>
-        <kendo-dropdownlist
-          id="ddlProblema"
-          formControlName="problemaId"
-          [data]="opcProblemaFiltro"
-          textField="nombre"
-          valueField="id"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          (filterChange)="onFilterChangeProblema($event)"
-          [defaultItem]="{ id: null, nombre: 'Seleccionar…' }"
-          style="width:100%"
-        ></kendo-dropdownlist>
-        <kendo-formerror *ngIf="formProblema.get('problemaId')?.invalid && formProblema.get('problemaId')?.touched">
-          Selecciona un nombre de problema.
-        </kendo-formerror>
-      </kendo-formfield>
-
-      <!-- ====== DETALLE ====== -->
-      <kendo-formfield orientation="horizontal">
-        <label class="k-label" for="ddlDetalle">Etiqueta Problema:</label>
-        <kendo-dropdownlist
-          id="ddlDetalle"
-          formControlName="detalleId"
-          [data]="detalleOptionsFiltro"
-          textField="nombre"
-          valueField="id"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          (filterChange)="onFilterChangeProblemaDetalle($event)"
-          [defaultItem]="{ id: null, nombre: 'Seleccionar…' }"
-          style="width:100%"
-        ></kendo-dropdownlist>
-      </kendo-formfield>
-
-      <!-- ====== DETALLE - Título (vinculado al Detalle) ====== -->
-      <kendo-formfield orientation="horizontal">
-        <label class="k-label" for="ddlDetalleTitulo">Nombre del Caso:</label>
-        <kendo-dropdownlist
-          id="ddlDetalleTitulo"
-          formControlName="detalleTituloId"
-          [data]="detalleTituloOptionsFiltro"
-          textField="titulo"
-          valueField="id"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          (filterChange)="onFilterChangeDetalleTitulo($event)"
-          [defaultItem]="{ id: null, titulo: 'Seleccionar…' }"
-          style="width:100%"
-        ></kendo-dropdownlist>
-      </kendo-formfield>
-
-      <!-- ====== SOLUCIÓN (agrupado) ====== -->
-
-      <!-- Descripción -->
-      <kendo-formfield orientation="horizontal">
-        <label class="k-label" for="ddlSolDesc">Solución:</label>
-        <kendo-dropdownlist
-          id="ddlSolDesc"
-          formControlName="solucionDescripcionId"
-          [data]="descOptionsFiltro"
-          textField="descripcion"
-          valueField="id"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          (filterChange)="onFilterChangeSolucionDescripcion($event)"
-          [defaultItem]="{ id: null, descripcion: 'Seleccionar…' }"
-          style="width:100%"
-        ></kendo-dropdownlist>
-      </kendo-formfield>
-
-      <!-- Título -->
-      <kendo-formfield orientation="horizontal">
-        <label class="k-label" for="ddlSolTitulo">Título:</label>
-        <kendo-dropdownlist
-          id="ddlSolTitulo"
-          formControlName="solucionTituloId"
-          [data]="opcSolucionTituloFilteredFiltro"
-          textField="titulo"
-          valueField="id"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          (filterChange)="onFilterChangeSolucionTitulo($event)"
-          [defaultItem]="{ id: null, titulo: 'Seleccionar…' }"
-          style="width:100%"
-        ></kendo-dropdownlist>
-      </kendo-formfield>
-
-      <!-- SubTítulo -->
-      <kendo-formfield orientation="horizontal">
-        <label class="k-label" for="ddlSolSubTitulo">Descripcion:</label>
-        <kendo-dropdownlist
-          id="ddlSolSubTitulo"
-          formControlName="solucionSubTituloId"
-          [data]="opcSolucionSubTituloFilteredFiltro"
-          textField="subTitulo"
-          valueField="id"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          (filterChange)="onFilterChangeSolucionSubTitulo($event)"
-          [defaultItem]="{ id: null, subTitulo: 'Seleccionar…' }"
-          style="width:100%"
-        ></kendo-dropdownlist>
-      </kendo-formfield>
-
-      <!-- ====== PANEL DE SUBSOLUCIONES ====== -->
-      <div *ngIf="mostrarCuadro" class="mt-3" style="
-          width: 100%;
-          display: grid;
-          grid-template-columns: 2fr 120px 2fr;
-          gap: 10px;
-          align-items: stretch;
-          max-height: 520px;
-        ">
-
-        <!-- Seleccionados -->
-        <kendo-card style="width: 100%; height: 100%; overflow: hidden;">
-          <kendo-card-header>
-            <h4 class="m-0">Seleccionados</h4>
-          </kendo-card-header>
-          <kendo-card-body style="height: calc(100% - 50px); overflow-y: auto;">
-            <kendo-grid
-              scrollable="scrollable"
-              [height]="400"
-              [data]="registrosSeleccionados"
-              [filterable]="false">
-              <kendo-grid-column [width]="60">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <button
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="deseleccionar(dataItem)"
-                    title="Quitar de seleccionados">
-                    <span class="k-icon k-i-minus"></span>
-                  </button>
-                </ng-template>
-              </kendo-grid-column>
-              <kendo-grid-column field="solucion" title="Nombre">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  {{ dataItem.solucion || dataItem.nombre }}
-                </ng-template>
-              </kendo-grid-column>
-            </kendo-grid>
-          </kendo-card-body>
-        </kendo-card>
-
-        <!-- Botones centro -->
-        <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px;">
-          <button class="btn btn-success"
-                  (click)="pasarASeleccionados()"
-                  [disabled]="registrosPreSeleccionados.length === 0"
-                  title="Pasar a seleccionados">
-            <span class="k-icon k-i-arrow-60-left k-icon-24"></span>
-          </button>
-
-          <button class="btn btn-outline-danger"
-                  (click)="revertirTodo()"
-                  [disabled]="registrosSeleccionados.length === 0 && registrosPreSeleccionados.length === 0"
-                  title="Revertir todo">
-            <span class="k-icon k-i-reload k-icon-24"></span>
-          </button>
-        </div>
-        <!-- Disponibles -->
-        <kendo-card style="width: 100%; height: 100%; overflow: hidden;">
-          <kendo-grid
-            [kendoGridBinding]="registrosDisponiblesFiltro"
-            [selectable]="false"
-            scrollable="none"
-            filterable="menu"
+    <div
+      class="modal-body"
+      style="overflow-y: auto; max-height: 70vh; padding: 1rem"
+    >
+      <form class="k-form k-form-horizontal" [formGroup]="formProblema">
+        <!-- ====== PROBLEMA ====== -->
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label" for="ddlProblema">Nombre del Problema:</label>
+          <kendo-dropdownlist
+            id="ddlProblema"
+            formControlName="problemaId"
+            [data]="opcProblemaFiltro"
+            textField="nombre"
+            valueField="id"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            (filterChange)="onFilterChangeProblema($event)"
+            [defaultItem]="{ id: null, nombre: 'Seleccionar…' }"
+            style="width: 100%"
+          ></kendo-dropdownlist>
+          <kendo-formerror
+            *ngIf="
+              formProblema.get('problemaId')?.invalid &&
+              formProblema.get('problemaId')?.touched
+            "
           >
-            <kendo-grid-column-group title="Disponibles" headerClass="pg-group">
-              <kendo-grid-column [width]="30">
-                <ng-template kendoGridHeaderTemplate>
-                  <input
-                    type="checkbox"
-                    [checked]="todosSeleccionadosCheckedDisponibles"
-                    (change)="
-                      todosSeleccionadosCheckedDisponibles = $any($event).target.checked;
-                      marcarPreSeleccionarTodos(todosSeleccionadosCheckedDisponibles);
-                    "
-                  />
-                </ng-template>
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <input
-                    type="checkbox"
-                    [checked]="dataItem.seleccionado === true"
-                    (change)="
-                      dataItem.seleccionado = $any($event).target.checked;
-                      marcarPreseleccion(dataItem, $any($event).target.checked)
-                    "
-                  />
-                </ng-template>
-              </kendo-grid-column>
-              <kendo-grid-column field="solucion" title="Nombre" [width]="220"
-                headerClass="pg-header-grid justify-content-center" class="text-start"
-                [filterable]="true">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  {{ dataItem.solucion || dataItem.nombre }}
-                </ng-template>
-              </kendo-grid-column>
-            </kendo-grid-column-group>
-          </kendo-grid>
-        </kendo-card>
-      </div>
+            Selecciona un nombre de problema.
+          </kendo-formerror>
+        </kendo-formfield>
 
-    </form>
+        <!-- ====== DETALLE ====== -->
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label" for="ddlDetalle">Etiqueta Problema:</label>
+          <kendo-dropdownlist
+            id="ddlDetalle"
+            formControlName="detalleId"
+            [data]="detalleOptionsFiltro"
+            textField="nombre"
+            valueField="id"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            (filterChange)="onFilterChangeProblemaDetalle($event)"
+            [defaultItem]="{ id: null, nombre: 'Seleccionar…' }"
+            style="width: 100%"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <!-- ====== DETALLE - Título (vinculado al Detalle) ====== -->
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label" for="ddlDetalleTitulo">Nombre del Caso:</label>
+          <kendo-dropdownlist
+            id="ddlDetalleTitulo"
+            formControlName="detalleTituloId"
+            [data]="detalleTituloOptionsFiltro"
+            textField="titulo"
+            valueField="id"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            (filterChange)="onFilterChangeDetalleTitulo($event)"
+            [defaultItem]="{ id: null, titulo: 'Seleccionar…' }"
+            style="width: 100%"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <!-- ====== SOLUCIÓN (agrupado) ====== -->
+
+        <!-- Descripción -->
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label" for="ddlSolDesc">Solución:</label>
+          <kendo-dropdownlist
+            id="ddlSolDesc"
+            formControlName="solucionDescripcionId"
+            [data]="descOptionsFiltro"
+            textField="descripcion"
+            valueField="id"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            (filterChange)="onFilterChangeSolucionDescripcion($event)"
+            [defaultItem]="{ id: null, descripcion: 'Seleccionar…' }"
+            style="width: 100%"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <!-- Título -->
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label" for="ddlSolTitulo">Título:</label>
+          <kendo-dropdownlist
+            id="ddlSolTitulo"
+            formControlName="solucionTituloId"
+            [data]="opcSolucionTituloFilteredFiltro"
+            textField="titulo"
+            valueField="id"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            (filterChange)="onFilterChangeSolucionTitulo($event)"
+            [defaultItem]="{ id: null, titulo: 'Seleccionar…' }"
+            style="width: 100%"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <!-- SubTítulo -->
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label" for="ddlSolSubTitulo">Descripcion:</label>
+          <kendo-dropdownlist
+            id="ddlSolSubTitulo"
+            formControlName="solucionSubTituloId"
+            [data]="opcSolucionSubTituloFilteredFiltro"
+            textField="subTitulo"
+            valueField="id"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            (filterChange)="onFilterChangeSolucionSubTitulo($event)"
+            [defaultItem]="{ id: null, subTitulo: 'Seleccionar…' }"
+            style="width: 100%"
+          ></kendo-dropdownlist>
+        </kendo-formfield>
+
+        <!-- ====== PANEL DE SUBSOLUCIONES ====== -->
+        <div
+          *ngIf="mostrarCuadro"
+          class="mt-3"
+          style="
+            width: 100%;
+            display: grid;
+            grid-template-columns: 2fr 120px 2fr;
+            gap: 10px;
+            align-items: stretch;
+            max-height: 520px;
+          "
+        >
+          <!-- Seleccionados -->
+          <kendo-card style="width: 100%; height: 100%; overflow: hidden">
+            <kendo-card-header>
+              <h4 class="m-0">Seleccionados</h4>
+            </kendo-card-header>
+            <kendo-card-body
+              style="height: calc(100% - 50px); overflow-y: auto"
+            >
+              <kendo-grid
+                scrollable="scrollable"
+                [height]="400"
+                [data]="registrosSeleccionados"
+                [filterable]="false"
+              >
+                <kendo-grid-column [width]="60">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <button
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="deseleccionar(dataItem)"
+                      title="Quitar de seleccionados"
+                    >
+                      <span class="k-icon k-i-minus"></span>
+                    </button>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="solucion" title="Nombre">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.solucion || dataItem.nombre }}
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid>
+            </kendo-card-body>
+          </kendo-card>
+
+          <!-- Botones centro -->
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              gap: 10px;
+            "
+          >
+            <button
+              class="btn btn-success"
+              (click)="pasarASeleccionados()"
+              [disabled]="registrosPreSeleccionados.length === 0"
+              title="Pasar a seleccionados"
+            >
+              <span class="k-icon k-i-arrow-60-left k-icon-24"></span>
+            </button>
+
+            <button
+              class="btn btn-outline-danger"
+              (click)="revertirTodo()"
+              [disabled]="
+                registrosSeleccionados.length === 0 &&
+                registrosPreSeleccionados.length === 0
+              "
+              title="Revertir todo"
+            >
+              <span class="k-icon k-i-reload k-icon-24"></span>
+            </button>
+          </div>
+          <!-- Disponibles -->
+          <kendo-card style="width: 100%; height: 100%; overflow: hidden">
+            <kendo-grid
+              [kendoGridBinding]="registrosDisponiblesFiltro"
+              filterable="menu"
+              scrollable="scrollable"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{
+                pageSizes: [10, 20, 30],
+                info: true,
+                responsive: false
+              }"
+            >
+              <kendo-grid-column-group
+                title="Disponibles"
+                headerClass="pg-group"
+              >
+                <kendo-grid-column [width]="30">
+                  <ng-template kendoGridHeaderTemplate>
+                    <input
+                      type="checkbox"
+                      [checked]="todosSeleccionadosCheckedDisponibles"
+                      (change)="
+                        todosSeleccionadosCheckedDisponibles =
+                          $any($event).target.checked;
+                        marcarPreSeleccionarTodos(
+                          todosSeleccionadosCheckedDisponibles
+                        )
+                      "
+                    />
+                  </ng-template>
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <input
+                      type="checkbox"
+                      [checked]="dataItem.seleccionado === true"
+                      (change)="
+                        dataItem.seleccionado = $any($event).target.checked;
+                        marcarPreseleccion(
+                          dataItem,
+                          $any($event).target.checked
+                        )
+                      "
+                    />
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column
+                  field="solucion"
+                  title="Nombre"
+                  [width]="220"
+                  headerClass="pg-header-grid justify-content-center"
+                  class="text-start"
+                  [filterable]="true"
+                >
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ dataItem.solucion || dataItem.nombre }}
+                  </ng-template>
+                </kendo-grid-column>
+              </kendo-grid-column-group>
+            </kendo-grid>
+          </kendo-card>
+        </div>
+      </form>
     </div>
     <loading [loading]="formLoader"></loading>
   </div>
@@ -229,9 +277,14 @@
   <div class="modal-footer">
     <div class="k-form-buttons m-0">
       <button kendoButton themeColor="primary" icon="save" (click)="guardar()">
-        {{ esNuevo ? 'Guardar' : 'Actualizar' }}
+        {{ esNuevo ? "Guardar" : "Actualizar" }}
       </button>
-      <button kendoButton themeColor="error" icon="close" (click)="cerrar(false)">
+      <button
+        kendoButton
+        themeColor="error"
+        icon="close"
+        (click)="cerrar(false)"
+      >
         Cancelar
       </button>
     </div>

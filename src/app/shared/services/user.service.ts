@@ -328,18 +328,23 @@ export class UserService {
     })
   }
   obtenerEstadoValidacionIp$(): Observable<HttpResponse<{ estado: boolean, apis: IClaveValor[] }>> {
-    const body = {
-      estado: true,
-      apis: [
-        {
-          clave: 'ipify.org',
-          valor: 'https://api.ipify.org?format=JSON'
-        }
-      ]
-    };
+    // const body = {
+    //   estado: true,
+    //   apis: [
+    //     {
+    //       clave: 'ipify.org',
+    //       valor: 'https://api.ipify.org?format=JSON'
+    //     }
+    //   ]
+    // };
   
-    const response = new HttpResponse({ body, status: 200 });
-    return of(response);
+    // const response = new HttpResponse({ body, status: 200 });
+    // return of(response);
+
+
+    return this.integraService.getJsonResponse(
+      constApiGlobal.ConfiguracionIntegraObtenerEstadoValidacionIp
+    );
   }
   obtenerApisValidacionIp$(): Observable<HttpResponse<{ estado: boolean }>> {
     return this.integraService.getJsonResponse(

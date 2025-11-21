@@ -543,7 +543,11 @@ export class PgProblemasClienteFormComponent implements OnInit, OnChanges {
       ...r,
       seleccionado: false,
     }));
-    this.registrosDisponiblesFiltro = this.registrosDisponibles;
+    this.registrosDisponiblesFiltro = [];
+    this.registrosDisponiblesFiltro = this.registrosDisponiblesBase.map((r) => ({
+      ...r,
+      seleccionado: false,
+    }));
     this.registrosSeleccionados = [];
     this.registrosPreSeleccionados = [];
   }

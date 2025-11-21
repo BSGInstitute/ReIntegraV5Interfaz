@@ -515,7 +515,6 @@ this.gridAsignacionmanualOportinidad.loading=true;
       return false;
     }
   }
-
   asignarAsesor(): any {
     this.loadingnModal=true;
     this.BtnAsignarFlag=true;
