@@ -2034,6 +2034,7 @@ export const constApiMarketing = {
   ObtenerRegistroPendientePageLinkedIn: "/LinkedInApi/ObtenerReportePendientes",
   ActualizarRegistroLandingPageLinkedIn: "/LinkedInApi/Actualizar",
   SubirOportunidadesPendientesLinkedIn: "/LinkedInApi/SubirOportunidadesPendientes",
+  SubirOportunidadesPendientesSeleccionadasLinkedIn: "/LinkedInApi/SubirOportunidadesPendientesSeleccionadas",
   ValidarEstadodeSubidaOportunidadLinkedIn: "/LinkedInApi/ValidarCreacionOportunidadLinkedinEstado",
   ValidarObtencionLeadLinkedinEstado : "/LinkedInApi/ValidarObtencionLeadLinkedinEstado",
   ObtenerRegistroLandingPageLinkedInByFecha:

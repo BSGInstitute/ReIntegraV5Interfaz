@@ -5,7 +5,12 @@ import { IntegraService } from '@shared/services/integra.service';
 import { AlertaService } from '@shared/services/alerta.service';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { datePipeTransform } from '@shared/functions/date-pipe';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { constApiMarketing } from '@environments/constApi';
 import {
   ICampaniaLinkedIn,
@@ -26,8 +31,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private _modalService: NgbModal,
     private formService: FormService
-  ) { }
-
+  ) {}
 
   @ViewChild('kgridlinkedin') kgridlinkedin: GridComponent;
   @ViewChild('kgridPartner') kgridPartner: GridComponent;
@@ -342,7 +346,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       'areaTrabajo',
       'industria',
       'pais',
-      'urlPerfilLinkedIn'
+      'urlPerfilLinkedIn',
     ].includes(field);
 
     if (!isEditableField || !control?.dirty) return;
@@ -399,7 +403,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     dataItem.industria = formGroup.value.industria;
     dataItem.pais = formGroup.value.pais;
     dataItem.urlPerfilLinkedIn = formGroup.value.urlPerfilLinkedIn;
-    console.log(formGroup)
+    console.log(formGroup);
 
     this.kgridPartner.closeCell();
     this.enProcesoSolicitud = true;
@@ -440,8 +444,10 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       industria: new FormControl(dataItem.industria),
       pais: new FormControl(dataItem.pais),
       urlPerfilLinkedIn: new FormControl(dataItem.urlPerfilLinkedIn, [
-        Validators.pattern(/^(https?:\/\/)?((www|www\.)\.)?linkedin\.com\/in\/[\w-]{3,}[^\s]*$/)
-      ])
+        Validators.pattern(
+          /^(https?:\/\/)?((www|www\.)\.)?linkedin\.com\/in\/[\w-]{3,}[^\s]*$/
+        ),
+      ]),
     });
   }
 
@@ -477,24 +483,60 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       this.kgridModal?.autoFitColumns();
     }, 0);
   }
-  confirmarEnvioSeleccionados(): void {
-    const payload = this.selectedItemsActivo.map((x) => ({
-      guidLinkedInLead: x.guidLinkedInLead,
-      nombres: x.nombres,
-      apellidos: x.apellidos,
-      correo: x.correo,
-      cargo: x.cargo,
-      areaFormacion: x.areaFormacion,
-      areaTrabajo: x.areaTrabajo,
-      industria: x.industria,
-      cuentaAsociada: x.cuentaAsociada,
-    }));
-    this._alertaService.notificationSuccess(
-      `Se prepararon ${payload.length} registros.`
-    );
-    this.modalRef?.close();
-  }
 
+  private onlyDigits(v: any): string {
+    return String(v || '').replace(/\D+/g, '');
+  }
+  confirmarEnvioSeleccionados(): void {
+    const cuenta = this.getIdCuentaActiva();
+    const items = this.selectedItemsActivo;
+
+    if (!items?.length) {
+      this._alertaService.mensajeIcon('Seleccione al menos un registro');
+      return;
+    }
+
+
+    const guids: string[] = Array.from(
+      new Set(
+        items
+          .map((x) => (x?.guidLinkedInLead ?? '').toString().trim())
+          .filter((s) => s.length > 0)
+      )
+    );
+
+    if (!guids.length) {
+      this._alertaService.mensajeIcon('No hay GUIDs válidos para enviar');
+      return;
+    }
+
+    const payload = {
+      guidLinkedinLead: guids, 
+      cuentaAsociada: cuenta, 
+      grupo: 1, 
+    };
+
+    this._integraService
+      .postJsonResponse(
+        constApiMarketing.SubirOportunidadesPendientesSeleccionadasLinkedIn,
+        JSON.stringify(payload)
+      )
+      .subscribe({
+        next: (_: HttpResponse<any>) => {
+          this._alertaService.notificationSuccess(
+            'Envío realizado. Se procesarán las oportunidades.'
+          );
+          this.modalRef?.close();
+          this.selectedKeysMap[cuenta] = [];
+          this.selectedItemsMap[cuenta] = [];
+          this.obtenerPendientes(cuenta);
+        },
+        error: (error) => {
+          const msg = this._alertaService.getMessageErrorService(error);
+          this._alertaService.mensajeIcon('¡Error!', msg, 'error');
+        },
+      });
+  }
   onCuentaTabSelect(e: any): void {
     this.cuentaActiva = this.cuentasTabs[e.index] || this.cuentasTabs[0];
 
@@ -519,13 +561,11 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     }
   }
 
-  // Como el backend ya devuelve por cuenta, solo reflejamos el grid actual
   private aplicarFiltroCuenta(): void {
     const grid = this.getGridActual();
     this.pendientesFiltrados = grid?.data ?? [];
   }
 
-  // Mantener selección tras refresh (limpia keys inexistentes) para la cuenta activa
   private resyncSelection(base?: any[]): void {
     const id = this.getIdCuentaActiva();
     const rows = base ?? this.getGridActual()?.data ?? [];
