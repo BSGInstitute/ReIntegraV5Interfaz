@@ -11,13 +11,20 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { constApiMarketing } from '@environments/constApi';
+import {
+  constApiGlobal,
+  constApiMarketing,
+  constApiPlanificacion,
+} from '@environments/constApi';
 import {
   ICampaniaLinkedIn,
+  ICuentaLinkedin,
   IPendientesLinkedIn,
 } from '@marketing/models/interfaces/campania-linkedin';
 import { GridComponent, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { FormService } from '@shared/services/form.service';
+import Swal from 'sweetalert2';
+import { IComboBase1 } from '@shared/models/interfaces/iglobal';
 
 @Component({
   selector: 'app-registro-landing-page-linkedin',
@@ -36,94 +43,246 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
   @ViewChild('kgridlinkedin') kgridlinkedin: GridComponent;
   @ViewChild('kgridPartner') kgridPartner: GridComponent;
   @ViewChild('modalSeleccionadosTpl') modalSeleccionadosTpl!: TemplateRef<any>;
-
   @ViewChild('kgridModal') kgridModal: GridComponent | undefined;
 
   private modalRef: NgbModalRef | null = null;
 
   gridLinkedin: KendoGrid = new KendoGrid();
-  gridPendientesCuenta1: KendoGrid = new KendoGrid();
-  gridPendientesCuenta2: KendoGrid = new KendoGrid();
-  gridPendientesCuenta6: KendoGrid = new KendoGrid();
-  enProcesoSolicitud = false;
+  private gridPendientesMap: Record<number, KendoGrid> = {};
+  cuentas: ICuentaLinkedin[] = [];
+  cuentaActiva: ICuentaLinkedin | null = null;
+  private loadedCuentas: Record<number, boolean> = {};
 
-  private readonly CUENTA_ID_MAP: Record<string, number> = {
-    'Cuenta 1': 512131517,
-    'Cuenta 2': 514207695,
-    'Cuenta 6': 515120283,
-  };
+  Cargos: IComboBase1[] = [];
+  AreasFormacion: IComboBase1[] = [];
+  AreasTrabajo: IComboBase1[] = [];
+  Industrias: IComboBase1[] = [];
+  Paises: IComboBase1[] = [];
 
-  private loadedCuentas: Record<number, boolean> = {
-    512131517: false,
-    514207695: false,
-    515120283: false,
-  };
+  private cargosAll: IComboBase1[] = [];
+  private paisesAll: IComboBase1[] = [];
+  private areasFormacionAll: IComboBase1[] = [];
+  private areasTrabajoAll: IComboBase1[] = [];
+  private industriasAll: IComboBase1[] = [];
 
   fechaInicio = new FormControl(null);
   fechaFin = new FormControl(null);
   tipoFecha: number;
 
+  enProcesoSolicitud = false;
   subiendoOportunidades = true;
   estadoEnvio: boolean;
 
-  private selectedKeysMap: Record<number, string[]> = {
-    512131517: [],
-    514207695: [],
-    515120283: [],
-  };
-  private selectedItemsMap: Record<number, any[]> = {
-    512131517: [],
-    514207695: [],
-    515120283: [],
-  };
+  private selectedKeysMap: Record<number, string[]> = {};
+  private selectedItemsMap: Record<number, any[]> = {};
   verSoloSeleccionados = false;
-
-  cuentasTabs: string[] = ['Cuenta 1', 'Cuenta 2', 'Cuenta 6'];
-  cuentaActiva: string = this.cuentasTabs[0];
 
   pendientesFiltrados: any[] = [];
 
-  getIdCuentaActiva(): number {
-    return this.CUENTA_ID_MAP[this.cuentaActiva] ?? 512131517;
+  private touchSelectedKeys(nroCuenta: number): void {
+    this.selectedKeysMap[nroCuenta] = [
+      ...(this.selectedKeysMap[nroCuenta] ?? []),
+    ];
   }
-  private getGridActual(): KendoGrid {
-    switch (this.cuentaActiva) {
-      case 'Cuenta 1':
-        return this.gridPendientesCuenta1;
-      case 'Cuenta 2':
-        return this.gridPendientesCuenta2;
-      case 'Cuenta 6':
-        return this.gridPendientesCuenta6;
-      default:
-        return this.gridPendientesCuenta1;
+
+  private normalize(s: string): string {
+    return (s || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '');
+  }
+
+  private filterData(src: IComboBase1[], term: string): IComboBase1[] {
+    const t = this.normalize(term || '');
+    if (!t) return [...src];
+    return src.filter((x) => this.normalize(x.nombre).includes(t));
+  }
+
+  filtrarOpcionesDropDown(
+    kind: 'cargo' | 'industria' | 'areaFormacion' | 'areaTrabajo' | 'pais',
+    term: string
+  ) {
+    switch (kind) {
+      case 'cargo':
+        this.Cargos = this.filterData(this.cargosAll, term);
+        break;
+      case 'industria':
+        this.Industrias = this.filterData(this.industriasAll, term);
+        break;
+      case 'areaFormacion':
+        this.AreasFormacion = this.filterData(this.areasFormacionAll, term);
+        break;
+      case 'areaTrabajo':
+        this.AreasTrabajo = this.filterData(this.areasTrabajoAll, term);
+        break;
+      case 'pais':
+        this.Paises = this.filterData(this.paisesAll, term);
+        break;
     }
   }
-  private getGridByIdCuenta(idCuenta: number): KendoGrid {
-    switch (idCuenta) {
-      case 512131517:
-        return this.gridPendientesCuenta1;
-      case 514207695:
-        return this.gridPendientesCuenta2;
-      case 515120283:
-        return this.gridPendientesCuenta6;
-      default:
-        return this.gridPendientesCuenta1;
+
+  restablecerOpcionesDropDown(
+    kind: 'cargo' | 'industria' | 'areaFormacion' | 'areaTrabajo' | 'pais'
+  ) {
+    switch (kind) {
+      case 'cargo':
+        this.Cargos = [...this.cargosAll];
+        break;
+      case 'industria':
+        this.Industrias = [...this.industriasAll];
+        break;
+      case 'areaFormacion':
+        this.AreasFormacion = [...this.areasFormacionAll];
+        break;
+      case 'areaTrabajo':
+        this.AreasTrabajo = [...this.areasTrabajoAll];
+        break;
+      case 'pais':
+        this.Paises = [...this.paisesAll];
+        break;
     }
+  }
+
+  getNroCuentaActiva(): number {
+    return this.cuentaActiva?.nroCuenta ?? this.cuentas[0]?.nroCuenta ?? 0;
+  }
+
+  private getGrid(nroCuenta: number): KendoGrid {
+    if (!this.gridPendientesMap[nroCuenta]) {
+      this.gridPendientesMap[nroCuenta] = new KendoGrid();
+    }
+    return this.gridPendientesMap[nroCuenta];
   }
 
   get gridPendientesActivo(): KendoGrid {
-    return this.getGridActual();
+    return this.getGrid(this.getNroCuentaActiva());
   }
+
   get selectedKeysActivo(): string[] {
-    const id = this.getIdCuentaActiva();
+    const id = this.getNroCuentaActiva();
     return this.selectedKeysMap[id] ?? [];
   }
+
   get selectedItemsActivo(): any[] {
-    const id = this.getIdCuentaActiva();
+    const id = this.getNroCuentaActiva();
     return this.selectedItemsMap[id] ?? [];
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.obtenerCuentas();
+    this.ObtenerCargos();
+    this.ObtenerIndustria();
+    this.ObtenerAreaTrabajo();
+    this.ObtenerAreaFormacion();
+    this.ObtenerPais();
+  }
+
+  obtenerCuentas() {
+    this._integraService
+      .getJsonResponse(constApiMarketing.LinkedInObtenerCuentasActivas)
+      .subscribe({
+        next: (resp: HttpResponse<ICuentaLinkedin[]>) => {
+          this.cuentas = resp.body ?? [];
+          this.loadedCuentas = {};
+          this.gridPendientesMap = {};
+          this.selectedKeysMap = {};
+          this.selectedItemsMap = {};
+          for (const c of this.cuentas) {
+            this.loadedCuentas[c.nroCuenta] = false;
+            this.gridPendientesMap[c.nroCuenta] = new KendoGrid();
+            this.selectedKeysMap[c.nroCuenta] = [];
+            this.selectedItemsMap[c.nroCuenta] = [];
+          }
+          if (
+            !this.cuentaActiva ||
+            !this.cuentas.some(
+              (x) => x.nroCuenta === this.cuentaActiva!.nroCuenta
+            )
+          ) {
+            this.cuentaActiva = this.cuentas[0] ?? null;
+          }
+          if (this.cuentaActiva)
+            this.touchSelectedKeys(this.cuentaActiva.nroCuenta);
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  ObtenerCargos() {
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.CargoObtenerCombo)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.cargosAll = resp.body ?? [];
+          this.Cargos = [...this.cargosAll];
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+  ObtenerPais() {
+    this._integraService
+      .getJsonResponse(constApiGlobal.PaisObtenerCombo)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.paisesAll = resp.body ?? [];
+          this.Paises = [...this.paisesAll];
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+  ObtenerIndustria() {
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.IndustriaObtenerCombo)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.industriasAll = resp.body ?? [];
+          this.Industrias = [...this.industriasAll];
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  ObtenerAreaTrabajo() {
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.AreaTrabajoObtenerCombo)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.areasTrabajoAll = resp.body ?? [];
+          this.AreasTrabajo = [...this.areasTrabajoAll];
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  ObtenerAreaFormacion() {
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.AreaFormacionObtenerCombo)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.areasFormacionAll = resp.body ?? [];
+          this.AreasFormacion = [...this.areasFormacionAll];
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
 
   BuscarPorFiltro() {
     if (!this.validarFechas()) {
@@ -135,7 +294,6 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       take: this.kgridlinkedin.pageSize,
     };
     this.kgridlinkedin.pageChange.emit(paginado);
-
     this.gridLinkedin.loading = true;
     this.obtenerGrilalRegistroLandingPage();
   }
@@ -163,7 +321,6 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
   obtenerGrilalRegistroLandingPage() {
     this.gridLinkedin.loading = true;
     const idTipoFecha = this.tipoFecha;
-
     const filtro = {
       fechaInicial: datePipeTransform(
         this.fechaInicio.value,
@@ -174,7 +331,6 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       skip: this.gridLinkedin.gridState.skip,
       take: this.gridLinkedin.gridState.take,
     };
-
     this._integraService
       .postJsonResponse(
         constApiMarketing.ObtenerRegistroLandingPageLinkedInByFecha,
@@ -204,111 +360,36 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
         },
       });
   }
+
   obtenerPendientes(
-    cuentaAsociada?: number,
+    nroCuenta?: number,
     opts?: { markLoadedOnSuccess?: boolean }
   ) {
     this.verSoloSeleccionados = false;
-
-    const targetId = cuentaAsociada ?? this.getIdCuentaActiva();
-    const grid = this.getGridByIdCuenta(targetId);
+    const targetNro = nroCuenta ?? this.getNroCuentaActiva();
+    const grid = this.getGrid(targetNro);
     grid.loading = true;
-
     this._integraService
-      .getJsonResponse(constApiMarketing.ValidarObtencionLeadLinkedinEstado)
+      .getJsonResponse(
+        `${constApiMarketing.ObtenerRegistroPendientePageLinkedIn}/${targetNro}`
+      )
       .subscribe({
-        next: (resp: HttpResponse<boolean>) => {
-          this.subiendoOportunidades = resp.body;
-
-          if (this.subiendoOportunidades) {
-            grid.loading = false;
-            this._alertaService.mensajeIcon(
-              '¡Advertencia!',
-              'Aún se están subiendo las oportunidades de LinkedIn, intente más tarde.',
-              'warning'
-            );
-            return;
+        next: (resp: HttpResponse<IPendientesLinkedIn[]>) => {
+          grid.data = resp.body || [];
+          if (this.getNroCuentaActiva() === targetNro) {
+            this.aplicarFiltroCuenta();
+            this.resyncSelection(grid.data);
+            this.touchSelectedKeys(targetNro);
           }
-
-          this._integraService
-            .getJsonResponse(
-              `${constApiMarketing.ObtenerRegistroPendientePageLinkedIn}/${targetId}`
-            )
-            .subscribe({
-              next: (resp: HttpResponse<IPendientesLinkedIn[]>) => {
-                grid.data = resp.body || [];
-                if (this.getIdCuentaActiva() === targetId) {
-                  this.aplicarFiltroCuenta();
-                  this.resyncSelection(grid.data);
-                }
-                if (opts?.markLoadedOnSuccess) {
-                  this.loadedCuentas[targetId] = true;
-                }
-
-                grid.loading = false;
-              },
-              error: (error) => {
-                grid.loading = false;
-                const mensaje =
-                  this._alertaService.getMessageErrorService(error);
-                this._alertaService.mensajeIcon('¡Error!', mensaje, 'error');
-              },
-            });
+          if (opts?.markLoadedOnSuccess) {
+            this.loadedCuentas[targetNro] = true;
+          }
+          grid.loading = false;
         },
         error: (error) => {
           grid.loading = false;
           const mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
-        },
-      });
-  }
-
-  subirOportunidad() {
-    const grid = this.getGridActual();
-    grid.loading = true;
-
-    this._integraService
-      .getJsonResponse(constApiMarketing.ValidarObtencionLeadLinkedinEstado)
-      .subscribe({
-        next: (resp: HttpResponse<boolean>) => {
-          this.estadoEnvio = resp.body;
-
-          if (this.estadoEnvio) {
-            grid.loading = false;
-            this._alertaService.mensajeIcon(
-              '¡Advertencia!',
-              'No se puede CrearOportunidades hasta que termine un proceso de LinkedIn que está en proceso',
-              'warning'
-            );
-          } else {
-            this._alertaService.notificationInfo(
-              'Se envió exitosamente. Espere por favor mientras se crean las oportunidades...'
-            );
-
-            this._integraService
-              .getJsonResponse(
-                constApiMarketing.SubirOportunidadesPendientesLinkedIn
-              )
-              .subscribe({
-                next: (_: HttpResponse<any>) => {
-                  grid.loading = false;
-                  this._alertaService.notificationSuccess(
-                    'Las oportunidades fueron creadas correctamente.'
-                  );
-                },
-                error: (error) => {
-                  grid.loading = false;
-                  const mensaje =
-                    this._alertaService.getMessageErrorService(error);
-                  this._alertaService.notificationWarning(mensaje);
-                },
-              });
-          }
-        },
-        error: (error) => {
-          grid.loading = false;
-          const mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
+          this._alertaService.mensajeIcon('¡Error!', mensaje, 'error');
         },
       });
   }
@@ -321,10 +402,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
   public cellCloseHandler(args: any): void {
     const field = args.column.field as string;
     const control = args.formGroup.get(field);
-
-    // Validar específicamente el campo urlPerfilLinkedIn
     if (field === 'urlPerfilLinkedIn' && control?.invalid && control?.dirty) {
-      // Revertir al valor original
       control.setValue(args.dataItem.urlPerfilLinkedIn);
       control.markAsPristine();
       this._alertaService.mensajeIcon(
@@ -334,12 +412,10 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       );
       return;
     }
-
     if (!args.formGroup.valid) {
       args.preventDefault();
       return;
     }
-
     const isEditableField = [
       'cargo',
       'areaFormacion',
@@ -348,9 +424,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       'pais',
       'urlPerfilLinkedIn',
     ].includes(field);
-
     if (!isEditableField || !control?.dirty) return;
-
     const dto = {
       guidLinkedInLead: args.dataItem.guidLinkedInLead,
       cargo: args.formGroup.value.cargo,
@@ -362,7 +436,6 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     };
     Object.assign(args.dataItem, dto);
     this.enProcesoSolicitud = true;
-
     this._integraService
       .putJsonResponse(
         constApiMarketing.ActualizarRegistroLandingPageLinkedIn,
@@ -382,9 +455,6 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
   }
 
   public saveHandler({ dataItem, formGroup }: any): void {
-    console.log('Data Item: ', dataItem);
-
-    // Validar el formulario antes de guardar
     if (!formGroup.valid) {
       const urlControl = formGroup.get('urlPerfilLinkedIn');
       if (urlControl?.invalid) {
@@ -396,18 +466,14 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       }
       return;
     }
-
     dataItem.cargo = formGroup.value.cargo;
     dataItem.areaFormacion = formGroup.value.areaFormacion;
     dataItem.areaTrabajo = formGroup.value.areaTrabajo;
     dataItem.industria = formGroup.value.industria;
     dataItem.pais = formGroup.value.pais;
     dataItem.urlPerfilLinkedIn = formGroup.value.urlPerfilLinkedIn;
-    console.log(formGroup);
-
     this.kgridPartner.closeCell();
     this.enProcesoSolicitud = true;
-
     const dto = {
       guidLinkedInLead: dataItem.guidLinkedInLead,
       cargo: formGroup.value.cargo,
@@ -417,7 +483,6 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       pais: formGroup.value.pais,
       urlPerfil: formGroup.value.urlPerfilLinkedIn,
     };
-
     this._integraService
       .putJsonResponse(
         constApiMarketing.ActualizarRegistroLandingPageLinkedIn,
@@ -445,18 +510,17 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       pais: new FormControl(dataItem.pais),
       urlPerfilLinkedIn: new FormControl(dataItem.urlPerfilLinkedIn, [
         Validators.pattern(
-          /^(https?:\/\/)?((www|www\.)\.)?linkedin\.com\/in\/[\w-]{3,}[^\s]*$/
+          /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[\w-]{3,}[^\s]*$/
         ),
       ]),
     });
   }
 
   onSelectedKeysChange(keys: string[]): void {
-    const id = this.getIdCuentaActiva();
+    const id = this.getNroCuentaActiva();
     this.selectedKeysMap[id] = keys;
-
     const set = new Set(keys);
-    const data = this.getGridActual()?.data ?? [];
+    const data = this.gridPendientesActivo?.data ?? [];
     this.selectedItemsMap[id] = data.filter((row: any) =>
       set.has(row.guidLinkedInLead)
     );
@@ -464,8 +528,9 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
 
   toggleVerSoloSeleccionados(): void {
     this.verSoloSeleccionados = !this.verSoloSeleccionados;
+    this.touchSelectedKeys(this.getNroCuentaActiva());
   }
-
+  modalEnviando = false;
   enviarSeleccionados(): void {
     const payload = this.selectedItemsActivo;
     if (!payload || !payload.length) {
@@ -473,29 +538,31 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
       return;
     }
 
+    this.modalEnviando = false;
     this.modalRef = this._modalService.open(this.modalSeleccionadosTpl, {
       size: 'xl',
       scrollable: true,
       backdrop: 'static',
       keyboard: false,
+      centered: true,
+      beforeDismiss: () => !this.modalEnviando,
     });
+
     setTimeout(() => {
       this.kgridModal?.autoFitColumns();
     }, 0);
   }
 
-  private onlyDigits(v: any): string {
-    return String(v || '').replace(/\D+/g, '');
-  }
   confirmarEnvioSeleccionados(): void {
-    const cuenta = this.getIdCuentaActiva();
+    const nroCuenta = this.getNroCuentaActiva();
+    const targetNro = nroCuenta ?? this.getNroCuentaActiva();
+    const grid = this.getGrid(targetNro);
     const items = this.selectedItemsActivo;
 
     if (!items?.length) {
       this._alertaService.mensajeIcon('Seleccione al menos un registro');
       return;
     }
-
 
     const guids: string[] = Array.from(
       new Set(
@@ -511,66 +578,116 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     }
 
     const payload = {
-      guidLinkedinLead: guids, 
-      cuentaAsociada: cuenta, 
-      grupo: 1, 
+      guidLinkedinLead: guids,
+      cuentaAsociada: nroCuenta,
+      grupo: 1,
     };
 
-    this._integraService
-      .postJsonResponse(
-        constApiMarketing.SubirOportunidadesPendientesSeleccionadasLinkedIn,
-        JSON.stringify(payload)
-      )
-      .subscribe({
-        next: (_: HttpResponse<any>) => {
-          this._alertaService.notificationSuccess(
-            'Envío realizado. Se procesarán las oportunidades.'
-          );
-          this.modalRef?.close();
-          this.selectedKeysMap[cuenta] = [];
-          this.selectedItemsMap[cuenta] = [];
-          this.obtenerPendientes(cuenta);
-        },
-        error: (error) => {
-          const msg = this._alertaService.getMessageErrorService(error);
-          this._alertaService.mensajeIcon('¡Error!', msg, 'error');
-        },
-      });
-  }
-  onCuentaTabSelect(e: any): void {
-    this.cuentaActiva = this.cuentasTabs[e.index] || this.cuentasTabs[0];
+    Swal.fire({
+      title: '¿Seguro que deseas enviar a crear las oportunidades?',
+      html: `Se enviarán <b>${guids.length}</b> registro(s) para la cuenta <b>${nroCuenta}</b>.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, enviar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      heightAuto: false,
+    }).then((res) => {
+      if (!res.isConfirmed) return;
 
-    const id = this.getIdCuentaActiva();
-    if (!this.loadedCuentas[id]) {
-      this.obtenerPendientes(id, { markLoadedOnSuccess: true });
+      this.modalEnviando = true; // << bloquea modal
+      grid.loading = true;
+
+      this._integraService
+        .getJsonResponse(
+          `${constApiMarketing.ValidarObtencionLeadLinkedinEstadoPorCuenta}/${targetNro}`
+        )
+        .subscribe({
+          next: (resp: HttpResponse<boolean>) => {
+            this.subiendoOportunidades = resp.body;
+
+            if (this.subiendoOportunidades) {
+              grid.loading = false;
+              this.modalEnviando = false; // << desbloquea modal
+              this._alertaService.mensajeIcon(
+                '¡Advertencia!',
+                'Aún se están subiendo las oportunidades de LinkedIn, intente más tarde.',
+                'warning'
+              );
+              return;
+            }
+
+            this._integraService
+              .postJsonResponse(
+                constApiMarketing.SubirOportunidadesPendientesSeleccionadasLinkedIn,
+                JSON.stringify(payload)
+              )
+              .subscribe({
+                next: (_: HttpResponse<any>) => {
+                  this._alertaService.notificationSuccess(
+                    'Envío realizado. Se procesarán las oportunidades.'
+                  );
+                  this.modalEnviando = false; // << desbloquea modal
+                  this.modalRef?.close();
+                  this.selectedKeysMap[nroCuenta] = [];
+                  this.selectedItemsMap[nroCuenta] = [];
+                  this.obtenerPendientes(nroCuenta);
+                  grid.loading = false;
+                },
+                error: (error) => {
+                  grid.loading = false;
+                  this.modalEnviando = false; // << desbloquea modal
+                  const msg = this._alertaService.getMessageErrorService(error);
+                  this._alertaService.mensajeIcon('¡Error!', msg, 'error');
+                },
+              });
+          },
+          error: (error) => {
+            grid.loading = false;
+            this.modalEnviando = false; // << desbloquea modal
+            const msg = this._alertaService.getMessageErrorService(error);
+            this._alertaService.mensajeIcon('¡Error!', msg, 'error');
+          },
+        });
+    });
+  }
+
+  onCuentaTabSelect(e: any): void {
+    const cuenta = this.cuentas[e.index];
+    if (!cuenta) return;
+    this.cuentaActiva = cuenta;
+    const nro = this.getNroCuentaActiva();
+    if (!this.loadedCuentas[nro]) {
+      this.obtenerPendientes(nro, { markLoadedOnSuccess: true });
     } else {
       this.verSoloSeleccionados = false;
       this.aplicarFiltroCuenta();
       this.resyncSelection();
+      this.touchSelectedKeys(nro);
     }
   }
 
   refreshDentro(): void {
     this.verSoloSeleccionados = false;
-    const grid = this.getGridActual();
+    const grid = this.gridPendientesActivo;
     if (!grid.data || !grid.data.length) {
-      this.obtenerPendientes(this.getIdCuentaActiva());
+      this.obtenerPendientes(this.getNroCuentaActiva());
     } else {
       this.aplicarFiltroCuenta();
       this.resyncSelection(grid.data);
+      this.touchSelectedKeys(this.getNroCuentaActiva());
     }
   }
 
   private aplicarFiltroCuenta(): void {
-    const grid = this.getGridActual();
+    const grid = this.gridPendientesActivo;
     this.pendientesFiltrados = grid?.data ?? [];
   }
 
   private resyncSelection(base?: any[]): void {
-    const id = this.getIdCuentaActiva();
-    const rows = base ?? this.getGridActual()?.data ?? [];
+    const id = this.getNroCuentaActiva();
+    const rows = base ?? this.gridPendientesActivo?.data ?? [];
     const existing = new Set(rows.map((r: any) => r.guidLinkedInLead));
-
     const prevKeys = this.selectedKeysMap[id] ?? [];
     const keptKeys = prevKeys.filter((k) => existing.has(k));
     if (keptKeys.length !== prevKeys.length) {
@@ -587,6 +704,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     }
     return Array.from(map.values());
   }
+
   get modalPageable(): boolean | any {
     const n = this.modalItems.length;
     return n > 10 ? { pageSizes: [10, 20, 50] } : false;
@@ -597,5 +715,25 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
     return String(v)
       .replace(/duplicado/gi, '')
       .trim();
+  }
+
+  actualizarCampoDesdeDropDown(
+    field: 'cargo' | 'industria' | 'areaFormacion' | 'areaTrabajo' | 'pais',
+    value: string | null,
+    formGroup: FormGroup
+  ): void {
+    const ctrl = formGroup.get(field);
+    if (!ctrl) return;
+
+    const val =
+      value === undefined || value === null || value === 'Seleccione…'
+        ? null
+        : value;
+
+    ctrl.setValue(val);
+    ctrl.markAsDirty();
+    ctrl.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+
+    setTimeout(() => this.kgridPartner?.closeCell());
   }
 }

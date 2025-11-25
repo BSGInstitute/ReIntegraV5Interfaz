@@ -2037,6 +2037,8 @@ export const constApiMarketing = {
   SubirOportunidadesPendientesSeleccionadasLinkedIn: "/LinkedInApi/SubirOportunidadesPendientesSeleccionadas",
   ValidarEstadodeSubidaOportunidadLinkedIn: "/LinkedInApi/ValidarCreacionOportunidadLinkedinEstado",
   ValidarObtencionLeadLinkedinEstado : "/LinkedInApi/ValidarObtencionLeadLinkedinEstado",
+  LinkedInObtenerCuentasActivas: "/LinkedInApi/ObtenerCuentasActivas",
+  ValidarObtencionLeadLinkedinEstadoPorCuenta : "/LinkedInApi/ValidarObtencionLeadLinkedinEstadoPorCuenta",
   ObtenerRegistroLandingPageLinkedInByFecha:
     "/LinkedInApi/ObtenerReporteLeadsByFecha",
   //Reporte Chat Bot

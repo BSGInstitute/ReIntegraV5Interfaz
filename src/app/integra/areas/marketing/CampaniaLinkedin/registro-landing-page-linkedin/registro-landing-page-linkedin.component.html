@@ -242,8 +242,6 @@
                             [width]="150"
                             headerClass="headerGridChat"
                           >
-
-
                           </kendo-grid-column>
                           <kendo-grid-column
                             field="cuentaAsociada"
@@ -312,29 +310,18 @@
                     class="mb-3"
                   >
                     <kendo-tabstrip-tab
-                      [title]="cuentasTabs[0]"
-                      [selected]="cuentaActiva === cuentasTabs[0]"
+                      *ngFor="let c of cuentas; let i = index"
+                      [title]="c.nombre || 'Cuenta ' + c.nroCuenta"
+                      [selected]="cuentaActiva?.nroCuenta === c.nroCuenta"
                     >
                       <ng-template kendoTabContent>
                         <div class="small text-muted px-2 py-1">
-                          Cuenta activa: {{ cuentaActiva }}
+                          Cuenta activa:
+                          {{ c.nombre || "Cuenta " + c.nroCuenta }}
                         </div>
                       </ng-template>
                     </kendo-tabstrip-tab>
-                    <kendo-tabstrip-tab
-                      [title]="cuentasTabs[1]"
-                      [selected]="cuentaActiva === cuentasTabs[1]"
-                    >
-                      <ng-template kendoTabContent></ng-template>
-                    </kendo-tabstrip-tab>
-                    <kendo-tabstrip-tab
-                      [title]="cuentasTabs[2]"
-                      [selected]="cuentaActiva === cuentasTabs[2]"
-                    >
-                      <ng-template kendoTabContent></ng-template>
-                    </kendo-tabstrip-tab>
                   </kendo-tabstrip>
-
                   <kendo-grid
                     #kgridPartner
                     [kendoGridBinding]="
@@ -343,7 +330,6 @@
                         : pendientesFiltrados
                     "
                     [loading]="gridPendientesActivo.loading"
-                    (remove)="gridPendientesCuenta1.removeHandler($event)"
                     [editable]="'incell'"
                     [saveOnBlur]="false"
                     (cellClick)="cellClickHandler($event)"
@@ -367,15 +353,18 @@
                       [showSelectAll]="true"
                       [width]="50"
                     ></kendo-grid-checkbox-column>
+
                     <ng-template kendoGridToolbarTemplate>
                       <button
                         kendoButton
                         icon="reload"
                         fillMode="flat"
                         themeColor="primary"
-                        (click)="obtenerPendientes(getIdCuentaActiva())"
+                        (click)="obtenerPendientes(getNroCuentaActiva())"
                       ></button>
+
                       <kendo-grid-spacer></kendo-grid-spacer>
+
                       <button
                         kendoButton
                         icon="eye"
@@ -389,6 +378,7 @@
                             : "Ver solo seleccionados"
                         }}
                       </button>
+
                       <button
                         kendoButton
                         icon="send"
@@ -444,21 +434,40 @@
                       [width]="150"
                       headerClass="headerGridChat"
                     ></kendo-grid-column>
-                    <kendo-grid-column
-                      field="pais"
-                      title="Pais"
-                      [width]="150"
-                      editor="text"
-                    >
+                    <kendo-grid-column field="pais" title="País" [width]="200">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.pais || "—" }}
+                      </ng-template>
+
                       <ng-template
                         kendoGridEditTemplate
                         let-formGroup="formGroup"
                       >
-                        <input
-                          kendoTextBox
-                          [formControl]="formGroup.get('pais')"
-                          placeholder="Pais"
-                        />
+                        <kendo-dropdownlist
+                          [data]="Paises"
+                          textField="nombre"
+                          valueField="nombre"
+                          [valuePrimitive]="true"
+                          [filterable]="true"
+                          [popupSettings]="{ appendTo: 'root' }"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione…' }"
+                          [value]="formGroup.get('pais')?.value || null"
+                          (open)="restablecerOpcionesDropDown('pais')"
+                          (filterChange)="
+                            filtrarOpcionesDropDown('pais', $event)
+                          "
+                          (valueChange)="
+                            actualizarCampoDesdeDropDown(
+                              'pais',
+                              $event,
+                              formGroup
+                            )
+                          "
+                        >
+                          <ng-template kendoDropDownListNoDataTemplate
+                            >Sin resultados</ng-template
+                          >
+                        </kendo-dropdownlist>
                       </ng-template>
                     </kendo-grid-column>
                     <kendo-grid-column
@@ -471,58 +480,125 @@
                     <kendo-grid-column
                       field="cargo"
                       title="Cargo"
-                      [width]="200"
-                      editor="text"
+                      [width]="220"
                     >
                       <ng-template kendoGridCellTemplate let-dataItem>
-                        <span>{{ dataItem.cargo || "" }}</span>
+                        {{ dataItem.cargo || "—" }}
                       </ng-template>
                       <ng-template
                         kendoGridEditTemplate
                         let-formGroup="formGroup"
                       >
-                        <input
-                          kendoTextBox
-                          [formControl]="formGroup.get('cargo')"
-                          placeholder="Escriba cargo original"
-                          style="width: 100%"
-                        />
+                        <kendo-dropdownlist
+                          [data]="Cargos"
+                          textField="nombre"
+                          valueField="nombre"
+                          [valuePrimitive]="true"
+                          [filterable]="true"
+                          [popupSettings]="{ appendTo: 'root' }"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione…' }"
+                          [value]="formGroup.get('cargo')?.value || null"
+                          (open)="restablecerOpcionesDropDown('cargo')"
+                          (filterChange)="
+                            filtrarOpcionesDropDown('cargo', $event)
+                          "
+                          (valueChange)="
+                            actualizarCampoDesdeDropDown(
+                              'cargo',
+                              $event,
+                              formGroup
+                            )
+                          "
+                        >
+                          <ng-template kendoDropDownListNoDataTemplate
+                            >Sin resultados</ng-template
+                          >
+                        </kendo-dropdownlist>
                       </ng-template>
                     </kendo-grid-column>
+
                     <kendo-grid-column
                       field="areaFormacion"
                       title="Área Formación"
-                      [width]="150"
-                      editor="text"
+                      [width]="200"
                     >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.areaFormacion || "—" }}
+                      </ng-template>
                       <ng-template
                         kendoGridEditTemplate
                         let-formGroup="formGroup"
                       >
-                        <input
-                          kendoTextBox
-                          [formControl]="formGroup.get('areaFormacion')"
-                          placeholder="Área formación original"
-                        />
+                        <kendo-dropdownlist
+                          [data]="AreasFormacion"
+                          textField="nombre"
+                          valueField="nombre"
+                          [valuePrimitive]="true"
+                          [filterable]="true"
+                          [popupSettings]="{ appendTo: 'root' }"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione…' }"
+                          [value]="
+                            formGroup.get('areaFormacion')?.value || null
+                          "
+                          (open)="restablecerOpcionesDropDown('areaFormacion')"
+                          (filterChange)="
+                            filtrarOpcionesDropDown('areaFormacion', $event)
+                          "
+                          (valueChange)="
+                            actualizarCampoDesdeDropDown(
+                              'areaFormacion',
+                              $event,
+                              formGroup
+                            )
+                          "
+                        >
+                          <ng-template kendoDropDownListNoDataTemplate
+                            >Sin resultados</ng-template
+                          >
+                        </kendo-dropdownlist>
                       </ng-template>
                     </kendo-grid-column>
+
                     <kendo-grid-column
                       field="areaTrabajo"
                       title="Área Trabajo"
-                      [width]="150"
-                      editor="text"
+                      [width]="200"
                     >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.areaTrabajo || "—" }}
+                      </ng-template>
                       <ng-template
                         kendoGridEditTemplate
                         let-formGroup="formGroup"
                       >
-                        <input
-                          kendoTextBox
-                          [formControl]="formGroup.get('areaTrabajo')"
-                          placeholder="Área trabajo original"
-                        />
+                        <kendo-dropdownlist
+                          [data]="AreasTrabajo"
+                          textField="nombre"
+                          valueField="nombre"
+                          [valuePrimitive]="true"
+                          [filterable]="true"
+                          [popupSettings]="{ appendTo: 'root' }"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione…' }"
+                          [value]="formGroup.get('areaTrabajo')?.value || null"
+                          (open)="restablecerOpcionesDropDown('areaTrabajo')"
+                          (filterChange)="
+                            filtrarOpcionesDropDown('areaTrabajo', $event)
+                          "
+                          (valueChange)="
+                            actualizarCampoDesdeDropDown(
+                              'areaTrabajo',
+                              $event,
+                              formGroup
+                            )
+                          "
+                        >
+                          <ng-template kendoDropDownListNoDataTemplate
+                            >Sin resultados</ng-template
+                          >
+                        </kendo-dropdownlist>
                       </ng-template>
                     </kendo-grid-column>
+
                     <kendo-grid-column
                       field="industriaOriginal"
                       title="Industria Original"
@@ -533,20 +609,43 @@
                     <kendo-grid-column
                       field="industria"
                       title="Industria"
-                      [width]="150"
-                      editor="text"
+                      [width]="200"
                     >
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.industria || "—" }}
+                      </ng-template>
                       <ng-template
                         kendoGridEditTemplate
                         let-formGroup="formGroup"
                       >
-                        <input
-                          kendoTextBox
-                          [formControl]="formGroup.get('industria')"
-                          placeholder="Industria"
-                        />
+                        <kendo-dropdownlist
+                          [data]="Industrias"
+                          textField="nombre"
+                          valueField="nombre"
+                          [valuePrimitive]="true"
+                          [filterable]="true"
+                          [popupSettings]="{ appendTo: 'root' }"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione…' }"
+                          [value]="formGroup.get('industria')?.value || null"
+                          (open)="restablecerOpcionesDropDown('industria')"
+                          (filterChange)="
+                            filtrarOpcionesDropDown('industria', $event)
+                          "
+                          (valueChange)="
+                            actualizarCampoDesdeDropDown(
+                              'industria',
+                              $event,
+                              formGroup
+                            )
+                          "
+                        >
+                          <ng-template kendoDropDownListNoDataTemplate
+                            >Sin resultados</ng-template
+                          >
+                        </kendo-dropdownlist>
                       </ng-template>
                     </kendo-grid-column>
+
                     <kendo-grid-column
                       field="grupoCampania"
                       title="Grupo Campaña"
@@ -567,41 +666,45 @@
                     >
                     </kendo-grid-column>
                     <kendo-grid-column
-                            field="urlPerfilLinkedIn"
-                            title="Url Perfil"
-                            [width]="250"
-                            editor="text"
+                      field="urlPerfilLinkedIn"
+                      title="Url Perfil"
+                      [width]="250"
+                      editor="text"
                     >
                       <ng-template
                         kendoGridEditTemplate
                         let-formGroup="formGroup"
                       >
-                      <input
-                        kendoTextBox
-                        [formControl]="formGroup.get('urlPerfilLinkedIn')"
-                        placeholder="Ingrese URL LinkedIn"
-                        style="width: 100%"
-                      />
+                        <input
+                          kendoTextBox
+                          [formControl]="formGroup.get('urlPerfilLinkedIn')"
+                          placeholder="Ingrese URL LinkedIn"
+                          style="width: 100%"
+                        />
                       </ng-template>
                     </kendo-grid-column>
-
                   </kendo-grid>
 
                   <ng-template #modalSeleccionadosTpl let-modal>
                     <div class="modal-header">
-                      <div class="d-flex flex-column">
-                        <h5 class="modal-title mb-1">
-                          Registros seleccionados
-                        </h5>
-                        <small class="text-muted"
-                          >Seleccionados: {{ modalItems.length }}</small
+                      <div>
+                        <h1
+                          class="mi-titulo"
+                          style="
+                            font-size: 30px;
+                            margin-left: 20px;
+                            margin-top: 15px;
+                          "
                         >
+                          Datos de Oportunidades Seleccionadas
+                        </h1>
                       </div>
                       <button
                         type="button"
                         class="btn-close"
                         aria-label="Close"
                         (click)="modal.dismiss()"
+                        [disabled]="modalEnviando"
                       ></button>
                     </div>
 
@@ -669,6 +772,26 @@
                             </ng-template>
                           </kendo-grid-column>
                           <kendo-grid-column
+                            field="centroCosto"
+                            title="CentroCosto"
+                            [width]="180"
+                            headerClass="headerGridChat"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              {{ cleanText(dataItem.centroCosto) }}
+                            </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
+                            field="pais"
+                            title="Pais"
+                            [width]="100"
+                            headerClass="headerGridChat"
+                          >
+                            <ng-template kendoGridCellTemplate let-dataItem>
+                              {{ cleanText(dataItem.pais) }}
+                            </ng-template>
+                          </kendo-grid-column>
+                          <kendo-grid-column
                             field="cuentaAsociada"
                             title="Cuenta Asociada"
                             [width]="180"
@@ -688,15 +811,28 @@
                         fillMode="outline"
                         themeColor="secondary"
                         (click)="modal.dismiss()"
+                        [disabled]="modalEnviando"
                       >
                         Cerrar
                       </button>
+
                       <button
                         kendoButton
                         themeColor="primary"
                         (click)="confirmarEnvioSeleccionados()"
+                        [disabled]="modalEnviando"
                       >
-                        Enviar
+                        <span *ngIf="!modalEnviando">Enviar</span>
+                        <span
+                          *ngIf="modalEnviando"
+                          class="d-inline-flex align-items-center"
+                        >
+                          <span
+                            class="spinner-border spinner-border-sm me-2"
+                            role="status"
+                          ></span>
+                          Enviando…
+                        </span>
                       </button>
                     </div>
                   </ng-template>
