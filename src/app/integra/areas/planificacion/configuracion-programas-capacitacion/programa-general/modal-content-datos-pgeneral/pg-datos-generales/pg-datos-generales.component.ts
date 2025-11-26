@@ -16,6 +16,8 @@ import { GridComponent } from '@progress/kendo-angular-grid';
 import { datePipeTransform } from '@shared/functions/date-pipe';
 import { IClaveValor, IComboBase1 } from '@shared/models/interfaces/iglobal';
 import { KendoGrid } from '@shared/models/kendo-grid';
+import { AlertaService } from '@shared/services/alerta.service';
+import { IntegraService } from '@shared/services/integra.service';
 import { data } from 'jquery';
 
 @Component({
@@ -24,7 +26,7 @@ import { data } from 'jquery';
   styleUrls: ['./pg-datos-generales.component.scss'],
 })
 export class PgDatosGeneralesComponent implements OnInit {
-  constructor(private _formBuilder: FormBuilder, private ngZone: NgZone) {}
+  constructor(private _formBuilder: FormBuilder, private ngZone: NgZone, private _integraService: IntegraService, private _alertaService: AlertaService) { }
   @Input() pgeneralService: PgeneralService;
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
@@ -112,16 +114,16 @@ export class PgDatosGeneralesComponent implements OnInit {
     this.configurarGridDatosAdicionales();
     this.initCombos();
     this.initSubscribeObservables();
-    if(!this.pgeneralService.isNewPgeneral){
+    if (!this.pgeneralService.isNewPgeneral) {
       // this.formConfiguracionBase.disable()
       // this.formDatosWeb.disable()
       this.asignarValoresForm();
-    }else{
+    } else {
       this.formConfiguracionBase.get('subArea').disable();
     }
   }
-  loadingPgeneral: boolean[]= [];
-  get isNewPgeneral(){
+  loadingPgeneral: boolean[] = [];
+  get isNewPgeneral() {
     return this.pgeneralService.isNewPgeneral;
   }
   initCombos() {
@@ -147,7 +149,7 @@ export class PgDatosGeneralesComponent implements OnInit {
     //   this.pgeneralService.combosModulo.proveedor.slice();
   }
   initSubscribeObservables() {
-    if(!this.pgeneralService.isNewPgeneral){
+    if (!this.pgeneralService.isNewPgeneral) {
       this.pgeneralService.detalleProgramas$.subscribe((resp) => {
         if (resp != null) {
           console.log(resp);
@@ -189,12 +191,12 @@ export class PgDatosGeneralesComponent implements OnInit {
       );
     });
   }
-  validarTab(){
-    if(this.formDatosWeb.invalid){
+  validarTab() {
+    if (this.formDatosWeb.invalid) {
       this.formDatosWeb.markAllAsTouched();
       this.pgeneralService.addErroresDatosPgeneral('Datos Generales', 'Error campos base');
     }
-    if(this.formConfiguracionBase.invalid){
+    if (this.formConfiguracionBase.invalid) {
       this.formConfiguracionBase.markAllAsTouched();
       this.pgeneralService.addErroresDatosPgeneral('Datos Generales', 'Error Datos web');
     }
@@ -301,22 +303,24 @@ export class PgDatosGeneralesComponent implements OnInit {
   cargarDocentePgeneral(idsDocentes: number[]) {
     console.log(idsDocentes);
     if (idsDocentes) {
-      this.asignarDocente = true ;
+      this.asignarDocente = true;
       this.formConfiguracionBase.get('docentes').setValue(idsDocentes);
-    }else{
+    } else {
       this.asignarDocente = false;
     }
   }
   configurarGridDatosAdicionales() {
     this.gridDatosAdicionales.formGroup = this._formBuilder.group({
       duracion: null,
+      creditoDisponibleTutorVirtual: null,
     });
-    this.gridDatosAdicionales.cellClickEvent$.subscribe((resp) => {});
+    this.gridDatosAdicionales.cellClickEvent$.subscribe((resp) => { });
     this.gridDatosAdicionales.cellCloseEvent$.subscribe((resp) => {
       this.gridDatosAdicionales.assignValues(
         resp.dataItem,
         resp.formGroupValue
       );
+      this.actualizarPGeneralVersion(this.gridDatosAdicionales.data);
     });
   }
   onValueChangeArea(event: number) {
@@ -325,14 +329,14 @@ export class PgDatosGeneralesComponent implements OnInit {
     this.formConfiguracionBase.get('subArea').setValue(null);
     if (event != null) {
       this.comboSubAreas =
-      this.pgeneralService.combosModulo.subAreaCapacitacion.filter(
-        (x) => x.idAreaCapacitacion == event
-      );
-      if(this.formConfiguracionBase.get('subArea').disabled){
+        this.pgeneralService.combosModulo.subAreaCapacitacion.filter(
+          (x) => x.idAreaCapacitacion == event
+        );
+      if (this.formConfiguracionBase.get('subArea').disabled) {
         this.formConfiguracionBase.get('subArea').enable();
       }
     } else {
-      if(this.formConfiguracionBase.get('subArea').enabled){
+      if (this.formConfiguracionBase.get('subArea').enabled) {
         this.formConfiguracionBase.get('subArea').disable();
       }
       this.comboSubAreas = [];
@@ -358,7 +362,7 @@ export class PgDatosGeneralesComponent implements OnInit {
     }
     if (event != null && event.length > 0) {
       let data = this.gridDatosAdicionales
-      .data.filter((x) => event.includes(x.idModalidadCurso));
+        .data.filter((x) => event.includes(x.idModalidadCurso));
 
       let idsModalidadRestante = event.filter(
         (x) => !data.map((s) => s.idModalidadCurso).includes(x)
@@ -372,7 +376,8 @@ export class PgDatosGeneralesComponent implements OnInit {
             idPgeneralVersionPrograma: 0,
             idVersionPrograma: modalidad.id,
             nombreVersion: modalidad.nombre,
-            duracion: 0
+            duracion: 0,
+            creditoDisponibleTutorVirtual: 0,
           };
           return item;
         });
@@ -384,11 +389,36 @@ export class PgDatosGeneralesComponent implements OnInit {
       this.gridDatosAdicionales.data = [];
     }
   }
-  onChangeCertificadoModular(event: MatCheckboxChange ){
+  onChangeCertificadoModular(event: MatCheckboxChange) {
     this.showRequierePago = event.checked ?? false;
   }
 
   onValueChangeAsincronica(event: number[]) {
     this.asignarDocente = event.includes(1) ? true : false;
+  }
+  actualizarPGeneralVersion(listaVersiones: PgeneralVersionPrograma[]) {
+    const jsonEnvio = {
+      IdPgeneral: this.pgeneralService.dataItemPgeneral.id,
+      versiones: listaVersiones,
+    };
+    this._integraService
+      .postJsonResponse(
+        '/ProgramaGeneral/ActualizarVersionPrograma',
+        JSON.stringify(jsonEnvio)
+      )
+      .subscribe({
+        next: (resp: any) => {
+          const response = resp.body;
+          if (response.estado) {
+            this._alertaService.notificationSuccess("Se actualizó la versión del programa correctamente.");
+          } else {
+            this._alertaService.notificationWarning("No se pudo actualizar la versión del programa.");
+          }
+        },
+        error: (error) => {
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
   }
 }

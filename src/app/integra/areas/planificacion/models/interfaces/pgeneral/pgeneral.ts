@@ -321,6 +321,7 @@ export interface PgeneralVersionPrograma {
   nombreVersion: string;
   duracion: number;
   idModalidadCurso?: number;
+  creditoDisponibleTutorVirtual: number;
 }
 
 export interface PgeneralProyectoAplicacion {
