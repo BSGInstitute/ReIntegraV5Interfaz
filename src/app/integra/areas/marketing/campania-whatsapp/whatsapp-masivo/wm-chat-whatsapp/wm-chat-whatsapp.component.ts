@@ -431,6 +431,7 @@ export class WmChatWhatsAppComponent implements OnInit {
       .subscribe({
         next: (response: HttpResponse<ChatWhatsAppMarketingPorCelular[]>) => {
           this.datosChat = response.body[0];
+          this.datosChat.idPersonal = this.idPersonal;
           this.alumnosPorCelular = this.datosChat.listaAlumnosPorCelular;
           this.mensajesWhats = this.datosChat.mensajePorCelular;
           this.idPais = this.datosChat.idPaisEmpresa;
