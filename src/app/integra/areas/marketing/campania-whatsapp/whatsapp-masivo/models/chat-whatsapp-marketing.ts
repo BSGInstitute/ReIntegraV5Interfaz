@@ -1,18 +1,17 @@
 export interface ChatWhatsAppMarketing {
   celular: string;
-  celularEncriptado: string;
   mensaje: string;
   alumno: string;
   idAlumno: number;
   asesor: string;
   idPersonal: number;
   tipo: number;
-  categoría: number;
   proceso: string;
   tab: number;
   tiempo: string;
   fecha: string;
   pais: string;
+  numeroWhatsApp?: string;
   rango?: string | null;
   estadoInteraccion?: string | null;
   requiereDerivacion?: boolean | null;

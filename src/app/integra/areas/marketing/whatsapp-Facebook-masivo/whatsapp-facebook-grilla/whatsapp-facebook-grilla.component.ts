@@ -57,7 +57,6 @@ export class WhatsappFacebookGrillaComponent implements OnInit {
       .subscribe({
         next: (response: HttpResponse<any>) => {
           this.grilla = response.body;
-          console.log(response.body);
           this.loading = false;
         },
         error: (error) => {
@@ -84,11 +83,8 @@ export class WhatsappFacebookGrillaComponent implements OnInit {
   selectionChange(e: any) {
     console.log(e);
     this.diaDrop = e;
-    console.log(this.diaDrop);
     this.obtenerGrillass();
   }
-
-  Eliminar(data: any) {}
 
   public rowCallback = (context: RowClassArgs) => {
     if (context.dataItem.tipo == 1) {
