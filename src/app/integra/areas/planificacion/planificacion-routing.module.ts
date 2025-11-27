@@ -73,12 +73,13 @@ import { EncuestaComponent } from './maestros/encuesta-online/encuesta/encuesta.
 import { EncuestaProgramaOnlineComponent } from './maestros/encuesta-online/encuesta-programa/encuesta-programa-online/encuesta-programa-online.component';
 import { ReporteEncuestaIntermediaSincronicoComponent } from './reportes/reporte-encuesta-intermedia-sincronico/reporte-encuesta-intermedia-sincronico.component';
 import { ReporteEncuestaFinalSincronicoComponent } from './reportes/reporte-encuesta-final-sincronico/reporte-encuesta-final-sincronico.component';
-import { ReporteEncuestaInicialSincronicoComponent} from './reportes/reporte-encuesta-inicial-sincronico/reporte-encuesta-inicial-sincronico.component'
+import { ReporteEncuestaInicialSincronicoComponent } from './reportes/reporte-encuesta-inicial-sincronico/reporte-encuesta-inicial-sincronico.component'
 import { ReporteEncuestaDocenteComponent } from './reportes/reporte-encuesta-docente/reporte-encuesta-docente.component';
 
 import { ConfigurarGrabacionesOnlineComponent } from './configuracion-portal-web/configurar-grabaciones-online/configurar-grabaciones-online/configurar-grabaciones-online.component';
 import { BsgCelularesComponent } from './maestros/bsgcelulares/bsgcelulares.component';
 import { ProblemaClienteConfiguracionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/problema-cliente-configuracion.component';
+import { CostoCreditosComponent } from './maestros/costo-creditos/costo-creditos.component';
 
 const routes: Routes = [
   {
@@ -118,6 +119,7 @@ const routes: Routes = [
         component: CriterioEvaluacionAulaVirtualComponent,
       },
       { path: 'Courier', component: CourierComponent },
+      { path: 'CostoCreditos', component: CostoCreditosComponent },
 
       { path: 'MaestroTipoDocumentos', component: TipoDocumentosComponent },
       { path: 'TipoMaterial', component: TipoMaterialComponent },
@@ -164,8 +166,10 @@ const routes: Routes = [
         path: 'ReporteEncuestaInicialSincronico',
         component: ReporteEncuestaInicialSincronicoComponent,
       },
-      { path: 'ReporteSugerencias',
-         component: QuejasSugerenciasComponent },
+      {
+        path: 'ReporteSugerencias',
+        component: QuejasSugerenciasComponent
+      },
       {
         path: 'ReporteConsultasForoAulaVirtual',
         component: ConsultaForoAulaVirtualComponent,
@@ -216,16 +220,20 @@ const routes: Routes = [
       },
       {
         path: 'CentroCosto',
-        component: CentroCostoComponent },
+        component: CentroCostoComponent
+      },
       {
         path: 'TagsAulaVirtual',
-        component: TagsAulaVirtualComponent },
+        component: TagsAulaVirtualComponent
+      },
       {
-        path:'CriteriosEvaluacionProgramasEspecificos',
-        component:CriteriosProgramasEspecificosComponent},
+        path: 'CriteriosEvaluacionProgramasEspecificos',
+        component: CriteriosProgramasEspecificosComponent
+      },
       {
         path: 'ConfirmacionWebinar',
-        component: ConfirmacionWebinarComponent },
+        component: ConfirmacionWebinarComponent
+      },
       {
         path: 'ConfigurarVideoPrograma',
         component: VideoEvaluacionesEstructuraProgramaComponent,
@@ -246,38 +254,38 @@ const routes: Routes = [
         component: CertificadoPartnersComponent,
       },
       {
-        path:'EsquemaEvaluacion',
-        component:EsquemaPonderacionEvaluacionComponent,
+        path: 'EsquemaEvaluacion',
+        component: EsquemaPonderacionEvaluacionComponent,
       },
       {
-        path:'FeedbackConfigurar',
-        component:FeedbackEvaluacionAulavirtualComponent,
+        path: 'FeedbackConfigurar',
+        component: FeedbackEvaluacionAulavirtualComponent,
       },
-      {path:'RevisarAprobarMaterial',component: RevisarAprobarMaterialComponent},
-      {path:'CrucigramaAulaVirtual',component: CrucigramaAulaVirtualComponent},
-      {path:'SubirMaterial',component: SubirMaterialComponent},
-      {path:'DocumentosPortalWeb',component: DocumentosPortalWebComponent},
+      { path: 'RevisarAprobarMaterial', component: RevisarAprobarMaterialComponent },
+      { path: 'CrucigramaAulaVirtual', component: CrucigramaAulaVirtualComponent },
+      { path: 'SubirMaterial', component: SubirMaterialComponent },
+      { path: 'DocumentosPortalWeb', component: DocumentosPortalWebComponent },
 
       //GESTION MATERIAL
       {
-        path: 'GestionEnvioMaterial',component: EnvioMaterialDigitalComponent,
+        path: 'GestionEnvioMaterial', component: EnvioMaterialDigitalComponent,
       },
 
       {
-        path:'GestionEntregaMaterialFisico',component: EntregaMaterialFisicoComponent
+        path: 'GestionEntregaMaterialFisico', component: EntregaMaterialFisicoComponent
       },
 
       //Encuesta Online
-      { path: 'CategoriaEncuestaOnline', component: CategoriaEncuestaOnlineComponent},
-      { path: 'PreguntaEncuestaOnline', component: PreguntaEncuestaOnlineComponent},
-      { path: 'Encuesta', component: EncuestaComponent},
-      { path: 'EncuestaProgramaOnline', component: EncuestaProgramaOnlineComponent},
+      { path: 'CategoriaEncuestaOnline', component: CategoriaEncuestaOnlineComponent },
+      { path: 'PreguntaEncuestaOnline', component: PreguntaEncuestaOnlineComponent },
+      { path: 'Encuesta', component: EncuestaComponent },
+      { path: 'EncuestaProgramaOnline', component: EncuestaProgramaOnlineComponent },
       //REPORTES DE ENCUESTAS ONLINE
-      { path: 'ReporteEncuestaIntermediaSincronico', component: ReporteEncuestaIntermediaSincronicoComponent,},
-      { path: 'ReporteEncuestaFinalSincronico', component: ReporteEncuestaFinalSincronicoComponent,},
-      { path: 'ReporteEncuestaDocente', component:ReporteEncuestaDocenteComponent,},
-      { path: 'GrabacionesClasesOnline', component: ConfigurarGrabacionesOnlineComponent},
-      { path: 'ProblemaClienteConfiguracion', component: ProblemaClienteConfiguracionComponent}
+      { path: 'ReporteEncuestaIntermediaSincronico', component: ReporteEncuestaIntermediaSincronicoComponent, },
+      { path: 'ReporteEncuestaFinalSincronico', component: ReporteEncuestaFinalSincronicoComponent, },
+      { path: 'ReporteEncuestaDocente', component: ReporteEncuestaDocenteComponent, },
+      { path: 'GrabacionesClasesOnline', component: ConfigurarGrabacionesOnlineComponent },
+      { path: 'ProblemaClienteConfiguracion', component: ProblemaClienteConfiguracionComponent }
     ],
   },
 ];
@@ -286,4 +294,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class PlanificacionRoutingModule {}
+export class PlanificacionRoutingModule { }
