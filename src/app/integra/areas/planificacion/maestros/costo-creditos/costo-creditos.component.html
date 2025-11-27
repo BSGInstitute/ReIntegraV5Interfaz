@@ -35,80 +35,15 @@
                                 headerClass="header-grid-integra">
                             </kendo-grid-column>
 
-                            <kendo-grid-column-group title="Costo Internacional" headerClass="header-grid-integra">
-                                <kendo-grid-column field="costoInternacionalPaquete" title="Paquete" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoInternacionalPaquete }} USD
-                                    </ng-template>
-                                </kendo-grid-column>
-                                <kendo-grid-column field="costoInternacionalIndividual" title="Individual" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoInternacionalIndividual }} USD
-                                    </ng-template>
-                                </kendo-grid-column>
-                            </kendo-grid-column-group>
-
-                            <kendo-grid-column-group title="Costo Perú" headerClass="header-grid-integra">
-                                <kendo-grid-column field="costoPeruPaquete" title="Paquete" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoPeruPaquete }} PEN
-                                    </ng-template>
-                                </kendo-grid-column>
-                                <kendo-grid-column field="costoPeruIndividual" title="Individual" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoPeruIndividual }} PEN
-                                    </ng-template>
-                                </kendo-grid-column>
-                            </kendo-grid-column-group>
-
-                            <kendo-grid-column-group title="Costo México" headerClass="header-grid-integra">
-                                <kendo-grid-column field="costoMexicoPaquete" title="Paquete" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoMexicoPaquete }} MXN
-                                    </ng-template>
-                                </kendo-grid-column>
-                                <kendo-grid-column field="costoMexicoIndividual" title="Individual" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoMexicoIndividual }} MXN
-                                    </ng-template>
-                                </kendo-grid-column>
-                            </kendo-grid-column-group>
-
-                            <kendo-grid-column-group title="Costo Chile" headerClass="header-grid-integra">
-                                <kendo-grid-column field="costoChilePaquete" title="Paquete" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoChilePaquete }} CLP
-                                    </ng-template>
-                                </kendo-grid-column>
-                                <kendo-grid-column field="costoChileIndividual" title="Individual" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoChileIndividual }} CLP
-                                    </ng-template>
-                                </kendo-grid-column>
-                            </kendo-grid-column-group>
-
-                            <kendo-grid-column-group title="Costo Colombia" headerClass="header-grid-integra">
-                                <kendo-grid-column field="costoColombiaPaquete" title="Paquete" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoColombiaPaquete }} COP
-                                    </ng-template>
-                                </kendo-grid-column>
-                                <kendo-grid-column field="costoColombiaIndividual" title="Individual" [width]="100"
-                                    headerClass="header-grid-integra">
-                                    <ng-template kendoGridCellTemplate let-dataItem>
-                                        {{ dataItem.costoColombiaIndividual }} COP
-                                    </ng-template>
-                                </kendo-grid-column>
-                            </kendo-grid-column-group>
+                            <kendo-grid-column field="precios" title="Países Configurados" [width]="150"
+                                headerClass="header-grid-integra">
+                                <ng-template kendoGridCellTemplate let-dataItem>
+                                    <span *ngFor="let precio of dataItem.precios; let last = last"
+                                        class="badge bg-secondary me-1">
+                                        {{precio.nombrePais}}{{!last ? ', ' : ''}}
+                                    </span>
+                                </ng-template>
+                            </kendo-grid-column>
 
                             <kendo-grid-command-column title="Editar" [width]="100"
                                 [headerClass]="'header-grid-integra'">
@@ -159,188 +94,134 @@
                 <div class="col-md-6">
                     <kendo-formfield>
                         <kendo-label text="Cantidad de créditos:"></kendo-label>
-                        <kendo-numerictextbox formControlName="cantidadCreditos" [min]="1" [format]="'n0'">
+                        <kendo-numerictextbox formControlName="cantidadCreditos" [min]="1" [format]="'n0'"
+                            (valueChange)="recalcularTodosLosPrecios()">
                         </kendo-numerictextbox>
                         <kendo-formerror>La cantidad de créditos es requerida.</kendo-formerror>
                     </kendo-formfield>
                 </div>
             </div>
 
-            <!-- Beneficios -->
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 1 Internacional:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio1Internacional" [min]="0" [format]="'n2'"
-                            suffix=" USD por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
+            <!-- BENEFICIOS POR PAÍS -->
+            <h4 class="mt-4 mb-3 text-uppercase" style="color: #666;">Beneficios por País</h4>
+            <div class="row mb-3 align-items-end">
+                <div class="col-md-9">
+                    <kendo-label text="Seleccione un país:"></kendo-label>
+                    <kendo-dropdownlist [data]="listaPaises" textField="nombre" valueField="id"
+                        [(ngModel)]="paisSeleccionadoBeneficios" [ngModelOptions]="{standalone: true}"
+                        placeholder="Seleccione un país" [style.width.%]="100">
+                    </kendo-dropdownlist>
                 </div>
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 2 Internacional:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio2Internacional" [min]="0" [format]="'n2'"
-                            suffix=" USD por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
-            </div>
-
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 1 Perú:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio1Peru" [min]="0" [format]="'n2'"
-                            suffix=" PEN por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 2 Perú:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio2Peru" [min]="0" [format]="'n2'"
-                            suffix=" PEN por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
+                <div class="col-md-3">
+                    <button kendoButton themeColor="primary" icon="plus" (click)="agregarBeneficio()"
+                        [style.width.%]="100">
+                        Agregar
+                    </button>
                 </div>
             </div>
 
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 1 México:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio1Mexico" [min]="0" [format]="'n2'"
-                            suffix=" MXN por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 2 México:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio2Mexico" [min]="0" [format]="'n2'"
-                            suffix=" MXN por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
+            <!-- Tabla de Beneficios -->
+            <div *ngIf="beneficiosPorPais.length > 0" class="table-responsive mb-4">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="20%">País</th>
+                            <th width="40%">Descripción</th>
+                            <th width="30%">Monto</th>
+                            <th width="10%" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let beneficio of beneficiosPorPais; let i = index">
+                            <td class="align-middle">
+                                <span class="badge bg-info">{{beneficio.nombrePais}}</span>
+                            </td>
+                            <td>
+                                <kendo-textbox [(ngModel)]="beneficio.descripcion" [ngModelOptions]="{standalone: true}"
+                                    placeholder="Ej: Descuento por volumen">
+                                </kendo-textbox>
+                            </td>
+                            <td>
+                                <kendo-numerictextbox [(ngModel)]="beneficio.monto"
+                                    [ngModelOptions]="{standalone: true}" [format]="'n2'" [min]="0"
+                                    [suffix]="' ' + beneficio.moneda">
+                                </kendo-numerictextbox>
+                            </td>
+                            <td class="text-center align-middle">
+                                <button kendoButton icon="delete" fillMode="flat" themeColor="error"
+                                    (click)="eliminarBeneficio(i)" size="small">
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 1 Chile:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio1Chile" [min]="0" [format]="'n2'"
-                            suffix=" CLP por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 2 Chile:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio2Chile" [min]="0" [format]="'n2'"
-                            suffix=" CLP por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 1 Colombia:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio1Colombia" [min]="0" [format]="'n2'"
-                            suffix=" COP por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
-                <div class="col-md-6">
-                    <kendo-formfield>
-                        <kendo-label text="Beneficio 2 Colombia:"></kendo-label>
-                        <kendo-numerictextbox formControlName="beneficio2Colombia" [min]="0" [format]="'n2'"
-                            suffix=" COP por crédito"></kendo-numerictextbox>
-                    </kendo-formfield>
-                </div>
+            <div *ngIf="beneficiosPorPais.length === 0" class="alert alert-info mb-4">
+                <i class="k-icon k-i-information"></i> No hay beneficios agregados. Use el selector arriba para agregar
+                beneficios por país.
             </div>
 
             <!-- CONFIGURACIÓN DE PRECIOS -->
             <h4 class="mt-4 mb-3 text-uppercase" style="color: #666;">Configuración de Precios</h4>
-
-            <div class="row">
-                <!-- Columna 1: Internacional, Perú, México -->
-                <div class="col-md-6">
-                    <!-- Internacional -->
-                    <div class="mb-3 p-3">
-                        <h5 class="mb-3" style="color: #495057;">Internacional (USD)</h5>
-                        <kendo-formfield>
-                            <kendo-label text="Costo individual:"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoInternacionalIndividual" [min]="0"
-                                [format]="'n2'" suffix=" USD"></kendo-numerictextbox>
-                            <kendo-formerror>El costo es requerido.</kendo-formerror>
-                        </kendo-formfield>
-                        <kendo-formfield class="mt-2">
-                            <kendo-label text="Costo paquete (calculado):"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoInternacionalPaquete" [min]="0" [format]="'n2'"
-                                suffix=" USD" [disabled]="true" [style.opacity]="0.6"></kendo-numerictextbox>
-                        </kendo-formfield>
-                    </div>
-
-                    <!-- Perú -->
-                    <div class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
-                        <h5 class="mb-3" style="color: #495057;">Perú (PEN)</h5>
-                        <kendo-formfield>
-                            <kendo-label text="Costo individual:"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoPeruIndividual" [min]="0" [format]="'n2'"
-                                suffix=" PEN"></kendo-numerictextbox>
-                            <kendo-formerror>El costo es requerido.</kendo-formerror>
-                        </kendo-formfield>
-                        <kendo-formfield class="mt-2">
-                            <kendo-label text="Costo paquete (calculado):"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoPeruPaquete" [min]="0" [format]="'n2'"
-                                suffix=" PEN" [disabled]="true" [style.opacity]="0.6"></kendo-numerictextbox>
-                        </kendo-formfield>
-                    </div>
-
-                    <!-- México -->
-                    <div class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
-                        <h5 class="mb-3" style="color: #495057;">México (MXN)</h5>
-                        <kendo-formfield>
-                            <kendo-label text="Costo individual:"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoMexicoIndividual" [min]="0" [format]="'n2'"
-                                suffix=" MXN"></kendo-numerictextbox>
-                            <kendo-formerror>El costo es requerido.</kendo-formerror>
-                        </kendo-formfield>
-                        <kendo-formfield class="mt-2">
-                            <kendo-label text="Costo paquete (calculado):"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoMexicoPaquete" [min]="0" [format]="'n2'"
-                                suffix=" MXN" [disabled]="true" [style.opacity]="0.6"></kendo-numerictextbox>
-                        </kendo-formfield>
-                    </div>
+            <div class="row mb-3 align-items-end">
+                <div class="col-md-9">
+                    <kendo-label text="Seleccione un país:"></kendo-label>
+                    <kendo-dropdownlist [data]="listaPaises" textField="nombre" valueField="id"
+                        [(ngModel)]="paisSeleccionadoPrecios" [ngModelOptions]="{standalone: true}"
+                        placeholder="Seleccione un país" [style.width.%]="100">
+                    </kendo-dropdownlist>
                 </div>
-
-                <!-- Columna 2: Chile, Colombia -->
-                <div class="col-md-6">
-                    <!-- Chile -->
-                    <div class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
-                        <h5 class="mb-3" style="color: #495057;">Chile (CLP)</h5>
-                        <kendo-formfield>
-                            <kendo-label text="Costo individual:"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoChileIndividual" [min]="0" [format]="'n2'"
-                                suffix=" CLP"></kendo-numerictextbox>
-                            <kendo-formerror>El costo es requerido.</kendo-formerror>
-                        </kendo-formfield>
-                        <kendo-formfield class="mt-2">
-                            <kendo-label text="Costo paquete (calculado):"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoChilePaquete" [min]="0" [format]="'n2'"
-                                suffix=" CLP" [disabled]="true" [style.opacity]="0.6"></kendo-numerictextbox>
-                        </kendo-formfield>
-                    </div>
-
-                    <!-- Colombia -->
-                    <div class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
-                        <h5 class="mb-3" style="color: #495057;">Colombia (COP)</h5>
-                        <kendo-formfield>
-                            <kendo-label text="Costo individual:"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoColombiaIndividual" [min]="0" [format]="'n2'"
-                                suffix=" COP"></kendo-numerictextbox>
-                            <kendo-formerror>El costo es requerido.</kendo-formerror>
-                        </kendo-formfield>
-                        <kendo-formfield class="mt-2">
-                            <kendo-label text="Costo paquete (calculado):"></kendo-label>
-                            <kendo-numerictextbox formControlName="costoColombiaPaquete" [min]="0" [format]="'n2'"
-                                suffix=" COP" [disabled]="true" [style.opacity]="0.6"></kendo-numerictextbox>
-                        </kendo-formfield>
-                    </div>
+                <div class="col-md-3">
+                    <button kendoButton themeColor="primary" icon="plus" (click)="agregarPais()" [style.width.%]="100">
+                        Agregar
+                    </button>
                 </div>
+            </div>
+
+            <!-- Tabla de Precios por País -->
+            <div *ngIf="preciosPorPais.length > 0" class="table-responsive mb-4">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th width="20%">País</th>
+                            <th width="10%">Moneda</th>
+                            <th width="30%">Precio Unitario</th>
+                            <th width="30%">Precio Paquete (Calculado)</th>
+                            <th width="10%" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let precio of preciosPorPais; let i = index">
+                            <td class="align-middle">
+                                <strong>{{precio.nombrePais}}</strong>
+                                <span class="badge bg-secondary ms-2">{{precio.codigoPais}}</span>
+                            </td>
+                            <td class="align-middle text-center">
+                                <span class="badge bg-primary">{{precio.moneda}}</span>
+                            </td>
+                            <td>
+                                <kendo-numerictextbox [(ngModel)]="precio.precioUnitario"
+                                    [ngModelOptions]="{standalone: true}" [format]="'n2'" [min]="0"
+                                    (valueChange)="onPrecioUnitarioChange(i)">
+                                </kendo-numerictextbox>
+                            </td>
+                            <td>
+                                <kendo-numerictextbox [value]="precio.precioPaquete" [format]="'n2'" [disabled]="true"
+                                    [style.opacity]="0.7" [style.background-color]="'#f0f0f0'">
+                                </kendo-numerictextbox>
+                            </td>
+                            <td class="text-center align-middle">
+                                <button kendoButton icon="delete" fillMode="flat" themeColor="error"
+                                    (click)="eliminarPais(i)" size="small">
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div *ngIf="preciosPorPais.length === 0" class="alert alert-warning mb-4">
+                <i class="k-icon k-i-warning"></i> No hay precios configurados. Use el selector arriba para agregar
+                precios por país.
             </div>
 
         </form>

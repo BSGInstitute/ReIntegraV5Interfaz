@@ -8,20 +8,38 @@ import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import { FormService } from '@shared/services/form.service';
 
+interface PrecioPorPais {
+    id?: number;
+    idPais: number;
+    nombrePais: string;
+    codigoPais: string;
+    moneda: string;
+    precioUnitario: number;
+    precioPaquete: number;
+}
+
+interface BeneficioPorPais {
+    id?: number;
+    idPais: number;
+    nombrePais: string;
+    descripcion: string;
+    monto: number;
+    moneda: string;
+}
+
+interface Pais {
+    id: number;
+    nombre: string;
+    codigo: string;
+    moneda: string;
+}
+
 interface CostoCreditoPaquete {
     id: number;
     nombrePaquete: string;
     cantidadCreditos: number;
-    costoInternacionalPaquete?: number;
-    costoInternacionalIndividual?: number;
-    costoPeruPaquete?: number;
-    costoPeruIndividual?: number;
-    costoMexicoPaquete?: number;
-    costoMexicoIndividual?: number;
-    costoChilePaquete?: number;
-    costoChileIndividual?: number;
-    costoColombiaPaquete?: number;
-    costoColombiaIndividual?: number;
+    precios: PrecioPorPais[];
+    beneficios: BeneficioPorPais[];
 }
 
 /**
@@ -51,84 +69,97 @@ export class CostoCreditosComponent implements OnInit {
     modalRef: any;
     gridCostoCreditos = new KendoGrid<CostoCreditoPaquete>();
 
+    // Listas dinámicas
+    listaPaises: Pais[] = [
+        { id: 1, nombre: 'Internacional', codigo: 'INT', moneda: 'USD' },
+        { id: 2, nombre: 'Perú', codigo: 'PE', moneda: 'PEN' },
+        { id: 3, nombre: 'México', codigo: 'MX', moneda: 'MXN' },
+        { id: 4, nombre: 'Chile', codigo: 'CL', moneda: 'CLP' },
+        { id: 5, nombre: 'Colombia', codigo: 'CO', moneda: 'COP' },
+        { id: 6, nombre: 'Argentina', codigo: 'AR', moneda: 'ARS' },
+        { id: 7, nombre: 'Brasil', codigo: 'BR', moneda: 'BRL' },
+        { id: 8, nombre: 'Ecuador', codigo: 'EC', moneda: 'USD' },
+        { id: 9, nombre: 'Bolivia', codigo: 'BO', moneda: 'BOB' },
+    ];
+
+    preciosPorPais: PrecioPorPais[] = [];
+    beneficiosPorPais: BeneficioPorPais[] = [];
+
+    paisSeleccionadoPrecios: Pais | null = null;
+    paisSeleccionadoBeneficios: Pais | null = null;
+
     formCostoCreditos: FormGroup = this.formBuilder.group({
         nombrePaquete: [null, Validators.required],
         cantidadCreditos: [null, [Validators.required, Validators.min(1)]],
-        // Beneficios
-        beneficio1Internacional: [null, Validators.min(0)],
-        beneficio2Internacional: [null, Validators.min(0)],
-        beneficio1Peru: [null, Validators.min(0)],
-        beneficio2Peru: [null, Validators.min(0)],
-        beneficio1Mexico: [null, Validators.min(0)],
-        beneficio2Mexico: [null, Validators.min(0)],
-        beneficio1Chile: [null, Validators.min(0)],
-        beneficio2Chile: [null, Validators.min(0)],
-        beneficio1Colombia: [null, Validators.min(0)],
-        beneficio2Colombia: [null, Validators.min(0)],
-        // Precios
-        costoInternacionalPaquete: [null, [Validators.required, Validators.min(0)]],
-        costoInternacionalIndividual: [null, [Validators.required, Validators.min(0)]],
-        costoPeruPaquete: [null, [Validators.required, Validators.min(0)]],
-        costoPeruIndividual: [null, [Validators.required, Validators.min(0)]],
-        costoMexicoPaquete: [null, [Validators.required, Validators.min(0)]],
-        costoMexicoIndividual: [null, [Validators.required, Validators.min(0)]],
-        costoChilePaquete: [null, [Validators.required, Validators.min(0)]],
-        costoChileIndividual: [null, [Validators.required, Validators.min(0)]],
-        costoColombiaPaquete: [null, [Validators.required, Validators.min(0)]],
-        costoColombiaIndividual: [null, [Validators.required, Validators.min(0)]],
     });
 
     ngOnInit(): void {
         this.configurarGrid();
         this.obtener();
-        this.setupCalculations();
     }
 
-    setupCalculations() {
-        // Suscribirse a cambios en cantidad de créditos y costos individuales para calcular costos de paquete
-        this.formCostoCreditos.get('cantidadCreditos')?.valueChanges.subscribe(() => {
-            this.calcularCostosPaquete();
-        });
-
-        // Suscripciones para cada país
-        this.formCostoCreditos.get('costoInternacionalIndividual')?.valueChanges.subscribe(() => {
-            this.calcularCostoPaquete('costoInternacionalPaquete', 'costoInternacionalIndividual');
-        });
-
-        this.formCostoCreditos.get('costoPeruIndividual')?.valueChanges.subscribe(() => {
-            this.calcularCostoPaquete('costoPeruPaquete', 'costoPeruIndividual');
-        });
-
-        this.formCostoCreditos.get('costoMexicoIndividual')?.valueChanges.subscribe(() => {
-            this.calcularCostoPaquete('costoMexicoPaquete', 'costoMexicoIndividual');
-        });
-
-        this.formCostoCreditos.get('costoChileIndividual')?.valueChanges.subscribe(() => {
-            this.calcularCostoPaquete('costoChilePaquete', 'costoChileIndividual');
-        });
-
-        this.formCostoCreditos.get('costoColombiaIndividual')?.valueChanges.subscribe(() => {
-            this.calcularCostoPaquete('costoColombiaPaquete', 'costoColombiaIndividual');
-        });
-    }
-
-    calcularCostoPaquete(paqueteField: string, individualField: string) {
-        const cantidadCreditos = this.formCostoCreditos.get('cantidadCreditos')?.value;
-        const costoIndividual = this.formCostoCreditos.get(individualField)?.value;
-
-        if (cantidadCreditos && costoIndividual) {
-            const costoPaquete = cantidadCreditos * costoIndividual;
-            this.formCostoCreditos.get(paqueteField)?.setValue(costoPaquete, { emitEvent: false });
+    agregarPais() {
+        if (!this.paisSeleccionadoPrecios) {
+            this.alertaService.notificationWarning('Seleccione un país');
+            return;
         }
+
+        const existe = this.preciosPorPais.find(p => p.idPais === this.paisSeleccionadoPrecios!.id);
+        if (existe) {
+            this.alertaService.notificationWarning('El país ya fue agregado');
+            return;
+        }
+
+        const cantidad = this.formCostoCreditos.get('cantidadCreditos')?.value || 0;
+
+        this.preciosPorPais.push({
+            idPais: this.paisSeleccionadoPrecios.id,
+            nombrePais: this.paisSeleccionadoPrecios.nombre,
+            codigoPais: this.paisSeleccionadoPrecios.codigo,
+            moneda: this.paisSeleccionadoPrecios.moneda,
+            precioUnitario: 0,
+            precioPaquete: 0
+        });
+
+        this.paisSeleccionadoPrecios = null;
     }
 
-    calcularCostosPaquete() {
-        // Recalcular todos los costos de paquete cuando cambia la cantidad de créditos
-        this.calcularCostoPaquete('costoInternacionalPaquete', 'costoInternacionalIndividual');
-        this.calcularCostoPaquete('costoPeruPaquete', 'costoPeruIndividual');
-        this.calcularCostoPaquete('costoMexicoPaquete', 'costoMexicoIndividual');
-        this.calcularCostoPaquete('costoChilePaquete', 'costoChileIndividual');
-        this.calcularCostoPaquete('costoColombiaPaquete', 'costoColombiaIndividual');
+    eliminarPais(index: number) {
+        this.preciosPorPais.splice(index, 1);
+    }
+
+    onPrecioUnitarioChange(index: number) {
+        const cantidad = this.formCostoCreditos.get('cantidadCreditos')?.value || 0;
+        const precio = this.preciosPorPais[index];
+        precio.precioPaquete = precio.precioUnitario * cantidad;
+    }
+
+    recalcularTodosLosPrecios() {
+        const cantidad = this.formCostoCreditos.get('cantidadCreditos')?.value || 0;
+        this.preciosPorPais.forEach(precio => {
+            precio.precioPaquete = precio.precioUnitario * cantidad;
+        });
+    }
+
+    agregarBeneficio() {
+        if (!this.paisSeleccionadoBeneficios) {
+            this.alertaService.notificationWarning('Seleccione un país');
+            return;
+        }
+
+        this.beneficiosPorPais.push({
+            idPais: this.paisSeleccionadoBeneficios.id,
+            nombrePais: this.paisSeleccionadoBeneficios.nombre,
+            moneda: this.paisSeleccionadoBeneficios.moneda,
+            descripcion: '',
+            monto: 0
+        });
+
+        this.paisSeleccionadoBeneficios = null;
+    }
+
+    eliminarBeneficio(index: number) {
+        this.beneficiosPorPais.splice(index, 1);
     }
 
     procesarPaquete(): CostoCreditoPaquete {
@@ -138,16 +169,8 @@ export class CostoCreditosComponent implements OnInit {
             id: this.isNew ? 0 : this.gridCostoCreditos.dataItemEditTemp.id,
             nombrePaquete: data.nombrePaquete,
             cantidadCreditos: data.cantidadCreditos,
-            costoInternacionalPaquete: data.costoInternacionalPaquete,
-            costoInternacionalIndividual: data.costoInternacionalIndividual,
-            costoPeruPaquete: data.costoPeruPaquete,
-            costoPeruIndividual: data.costoPeruIndividual,
-            costoMexicoPaquete: data.costoMexicoPaquete,
-            costoMexicoIndividual: data.costoMexicoIndividual,
-            costoChilePaquete: data.costoChilePaquete,
-            costoChileIndividual: data.costoChileIndividual,
-            costoColombiaPaquete: data.costoColombiaPaquete,
-            costoColombiaIndividual: data.costoColombiaIndividual,
+            precios: this.preciosPorPais.map(p => ({ ...p })),
+            beneficios: this.beneficiosPorPais.map(b => ({ ...b })),
         };
         return paquete;
     }
@@ -169,53 +192,45 @@ export class CostoCreditosComponent implements OnInit {
         //     },
         //   });
 
-        // Datos de ejemplo basados en la imagen
+        // Datos de ejemplo con la nueva estructura
         setTimeout(() => {
             const datosEjemplo: CostoCreditoPaquete[] = [
                 {
                     id: 1,
                     nombrePaquete: 'Básico',
                     cantidadCreditos: 20,
-                    costoInternacionalPaquete: 40,
-                    costoInternacionalIndividual: 3,
-                    costoPeruPaquete: 152,
-                    costoPeruIndividual: 7.6,
-                    costoMexicoPaquete: 826,
-                    costoMexicoIndividual: 41.3,
-                    costoChilePaquete: 41762,
-                    costoChileIndividual: 2088.1,
-                    costoColombiaPaquete: 168999,
-                    costoColombiaIndividual: 8449.9,
+                    precios: [
+                        { idPais: 1, nombrePais: 'Internacional', codigoPais: 'INT', moneda: 'USD', precioUnitario: 2, precioPaquete: 40 },
+                        { idPais: 2, nombrePais: 'Perú', codigoPais: 'PE', moneda: 'PEN', precioUnitario: 7.6, precioPaquete: 152 },
+                        { idPais: 3, nombrePais: 'México', codigoPais: 'MX', moneda: 'MXN', precioUnitario: 41.3, precioPaquete: 826 },
+                    ],
+                    beneficios: [
+                        { idPais: 1, nombrePais: 'Internacional', moneda: 'USD', descripcion: 'Descuento por volumen', monto: 0.5 },
+                    ]
                 },
                 {
                     id: 2,
                     nombrePaquete: 'Estándar',
                     cantidadCreditos: 50,
-                    costoInternacionalPaquete: 95,
-                    costoInternacionalIndividual: 1.9,
-                    costoPeruPaquete: 320,
-                    costoPeruIndividual: 6.4,
-                    costoMexicoPaquete: 1743,
-                    costoMexicoIndividual: 34.9,
-                    costoChilePaquete: 88164,
-                    costoChileIndividual: 1763.3,
-                    costoColombiaPaquete: 356775,
-                    costoColombiaIndividual: 7135.5,
+                    precios: [
+                        { idPais: 1, nombrePais: 'Internacional', codigoPais: 'INT', moneda: 'USD', precioUnitario: 1.9, precioPaquete: 95 },
+                        { idPais: 2, nombrePais: 'Perú', codigoPais: 'PE', moneda: 'PEN', precioUnitario: 6.4, precioPaquete: 320 },
+                    ],
+                    beneficios: []
                 },
                 {
                     id: 3,
                     nombrePaquete: 'Premium',
                     cantidadCreditos: 150,
-                    costoInternacionalPaquete: 195,
-                    costoInternacionalIndividual: 1.3,
-                    costoPeruPaquete: 656,
-                    costoPeruIndividual: 4.4,
-                    costoMexicoPaquete: 3577,
-                    costoMexicoIndividual: 23.9,
-                    costoChilePaquete: 3577,
-                    costoChileIndividual: 1206.4,
-                    costoColombiaPaquete: 732328,
-                    costoColombiaIndividual: 4882,
+                    precios: [
+                        { idPais: 1, nombrePais: 'Internacional', codigoPais: 'INT', moneda: 'USD', precioUnitario: 1.3, precioPaquete: 195 },
+                        { idPais: 4, nombrePais: 'Chile', codigoPais: 'CL', moneda: 'CLP', precioUnitario: 1206.4, precioPaquete: 180960 },
+                        { idPais: 5, nombrePais: 'Colombia', codigoPais: 'CO', moneda: 'COP', precioUnitario: 4882, precioPaquete: 732300 },
+                    ],
+                    beneficios: [
+                        { idPais: 1, nombrePais: 'Internacional', moneda: 'USD', descripcion: 'Soporte prioritario', monto: 100 },
+                        { idPais: 4, nombrePais: 'Chile', moneda: 'CLP', descripcion: 'Beneficio especial', monto: 50000 },
+                    ]
                 },
             ];
             this.gridCostoCreditos.data$.next(datosEjemplo);
@@ -364,25 +379,25 @@ export class CostoCreditosComponent implements OnInit {
 
     abrirModal(content: any, dataItem?: CostoCreditoPaquete) {
         this.isNew = !dataItem;
+
+        // Limpiar arrays
+        this.preciosPorPais = [];
+        this.beneficiosPorPais = [];
+
         if (dataItem) {
             this.gridCostoCreditos.dataItemEditTemp = dataItem;
             this.formCostoCreditos.patchValue({
                 nombrePaquete: dataItem.nombrePaquete,
                 cantidadCreditos: dataItem.cantidadCreditos,
-                costoInternacionalPaquete: dataItem.costoInternacionalPaquete,
-                costoInternacionalIndividual: dataItem.costoInternacionalIndividual,
-                costoPeruPaquete: dataItem.costoPeruPaquete,
-                costoPeruIndividual: dataItem.costoPeruIndividual,
-                costoMexicoPaquete: dataItem.costoMexicoPaquete,
-                costoMexicoIndividual: dataItem.costoMexicoIndividual,
-                costoChilePaquete: dataItem.costoChilePaquete,
-                costoChileIndividual: dataItem.costoChileIndividual,
-                costoColombiaPaquete: dataItem.costoColombiaPaquete,
-                costoColombiaIndividual: dataItem.costoColombiaIndividual,
             });
+
+            // Cargar precios y beneficios existentes
+            this.preciosPorPais = dataItem.precios?.map(p => ({ ...p })) || [];
+            this.beneficiosPorPais = dataItem.beneficios?.map(b => ({ ...b })) || [];
         } else {
             this.formCostoCreditos.reset();
         }
+
         this.modalRef = this.modalService.open(content, { size: 'xl', centered: true });
     }
 
