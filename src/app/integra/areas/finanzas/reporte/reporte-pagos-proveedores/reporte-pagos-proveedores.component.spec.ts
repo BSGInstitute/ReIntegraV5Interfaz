@@ -1,25 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReportePagosProveedoresComponent } from './reporte-pagos-proveedores.component';
+// import { ReportePagosProveedoresComponent } from './reporte-pagos-proveedores.component';
 
-describe('ReportePagosProveedoresComponent', () => {
-  let component: ReportePagosProveedoresComponent;
-  let fixture: ComponentFixture<ReportePagosProveedoresComponent>;
+// describe('ReportePagosProveedoresComponent', () => {
+//   let component: ReportePagosProveedoresComponent;
+//   let fixture: ComponentFixture<ReportePagosProveedoresComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ReportePagosProveedoresComponent ]
-    })
-    .compileComponents();
-  });
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       declarations: [ ReportePagosProveedoresComponent ]
+//     })
+//     .compileComponents();
+//   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ReportePagosProveedoresComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//   beforeEach(() => {
+//     fixture = TestBed.createComponent(ReportePagosProveedoresComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });

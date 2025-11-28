@@ -76,7 +76,7 @@ export class PgProblemasClienteV2Component implements OnInit {
   constructor(
     private integraService: IntegraService,
     public activeModal: NgbActiveModal,
-    private alertaService: AlertaService,
+    public alertaService: AlertaService,
     private modalService: NgbModal,
     private formService: FormService
   ) {}
