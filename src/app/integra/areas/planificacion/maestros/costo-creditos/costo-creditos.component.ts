@@ -8,11 +8,64 @@ import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import { FormService } from '@shared/services/form.service';
 
+// Interfaces que coinciden con la estructura de la API (Response)
+interface BeneficioAPI {
+    id: number;
+    nombre: string;
+}
+
+interface PaisAPI {
+    id: number;
+    idPais: number;
+    pais?: string; // Campo agregado para el nombre del país
+    idMoneda: number;
+    costoIndividual: number;
+    costoPrograma: number;
+    beneficios: BeneficioAPI[];
+}
+
+interface PaqueteAPI {
+    id: number;
+    nombre: string;
+    cantidadCreditos: number;
+    paises: PaisAPI[];
+}
+
+// Interfaces para Request (lo que enviamos a la API)
+interface BeneficioRequest {
+    id?: number; // Solo para actualizar
+    nombre: string;
+}
+
+interface PaisRequest {
+    id?: number; // Solo para actualizar
+    idPais: number;
+    idMoneda: number;
+    costoIndividual: number;
+    costoPaquete: number;
+    beneficios: BeneficioRequest[];
+}
+
+interface PaqueteInsertRequest {
+    nombre: string;
+    cantidadCredito: number;
+    paises: PaisRequest[];
+}
+
+interface PaqueteUpdateRequest {
+    id: number;
+    nombre: string;
+    cantidadCredito: number;
+    paises: PaisRequest[];
+}
+
+// Interfaces para uso interno del componente
 interface PrecioPorPais {
     id?: number;
     idPais: number;
     nombrePais: string;
     codigoPais: string;
+    idMoneda: number;
     moneda: string;
     precioUnitario: number;
     precioPaquete: number;
@@ -23,7 +76,6 @@ interface BeneficioPorPais {
     idPais: number;
     nombrePais: string;
     descripcion: string;
-    monto: number;
     moneda: string;
 }
 
@@ -31,6 +83,7 @@ interface Pais {
     id: number;
     nombre: string;
     codigo: string;
+    idMoneda: number;
     moneda: string;
 }
 
@@ -71,15 +124,15 @@ export class CostoCreditosComponent implements OnInit {
 
     // Listas dinámicas
     listaPaises: Pais[] = [
-        { id: 1, nombre: 'Internacional', codigo: 'INT', moneda: 'USD' },
-        { id: 2, nombre: 'Perú', codigo: 'PE', moneda: 'PEN' },
-        { id: 3, nombre: 'México', codigo: 'MX', moneda: 'MXN' },
-        { id: 4, nombre: 'Chile', codigo: 'CL', moneda: 'CLP' },
-        { id: 5, nombre: 'Colombia', codigo: 'CO', moneda: 'COP' },
-        { id: 6, nombre: 'Argentina', codigo: 'AR', moneda: 'ARS' },
-        { id: 7, nombre: 'Brasil', codigo: 'BR', moneda: 'BRL' },
-        { id: 8, nombre: 'Ecuador', codigo: 'EC', moneda: 'USD' },
-        { id: 9, nombre: 'Bolivia', codigo: 'BO', moneda: 'BOB' },
+        { id: 0, nombre: 'Internacional', codigo: 'INT', idMoneda: 19, moneda: 'USD' },
+        { id: 51, nombre: 'Perú', codigo: 'PE', idMoneda: 20, moneda: 'PEN' },
+        { id: 52, nombre: 'México', codigo: 'MX', idMoneda: 6, moneda: 'MXN' },
+        { id: 56, nombre: 'Chile', codigo: 'CL', idMoneda: 9, moneda: 'CLP' },
+        { id: 57, nombre: 'Colombia', codigo: 'CO', idMoneda: 10, moneda: 'COP' },
+        { id: 54, nombre: 'Argentina', codigo: 'AR', idMoneda: 7, moneda: 'ARS' },
+        { id: 55, nombre: 'Brasil', codigo: 'BR', idMoneda: 8, moneda: 'BRL' },
+        { id: 593, nombre: 'Ecuador', codigo: 'EC', idMoneda: 19, moneda: 'USD' },
+        { id: 591, nombre: 'Bolivia', codigo: 'BO', idMoneda: 16, moneda: 'BOB' },
     ];
 
     preciosPorPais: PrecioPorPais[] = [];
@@ -87,6 +140,17 @@ export class CostoCreditosComponent implements OnInit {
 
     paisSeleccionadoPrecios: Pais | null = null;
     paisSeleccionadoBeneficios: Pais | null = null;
+
+    /**
+     * Obtiene la lista de países disponibles para beneficios
+     * Solo incluye países que ya tienen precios configurados
+     */
+    get listaPaisesDisponiblesParaBeneficios(): Pais[] {
+        // Obtener IDs de países con precios configurados
+        const paisesConPrecios = this.preciosPorPais.map(p => p.idPais);
+        // Filtrar la lista de países para solo incluir los que tienen precios
+        return this.listaPaises.filter(pais => paisesConPrecios.includes(pais.id));
+    }
 
     formCostoCreditos: FormGroup = this.formBuilder.group({
         nombrePaquete: [null, Validators.required],
@@ -116,6 +180,7 @@ export class CostoCreditosComponent implements OnInit {
             idPais: this.paisSeleccionadoPrecios.id,
             nombrePais: this.paisSeleccionadoPrecios.nombre,
             codigoPais: this.paisSeleccionadoPrecios.codigo,
+            idMoneda: this.paisSeleccionadoPrecios.idMoneda,
             moneda: this.paisSeleccionadoPrecios.moneda,
             precioUnitario: 0,
             precioPaquete: 0
@@ -142,8 +207,21 @@ export class CostoCreditosComponent implements OnInit {
     }
 
     agregarBeneficio() {
+        // Validar que haya precios configurados
+        if (this.preciosPorPais.length === 0) {
+            this.alertaService.notificationWarning('Debe configurar al menos un precio antes de agregar beneficios');
+            return;
+        }
+
         if (!this.paisSeleccionadoBeneficios) {
             this.alertaService.notificationWarning('Seleccione un país');
+            return;
+        }
+
+        // Verificar que el país tenga precio configurado
+        const tienePrecio = this.preciosPorPais.some(p => p.idPais === this.paisSeleccionadoBeneficios!.id);
+        if (!tienePrecio) {
+            this.alertaService.notificationWarning('El país seleccionado no tiene precios configurados');
             return;
         }
 
@@ -151,8 +229,7 @@ export class CostoCreditosComponent implements OnInit {
             idPais: this.paisSeleccionadoBeneficios.id,
             nombrePais: this.paisSeleccionadoBeneficios.nombre,
             moneda: this.paisSeleccionadoBeneficios.moneda,
-            descripcion: '',
-            monto: 0
+            descripcion: ''
         });
 
         this.paisSeleccionadoBeneficios = null;
@@ -175,106 +252,210 @@ export class CostoCreditosComponent implements OnInit {
         return paquete;
     }
 
+    /**
+     * Transforma los datos de la API al formato requerido por el componente
+     */
+    /**
+     * Transforma datos de la API al formato del componente (para lectura)
+     */
+    private transformarDatosAPI(paquetesAPI: PaqueteAPI[]): CostoCreditoPaquete[] {
+        return paquetesAPI.map(paquete => {
+            const precios: PrecioPorPais[] = [];
+            const beneficios: BeneficioPorPais[] = [];
+
+            paquete.paises.forEach(paisAPI => {
+                // Buscar el país en nuestra lista para obtener nombre, código y moneda
+                const paisInfo = this.listaPaises.find(p => p.id === paisAPI.idPais);
+                const nombrePais = paisAPI.pais || paisInfo?.nombre || 'Desconocido';
+                const codigoPais = paisInfo?.codigo || '??';
+                const moneda = paisInfo?.moneda || 'USD';
+
+                // Agregar precio
+                precios.push({
+                    id: paisAPI.id,
+                    idPais: paisAPI.idPais,
+                    nombrePais: nombrePais,
+                    codigoPais: codigoPais,
+                    idMoneda: paisAPI.idMoneda,
+                    moneda: moneda,
+                    precioUnitario: paisAPI.costoIndividual,
+                    precioPaquete: paisAPI.costoPrograma
+                });
+
+                // Agregar beneficios
+                paisAPI.beneficios.forEach(beneficioAPI => {
+                    beneficios.push({
+                        id: beneficioAPI.id,
+                        idPais: paisAPI.idPais,
+                        nombrePais: nombrePais,
+                        moneda: moneda,
+                        descripcion: beneficioAPI.nombre
+                    });
+                });
+            });
+
+            return {
+                id: paquete.id,
+                nombrePaquete: paquete.nombre,
+                cantidadCreditos: paquete.cantidadCreditos,
+                precios: precios,
+                beneficios: beneficios
+            };
+        });
+    }
+
+    /**
+     * Transforma datos del componente al formato de la API para insertar
+     */
+    private transformarParaInsertar(paquete: CostoCreditoPaquete): PaqueteInsertRequest {
+        // Agrupar precios y beneficios por país
+        const paisesProcesados = new Map<number, PaisRequest>();
+
+        // Procesar precios
+        this.preciosPorPais.forEach(precio => {
+            if (!paisesProcesados.has(precio.idPais)) {
+                const paisInfo = this.listaPaises.find(p => p.id === precio.idPais);
+                paisesProcesados.set(precio.idPais, {
+                    idPais: precio.idPais,
+                    idMoneda: precio.idMoneda,
+                    costoIndividual: precio.precioUnitario,
+                    costoPaquete: precio.precioPaquete,
+                    beneficios: []
+                });
+            }
+        });
+
+        // Procesar beneficios
+        this.beneficiosPorPais.forEach(beneficio => {
+            const paisData = paisesProcesados.get(beneficio.idPais);
+            if (paisData) {
+                paisData.beneficios.push({
+                    nombre: beneficio.descripcion
+                });
+            }
+        });
+
+        return {
+            nombre: paquete.nombrePaquete,
+            cantidadCredito: paquete.cantidadCreditos,
+            paises: Array.from(paisesProcesados.values())
+        };
+    }
+
+    /**
+     * Transforma datos del componente al formato de la API para actualizar
+     */
+    private transformarParaActualizar(paquete: CostoCreditoPaquete): PaqueteUpdateRequest {
+        // Agrupar precios y beneficios por país
+        const paisesProcesados = new Map<number, PaisRequest>();
+
+        // Procesar precios
+        this.preciosPorPais.forEach(precio => {
+            if (!paisesProcesados.has(precio.idPais)) {
+                const paisInfo = this.listaPaises.find(p => p.id === precio.idPais);
+                const paisRequest: PaisRequest = {
+                    idPais: precio.idPais,
+                    idMoneda: precio.idMoneda,
+                    costoIndividual: precio.precioUnitario,
+                    costoPaquete: precio.precioPaquete,
+                    beneficios: []
+                };
+                // Solo agregar ID si existe (para actualización)
+                if (precio.id) {
+                    paisRequest.id = precio.id;
+                }
+                paisesProcesados.set(precio.idPais, paisRequest);
+            }
+        });
+
+        // Procesar beneficios
+        this.beneficiosPorPais.forEach(beneficio => {
+            const paisData = paisesProcesados.get(beneficio.idPais);
+            if (paisData) {
+                const beneficioRequest: BeneficioRequest = {
+                    nombre: beneficio.descripcion
+                };
+                // Solo agregar ID si existe (para actualización)
+                if (beneficio.id) {
+                    beneficioRequest.id = beneficio.id;
+                }
+                paisData.beneficios.push(beneficioRequest);
+            }
+        });
+
+        return {
+            id: paquete.id,
+            nombre: paquete.nombrePaquete,
+            cantidadCredito: paquete.cantidadCreditos,
+            paises: Array.from(paisesProcesados.values())
+        };
+    }
+
+    /**
+     * Obtiene el ID de la moneda basado en el código
+     * TODO: Esto debería venir de un servicio o combo de monedas
+     */
+    // private obtenerIdMoneda(codigoMoneda: string): number {
+    //     const monedas: { [key: string]: number } = {
+    //         'USD': 1,
+    //         'PEN': 52,
+    //         'MXN': 56,
+    //         'CLP': 57,
+    //         'COP': 54,
+    //         'ARS': 55,
+    //         'BRL': 593,
+    //         'BOB': 591
+    //     };
+    //     return monedas[codigoMoneda] || 1; // Default USD
+    // }
+
     obtener() {
         this.gridCostoCreditos.loading = true;
-        // TODO: Reemplazar con el endpoint real cuando esté disponible
-        // this.integraService
-        //   .getJsonResponse(constApiPlanificacion.CostoCreditosObtener)
-        //   .subscribe({
-        //     next: (resp: HttpResponse<CostoCreditoPaquete[]>) => {
-        //       this.gridCostoCreditos.loading = false;
-        //       this.gridCostoCreditos.data$.next(resp.body);
-        //     },
-        //     error: (error) => {
-        //       this.gridCostoCreditos.loading = false;
-        //       let mensaje = this.alertaService.getMessageErrorService(error);
-        //       this.alertaService.notificationWarning(mensaje);
-        //     },
-        //   });
-
-        // Datos de ejemplo con la nueva estructura
-        setTimeout(() => {
-            const datosEjemplo: CostoCreditoPaquete[] = [
-                {
-                    id: 1,
-                    nombrePaquete: 'Básico',
-                    cantidadCreditos: 20,
-                    precios: [
-                        { idPais: 1, nombrePais: 'Internacional', codigoPais: 'INT', moneda: 'USD', precioUnitario: 2, precioPaquete: 40 },
-                        { idPais: 2, nombrePais: 'Perú', codigoPais: 'PE', moneda: 'PEN', precioUnitario: 7.6, precioPaquete: 152 },
-                        { idPais: 3, nombrePais: 'México', codigoPais: 'MX', moneda: 'MXN', precioUnitario: 41.3, precioPaquete: 826 },
-                    ],
-                    beneficios: [
-                        { idPais: 1, nombrePais: 'Internacional', moneda: 'USD', descripcion: 'Descuento por volumen', monto: 0.5 },
-                    ]
+        this.integraService
+            .getJsonResponse('/PaqueteTutorVirtual/ObtenerDetalle')
+            .subscribe({
+                next: (resp: HttpResponse<PaqueteAPI[]>) => {
+                    this.gridCostoCreditos.loading = false;
+                    if (resp.body) {
+                        const datosTransformados = this.transformarDatosAPI(resp.body);
+                        this.gridCostoCreditos.data$.next(datosTransformados);
+                    }
                 },
-                {
-                    id: 2,
-                    nombrePaquete: 'Estándar',
-                    cantidadCreditos: 50,
-                    precios: [
-                        { idPais: 1, nombrePais: 'Internacional', codigoPais: 'INT', moneda: 'USD', precioUnitario: 1.9, precioPaquete: 95 },
-                        { idPais: 2, nombrePais: 'Perú', codigoPais: 'PE', moneda: 'PEN', precioUnitario: 6.4, precioPaquete: 320 },
-                    ],
-                    beneficios: []
+                error: (error) => {
+                    this.gridCostoCreditos.loading = false;
+                    let mensaje = this.alertaService.getMessageErrorService(error);
+                    this.alertaService.notificationWarning(mensaje);
                 },
-                {
-                    id: 3,
-                    nombrePaquete: 'Premium',
-                    cantidadCreditos: 150,
-                    precios: [
-                        { idPais: 1, nombrePais: 'Internacional', codigoPais: 'INT', moneda: 'USD', precioUnitario: 1.3, precioPaquete: 195 },
-                        { idPais: 4, nombrePais: 'Chile', codigoPais: 'CL', moneda: 'CLP', precioUnitario: 1206.4, precioPaquete: 180960 },
-                        { idPais: 5, nombrePais: 'Colombia', codigoPais: 'CO', moneda: 'COP', precioUnitario: 4882, precioPaquete: 732300 },
-                    ],
-                    beneficios: [
-                        { idPais: 1, nombrePais: 'Internacional', moneda: 'USD', descripcion: 'Soporte prioritario', monto: 100 },
-                        { idPais: 4, nombrePais: 'Chile', moneda: 'CLP', descripcion: 'Beneficio especial', monto: 50000 },
-                    ]
-                },
-            ];
-            this.gridCostoCreditos.data$.next(datosEjemplo);
-            this.gridCostoCreditos.loading = false;
-        }, 500);
+            });
     }
 
     insertar() {
         if (this.formCostoCreditos.valid) {
-            let jsonEnvio = this.procesarPaquete();
+            let paqueteTemp = this.procesarPaquete();
+            let jsonEnvio = this.transformarParaInsertar(paqueteTemp);
             this.gridCostoCreditos.loading = true;
             this.loaderModal = true;
 
-            // TODO: Reemplazar con el endpoint real cuando esté disponible
-            // this.integraService
-            //   .postJsonResponse(
-            //     constApiPlanificacion.CostoCreditosInsertar,
-            //     jsonEnvio
-            //   )
-            //   .subscribe({
-            //     next: (resp: HttpResponse<CostoCreditoPaquete>) => {
-            //       this.gridCostoCreditos.loading = false;
-            //       this.loaderModal = false;
-            //       this.gridCostoCreditos.loadData();
-            //       this.modalRef.close();
-            //       this.alertaService.mensajeExitoso();
-            //       this.obtener();
-            //     },
-            //     error (error) => {
-            //       this.loaderModal = false;
-            //       let mensaje = this.alertaService.getMessageErrorService(error);
-            //       this.alertaService.notificationWarning(mensaje);
-            //       this.gridCostoCreditos.loading = false;
-            //     },
-            //   });
-
-            // Simulación temporal
-            setTimeout(() => {
-                this.gridCostoCreditos.loading = false;
-                this.loaderModal = false;
-                this.modalRef.close();
-                this.alertaService.mensajeExitoso();
-                this.obtener();
-            }, 500);
+            this.integraService
+                .postJsonResponse(
+                    '/PaqueteTutorVirtual/Insertar',
+                    jsonEnvio
+                )
+                .subscribe({
+                    next: (resp: HttpResponse<any>) => {
+                        this.gridCostoCreditos.loading = false;
+                        this.loaderModal = false;
+                        this.modalRef.close();
+                        this.alertaService.mensajeExitoso();
+                        this.obtener();
+                    },
+                    error: (error) => {
+                        this.loaderModal = false;
+                        this.gridCostoCreditos.loading = false;
+                        let mensaje = this.alertaService.getMessageErrorService(error);
+                        this.alertaService.notificationWarning(mensaje);
+                    },
+                });
         } else {
             this.formCostoCreditos.markAllAsTouched();
         }
@@ -282,45 +463,31 @@ export class CostoCreditosComponent implements OnInit {
 
     actualizar() {
         if (this.formCostoCreditos.valid) {
-            let jsonEnvio = this.procesarPaquete();
+            let paqueteTemp = this.procesarPaquete();
+            let jsonEnvio = this.transformarParaActualizar(paqueteTemp);
             this.gridCostoCreditos.loading = true;
             this.loaderModal = true;
 
-            // TODO: Reemplazar con el endpoint real cuando esté disponible
-            // this.integraService
-            //   .putJsonResponse(
-            //     constApiPlanificacion.CostoCreditosActualizar,
-            //     jsonEnvio
-            //   )
-            //   .subscribe({
-            //     next: (resp: HttpResponse<CostoCreditoPaquete>) => {
-            //       this.gridCostoCreditos.loading = false;
-            //       this.gridCostoCreditos.assignValues(
-            //         this.gridCostoCreditos.dataItemEditTemp,
-            //         resp.body
-            //       );
-            //       this.gridCostoCreditos.loadData();
-            //       this.modalRef.close();
-            //       this.loaderModal = false;
-            //       this.alertaService.mensajeExitoso();
-            //     },
-            //     error: (error) => {
-            //       this.modalRef.close();
-            //       this.loaderModal = false;
-            //       let mensaje = this.alertaService.getMessageErrorService(error);
-            //       this.alertaService.notificationWarning(mensaje);
-            //       this.gridCostoCreditos.loading = false;
-            //     },
-            //   });
-
-            // Simulación temporal
-            setTimeout(() => {
-                this.gridCostoCreditos.loading = false;
-                this.loaderModal = false;
-                this.modalRef.close();
-                this.alertaService.mensajeExitoso();
-                this.obtener();
-            }, 500);
+            this.integraService
+                .putJsonResponse(
+                    '/PaqueteTutorVirtual/Actualizar',
+                    jsonEnvio
+                )
+                .subscribe({
+                    next: (resp: HttpResponse<any>) => {
+                        this.gridCostoCreditos.loading = false;
+                        this.loaderModal = false;
+                        this.modalRef.close();
+                        this.alertaService.mensajeExitoso();
+                        this.obtener();
+                    },
+                    error: (error) => {
+                        this.loaderModal = false;
+                        this.gridCostoCreditos.loading = false;
+                        let mensaje = this.alertaService.getMessageErrorService(error);
+                        this.alertaService.notificationWarning(mensaje);
+                    },
+                });
         } else {
             this.formCostoCreditos.markAllAsTouched();
         }
@@ -329,40 +496,28 @@ export class CostoCreditosComponent implements OnInit {
     eliminar(id: number, index: number) {
         this.gridCostoCreditos.loading = true;
 
-        // TODO: Reemplazar con el endpoint real cuando esté disponible
-        // this.integraService
-        //   .deleteJsonResponse(`${constApiPlanificacion.CostoCreditosEliminar}/${id}`)
-        //   .subscribe({
-        //     next: (resp: HttpResponse<boolean>) => {
-        //       this.gridCostoCreditos.loading = false;
-        //       if (resp.body) {
-        //         this.gridCostoCreditos.data.splice(index, 1);
-        //         this.gridCostoCreditos.loadView();
-        //         this.alertaService.mensajeIcon(
-        //           '¡Eliminado!',
-        //           'El paquete ha sido eliminado.',
-        //           'success'
-        //         );
-        //         this.obtener();
-        //       }
-        //     },
-        //     error: (error) => {
-        //       this.gridCostoCreditos.loading = false;
-        //       let mensaje = this.alertaService.getMessageErrorService(error);
-        //       this.alertaService.notificationWarning(mensaje);
-        //     },
-        //   });
-
-        // Simulación temporal
-        setTimeout(() => {
-            this.gridCostoCreditos.loading = false;
-            this.alertaService.mensajeIcon(
-                '¡Eliminado!',
-                'El paquete ha sido eliminado.',
-                'success'
-            );
-            this.obtener();
-        }, 500);
+        this.integraService
+            .deleteJsonResponse(`/PaqueteTutorVirtual/Eliminar/${id}`)
+            .subscribe({
+                next: (resp: HttpResponse<boolean>) => {
+                    this.gridCostoCreditos.loading = false;
+                    if (resp.body) {
+                        this.gridCostoCreditos.data.splice(index, 1);
+                        this.gridCostoCreditos.loadView();
+                        this.alertaService.mensajeIcon(
+                            '¡Eliminado!',
+                            'El paquete ha sido eliminado correctamente.',
+                            'success'
+                        );
+                        this.obtener();
+                    }
+                },
+                error: (error) => {
+                    this.gridCostoCreditos.loading = false;
+                    let mensaje = this.alertaService.getMessageErrorService(error);
+                    this.alertaService.notificationWarning(mensaje);
+                },
+            });
     }
 
     configurarGrid() {
