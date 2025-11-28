@@ -1,0 +1,186 @@
+<div class="modal-backdrop" (click)="close.emit()">
+  <div class="modal-box messenger-modal" (click)="$event.stopPropagation()">
+    <div class="modal-content-row">
+      <!-- Lado izquierdo: Formulario alumno (por ahora vacío) -->
+      <div class="modal-left">
+        <div *ngIf="loaderdetalleAlumnosPorPSID" class="modal-right-loader">
+          <mat-progress-spinner
+            diameter="60"
+            mode="indeterminate"
+            color="primary"
+          ></mat-progress-spinner>
+        </div>
+
+        <mat-accordion>
+          <div
+            *ngIf="
+              alumnosPorPSID && alumnosPorPSID.length > 0;
+              else noAlumnoRegistrado
+            "
+          >
+            <mat-expansion-panel
+              *ngFor="let alumno of alumnosPorPSID; let idx = index"
+              [expanded]="panelOpenIndex === idx"
+              (expandedChange)="onPanelExpanded($event, idx)"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title
+                  >Alumno: {{ alumno.idAlumno }} | Email: {{ alumno.email }} |
+                  Fecha: {{ alumno.fechaModificacionAlumno | date : "short" }}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="oportunidad-datos">
+                <app-whatsapp-facebook-modal-oportunidad
+                  [celularAlumno]="null"
+                  [abrirModalTrigger]="false"
+                  [identificadorAmbitoPagina]="identificadorAmbitoPagina"
+                  [idAlumnoMessenger]="alumno.idAlumno"
+                >
+                </app-whatsapp-facebook-modal-oportunidad>
+              </div>
+
+              <div class="oportunidad-datos mt-4 py-2 px-4">
+                <div class="text-center mb-2 fs-6">
+                  <strong>Historial de oportunidades creadas:</strong>
+                </div>
+                <table
+                  *ngIf="
+                    alumno.oportunidades && alumno.oportunidades.length > 0;
+                    else sinOportunidades
+                  "
+                  class="table table-bordered table-sm w-100 mt-2"
+                >
+                  <thead style="background-color: #ddd">
+                    <tr>
+                      <th scope="col" class="text-center">IdOportunidad</th>
+                      <th scope="col" class="text-center">Fecha Registro</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let oportunidad of alumno.oportunidades">
+                      <td class="text-center">
+                        {{ oportunidad.idOportunidad }}
+                      </td>
+                      <td class="text-center">
+                        {{
+                          oportunidad.fechaModificacionOportunidad
+                            | date : "short"
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ng-template #sinOportunidades>
+                  <span style="color: #777">Sin oportunidades registradas</span>
+                </ng-template>
+              </div>
+            </mat-expansion-panel>
+          </div>
+
+          <ng-template #noAlumnoRegistrado>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Sin Alumno Registrado </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="oportunidad-datos">
+                <app-whatsapp-facebook-modal-oportunidad
+                  [celularAlumno]="null"
+                  [abrirModalTrigger]="false"
+                  [identificadorAmbitoPagina]="identificadorAmbitoPagina"
+                >
+                </app-whatsapp-facebook-modal-oportunidad>
+              </div>
+            </mat-expansion-panel>
+          </ng-template>
+        </mat-accordion>
+      </div>
+
+      <!-- Lado derecho: Chat Messenger -->
+      <div class="modal-right">
+        <div *ngIf="loaderReloadChat" class="modal-right-loader">
+          <mat-progress-spinner
+            diameter="60"
+            mode="indeterminate"
+            color="primary"
+          ></mat-progress-spinner>
+        </div>
+
+        <div class="chat-header">
+          <div style="display: flex; align-items: center">
+            <mat-icon>account_circle</mat-icon>
+            <div class="chat-code" style="margin-left: 12px">
+              {{ identificadorAmbitoPagina }}
+            </div>
+          </div>
+          <button
+            mat-icon-button
+            class="reload-btn-modal"
+            (click)="reloadChats()"
+            matTooltip="Recargar Chats"
+          >
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+        <div class="chat-history" #chatHistory>
+          <div
+            *ngFor="let msg of historialChats"
+            [ngClass]="{
+              'msg-row': true,
+              sent: msg.esMensajeSaliente,
+              received: !msg.esMensajeSaliente
+            }"
+          >
+            <div class="msg-bubble">
+              <span>{{ msg.contenido }}</span>
+              <!-- Adjuntos -->
+              <ng-container *ngIf="msg.tipoAdjunto && msg.urlAdjunto">
+                <ng-container
+                  *ngIf="msg.tipoAdjunto === 'image'; else otherAdjunto"
+                >
+                  <div class="msg-adjunto-img">
+                    <img
+                      [src]="msg.urlAdjunto"
+                      alt="Imagen adjunta"
+                      style="max-width: 220px; max-height: 180px"
+                    />
+                  </div>
+                </ng-container>
+                <ng-template #otherAdjunto>
+                  <div class="msg-adjunto-link" style="margin-top: 0.5rem">
+                    <a
+                      [href]="msg.urlAdjunto"
+                      target="_blank"
+                      rel="noopener"
+                      style="
+                        color: #0695ff;
+                        text-decoration: underline;
+                        word-break: break-all;
+                      "
+                    >
+                      {{ msg.urlAdjunto }}
+                    </a>
+                  </div>
+                </ng-template>
+              </ng-container>
+              <div class="msg-time">
+                {{ msg.fechaEvento | date : "short" }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input
+            type="text"
+            class="chat-input"
+            [(ngModel)]="newMessage"
+            placeholder="Escribe un mensaje..."
+            (keydown.enter)="enviarMensajeTexto()"
+          />
+          <button class="chat-send-btn" (click)="enviarMensajeTexto()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

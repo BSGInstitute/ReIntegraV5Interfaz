@@ -1314,7 +1314,6 @@ export const constApiOperaciones = {
 
 export const constApiMarketing = {
   ///Prueba
-
   EjecutarCampaniaGeneralEnvioWhatsApp:
     "/ConfiguracionWhatsApp/EjecutarCampaniaGeneralEnvioWhatsApp",
   EjecutarCampaniaGeneralEnvioWhatsAppBoton:
@@ -2102,7 +2101,6 @@ export const constApiMarketing = {
     "/AsignacionManual/ObtenerOportunidades",
   AsignacionManualObtenerFiltros: "/AsignacionManual/ObtenerFiltros",
   AsignarManualmenteAsesorAsignarAsesor: "/AsignacionManual/AsignarAsesor",
-  AsignarManualmenteAsesorCambioActividadCabeceraAgenda: "/AsignacionManual/CambioActividadCabeceraAgenda",
   AsignarManualmenteCerrarOportunidadOD:
     "/AsignacionManual/CerrarOportunidadOD",
   AsignarManualmenteCerrarOportunidadOM:
@@ -2395,6 +2393,15 @@ export const constApiMarketing = {
   EnviarMensajeApigraphWhatsappArchivo:
   "/CampaniaGeneralWhatsApp/WhatsAppMensajeArchivo/",
 
+  // MESSENGER FACEBOOK CHAT
+  ObtenerGrillaMessengerFacebookChat:
+    "/MessengerFacebookChat/ObtenerGrillaChats",
+  ObtenerHistorialChatPorPSID:
+    "/MessengerFacebookChat/ObtenerHistorialChatPorPSID",
+  EnviarMensajeTextoMessengerFacebook:
+    "/MessengerFacebookChat/EnviarMensajeTexto",
+  ObtenerDatosGeneralesAlumnosPorPSID:
+    "/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID",
 
 };
 
@@ -3826,7 +3833,7 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorDetalleInsertar:"/ProgramageneralproblemaFactorDetalle/Insertar",
   ProgramageneralproblemaFactorDetalleActualizar:"/ProgramageneralproblemaFactorDetalle/Actualizar",
   ProgramageneralproblemaFactorDetalleEliminar:"/ProgramageneralproblemaFactorDetalle/Eliminar",
-  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/ExistePorNombre",
+  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/Existe",
   ProgramageneralproblemaFactorSolucionObtener:"/ProgramageneralproblemaFactorSolucion/Obtener",
   ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
   ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",

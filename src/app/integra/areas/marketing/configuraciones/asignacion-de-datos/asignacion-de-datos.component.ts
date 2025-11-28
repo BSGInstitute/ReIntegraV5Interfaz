@@ -2040,16 +2040,6 @@ IniciarAsignacion() {
             'Se termino la asignacion'
           );
           this.EsAsignacion = false;
-          this.integraService
-              .postJsonResponse(
-                constApiMarketing.AsignarManualmenteAsesorCambioActividadCabeceraAgenda,
-                JSON.stringify({IdAsesor: 0}) // 0 indica que es para todos los asesores registrados en mkt.T_AsesoresAgendaV6
-              )
-              .subscribe({
-                next: (response: HttpResponse<any>) => {
-                  console.log(response.body);
-                }
-              });
         }
         this.EsAsignacion = false;
       },

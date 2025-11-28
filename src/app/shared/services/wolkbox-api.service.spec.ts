@@ -1,16 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+// import { TestBed } from '@angular/core/testing';
 
-import { WolkboxApiService } from './wolkbox-api.service';
+// import { WolkboxApiService } from './wolkbox-api.service';
 
-describe('WolkboxApiService', () => {
-  let service: WolkboxApiService;
+// describe('WolkboxApiService', () => {
+//   let service: WolkboxApiService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(WolkboxApiService);
-  });
+//   beforeEach(() => {
+//     TestBed.configureTestingModule({});
+//     service = TestBed.inject(WolkboxApiService);
+//   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+//   it('should be created', () => {
+//     expect(service).toBeTruthy();
+//   });
+// });

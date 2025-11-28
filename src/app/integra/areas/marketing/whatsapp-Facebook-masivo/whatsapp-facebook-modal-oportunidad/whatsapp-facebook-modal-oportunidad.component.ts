@@ -51,6 +51,8 @@ interface DataDialog {
 export class WhatsappFacebookModalOportunidadComponent
   implements OnInit, OnChanges
 {
+  @Input() identificadorAmbitoPagina?: string;
+  @Input() idAlumnoMessenger?: number;
   @Input() celularAlumno: string;
   @ViewChild('modalExtraerRegistros') modalExtraerRegistros: DataDialog;
 
@@ -153,6 +155,9 @@ export class WhatsappFacebookModalOportunidadComponent
     this.formExtraccionRegistros = this.formBuilder.group({
       rangoExtraccion: [null, Validators.required],
     });
+
+    if (this.idAlumnoMessenger)
+      this.obtenerAlumnosMessengerPorId(this.idAlumnoMessenger);
   }
 
   get formRegistro(): IFormRegistroOportunidad {
@@ -617,6 +622,11 @@ export class WhatsappFacebookModalOportunidadComponent
   guardarContactoOportunidad(idAlumno: number) {
     //Insertamos el alumno y IdOportunidad
     let jsonEnvio = this.recuperarFormValueRef();
+
+    if (this.identificadorAmbitoPagina)
+      jsonEnvio.alumno.identificadorAmbitoPagina =
+        this.identificadorAmbitoPagina;
+
     let constApi = '';
     jsonEnvio.alumno.id =
       jsonEnvio.alumno.id == 0 ? idAlumno : jsonEnvio.alumno.id;

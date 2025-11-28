@@ -252,6 +252,7 @@ export interface IAlumnoFormularioOportunidad {
   celular2?: string;
   idEmpresa?: number;
   comentario?: string;
+  identificadorAmbitoPagina?: string;
 }
 
 export interface IOportunidadFormulario {

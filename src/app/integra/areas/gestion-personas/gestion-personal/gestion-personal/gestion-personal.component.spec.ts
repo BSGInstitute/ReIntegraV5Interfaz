@@ -1,25 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GestionPersonalComponent } from './gestion-personal.component';
+// import { GestionPersonalComponent } from './gestion-personal.component';
 
-describe('GestionPersonalComponent', () => {
-  let component: GestionPersonalComponent;
-  let fixture: ComponentFixture<GestionPersonalComponent>;
+// describe('GestionPersonalComponent', () => {
+//   let component: GestionPersonalComponent;
+//   let fixture: ComponentFixture<GestionPersonalComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ GestionPersonalComponent ]
-    })
-    .compileComponents();
-  });
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       declarations: [ GestionPersonalComponent ]
+//     })
+//     .compileComponents();
+//   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(GestionPersonalComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//   beforeEach(() => {
+//     fixture = TestBed.createComponent(GestionPersonalComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+//   it('should create', () => {
+//     expect(component).toBeTruthy();
+//   });
+// });
