@@ -70,13 +70,14 @@ export class ReporteLlamadaEntranteComponent implements OnInit {
     { title: 'LC', field: 'lc', campo: 'llamadaContestada' },
     { title: 'LNCD', field: 'lncd', campo: 'noContestoDisponible' },
     { title: 'LNCO', field: 'lnco', campo: 'noContestoOcupado' },
-    { title: 'LD', field: 'ld', campo: 'llamadaDevuelta' },
-    { title: 'LF', field: 'lf', campo: 'llamadaFallida' },
+    // { title: 'LD', field: 'ld', campo: 'llamadaDevuelta' },
+    // { title: 'LF', field: 'lf', campo: 'llamadaFallida' },
   ];
   origenReporte = [
-    { title: '3cx', field: 'trescx', nombre: '3cx' },
-    { title: 'R', field: 'ringover', nombre: 'Ringover' },
-    { title: 'W', field: 'wolkbox', nombre: 'Wolkbox' },
+    // { title: '3cx', field: 'trescx', nombre: '3cx' },
+    // { title: 'R', field: 'ringover', nombre: 'Ringover' },
+    // { title: 'W', field: 'wolkbox', nombre: 'Wolkbox' },
+    { title: 'Wavix', field: 'wavix', nombre: 'Wavix' },
   ];
   horasReporte: number[] = [];
   ngOnInit(): void {
