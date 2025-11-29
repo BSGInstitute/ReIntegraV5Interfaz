@@ -41,6 +41,7 @@ import { AsociarFeedbackProgramasComponent } from './configuracionPortalWeb/asoc
 import { AsociarTagsProgramasComponent } from './configuracionPortalWeb/asociar-tags-programas/asociar-tags-programas.component';
 import { VersionMaterialComponent } from './maestros/version-material/version-material.component';
 import { BsgCelularesComponent } from './maestros/bsgcelulares/bsgcelulares.component';
+import { CostoCreditosComponent } from './maestros/costo-creditos/costo-creditos.component';
 
 import { MaterialAdicionalAulaVirtualComponent } from './configuracion-portal-web/material-adicional-aula-virtual/material-adicional-aula-virtual.component';
 import { GestionMaterialAulaVirtualComponent } from './configuracion-portal-web/gestion-material-aula-virtual/gestion-material-aula-virtual.component';
@@ -102,7 +103,7 @@ import { EsquemaPonderacionEvaluacionComponent } from './configuracionPortalWeb/
 import { FeedbackEvaluacionAulavirtualComponent } from './configuracionPortalWeb/feedback-evaluacion-aulavirtual/feedback-evaluacion-aulavirtual.component';
 import { DocumentosPortalWebComponent } from './configuracionPortalWeb/documentos-portal-web/documentos-portal-web.component';
 import { EnvioMaterialDigitalComponent } from './gestion-material/envio-material-digital/envio-material-digital.component';
-import { EntregaMaterialFisicoComponent}from './gestion-material/entrega-material-fisico/entrega-material-fisico.component';
+import { EntregaMaterialFisicoComponent } from './gestion-material/entrega-material-fisico/entrega-material-fisico.component';
 import { EsquemaEvaluacionDetalleComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-datos-pgeneral/pg-criterio-evaluacion/esquema-evaluacion-detalle/esquema-evaluacion-detalle.component';
 import { PgBeneficiosConfiguracionComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-beneficios-configuracion/pg-beneficios-configuracion.component';
 import { PgFactoresMotivacionComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-factores-motivacion/pg-factores-motivacion.component';
@@ -166,12 +167,13 @@ import { PgProblemasClienteFormComponent } from './configuracion-programas-capac
     TroncalesComponent,
     VersionMaterialComponent,
     BsgCelularesComponent,
+    CostoCreditosComponent,
     MaterialAdicionalAulaVirtualComponent,
     GestionMaterialAulaVirtualComponent,
     PlantillaDocumentosPortalWebComponent,
     TagsAulaVirtualComponent,
-    PlantillaDocumentosPortalWebComponent
-    ,ReporteControlTareaAlumnoComponent,
+    PlantillaDocumentosPortalWebComponent,
+    ReporteControlTareaAlumnoComponent,
     ReporteEncuestaInicialComponent,
     ReporteEncuestaIntermediaComponent,
     ReporteEncuestaFinalComponent,

@@ -48,3 +48,11 @@ export interface IPendientesLinkedIn {
   cuentaAsociada: number
   urlPerfilLinkedIn: string
 }
+
+
+export interface ICuentaLinkedin{
+  id:number;
+  nombre:string;
+  nroCuenta:number;
+  descripcion:string;
+}
