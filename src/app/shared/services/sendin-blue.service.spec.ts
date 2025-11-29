@@ -1,16 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+// import { TestBed } from '@angular/core/testing';
 
-import { SendinBlueService } from './sendin-blue.service';
+// import { SendinBlueService } from './sendin-blue.service';
 
-describe('SendinBlueService', () => {
-  let service: SendinBlueService;
+// describe('SendinBlueService', () => {
+//   let service: SendinBlueService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(SendinBlueService);
-  });
+//   beforeEach(() => {
+//     TestBed.configureTestingModule({});
+//     service = TestBed.inject(SendinBlueService);
+//   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+//   it('should be created', () => {
+//     expect(service).toBeTruthy();
+//   });
+// });

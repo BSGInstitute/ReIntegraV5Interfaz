@@ -1314,7 +1314,6 @@ export const constApiOperaciones = {
 
 export const constApiMarketing = {
   ///Prueba
-
   EjecutarCampaniaGeneralEnvioWhatsApp:
     "/ConfiguracionWhatsApp/EjecutarCampaniaGeneralEnvioWhatsApp",
   EjecutarCampaniaGeneralEnvioWhatsAppBoton:
@@ -2034,8 +2033,11 @@ export const constApiMarketing = {
   ObtenerRegistroPendientePageLinkedIn: "/LinkedInApi/ObtenerReportePendientes",
   ActualizarRegistroLandingPageLinkedIn: "/LinkedInApi/Actualizar",
   SubirOportunidadesPendientesLinkedIn: "/LinkedInApi/SubirOportunidadesPendientes",
+  SubirOportunidadesPendientesSeleccionadasLinkedIn: "/LinkedInApi/SubirOportunidadesPendientesSeleccionadas",
   ValidarEstadodeSubidaOportunidadLinkedIn: "/LinkedInApi/ValidarCreacionOportunidadLinkedinEstado",
   ValidarObtencionLeadLinkedinEstado : "/LinkedInApi/ValidarObtencionLeadLinkedinEstado",
+  LinkedInObtenerCuentasActivas: "/LinkedInApi/ObtenerCuentasActivas",
+  ValidarObtencionLeadLinkedinEstadoPorCuenta : "/LinkedInApi/ValidarObtencionLeadLinkedinEstadoPorCuenta",
   ObtenerRegistroLandingPageLinkedInByFecha:
     "/LinkedInApi/ObtenerReporteLeadsByFecha",
   //Reporte Chat Bot
@@ -2391,6 +2393,15 @@ export const constApiMarketing = {
   EnviarMensajeApigraphWhatsappArchivo:
   "/CampaniaGeneralWhatsApp/WhatsAppMensajeArchivo/",
 
+  // MESSENGER FACEBOOK CHAT
+  ObtenerGrillaMessengerFacebookChat:
+    "/MessengerFacebookChat/ObtenerGrillaChats",
+  ObtenerHistorialChatPorPSID:
+    "/MessengerFacebookChat/ObtenerHistorialChatPorPSID",
+  EnviarMensajeTextoMessengerFacebook:
+    "/MessengerFacebookChat/EnviarMensajeTexto",
+  ObtenerDatosGeneralesAlumnosPorPSID:
+    "/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID",
 
 };
 
@@ -3822,7 +3833,7 @@ export const constApiPlanificacion = {
   ProgramageneralproblemaFactorDetalleInsertar:"/ProgramageneralproblemaFactorDetalle/Insertar",
   ProgramageneralproblemaFactorDetalleActualizar:"/ProgramageneralproblemaFactorDetalle/Actualizar",
   ProgramageneralproblemaFactorDetalleEliminar:"/ProgramageneralproblemaFactorDetalle/Eliminar",
-  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/ExistePorNombre",
+  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/Existe",
   ProgramageneralproblemaFactorSolucionObtener:"/ProgramageneralproblemaFactorSolucion/Obtener",
   ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
   ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",
