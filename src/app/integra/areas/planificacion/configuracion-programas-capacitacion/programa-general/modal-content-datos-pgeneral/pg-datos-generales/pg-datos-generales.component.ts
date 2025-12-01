@@ -312,7 +312,9 @@ export class PgDatosGeneralesComponent implements OnInit {
   configurarGridDatosAdicionales() {
     this.gridDatosAdicionales.formGroup = this._formBuilder.group({
       duracion: null,
-      creditoDisponibleTutorVirtual: null,
+      creditoDisponibleTutorVirtual: [null, [Validators.min(0)]],
+      cantidadWebinarAsignado: [null, [Validators.max(999), Validators.min(0)]],
+      cantidadMesAccesoAdicionalWebinar: [null, [Validators.max(99), Validators.min(0)]],
     });
     this.gridDatosAdicionales.cellClickEvent$.subscribe((resp) => { });
     this.gridDatosAdicionales.cellCloseEvent$.subscribe((resp) => {
@@ -378,6 +380,8 @@ export class PgDatosGeneralesComponent implements OnInit {
             nombreVersion: modalidad.nombre,
             duracion: 0,
             creditoDisponibleTutorVirtual: 0,
+            cantidadWebinarAsignado: 0,
+            cantidadMesAccesoAdicionalWebinar: 0
           };
           return item;
         });
@@ -397,10 +401,53 @@ export class PgDatosGeneralesComponent implements OnInit {
     this.asignarDocente = event.includes(1) ? true : false;
   }
   actualizarPGeneralVersion(listaVersiones: PgeneralVersionPrograma[]) {
+    // Validacion de campos
+    for (const version of listaVersiones) {
+      if (version.cantidadMesAccesoAdicionalWebinar == null) {
+        version.cantidadMesAccesoAdicionalWebinar = 0;
+      }
+      if (version.cantidadMesAccesoAdicionalWebinar == null) {
+        version.cantidadMesAccesoAdicionalWebinar = 0;
+      }
+      if (version.creditoDisponibleTutorVirtual == null) {
+        version.creditoDisponibleTutorVirtual = 0;
+      }
+      if (
+        version.cantidadWebinarAsignado > 999 ||
+        version.cantidadWebinarAsignado < 0 ||
+        !Number.isInteger(version.cantidadWebinarAsignado)
+      ) {
+        this._alertaService.notificationWarning(
+          'El campo "N° Webinar Asignados" debe ser un número entero entre 0 y 999.'
+        );
+        return;
+      }
+      if (
+        version.cantidadMesAccesoAdicionalWebinar > 99 ||
+        version.cantidadMesAccesoAdicionalWebinar < 0 ||
+        !Number.isInteger(version.cantidadMesAccesoAdicionalWebinar)
+      ) {
+        this._alertaService.notificationWarning(
+          'El campo "N° Meses Adicionales Acceso Webinar" debe ser un número entero entre 0 y 99.'
+        );
+        return;
+      }
+      if (
+        version.creditoDisponibleTutorVirtual < 0 ||
+        !Number.isInteger(version.creditoDisponibleTutorVirtual)
+      ) {
+        this._alertaService.notificationWarning(
+          'El campo "N° Créditos Asignados Tutor Virtual" debe ser un número entero mayor o igual a 0.'
+        );
+        return;
+      }
+    }
+
     const jsonEnvio = {
       IdPgeneral: this.pgeneralService.dataItemPgeneral.id,
       versiones: listaVersiones,
     };
+
     this._integraService
       .postJsonResponse(
         '/ProgramaGeneral/ActualizarVersionPrograma',
