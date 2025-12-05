@@ -3853,6 +3853,10 @@ export const constApiPlanificacion = {
   ProgramaMotivacionActualizar: "/ProgramaMotivacion/Actualizar",
   ProgramaMotivacionEliminar: "/ProgramaMotivacion/Eliminar",
   ProgramaGeneralProblemaFactorObtenerCombos: "/ProgramaGeneralProblemaFactor/ObtenerCombo",
+
+
+
+  MontoPagoLogObtenerReporteMontoPagoHistorico : "/MontoPagoLog/ObtenerReporteMontoPagoHistorico",
 };
 
 export const constApiFinanzas = {
