@@ -1261,13 +1261,11 @@ export class CronogramaPagoComponent implements OnInit {
   }
 
   filtrarMontosPagoPorDescuento(tipoDescuento: any) {
-    // Si el tipo de descuento no tiene información o no tiene porcentajes, mostrar todos
     if (!tipoDescuento) {
       this.montoPagoFiltro = this.montoPagoFiltroAux;
       return;
     }
 
-    // Verificar si algún porcentaje es mayor al 20%
     const porcentajeMayorA20 =
       (tipoDescuento.porcentajeGeneral &&
         tipoDescuento.porcentajeGeneral > 20) ||
@@ -1276,7 +1274,6 @@ export class CronogramaPagoComponent implements OnInit {
       (tipoDescuento.porcentajeCuotas && tipoDescuento.porcentajeCuotas > 20);
 
     if (porcentajeMayorA20) {
-      // Filtrar solo los que contengan "Crédito" en el nombre
       this.montoPagoFiltro = this.montoPagoFiltroAux.filter(
         (x: IMontoPagoCronograma) =>
           x.nombre.toLowerCase().includes('crédito') ||
