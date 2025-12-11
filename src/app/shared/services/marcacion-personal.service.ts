@@ -191,7 +191,7 @@ export class MarcacionPersonalService {
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        this.validarYRegistrarMarcacion(usuario, tipoBoton, result.value, tipoTexto);
+        this.registrarMarcacion(usuario, tipoBoton, result.value, tipoTexto);
       }
     });
 
@@ -227,12 +227,8 @@ export class MarcacionPersonalService {
   ): void {
     this.userService.dataPersonal$.subscribe({
       next: (response) => {
-        console.log('🔍 [DEBUG] Response completo:', response);
 
         if (response != null && response.datosPersonal) {
-          console.log('📋 [DEBUG] datosPersonal completo:', response.datosPersonal);
-          console.log('📄 [DEBUG] Todas las propiedades:', Object.keys(response.datosPersonal));
-
           // Intentar obtener el documento desde diferentes propiedades posibles
           const documentoPersonal = (
             response.datosPersonal.documento ||
@@ -245,13 +241,7 @@ export class MarcacionPersonalService {
 
           const codigoIngresado = codigoDocumento.trim().toUpperCase();
 
-          console.log('✅ [DEBUG] Documento encontrado:', documentoPersonal);
-          console.log('✅ [DEBUG] Código ingresado:', codigoIngresado);
-
           if (!documentoPersonal) {
-            console.error('❌ [ERROR] No se encontró ningún campo de documento');
-            console.error('📋 [ERROR] Campos intentados: documento, nroDocumento, numeroDocumento, dni, numeroDocumentoIdentidad, docIdentidad');
-            console.error('📄 [ERROR] Propiedades disponibles:', Object.keys(response.datosPersonal));
             this.alertaService.notificationError(
               'No se pudo obtener el documento del personal. Contacte al administrador.'
             );
@@ -266,15 +256,12 @@ export class MarcacionPersonalService {
             return;
           }
 
-          console.log('✅ [SUCCESS] Validación exitosa, registrando marcación');
           this.registrarMarcacion(usuario, tipoBoton, codigoIngresado, tipoTexto);
         } else {
-          console.error('❌ [ERROR] response es null o datosPersonal no existe');
           this.alertaService.notificationError('No se pudo obtener los datos del personal');
         }
       },
       error: (error) => {
-        console.error('❌ [ERROR] Error al obtener datos del personal:', error);
         this.alertaService.notificationError('Error al validar documento');
       },
     });
