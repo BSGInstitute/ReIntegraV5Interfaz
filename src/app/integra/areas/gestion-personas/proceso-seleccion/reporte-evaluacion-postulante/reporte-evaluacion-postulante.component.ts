@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { constApiGestionPersonal } from '@environments/constApi';
+import { constApiGestionPersonal, constApiPlanificacion } from '@environments/constApi';
 import { IntegraService } from '@shared/services/integra.service';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import {
@@ -150,15 +150,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
   ngOnInit(): void {
     this.obtenerCombosModulo();
   }
-  ngAfterViewInit(): void {
-    let fechaActual = new Date();
-    this.formFiltro
-      .get('fechaFin')
-      .setValue(new Date(fechaActual.setHours(23, 59, 59, 999)));
-    this.formFiltro
-      .get('fechaInicio')
-      .setValue(new Date(fechaActual.setHours(0, 0, 0, 0)));
-  }
+  
   get fechaActual(): Date {
     return new Date();
   }
@@ -436,6 +428,26 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       });
   }
   generarGridGmatPma(reporte: ReporteEvaluacionPostulante) {
+    if (
+      !reporte ||
+      !reporte.postulantes ||
+      reporte.postulantes.length === 0 ||
+      !reporte.datosEvaluacionAgrupado ||
+      reporte.datosEvaluacionAgrupado.length === 0
+    ) {
+      this.postulantesTemp = [];
+      this.gridReportePostulante.data = [];
+      this.loadingReportePostulante = false;
+      this.showReportePostulante = false;
+
+      this.alertaService.notificationInfo(
+        'No se encontraron resultados para el reporte de postulantes.'
+      );
+
+      return;
+    }
+
+    // ======= LO QUE YA TENÍAS A PARTIR DE AQUÍ =======
     reporte.postulantes.forEach((x) => {
       let clasificacionNEO: ClasificacionNeo = {
         idProcesoSeleccion: 0,
@@ -531,7 +543,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     for (let item in registroRP) {
       datosFinal.push(registroRP[item]);
     }
-    console.log(datosFinal);
+
     let evaluaciones = datosFinal.map((x) => x['evaluacion']);
     let colores = [
       'color1',
@@ -557,6 +569,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       contadorColor++;
       this.colorEvaluaciones.push(item);
     }
+
     this.gridReportePostulante.data = datosFinal;
     this.loadingReportePostulante = false;
     this.showReportePostulante = true;
@@ -1501,4 +1514,22 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
+  obtenerModalInformacion() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.PartnerPwObtener)
+      .subscribe({
+        next: (resp: HttpResponse<any[]>) => {
+         
+        },
+        error: (error) => {
+          console.log('aqui entro error');
+          
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+
 }
