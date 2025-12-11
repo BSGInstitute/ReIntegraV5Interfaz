@@ -66,7 +66,6 @@ export class MarcacionPersonalService {
    */
   inicializarMarcacion(usuario: string): void {
     this.verificarAreaPersonal(usuario);
-    this.iniciarReloj();
   }
 
   /**
@@ -79,7 +78,6 @@ export class MarcacionPersonalService {
       next: (response) => {
         if (response != null && response.datosPersonal) {
           const areaAbrev = response.datosPersonal.areaAbrev;
-          // No mostrar botones si el área es OP (Operaciones) o VE (Ventas)
           if (areaAbrev && areaAbrev !== 'OP' && areaAbrev !== 'VE') {
             this._mostrarBotonesMarcacion$.next(true);
             this.iniciarMonitoreoInactividad(usuario);
@@ -98,13 +96,118 @@ export class MarcacionPersonalService {
   }
 
   /**
-   * Inserta una marcación del personal
+   * Inserta una marcación del personal con validación de DNI
    * @param usuario Usuario del personal
    * @param tipoBoton Tipo de marcación (1: Ingreso, 2: Salida Almuerzo, 3: Llegada Almuerzo, 4: Salida)
    */
   insertarMarcacion(usuario: string, tipoBoton: TipoMarcacion): void {
     const tipoTexto = this.obtenerTextoTipoMarcacion(tipoBoton);
 
+    // Mostrar modal para solicitar código de documento
+    this.solicitarCodigoDocumento(usuario, tipoBoton, tipoTexto);
+  }
+
+  /**
+   * Muestra modal para solicitar código del documento de identidad
+   * @param usuario Usuario del personal
+   * @param tipoBoton Tipo de marcación
+   * @param tipoTexto Texto descriptivo del tipo
+   */
+  private solicitarCodigoDocumento(
+    usuario: string,
+    tipoBoton: TipoMarcacion,
+    tipoTexto: string
+  ): void {
+    Swal.fire({
+      title: 'Asistencia',
+      html: `
+        <p style="margin-bottom: 20px;">Para confirmar su marcación ingrese el <b>Código</b> de su <b>documento de identidad</b> y click en <b>'Confirmar'</b></p>
+        <div style="text-align: left; margin: 0 auto; max-width: 400px;">
+          <label style="font-weight: bold; margin-bottom: 5px; display: block;">CÓDIGO DE DOCUMENTO</label>
+          <input type="text" id="inputDNI" class="swal2-input" placeholder="Ingrese código" style="margin: 0; text-transform: uppercase;">
+        </div>
+      `,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cerrar',
+      confirmButtonColor: '#5cb85c',
+      cancelButtonColor: '#d33',
+      allowOutsideClick: false,
+      preConfirm: () => {
+        const input = document.getElementById('inputDNI') as HTMLInputElement;
+        const codigo = input?.value?.trim().toUpperCase();
+        if (!codigo) {
+          Swal.showValidationMessage('Debe ingresar el código del documento');
+          return false;
+        }
+        return codigo;
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.validarYRegistrarMarcacion(usuario, tipoBoton, result.value, tipoTexto);
+      }
+    });
+
+    // Auto-focus en el input cuando se abre el modal
+    setTimeout(() => {
+      const input = document.getElementById('inputDNI') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.addEventListener('input', (e) => {
+          const target = e.target as HTMLInputElement;
+          target.value = target.value.toUpperCase();
+        });
+      }
+    }, 100);
+  }
+
+  /**
+   * Valida el código del documento y registra la marcación
+   * @param usuario Usuario del personal
+   * @param tipoBoton Tipo de marcación
+   * @param codigoDocumento Código del documento ingresado
+   * @param tipoTexto Texto descriptivo del tipo
+   */
+  private validarYRegistrarMarcacion(
+    usuario: string,
+    tipoBoton: TipoMarcacion,
+    codigoDocumento: string,
+    tipoTexto: string
+  ): void {
+    // Obtener el documento del usuario desde UserService
+    this.userService.dataPersonal$.subscribe({
+      next: (response) => {
+        if (response != null && response.datosPersonal) {
+          const documentoPersonal = response.datosPersonal.documento?.toString().trim();
+
+          if (codigoDocumento !== documentoPersonal) {
+            this.mostrarModalError('No son los datos correctos, intentar otra vez.');
+            return;
+          }
+          this.registrarMarcacion(usuario, tipoBoton, tipoTexto);
+        } else {
+          this.alertaService.notificationError('No se pudo obtener los datos del personal');
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener datos del personal:', error);
+        this.alertaService.notificationError('Error al validar documento');
+      },
+    });
+  }
+
+  /**
+   * Registra la marcación en el servidor
+   * @param usuario Usuario del personal
+   * @param tipoBoton Tipo de marcación
+   * @param tipoTexto Texto descriptivo del tipo
+   */
+  private registrarMarcacion(
+    usuario: string,
+    tipoBoton: TipoMarcacion,
+    tipoTexto: string
+  ): void {
     this.integraService
       .getJsonResponse(
         `${constApiGlobal.RegistroMarcacionInsertarMarcacionPersonal}/${usuario}/${tipoBoton}`
@@ -112,27 +215,87 @@ export class MarcacionPersonalService {
       .subscribe({
         next: (resp: HttpResponse<IInsertarMarcacionResponse>) => {
           const data = resp.body;
+
           if (data?.esInsertado && !data?.esMarcado) {
-            this.alertaService.notificationSuccess(
-              `La marcación de ${tipoTexto} se realizó correctamente`
-            );
-          } else if (!data?.esInsertado && data?.esMarcado) {
-            this.alertaService.notificationWarning(
-              `Ud. ya realizó la marcación de ${tipoTexto}`
-            );
-          } else {
-            this.alertaService.notificationError(
-              `Hubo un problema en la marcación de ${tipoTexto}`
-            );
+            this.mostrarModalExitoso(tipoTexto);
+          }
+          else if (!data?.esInsertado && data?.esMarcado) {
+            this.mostrarModalYaMarco();
+          }
+          else if (data?.cumpleTiempoMinimo === false && tipoBoton === TipoMarcacion.LlegadaAlmuerzo) {
+            this.mostrarModalTiempoMinimo();
+          }
+          else {
+            this.mostrarModalError(`Hubo un problema en la marcación de ${tipoTexto}`);
           }
         },
         error: (error) => {
           let mensaje = this.alertaService.getMessageErrorService(error);
-          this.alertaService.notificationError(
-            `Error al registrar marcación: ${mensaje}`
-          );
+          this.mostrarModalError(`Error al registrar marcación: ${mensaje}`);
         },
       });
+  }
+
+  /**
+   * Muestra modal de error
+   * @param mensaje Mensaje de error
+   */
+  private mostrarModalError(mensaje: string): void {
+    Swal.fire({
+      title: 'Error',
+      text: mensaje,
+      icon: 'error',
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#d33',
+    });
+  }
+
+  /**
+   * Muestra modal de error por tiempo mínimo de refrigerio
+   */
+  private mostrarModalTiempoMinimo(): void {
+    Swal.fire({
+      title: 'Error',
+      html: 'El tiempo mínimo dedicado al refrigerio no podrá ser inferior a <b>45 minutos</b>, probar nuevamente cuando haya transcurrido ese tiempo o más, gracias.',
+      icon: 'error',
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#d33',
+    });
+  }
+
+  /**
+   * Muestra modal indicando que ya marcó
+   */
+  private mostrarModalYaMarco(): void {
+    Swal.fire({
+      title: 'Alerta',
+      text: 'Usted ya marcó esta asistencia.',
+      icon: 'info',
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#0d6efd',
+    });
+  }
+
+  /**
+   * Muestra modal de marcación exitosa
+   * @param tipoTexto Tipo de marcación realizada
+   */
+  private mostrarModalExitoso(tipoTexto: string): void {
+    Swal.fire({
+      title: 'Exitoso',
+      html: `
+        <h6>Gracias por registrar su asistencia de <b>${tipoTexto}</b>.</h6>
+        <br>
+        <p style="font-size: 12px; text-align: left;">
+          <b>Nota:</b> Dentro del marco del reglamento interno se considera falta grave al incumplimiento de las obligaciones.<br>
+          <b>Capítulo VI:</b> Normas de control de asistencia al trabajo.<br>
+          <b>Artículo 23°</b> "El trabajador deberá proceder personalmente a registrar su ingreso y su salida de la institución..."
+        </p>
+      `,
+      icon: 'success',
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#5cb85c',
+    });
   }
 
   /**

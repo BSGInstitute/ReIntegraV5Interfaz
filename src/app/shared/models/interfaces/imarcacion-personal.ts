@@ -9,6 +9,7 @@ export interface IInsertarMarcacionResponse {
   esInsertado: boolean;
   esMarcado: boolean;
   mensaje?: string;
+  cumpleTiempoMinimo?: boolean;
 }
 
 /**

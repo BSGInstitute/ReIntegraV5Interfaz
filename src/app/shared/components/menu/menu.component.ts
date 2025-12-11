@@ -91,12 +91,6 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   get mostrarBotonesMarcacion$(): Observable<boolean> {
     return this._marcacionPersonalService.mostrarBotonesMarcacion$;
   }
-  get horaActual$(): Observable<string> {
-    return this._marcacionPersonalService.horaActual$;
-  }
-  get fechaActual$(): Observable<string> {
-    return this._marcacionPersonalService.fechaActual$;
-  }
   private initSubscribeObservables() {
     let sub1$ = this._userService.moduloUsuario$.subscribe((resp) => {
       if (resp != null) {
