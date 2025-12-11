@@ -4753,6 +4753,12 @@ export const constApiGlobal = {
   IntegraAspNetUserValidarAcceso: "/IntegraAspNetUser/ValidarAcceso",
   IntegraAspNetUserActualizarReLogin: "/IntegraAspNetUser/ActualizarReLogin",
   AvatarObtenerAvatar: "/Avatar/ObtenerAvatar",
+
+  // MARCACION PERSONAL
+  RegistroMarcacionInsertarMarcacionPersonal: "/RegistroMarcacion/InsertarMarcacionPersonal",
+  RegistroMarcacionObtenerAreaPersonal: "/RegistroMarcacion/ObtenerAreaPersonal",
+  RegistroMarcacionObtenerTiempoInactividadPersonal: "/RegistroMarcacion/ObtenerTiempoInactividadPersonal",
+
   //Login
   AspNetUserAuthenticate: "/AspNetUser/Authenticate",
   PersonalObtenerDatosPersonalVentas: "/Personal/ObtenerAsesoresVentasOficial",
