@@ -4755,7 +4755,7 @@ export const constApiGlobal = {
   AvatarObtenerAvatar: "/Avatar/ObtenerAvatar",
 
   // MARCACION PERSONAL
-  RegistroMarcacionInsertarMarcacionPersonal: "/RegistroMarcacion/InsertarMarcacionPersonal",
+  RegistroMarcacionInsertarMarcacionPersonal: "/RegistroMarcacion/InsertarMarcacionPersonalV2",
   RegistroMarcacionObtenerAreaPersonal: "/RegistroMarcacion/ObtenerAreaPersonal",
   RegistroMarcacionObtenerTiempoInactividadPersonal: "/RegistroMarcacion/ObtenerTiempoInactividadPersonal",
 
