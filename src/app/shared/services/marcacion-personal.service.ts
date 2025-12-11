@@ -96,7 +96,7 @@ export class MarcacionPersonalService {
   }
 
   /**
-   * Inserta una marcación del personal con validación de DNI
+   * Inserta una marcación del personal con solicitud de DNI
    * @param usuario Usuario del personal
    * @param tipoBoton Tipo de marcación (1: Ingreso, 2: Salida Almuerzo, 3: Llegada Almuerzo, 4: Salida)
    */
@@ -119,26 +119,72 @@ export class MarcacionPersonalService {
     tipoTexto: string
   ): void {
     Swal.fire({
-      title: 'Asistencia',
+      title: '<strong>Confirmar Asistencia</strong>',
       html: `
-        <p style="margin-bottom: 20px;">Para confirmar su marcación ingrese el <b>Código</b> de su <b>documento de identidad</b> y click en <b>'Confirmar'</b></p>
-        <div style="text-align: left; margin: 0 auto; max-width: 400px;">
-          <label style="font-weight: bold; margin-bottom: 5px; display: block;">CÓDIGO DE DOCUMENTO</label>
-          <input type="text" id="inputDNI" class="swal2-input" placeholder="Ingrese código" style="margin: 0; text-transform: uppercase;">
+        <div style="text-align: center; padding: 10px 20px;">
+          <p style="font-size: 15px; color: #555; margin-bottom: 25px; line-height: 1.6;">
+            Para confirmar su marcación de <strong>${tipoTexto}</strong>,<br>
+            ingrese el código de su documento de identidad
+          </p>
+          <div style="max-width: 350px; margin: 0 auto;">
+            <label style="
+              font-weight: 600;
+              font-size: 12px;
+              color: #333;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              display: block;
+              text-align: left;
+              margin-bottom: 8px;
+            ">Código de Documento</label>
+            <input
+              type="text"
+              id="inputDNI"
+              class="swal2-input"
+              placeholder="Ej: 12345678"
+              autocomplete="off"
+              style="
+                margin: 0;
+                width: 100%;
+                padding: 12px 16px;
+                font-size: 16px;
+                text-align: center;
+                text-transform: uppercase;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                transition: border-color 0.3s ease;
+              "
+              onfocus="this.style.borderColor='#5cb85c'"
+              onblur="this.style.borderColor='#e0e0e0'"
+            >
+          </div>
         </div>
       `,
-      icon: 'info',
+      icon: 'question',
+      iconColor: '#5cb85c',
       showCancelButton: true,
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Cerrar',
+      confirmButtonText: '<i class="k-icon k-i-check"></i> Confirmar',
+      cancelButtonText: '<i class="k-icon k-i-cancel"></i> Cancelar',
       confirmButtonColor: '#5cb85c',
-      cancelButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      buttonsStyling: true,
+      customClass: {
+        popup: 'swal-marcacion-popup',
+        title: 'swal-marcacion-title',
+        confirmButton: 'swal-marcacion-btn-confirm',
+        cancelButton: 'swal-marcacion-btn-cancel'
+      },
       allowOutsideClick: false,
+      allowEscapeKey: false,
       preConfirm: () => {
         const input = document.getElementById('inputDNI') as HTMLInputElement;
         const codigo = input?.value?.trim().toUpperCase();
         if (!codigo) {
-          Swal.showValidationMessage('Debe ingresar el código del documento');
+          Swal.showValidationMessage('⚠️ Por favor, ingrese el código del documento');
+          return false;
+        }
+        if (codigo.length < 4) {
+          Swal.showValidationMessage('⚠️ El código debe tener al menos 4 caracteres');
           return false;
         }
         return codigo;
@@ -149,7 +195,6 @@ export class MarcacionPersonalService {
       }
     });
 
-    // Auto-focus en el input cuando se abre el modal
     setTimeout(() => {
       const input = document.getElementById('inputDNI') as HTMLInputElement;
       if (input) {
@@ -157,6 +202,11 @@ export class MarcacionPersonalService {
         input.addEventListener('input', (e) => {
           const target = e.target as HTMLInputElement;
           target.value = target.value.toUpperCase();
+        });
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            Swal.clickConfirm();
+          }
         });
       }
     }, 100);
@@ -175,17 +225,31 @@ export class MarcacionPersonalService {
     codigoDocumento: string,
     tipoTexto: string
   ): void {
-    // Obtener el documento del usuario desde UserService
     this.userService.dataPersonal$.subscribe({
       next: (response) => {
         if (response != null && response.datosPersonal) {
-          const documentoPersonal = response.datosPersonal.documento?.toString().trim();
+          const documentoPersonal = (
+            response.datosPersonal.documento ||
+            response.datosPersonal.nroDocumento ||
+            response.datosPersonal.numeroDocumento ||
+            response.datosPersonal.dni
+          )?.toString().trim().toUpperCase();
 
-          if (codigoDocumento !== documentoPersonal) {
+          const codigoIngresado = codigoDocumento.trim().toUpperCase();
+
+          if (!documentoPersonal) {
+            this.alertaService.notificationError(
+              'No se pudo obtener el documento del personal. Contacte al administrador.'
+            );
+            return;
+          }
+
+          if (codigoIngresado !== documentoPersonal) {
             this.mostrarModalError('No son los datos correctos, intentar otra vez.');
             return;
           }
-          this.registrarMarcacion(usuario, tipoBoton, tipoTexto);
+
+          this.registrarMarcacion(usuario, tipoBoton, codigoIngresado, tipoTexto);
         } else {
           this.alertaService.notificationError('No se pudo obtener los datos del personal');
         }
@@ -201,16 +265,19 @@ export class MarcacionPersonalService {
    * Registra la marcación en el servidor
    * @param usuario Usuario del personal
    * @param tipoBoton Tipo de marcación
+   * @param documento Documento del personal
    * @param tipoTexto Texto descriptivo del tipo
    */
   private registrarMarcacion(
     usuario: string,
     tipoBoton: TipoMarcacion,
+    documento: string,
     tipoTexto: string
   ): void {
+    // Formato del endpoint: /api/RegistroMarcacion/InsertarMarcacionPersonal/{usuario}/{tipoBoton}/{documento}
     this.integraService
       .getJsonResponse(
-        `${constApiGlobal.RegistroMarcacionInsertarMarcacionPersonal}/${usuario}/${tipoBoton}`
+        `${constApiGlobal.RegistroMarcacionInsertarMarcacionPersonal}/${usuario}/${tipoBoton}/${documento}`
       )
       .subscribe({
         next: (resp: HttpResponse<IInsertarMarcacionResponse>) => {
@@ -242,24 +309,61 @@ export class MarcacionPersonalService {
    */
   private mostrarModalError(mensaje: string): void {
     Swal.fire({
-      title: 'Error',
-      text: mensaje,
+      title: '<strong>Error</strong>',
+      html: `
+        <div style="text-align: center; padding: 15px 20px;">
+          <p style="font-size: 15px; color: #555; line-height: 1.6; margin: 0;">
+            ${mensaje}
+          </p>
+        </div>
+      `,
       icon: 'error',
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#d33',
+      iconColor: '#dc3545',
+      confirmButtonText: '<i class="k-icon k-i-close"></i> Cerrar',
+      confirmButtonColor: '#dc3545',
+      customClass: {
+        popup: 'swal-marcacion-popup',
+        title: 'swal-marcacion-title',
+        confirmButton: 'swal-marcacion-btn-confirm'
+      },
+      buttonsStyling: true,
     });
   }
 
   /**
-   * Muestra modal de error por tiempo mínimo de refrigerio
+   * Muestra modal de error por tiempo mínimo de refrigerio (1 hora)
    */
   private mostrarModalTiempoMinimo(): void {
     Swal.fire({
-      title: 'Error',
-      html: 'El tiempo mínimo dedicado al refrigerio no podrá ser inferior a <b>45 minutos</b>, probar nuevamente cuando haya transcurrido ese tiempo o más, gracias.',
-      icon: 'error',
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#d33',
+      title: '<strong>Tiempo Mínimo de Refrigerio</strong>',
+      html: `
+        <div style="text-align: center; padding: 15px 20px;">
+          <div style="
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+          ">
+            <p style="font-size: 16px; color: #856404; margin: 0; line-height: 1.6;">
+              ⏰ El tiempo mínimo dedicado al refrigerio no puede ser inferior a <strong>1 hora</strong>
+            </p>
+          </div>
+          <p style="font-size: 14px; color: #666; margin: 0; line-height: 1.5;">
+            Por favor, intente nuevamente cuando haya transcurrido el tiempo completo
+          </p>
+        </div>
+      `,
+      icon: 'warning',
+      iconColor: '#ffc107',
+      confirmButtonText: '<i class="k-icon k-i-check"></i> Entendido',
+      confirmButtonColor: '#ffc107',
+      customClass: {
+        popup: 'swal-marcacion-popup',
+        title: 'swal-marcacion-title',
+        confirmButton: 'swal-marcacion-btn-confirm'
+      },
+      buttonsStyling: true,
     });
   }
 
@@ -268,11 +372,35 @@ export class MarcacionPersonalService {
    */
   private mostrarModalYaMarco(): void {
     Swal.fire({
-      title: 'Alerta',
-      text: 'Usted ya marcó esta asistencia.',
+      title: '<strong>Marcación Registrada</strong>',
+      html: `
+        <div style="text-align: center; padding: 15px 20px;">
+          <div style="
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 10px;
+          ">
+            <p style="font-size: 16px; color: #0c5460; margin: 0; line-height: 1.6;">
+              ✓ Usted ya registró esta marcación de asistencia anteriormente
+            </p>
+          </div>
+          <p style="font-size: 14px; color: #666; margin-top: 10px; margin-bottom: 0;">
+            No es necesario volver a marcar
+          </p>
+        </div>
+      `,
       icon: 'info',
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#0d6efd',
+      iconColor: '#17a2b8',
+      confirmButtonText: '<i class="k-icon k-i-check"></i> Entendido',
+      confirmButtonColor: '#17a2b8',
+      customClass: {
+        popup: 'swal-marcacion-popup',
+        title: 'swal-marcacion-title',
+        confirmButton: 'swal-marcacion-btn-confirm'
+      },
+      buttonsStyling: true,
     });
   }
 
@@ -282,19 +410,52 @@ export class MarcacionPersonalService {
    */
   private mostrarModalExitoso(tipoTexto: string): void {
     Swal.fire({
-      title: 'Exitoso',
+      title: '<strong>¡Marcación Exitosa!</strong>',
       html: `
-        <h6>Gracias por registrar su asistencia de <b>${tipoTexto}</b>.</h6>
-        <br>
-        <p style="font-size: 12px; text-align: left;">
-          <b>Nota:</b> Dentro del marco del reglamento interno se considera falta grave al incumplimiento de las obligaciones.<br>
-          <b>Capítulo VI:</b> Normas de control de asistencia al trabajo.<br>
-          <b>Artículo 23°</b> "El trabajador deberá proceder personalmente a registrar su ingreso y su salida de la institución..."
-        </p>
+        <div style="text-align: center; padding: 15px 20px;">
+          <div style="
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+          ">
+            <p style="font-size: 16px; color: #155724; margin: 0; line-height: 1.6;">
+              ✓ Su marcación de <strong>${tipoTexto}</strong> se ha registrado correctamente
+            </p>
+          </div>
+
+          <div style="
+            background: #f8f9fa;
+            border-left: 4px solid #6c757d;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            border-radius: 4px;
+          ">
+            <p style="font-size: 12px; color: #495057; margin: 0 0 10px 0; line-height: 1.5;">
+              <strong>Nota Importante:</strong>
+            </p>
+            <p style="font-size: 11px; color: #6c757d; margin: 0 0 8px 0; line-height: 1.5;">
+              Dentro del marco del reglamento interno se considera falta grave el incumplimiento de las obligaciones.
+            </p>
+            <p style="font-size: 11px; color: #6c757d; margin: 0; line-height: 1.5;">
+              <strong>Capítulo VI - Artículo 23°:</strong> "El trabajador deberá proceder personalmente a registrar su ingreso y su salida de la institución..."
+            </p>
+          </div>
+        </div>
       `,
       icon: 'success',
-      confirmButtonText: 'Cerrar',
-      confirmButtonColor: '#5cb85c',
+      iconColor: '#28a745',
+      confirmButtonText: '<i class="k-icon k-i-check"></i> Aceptar',
+      confirmButtonColor: '#28a745',
+      customClass: {
+        popup: 'swal-marcacion-popup',
+        title: 'swal-marcacion-title',
+        confirmButton: 'swal-marcacion-btn-confirm'
+      },
+      buttonsStyling: true,
+      width: '550px',
     });
   }
 
@@ -361,7 +522,6 @@ export class MarcacionPersonalService {
           }
         });
       } else if (contador === 60) {
-        // Después de 60 segundos, marcar automáticamente
         clearInterval(this.intervaloDialog);
         this.insertarMarcacion(usuario, tipoBoton);
         Swal.close();
