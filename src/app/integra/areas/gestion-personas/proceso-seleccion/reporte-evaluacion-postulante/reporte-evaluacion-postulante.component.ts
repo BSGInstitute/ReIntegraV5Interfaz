@@ -148,7 +148,6 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
   showBtnActualizarRespuesta: boolean = false;
 
   ngOnInit(): void {
-
     this.obtenerCombosModulo();
   }
   ngAfterViewInit(): void {
@@ -193,7 +192,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     if (event) {
       this.formFiltro.get('procesoSeleccion').disable();
       this.formFiltro.get('etapasProceso').disable();
-      this.comboEtapaProceso =[];
+      this.comboEtapaProceso = [];
       this.formFiltro.get('estadoEtapas').disable();
       this.formFiltro.get('fechaInicio').disable();
       this.formFiltro.get('fechaFin').disable();
@@ -216,8 +215,10 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       this.formFiltro.get('postulantes').setValue([]);
     }
   }
-  valueChangeProcesoSeleccion(event: number){
-    this.comboEtapaProceso = this._sourceEtapaProceso.filter(x => x.idProcesoSeleccion == event)
+  valueChangeProcesoSeleccion(event: number) {
+    this.comboEtapaProceso = this._sourceEtapaProceso.filter(
+      (x) => x.idProcesoSeleccion == event
+    );
   }
   /**
    * Obtiene los combos utilizados en el modulo
