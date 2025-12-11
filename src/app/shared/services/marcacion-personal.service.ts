@@ -60,10 +60,6 @@ export class MarcacionPersonalService {
     return this._fechaActual$.asObservable();
   }
 
-  /**
-   * Inicializa el servicio de marcación
-   * @param usuario Usuario del personal
-   */
   inicializarMarcacion(usuario: string): void {
     this.verificarAreaPersonal(usuario);
   }
@@ -103,16 +99,10 @@ export class MarcacionPersonalService {
   insertarMarcacion(usuario: string, tipoBoton: TipoMarcacion): void {
     const tipoTexto = this.obtenerTextoTipoMarcacion(tipoBoton);
 
-    // Mostrar modal para solicitar código de documento
     this.solicitarCodigoDocumento(usuario, tipoBoton, tipoTexto);
   }
 
-  /**
-   * Muestra modal para solicitar código del documento de identidad
-   * @param usuario Usuario del personal
-   * @param tipoBoton Tipo de marcación
-   * @param tipoTexto Texto descriptivo del tipo
-   */
+
   private solicitarCodigoDocumento(
     usuario: string,
     tipoBoton: TipoMarcacion,
@@ -280,7 +270,6 @@ export class MarcacionPersonalService {
     documento: string,
     tipoTexto: string
   ): void {
-    // Formato del endpoint: /api/RegistroMarcacion/InsertarMarcacionPersonal/{usuario}/{tipoBoton}/{documento}
     this.integraService
       .getJsonResponse(
         `${constApiGlobal.RegistroMarcacionInsertarMarcacionPersonal}/${usuario}/${tipoBoton}/${documento}`
@@ -289,17 +278,24 @@ export class MarcacionPersonalService {
         next: (resp: HttpResponse<IInsertarMarcacionResponse>) => {
           const data = resp.body;
 
-          if (data?.esInsertado && !data?.esMarcado) {
-            this.mostrarModalExitoso(tipoTexto);
+          if (!data) {
+            this.mostrarModalError('No se recibió respuesta del servidor');
+            return;
           }
-          else if (!data?.esInsertado && data?.esMarcado) {
-            this.mostrarModalYaMarco();
-          }
-          else if (data?.cumpleTiempoMinimo === false && tipoBoton === TipoMarcacion.LlegadaAlmuerzo) {
-            this.mostrarModalTiempoMinimo();
-          }
-          else {
-            this.mostrarModalError(`Hubo un problema en la marcación de ${tipoTexto}`);
+          if (data.exito) {
+            const mensajeLower = data.mensaje.toLowerCase();
+
+            if (mensajeLower.includes('ya') && (mensajeLower.includes('marcó') || mensajeLower.includes('registró') || mensajeLower.includes('marcado') || mensajeLower.includes('registrado'))) {
+              this.mostrarModalYaMarco();
+            }
+            else if (mensajeLower.includes('tiempo mínimo') || mensajeLower.includes('45 minutos') || mensajeLower.includes('1 hora') || mensajeLower.includes('refrigerio')) {
+              this.mostrarModalTiempoMinimo();
+            }
+            else {
+              this.mostrarModalExitoso(tipoTexto);
+            }
+          } else {
+            this.mostrarModalError(data.mensaje || `Hubo un problema en la marcación de ${tipoTexto}`);
           }
         },
         error: (error) => {

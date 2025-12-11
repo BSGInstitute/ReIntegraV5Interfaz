@@ -1,20 +1,12 @@
-/**
- * Interfaces para el sistema de marcación de personal
- */
-
-/**
- * Respuesta de inserción de marcación
- */
 export interface IInsertarMarcacionResponse {
-  esInsertado: boolean;
-  esMarcado: boolean;
-  mensaje?: string;
+  exito: boolean;
+  mensaje: string;
+  esInsertado?: boolean;
+  esMarcado?: boolean;
   cumpleTiempoMinimo?: boolean;
 }
 
-/**
- * Datos de marcación del personal
- */
+
 export interface IMarcacionPersonal {
   idMarcacion?: number;
   idPersonal: number;
