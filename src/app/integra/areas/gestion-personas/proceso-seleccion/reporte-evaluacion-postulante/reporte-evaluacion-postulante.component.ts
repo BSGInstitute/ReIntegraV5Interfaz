@@ -28,6 +28,7 @@ import { datePipeTransform } from '@shared/functions/date-pipe';
 import { SortDescriptor } from '@progress/kendo-data-query';
 import { RowClassArgs } from '@progress/kendo-angular-grid';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { retry } from 'rxjs';
 
 interface FormFiltro {
   procesoSeleccion: number;
@@ -556,9 +557,8 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
           registroRP[key][
             `postulante_${x.idPostulante}_Centil_${centil.version}`
           ] = centil.registro;
-          registroRP[key][
-            `estado_${x.idPostulante}_Centil_${centil.version}`
-          ] = centil.esAprobado;
+          registroRP[key][`estado_${x.idPostulante}_Centil_${centil.version}`] =
+            centil.esAprobado;
           registroRP[key][
             `notaAprobatoria_${x.idPostulante}_Centil_${centil.version}`
           ] = centil.notaAprobatoria;
@@ -571,15 +571,13 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
           registroRP[key][
             `postulante_${x.idPostulante}_Centil_${centil.clave}`
           ] = x.registro;
-          registroRP[key][
-            `estado_${x.idPostulante}_Centil_${centil.clave}`
-          ] = x.esAprobado;
+          registroRP[key][`estado_${x.idPostulante}_Centil_${centil.clave}`] =
+            x.esAprobado;
           registroRP[key][
             `notaAprobatoria_${x.idPostulante}_Centil_${centil.clave}`
           ] = x.notaAprobatoria;
-          registroRP[key][
-            `simbolo_${x.idPostulante}_Centil_${centil.clave}`
-          ] = x.simbolo;
+          registroRP[key][`simbolo_${x.idPostulante}_Centil_${centil.clave}`] =
+            x.simbolo;
         });
       }
     });
@@ -746,10 +744,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     return resultado;
   }
 
-  templateAccesoTemporalPostulante(
-    dataItem: ClaveValor,
-    idPostulante: number
-  ) {
+  templateAccesoTemporalPostulante(dataItem: ClaveValor, idPostulante: number) {
     let notaAprobatoria = dataItem[`notaAprobatoria`] as string;
     let estado = dataItem[`estado_${idPostulante}`] as boolean;
     let aplicaAcceso = dataItem[`aplicaAcceso_${idPostulante}`];
@@ -1240,12 +1235,17 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       idExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
       idPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
     };
+
     this.gridEtapaProcesoSeleccion.loading = true;
     this.enProcesoGuardarRespuesta = true;
+
     this.integraService
       .postJsonResponse(
         constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
         JSON.stringify(jsonEnvio)
+      )
+      .pipe(
+        retry(1)
       )
       .subscribe({
         next: () => {
@@ -1264,20 +1264,18 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
           let resp = this.alertaService.getErrorResponse(error);
           this.alertaService.swalFireOptions({
             icon: 'error',
-            title: '¡Ocurrio un problema al registrar las respuestas!',
+            title: '¡Ocurrió un problema al registrar las respuestas!',
             text: `${resp.titulo}: ${resp.mensaje}`,
           });
         },
       });
   }
 
-
   sendAnswers() {
     let idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
     let listaRespuestasEvaluador: RespuestaDetalle[] = [];
 
     this.preguntaTestAgrupadoTemp.listaPreguntas.forEach((pregunta) => {
-
       if (pregunta.idTipoRespuesta == 10) {
         pregunta.listaRespuestas.forEach((respuesta) => {
           let rpta = respuesta.fcRespuesta10.value;
@@ -1318,7 +1316,6 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
 
           if (pregunta.enunciadoPregunta == '75 Registros') {
           } else {
-    
             if (pregunta.idExamen == 93) {
               rpta = respuesta.fcRespuesta93.value;
             } else {
@@ -1470,7 +1467,6 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       });
   }
 
-
   private obtenerNotasMatriculaReporte(idsPostulantes: number[]) {
     this.gridCursoAsesorCapacitacion.loading = true;
     this.loadingReporteAsesorCapacitacion = true;
@@ -1502,7 +1498,6 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       });
   }
 
-
   confirmarReestablecerEnviar(dataItem: ReportePostulanteMatricula) {
     this.alertaService
       .swalFireOptions({
@@ -1521,7 +1516,6 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         }
       });
   }
-
 
   private restablecerNotas(dataItem: ReportePostulanteMatricula) {
     let jsonEnvio = {
@@ -1554,7 +1548,6 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       });
   }
 
-
   getTiempoExperiencia(meses: number): string {
     if (!meses || meses <= 0) {
       return '-';
@@ -1571,39 +1564,39 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     return partes.join(' ');
   }
 
- verInformacionPostulante(idPostulante: number) {
-  this.activeInfoTab = 'cv';
-  this.loadingInformacionPostulante = true;
-  this.informacionPostulanteData = null;
-  this.integraService
-    .postJsonResponse(
-      constApiGestionPersonal.PostulanteObtenerPostulantesInformacionV2,
-      JSON.stringify(idPostulante) 
-    )
-    .subscribe({
-      next: (resp: HttpResponse<InformacionPostulanteDTO>) => {
-        this.loadingInformacionPostulante = false;
-        this.informacionPostulanteData = resp.body;
+  verInformacionPostulante(idPostulante: number) {
+    this.activeInfoTab = 'cv';
+    this.loadingInformacionPostulante = true;
+    this.informacionPostulanteData = null;
+    this.integraService
+      .postJsonResponse(
+        constApiGestionPersonal.PostulanteObtenerPostulantesInformacionV2,
+        JSON.stringify(idPostulante)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<InformacionPostulanteDTO>) => {
+          this.loadingInformacionPostulante = false;
+          this.informacionPostulanteData = resp.body;
 
-        this.modalRef = this.modalService.open(
-          this.modalInformacionPostulante,
-          {
-            size: 'xl',
-            backdrop: 'static',
-            scrollable: true,
-          }
-        );
-      },
-      error: (error) => {
-        this.loadingInformacionPostulante = false;
-        const mensaje = this.alertaService.getMessageErrorService
-          ? this.alertaService.getMessageErrorService(error)
-          : this.alertaService.getErrorResponse(error).mensaje;
+          this.modalRef = this.modalService.open(
+            this.modalInformacionPostulante,
+            {
+              size: 'xl',
+              backdrop: 'static',
+              scrollable: true,
+            }
+          );
+        },
+        error: (error) => {
+          this.loadingInformacionPostulante = false;
+          const mensaje = this.alertaService.getMessageErrorService
+            ? this.alertaService.getMessageErrorService(error)
+            : this.alertaService.getErrorResponse(error).mensaje;
 
-        this.alertaService.notificationWarning(mensaje);
-      },
-    });
-}
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
 
   trackByEtapa = (_: number, etapa: EtapaAprobada) => etapa.idPostulante;
   trackByPostulante = (_: number, p: Postulante) => p.idPostulante;
