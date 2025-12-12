@@ -1517,10 +1517,10 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
 
   obtenerModalInformacion() {
     this.integraService
-      .getJsonResponse(constApiPlanificacion.PartnerPwObtener)
+      .getJsonResponse(constApiGestionPersonal.PostulanteObtenerPostulantesInformacionV2)
       .subscribe({
         next: (resp: HttpResponse<any[]>) => {
-         
+          
         },
         error: (error) => {
           console.log('aqui entro error');

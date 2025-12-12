@@ -1,947 +1,957 @@
-import { ReporteEncuestaInicialSincronicoComponent } from "@planificacion/reportes/reporte-encuesta-inicial-sincronico/reporte-encuesta-inicial-sincronico.component";
+import { ReporteEncuestaInicialSincronicoComponent } from '@planificacion/reportes/reporte-encuesta-inicial-sincronico/reporte-encuesta-inicial-sincronico.component';
 
 export const constApiComercial = {
   // Reporte seguimiento TresCx
   ReporteSeguimientoOportunidadesTresCxGenerarReporte:
-    "/ReporteSeguimientoOportunidadesTresCx/GenerarReporte",
+    '/ReporteSeguimientoOportunidadesTresCx/GenerarReporte',
   ReporteSeguimientoOportunidadesTresCxObtenerListaOportunidadLog:
-    "/ReporteSeguimientoOportunidadesTresCx/ObtenerListaOportunidadLog",
+    '/ReporteSeguimientoOportunidadesTresCx/ObtenerListaOportunidadLog',
 
   ReporteActividadesRealizadasTresCxGenerarReporte:
-    "/ReporteActividadesRealizadasTresCx/GenerarReporte",
+    '/ReporteActividadesRealizadasTresCx/GenerarReporte',
   ReporteContactabilidadTresCxGenerarReportev2:
-    "/ReporteContactabilidadTresCx/GenerarReportev2",
+    '/ReporteContactabilidadTresCx/GenerarReportev2',
   ReporteContactabilidadTresCxGenerarReportev2Alterno:
-    "/ReporteContactabilidadTresCx/GenerarReportev2Alterno",
+    '/ReporteContactabilidadTresCx/GenerarReportev2Alterno',
   ReporteContactabilidadTresCxGenerarReporteLlamadaEntrante:
-    "/ReporteContactabilidadTresCx/GenerarReporteLlamadaEntrante",
+    '/ReporteContactabilidadTresCx/GenerarReporteLlamadaEntrante',
 
   //Reporte Cambio de fase tres cx
   ReporteCambioDeFaseTresCxGenerarActividadEjecutadaFaseActual:
-    "/ReporteCambioDeFaseTresCx/GenerarActividadEjecutadaFaseActual",
+    '/ReporteCambioDeFaseTresCx/GenerarActividadEjecutadaFaseActual',
   ReporteCambioDeFaseTresCxGenerarReporteV2Async:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteV2Async",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteV2Async',
   ReporteCambioDeFaseTresCxGenerarReporteCalidadProcesamiento:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteCalidadProcesamiento",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteCalidadProcesamiento',
   ReporteCambioDeFaseTresCxGenerarReporteV2ControlBICYEAcumuladoAsync:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteV2ControlBICYEAcumuladoAsync",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteV2ControlBICYEAcumuladoAsync',
   ReporteCambioDeFaseTresCxGenerarReporteTasaContactoTresCxAsync:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxAsync",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxAsync',
   ReporteCambioDeFaseTresCxGenerarReporteTasaContactoTresCxOtroMedioAsync:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxOtroMedioAsync",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxOtroMedioAsync',
   ReporteCambioDeFaseTresCxGenerarReporteTasaContactoTresCxV2Async:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxV2Async",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxV2Async',
   ReporteCambioDeFaseTresCxGenerarReporteV2IntegraAsync:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteV2IntegraAsync",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteV2IntegraAsync',
   ReporteCambioDeFaseTresCxGenerarAcumuladoTiempoContactoEfectivo:
-    "/ReporteCambioDeFaseTresCx/GenerarAcumuladoTiempoContactoEfectivo",
+    '/ReporteCambioDeFaseTresCx/GenerarAcumuladoTiempoContactoEfectivo',
   ReporteCambioDeFaseTresCxObtenerReporteConteoDatosFaseAlterno:
-    "/ReporteCambioDeFaseTresCx/ObtenerReporteConteoDatosFaseAlterno",
+    '/ReporteCambioDeFaseTresCx/ObtenerReporteConteoDatosFaseAlterno',
   ReporteCambioDeFaseTresCxGenerarReporteActividadEjecutadaLlamadaObservada:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteActividadEjecutadaLlamadaObservada",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteActividadEjecutadaLlamadaObservada',
   ReporteCambioDeFaseTresCxGenerarReporteActividadEjecutadaLlamadaObservadaV2:
-    "/ReporteCambioDeFaseTresCx/GenerarReporteActividadEjecutadaLlamadaObservadaV2",
+    '/ReporteCambioDeFaseTresCx/GenerarReporteActividadEjecutadaLlamadaObservadaV2',
   ReporteCambioDeFaseTresCxGenerarAcumuladoLlamadasReprogramadasManualmente:
-    "/ReporteCambioDeFaseTresCx/GenerarAcumuladoLlamadasReprogramadasManualmente",
+    '/ReporteCambioDeFaseTresCx/GenerarAcumuladoLlamadasReprogramadasManualmente',
   ReporteCambioDeFaseTresCxObtenerControlOportunidadPredictiva:
-    "/ReporteCambioDeFaseTresCx/ObtenerControlOportunidadPredictiva",
+    '/ReporteCambioDeFaseTresCx/ObtenerControlOportunidadPredictiva',
 
   //AGENDA TAB
-  AgendaTabInsertar: "/AgendaTab/Insertar",
-  AgendaTabActualizar: "/AgendaTab/Actualizar",
-  AgendaTabEliminar: "/AgendaTab/Eliminar",
-  AgendaTabObtener: "/AgendaTab/Obtener",
+  AgendaTabInsertar: '/AgendaTab/Insertar',
+  AgendaTabActualizar: '/AgendaTab/Actualizar',
+  AgendaTabEliminar: '/AgendaTab/Eliminar',
+  AgendaTabObtener: '/AgendaTab/Obtener',
 
   AgendaActividadObtenerValoresEtiquetaWhatsapp:
-    "/Comercial/AgendaActividad/ObtenerValoresEtiquetaWhatsapp",
+    '/Comercial/AgendaActividad/ObtenerValoresEtiquetaWhatsapp',
   AgendaActividadObtenerReporteControlActividadesAgenda:
-    "/Comercial/AgendaActividad/ObtenerReporteControlActividadesAgenda",
+    '/Comercial/AgendaActividad/ObtenerReporteControlActividadesAgenda',
 
   AgendaActividadBuscarFichaPorCelular:
-    "/Comercial/AgendaActividad/BuscarFichaPorCelular",
+    '/Comercial/AgendaActividad/BuscarFichaPorCelular',
   AgendaActividadObtenerColorPerfilProgramaPorIdOportunidad:
-    "/Comercial/AgendaActividad/ObtenerColorPerfilProgramaPorIdOportunidad",
+    '/Comercial/AgendaActividad/ObtenerColorPerfilProgramaPorIdOportunidad',
 
   ProgramaGeneralMotivacionRespuestaInsertar:
-    "/ProgramaGeneralMotivacionRespuesta/Insertar",
-  PublicoObjetivoRespuestaInsertar: "/PublicoObjetivoRespuesta/Insertar",
+    '/ProgramaGeneralMotivacionRespuesta/Insertar',
+  PublicoObjetivoRespuestaInsertar: '/PublicoObjetivoRespuesta/Insertar',
   ProgramaGeneralCertificacionRespuestaInsertar:
-    "/ProgramaGeneralCertificacionRespuesta/Insertar",
+    '/ProgramaGeneralCertificacionRespuesta/Insertar',
   ProgramaGeneralPrerequisitoRespuestaInsertar:
-    "/ProgramaGeneralPrerequisitoRespuesta/Insertar",
+    '/ProgramaGeneralPrerequisitoRespuesta/Insertar',
   ProgramaGeneralBeneficioRespuestaGuardarCambiosAgenda:
-    "/ProgramaGeneralBeneficioRespuesta/GuardarCambiosAgenda",
+    '/ProgramaGeneralBeneficioRespuesta/GuardarCambiosAgenda',
   ProgramaGeneralProblemaDetalleSolucionRespuestaGuardarCambiosAgenda:
-    "/ProgramaGeneralProblemaDetalleSolucionRespuesta/GuardarCambiosAgenda",
+    '/ProgramaGeneralProblemaDetalleSolucionRespuesta/GuardarCambiosAgenda',
 
   //ModuloCreacionOportunidad
   ObtenerDatosFiltroRegistrarOportunidad:
-    "/RegistrarOportunidad/ObtenerDatosFiltroRegistrarOportunidad",
+    '/RegistrarOportunidad/ObtenerDatosFiltroRegistrarOportunidad',
   RegistrarOportunidadObtenerOportunidad:
-    "/RegistrarOportunidad/ObtenerOportunidad",
+    '/RegistrarOportunidad/ObtenerOportunidad',
   RegistrarOportunidadObtenerOportunidadV2:
-    "/RegistrarOportunidad/ObtenerOportunidadV2",
-  MessengerChatObtenerTodoComboAlumno: "/MessengerChat/ObtenerTodoComboAlumno",
+    '/RegistrarOportunidad/ObtenerOportunidadV2',
+  MessengerChatObtenerTodoComboAlumno: '/MessengerChat/ObtenerTodoComboAlumno',
   MessengerChatObtenerAlumnosMessengerPorId:
-    "/MessengerChat/ObtenerAlumnosMessengerPorId",
+    '/MessengerChat/ObtenerAlumnosMessengerPorId',
   MessengerChatObtenerDatosAlumnoPorEmail:
-    "/MessengerChat/ObtenerDatosAlumnoPorEmail",
+    '/MessengerChat/ObtenerDatosAlumnoPorEmail',
   MessengerChatObtenerHistorialChatPorPersonal:
-    "/MessengerChat/ObtenerHistorialChatPorPersonal",
+    '/MessengerChat/ObtenerHistorialChatPorPersonal',
   AgendaInformacionActividadObtenerPersonalAutocomplete:
-    "/AgendaInformacionActividad/ObtenerPersonalAutocomplete",
+    '/AgendaInformacionActividad/ObtenerPersonalAutocomplete',
   AgendaInformacionActividadObtenerEmpresaAutocomplete:
-    "/AgendaInformacionActividad/ObtenerEmpresaAutocomplete",
+    '/AgendaInformacionActividad/ObtenerEmpresaAutocomplete',
   AgendaInformacionActividadObtenterPlantillaWhatsAppOperaciones:
-    "/AgendaInformacionActividad/ObtenterPlantillaWhatsAppOperaciones/",
+    '/AgendaInformacionActividad/ObtenterPlantillaWhatsAppOperaciones/',
   OportunidadCrearOportunidadCrearAlumnoVentas:
-    "/Oportunidad/CrearOportunidadCrearAlumnoVentas",
+    '/Oportunidad/CrearOportunidadCrearAlumnoVentas',
   OportunidadActualizarAlumnoCrearOportunidadVentas:
-    "/Oportunidad/ActualizarAlumnoCrearOportunidadVentas",
-  MessengerChatValidarAlumnoExiste: "/MessengerChat/ValidarAlumnoExiste",
+    '/Oportunidad/ActualizarAlumnoCrearOportunidadVentas',
+  MessengerChatValidarAlumnoExiste: '/MessengerChat/ValidarAlumnoExiste',
   MessengerChatObtenerTodoFiltroIdReferido:
-    "/MessengerChat/ObtenerTodoFiltroIdReferido",
+    '/MessengerChat/ObtenerTodoFiltroIdReferido',
   //AgendaInformacionActividadObtenerPersonalAutocomplete:'/AgendaInformacionActividad/ObtenerPersonalAutocomplete',
-  PersonalObtenerConfiguracionOpenVox: "/Personal/ObtenerConfiguracionOpenVox",
+  PersonalObtenerConfiguracionOpenVox: '/Personal/ObtenerConfiguracionOpenVox',
 
-  PersonalObtenerPaisSedPersonal: "/Personal/ObtenerPaisSedPersonal",
+  PersonalObtenerPaisSedPersonal: '/Personal/ObtenerPaisSedPersonal',
   //ReporteActividadesRealizadas
   ReporteActividadesRealizadasGenerarReporte:
-    "/ReporteActividadesRealizadas/GenerarReporte",
+    '/ReporteActividadesRealizadas/GenerarReporte',
   ReporteActividadesRealizadasObtenerCombo:
-    "/ReporteActividadesRealizadas/ObtenerCombo",
+    '/ReporteActividadesRealizadas/ObtenerCombo',
   //ReporteTasaIngresoAsesor
   ReporteTasaConversionConsolidadaObtenerCombosReporte:
-    "/ReporteTasaConversionConsolidada/ObtenerCombosReporte",
+    '/ReporteTasaConversionConsolidada/ObtenerCombosReporte',
   ReporteTasaConversionConsolidadaGenerarReporteGraficas:
-    "/ReporteTasaConversionConsolidada/GenerarReporteGraficas",
+    '/ReporteTasaConversionConsolidada/GenerarReporteGraficas',
   ReporteTasaConversionConsolidadaObtenerCombos:
-    "/ReporteTasaConversionConsolidada/ObtenerCombos",
+    '/ReporteTasaConversionConsolidada/ObtenerCombos',
   //AGENDA
   AgendaObtenerActividadFiltradaPorAsesor:
-    "/Agenda/ObtenerActividadFiltradaPorAsesor",
+    '/Agenda/ObtenerActividadFiltradaPorAsesor',
   AgendaObtenerActividadFiltradaPorAsesorRN2:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorRN2",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorRN2',
   AgendaObtenerActividadFiltradaPorAsesorRN2A:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorRN2A",
-  AgendaObtenerRealizadas: "/Agenda/ObtenerRealizadas",
-  AgendaObtenerCentroCostoAgenda: "/Agenda/ObtenerCentroCostoAgenda",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorRN2A',
+  AgendaObtenerRealizadas: '/Agenda/ObtenerRealizadas',
+  AgendaObtenerCentroCostoAgenda: '/Agenda/ObtenerCentroCostoAgenda',
 
   WhatsAppPlantillaPorOcurrenciaActividadObtenerPlantillaPorActividadOcurrencia:
-    "/WhatsAppPlantillaPorOcurrenciaActividad/ObtenerPlantillaPorActividadOcurrencia",
+    '/WhatsAppPlantillaPorOcurrenciaActividad/ObtenerPlantillaPorActividadOcurrencia',
   AgendaInformacionActividadSubirDocumentosOportunidad:
-    "/AgendaInformacionActividad/SubirDocumentosOportunidad",
+    '/AgendaInformacionActividad/SubirDocumentosOportunidad',
   AgendaObtenerMensajesRecibidosComercial:
-    "/Agenda/ObtenerMensajesRecibidosComercial",
-  AgendaObtenerCorreosAgendaComercial: "/Agenda/ObtenerCorreosAgendaComercial",
+    '/Agenda/ObtenerMensajesRecibidosComercial',
+  AgendaObtenerCorreosAgendaComercial: '/Agenda/ObtenerCorreosAgendaComercial',
 
   AgendaInformacionActividadFinalizarYProgramarActividadAlternoV2:
-    "/AgendaInformacionActividad/FinalizarYProgramarActividadAlternoV2",
+    '/AgendaInformacionActividad/FinalizarYProgramarActividadAlternoV2',
   AgendaReprogramacionFinalizarYProgramarActividadAlternoV2:
-    "/Comercial/AgendaReprogramacion/FinalizarYProgramarActividadAlternoV2",
+    '/Comercial/AgendaReprogramacion/FinalizarYProgramarActividadAlternoV2',
   AgendaReprogramacionRealizarCambioCentroCosto:
-    "/Comercial/AgendaReprogramacion/RealizarCambioCentroCosto",
+    '/Comercial/AgendaReprogramacion/RealizarCambioCentroCosto',
   AgendaInformacionActividadFinalizarYProgramarActividadAlternoAsync:
-    "/AgendaInformacionActividad/pruebasAsincrono",
+    '/AgendaInformacionActividad/pruebasAsincrono',
 
-  FichaAlumnoObtenerCombos: "/Comercial/FichaAlumno/ObtenerCombos",
+  FichaAlumnoObtenerCombos: '/Comercial/FichaAlumno/ObtenerCombos',
   FichaAlumnoObtenerInformacionAlumnoPorIdOportunidadRN2:
-    "/Comercial/FichaAlumno/ObtenerInformacionAlumnoPorIdOportunidadRN2",
+    '/Comercial/FichaAlumno/ObtenerInformacionAlumnoPorIdOportunidadRN2',
   FichaAlumnoCrearOportunidadFicha:
-    "/Comercial/FichaAlumno/CrearOportunidadFicha",
+    '/Comercial/FichaAlumno/CrearOportunidadFicha',
   FichaAlumnoObtenerOportunidadPredictivo:
-    "/Comercial/FichaAlumno/ObtenerOportunidadPredictivo",
+    '/Comercial/FichaAlumno/ObtenerOportunidadPredictivo',
   FichaAlumnoObtenerProgramaGeneralPredictivo:
-    "/Comercial/FichaAlumno/ObtenerProgramaGeneralPredictivo",
+    '/Comercial/FichaAlumno/ObtenerProgramaGeneralPredictivo',
 
-  OportunidadObtenerDatosOportunidad: "/Oportunidad/ObtenerDatosOportunidad",
+  OportunidadObtenerDatosOportunidad: '/Oportunidad/ObtenerDatosOportunidad',
 
-  AgendaObtenerActividades: "/Agenda/ObtenerActividades",
+  AgendaObtenerActividades: '/Agenda/ObtenerActividades',
   ActividadMarcadorLogObtenerPorIdActividadDetalleIdOportunidad:
-    "/ActividadMarcadorLog/ObtenerPorIdActividadDetalleIdOportunidad",
+    '/ActividadMarcadorLog/ObtenerPorIdActividadDetalleIdOportunidad',
   ActividadMarcadorLogGuardarActividadMarcadorLog:
-    "/ActividadMarcadorLog/GuardarActividadMarcadorLog",
-  AgendaObtenerActividadesAgenda: "/Agenda/ObtenerActividadesAgenda",
+    '/ActividadMarcadorLog/GuardarActividadMarcadorLog',
+  AgendaObtenerActividadesAgenda: '/Agenda/ObtenerActividadesAgenda',
   //DataPrueb
 
   AgendaFichaObtenerOportunidadInformacion:
-    "/AgendaInformacionActividad/ObtenerOportunidadInformacion",
+    '/AgendaInformacionActividad/ObtenerOportunidadInformacion',
   AgendaFichaObtenerHistorialMensajes:
-    "/AgendaInformacionActividad/ObtenerCorreoInteraccionV2EnviadosPorPersonal",
+    '/AgendaInformacionActividad/ObtenerCorreoInteraccionV2EnviadosPorPersonal',
   //Agenda Informacion Actividad
   // AgendaInformacionActividadSubirDocumentosOportunidad: "/AgendaInformacionActividad/SubirDocumentosOportunidad", // /{idOportunidad}
   AgendaActividadObtenerDiasSinContactoPorOportunidad:
-    "/Comercial/AgendaActividad/ObtenerDiasSinContactoPorOportunidad", // /{idOportunidad}
+    '/Comercial/AgendaActividad/ObtenerDiasSinContactoPorOportunidad', // /{idOportunidad}
   AgendaInformacionActividadValidarVisualizacionDatosOportunidad:
-    "/AgendaInformacionActividad/ValidarVisualizacionDatosOportunidad", // /{idOportunidad}
+    '/AgendaInformacionActividad/ValidarVisualizacionDatosOportunidad', // /{idOportunidad}
   AgendaInformacionActividadObtenerCabeceraSpeech:
-    "/AgendaInformacionActividad/ObtenerCabeceraSpeech", // {idOportunidad}/{idCentroCosto}
+    '/AgendaInformacionActividad/ObtenerCabeceraSpeech', // {idOportunidad}/{idCentroCosto}
   AgendaInformacionActividadObtenerPublicoObjetivoPrograma:
-    "/AgendaInformacionActividad/ObtenerPublicoObjetivoProgramaNuevaAgendaV3", // {idCentroCosto}/{idOportunidad}
+    '/AgendaInformacionActividad/ObtenerPublicoObjetivoProgramaNuevaAgendaV3', // {idCentroCosto}/{idOportunidad}
   AgendaInformacionActividadObtenerRequisitosCertificacionProgramaPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerRequisitosCertificacionProgramaPorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerRequisitosCertificacionProgramaPorIdOportunidad', // {idOportunidad}
   AgendaInformacionActividadObtenerArgumentosMotivacionProgramaPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerArgumentosMotivacionProgramaPorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerArgumentosMotivacionProgramaPorIdOportunidad', // {idOportunidad}
   AgendaInformacionActividadObtenerOportunidadInformacion:
-    "/AgendaInformacionActividad/ObtenerOportunidadInformacion", // {idClasificacionPersona}/{idAlumno}
+    '/AgendaInformacionActividad/ObtenerOportunidadInformacion', // {idClasificacionPersona}/{idAlumno}
   AgendaInformacionActividadObtenerProgramaGeneralProblemaDetallePorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerProgramaGeneralProblemaDetallePorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerProgramaGeneralProblemaDetallePorIdOportunidad', // {idOportunidad}
   AgendaInformacionActividadObtenerProgramaGeneralProblemaDetallePorIdOportunidadNuevaAgenda:
-    "/AgendaInformacionActividad/ObtenerProgramaGeneralProblemaDetallePorIdOportunidadNuevaAgenda", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerProgramaGeneralProblemaDetallePorIdOportunidadNuevaAgenda', // {idOportunidad}
   AgendaInformacionActividadObtenerTiempoCapacitacionPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerTiempoCapacitacionPorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerTiempoCapacitacionPorIdOportunidad', // {idOportunidad}
   AgendaInformacionActividadObtenerCorreoInteraccionV2EnviadosPorPersonal:
-    "/AgendaInformacionActividad/ObtenerCorreoInteraccionV2EnviadosPorPersonal", // {idAlumno}/{idPersonal}
+    '/AgendaInformacionActividad/ObtenerCorreoInteraccionV2EnviadosPorPersonal', // {idAlumno}/{idPersonal}
   AgendaInformacionActividadObtenerCompetidorPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerCompetidorPorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerCompetidorPorIdOportunidad', // {idOportunidad}
   AgendaInformacionActividadObtenerPrerequisitosBeneficiosCompetidoresPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerPrerequisitosBeneficiosCompetidoresPorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerPrerequisitosBeneficiosCompetidoresPorIdOportunidad', // {idOportunidad}
   AgendaInformacionActividadObtenerHistorialComentariosPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerHistorialComentariosPorIdOportunidad", //{idOportunidad}
+    '/AgendaInformacionActividad/ObtenerHistorialComentariosPorIdOportunidad', //{idOportunidad}
 
   AgendaActividadObtenerHistorialInteraccionesPorIdOportunidad:
-    "/Comercial/AgendaActividad/ObtenerHistorialInteraccionesPorIdOportunidad", // {idOportunidad}
+    '/Comercial/AgendaActividad/ObtenerHistorialInteraccionesPorIdOportunidad', // {idOportunidad}
   AgendaActividadObtenerHistorialInteraccionesPorIdOportunidad3cx:
-    "/Comercial/AgendaActividad/ObtenerHistorialInteraccionesPorIdOportunidad3cx", // {idOportunidad}
+    '/Comercial/AgendaActividad/ObtenerHistorialInteraccionesPorIdOportunidad3cx', // {idOportunidad}
   AgendaInformacionActividadObtenerOportunidadYPEspecificoPorIdActividadDetalle:
-    "/AgendaInformacionActividad/ObtenerOportunidadYPEspecificoPorIdActividadDetalle", // {idActividadDetalle}
+    '/AgendaInformacionActividad/ObtenerOportunidadYPEspecificoPorIdActividadDetalle', // {idActividadDetalle}
   AgendaInformacionActividadObtenerPreguntasFrecuentes:
-    "/AgendaInformacionActividad/ObtenerPreguntasFrecuentes", // {idCentroCosto}
+    '/AgendaInformacionActividad/ObtenerPreguntasFrecuentes', // {idCentroCosto}
   AgendaInformacionActividadObtenerPreguntasFrecuentesCambio:
-    "/AgendaInformacionActividad/ObtenerPreguntasFrecuentesCambio", //{idCentroCosto}{idPrograma}{idOportunidad}
+    '/AgendaInformacionActividad/ObtenerPreguntasFrecuentesCambio', //{idCentroCosto}{idPrograma}{idOportunidad}
   AgendaInformacionActividadObtenerArbolOcurrencias:
-    "/AgendaInformacionActividad/ObtenerArbolOcurrencias", // {idActividadCabecera}/{idOcurrenciaPadre}
+    '/AgendaInformacionActividad/ObtenerArbolOcurrencias', // {idActividadCabecera}/{idOcurrenciaPadre}
   AgendaInformacionActividadObtenerHistorialModificacionAlumnoPorIdAlumno:
-    "/AgendaInformacionActividad/ObtenerHistorialModificacionAlumnoPorIdAlumno", // {idAlumno}
+    '/AgendaInformacionActividad/ObtenerHistorialModificacionAlumnoPorIdAlumno', // {idAlumno}
   AgendaInformacionActividadObtenerDocumentoLegal:
-    "/AgendaInformacionActividad/ObtenerDocumentoLegal", // {idAreaPersonal}/{rol}/{idAlumno}
+    '/AgendaInformacionActividad/ObtenerDocumentoLegal', // {idAreaPersonal}/{rol}/{idAlumno}
   AgendaInformacionActividadObtenerPlantillasPorIdFaseOportunidad:
-    "/AgendaInformacionActividad/ObtenerPlantillasPorIdFaseOportunidad", // {idFaseOportunidad}
+    '/AgendaInformacionActividad/ObtenerPlantillasPorIdFaseOportunidad', // {idFaseOportunidad}
   AgendaInformacionActividadObtenerSeguimientoAsesor:
-    "/AgendaInformacionActividad/ObtenerSeguimientoAsesor", // {idAsesor}/{idCategoriaOrigen}/{estadoPantalla}
+    '/AgendaInformacionActividad/ObtenerSeguimientoAsesor', // {idAsesor}/{idCategoriaOrigen}/{estadoPantalla}
   AgendaInformacionActividadObtenerDocumentosPorIdActividadDetalle:
-    "/AgendaInformacionActividad/ObtenerDocumentosPorIdActividadDetalle", // {idActividadDetalle}
+    '/AgendaInformacionActividad/ObtenerDocumentosPorIdActividadDetalle', // {idActividadDetalle}
   AgendaInformacionActividadObtenerDatosAlumno:
-    "/AgendaInformacionActividad/ObtenerDatosAlumno", // {idClasificacionPersona}/{idOportunidad}/{idPersonal}
+    '/AgendaInformacionActividad/ObtenerDatosAlumno', // {idClasificacionPersona}/{idOportunidad}/{idPersonal}
   ObtenerDatosAlumnoSemaforoChatWhatsApp:
-    "/AgendaInformacionActividad/ObtenerDatosAlumnoSemaforoChatWhatsApp", // {idClasificacionPersona}
+    '/AgendaInformacionActividad/ObtenerDatosAlumnoSemaforoChatWhatsApp', // {idClasificacionPersona}
   AgendaInformacionActividadObtenerAccesosAlumno:
-    "/AgendaInformacionActividad/obtenerAccesosPortalAlumno", // {idClasificacionPersona}/{idOportunidad}/{idPersonal}
+    '/AgendaInformacionActividad/obtenerAccesosPortalAlumno', // {idClasificacionPersona}/{idOportunidad}/{idPersonal}
   AgendaInformacionActividadObtenerDatosCobranzaAlumno:
-    "/AgendaInformacionActividad/ObtenerDatosCobranzaAlumno", //{idMatriculaCaebecera}
+    '/AgendaInformacionActividad/ObtenerDatosCobranzaAlumno', //{idMatriculaCaebecera}
   AgendaInformacionActividadObtenerDatosAvanceAOnline:
-    "/AgendaInformacionActividad/ObtenerDatosAvanceAonline", //{idMatriculaCaebecera}
+    '/AgendaInformacionActividad/ObtenerDatosAvanceAonline', //{idMatriculaCaebecera}
   AgendaInformacionActividadObtenerDatosAvanceOnline:
-    "/AgendaInformacionActividad/ObtenerDatosAvanceOnline", //{idMatriculaCaebecera}
+    '/AgendaInformacionActividad/ObtenerDatosAvanceOnline', //{idMatriculaCaebecera}
   AgendaInformacionActividadObtenerPlantillaWhatsApp:
-    "/AgendaInformacionActividad/ObtenerPlantillaWhatsApp",
+    '/AgendaInformacionActividad/ObtenerPlantillaWhatsApp',
   AgendaInformacionActividadObtenerPlantillaWhatsAppComercial:
-    "/AgendaInformacionActividad/ObtenerPlantillaWhatsAppComercial",
+    '/AgendaInformacionActividad/ObtenerPlantillaWhatsAppComercial',
   AgendaInformacionActividadObtenerProbabilidadSueldoOportunidad:
-    "/AgendaInformacionActividad/ObtenerProbabilidadSueldoOportunidad", // {idOportunidad}/{idPais}
+    '/AgendaInformacionActividad/ObtenerProbabilidadSueldoOportunidad', // {idOportunidad}/{idPais}
   AgendaInformacionActividadObtenerValorEtiqueta:
-    "/AgendaInformacionActividad/ObtenerValorEtiqueta", // {idCentroCosto}/{idFaseOportunidad}/{idOportunidad}
+    '/AgendaInformacionActividad/ObtenerValorEtiqueta', // {idCentroCosto}/{idFaseOportunidad}/{idOportunidad}
   AgendaInformacionActividadObtenerValorEtiquetaAsync:
-    "/AgendaInformacionActividad/ObtenerValorEtiquetaAsync", // {idCentroCosto}/{idFaseOportunidad}/{idOportunidad}
+    '/AgendaInformacionActividad/ObtenerValorEtiquetaAsync', // {idCentroCosto}/{idFaseOportunidad}/{idOportunidad}
 
   AgendaInformacionActividadObtenerInformacionProgramav1:
-    "/AgendaInformacionActividad/ObtenerInformacionProgramav1",
+    '/AgendaInformacionActividad/ObtenerInformacionProgramav1',
 
   AgendaInformacionActividadObtenerInformacionProgramaSpeech:
-    "/AgendaInformacionActividad/ObtenerInformacionProgramaSpeech",
-  AgendaObtenerConfiguraciones: "/Agenda/ObtenerConfiguraciones",
+    '/AgendaInformacionActividad/ObtenerInformacionProgramaSpeech',
+  AgendaObtenerConfiguraciones: '/Agenda/ObtenerConfiguraciones',
   AgendaInformacionActividadObtenerPlantillaPorFase:
-    "/AgendaInformacionActividad/ObtenerPlantillaPorFase", // {idFaseOportunidad}
+    '/AgendaInformacionActividad/ObtenerPlantillaPorFase', // {idFaseOportunidad}
   AgendaInformacionActividadValidarRN2:
-    "/AgendaInformacionActividad/ValidarRN2", // {idContacto}/{idCentroCosto}/{idOcurrencia}
+    '/AgendaInformacionActividad/ValidarRN2', // {idContacto}/{idCentroCosto}/{idOcurrencia}
   AgendaInformacionActividadValidarRN2A:
-    "/AgendaInformacionActividad/ValidarRN2A", // {idContacto}/{idCentroCosto}/{idOcurrencia}
+    '/AgendaInformacionActividad/ValidarRN2A', // {idContacto}/{idCentroCosto}/{idOcurrencia}
   AgendaInformacionActividadObtenerFechaHoraActividadReprogramacionAutomatica:
-    "/AgendaInformacionActividad/ObtenerFechaHoraActividadReprogramacionAutomatica", // {idOportunidad}/{codigoFase}/{idOcurrencia
+    '/AgendaInformacionActividad/ObtenerFechaHoraActividadReprogramacionAutomatica', // {idOportunidad}/{codigoFase}/{idOcurrencia
   AgendaInformacionActividadObtenerHojaActividadesPorIdOcurrenciaAlterno:
-    "/AgendaInformacionActividad/ObtenerHojaActividadesPorIdOcurrenciaAlterno", // {idOcurrencia}
+    '/AgendaInformacionActividad/ObtenerHojaActividadesPorIdOcurrenciaAlterno', // {idOcurrencia}
 
   AgendaInformacionActividadActualizarSentinelAlumno:
-    "/AgendaInformacionActividad/ActualizarSentinelAlumno", // {dni}/{idContacto}/{usuario}
+    '/AgendaInformacionActividad/ActualizarSentinelAlumno', // {dni}/{idContacto}/{usuario}
   AgendaInformacionActividadActualizarSentinelAlumnoAlterno:
-    "/AgendaInformacionActividad/ActualizarSentinelAlumnoAlterno", // {dni}/{idContacto}/{usuario}
+    '/AgendaInformacionActividad/ActualizarSentinelAlumnoAlterno', // {dni}/{idContacto}/{usuario}
   AgendaInformacionActividadObtenerSemaforoSentinelAlumno:
-    "/AgendaInformacionActividad/ObtenerSemaforoSentinelAlumno", // {idAlumno}
+    '/AgendaInformacionActividad/ObtenerSemaforoSentinelAlumno', // {idAlumno}
   AgendaInformacionActividadActualizarTiempoCapacitacion:
-    "/AgendaInformacionActividad/ActualizarTiempoCapacitacion",
+    '/AgendaInformacionActividad/ActualizarTiempoCapacitacion',
   AgendaInformacionActividadActualizarAlumno:
-    "/AgendaInformacionActividad/ActualizarAlumno",
-  AgendaInformacionActividadActualizarAFormacion: // AFormacion
-    "/AgendaInformacionActividad/ActualizarAFormacion",
-  AgendaInformacionActividadActualizarCargo:    // Cargo",
-    "/AgendaInformacionActividad/ActualizarCargo",
-  AgendaInformacionActividadActualizarIndustria:   // Industria
-    "/AgendaInformacionActividad/ActualizarIndustria",
-  AgendaInformacionActividadActualizarATrabajo:   // ATrabajo
-    "/AgendaInformacionActividad/ActualizarATrabajo",
-  AgendaInformacionActividadActualizarEmpresa:   // Empresa
-    "/AgendaInformacionActividad/ActualizarEmpresa",
-  AgendaInformacionActividadActualizarTamanioEmpresa:   // TamanioEmpresa
-    "/AgendaInformacionActividad/ActualizarTamanioEmpresa",
-  AgendaInformacionActividadActualizarTiempoExperiencia:   // TiempoExperiencia
-    "/AgendaInformacionActividad/ActualizarTiempoExperiencia",
-  AgendaInformacionActividadActualizarPrincipalResponsabilidad:   // PrincipalResponsabilidad
-    "/AgendaInformacionActividad/ActualizarPrincipalResponsabilidad",
+    '/AgendaInformacionActividad/ActualizarAlumno',
+  // AFormacion
+  AgendaInformacionActividadActualizarAFormacion:
+    '/AgendaInformacionActividad/ActualizarAFormacion',
+  // Cargo",
+  AgendaInformacionActividadActualizarCargo:
+    '/AgendaInformacionActividad/ActualizarCargo',
+  // Industria
+  AgendaInformacionActividadActualizarIndustria:
+    '/AgendaInformacionActividad/ActualizarIndustria',
+  // ATrabajo
+  AgendaInformacionActividadActualizarATrabajo:
+    '/AgendaInformacionActividad/ActualizarATrabajo',
+  // Empresa
+  AgendaInformacionActividadActualizarEmpresa:
+    '/AgendaInformacionActividad/ActualizarEmpresa',
+  // TamanioEmpresa
+  AgendaInformacionActividadActualizarTamanioEmpresa:
+    '/AgendaInformacionActividad/ActualizarTamanioEmpresa',
+  // TiempoExperiencia
+  AgendaInformacionActividadActualizarTiempoExperiencia:
+    '/AgendaInformacionActividad/ActualizarTiempoExperiencia',
+  // PrincipalResponsabilidad
+  AgendaInformacionActividadActualizarPrincipalResponsabilidad:
+    '/AgendaInformacionActividad/ActualizarPrincipalResponsabilidad',
   AgendaInformacionActividadObtenerDatoSentinelAlumno:
-    "/AgendaInformacionActividad/ObtenerDatoSentinelAlumno", // {idAlumno}
+    '/AgendaInformacionActividad/ObtenerDatoSentinelAlumno', // {idAlumno}
   AgendaInformacionActividadObtenerInformacionPrograma:
-    "/AgendaInformacionActividad/ObtenerInformacionPrograma",
+    '/AgendaInformacionActividad/ObtenerInformacionPrograma',
   AgendaInformacionActividadObtenerInformacionProgramaRefreshSpeech:
-    "/AgendaInformacionActividad/ObtenerInformacionProgramaRefresh",
+    '/AgendaInformacionActividad/ObtenerInformacionProgramaRefresh',
   AgendaInformacionActividadObtenerInformacionProgramaV2:
-    "/AgendaInformacionActividad/ObtenerInformacionProgramaV2",
+    '/AgendaInformacionActividad/ObtenerInformacionProgramaV2',
 
   AgendaInformacionActividadObtenerResumenProgramasV2:
-    "/AgendaInformacionActividad/ObtenerResumenProgramasV2",
+    '/AgendaInformacionActividad/ObtenerResumenProgramasV2',
   AgendaInformacionActividadObtenerCorreosEnviadosSpeech:
-    "/AgendaInformacionActividad/ObtenerCorreosEnviadosSpeech", // {CorreoReceptor}/{MessageId}
+    '/AgendaInformacionActividad/ObtenerCorreosEnviadosSpeech', // {CorreoReceptor}/{MessageId}
   AgendaInformacionActividadObtenerCompetidores:
-    "/AgendaInformacionActividad/ObtenerCompetidores",
+    '/AgendaInformacionActividad/ObtenerCompetidores',
   AgendaInformacionActividadObtenerDocumentosPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerDocumentosPorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerDocumentosPorIdOportunidad', // {idOportunidad}
   AgendaInformacionActividadObtenerIdSpeechBienvenidaDespedida:
-    "/AgendaInformacionActividad/ObtenerIdSpeechBienvenidaDespedida", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerIdSpeechBienvenidaDespedida', // {idOportunidad}
   AgendaInformacionActividadObtenerConfiguracionContacto:
-    "/AgendaInformacionActividad/ObtenerConfiguracionContacto",
+    '/AgendaInformacionActividad/ObtenerConfiguracionContacto',
   AgendaInformacionActividadObtenerConfiguracionReferidos:
-    "/AgendaInformacionActividad/ObtenerConfiguracionReferidos",
+    '/AgendaInformacionActividad/ObtenerConfiguracionReferidos',
   AgendaInformacionActividadObtenerFechaFinalizacionMatricula:
-    "/AgendaInformacionActividad/ObtenerFechaFinalizacionMatricula",
-  ObtenerSentinelPorDni:
-    "/AgendaInformacionActividad/ObtenerSentinelPorDni",
+    '/AgendaInformacionActividad/ObtenerFechaFinalizacionMatricula',
+  ObtenerSentinelPorDni: '/AgendaInformacionActividad/ObtenerSentinelPorDni',
 
   MatriculaCabeceraDatosCertificadoMensajeObtenerCantidadMensajesPorUsername:
-    "/MatriculaCabeceraDatosCertificadoMensaje/ObtenerCantidadMensajesPorUsername",
+    '/MatriculaCabeceraDatosCertificadoMensaje/ObtenerCantidadMensajesPorUsername',
   DataCreditoActualizarInformacionDataCredito:
-    "DataCredito/ActualizarInformacionDataCredito",
+    'DataCredito/ActualizarInformacionDataCredito',
   //WHATSAPP
   WhatsAppMensajeEnviadoValidarNumeroLibre:
-    "/WhatsAppMensajeEnviado/ValidarNumeroLibre",
+    '/WhatsAppMensajeEnviado/ValidarNumeroLibre',
   WhatsAppMensajeEnviadoHistorialMensajeRecibidosChat:
-    "/WhatsAppMensajeEnviado/HistorialMensajeRecibidosChat",
+    '/WhatsAppMensajeEnviado/HistorialMensajeRecibidosChat',
   WhatsAppMensajeEnviadoWhatsAppHistorialMensajeChat:
-    "/WhatsAppMensajeEnviado/WhatsAppHistorialMensajeChat",
+    '/WhatsAppMensajeEnviado/WhatsAppHistorialMensajeChat',
   WhatsAppMensajeEnviadoWhatsAppUltimoMensajeEnviadosChat:
-    "/WhatsAppMensajeEnviado/WhatsAppUltimoMensajeEnviadosChat",
+    '/WhatsAppMensajeEnviado/WhatsAppUltimoMensajeEnviadosChat',
   WhatsAppMensajeRecibidoWhatsAppHistorialMensajeChatControlMensaje:
-    "/WhatsAppMensajeEnviado/WhatsAppHistorialMensajeChatControlMensaje",
+    '/WhatsAppMensajeEnviado/WhatsAppHistorialMensajeChatControlMensaje',
   WhatsAppNumeroValidadoVerificarInsertarNumeroValidado:
-    "/WhatsAppNumeroValidado/VerificarInsertarNumeroValidado",
+    '/WhatsAppNumeroValidado/VerificarInsertarNumeroValidado',
   WhatsAppContactoWhatsAppValidarNumeros:
-    "/WhatsAppContacto/WhatsAppValidarNumeros",
+    '/WhatsAppContacto/WhatsAppValidarNumeros',
   WhatsAppMensajeEnviadoValidarPlantillasEnviadas:
-    "/WhatsAppMensajeEnviado/ValidarPlantillasEnviadas",
+    '/WhatsAppMensajeEnviado/ValidarPlantillasEnviadas',
   WhatsAppMensajeEnviadoWhatsAppMensaje:
-    "/WhatsAppMensajeEnviado/WhatsAppMensaje",
+    '/WhatsAppMensajeEnviado/WhatsAppMensaje',
 
-  ProgramaGeneralObtenerComboUrl: "/ProgramaGeneral/ObtenerComboUrl",
+  ProgramaGeneralObtenerComboUrl: '/ProgramaGeneral/ObtenerComboUrl',
   //PORTAL CHAT
 
   ChatDetalleIntegraObtenerDetalleChatPorIdInteraccion:
-    "/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccion", //IdInteraccionChat
+    '/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccion', //IdInteraccionChat
 
   AgendaInformacionActividadObtenerValorEtiquetaListas:
-    "/AgendaInformacionActividad/ObtenerValorEtiquetaListas",
+    '/AgendaInformacionActividad/ObtenerValorEtiquetaListas',
   AgendaInformacionActividadActualizarFechaOcultarWhatsApp:
-    "/AgendaInformacionActividad/ActualizarFechaOcultarWhatsApp",
+    '/AgendaInformacionActividad/ActualizarFechaOcultarWhatsApp',
   AgendaInformacionActividadCrearOportunidadSinValidarOportunidadEnSeguimientoActualizarAlumno:
-    "/AgendaInformacionActividad/CrearOportunidadSinValidarOportunidadEnSeguimientoActualizarAlumno",
-  FaseOportunidadObtenerCombo: "/FaseOportunidad/ObtenerCombo",
+    '/AgendaInformacionActividad/CrearOportunidadSinValidarOportunidadEnSeguimientoActualizarAlumno',
+  FaseOportunidadObtenerCombo: '/FaseOportunidad/ObtenerCombo',
 
   //AGENDA CRONOGRAMA
   MontoPagoCronogramaObtenerOportunidadCronogramaPago:
-    "/MontoPagoCronograma/ObtenerOportunidadCronogramaPago",
+    '/MontoPagoCronograma/ObtenerOportunidadCronogramaPago',
   PasarelaPagoPwObtenerPasarelaPagoPorIdAlumno:
-    "/PasarelaPagoPw/ObtenerPasarelaPagoPorIdAlumno",
+    '/PasarelaPagoPw/ObtenerPasarelaPagoPorIdAlumno',
   MontoPagoCronogramaObtenerDetalleMontoPago:
-    "/MontoPagoCronograma/ObtenerDetalleMontoPago",
+    '/MontoPagoCronograma/ObtenerDetalleMontoPago',
   MontoPagoCronogramaGuardarCronogramaVentas:
-    "/MontoPagoCronograma/GuardarCronogramaVentas",
+    '/MontoPagoCronograma/GuardarCronogramaVentas',
   MontoPagoCronogramaCongelarCronogramaAlumno:
-    "/MontoPagoCronograma/CongelarCronogramaAlumno",
+    '/MontoPagoCronograma/CongelarCronogramaAlumno',
   MontoPagoCronogramaEliminarCronogramaVentas:
-    "/MontoPagoCronograma/EliminarCronogramaVentas",
+    '/MontoPagoCronograma/EliminarCronogramaVentas',
   PasarelaPagoPWRegistroMedioPagoMatriculaCronograma:
-    "/PasarelaPagoPW/RegistroMedioPagoMatriculaCronograma",
+    '/PasarelaPagoPW/RegistroMedioPagoMatriculaCronograma',
   MatriculaCabeceraObtenerIdMatriculaPorAlumnoCentroCosto:
-    "/MatriculaCabecera/ObtenerIdMatriculaPorAlumnoCentroCosto",
+    '/MatriculaCabecera/ObtenerIdMatriculaPorAlumnoCentroCosto',
   MedioPagoMatriculaCronogramaObtenerMedioPagoPorIdMatricula:
-    "/MedioPagoMatriculaCronograma/ObtenerMedioPagoPorIdMatricula",
+    '/MedioPagoMatriculaCronograma/ObtenerMedioPagoPorIdMatricula',
   AgendaInformacionActividadEnviarMensajeTexto:
-    "/AgendaInformacionActividad/EnviarMensajeTexto",
+    '/AgendaInformacionActividad/EnviarMensajeTexto',
 
   WhatsappObtenerChatWhatsapp:
-    "/ChatDetalleIntegra/ObtenerHistorialChatPortal/4247/9519847",
+    '/ChatDetalleIntegra/ObtenerHistorialChatPortal/4247/9519847',
 
   OportunidadFinalizarActividadAlternoV2:
-    "/Oportunidad/FinalizarActividadAlternoV2",
+    '/Oportunidad/FinalizarActividadAlternoV2',
   AgendaReprogramacionCerrarActividad:
-    "/Comercial/AgendaReprogramacion/CerrarActividad",
+    '/Comercial/AgendaReprogramacion/CerrarActividad',
   AgendaReprogramacionFinalizarActividadCrearOportunidadAlterno:
-    "/Comercial/AgendaReprogramacion/FinalizarActividadCrearOportunidadAlterno",
-  MarcadorObtenerActividad: "/Comercial/Marcador/ObtenerActividad", //Get /{idAsesor}
+    '/Comercial/AgendaReprogramacion/FinalizarActividadCrearOportunidadAlterno',
+  MarcadorObtenerActividad: '/Comercial/Marcador/ObtenerActividad', //Get /{idAsesor}
   MarcadorGuardarActividadMarcador:
-    "/Comercial/Marcador/GuardarActividadMarcador", //Get /{idAsesor}
+    '/Comercial/Marcador/GuardarActividadMarcador', //Get /{idAsesor}
   MarcadorGuardarNoContestadoMarcador:
-    "/Comercial/Marcador/GuardarNoContestadoMarcador", //Get /{idAsesor}
+    '/Comercial/Marcador/GuardarNoContestadoMarcador', //Get /{idAsesor}
   MarcadorGuardarContestadoMarcador:
-    "/Comercial/Marcador/GuardarContestadoMarcador", //Get /{idAsesor}
+    '/Comercial/Marcador/GuardarContestadoMarcador', //Get /{idAsesor}
   MarcadorObtenerActividadMarcadorPorIdActividadDetalle:
-    "/Comercial/Marcador/ObtenerActividadMarcadorPorIdActividadDetalle", //Get /{idActividadDetalle}/{idOportunidad}
+    '/Comercial/Marcador/ObtenerActividadMarcadorPorIdActividadDetalle', //Get /{idActividadDetalle}/{idOportunidad}
 
   AgendaActividadCargarReporteIncidencia:
-    "/Comercial/AgendaActividad/CargarReporteIncidencia",
+    '/Comercial/AgendaActividad/CargarReporteIncidencia',
   AgendaActividadObtenerPreguntasFrecuentesCambio:
-    "/Comercial/AgendaActividad/ObtenerPreguntasFrecuentesCambio", //{idCentroCosto}{idPrograma}{idOportunidad}
+    '/Comercial/AgendaActividad/ObtenerPreguntasFrecuentesCambio', //{idCentroCosto}{idPrograma}{idOportunidad}
   AgendaActividadObtenerArbolOcurrenciaAlterno:
-    "/Comercial/AgendaActividad/ObtenerArbolOcurrenciaAlterno", // {idActividadCabecera}/{idOcurrenciaPadre}
+    '/Comercial/AgendaActividad/ObtenerArbolOcurrenciaAlterno', // {idActividadCabecera}/{idOcurrenciaPadre}
   AgendaActividadObtenerOcurrenciaMarcador:
-    "/Comercial/AgendaActividad/ObtenerOcurrenciaMarcador", // {idActividadCabecera}/{idOcurrenciaPadre}
+    '/Comercial/AgendaActividad/ObtenerOcurrenciaMarcador', // {idActividadCabecera}/{idOcurrenciaPadre}
   AgendaReprogramacionValidacionReprogramacion:
-    "/Comercial/AgendaReprogramacion/ValidacionReprogramacion",
+    '/Comercial/AgendaReprogramacion/ValidacionReprogramacion',
 
   // OportunidadCerrarActividad: "/Oportunidad/CerrarActividad",
   OportunidadFinalizarActividadCrearOportunidadAlterno:
-    "/Oportunidad/FinalizarActividadCrearOportunidadAlterno",
+    '/Oportunidad/FinalizarActividadCrearOportunidadAlterno',
 
   //CENTRO COSTO
-  CentroCostoObtener: "/CentroCosto/Obtener",
-  CentroCostoObtenerCcUsuarios: "/CentroCosto/ObtenerCcDatosUsuarios",
-  CentroCostoObtenerPorId: "/CentroCosto/ObtenerMasAdicionales",
-  CentroCostoObtenerCombo: "/CentroCosto/ObtenerCombo",
-  CentroCostoObtenerAutocomplete: "/CentroCosto/ObtenerAutocomplete",
-  CentroCostoObtenerAutocompleteV2: "/CentroCosto/ObtenerAutocompleteV2",
+  CentroCostoObtener: '/CentroCosto/Obtener',
+  CentroCostoObtenerCcUsuarios: '/CentroCosto/ObtenerCcDatosUsuarios',
+  CentroCostoObtenerPorId: '/CentroCosto/ObtenerMasAdicionales',
+  CentroCostoObtenerCombo: '/CentroCosto/ObtenerCombo',
+  CentroCostoObtenerAutocomplete: '/CentroCosto/ObtenerAutocomplete',
+  CentroCostoObtenerAutocompleteV2: '/CentroCosto/ObtenerAutocompleteV2',
   CentroCostoObtenerAutocompleteCentroCosto:
-    "/CentroCosto/ObtenerAutocompleteCentroCosto",
+    '/CentroCosto/ObtenerAutocompleteCentroCosto',
   CentroCostoObtenerRecientesAutocomplete:
-    "/CentroCosto/ObtenerRecientesAutocomplete",
-  CentroCostoObtenerFiltroAutocomplete: "/CentroCosto/ObtenerAutocomplete",
-  CentroCostoInsertar: "/CentroCosto/Insertar",
-  CentroCostoActualizar: "/CentroCosto/Actualizar",
-  CentroCostoEliminar: "/CentroCosto/Eliminar",
-  CentroCostoObtenerCombosModulo: "/CentroCosto/ObtenerCombosModulo",
+    '/CentroCosto/ObtenerRecientesAutocomplete',
+  CentroCostoObtenerFiltroAutocomplete: '/CentroCosto/ObtenerAutocomplete',
+  CentroCostoInsertar: '/CentroCosto/Insertar',
+  CentroCostoActualizar: '/CentroCosto/Actualizar',
+  CentroCostoEliminar: '/CentroCosto/Eliminar',
+  CentroCostoObtenerCombosModulo: '/CentroCosto/ObtenerCombosModulo',
   MessengerChatObtenerPlantillaMessengerParaAgenda:
-    "/MessengerChat/ObtenerPlantillaMessengerParaAgenda",
+    '/MessengerChat/ObtenerPlantillaMessengerParaAgenda',
   //AGENDA
-  AgendaObtenerFiltro: "/Agenda/ObtenerFiltro",
+  AgendaObtenerFiltro: '/Agenda/ObtenerFiltro',
   AgendaObtenerTodoPlantilla:
-    "/Agenda/ObtenerTodoPlantillaPorPersonalAreaTrabajo",
-  AgendaObtenerPlantillasModuloAgenda: "/Agenda/ObtenerPlantillasModuloAgenda",
-  AgendaGenerarPlantillaMailing: "/Agenda/GenerarPlantillaMailing",
-  AgendaGenerarPlantillaWhatsapp: "/Agenda/GenerarPlantillaWhatsapp",
+    '/Agenda/ObtenerTodoPlantillaPorPersonalAreaTrabajo',
+  AgendaObtenerPlantillasModuloAgenda: '/Agenda/ObtenerPlantillasModuloAgenda',
+  AgendaGenerarPlantillaMailing: '/Agenda/GenerarPlantillaMailing',
+  AgendaGenerarPlantillaWhatsapp: '/Agenda/GenerarPlantillaWhatsapp',
   AgendaGenerarPlantillaWhatsappComercial:
-    "/Agenda/GenerarPlantillaWhatsappComercial",
+    '/Agenda/GenerarPlantillaWhatsappComercial',
 
   //CONTACTABILIDAD
   ReporteContactabilidadGenerarReportev2:
-    "/ReporteContactabilidad/GenerarReportev2",
-  ReporteContactabilidadObtenerCombo: "/ReporteContactabilidad/ObtenerCombo",
+    '/ReporteContactabilidad/GenerarReportev2',
+  ReporteContactabilidadObtenerCombo: '/ReporteContactabilidad/ObtenerCombo',
   ReporteContactabilidadObtenerCombosReporteOperaciones:
-    "/ReporteContactabilidad/ObtenerCombosReporteOperaciones",
+    '/ReporteContactabilidad/ObtenerCombosReporteOperaciones',
 
   //CORREO
-  CorreoObtenerCorreoRecibido: "/Correo/ObtenerCorreoRecibido",
+  CorreoObtenerCorreoRecibido: '/Correo/ObtenerCorreoRecibido',
   CorreoObtenerCorreosEnviadosPorAsesor:
-    "/Correo/ObtenerCorreosEnviadosPorAsesor",
-  CorreoObtenerInformacionGmail: "/Correo/ObtenerInformacionGmail",
-  CorreoDescargarArchivoAdjunto: "/Correo/Descargar",
-  CorreoObtenerCorreoSpeech: "/Correo/ObtenerCorreoSpeech",
-  CorreoObtenerInformacionEnviados: "/Correo/ObtenerCorreoEnviadoPorId",
+    '/Correo/ObtenerCorreosEnviadosPorAsesor',
+  CorreoObtenerInformacionGmail: '/Correo/ObtenerInformacionGmail',
+  CorreoDescargarArchivoAdjunto: '/Correo/Descargar',
+  CorreoObtenerCorreoSpeech: '/Correo/ObtenerCorreoSpeech',
+  CorreoObtenerInformacionEnviados: '/Correo/ObtenerCorreoEnviadoPorId',
   CorreoObtenerInformacionEnviadosMasivos:
-    "/Correo/ObtenerInformacionEnvioMasivo",
+    '/Correo/ObtenerInformacionEnvioMasivo',
   CorreoObtenerCorreosEnviadosAlumnoSoloVentas:
-    "/Correo/ObtenerCorreosEnviadosAlumnoSoloVentas",
-  CorreoGenerarPlantillaCentroCosto: "/Agenda/GenerarPlantillaCentroCostoV2",
+    '/Correo/ObtenerCorreosEnviadosAlumnoSoloVentas',
+  CorreoGenerarPlantillaCentroCosto: '/Agenda/GenerarPlantillaCentroCostoV2',
   CorreoObtenerCorreosEnviadosSpeech:
-    "/AgendaInformacionActividad/ObtenerCorreosEnviadosSpeech",
+    '/AgendaInformacionActividad/ObtenerCorreosEnviadosSpeech',
   CorreoObtenerInteraccionesCorreosEnviados:
-    "/AgendaInformacionActividad/ObtenerInteraccionesCorreosEnviados",
-  CorreoEnviarMensajeGmail: "/Correo/EnviarMensajeGmail",
-  CorreoEnviarMensaje: "/Correo/EnviarMensaje",
-  CorreoObtenerCorreosGrupos: "/Correo/ObtenerCorreosGrupos",
+    '/AgendaInformacionActividad/ObtenerInteraccionesCorreosEnviados',
+  CorreoEnviarMensajeGmail: '/Correo/EnviarMensajeGmail',
+  CorreoEnviarMensaje: '/Correo/EnviarMensaje',
+  CorreoObtenerCorreosGrupos: '/Correo/ObtenerCorreosGrupos',
 
   //DATA CREDITO
   DataCreditoObtenerInformacionDataCredito:
-    "/DataCredito/ObtenerInformacionDataCredito",
+    '/DataCredito/ObtenerInformacionDataCredito',
   //PLANTILLA
-  ObtenerPlantillaMailing: "/Agenda/ObtenerPlantillasMailing",
+  ObtenerPlantillaMailing: '/Agenda/ObtenerPlantillasMailing',
 
   //PERSONAL
-  ProgramaGeneralProblemaInsertar: "/ProgramaGeneralProblema/Insertar",
+  ProgramaGeneralProblemaInsertar: '/ProgramaGeneralProblema/Insertar',
   ProgramaGeneralProblemaInsertarLista:
-    "/ProgramaGeneralProblema/InsertarLista",
-  ProgramaGeneralProblemaActualizar: "/ProgramaGeneralProblema/Actualizar",
+    '/ProgramaGeneralProblema/InsertarLista',
+  ProgramaGeneralProblemaActualizar: '/ProgramaGeneralProblema/Actualizar',
   ProgramaGeneralProblemaActualizarLista:
-    "/ProgramaGeneralProblema/ActualizarLista",
-  ProgramaGeneralProblemaEliminar: "/ProgramaGeneralProblema/Actualizar",
+    '/ProgramaGeneralProblema/ActualizarLista',
+  ProgramaGeneralProblemaEliminar: '/ProgramaGeneralProblema/Actualizar',
   ProgramaGeneralProblemaEliminarListado:
-    "/ProgramaGeneralProblema/ActualizarLista",
+    '/ProgramaGeneralProblema/ActualizarLista',
   ProgramaGeneralProblemaObtenerProgramaGeneralProblema:
-    "/ProgramaGeneralProblema/ObtenerProgramaGeneralProblema",
-  ProgramaGeneralProblemaObtenerCombo: "/ProgramaGeneralProblema/ObtenerCombo",
+    '/ProgramaGeneralProblema/ObtenerProgramaGeneralProblema',
+  ProgramaGeneralProblemaObtenerCombo: '/ProgramaGeneralProblema/ObtenerCombo',
   ProgramaGenrealProblemaObtenerArgumentoModalidad:
-    "/ProgramaGeneralProblema/ObtenerProgramaGeneralProblemaArgumentoModalidad",
+    '/ProgramaGeneralProblema/ObtenerProgramaGeneralProblemaArgumentoModalidad',
 
   ProgramaGeneralObtenerProgramaGeneral:
-    "/ProgramaGeneral/ObtenerProgramaGeneral",
+    '/ProgramaGeneral/ObtenerProgramaGeneral',
 
   //Problema General
 
   ProgramaGeneralProblemaObtenerProgramaGeneralProblemaArgumentoModalidad:
-    "/ProgramaGeneralProblema/ObtenerProgramaGeneralProblemaArgumentoModalidad",
+    '/ProgramaGeneralProblema/ObtenerProgramaGeneralProblemaArgumentoModalidad',
   ProgramaGeneralGuardarProblemasVentasV2:
-    "/ProgramaGeneral/GuardarProblemasVentasV2",
+    '/ProgramaGeneral/GuardarProblemasVentasV2',
   ProgramaGeneralProblemaEliminarProblemaVenta:
-    "/ProgramaGeneralProblema/EliminarProblemaVenta",
-  ProgramaGeneralModalidadCursoObtenerCombo: "/ModalidadCurso/ObtenerCombo",
+    '/ProgramaGeneralProblema/EliminarProblemaVenta',
+  ProgramaGeneralModalidadCursoObtenerCombo: '/ModalidadCurso/ObtenerCombo',
   ProgramaGeneralActualizarProblemasVentasV2:
-    "/ProgramaGeneral/ActualizarProblemasVentasV2",
+    '/ProgramaGeneral/ActualizarProblemasVentasV2',
 
   //TABLERO COMERCIAL UNIDAD
 
-  TableroComercialUnidadObtenerCombo: "/TableroComercialUnidad/ObtenerCombo",
+  TableroComercialUnidadObtenerCombo: '/TableroComercialUnidad/ObtenerCombo',
 
   //TABLERO COMERCIAL CATEGORIA ASESOR
   TableroComercialCategoriaAsesorObtenerTableroComercialCategoriaAsesor:
-    "/TableroComercialCategoriaAsesor/ObtenerTableroComercialCategoriaAsesor",
+    '/TableroComercialCategoriaAsesor/ObtenerTableroComercialCategoriaAsesor',
   TableroComercialCategoriaAsesorObtenerCombo:
-    "/TableroComercialCategoriaAsesor/ObtenerCombo",
+    '/TableroComercialCategoriaAsesor/ObtenerCombo',
 
   TableroComercialCategoriaAsesorObtenerDatosTablero:
-    "/TableroComercialCategoriaAsesor/ObtenerDatosTablero", //OK
+    '/TableroComercialCategoriaAsesor/ObtenerDatosTablero', //OK
   TableroComercialCategoriaAsesorObtenerCombosIniciales:
-    "/TableroComercialCategoriaAsesor/ObtenerCombosIniciales", //OK
+    '/TableroComercialCategoriaAsesor/ObtenerCombosIniciales', //OK
 
   TableroComercialCategoriaAsesorInsertar:
-    "/TableroComercialCategoriaAsesor/Insertar", //OK
+    '/TableroComercialCategoriaAsesor/Insertar', //OK
   TableroComercialCategoriaAsesorInsertarLista:
-    "/TableroComercialCategoriaAsesor/InsertarLista",
+    '/TableroComercialCategoriaAsesor/InsertarLista',
   TableroComercialCategoriaAsesorActualizar:
-    "/TableroComercialCategoriaAsesor/Actualizar", //OK
+    '/TableroComercialCategoriaAsesor/Actualizar', //OK
   TableroComercialCategoriaAsesorActualizarLista:
-    "/TableroComercialCategoriaAsesor/ActualizarLista",
+    '/TableroComercialCategoriaAsesor/ActualizarLista',
   TableroComercialCategoriaAsesorEliminar:
-    "/Tablerocomercialcategoriaasesor/Eliminar", //OK
+    '/Tablerocomercialcategoriaasesor/Eliminar', //OK
   TableroComercialCategoriaAsesorEliminarListado:
-    "/TableroComercialCategoriaAsesor/EliminarLista",
+    '/TableroComercialCategoriaAsesor/EliminarLista',
 
   //Record Area Comercial
-  RecordAreaComercialInsertar: "/RecordAreaComercial/Insertar",
-  RecordAreaComercialInsertarLista: "/RecordAreaComercial/InsertarLista",
-  RecordAreaComercialActualizar: "/RecordAreaComercial/Actualizar",
-  RecordAreaComercialActualizarLista: "/RecordAreaComercial/Actualizar",
-  RecordAreaComercialEliminar: "/RecordAreaComercial/Eliminar",
-  RecordAreaComercialEliminarListado: "/RecordAreaComercial/EliminarListado",
+  RecordAreaComercialInsertar: '/RecordAreaComercial/Insertar',
+  RecordAreaComercialInsertarLista: '/RecordAreaComercial/InsertarLista',
+  RecordAreaComercialActualizar: '/RecordAreaComercial/Actualizar',
+  RecordAreaComercialActualizarLista: '/RecordAreaComercial/Actualizar',
+  RecordAreaComercialEliminar: '/RecordAreaComercial/Eliminar',
+  RecordAreaComercialEliminarListado: '/RecordAreaComercial/EliminarListado',
   RecordAreaComercialObtenerRecordAreaComercial:
-    "/RecordAreaComercial/ObtenerRecordAreaComercial",
-  RecordAreaComercialObtenerCombo: "/RecordAreaComercial/ObtenerCombo",
+    '/RecordAreaComercial/ObtenerRecordAreaComercial',
+  RecordAreaComercialObtenerCombo: '/RecordAreaComercial/ObtenerCombo',
   RecordAreaComercialObtenerTodoRecordAreaComercial:
-    "/RecordAreaComercial/ObtenerTodoRecordAreaComercial",
+    '/RecordAreaComercial/ObtenerTodoRecordAreaComercial',
   RecordAreaComercialObtenerCombosIniciales:
-    "/RecordAreaComercial/ObtenerCombosIniciales",
+    '/RecordAreaComercial/ObtenerCombosIniciales',
 
-  ReporteCambioDeFaseObtenerCombo: "/ReporteCambioDeFase/ObtenerCombo",
+  ReporteCambioDeFaseObtenerCombo: '/ReporteCambioDeFase/ObtenerCombo',
   ReporteCambioDeFaseGenerarReporteV2Async:
-    "/ReporteCambioDeFase/GenerarReporteV2Async",
+    '/ReporteCambioDeFase/GenerarReporteV2Async',
   ReporteCambioDeFaseGenerarReporteV2ControlBicYEAcumuladoAsync:
-    "/ReporteCambioDeFase/GenerarReporteV2ControlBICYEAcumuladoAsync",
+    '/ReporteCambioDeFase/GenerarReporteV2ControlBICYEAcumuladoAsync',
   ReporteCambioDeFaseGenerarReporteV2TasaContactoAsync:
-    "/ReporteCambioDeFase/GenerarReporteV2TasaContactoAsync",
+    '/ReporteCambioDeFase/GenerarReporteV2TasaContactoAsync',
   ReporteCambioDeFaseGenerarReporteV2IntegraAsync:
-    "/ReporteCambioDeFase/GenerarReporteV2IntegraAsync",
+    '/ReporteCambioDeFase/GenerarReporteV2IntegraAsync',
   ReporteCambioDeFaseGenerarReporteCalidadProcesamiento:
-    "/ReporteCambioDeFase/GenerarReporteCalidadProcesamiento",
+    '/ReporteCambioDeFase/GenerarReporteCalidadProcesamiento',
   ReporteCambioDeFaseObtenerReporteConteoDatosFase:
-    "/ReporteCambioDeFase/ObtenerReporteConteoDatosFase",
+    '/ReporteCambioDeFase/ObtenerReporteConteoDatosFase',
   ReporteCambioDeFaseObtenerReporteConteoDatosFaseAlterno:
-    "/ReporteCambioDeFase/ObtenerReporteConteoDatosFaseAlterno",
+    '/ReporteCambioDeFase/ObtenerReporteConteoDatosFaseAlterno',
   ReporteCambioDeFaseGenerarReporteActividadEjecutadaLlamadaObservada:
-    "/ReporteCambioDeFase/GenerarReporteActividadEjecutadaLlamadaObservada",
+    '/ReporteCambioDeFase/GenerarReporteActividadEjecutadaLlamadaObservada',
   ReporteCambioDeFaseGenerarAcumuladoTiempoContactoEfectivo:
-    "/ReporteCambioDeFase/GenerarAcumuladoTiempoContactoEfectivo",
+    '/ReporteCambioDeFase/GenerarAcumuladoTiempoContactoEfectivo',
   ReporteCambioDeFaseGenerarAcumuladoLlamadasReprogramadasManualmente:
-    "/ReporteCambioDeFase/GenerarAcumuladoLlamadasReprogramadasManualmente",
+    '/ReporteCambioDeFase/GenerarAcumuladoLlamadasReprogramadasManualmente',
   ReporteCambioDeFaseGenerarActividadEjecutadaFaseActual:
-    "/ReporteCambioDeFase/GenerarActividadEjecutadaFaseActual",
+    '/ReporteCambioDeFase/GenerarActividadEjecutadaFaseActual',
 
   SemaforoFinancieroObtenerSemaforoFinanciero:
-    "/SemaforoFinanciero/ObtenerSemaforoFinanciero",
+    '/SemaforoFinanciero/ObtenerSemaforoFinanciero',
 
-  SemaforoFinancieroObtenerCombos: "/SemaforoFinanciero/ObtenerCombo",
-  SemaforoFinancieroInsertar: "/SemaforoFinanciero/Insertar",
-  SemaforoFinancieroInsertarLista: "/SemaforoFinanciero/InsertarLista",
-  SemaforoFinancieroActualizar: "/SemaforoFinanciero/Actualizar",
-  SemaforoFinancieroActualizarLista: "/SemaforoFinanciero/ActualizarLista",
-  SemaforoFinancieroEliminar: "/SemaforoFinanciero/Eliminar",
-  SemaforoFinancieroEliminarListado: "/SemaforoFinanciero/EliminarListado",
+  SemaforoFinancieroObtenerCombos: '/SemaforoFinanciero/ObtenerCombo',
+  SemaforoFinancieroInsertar: '/SemaforoFinanciero/Insertar',
+  SemaforoFinancieroInsertarLista: '/SemaforoFinanciero/InsertarLista',
+  SemaforoFinancieroActualizar: '/SemaforoFinanciero/Actualizar',
+  SemaforoFinancieroActualizarLista: '/SemaforoFinanciero/ActualizarLista',
+  SemaforoFinancieroEliminar: '/SemaforoFinanciero/Eliminar',
+  SemaforoFinancieroEliminarListado: '/SemaforoFinanciero/EliminarListado',
 
   //SEMAFORO FINANCIERO DETALLE
   SemaforoFinancieroDetalleObtener:
-    "/SemaforoFinancieroDetalle/ObtenerSemaforoFinancieroDetalle",
+    '/SemaforoFinancieroDetalle/ObtenerSemaforoFinancieroDetalle',
 
   SemaforoFinancieroDetalleObtenerId:
-    "/SemaforoFinancieroDetalle/SemaforoFinancieroDetalle/",
+    '/SemaforoFinancieroDetalle/SemaforoFinancieroDetalle/',
   SemaforoFinancieroDetalleObtenerCombo:
-    "/SemaforoFinancieroDetalle/ObtenerCombo",
-  SemaforoFinancieroDetalleInsertar: "/SemaforoFinancieroDetalle/Insertar",
+    '/SemaforoFinancieroDetalle/ObtenerCombo',
+  SemaforoFinancieroDetalleInsertar: '/SemaforoFinancieroDetalle/Insertar',
   SemaforoFinancieroDetalleInsertarLista:
-    "/SemaforoFinancieroDetalle/InsertarLista",
-  SemaforoFinancieroDetalleActualizar: "/SemaforoFinancieroDetalle/Insertar",
+    '/SemaforoFinancieroDetalle/InsertarLista',
+  SemaforoFinancieroDetalleActualizar: '/SemaforoFinancieroDetalle/Insertar',
   SemaforoFinancieroDetalleActualizarLista:
-    "/SemaforoFinancieroDetalle/ActualizarLista",
-  SemaforoFinancieroDetalleEliminar: "/SemaforoFinancieroDetalle/Eliminar",
+    '/SemaforoFinancieroDetalle/ActualizarLista',
+  SemaforoFinancieroDetalleEliminar: '/SemaforoFinancieroDetalle/Eliminar',
   SemaforoFinancieroDetalleEliminarLista:
-    "/SemaforoFinancieroDetalle/EliminarListado",
+    '/SemaforoFinancieroDetalle/EliminarListado',
 
   //SEMAFORO FINANCIERO DETALLE VARIABLE
   SemaforoFinancieroDetalleVariableObtenerSemaforoFinancieroDetalleVariable:
-    "/SemaforoFinancieroDetalleVariable/ObtenerSemaforoFinancieroDetalleVariable",
+    '/SemaforoFinancieroDetalleVariable/ObtenerSemaforoFinancieroDetalleVariable',
 
   SemaforoFinancieroDetalleVariableObtenerPorIdSemaforoFinancieroDetalle:
-    "/SemaforoFinancieroDetalleVariable/ObtenerDetalleVariablePorIdSemaforoFinancieroDetalle",
+    '/SemaforoFinancieroDetalleVariable/ObtenerDetalleVariablePorIdSemaforoFinancieroDetalle',
 
   SemaforoFinancieroDetalleVariableInsertar:
-    "/SemaforoFinancieroDetalleVariable/Insertar",
+    '/SemaforoFinancieroDetalleVariable/Insertar',
   SemaforoFinancieroDetalleVariableInsertarLista:
-    "/SemaforoFinancieroDetalleVariable/InsertarLista",
+    '/SemaforoFinancieroDetalleVariable/InsertarLista',
   SemaforoFinancieroDetalleVariableActualizar:
-    "/SemaforoFinancieroDetalleVariable/Actualizar",
+    '/SemaforoFinancieroDetalleVariable/Actualizar',
   SemaforoFinancieroDetalleVariableActualizarLista:
-    "/SemaforoFinancieroDetalleVariable/ActualizarLista",
+    '/SemaforoFinancieroDetalleVariable/ActualizarLista',
   SemaforoFinancieroDetalleVariableEliminar:
-    "/SemaforoFinancieroDetalleVariable/Eliminar",
+    '/SemaforoFinancieroDetalleVariable/Eliminar',
   SemaforoFinancieroDetalleVariableEliminarListado:
-    "/SemaforoFinancieroDetalleVariable/EliminarListado",
+    '/SemaforoFinancieroDetalleVariable/EliminarListado',
   SemaforoFinancieroDetalleVariableObtenerCombo:
-    "/SemaforoFinancieroDetalleVariable/ObtenerCombo",
+    '/SemaforoFinancieroDetalleVariable/ObtenerCombo',
   //SEMAFORO FINANCIERO VARIABLE
-  SemaforoFinancieroVariableInsertar: "/SemaforoFinancieroVariable/Insertar",
+  SemaforoFinancieroVariableInsertar: '/SemaforoFinancieroVariable/Insertar',
   SemaforoFinancieroVariableInsertarLista:
-    "/SemaforoFinancieroVariable/InsertarLista",
+    '/SemaforoFinancieroVariable/InsertarLista',
   SemaforoFinancieroVariableActualizar:
-    "/SemaforoFinancieroVariable/Actualizar",
+    '/SemaforoFinancieroVariable/Actualizar',
   SemaforoFinancieroVariableActualizarLista:
-    "/SemaforoFinancieroVariable/ActualizarLista",
-  SemaforoFinancieroVariableEliminar: "/SemaforoFinancieroVariable/Eliminar",
+    '/SemaforoFinancieroVariable/ActualizarLista',
+  SemaforoFinancieroVariableEliminar: '/SemaforoFinancieroVariable/Eliminar',
   SemaforoFinancieroVariableEliminarListado:
-    "/SemaforoFinancieroVariable/EliminarListado",
+    '/SemaforoFinancieroVariable/EliminarListado',
   SemaforoFinancieroVariableObtenerSemaforoFinancieroVariable:
-    "/SemaforoFinancieroVariable/ObtenerSemaforoFinancieroVariable",
+    '/SemaforoFinancieroVariable/ObtenerSemaforoFinancieroVariable',
   SemaforoFinancieroVariableObtenerCombo:
-    "/SemaforoFinancieroVariable/ObtenerCombo",
+    '/SemaforoFinancieroVariable/ObtenerCombo',
 
-  SentinelObtenerDetalleSentinel: "/Sentinel/ObtenerDetalleSentinel",
+  SentinelObtenerDetalleSentinel: '/Sentinel/ObtenerDetalleSentinel',
 
   ReporteTasaConversionConsolidadaGenerarReporteTasas:
-    "/ReporteTasaConversionConsolidada/GenerarReporteTasas",
+    '/ReporteTasaConversionConsolidada/GenerarReporteTasas',
   ReporteTasaConversionConsolidadaObtenerComboPEspecifico:
-    "/ReporteTasaConversionConsolidada/ObtenerComboPespecifico",
+    '/ReporteTasaConversionConsolidada/ObtenerComboPespecifico',
   ReporteTasaConversionConsolidadaObtenerComboPGeneral:
-    "/ReporteTasaConversionConsolidada/ObtenerComboPGeneral",
+    '/ReporteTasaConversionConsolidada/ObtenerComboPGeneral',
   ReporteTasaConversionConsolidadaObtenerComboArea:
-    "/ReporteTasaConversionConsolidada/ObtenerComboArea",
+    '/ReporteTasaConversionConsolidada/ObtenerComboArea',
   ReporteTasaConversionConsolidadaObtenerComboSubArea:
-    "/ReporteTasaConversionConsolidada/ObtenerComboSubArea",
+    '/ReporteTasaConversionConsolidada/ObtenerComboSubArea',
   ReporteTasaConversionConsolidadaObtenerCombosReporteTasaConversionConsolidada:
-    "/ReporteTasaConversionConsolidada/ObtenerCombosReporteTasaConversionConsolidada/",
+    '/ReporteTasaConversionConsolidada/ObtenerCombosReporteTasaConversionConsolidada/',
   ReporteTasaConversionConsolidadaObtenerCombosReporteTasaConversionConsolidada2:
-    "/ReporteTasaConversionConsolidada/ObtenerCombosReporteTasaConversionConsolidada/",
+    '/ReporteTasaConversionConsolidada/ObtenerCombosReporteTasaConversionConsolidada/',
   ReporteTasaConversionConsolidadaGenerarReporte:
-    "/ReporteTasaConversionConsolidada/GenerarReporte",
+    '/ReporteTasaConversionConsolidada/GenerarReporte',
 
   ReporteTasaConversionConsolidadaGenerarAsesoresCoordinadores:
-    "/ReporteTasaConversionConsolidada/GenerarAsesoresCoordinadores",
+    '/ReporteTasaConversionConsolidada/GenerarAsesoresCoordinadores',
   ReporteTasaConversionConsolidadaDarPeriodoActual:
-    "/ReporteTasaConversionConsolidada/DarPeriodoActual",
+    '/ReporteTasaConversionConsolidada/DarPeriodoActual',
 
   ReporteSeguimientoOportunidadesObtenerCombosReporte:
-    "/ReporteSeguimientoOportunidades/ObtenerCombosReporte",
+    '/ReporteSeguimientoOportunidades/ObtenerCombosReporte',
   ReporteSeguimientoOportunidadesObtenerDatosNuevaLlamada:
-    "/ReporteSeguimientoOportunidades/ObtenerDatosNuevaLlamada",
+    '/ReporteSeguimientoOportunidades/ObtenerDatosNuevaLlamada',
   ReporteSeguimientoOportunidadesGenerarNuevaLlamadaActividad:
-    "/ReporteSeguimientoOportunidades/GenerarNuevaLlamadaActividad",
+    '/ReporteSeguimientoOportunidades/GenerarNuevaLlamadaActividad',
   // ReporteSeguimientoOportunidadesObtenerCombosYPersonal:'/ReporteSeguimientoOportunidades/ObtenerCombosYPersonal/',
   ReporteSeguimientoOportunidadesGenerarReporte:
-    "/ReporteSeguimientoOportunidades/GenerarReporte",
+    '/ReporteSeguimientoOportunidades/GenerarReporte',
   ReporteSeguimientoOportunidadesActualizarCronogramaVersionFinal:
-    "/ReporteSeguimientoOportunidades/ActualizarCronogramaVersionFinal",
+    '/ReporteSeguimientoOportunidades/ActualizarCronogramaVersionFinal',
   ReporteSeguimientoOportunidadesObtenerListaOportunidadLog:
-    "/ReporteSeguimientoOportunidades/ObtenerListaOportunidadLog",
+    '/ReporteSeguimientoOportunidades/ObtenerListaOportunidadLog',
   ReporteSeguimientoOportunidadesModificarLlamadaWebphone:
-    "/ReporteSeguimientoOportunidades/ModificarLlamadaWebphone",
+    '/ReporteSeguimientoOportunidades/ModificarLlamadaWebphone',
   ReporteSeguimientoOportunidadesGenerarReporteSolicitudesVisualizacion:
-    "/ReporteSeguimientoOportunidades/GenerarReporteSolicitudesVisualizacion/",
+    '/ReporteSeguimientoOportunidades/GenerarReporteSolicitudesVisualizacion/',
   ReporteSeguimientoOportunidadesObtenerCombosSeguimiento:
-    "/ReporteSeguimientoOportunidades/ObtenerCombosReporteSeguimiento",
+    '/ReporteSeguimientoOportunidades/ObtenerCombosReporteSeguimiento',
 
   ReporteSeguimientoOportunidadesObtenerInformacionOportunidad:
-    "/ReporteSeguimientoOportunidades/ObtenerInformacionOportunidad",
+    '/ReporteSeguimientoOportunidades/ObtenerInformacionOportunidad',
   ReporteSeguimientoOportunidadesObtenerReferidos:
-    "/ReporteSeguimientoOportunidades/ObtenerReferidos",
+    '/ReporteSeguimientoOportunidades/ObtenerReferidos',
   ReporteSeguimientoOportunidadesObtenerInteraccionesAlumno:
-    "/ReporteSeguimientoOportunidades/ObtenerInteraccionesAlumno",
+    '/ReporteSeguimientoOportunidades/ObtenerInteraccionesAlumno',
   ReporteSeguimientoOportunidadesObtenerOportunidadesAnteriores:
-    "/ReporteSeguimientoOportunidades/ObtenerOportunidadesAnteriores",
+    '/ReporteSeguimientoOportunidades/ObtenerOportunidadesAnteriores',
 
   CriterioCalificacionObtenerTodoReporteSeguimiento:
-    "/CriterioCalificacion/ObtenerTodoReporteSeguimiento",
+    '/CriterioCalificacion/ObtenerTodoReporteSeguimiento',
 
   BeneficiosAlumnoPEspecificoInsertarBeneficios:
-    "/BeneficioAlumnoPEspecifico/InsertarBeneficios",
+    '/BeneficioAlumnoPEspecifico/InsertarBeneficios',
   VerificacionOportunidadISMInsertarOportunidadVerificada:
-    "/OportunidadIsVerificada/InsertarOportunidadVerificada",
+    '/OportunidadIsVerificada/InsertarOportunidadVerificada',
   RegistrarOportunidadObtenerDatosFiltroRegistrarOportunidad:
-    "/RegistrarOportunidad/ObtenerDatosFiltroRegistrarOportunidad",
+    '/RegistrarOportunidad/ObtenerDatosFiltroRegistrarOportunidad',
   ControlDocAlumnoActualizarCriterioCalificacionMatricula:
-    "/ControlDocAlumno/ActualizarCriterioCalificacionMatricula", // *PUT
+    '/ControlDocAlumno/ActualizarCriterioCalificacionMatricula', // *PUT
   ControlDocAlumnoActualizarMatriculaObservacionMatricula:
-    "/ControlDocAlumno/ActualizarMatriculaObservacionMatricula", // *PUT
+    '/ControlDocAlumno/ActualizarMatriculaObservacionMatricula', // *PUT
 
   //Envio de mensajes por el ApiGraph para WhatsApp
   WhatsAppMensajeEnviadoApiComercialEnvioPlantilla:
-    "/WhatsAppMensajeEnviadoApiComercial/WhatsAppMensajePlantilla",
+    '/WhatsAppMensajeEnviadoApiComercial/WhatsAppMensajePlantilla',
   WhatsAppMensajeEnviadoApiComercialWhatsAppMensajeTexto:
-    "/WhatsAppMensajeEnviadoApiComercial/WhatsAppMensajeTexto",
+    '/WhatsAppMensajeEnviadoApiComercial/WhatsAppMensajeTexto',
   WhatsAppMensajeEnviadoApiComercialEnvioArchivo:
-    "/WhatsAppMensajeEnviadoApiComercial/WhatsAppMensajeArchivo",
+    '/WhatsAppMensajeEnviadoApiComercial/WhatsAppMensajeArchivo',
 
   //Agenda Presentacion Argumento
   AgendaInformacionActividadObtenerProgramaGeneralPresentacionArgumentoDetallePorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerProgramaGeneralPresentacionArgumentoDetallePorIdOportunidad", // {idOportunidad}
-
+    '/AgendaInformacionActividad/ObtenerProgramaGeneralPresentacionArgumentoDetallePorIdOportunidad', // {idOportunidad}
 
   //Asesor Marcado
-  AsesorMarcadoObtener: "/AsesorMarcador/Obtener",
-  AsesorMarcadoActualizar: "/AsesorMarcador/Actualizar",
-  AsesorMarcadoEliminar: "/AsesorMarcador/Eliminar",
-  AsesorMarcadoObtenerReporteAsesorMarcadorAutomatico: "/AsesorMarcador/ObtenerReporteAsesorMarcadorAutomatico",
+  AsesorMarcadoObtener: '/AsesorMarcador/Obtener',
+  AsesorMarcadoActualizar: '/AsesorMarcador/Actualizar',
+  AsesorMarcadoEliminar: '/AsesorMarcador/Eliminar',
+  AsesorMarcadoObtenerReporteAsesorMarcadorAutomatico:
+    '/AsesorMarcador/ObtenerReporteAsesorMarcadorAutomatico',
 };
 
 export const constApiOperaciones = {
-  AlumnoActualizarNombreAlumno: "Alumno/ActualizarNombreAlumno",
+  AlumnoActualizarNombreAlumno: 'Alumno/ActualizarNombreAlumno',
   AgendaInformacionActividadObtenerPEspecificoPorMatriculaParaPortalAcademico:
-    "/AgendaInformacionActividad/ObtenerPEspecificoPorMatriculaParaPortalAcademico",
+    '/AgendaInformacionActividad/ObtenerPEspecificoPorMatriculaParaPortalAcademico',
   AgendaInformacionActividadObtenerCriterioDetalleEntregablesAlumno:
-    "/AgendaInformacionActividad/ObtenerCriterioDetalleEntregablesAlumno",
+    '/AgendaInformacionActividad/ObtenerCriterioDetalleEntregablesAlumno',
   MatriculaCabeceraObtenerAgendaAtcCompromiso:
-    "/MatriculaCabecera/ObtenerAgendaAtcCompromiso",
+    '/MatriculaCabecera/ObtenerAgendaAtcCompromiso',
   AgendaInformacionActividadObtenerProgramasPorCodigoPais:
-    "/AgendaInformacionActividad/ObtenerProgramasPorCodigoPais",
+    '/AgendaInformacionActividad/ObtenerProgramasPorCodigoPais',
   SolicitudOperacionesObtenerHistorialAsesora:
-    "/SolicitudOperaciones/ObtenerHistorialAsesora",
+    '/SolicitudOperaciones/ObtenerHistorialAsesora',
   AgendaInformacionActividadObtenerHistorialInteraccionesPorIdOportunidad:
-    "/AgendaInformacionActividad/ObtenerHistorialInteraccionesPorIdOportunidad", // {idOportunidad}
+    '/AgendaInformacionActividad/ObtenerHistorialInteraccionesPorIdOportunidad', // {idOportunidad}
 
   AgendaInformacionActividadObtenerPrecioFinalProgramaAlumno:
-    "/AgendaInformacionActividad/ObtenerPrecioFinalProgramaAlumno", // {codigoMatricula}
+    '/AgendaInformacionActividad/ObtenerPrecioFinalProgramaAlumno', // {codigoMatricula}
 
   AgendaInformacionActividadObtenerTodoInformacionBeneficioSolicitado:
-    "/AgendaInformacionActividad/ObtenerTodoInformacionBeneficioSolicitado",
+    '/AgendaInformacionActividad/ObtenerTodoInformacionBeneficioSolicitado',
   AgendaInformacionActividadObtenerDatosAdicionalesPorCodigo:
-    "/AgendaInformacionActividad/ObtenerDatosAdicionalesPorCodigo", // {idMatriculaCabeceraBeneficio},
+    '/AgendaInformacionActividad/ObtenerDatosAdicionalesPorCodigo', // {idMatriculaCabeceraBeneficio},
   AgendaInformacionActividadEntregarBeneficio:
-    "/AgendaInformacionActividad/EntregarBeneficio", // {idMatriculaCabeceraBeneficio, usuario},
+    '/AgendaInformacionActividad/EntregarBeneficio', // {idMatriculaCabeceraBeneficio, usuario},
 
   //Filtro de beneficios solicitados por alumnos sin repetir
-  ObtenerNombreBeneficiosSolicitados: '/MatriculaCabeceraBeneficios/ObtenerBeneficiosSolicitadosSinRepetir',
+  ObtenerNombreBeneficiosSolicitados:
+    '/MatriculaCabeceraBeneficios/ObtenerBeneficiosSolicitadosSinRepetir',
   //Obtiene de pla.T_EstadoSolicitudBeneficio
   EstadoSolicitudBeneficio: '/EstadoSolicitudBeneficio/ObtenerCombo',
 
-  ContenidoCertificadoIrcaMostrarContenidoIrca: '/ContenidoCertificadoIrca/MostrarContenidoIrca', // {data archivo .csv},
-  ContenidoCertificadoIrcaInsertarContenidoCertificadoIrca: '/ContenidoCertificadoIrca/InsertarContenidoCertificadoIrca', // {data archivo .csv},
+  ContenidoCertificadoIrcaMostrarContenidoIrca:
+    '/ContenidoCertificadoIrca/MostrarContenidoIrca', // {data archivo .csv},
+  ContenidoCertificadoIrcaInsertarContenidoCertificadoIrca:
+    '/ContenidoCertificadoIrca/InsertarContenidoCertificadoIrca', // {data archivo .csv},
 
   SolicitudCertificadoFisicoObtenerSolicitudCertificadoFisico:
-    "/SolicitudCertificadoFisico/ObtenerSolicitudCertificadoFisico",
+    '/SolicitudCertificadoFisico/ObtenerSolicitudCertificadoFisico',
   SolicitudCertificadoFisicoGenerarCertificadoFisico:
-    "/SolicitudCertificadoFisico/GenerarCertificadoFisico",
+    '/SolicitudCertificadoFisico/GenerarCertificadoFisico',
   SolicitudCertificadoFisicoObtenerCombos:
-    "/SolicitudCertificadoFisico/ObtenerCombos", // {idPersonal}
+    '/SolicitudCertificadoFisico/ObtenerCombos', // {idPersonal}
   SolicitudCertificadoFisicoObtenerDatosRegistroEnvioFisico:
-    "/SolicitudCertificadoFisico/ObtenerDatosRegistroEnvioFisico", // {idSolicitudCertificadoFisico}
+    '/SolicitudCertificadoFisico/ObtenerDatosRegistroEnvioFisico', // {idSolicitudCertificadoFisico}
   SolicitudCertificadoFisicoActualizarDatosCourierEnvioFisico:
-    "/SolicitudCertificadoFisico/ActualizarDatosCourierEnvioFisico",
+    '/SolicitudCertificadoFisico/ActualizarDatosCourierEnvioFisico',
 
-  SolicitudOperacionesReporteFiltro: "/SolicitudOperaciones/ReporteFiltro",
+  SolicitudOperacionesReporteFiltro: '/SolicitudOperaciones/ReporteFiltro',
 
   ReporteSeguimientoOportunidadesObtenerInformacionOportunidadOperaciones:
-    "/ReporteSeguimientoOportunidades/ObtenerInformacionOportunidadOperaciones",
+    '/ReporteSeguimientoOportunidades/ObtenerInformacionOportunidadOperaciones',
   ReporteSeguimientoOportunidadesObtenerDatosOportunidadOperaciones:
-    "/ReporteSeguimientoOportunidades/ObtenerDatosOportunidadOperaciones",
+    '/ReporteSeguimientoOportunidades/ObtenerDatosOportunidadOperaciones',
   ReporteSeguimientoOportunidadesGenerarReporteOperaciones:
-    "/ReporteSeguimientoOportunidades/GenerarReporteOperaciones/",
+    '/ReporteSeguimientoOportunidades/GenerarReporteOperaciones/',
   ReporteSeguimientoInscritosCarreraGenerarReporteOperaciones:
-    "/ReporteSeguimientoOportunidades/ObtenerReporteSeguimientoInscritosCarreraOperaciones/",
+    '/ReporteSeguimientoOportunidades/ObtenerReporteSeguimientoInscritosCarreraOperaciones/',
 
   //Reporte indicadores Operativos
-  ReporteOperacionesObtenerCombos: "/ReporteOperaciones/ObtenerCombos",
+  ReporteOperacionesObtenerCombos: '/ReporteOperaciones/ObtenerCombos',
   ReporteOperacionesGenerarReporteIndicadoresOperativos:
-    "/ReporteOperaciones/GenerarReporteIndicadoresOperativos",
+    '/ReporteOperaciones/GenerarReporteIndicadoresOperativos',
   ReporteSeguimientoOportunidadesObtenerCombosReporteSeguimientoOperaciones:
-    "/ReporteSeguimientoOportunidades/ObtenerCombosReporteSeguimientoOperaciones/",
+    '/ReporteSeguimientoOportunidades/ObtenerCombosReporteSeguimientoOperaciones/',
   ReporteCompromisoPagoAlumnoObtenerReporteCompromiso:
-    "/ReporteCompromisoPagoAlumno/ObtenerReporteCompromiso",
-  AgendaObtenerAlumnoComplete: "/Agenda/ObtenerAlumnoAutocomplete",
+    '/ReporteCompromisoPagoAlumno/ObtenerReporteCompromiso',
+  AgendaObtenerAlumnoComplete: '/Agenda/ObtenerAlumnoAutocomplete',
   ReporteCompromisoPagoAlumnoObtenerCombos:
-    "/ReporteCompromisoPagoAlumno/ObtenerCombos/",
+    '/ReporteCompromisoPagoAlumno/ObtenerCombos/',
   //envio de mensajeswhatsapp
-  WhatsAppMensajesWhatsAppMensaje: "/WhatsAppMensajes/WhatsAppMensaje",
+  WhatsAppMensajesWhatsAppMensaje: '/WhatsAppMensajes/WhatsAppMensaje',
 
   WhatsAppMensajesWhatsAppMensajeApiGraph:
-    "/WebHookWhatsApp/WhatsAppMensajeApiGraphAtc",
+    '/WebHookWhatsApp/WhatsAppMensajeApiGraphAtc',
   WhatsAppMensajesEnviarMensajeWhatsappComercial:
-    "/WhatsAppMensajes/EnviarMensajeWhatsappComercial",
+    '/WhatsAppMensajes/EnviarMensajeWhatsappComercial',
   WhatsAppMensajesObtenerNombreAlumnoPorCelular:
-    "/WhatsAppMensajes/ObtenerNombreAlumnoPorCelular",
+    '/WhatsAppMensajes/ObtenerNombreAlumnoPorCelular',
 
   // ReporteRealizadas
 
   ReporteActividadesRealizadasGenerarReporteOperaciones:
-    "/ReporteActividadesRealizadas/GenerarReporteOperaciones",
+    '/ReporteActividadesRealizadas/GenerarReporteOperaciones',
   ReporteActividadesRealizadasObtenerCombosOperaciones:
-    "/ReporteActividadesRealizadas/ObtenerCombosOperaciones",
+    '/ReporteActividadesRealizadas/ObtenerCombosOperaciones',
   //Agenda
   WhatsAppMensajesWhatsAppHistorialMensajeChat:
-    "/WhatsAppMensajes/WhatsAppHistorialMensajeChat",
+    '/WhatsAppMensajes/WhatsAppHistorialMensajeChat',
   WhatsAppMensajesValidarPlantillasEnviadas:
-    "/WhatsAppMensajes/ValidarPlantillasEnviadas",
+    '/WhatsAppMensajes/ValidarPlantillasEnviadas',
   WhatsAppMensajesValidarPlantillasEnviadasComercial:
-    "/WhatsAppMensajes/ValidarPlantillasEnviadasComercial",
+    '/WhatsAppMensajes/ValidarPlantillasEnviadasComercial',
   WhatsAppMensajesValidarMesajeRecibidosApiComercial:
-    "/WhatsAppMensajes/ValidarMesajeRecibidosApiComercial",
+    '/WhatsAppMensajes/ValidarMesajeRecibidosApiComercial',
   WhatsAppMensajesValidarMesajesEnviadosEn24Horas:
-    "/WhatsAppMensajes/ValidarMesajesEnviadosEn24Horas",
+    '/WhatsAppMensajes/ValidarMesajesEnviadosEn24Horas',
   WhatsAppMensajesValidarMesajesEnviadosEn24HorasComercial:
-    "/WhatsAppMensajes/ValidarMesajesEnviadosEn24HorasComercial",
+    '/WhatsAppMensajes/ValidarMesajesEnviadosEn24HorasComercial',
 
   AgendaInformacionActividadAprobarSolicitudBeneficio:
-    "/AgendaInformacionActividad/AprobarSolicitudBeneficio",
+    '/AgendaInformacionActividad/AprobarSolicitudBeneficio',
   AgendaInformacionActividadRechazarSolicitudBeneficio:
-    "/AgendaInformacionActividad/RechazarSolicitudBeneficio",
+    '/AgendaInformacionActividad/RechazarSolicitudBeneficio',
   AgendaInformacionActividadObtenerInformacionProgramav15M:
-    "/AgendaInformacionActividad/ObtenerInformacionProgramav5M",
-  MontoPagoObtenerPaquetes: "/MontoPago/ObtenerPaquetes",
+    '/AgendaInformacionActividad/ObtenerInformacionProgramav5M',
+  MontoPagoObtenerPaquetes: '/MontoPago/ObtenerPaquetes',
   AgendaObtenerPEspecificoAccesoTemporalCombo:
-    "/Agenda/ObtenerPEspecificoAccesoTemporalCombo",
+    '/Agenda/ObtenerPEspecificoAccesoTemporalCombo',
   AgendaInformacionActividadObtenerEvaluacionesPorMatriculaV2:
-    "/AgendaInformacionActividad/ObtenerEvaluacionesPorMatriculaV2",
+    '/AgendaInformacionActividad/ObtenerEvaluacionesPorMatriculaV2',
   AgendaInformacionActividadObtenerPEspecificoPorMatricula:
-    "/AgendaInformacionActividad/ObtenerPEspecificoPorMatricula",
-  CorreoEnviarMensajeGmail: "/Correo/EnviarMensajeGmail",
-  AgendaObtenerClasificacionTab: "/Agenda/ObtenerClasificacionTab/",
-  AgendaObtenerClasificacionTabFicha: "/Agenda/ObtenerClasificacionTabFicha/",
+    '/AgendaInformacionActividad/ObtenerPEspecificoPorMatricula',
+  CorreoEnviarMensajeGmail: '/Correo/EnviarMensajeGmail',
+  AgendaObtenerClasificacionTab: '/Agenda/ObtenerClasificacionTab/',
+  AgendaObtenerClasificacionTabFicha: '/Agenda/ObtenerClasificacionTabFicha/',
   AgendaInformacionActividadObtenerPEspecificoPorMatriculaPorIdEspecifico:
-    "/AgendaInformacionActividad/ObtenerPEspecificoPorMatriculaPorIdEspecifico",
+    '/AgendaInformacionActividad/ObtenerPEspecificoPorMatriculaPorIdEspecifico',
   AgendaInformacionActividadObtenerVersionesCronogramaPorMatricula:
-    "/AgendaInformacionActividad/ObtenerVersionesCronogramaPorMatricula",
+    '/AgendaInformacionActividad/ObtenerVersionesCronogramaPorMatricula',
   AgendaInformacionActividadObtenerEvaluacionesPorMatriculaV3:
-    "/AgendaInformacionActividad/ObtenerEvaluacionesPorMatriculaV3",
+    '/AgendaInformacionActividad/ObtenerEvaluacionesPorMatriculaV3',
   AgendaInformacionActividadObtenerEvaluacionesPorVersion:
-    "/AgendaInformacionActividad/ObtenerEvaluacionesPorVersion",
+    '/AgendaInformacionActividad/ObtenerEvaluacionesPorVersion',
   AgendaInformacionActividadObtenerSeguimientoAlumnoCategoria:
-    "/AgendaInformacionActividad/ObtenerSeguimientoAlumnoCategoria",
+    '/AgendaInformacionActividad/ObtenerSeguimientoAlumnoCategoria',
   AgendaInformacionActividadObtenerCrongramaMoodle:
-    "/AgendaInformacionActividad/ObtenerCrongramaMoodle",
+    '/AgendaInformacionActividad/ObtenerCrongramaMoodle',
   AgendaInformacionActividadObtenerPEspecificoRelacionadoPorIdPGeneral:
-    "/AgendaInformacionActividad/ObtenerPEspecificoRelacionadoPorIdPGeneral",
+    '/AgendaInformacionActividad/ObtenerPEspecificoRelacionadoPorIdPGeneral',
   AgendaInformacionActividadObtenerPEspecificoRelacionadoPGeneral:
-    "/AgendaInformacionActividad/ObtenerPEspecificoRelacionadoPGeneral",
+    '/AgendaInformacionActividad/ObtenerPEspecificoRelacionadoPGeneral',
   AgendaInformacionActividadObtenerPEspecificoRelacionadoIrca:
-    "/AgendaInformacionActividad/ObtenerPEspecificoRelacionadoIrca",
+    '/AgendaInformacionActividad/ObtenerPEspecificoRelacionadoIrca',
   AgendaInformacionActividadInsertarPEspecificoMatriculaAlumnoRepositorio:
-    "/AgendaInformacionActividad/InsertarPEspecificoMatriculaAlumnoRepositorio/",
+    '/AgendaInformacionActividad/InsertarPEspecificoMatriculaAlumnoRepositorio/',
 
   WhatsAppMensajeRecibidoWhatsAppUltimoMensajeRecibidosPorOportunidad:
-    "/WhatsAppMensajeRecibido/WhatsAppUltimoMensajeRecibidosPorOportunidad",
+    '/WhatsAppMensajeRecibido/WhatsAppUltimoMensajeRecibidosPorOportunidad',
   WhatsAppMensajeRecibidoWhatsAppUltimoMensajeRecibidoChatControlMensaje:
-    "/WhatsAppMensajeRecibido/WhatsAppUltimoMensajeRecibidoChatControlMensaje",
+    '/WhatsAppMensajeRecibido/WhatsAppUltimoMensajeRecibidoChatControlMensaje',
   WhatsAppMensajeRecibidoAdjuntarArchivoWhatsApp:
-    "/WhatsAppMensajeRecibido/AdjuntarArchivoWhatsApp/",
-  SeguimientoAlumnoComentarioInsertar: "/SeguimientoAlumnoComentario/Insertar",
+    '/WhatsAppMensajeRecibido/AdjuntarArchivoWhatsApp/',
+  SeguimientoAlumnoComentarioInsertar: '/SeguimientoAlumnoComentario/Insertar',
 
   SolicitudOperacionesRealizadoSolicitud:
-    "/SolicitudOperaciones/RealizadoSolicitudOperaciones",
+    '/SolicitudOperaciones/RealizadoSolicitudOperaciones',
   SolicitudOperacionesCancelarSolicitud:
-    "/SolicitudOperaciones/CancelarSolicitudOperaciones",
+    '/SolicitudOperaciones/CancelarSolicitudOperaciones',
 
   SolicitudOperacionesObtenerSolicitud:
-    "/SolicitudOperaciones/ObtenerTodoSolicitudOperaciones",
+    '/SolicitudOperaciones/ObtenerTodoSolicitudOperaciones',
   SolicitudOperacionesObtenerTipoSolicitud:
-    "/SolicitudOperaciones/ObtenerTipoSolicitud",
+    '/SolicitudOperaciones/ObtenerTipoSolicitud',
 
   AgendaInformacionRegistrarLoginPortal:
-    "/AgendaInformacionActividad/RegistrarLoginPortal",
+    '/AgendaInformacionActividad/RegistrarLoginPortal',
   SolicitudOperacionesObtenerCombosOperaciones:
-    "/ReporteSeguimientoOportunidades/ObtenerCombosOperaciones",
+    '/ReporteSeguimientoOportunidades/ObtenerCombosOperaciones',
   SolicitudOperacionesGenerarReporteSolicitudes:
-    "/ReporteSeguimientoOportunidades/GenerarReporteSolicitudesVisualizacionOperaciones/",
+    '/ReporteSeguimientoOportunidades/GenerarReporteSolicitudesVisualizacionOperaciones/',
   SolicitudOperacionesObtenerCentroCostoPorPersonal:
-    "/ReporteCambioDeFase/ObtenerCentroCostoPorPersonal",
+    '/ReporteCambioDeFase/ObtenerCentroCostoPorPersonal',
   SolicitudOperacionesAprobarSolicitudVisualizacion:
-    "/ReporteSeguimientoOportunidades/AprobarSolicitudVisualizacion",
+    '/ReporteSeguimientoOportunidades/AprobarSolicitudVisualizacion',
   OperacionesNotaListadoNotaPorIdMatricula:
-    "/Operaciones/Nota/ListadoNotaPorIdMatricula",
-  OrigenObtenerTarifarios: "/Origen/ObtenerTarifarios",
-  OrigenObtenerTarifariosDetalles: "/Origen/ObtenerTarifariosDetalles/",
-  OrigenInsertarTarifario: "/Origen/InsertarTarifario",
-  OrigenEliminarTarifario: "/Origen/EliminarTarifario/",
-  OrigenActualizarTarifario: "/Origen/ActualizarTarifario",
-  OrigenEliminarTarifarioDetalle: "/Origen/EliminarTarifarioDetalle/",
-  OrigenEliminarTarifarioDetallePais: "/Origen/EliminarTarifarioDetallePais/",
+    '/Operaciones/Nota/ListadoNotaPorIdMatricula',
+  OrigenObtenerTarifarios: '/Origen/ObtenerTarifarios',
+  OrigenObtenerTarifariosDetalles: '/Origen/ObtenerTarifariosDetalles/',
+  OrigenInsertarTarifario: '/Origen/InsertarTarifario',
+  OrigenEliminarTarifario: '/Origen/EliminarTarifario/',
+  OrigenActualizarTarifario: '/Origen/ActualizarTarifario',
+  OrigenEliminarTarifarioDetalle: '/Origen/EliminarTarifarioDetalle/',
+  OrigenEliminarTarifarioDetallePais: '/Origen/EliminarTarifarioDetallePais/',
   ProgramaGeneralObtenerCombosEstadosSubEstados:
-    "/ProgramaGeneral/ObtenerCombosEstadosSubEstados",
+    '/ProgramaGeneral/ObtenerCombosEstadosSubEstados',
   ProgramaEspecificoSesionRegistrarRecuperacion:
-    "/ProgramaEspecificoSesion/RegistrarRecuperacion/",
+    '/ProgramaEspecificoSesion/RegistrarRecuperacion/',
   //Bandeja de entrada
   RegistrarOportunidadObtenerDatosFiltroRegistrarOportunidad:
-    "/RegistrarOportunidad/ObtenerDatosFiltroRegistrarOportunidad",
+    '/RegistrarOportunidad/ObtenerDatosFiltroRegistrarOportunidad',
 
-  CorreoObtenerCorreoRecibido: "/Correo/ObtenerCorreoRecibido",
-  CorreoObtenerInformacionGmail: "/Correo/ObtenerInformacionGmail",
+  CorreoObtenerCorreoRecibido: '/Correo/ObtenerCorreoRecibido',
+  CorreoObtenerInformacionGmail: '/Correo/ObtenerInformacionGmail',
   AgendaInformacionActividadObtenerFechaReprogramacionEjecutada:
-    "/AgendaInformacionActividad/ObtenerFechaReprogramacionEjecutada",
+    '/AgendaInformacionActividad/ObtenerFechaReprogramacionEjecutada',
   AgendaInformacionActividadObtenerHistorialInteraccionesOportunidad:
-    "/AgendaInformacionActividad/ObtenerHistorialInteraccionesOportunidad",
+    '/AgendaInformacionActividad/ObtenerHistorialInteraccionesOportunidad',
   AgendaInformacionActividadObtenerHistorialInteraccionesOportunidadATC:
-    "/AgendaInformacionActividad/ObtenerHistorialInteraccionesOportunidadATC",
+    '/AgendaInformacionActividad/ObtenerHistorialInteraccionesOportunidadATC',
   AgendaInformacionActividadRestablecerSolicitudBeneficio:
-    "/AgendaInformacionActividad/RestablecerSolicitudBeneficio",
+    '/AgendaInformacionActividad/RestablecerSolicitudBeneficio',
 
   AgendaInformacionActividadObtenerDocumentosWhatsApp:
-    "/AgendaInformacionActividad/ObtenerDocumentosWhatsApp",
+    '/AgendaInformacionActividad/ObtenerDocumentosWhatsApp',
 
   //reclamos y quejas
-  ReclamoObtenerReclamosAlumno: "/Reclamo/ObtenerReclamosAlumno",
-  ReclamoConfirmarReclamo: "/Reclamo/ConfirmarReclamo",
-  ReclamoSinContacto: "/Reclamo/ReclamoSinContacto",
+  ReclamoObtenerReclamosAlumno: '/Reclamo/ObtenerReclamosAlumno',
+  ReclamoConfirmarReclamo: '/Reclamo/ConfirmarReclamo',
+  ReclamoSinContacto: '/Reclamo/ReclamoSinContacto',
 
   //tasa educativasf
 
   AgendaInformacionActividadObtenerCostosAdministrativos:
-    "/AgendaInformacionActividad/ObtenerCostosAdministrativos",
+    '/AgendaInformacionActividad/ObtenerCostosAdministrativos',
   MatriculaCabeceraDatosCertificadoObtenerMatriculaCertificado:
-    "/MatriculaCabeceraDatosCertificadoMensaje/ObtenerMatriculaCertificado",
-  AlumnoObtenerInformacionAlumno: "/Alumno/ObtenerInformacionAlumno",
+    '/MatriculaCabeceraDatosCertificadoMensaje/ObtenerMatriculaCertificado',
+  AlumnoObtenerInformacionAlumno: '/Alumno/ObtenerInformacionAlumno',
   MatriculaCabeceraDatosCertificadoMensajeInsertarCertificadoDatos:
-    "/MatriculaCabeceraDatosCertificadoMensaje/InsertarCertificadoDatos",
-  SolicitudCertificadoFisicoInsertar: "/SolicitudCertificadoFisico/Insertar",
+    '/MatriculaCabeceraDatosCertificadoMensaje/InsertarCertificadoDatos',
+  SolicitudCertificadoFisicoInsertar: '/SolicitudCertificadoFisico/Insertar',
   SolicitudCertificadoFisicoObtenerPorIdMatriculaCabecera:
-    "/SolicitudCertificadoFisico/ObtenerPorIdMatriculaCabecera",
+    '/SolicitudCertificadoFisico/ObtenerPorIdMatriculaCabecera',
   SolicitudCertificadoFisicoInsertarDatosEnvioOperaciones:
-    "/SolicitudCertificadoFisico/InsertarDatosEnvioOperaciones",
+    '/SolicitudCertificadoFisico/InsertarDatosEnvioOperaciones',
 
   SolicitudCertificadoFisicoobtenerdatosenvio:
-    "/SolicitudCertificadoFisico/obtenerdatosenvio",
+    '/SolicitudCertificadoFisico/obtenerdatosenvio',
   //certificados
   MatriculaCabeceraDatosCertificadoMensajeObtenerCambiosPendientes:
-    "/MatriculaCabeceraDatosCertificadoMensaje/ObtenerCambiosPendientes",
+    '/MatriculaCabeceraDatosCertificadoMensaje/ObtenerCambiosPendientes',
 
   CertificadoGeneracionAutomaticaGenerarConstanciaPorMatricula:
-    "/CertificadoGeneracionAutomatica/GenerarConstanciaPorMatricula",
+    '/CertificadoGeneracionAutomatica/GenerarConstanciaPorMatricula',
 
   //reclamos y quejas
 
@@ -950,40 +960,40 @@ export const constApiOperaciones = {
   //cursos matriculados
 
   MatriculaCabeceraObtenerCursosMatriculados:
-    "/MatriculaCabecera/ObtenerCursosMatriculados",
+    '/MatriculaCabecera/ObtenerCursosMatriculados',
 
-  MatriculaCabeceraDesmatricularCurso: "/MatriculaCabecera/DesmatricularCurso",
+  MatriculaCabeceraDesmatricularCurso: '/MatriculaCabecera/DesmatricularCurso',
   //Configuracion Cordinador Centro Costo
 
   ConfiguracionCoordinadoresObtenerCombosConfiguracionCoordinador:
-    "/ConfiguracionCoordinadores/ObtenerCombosConfiguracionCoordinadores",
+    '/ConfiguracionCoordinadores/ObtenerCombosConfiguracionCoordinadores',
   ConfiguracionCoordinadoresObtenerConfiguracionCoordinadores:
-    "/ConfiguracionCoordinadores/ObtenerConfiguracionCoordinadores",
+    '/ConfiguracionCoordinadores/ObtenerConfiguracionCoordinadores',
   ConfiguracionCoordinadoresInsertarConfiguracion:
-    "/ConfiguracionCoordinadores/InsertarConfiguracion",
+    '/ConfiguracionCoordinadores/InsertarConfiguracion',
   ConfiguracionCoordinadoresEliminarConfiguracion:
-    "/ConfiguracionCoordinadores/EliminarConfiguracion",
+    '/ConfiguracionCoordinadores/EliminarConfiguracion',
   ConfiguracionCoordinadoresActualizarConfiguracion:
-    "/ConfiguracionCoordinadores/ActualizarConfiguracion",
+    '/ConfiguracionCoordinadores/ActualizarConfiguracion',
 
   //estado Maticula Agenda Spech
-  PlantillaOperacionesEnvio: "/PlantillaOperaciones/Envio",
-  PlantillaOperacionesObtenerFiltros: "/PlantillaOperaciones/ObtenerFiltros",
-  CorreoEnviarAccesoPortalWebAlumno: "/Correo/EnviarAccesoPortalWebAlumno",
-  CorreoEnviarAccesoMoodleAlumno: "/Correo/EnviarAccesoMoodleAlumno",
+  PlantillaOperacionesEnvio: '/PlantillaOperaciones/Envio',
+  PlantillaOperacionesObtenerFiltros: '/PlantillaOperaciones/ObtenerFiltros',
+  CorreoEnviarAccesoPortalWebAlumno: '/Correo/EnviarAccesoPortalWebAlumno',
+  CorreoEnviarAccesoMoodleAlumno: '/Correo/EnviarAccesoMoodleAlumno',
   CorreoEnviarAccesoPortalWebAlumnoWhatsApp:
-    "/Correo/EnviarAccesoPortalWebAlumnoWhatsApp",
+    '/Correo/EnviarAccesoPortalWebAlumnoWhatsApp',
   CorreoEnviarAccesoMoodleAlumnoWhatsApp:
-    "/Correo/EnviarAccesoMoodleAlumnoWhatsApp",
+    '/Correo/EnviarAccesoMoodleAlumnoWhatsApp',
   CorreoEnviarCondicionesCaracteristicas:
-    "/Correo/EnviarCondicionesCaracteristicas",
-  CorreoInsertarEnvio: "/Correo/InsertarEnvio",
+    '/Correo/EnviarCondicionesCaracteristicas',
+  CorreoInsertarEnvio: '/Correo/InsertarEnvio',
   EstadoMatriculaObtenerEstadoMatriculado:
-    "/EstadoMatricula/ObtenerEstadoMatriculado",
+    '/EstadoMatricula/ObtenerEstadoMatriculado',
   EstadoMatriculaObtenerMatriculaAlumno:
-    "/EstadoMatricula/ObtenerMatriculaAlumno",
+    '/EstadoMatricula/ObtenerMatriculaAlumno',
   SolicitudOperacionesObtenerConfirmacionSolicitudes:
-    "/SolicitudOperaciones/ObtenerConfirmacionSolicitudes",
+    '/SolicitudOperaciones/ObtenerConfirmacionSolicitudes',
   //solicitud cambios oportunidad Operaciones
 
   //
@@ -991,1505 +1001,1545 @@ export const constApiOperaciones = {
   //estado Maticula Agenda Spech
 
   SolicitudOperacionesAprobarSolicitudOperaciones:
-    "/SolicitudOperaciones/AprobarSolicitudOperaciones",
+    '/SolicitudOperaciones/AprobarSolicitudOperaciones',
   SolicitudOperacionesObtenerHistorialAccesoTemporal:
-    "/SolicitudOperaciones/ObtenerHistorialAccesoTemporal",
+    '/SolicitudOperaciones/ObtenerHistorialAccesoTemporal',
 
   //
 
   AgendaInformacionActividadObtenerFechaReprogramacionAutomatica:
-    "/AgendaInformacionActividad/ObtenerFechaReprogramacionAutomatica",
+    '/AgendaInformacionActividad/ObtenerFechaReprogramacionAutomatica',
   //BeneficionsAgenda
   AgendaInformacionActividadObtenerBeneficiosPorMatricula:
-    "/AgendaInformacionActividad/ObtenerBeneficiosPorMatricula",
+    '/AgendaInformacionActividad/ObtenerBeneficiosPorMatricula',
   AgendaInformacionActividadObtenerInformacionBeneficioSolicitado:
-    "/AgendaInformacionActividad/ObtenerInformacionBeneficioSolicitado",
+    '/AgendaInformacionActividad/ObtenerInformacionBeneficioSolicitado',
   AgendaInformacionActividadActualizarEstadoMatriculaBeneficio:
-    "/AgendaInformacionActividad/ActualizarEstadoMatriculaBeneficio",
+    '/AgendaInformacionActividad/ActualizarEstadoMatriculaBeneficio',
   MontoPagoCronogramaObtenerOportunidadMontoComplementarios:
-    "/MontoPagoCronograma/ObtenerOportunidadMontoComplementarios",
+    '/MontoPagoCronograma/ObtenerOportunidadMontoComplementarios',
   //OportunidadTabAgenda
 
   AgendaInformacionActividadFinalizarYProgramarActividadOperaciones:
-    "/AgendaInformacionActividad/FinalizarYProgramarActividadOperaciones",
+    '/AgendaInformacionActividad/FinalizarYProgramarActividadOperaciones',
 
   AgendaInformacionActividadObtenerInformacionProgramav1:
-    "/AgendaInformacionActividad/ObtenerInformacionProgramav1",
+    '/AgendaInformacionActividad/ObtenerInformacionProgramav1',
 
   MatriculaCabeceraObtenerCodigoMatriculaPEspecificoPorAlumno:
-    "/MatriculaCabecera/ObtenerCodigoMatriculaPEspecificoPorAlumno",
+    '/MatriculaCabecera/ObtenerCodigoMatriculaPEspecificoPorAlumno',
   MatriculaCabeceraObtenerIdentificadoresMatriculaComboPorAlumno:
-    "/MatriculaCabecera/ObtenerIdentificadoresMatriculaComboPorAlumno",
+    '/MatriculaCabecera/ObtenerIdentificadoresMatriculaComboPorAlumno',
   MatriculaCabeceraDatosCertificadoMensajeObtenerMensajesPorUsuario:
-    "/MatriculaCabeceraDatosCertificadoMensaje/ObtenerMensajesPorUsuario",
+    '/MatriculaCabeceraDatosCertificadoMensaje/ObtenerMensajesPorUsuario',
   MatriculaCabeceraDatosCertificadoMensajeModificarCertificadoMensaje:
-    "/MatriculaCabeceraDatosCertificadoMensaje/ModificarCertificadoMensaje",
+    '/MatriculaCabeceraDatosCertificadoMensaje/ModificarCertificadoMensaje',
   MatriculaCabeceraObtenerComboCursosMoodlePorMatricula:
-    "/MatriculaCabecera/ObtenerComboCursosMoodlePorMatricula",
+    '/MatriculaCabecera/ObtenerComboCursosMoodlePorMatricula',
   AgendaInformacionActividadObtenerValorEtiquetaListas:
-    "/AgendaInformacionActividad/ObtenerValorEtiquetaListas",
+    '/AgendaInformacionActividad/ObtenerValorEtiquetaListas',
   AgendaObtenerActividadFiltradaPorAsesorReasignado:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorReasignado",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorReasignado',
   AgendaObtenerActividadFiltradaPorAsesorProgramacionManual:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorProgramacionManual",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorProgramacionManual',
   AgendaObtenerActividadFiltradaPorAsesorPagosAtrasados:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorPagosAtrasados",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorPagosAtrasados',
   AgendaObtenerActividadFiltradaPorAsesorCompromisoPago:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorCompromisoPago",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorCompromisoPago',
   AgendaObtenerActividadFiltradaPorAsesorPreReporteCR:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorPreReporteCR",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorPreReporteCR',
   AgendaObtenerActividadFiltradaPorAsesorReportadoCR:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorReportadoCR",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorReportadoCR',
   AgendaObtenerActividadFiltradaPorAsesorCuotaAlDia:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorCuotaAlDia",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorCuotaAlDia',
   AgendaObtenerActividadFiltradaPorAsesorSeguimientoAcademico:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorSeguimientoAcademico",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorSeguimientoAcademico',
   AgendaObtenerActividadFiltradaPorAsesorRecuperacionCurso:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorRecuperacionCurso",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorRecuperacionCurso',
   AgendaObtenerActividadFiltradaPorAsesorCursoPendiente:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorCursoPendiente",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorCursoPendiente',
   AgendaObtenerActividadFiltradaPorAsesorProyectoAplicacionPendiente:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorProyectoAplicacionPendiente",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorProyectoAplicacionPendiente',
   AgendaObtenerActividadFiltradaPorAsesorNotasPendientes:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorNotasPendientes",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorNotasPendientes',
   AgendaObtenerActividadFiltradaPorAsesorCulminado:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorCulminado",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorCulminado',
   AgendaObtenerActividadFiltradaPorAsesorCulminadoDeudor:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorCulminadoDeudor",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorCulminadoDeudor',
   AgendaObtenerActividadFiltradaPorAsesorCertificado:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorCertificado",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorCertificado',
   AgendaObtenerActividadFiltradaPorAsesorBeneficiosPendientes:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorBeneficiosPendientes",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorBeneficiosPendientes',
   AgendaObtenerActividadFiltradaPorAsesorReservadoSinDeuda:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorReservadoSinDeuda",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorReservadoSinDeuda',
   AgendaObtenerActividadFiltradaPorAsesorReservadoConDeuda:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorReservadoConDeuda",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorReservadoConDeuda',
   AgendaObtenerActividadFiltradaPorAsesorRetirado:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorRetirado",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorRetirado',
   AgendaObtenerActividadFiltradaPorAsesorPorAbandonar:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorPorAbandonar",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorPorAbandonar',
   AgendaObtenerActividadFiltradaPorAsesorAbandonado:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorAbandonado",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorAbandonado',
   AgendaObtenerActividadFiltradaPorAsesorEvaluacion:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorEvaluacion",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorEvaluacion',
   AgendaObtenerActividadFiltradaPorAsesorBic:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorBic",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorBic',
   AgendaObtenerActividadFiltradaPorAsesorSolicitudCambio:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorSolicitudCambio",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorSolicitudCambio',
   AgendaObtenerActividadFiltradaPorAsesorSinContacto:
-    "/Agenda/ObtenerActividadFiltradaPorAsesorSinContacto",
+    '/Agenda/ObtenerActividadFiltradaPorAsesorSinContacto',
   AgendaObtenerActividadFiltradaPorClasesOnline:
-    "/Agenda/ObtenerActividadFiltradaPorClasesOnline",
+    '/Agenda/ObtenerActividadFiltradaPorClasesOnline',
   AgendaObtenerActividadFiltradaPorPagosDelDia:
-    "/Agenda/ObtenerActividadFiltradaPorPagosDelDia",
+    '/Agenda/ObtenerActividadFiltradaPorPagosDelDia',
   AgendaObtenerActividadFiltradaPorPagosAtrasadosMesActualPrevio:
-    "/Agenda/ObtenerActividadFiltradaPorPagosAtrasadosMesActualPrevio",
+    '/Agenda/ObtenerActividadFiltradaPorPagosAtrasadosMesActualPrevio',
   AgendaObtenerActividadFiltradaPorContestanCortan:
-    "/Agenda/ObtenerActividadFiltradaPorContestanCortan",
+    '/Agenda/ObtenerActividadFiltradaPorContestanCortan',
   AgendaObtenerActividadFiltradaPorBicDeuda:
-    "/Agenda/ObtenerActividadFiltradaPorBicDeuda",
-  AgendaObtenerActividadFichaChat: "/Agenda/ObtenerActividadFichaChat",
+    '/Agenda/ObtenerActividadFiltradaPorBicDeuda',
+  AgendaObtenerActividadFichaChat: '/Agenda/ObtenerActividadFichaChat',
 
   AgendaInformacionActividadObtenerComentarioOperaciones:
-    "/AgendaInformacionActividad/ObtenerComentarioOperaciones",
+    '/AgendaInformacionActividad/ObtenerComentarioOperaciones',
   AgendaInformacionActividadObtenerComentarioPagosOperaciones:
-    "/AgendaInformacionActividad/ObtenerComentariosOperacionesPagosAcademicos",
+    '/AgendaInformacionActividad/ObtenerComentariosOperacionesPagosAcademicos',
 
   AgendaInformacionActividadObtenerComentariosOperacionesPagosAcademicos2:
-    "/AgendaInformacionActividad/ObtenerComentariosOperacionesPagosAcademicos2",
+    '/AgendaInformacionActividad/ObtenerComentariosOperacionesPagosAcademicos2',
   CategoriaAlumnoObtenerFechaPagoCategoria:
-    "/CategoriaAlumno/ObtenerFechaPagoCategoria",
+    '/CategoriaAlumno/ObtenerFechaPagoCategoria',
   CategoriaAlumnoObtenerCategoriaAlumno:
-    "/CategoriaAlumno/ObtenerCategoriaAlumno",
+    '/CategoriaAlumno/ObtenerCategoriaAlumno',
   SolicitudCertificadoFisicoDatosReporteCertificadoEnvioFisicoPorId:
-    "/SolicitudCertificadoFisico/DatosReporteCertificadoEnvioFisicoPorId",
+    '/SolicitudCertificadoFisico/DatosReporteCertificadoEnvioFisicoPorId',
   EsquemaEvaluacionObtenerNombreEsquemaEvaluacionPorMatricula:
-    "/EsquemaEvaluacion/ObtenerNombreEsquemaEvaluacionPorMatricula",
+    '/EsquemaEvaluacion/ObtenerNombreEsquemaEvaluacionPorMatricula',
   EsquemaEvaluacionObtenerEsquemaEvaluacionPorMatricula:
-    "/EsquemaEvaluacion/ObtenerEsquemaEvaluacionPorMatricula",
+    '/EsquemaEvaluacion/ObtenerEsquemaEvaluacionPorMatricula',
   SolicitudOperacionesInsertarSolicitudOperaciones:
-    "/SolicitudOperaciones/InsertarSolicitudOperaciones",
+    '/SolicitudOperaciones/InsertarSolicitudOperaciones',
 
   EsquemaEvaluacionActualizarCongelamientoEsquemaEvaluacion:
-    "/EsquemaEvaluacion/ActualizarCongelamientoEsquemaEvaluacion",
+    '/EsquemaEvaluacion/ActualizarCongelamientoEsquemaEvaluacion',
   SolicitudOperacionesObtenerSolicitudOperaciones:
-    "/SolicitudOperaciones/ObtenerSolicitudOperaciones",
+    '/SolicitudOperaciones/ObtenerSolicitudOperaciones',
   SolicitudOperacionesObtenerSolicitudOperacionesRealizadas:
-    "/SolicitudOperaciones/ObtenerSolicitudOperacionesRealizadas",
+    '/SolicitudOperaciones/ObtenerSolicitudOperacionesRealizadas',
   MontoPagoCronogramaObtenerOportunidadCronogramaFinanzas:
-    "/MontoPagoCronograma/ObtenerOportunidadCronogramaFinanzas",
+    '/MontoPagoCronograma/ObtenerOportunidadCronogramaFinanzas',
   MatriculaCabeceraObtenerVersionesFechaCompromiso:
-    "/MatriculaCabecera/ObtenerVersionesFechaCompromiso",
+    '/MatriculaCabecera/ObtenerVersionesFechaCompromiso',
   MatriculaCabeceraGuardarFechaCompromiso:
-    "/MatriculaCabecera/GuardarFechaCompromiso",
+    '/MatriculaCabecera/GuardarFechaCompromiso',
   PasarelaPagoPWRegistroMedioPagoMatriculaCronograma:
-    "/PasarelaPagoPW/RegistroMedioPagoMatriculaCronograma",
+    '/PasarelaPagoPW/RegistroMedioPagoMatriculaCronograma',
   MontoPagoCronogramaObtenerOportunidadCronogramaFinanzasPorMatricula:
-    "/MontoPagoCronograma/ObtenerOportunidadCronogramaFinanzasPorMatricula",
+    '/MontoPagoCronograma/ObtenerOportunidadCronogramaFinanzasPorMatricula',
   ProgramaEspecificoSesionObtenerSesionesAsociadosPEspecifico:
-    "/ProgramaEspecificoSesion/ObtenerSesionesAsociadosPEspecifico",
+    '/ProgramaEspecificoSesion/ObtenerSesionesAsociadosPEspecifico',
 
   //Gestión de Solicitudes
-  ObtenerTipoReporteSolicitud: "/SolicitudTipoReporte/ObtenerCombo",
-  InsertarTipoReporteSolicitud: "/SolicitudTipoReporte/Insertar",
-  ActualizarTipoReporteSolicitud: "/SolicitudTipoReporte/Actualizar",
-  EliminarTipoReporteSolicitud: "/SolicitudTipoReporte/Eliminar",
+  ObtenerTipoReporteSolicitud: '/SolicitudTipoReporte/ObtenerCombo',
+  InsertarTipoReporteSolicitud: '/SolicitudTipoReporte/Insertar',
+  ActualizarTipoReporteSolicitud: '/SolicitudTipoReporte/Actualizar',
+  EliminarTipoReporteSolicitud: '/SolicitudTipoReporte/Eliminar',
 
-  ObtenerControlSolicitudOrigen: "/ControlSolicitudOrigen/ObtenerCombo",
+  ObtenerControlSolicitudOrigen: '/ControlSolicitudOrigen/ObtenerCombo',
   ObtenerRegistrosControlSolicitudOrigen:
-    "/ControlSolicitudOrigen/ObtenerRegistros",
-  InsertarControlSolicitudOrigen: "/ControlSolicitudOrigen/Insertar",
-  ActualizarControlSolicitudOrigen: "/ControlSolicitudOrigen/Actualizar",
-  EliminarControlSolicitudOrigen: "/ControlSolicitudOrigen/Eliminar",
+    '/ControlSolicitudOrigen/ObtenerRegistros',
+  InsertarControlSolicitudOrigen: '/ControlSolicitudOrigen/Insertar',
+  ActualizarControlSolicitudOrigen: '/ControlSolicitudOrigen/Actualizar',
+  EliminarControlSolicitudOrigen: '/ControlSolicitudOrigen/Eliminar',
 
-  ObtenerCategoriaSolicitud: "/SolicitudCategoria/ObtenerCombo",
-  InsertarCategoriaSolicitud: "/SolicitudCategoria/Insertar",
-  ActualizarCategoriaSolicitud: "/SolicitudCategoria/Actualizar",
-  EliminarCategoriaSolicitud: "/SolicitudCategoria/Eliminar",
+  ObtenerCategoriaSolicitud: '/SolicitudCategoria/ObtenerCombo',
+  InsertarCategoriaSolicitud: '/SolicitudCategoria/Insertar',
+  ActualizarCategoriaSolicitud: '/SolicitudCategoria/Actualizar',
+  EliminarCategoriaSolicitud: '/SolicitudCategoria/Eliminar',
   ObtenerTipoReporteCategoriaSolicitud:
-    "/SolicitudCategoria/ObtenerTipoReporteCategoria",
+    '/SolicitudCategoria/ObtenerTipoReporteCategoria',
   ObtenerTipoReporteSubCategoriaSolicitud:
-    "/SolicitudCategoria/ObtenerTipoReporteSubCategoria",
-  InsertarSubCategoriaSolicitud: "/SolicitudSubCategoria/Insertar",
-  InsertarSolicitudProblema: "/SolicitudSubCategoria/InsertarProblema",
-  ActualizarSolicitudProblema: "/SolicitudSubCategoria/ActualizarProblema",
-  EliminarSolicitudProblema: "/SolicitudSubCategoria/EliminarProblema",
-  ElimininarSubCategoriaSolicitud: "/SolicitudSubCategoria/Eliminar",
-  ActualizarSubCategoriaSolicitud: "/SolicitudSubCategoria/Actualizar",
-  ObtenerSubCategoriaSolicitud: "/SolicitudSubCategoria/ObtenerCombo",
-  InsertarSolicitud: "/Solicitud/Insertar",
-  ActualizarSolicitud: "/Solicitud/Actualizar",
-  EliminarSolicitud: "/Solicitud/Eliminar",
-  ObtenerSolicitudes: "/Solicitud/ObtenerSolicitudes",
-  ObtenerEstadosSolicitud: "/Solicitud/ObtenerEstadosSolicitud",
-  ObtenerEstadosSolicitudRevision: "/Solicitud/ObtenerEstadosSolicitudRevision",
-  ObtenerEstadosSolicitudGestion: "/Solicitud/ObtenerEstadosSolicitudGestion",
-  ObtenerLogSolicitudes: "/SolicitudAlumno/ObtenerLogSolicitudes",
+    '/SolicitudCategoria/ObtenerTipoReporteSubCategoria',
+  InsertarSubCategoriaSolicitud: '/SolicitudSubCategoria/Insertar',
+  InsertarSolicitudProblema: '/SolicitudSubCategoria/InsertarProblema',
+  ActualizarSolicitudProblema: '/SolicitudSubCategoria/ActualizarProblema',
+  EliminarSolicitudProblema: '/SolicitudSubCategoria/EliminarProblema',
+  ElimininarSubCategoriaSolicitud: '/SolicitudSubCategoria/Eliminar',
+  ActualizarSubCategoriaSolicitud: '/SolicitudSubCategoria/Actualizar',
+  ObtenerSubCategoriaSolicitud: '/SolicitudSubCategoria/ObtenerCombo',
+  InsertarSolicitud: '/Solicitud/Insertar',
+  ActualizarSolicitud: '/Solicitud/Actualizar',
+  EliminarSolicitud: '/Solicitud/Eliminar',
+  ObtenerSolicitudes: '/Solicitud/ObtenerSolicitudes',
+  ObtenerEstadosSolicitud: '/Solicitud/ObtenerEstadosSolicitud',
+  ObtenerEstadosSolicitudRevision: '/Solicitud/ObtenerEstadosSolicitudRevision',
+  ObtenerEstadosSolicitudGestion: '/Solicitud/ObtenerEstadosSolicitudGestion',
+  ObtenerLogSolicitudes: '/SolicitudAlumno/ObtenerLogSolicitudes',
   ObtenerPersonalSolicitanteAlumno:
-    "/SolicitudAlumno/ObtenerPersonalSolicitanteAlumno",
+    '/SolicitudAlumno/ObtenerPersonalSolicitanteAlumno',
   ObtenerPersonalSolucionSolicitudAlumno:
-    "/SolicitudAlumno/ObtenerPersonalSolucionSolicitudAlumno",
+    '/SolicitudAlumno/ObtenerPersonalSolucionSolicitudAlumno',
 
-  ObtenerMatriculaPorDNI: "/MatriculaCabecera/obtenerIdMatriculaPorDNI",
-  ObtenerMatriculaPorCorreo: "/MatriculaCabecera/obtenerIdMatriculaPorCorreo",
-  ObtenerMatriculaPorCodigo: "/MatriculaCabecera/obtenerIdMatriculaPorCodigo",
-  ObtenerMatriculaPorAlumno: "/MatriculaCabecera/obtenerIdMatriculaPorAlumno",
-  ObtenerMatriculaPorCelular: "/MatriculaCabecera/obtenerIdMatriculaPorCelular",
+  ObtenerMatriculaPorDNI: '/MatriculaCabecera/obtenerIdMatriculaPorDNI',
+  ObtenerMatriculaPorCorreo: '/MatriculaCabecera/obtenerIdMatriculaPorCorreo',
+  ObtenerMatriculaPorCodigo: '/MatriculaCabecera/obtenerIdMatriculaPorCodigo',
+  ObtenerMatriculaPorAlumno: '/MatriculaCabecera/obtenerIdMatriculaPorAlumno',
+  ObtenerMatriculaPorCelular: '/MatriculaCabecera/obtenerIdMatriculaPorCelular',
 
   ObtenerDatosCursosAlumno:
-    "/AgendaInformacionActividad/ObtenerDatosCursosPorMatricula",
-  ObtenerHistorialSolicitudAlumno: "/Solicitud/ObtenerHistorialSolcitudAlumno",
+    '/AgendaInformacionActividad/ObtenerDatosCursosPorMatricula',
+  ObtenerHistorialSolicitudAlumno: '/Solicitud/ObtenerHistorialSolcitudAlumno',
   obtenerSolicitudesPorAreaPersonal:
-    "/SolicitudAlumno/obtenerSolicitudesPorAreaPersonal",
+    '/SolicitudAlumno/obtenerSolicitudesPorAreaPersonal',
   obtenerSolicitudesPorPersonal:
-    "/SolicitudAlumno/obtenerSolicitudesPorPersonal",
+    '/SolicitudAlumno/obtenerSolicitudesPorPersonal',
   obtenerSolicitudesPorAlumno:
-    "/SolicitudAlumno/ObtenerSolicitudesPorFiltroAlumno",
+    '/SolicitudAlumno/ObtenerSolicitudesPorFiltroAlumno',
   obtenerSolicitudesPorAlumnoRevision:
-    "/SolicitudAlumno/ObtenerSolicitudesPorFiltroAlumnoRevision",
+    '/SolicitudAlumno/ObtenerSolicitudesPorFiltroAlumnoRevision',
   obtenerSolicitudesPorAlumnoGestion:
-    "/SolicitudAlumno/ObtenerSolicitudesPorFiltroAlumnoGestion",
+    '/SolicitudAlumno/ObtenerSolicitudesPorFiltroAlumnoGestion',
   obtenerReporteSolicitudesPorFiltroAlumno:
-    "/SolicitudAlumno/ObtenerReporteSolicitudesPorFiltroAlumno",
+    '/SolicitudAlumno/ObtenerReporteSolicitudesPorFiltroAlumno',
 
-  ObtenerSolicitudesPorFiltro: "/SolicitudAlumno/ObtenerSolicitudesPorFiltro",
+  ObtenerSolicitudesPorFiltro: '/SolicitudAlumno/ObtenerSolicitudesPorFiltro',
   ObtenerSolicitudesAlumnoPorFiltroReporte:
-    "/SolicitudAlumno/ObtenerSolicitudesAlumnoPorFiltroReporte",
-  RevisarSolicitudesAlumo: "/SolicitudAlumno/revisarSolicitudAlumno",
+    '/SolicitudAlumno/ObtenerSolicitudesAlumnoPorFiltroReporte',
+  RevisarSolicitudesAlumo: '/SolicitudAlumno/revisarSolicitudAlumno',
 
-  InsertarSolicitudAlumno: "/SolicitudAlumno/InsertarSolicitudAlumno",
-  ActualizarSolicitudAlumno: "/SolicitudAlumno/ActualizarSolicitudAlumno",
-  InsertarSolicitudInterna: "/SolicitudInterna/InsertarSolicitudInterna",
+  InsertarSolicitudAlumno: '/SolicitudAlumno/InsertarSolicitudAlumno',
+  ActualizarSolicitudAlumno: '/SolicitudAlumno/ActualizarSolicitudAlumno',
+  InsertarSolicitudInterna: '/SolicitudInterna/InsertarSolicitudInterna',
 
   obtenerSolicitudesInternaPorAreaPersonal:
-    "/SolicitudInterna/obtenerSolicitudesPorAreaPersonal",
+    '/SolicitudInterna/obtenerSolicitudesPorAreaPersonal',
   obtenerSolicitudesInternasGestion:
-    "/SolicitudInterna/obtenerSolicitudesInternasGestion",
+    '/SolicitudInterna/obtenerSolicitudesInternasGestion',
   ObtenerSolicitudesInternaPorFiltro:
-    "/SolicitudInterna/ObtenerSolicitudesPorFiltro",
+    '/SolicitudInterna/ObtenerSolicitudesPorFiltro',
   ObtenerSolicitudesInternasPorFiltroReporte:
-    "/SolicitudInterna/ObtenerSolicitudesInternasPorFiltroReporte",
-  revisarSolicitudInterna: "/SolicitudInterna/revisarSolicitudInterna",
-  ObtenerAlumnoPorValor: "/Alumno/ObtenerAlumnoMatriculadoAutocomplete",
+    '/SolicitudInterna/ObtenerSolicitudesInternasPorFiltroReporte',
+  revisarSolicitudInterna: '/SolicitudInterna/revisarSolicitudInterna',
+  ObtenerAlumnoPorValor: '/Alumno/ObtenerAlumnoMatriculadoAutocomplete',
   ObtenerCodigoMatriculaPEspecificoPorAlumnos:
-    "/Cronograma/ObtenerCodigoMatriculaPEspecificoPorAlumnos",
+    '/Cronograma/ObtenerCodigoMatriculaPEspecificoPorAlumnos',
 
-  ObtenerTodoSolicitudAlumno: "/SolicitudAlumno/ObtenerSolicitudesAlumno",
-  ObtenerTodoSolicitudInterna: "/SolicitudInterna/ObtenerSolicitudesInternas",
+  ObtenerTodoSolicitudAlumno: '/SolicitudAlumno/ObtenerSolicitudesAlumno',
+  ObtenerTodoSolicitudInterna: '/SolicitudInterna/ObtenerSolicitudesInternas',
 
   //Reporte Pendientes
-  ObtenerControlCobranzaCombos: "/ReportePendiente/ObtenerCombosPendientes",
-  GenerarReporteControlCobraznza: "/ReportePendiente/GenerarReporte",
+  ObtenerControlCobranzaCombos: '/ReportePendiente/ObtenerCombosPendientes',
+  GenerarReporteControlCobraznza: '/ReportePendiente/GenerarReporte',
   GenerarReporteDetallesControlCobraznza:
-    "/ReportePendiente/GenerarReporteDetalles",
+    '/ReportePendiente/GenerarReporteDetalles',
   //// GenerarReporteDetallesControlCobraznza:'/ReportePendiente/GenerarReporteDetalles',
   AsignacionManualOportunidadOperacionesObtenerCombos:
-    "/AsignacionManualOportunidadOperaciones/ObtenerCombos",
+    '/AsignacionManualOportunidadOperaciones/ObtenerCombos',
   AsignacionManualOportunidadOperacionesObtenerOportunidades:
-    "/AsignacionManualOportunidadOperaciones/ObtenerOportunidades",
+    '/AsignacionManualOportunidadOperaciones/ObtenerOportunidades',
   AsignacionManualOportunidadOperacionesAsignarOportunidadOperaciones:
-    "/AsignacionManualOportunidadOperaciones/AsignarOportunidadOperaciones",
+    '/AsignacionManualOportunidadOperaciones/AsignarOportunidadOperaciones',
   AsignacionManualOportunidadOperacionesAsignarOportunidadTabActual:
-    "/AsignacionManualOportunidadOperaciones/AsignarOportunidadTabActual",
+    '/AsignacionManualOportunidadOperaciones/AsignarOportunidadTabActual',
   //Gestión de reclamos
   ObtenerCodigoMatriculaAutocomplete:
-    "/ReportePagosIngresos/ObtenerCodigoMatriculaAutocomplete",
-  ObtenerReclamoFiltro: "/Reclamo/ObtenerAlumnosMatriculadosFiltro",
-  ObtenerReclamosConsolidado: "/Reclamo/ObtenerReclamos/",
-  ObtenerReclamosConsolidadoArea: "/Reclamo/ObtenerReclamosAreas/",
-  ObtenerCombosOrigenReclamo: "/Reclamo/ObtenerComboOrigenReclamo/",
-  ObtenerTipoReclamo: "/Reclamo/ObtenerListaTipoReclamoAlumno/",
-  InsertarReclamo: "/Reclamo/InsertarReclamo/",
-  InsertarReclamoArea: "/Reclamo/InsertarReclamoAreas/",
-  EnviarReclamo: "/Reclamo/EnviarReclamo/",
-  ActualizarReclamo: "/Reclamo/ActualizarReclamo/",
-  ResolverReclamoAreas: "/Reclamo/ResolverReclamoAreas/",
-  ObtenerReclamoPorAlumno: "/Reclamo/ObtenerReclamosPorAlumno/",
-  GenerarReporteReclamoAlumno: "/Reclamo/GenerarReporteReclamo/",
-  EliminarReclamo: "/Reclamo/EliminarReclamo/",
+    '/ReportePagosIngresos/ObtenerCodigoMatriculaAutocomplete',
+  ObtenerReclamoFiltro: '/Reclamo/ObtenerAlumnosMatriculadosFiltro',
+  ObtenerReclamosConsolidado: '/Reclamo/ObtenerReclamos/',
+  ObtenerReclamosConsolidadoArea: '/Reclamo/ObtenerReclamosAreas/',
+  ObtenerCombosOrigenReclamo: '/Reclamo/ObtenerComboOrigenReclamo/',
+  ObtenerTipoReclamo: '/Reclamo/ObtenerListaTipoReclamoAlumno/',
+  InsertarReclamo: '/Reclamo/InsertarReclamo/',
+  InsertarReclamoArea: '/Reclamo/InsertarReclamoAreas/',
+  EnviarReclamo: '/Reclamo/EnviarReclamo/',
+  ActualizarReclamo: '/Reclamo/ActualizarReclamo/',
+  ResolverReclamoAreas: '/Reclamo/ResolverReclamoAreas/',
+  ObtenerReclamoPorAlumno: '/Reclamo/ObtenerReclamosPorAlumno/',
+  GenerarReporteReclamoAlumno: '/Reclamo/GenerarReporteReclamo/',
+  EliminarReclamo: '/Reclamo/EliminarReclamo/',
   ObtenerPersonalAgendaLiberada:
-    "/Personal/ObtenerPersonalAgendaLiberadaOperaciones/",
+    '/Personal/ObtenerPersonalAgendaLiberadaOperaciones/',
 
   //PlantillasIVR
-  PlantillaIvrActualizar: "/IvrPlantilla/Actualizar",
-  PlantillaIvrInsertar: "/IvrPlantilla/Insertar",
-  PlantillaIvrEliminar: "/IvrPlantilla/Eliminar",
-  PlantillaIvrObtener: "/IvrPlantilla/ObtenerIvrPlantilla",
-  PlantillaIvrObtenerCombo: "/IvrPlantilla/ObtenerCombo",
+  PlantillaIvrActualizar: '/IvrPlantilla/Actualizar',
+  PlantillaIvrInsertar: '/IvrPlantilla/Insertar',
+  PlantillaIvrEliminar: '/IvrPlantilla/Eliminar',
+  PlantillaIvrObtener: '/IvrPlantilla/ObtenerIvrPlantilla',
+  PlantillaIvrObtenerCombo: '/IvrPlantilla/ObtenerCombo',
   //Pago IVR
-  PasarelaPago: "/LlamadaInteractiva/ObtenerPasarelaPagoPorMatriculaCabecera",
-  ProcesarPagoCuotaAlumno: "/LlamadaInteractiva/PreProcesoPagoCuotaAlumno",
-  InsertarProcesoPagoIvr: "/LlamadaInteractiva/InsertarProcesoPagoIvr",
+  PasarelaPago: '/LlamadaInteractiva/ObtenerPasarelaPagoPorMatriculaCabecera',
+  ProcesarPagoCuotaAlumno: '/LlamadaInteractiva/PreProcesoPagoCuotaAlumno',
+  InsertarProcesoPagoIvr: '/LlamadaInteractiva/InsertarProcesoPagoIvr',
   ObtenerProgramaGeneralPorIdMatricula:
-    "/MatriculaCabecera/ObtenerProgramaGeneralPorIdMatricula",
+    '/MatriculaCabecera/ObtenerProgramaGeneralPorIdMatricula',
 
   //CabeceraConfiguracionLlamadaAutomatica
   CabeceraConfiguracionLlamadaAutomaticaObtener:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerCabeceraConfiguracionLlamadaAutomatica",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerCabeceraConfiguracionLlamadaAutomatica',
   CabeceraConfiguracionLlamadaAutomaticaActualizar:
-    "/CabeceraConfiguracionLlamadaAutomatica/Actualizar",
+    '/CabeceraConfiguracionLlamadaAutomatica/Actualizar',
   CabeceraConfiguracionLlamadaAutomaticaInsertar:
-    "/CabeceraConfiguracionLlamadaAutomatica/Insertar",
+    '/CabeceraConfiguracionLlamadaAutomatica/Insertar',
   CabeceraConfiguracionLlamadaAutomaticaEliminar:
-    "/CabeceraConfiguracionLlamadaAutomatica/Eliminar",
+    '/CabeceraConfiguracionLlamadaAutomatica/Eliminar',
   ObtenerComboIvrEjecucion:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerComboIvrEjecucion",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerComboIvrEjecucion',
   ObtenerComboIvrTipoConfiguracion:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerComboIvrTipoConfiguracion",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerComboIvrTipoConfiguracion',
   ObtenerSesionesRecordatorioClases:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerSesionesRecordatorioClases",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerSesionesRecordatorioClases',
   ObtenerSesionesRecordatorioWebinar:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerSesionesRecordatorioWebinar",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerSesionesRecordatorioWebinar',
 
-  ObtenerProgramaGeneralPorIdArea: "/ProgramaGeneral/ObtenerComboPorIdArea",
+  ObtenerProgramaGeneralPorIdArea: '/ProgramaGeneral/ObtenerComboPorIdArea',
   ObtenerDetalleCabeceraConfiguracionClases:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionClases",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionClases',
   ObtenerDetalleCabeceraConfiguracionWebinar:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionWebinar",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionWebinar',
   ObtenerDetalleCabeceraConfiguracionCuota:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionCuota",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionCuota',
   ObtenerDetalleCabeceraConfiguracionAsistencia:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionAsistencia",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionAsistencia',
   ObtenerDetalleCabeceraConfiguracionAvanceAcademicoAO:
-    "/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionAvanceAcademicoAO",
-  AgendaObtenerAvatar: "/Agenda/ObtenerAvatar",
+    '/CabeceraConfiguracionLlamadaAutomatica/ObtenerDetalleCabeceraConfiguracionAvanceAcademicoAO',
+  AgendaObtenerAvatar: '/Agenda/ObtenerAvatar',
 
   //whatsapp historial
   WhatsAppMensajeEnviadoWhatsAppHistorialMensajeChatOperaciones:
-    "/WhatsAppMensajeEnviado/WhatsAppHistorialMensajeChatOperaciones",
+    '/WhatsAppMensajeEnviado/WhatsAppHistorialMensajeChatOperaciones',
   MatriculaCabeceraObtenerVersionMatricula:
-    "/MatriculaCabecera/obtenerVersionMatricula",
+    '/MatriculaCabecera/obtenerVersionMatricula',
   MatriculaCabeceraObtenerVersionDisponibleMatricula:
-    "/MatriculaCabecera/obtenerVersionDisponibleMatricula",
+    '/MatriculaCabecera/obtenerVersionDisponibleMatricula',
 
   //Encuestas por matricula
   EncuestaAlumnoMatriculaCurso:
-    "/AgendaInformacionActividad/ObtenerEncuestaAlumnoMatriculaCurso",
+    '/AgendaInformacionActividad/ObtenerEncuestaAlumnoMatriculaCurso',
   AgregarEncuesta:
-    "/AgendaInformacionActividad/AgregarPEspecificoSesionEncuestaAlumno",
+    '/AgendaInformacionActividad/AgregarPEspecificoSesionEncuestaAlumno',
   AgregarComentarioEncuesta:
-    "/AgendaInformacionActividad/AgregarComentarioEncuesta",
-
+    '/AgendaInformacionActividad/AgregarComentarioEncuesta',
 };
 
 export const constApiMarketing = {
   ///Prueba
   EjecutarCampaniaGeneralEnvioWhatsApp:
-    "/ConfiguracionWhatsApp/EjecutarCampaniaGeneralEnvioWhatsApp",
+    '/ConfiguracionWhatsApp/EjecutarCampaniaGeneralEnvioWhatsApp',
   EjecutarCampaniaGeneralEnvioWhatsAppBoton:
-    "/WhatsAppEnvioAutomatico/EjecutarCampaniaGeneralEnvioWhatsAppBoton",
+    '/WhatsAppEnvioAutomatico/EjecutarCampaniaGeneralEnvioWhatsAppBoton',
 
   //Articulo
-  ArticuloInsertar: "/Articulo/InsertarArticuloParametroSeo",
-  ArticuloInsertarLista: "/Articulo/InsertarLista",
-  ArticuloActualizar: "/Articulo/ActualizarArticuloParametroSeo",
-  ArticuloActualizarLista: "/Articulo/ActualizarLista",
-  ArticuloEliminar: "/Articulo/Eliminar",
-  ArticuloElimarninarListado: "/Articulo/EliminarListado",
-  ArticuloObtenerFiltros: "/Articulo/ObtenerFiltros",
-  ArticuloObtenerArticulo: "/Articulo/ObtenerArticulo",
-  ArticuloObtenerTodo: "/Articulo/ObtenerTodoArticulo",
-  ArticuloObtenerParametroSeoArticulo: "/Articulo/ObtenerParametroSeoArticulo",
-  ArticuloObtenerTag: "/Articulo/ObtenerTag",
+  ArticuloInsertar: '/Articulo/InsertarArticuloParametroSeo',
+  ArticuloInsertarLista: '/Articulo/InsertarLista',
+  ArticuloActualizar: '/Articulo/ActualizarArticuloParametroSeo',
+  ArticuloActualizarLista: '/Articulo/ActualizarLista',
+  ArticuloEliminar: '/Articulo/Eliminar',
+  ArticuloElimarninarListado: '/Articulo/EliminarListado',
+  ArticuloObtenerFiltros: '/Articulo/ObtenerFiltros',
+  ArticuloObtenerArticulo: '/Articulo/ObtenerArticulo',
+  ArticuloObtenerTodo: '/Articulo/ObtenerTodoArticulo',
+  ArticuloObtenerParametroSeoArticulo: '/Articulo/ObtenerParametroSeoArticulo',
+  ArticuloObtenerTag: '/Articulo/ObtenerTag',
   ArticuloObtenerProgramasNoAsociados:
-    "/Articulo/ObtenerProgramasNoAsociadosArticulo",
+    '/Articulo/ObtenerProgramasNoAsociadosArticulo',
   ArticuloObtenerProgramasAsociados:
-    "/Articulo/ObtenerProgramasAsociadosArticulo",
-  ArticuloAsociarProgramas: "/Articulo/AsociarProgramas",
-  ArticuloAsociarTag: "/Articulo/AsociarTag",
-  ArticuloObtenerTagsPorArticulo: "/Articulo/ObtenerTagsPorArticulo",
+    '/Articulo/ObtenerProgramasAsociadosArticulo',
+  ArticuloAsociarProgramas: '/Articulo/AsociarProgramas',
+  ArticuloAsociarTag: '/Articulo/AsociarTag',
+  ArticuloObtenerTagsPorArticulo: '/Articulo/ObtenerTagsPorArticulo',
 
   //AsignacionAutomatica
-  AsignacionAutomaticaInsertar: "/AsignacionAutomatica/Insertar",
-  AsignacionAutomaticaInsertarLista: "/AsignacionAutomatica/InsertarLista",
-  AsignacionAutomaticaActualizar: "/AsignacionAutomatica/Actualizar",
-  AsignacionAutomaticaActualizarLista: "/AsignacionAutomatica/ActualizarLista",
-  AsignacionAutomaticaEliminar: "/AsignacionAutomatica/Eliminar",
+  AsignacionAutomaticaInsertar: '/AsignacionAutomatica/Insertar',
+  AsignacionAutomaticaInsertarLista: '/AsignacionAutomatica/InsertarLista',
+  AsignacionAutomaticaActualizar: '/AsignacionAutomatica/Actualizar',
+  AsignacionAutomaticaActualizarLista: '/AsignacionAutomatica/ActualizarLista',
+  AsignacionAutomaticaEliminar: '/AsignacionAutomatica/Eliminar',
   AsignacionAutomaticaElimarninarListado:
-    "/AsignacionAutomatica/EliminarListado",
+    '/AsignacionAutomatica/EliminarListado',
   AsignacionAutomaticaObtenerFiltros:
-    "/AsignacionAutomatica/ObtenerFiltroCombos",
+    '/AsignacionAutomatica/ObtenerFiltroCombos',
   AsignacionAutomaticaObtenerRegistrosImportados:
-    "/AsignacionAutomatica/ObtenerRegistrosImportados",
+    '/AsignacionAutomatica/ObtenerRegistrosImportados',
   AsignacionAutomaticaObtenerRegistrosErroneos:
-    "/AsignacionAutomatica/ObtenerRegistrosErroneos",
+    '/AsignacionAutomatica/ObtenerRegistrosErroneos',
   AsignacionAutomaticaEliminarRegistrosErroneos:
-    "/AsignacionAutomatica/EliminarAsignacionAutomaticaErroneo",
+    '/AsignacionAutomatica/EliminarAsignacionAutomaticaErroneo',
   AsignacionAutomaticaCorregirRegistrosErroneos:
-    "/Oportunidad/CorregirRegistroErroneo",
+    '/Oportunidad/CorregirRegistroErroneo',
 
   //AsignacionChat
-  AsignacionChatInsertar: "/AsesorChat/Insertar",
-  AsignacionChatInsertarLista: "/AsesorChat/InsertarLista",
-  AsignacionChatActualizar: "/AsesorChat/Actualizar",
-  AsignacionChatActualizarLista: "/AsesorChat/ActualizarLista",
-  AsignacionChatEliminar: "/AsesorChat/Eliminar",
-  AsignacionChatEliminarListado: "/AsesorChat/EliminarListado",
-  AsignacionChatObtenerFiltros: "/AsesorChat/ObtenerFiltroCombos",
+  AsignacionChatInsertar: '/AsesorChat/Insertar',
+  AsignacionChatInsertarLista: '/AsesorChat/InsertarLista',
+  AsignacionChatActualizar: '/AsesorChat/Actualizar',
+  AsignacionChatActualizarLista: '/AsesorChat/ActualizarLista',
+  AsignacionChatEliminar: '/AsesorChat/Eliminar',
+  AsignacionChatEliminarListado: '/AsesorChat/EliminarListado',
+  AsignacionChatObtenerFiltros: '/AsesorChat/ObtenerFiltroCombos',
   AsignacionChatObtenerChatAsignadosNoAsignados:
-    "/AsesorChat/ObtenerChatAsignadosNoAsignados",
+    '/AsesorChat/ObtenerChatAsignadosNoAsignados',
   AsignacionChatObtenerChatListaAsesores:
-    "/AsesorChat/ObtenerChatListaAsesores",
+    '/AsesorChat/ObtenerChatListaAsesores',
   AsignacionChatObtenerDetalleChatAsesor:
-    "/AsesorChat/ObtenerDetalleChatAsesor",
-  AsignacionChatInsertarDetalles: "/AsesorChat/InsertarDetalles",
-  AsignacionChatActualizarDetalles: "/AsesorChat/ActualizarDetalles",
-  AsignacionChatEliminarDetalles: "/AsesorChat/EliminarDetalles",
+    '/AsesorChat/ObtenerDetalleChatAsesor',
+  AsignacionChatInsertarDetalles: '/AsesorChat/InsertarDetalles',
+  AsignacionChatActualizarDetalles: '/AsesorChat/ActualizarDetalles',
+  AsignacionChatEliminarDetalles: '/AsesorChat/EliminarDetalles',
 
-  AsignacionChatObtenerTodosChats: "/AsesorChat/ObtenerTodoChatAsignados",
+  AsignacionChatObtenerTodosChats: '/AsesorChat/ObtenerTodoChatAsignados',
   AsignacionChatObtenerTodosListaAsesores:
-    "/AsesorChat/ObtenerChatListaAsesores2",
+    '/AsesorChat/ObtenerChatListaAsesores2',
 
   //CategoriaOrigen
-  CategoriaOrigenInsertar: "/CategoriaOrigen/Insertar",
-  CategoriaOrigenInsertarLista: "/CategoriaOrigen/InsertarLista",
-  CategoriaOrigenActualizar: "/CategoriaOrigen/Actualizar",
-  CategoriaOrigenActualizarLista: "/CategoriaOrigen/ActualizarLista",
-  CategoriaOrigenEliminar: "/CategoriaOrigen/Eliminar",
-  CategoriaOrigenElimarninarListado: "/CategoriaOrigen/EliminarListado",
-  CategoriaOrigenObtenerCombo: "/CategoriaOrigen/ObtenerCombo",
+  CategoriaOrigenInsertar: '/CategoriaOrigen/Insertar',
+  CategoriaOrigenInsertarLista: '/CategoriaOrigen/InsertarLista',
+  CategoriaOrigenActualizar: '/CategoriaOrigen/Actualizar',
+  CategoriaOrigenActualizarLista: '/CategoriaOrigen/ActualizarLista',
+  CategoriaOrigenEliminar: '/CategoriaOrigen/Eliminar',
+  CategoriaOrigenElimarninarListado: '/CategoriaOrigen/EliminarListado',
+  CategoriaOrigenObtenerCombo: '/CategoriaOrigen/ObtenerCombo',
   CategoriaOrigenObtenerCategoriaOrigen:
-    "/CategoriaOrigen/ObtenerCategoriaOrigen",
-  CategoriaOrigenObtenerFiltros: "/CategoriaOrigen/ObtenerFiltros",
+    '/CategoriaOrigen/ObtenerCategoriaOrigen',
+  CategoriaOrigenObtenerFiltros: '/CategoriaOrigen/ObtenerFiltros',
 
   ChatControllerObtenerDatosComboContactoOportunidad:
-    "/ChatController/ObtenerDatosComboContactoOportunidad",
+    '/ChatController/ObtenerDatosComboContactoOportunidad',
 
-  FormularioRespuestaInsertar: "/FormularioRespuesta/Insertar",
-  FormularioRespuestaInsertarLista: "/FormularioRespuesta/InsertarLista",
-  FormularioRespuestaActualizar: "/FormularioRespuesta/Actualizar",
-  FormularioRespuestaActualizarLista: "/FormularioRespuesta/ActualizarLista",
-  FormularioRespuestaEliminar: "/FormularioRespuesta/Eliminar",
-  FormularioRespuestaElimarninarListado: "/FormularioRespuesta/EliminarListado",
-  FormularioRespuestaObtenerCombo: "/FormularioRespuesta/ObtenerCombo",
-  FormularioRespuestaObtenerFiltros: "/FormularioRespuesta/ObtenerFiltros",
-  FormularioRespuestaObtenerComboDato: "/FormularioRespuesta/ObtenerComboDato",
+  FormularioRespuestaInsertar: '/FormularioRespuesta/Insertar',
+  FormularioRespuestaInsertarLista: '/FormularioRespuesta/InsertarLista',
+  FormularioRespuestaActualizar: '/FormularioRespuesta/Actualizar',
+  FormularioRespuestaActualizarLista: '/FormularioRespuesta/ActualizarLista',
+  FormularioRespuestaEliminar: '/FormularioRespuesta/Eliminar',
+  FormularioRespuestaElimarninarListado: '/FormularioRespuesta/EliminarListado',
+  FormularioRespuestaObtenerCombo: '/FormularioRespuesta/ObtenerCombo',
+  FormularioRespuestaObtenerFiltros: '/FormularioRespuesta/ObtenerFiltros',
+  FormularioRespuestaObtenerComboDato: '/FormularioRespuesta/ObtenerComboDato',
   FormularioRespuestaObtenerFormularioRespueta:
-    "/FormularioRespuesta/ObtenerFormularioRespuesta",
+    '/FormularioRespuesta/ObtenerFormularioRespuesta',
 
   //FormmularioSolicitud
-  FormularioSolicitudInsertar: "/FormularioSolicitud/Insertar",
-  FormularioSolicitudInsertarLista: "/FormularioSolicitud/InsertarLista",
-  FormularioSolicitudActualizar: "/FormularioSolicitud/Actualizar",
-  FormularioSolicitudActualizarLista: "/FormularioSolicitud/ActualizarLista",
-  FormularioSolicitudEliminar: "/FormularioSolicitud/Eliminar",
-  FormularioSolicitudElimarninarListado: "/FormularioSolicitud/EliminarListado",
-  FormularioSolicitudObtenerCombo: "/FormularioSolicitud/ObtenerCombo",
-  FormularioSolicitudComboFS: "/FormularioSolicitud/ObtenerComboFs",
+  FormularioSolicitudInsertar: '/FormularioSolicitud/Insertar',
+  FormularioSolicitudInsertarLista: '/FormularioSolicitud/InsertarLista',
+  FormularioSolicitudActualizar: '/FormularioSolicitud/Actualizar',
+  FormularioSolicitudActualizarLista: '/FormularioSolicitud/ActualizarLista',
+  FormularioSolicitudEliminar: '/FormularioSolicitud/Eliminar',
+  FormularioSolicitudElimarninarListado: '/FormularioSolicitud/EliminarListado',
+  FormularioSolicitudObtenerCombo: '/FormularioSolicitud/ObtenerCombo',
+  FormularioSolicitudComboFS: '/FormularioSolicitud/ObtenerComboFs',
   FormularioSolicitudObtenerCategoriaOrigen:
-    "/FormularioSolicitud/ObtenerCategoriaOrigen",
-  FormularioSolicitudObtenerFiltros: "/FormularioSolicitud/ObtenerFiltros",
+    '/FormularioSolicitud/ObtenerCategoriaOrigen',
+  FormularioSolicitudObtenerFiltros: '/FormularioSolicitud/ObtenerFiltros',
   FormularioSolicitudObtenerFormularioSolicitud:
-    "/FormularioSolicitud/ObtenerFormularioSolicitud",
+    '/FormularioSolicitud/ObtenerFormularioSolicitud',
 
   // FormularioSolicitudObtenerCombo: "/FormularioSolicitud/ObtenerCombo",
   // FormularioSolicitudObtenerFormularioSolicitud: "/FormularioSolicitud/ObtenerFormularioSolicitud",
   // FormularioSolicitudObtenerFiltros: "/FormularioSolicitud/ObtenerFiltros",
   FormularioSolicitudInsertarFormularioSolicitud:
-    "/FormularioSolicitud/InsertarFormularioSolicitud",
+    '/FormularioSolicitud/InsertarFormularioSolicitud',
   FormularioSolicitudObtenerCampoFormularioPorIdFormularioSolicitud:
-    "/FormularioSolicitud/ObtenerCampoFormularioPorIdFormularioSolicitud",
+    '/FormularioSolicitud/ObtenerCampoFormularioPorIdFormularioSolicitud',
   FormularioSolicitudObtenerConjuntoAnuncioFiltro:
-    "/FormularioSolicitud/ObtenerConjuntoAnuncioFiltro",
+    '/FormularioSolicitud/ObtenerConjuntoAnuncioFiltro',
   FormularioSolicitudObtenerFormularioRespuestaFiltro:
-    "/FormularioSolicitud/ObtenerFormularioRespuestaFiltro",
+    '/FormularioSolicitud/ObtenerFormularioRespuestaFiltro',
   FormularioSolicitudEliminarFormularioSolicitud:
-    "/FormularioSolicitud/EliminarFormularioSolicitud",
+    '/FormularioSolicitud/EliminarFormularioSolicitud',
   FormularioSolicitudActualizarFormularioSolicitud:
-    "/FormularioSolicitud/ActualizarFormularioSolicitud",
+    '/FormularioSolicitud/ActualizarFormularioSolicitud',
 
   //PROCEDENCIA FORMULARIO
-  ProcedenciaFormularioInsertar: "/ProcedenciaFormulario/Insertar",
-  ProcedenciaFormularioInsertarLista: "/ProcedenciaFormulario/InsertarLista",
-  ProcedenciaFormularioActualizar: "/ProcedenciaFormulario/Actualizar",
+  ProcedenciaFormularioInsertar: '/ProcedenciaFormulario/Insertar',
+  ProcedenciaFormularioInsertarLista: '/ProcedenciaFormulario/InsertarLista',
+  ProcedenciaFormularioActualizar: '/ProcedenciaFormulario/Actualizar',
   ProcedenciaFormularioActualizarLista:
-    "/ProcedenciaFormulario/ActualizarLista",
-  ProcedenciaFormularioEliminar: "/ProcedenciaFormulario/Eliminar",
+    '/ProcedenciaFormulario/ActualizarLista',
+  ProcedenciaFormularioEliminar: '/ProcedenciaFormulario/Eliminar',
   ProcedenciaFormularioElimarninarListado:
-    "/ProcedenciaFormulario/EliminarListado",
-  ProcedenciaFormularionObtenerCombo: "/ProcedenciaFormulario/ObtenerCombo",
+    '/ProcedenciaFormulario/EliminarListado',
+  ProcedenciaFormularionObtenerCombo: '/ProcedenciaFormulario/ObtenerCombo',
   ProcedenciaFormularioObtenerProcedenciaFormulario:
-    "/ProcedenciaFormulario/ObtenerProcedenciaFormulario",
+    '/ProcedenciaFormulario/ObtenerProcedenciaFormulario',
 
   //PROCEDENCIA FORMULARIO
   FormularioSolicitudTextoBotonInsertar:
-    "/FormularioSolicitudTextoBoton/Insertar",
+    '/FormularioSolicitudTextoBoton/Insertar',
   FormularioSolicitudTextoBotonInsertarLista:
-    "/FormularioSolicitudTextoBoton/InsertarLista",
+    '/FormularioSolicitudTextoBoton/InsertarLista',
   FormularioSolicitudTextoBotonActualizar:
-    "/FormularioSolicitudTextoBoton/Actualizar",
+    '/FormularioSolicitudTextoBoton/Actualizar',
   FormularioSolicitudTextoBotonActualizarLista:
-    "/FormularioSolicitudTextoBoton/ActualizarLista",
+    '/FormularioSolicitudTextoBoton/ActualizarLista',
   FormularioSolicitudTextoBotonEliminar:
-    "/FormularioSolicitudTextoBoton/Eliminar",
+    '/FormularioSolicitudTextoBoton/Eliminar',
   FormularioSolicitudTextoBotonElimarninarListado:
-    "/FormularioSolicitudTextoBoton/EliminarListado",
+    '/FormularioSolicitudTextoBoton/EliminarListado',
   FormularioSolicitudTextoBotonnObtenerCombo:
-    "/FormularioSolicitudTextoBoton/ObtenerCombo",
+    '/FormularioSolicitudTextoBoton/ObtenerCombo',
   FormularioSolicitudTextoBotonObtenerFormularioSolicitudTexto:
-    "/FormularioSolicitudTextoBoton/ObtenerFormularioSolicitudTextoBoton",
+    '/FormularioSolicitudTextoBoton/ObtenerFormularioSolicitudTextoBoton',
   FormularioSolicitudTextoBotonObtenerFormularioSolicitudTextoBoton:
-    "/ProcedenciaFormulario/ObtenerProcedenciaFormulario",
+    '/ProcedenciaFormulario/ObtenerProcedenciaFormulario',
 
   //PROCEDENCIA FORMULARIO DETALLE
   ProcedenciaFormularioDetalleInsertar:
-    "/ProcedenciaFormularioDetalle/Insertar",
+    '/ProcedenciaFormularioDetalle/Insertar',
   ProcedenciaFormularioDetalleInsertarLista:
-    "/ProcedenciaFormularioDetalle/InsertarLista",
+    '/ProcedenciaFormularioDetalle/InsertarLista',
   ProcedenciaFormularioDetalleActualizar:
-    "/ProcedenciaFormularioDetalle/Actualizar",
+    '/ProcedenciaFormularioDetalle/Actualizar',
   ProcedenciaFormularioDetalleActualizarLista:
-    "/ProcedenciaFormularioDetalle/ActualizarLista",
+    '/ProcedenciaFormularioDetalle/ActualizarLista',
   ProcedenciaFormularioDetalleEliminar:
-    "/ProcedenciaFormularioDetalle/Eliminar",
+    '/ProcedenciaFormularioDetalle/Eliminar',
   ProcedenciaFormularioDetalleElimarninarListado:
-    "/ProcedenciaFormularioDetalle/EliminarListado",
+    '/ProcedenciaFormularioDetalle/EliminarListado',
   ProcedenciaFormularioDetallenObtenerCombo:
-    "/ProcedenciaFormularioDetalle/ObtenerCombo",
+    '/ProcedenciaFormularioDetalle/ObtenerCombo',
   ProcedenciaFormularioDetalleObtenerProcedenciaFormularioDetalle:
-    "/ProcedenciaFormularioDetalle/ObtenerProcedenciaFormularioDetalle",
+    '/ProcedenciaFormularioDetalle/ObtenerProcedenciaFormularioDetalle',
   ObtenerProcedenciaFormularioDetallePorIdProcedenciaFormulario:
-    "/ProcedenciaFormularioDetalle/ObtenerProcedenciaFormularioDetallePorIdProcedenciaFormulario",
+    '/ProcedenciaFormularioDetalle/ObtenerProcedenciaFormularioDetallePorIdProcedenciaFormulario',
 
   //RemitenteMailing
-  RemitenteMailingInsertar: "/RemitenteMailing/Insertar",
-  RemitenteMailingInsertarLista: "/RemitenteMailing/InsertarLista",
-  RemitenteMailingnActualizar: "/RemitenteMailing/Actualizar",
-  RemitenteMailingActualizarLista: "/RemitenteMailing/ActualizarLista",
-  RemitenteMailingEliminar: "/RemitenteMailing/Eliminar",
-  RemitenteMailingElimarninarListado: "/RemitenteMailing/EliminarListado",
+  RemitenteMailingInsertar: '/RemitenteMailing/Insertar',
+  RemitenteMailingInsertarLista: '/RemitenteMailing/InsertarLista',
+  RemitenteMailingnActualizar: '/RemitenteMailing/Actualizar',
+  RemitenteMailingActualizarLista: '/RemitenteMailing/ActualizarLista',
+  RemitenteMailingEliminar: '/RemitenteMailing/Eliminar',
+  RemitenteMailingElimarninarListado: '/RemitenteMailing/EliminarListado',
   RemitenteMailingObtenerRemitentesMailing:
-    "/RemitenteMailing/ObtenerRemitentesMailing",
+    '/RemitenteMailing/ObtenerRemitentesMailing',
   RemitenteMailingObtenerRemitenteMailingAsesor:
-    "/RemitenteMailing/ObtenerListaRemitenteMailingAsesor",
+    '/RemitenteMailing/ObtenerListaRemitenteMailingAsesor',
   RemitenteMailingObtenerComboAsesores:
-    "/RemitenteMailing/ObtenerComboAsesores",
+    '/RemitenteMailing/ObtenerComboAsesores',
   RemitenteMailingCrearRemitenteMailing:
-    "/RemitenteMailing/CrearRemitenteMailing",
+    '/RemitenteMailing/CrearRemitenteMailing',
   RemitenteMailingActualizarRemitenteMailing:
-    "/RemitenteMailing/ActualizarRemitenteMailing",
+    '/RemitenteMailing/ActualizarRemitenteMailing',
   RemitenteMailingEliminarRemitenteMailing:
-    "/RemitenteMailing/EliminarRemitenteMailing",
+    '/RemitenteMailing/EliminarRemitenteMailing',
 
   //TIPO CATEGORIA ORIGEN : MARKETING
-  TipoCateriaOrigenInsertar: "/TipoCategoriaOrigen/Insertar",
-  TipoCateriaOrigenInsertarLista: "/TipoCategoriaOrigen/InsertarLista",
-  TipoCateriaOrigenActualizar: "/TipoCategoriaOrigen/Actualizar",
-  TipoCateriaOrigenActualizarLista: "/TipoCategoriaOrigen/ActualizarLista",
-  TipoCateriaOrigenEliminar: "/TipoCategoriaOrigen/Eliminar",
-  TipoCateriaOrigenEliminarListado: "/TipoCategoriaOrigen/EliminarListado",
-  TipoCateriaOrigenObtenerCombo: "/TipoCategoriaOrigen/ObtenerCombo",
+  TipoCateriaOrigenInsertar: '/TipoCategoriaOrigen/Insertar',
+  TipoCateriaOrigenInsertarLista: '/TipoCategoriaOrigen/InsertarLista',
+  TipoCateriaOrigenActualizar: '/TipoCategoriaOrigen/Actualizar',
+  TipoCateriaOrigenActualizarLista: '/TipoCategoriaOrigen/ActualizarLista',
+  TipoCateriaOrigenEliminar: '/TipoCategoriaOrigen/Eliminar',
+  TipoCateriaOrigenEliminarListado: '/TipoCategoriaOrigen/EliminarListado',
+  TipoCateriaOrigenObtenerCombo: '/TipoCategoriaOrigen/ObtenerCombo',
   TipoCateriaOrigenObtenerTipoCategoriaOrigen:
-    "/TipoCategoriaOrigen/ObtenerTipoCategoriaOrigen",
+    '/TipoCategoriaOrigen/ObtenerTipoCategoriaOrigen',
 
   //PROCEDENCIA FORMULARIO DETALLE
-  TipoInteraccionInsertar: "/TipoInteraccion/Insertar",
-  TipoInteraccionInsertarLista: "/TipoInteraccion/InsertarLista",
-  TipoInteraccionActualizar: "/TipoInteraccion/Actualizar",
-  TipoInteraccionActualizarLista: "/TipoInteraccion/ActualizarLista",
-  TipoInteraccionEliminar: "/TipoInteraccion/Eliminar",
-  TipoInteraccionEliminarListado: "/TipoInteraccion/EliminarListado",
-  TipoInteraccionObtenerCombo: "/TipoInteraccion/ObtenerCombo",
+  TipoInteraccionInsertar: '/TipoInteraccion/Insertar',
+  TipoInteraccionInsertarLista: '/TipoInteraccion/InsertarLista',
+  TipoInteraccionActualizar: '/TipoInteraccion/Actualizar',
+  TipoInteraccionActualizarLista: '/TipoInteraccion/ActualizarLista',
+  TipoInteraccionEliminar: '/TipoInteraccion/Eliminar',
+  TipoInteraccionEliminarListado: '/TipoInteraccion/EliminarListado',
+  TipoInteraccionObtenerCombo: '/TipoInteraccion/ObtenerCombo',
   TipoInteraccionObtenerTipoInteraccion:
-    "/TipoInteraccion/ObtenerTipoInteraccion",
+    '/TipoInteraccion/ObtenerTipoInteraccion',
   TipoInteraccionObtenerTipoInteraccionCanalCombo:
-    "/TipoInteraccion/ObtenerTipoInteraccionCanalCombo",
+    '/TipoInteraccion/ObtenerTipoInteraccionCanalCombo',
 
   //TIPO  DATO: MARKETING
-  TipoDatoInsertar: "/TipoDato/Insertar",
-  TipoDatoInsertarLista: "/TipoDato/InsertarLista",
-  TipoDatoActualizar: "/TipoDato/Actualizar",
-  TipoDatoActualizarLista: "/TipoDato/ActualizarLista",
-  TipoDatoEliminar: "/TipoDato/Eliminar",
-  TipoDatoEliminarListado: "/TipoDato/EliminarListado",
-  TipoDatoObtenerCombo: "/TipoDato/ObtenerCombo",
-  TipoDatoObtenerTipoDato: "/TipoDato/ObtenerTipoDato",
-  TipoDatoInsertarTipoDato: "/TipoDato/InsertarTipoDato",
-  TipoDatoActualizarTipoDato: "/TipoDato/ActualizarTipoDato",
+  TipoDatoInsertar: '/TipoDato/Insertar',
+  TipoDatoInsertarLista: '/TipoDato/InsertarLista',
+  TipoDatoActualizar: '/TipoDato/Actualizar',
+  TipoDatoActualizarLista: '/TipoDato/ActualizarLista',
+  TipoDatoEliminar: '/TipoDato/Eliminar',
+  TipoDatoEliminarListado: '/TipoDato/EliminarListado',
+  TipoDatoObtenerCombo: '/TipoDato/ObtenerCombo',
+  TipoDatoObtenerTipoDato: '/TipoDato/ObtenerTipoDato',
+  TipoDatoInsertarTipoDato: '/TipoDato/InsertarTipoDato',
+  TipoDatoActualizarTipoDato: '/TipoDato/ActualizarTipoDato',
 
   //ORIGEN
-  OrigenIsertar: "/Origen/Insertar",
-  OrigenInsertarLista: "/Origen/InsertarLista",
-  OrigenActualizar: "/Origen/Actualizar",
-  OrigenActualizarLista: "/Origen/ActualizarLista",
-  OrigenEliminar: "/Origen/Eliminar",
-  OrigenElimarninarListado: "/Origen/EliminarListado",
-  OrigenObtenerCombo: "/Origen/ObtenerCombo",
-  OrigenObtenerOrigen: "/Origen/ObtenerOrigen",
+  OrigenIsertar: '/Origen/Insertar',
+  OrigenInsertarLista: '/Origen/InsertarLista',
+  OrigenActualizar: '/Origen/Actualizar',
+  OrigenActualizarLista: '/Origen/ActualizarLista',
+  OrigenEliminar: '/Origen/Eliminar',
+  OrigenElimarninarListado: '/Origen/EliminarListado',
+  OrigenObtenerCombo: '/Origen/ObtenerCombo',
+  OrigenObtenerOrigen: '/Origen/ObtenerOrigen',
 
   // PROVEEDO CAMPANIA INTEGRA
-  ProveedorCampaniaIntegraInsertar: "/ProveedorCampaniaIntegra/Insertar",
+  ProveedorCampaniaIntegraInsertar: '/ProveedorCampaniaIntegra/Insertar',
   ProveedorCampaniaIntegraInsertarLista:
-    "/ProveedorCampaniaIntegra/InsertarLista",
-  ProveedorCampaniaIntegraActualizar: "/ProveedorCampaniaIntegra/Actualizar",
+    '/ProveedorCampaniaIntegra/InsertarLista',
+  ProveedorCampaniaIntegraActualizar: '/ProveedorCampaniaIntegra/Actualizar',
   ProveedorCampaniaIntegraActualizarLista:
-    "/ProveedorCampaniaIntegra/ActualizarLista",
-  ProveedorCampaniaIntegraEliminar: "/ProveedorCampaniaIntegra/Eliminar",
+    '/ProveedorCampaniaIntegra/ActualizarLista',
+  ProveedorCampaniaIntegraEliminar: '/ProveedorCampaniaIntegra/Eliminar',
   ProveedorCampaniaIntegraElimarninarListado:
-    "/ProcedenciaFormulario/EliminarListado",
-  ProveedorCampaniaIntegraObtenerCombo: "/ProcedenciaFormulario/ObtenerCombo",
+    '/ProcedenciaFormulario/EliminarListado',
+  ProveedorCampaniaIntegraObtenerCombo: '/ProcedenciaFormulario/ObtenerCombo',
   ProveedorCampaniaIntegraObtenerProveedorCampaniaIntegra:
-    "/ProveedorCampaniaIntegra/ObtenerProveedorCampaniaIntegra",
+    '/ProveedorCampaniaIntegra/ObtenerProveedorCampaniaIntegra',
 
   //CAMPO CONTACTO
 
   //TIPO  DATO: MARKETING
-  CampoContactoInsertar: "/CampoContacto/Insertar",
-  CampoContactoInsertarLista: "/CampoContacto/InsertarLista",
-  CampoContactoActualizar: "/CampoContacto/Actualizar",
-  CampoContactoActualizarLista: "/CampoContacto/ActualizarLista",
-  CampoContactoEliminar: "/CampoContacto/Eliminar",
-  CampoContactoEliminarListado: "/CampoContacto/EliminarListado",
-  CampoContactoObtenerCombo: "/CampoContacto/ObtenerCombo",
-  CampoContactoObtenerCampoContacto: "/CampoContacto/ObtenerCampoContacto",
+  CampoContactoInsertar: '/CampoContacto/Insertar',
+  CampoContactoInsertarLista: '/CampoContacto/InsertarLista',
+  CampoContactoActualizar: '/CampoContacto/Actualizar',
+  CampoContactoActualizarLista: '/CampoContacto/ActualizarLista',
+  CampoContactoEliminar: '/CampoContacto/Eliminar',
+  CampoContactoEliminarListado: '/CampoContacto/EliminarListado',
+  CampoContactoObtenerCombo: '/CampoContacto/ObtenerCombo',
+  CampoContactoObtenerCampoContacto: '/CampoContacto/ObtenerCampoContacto',
 
   //REGISTRO ARCHIVO STORAGE
-  RegistroArchivoStorageInsertar: "/RegistroArchivoStorageStorage/ObtenerCombo",
-  CegistroArchivoStorageInsertarLista: "/RegistroArchivoStorage/InsertarLista",
-  RegistroArchivoStorageActualizar: "/RegistroArchivoStorage/Actualizar",
+  RegistroArchivoStorageInsertar: '/RegistroArchivoStorageStorage/ObtenerCombo',
+  CegistroArchivoStorageInsertarLista: '/RegistroArchivoStorage/InsertarLista',
+  RegistroArchivoStorageActualizar: '/RegistroArchivoStorage/Actualizar',
   RegistroArchivoStorageActualizarLista:
-    "/RegistroArchivoStorage/ActualizarLista",
-  RegistroArchivoStorageEliminar: "/RegistroArchivoStorage/Eliminar",
+    '/RegistroArchivoStorage/ActualizarLista',
+  RegistroArchivoStorageEliminar: '/RegistroArchivoStorage/Eliminar',
   RegistroArchivoStorageEliminarListado:
-    "/RegistroArchivoStorage/EliminarListado",
-  RegistroArchivoStorageObtenerCombo: "/RegistroArchivoStorage/ObtenerCombo",
-  RegistroArchivoStorageObtenerCombos: "/RegistroArchivoStorage/ObtenerCombos",
+    '/RegistroArchivoStorage/EliminarListado',
+  RegistroArchivoStorageObtenerCombo: '/RegistroArchivoStorage/ObtenerCombo',
+  RegistroArchivoStorageObtenerCombos: '/RegistroArchivoStorage/ObtenerCombos',
   RegistroArchivoStorageObtenerTodoPorPermisosRegistroArchivoStorage:
-    "/RegistroArchivoStorage/ObtenerTodoPorPermisosRegistroArchivoStorage",
+    '/RegistroArchivoStorage/ObtenerTodoPorPermisosRegistroArchivoStorage',
   RegistroArchivoStorageRegistroArchivoStorageSubirArchivo:
-    "/RegistroArchivoStorage/RegistroArchivoStorageSubirArchivo",
+    '/RegistroArchivoStorage/RegistroArchivoStorageSubirArchivo',
   RegistroArchivoStorageObtenerComboFirmas:
-    "/RegistroArchivoStorage/ObtenerComboFirma",
+    '/RegistroArchivoStorage/ObtenerComboFirma',
   UrlSubContenedorObtenerRutaSubContenedor:
-    "/UrlSubContenedor/ObtenerRutaSubContenedor",
-  ObtenerRegistroArchivoStoragePorIdUrlSubContenedor: "/RegistroArchivoStorage/ObtenerRegistroArchivoStoragePorIdUrlSubContenedor",
+    '/UrlSubContenedor/ObtenerRutaSubContenedor',
+  ObtenerRegistroArchivoStoragePorIdUrlSubContenedor:
+    '/RegistroArchivoStorage/ObtenerRegistroArchivoStoragePorIdUrlSubContenedor',
 
   //ConjuntoAnuncio
-  ConjuntoAnuncioInsertar: "/ConjuntoAnuncio/Insertar",
-  ConjuntoAnuncioInsertarLista: "/ConjuntoAnuncio/InsertarLista",
-  ConjuntoAnuncioActualizar: "/ConjuntoAnuncio/Actualizar",
-  ConjuntoAnuncioActualizarLista: "/ConjuntoAnuncio/ActualizarLista",
+  ConjuntoAnuncioInsertar: '/ConjuntoAnuncio/Insertar',
+  ConjuntoAnuncioInsertarLista: '/ConjuntoAnuncio/InsertarLista',
+  ConjuntoAnuncioActualizar: '/ConjuntoAnuncio/Actualizar',
+  ConjuntoAnuncioActualizarLista: '/ConjuntoAnuncio/ActualizarLista',
   ConjuntoAnuncioObtenerConjuntoAnuncio:
-    "/ConjuntoAnuncio/obtenerConjuntoAnuncio",
+    '/ConjuntoAnuncio/obtenerConjuntoAnuncio',
   ConjuntoAnuncioListarConjuntoAnuncios:
-    "/ConjuntoAnuncio/ListarConjuntoAnuncios",
-  ConjuntoAnuncioEliminar: "/ConjuntoAnuncio/Eliminar",
-  ConjuntoAnuncioEliminarListado: "/ConjuntoAnuncio/EliminarListado",
-  ConjuntoAnuncioObtenerCombo: "/ConjuntoAnuncio/ObtenerCombo",
-  ConjuntoAnuncioUrl: "/ConjuntoAnuncio/ObtenerConjuntoAnuncioUrl",
+    '/ConjuntoAnuncio/ListarConjuntoAnuncios',
+  ConjuntoAnuncioEliminar: '/ConjuntoAnuncio/Eliminar',
+  ConjuntoAnuncioEliminarListado: '/ConjuntoAnuncio/EliminarListado',
+  ConjuntoAnuncioObtenerCombo: '/ConjuntoAnuncio/ObtenerCombo',
+  ConjuntoAnuncioUrl: '/ConjuntoAnuncio/ObtenerConjuntoAnuncioUrl',
 
   //CIUDADES
-  ProcesarOportunidadesPortalWeb: "/Oportunidad/ProcesarOportunidadesPortalWeb",
-  CrearOportunidadesPortalWeb: "/Oportunidad/CrearOportunidadesPortalWeb",
-  ValidarOportunidadesPortalWeb: "/Oportunidad/ValidarOportunidadesPortalWeb",
-  ProcesarFacebookLeadsErroneos: "/FacebookLead/ProcesarFacebookLeadsErroneos",
+  ProcesarOportunidadesPortalWeb: '/Oportunidad/ProcesarOportunidadesPortalWeb',
+  CrearOportunidadesPortalWeb: '/Oportunidad/CrearOportunidadesPortalWeb',
+  ValidarOportunidadesPortalWeb: '/Oportunidad/ValidarOportunidadesPortalWeb',
+  ProcesarFacebookLeadsErroneos: '/FacebookLead/ProcesarFacebookLeadsErroneos',
 
   //Subir Fuente
-  FuentesPortalWebObtener: "/FuentesPortalWeb/ObtenerFuentesPortalWeb",
-  FuentesPortalWebInsertar: "/FuentesPortalWeb/Insertar",
-  FuentesPortalWebActualizar: "/FuentesPortalWeb/Actualizar",
-  FuentesPortalWebEliminar: "/FuentesPortalWeb/Eliminar",
-  FuentesPortalWebCombo: "/FuentesPortalWeb/ObtenerCombo",
+  FuentesPortalWebObtener: '/FuentesPortalWeb/ObtenerFuentesPortalWeb',
+  FuentesPortalWebInsertar: '/FuentesPortalWeb/Insertar',
+  FuentesPortalWebActualizar: '/FuentesPortalWeb/Actualizar',
+  FuentesPortalWebEliminar: '/FuentesPortalWeb/Eliminar',
+  FuentesPortalWebCombo: '/FuentesPortalWeb/ObtenerCombo',
 
   //TipoLandingPage
 
-  TipoLandingPageObtener: "/TipoLandingPage/ObtenerTipoLandingPage",
-  TipoLandingInsertar: "/TipoLandingPage/Insertar",
-  TipoLandingActualizar: "/TipoLandingPage/Actualizar",
-  TipoLandingEliminar: "/TipoLandingPage/Eliminar",
+  TipoLandingPageObtener: '/TipoLandingPage/ObtenerTipoLandingPage',
+  TipoLandingInsertar: '/TipoLandingPage/Insertar',
+  TipoLandingActualizar: '/TipoLandingPage/Actualizar',
+  TipoLandingEliminar: '/TipoLandingPage/Eliminar',
 
   //Estillos Css
 
-  EstilosCssObtener: "/EstilosCss/ObtenerEstilosCss",
-  EstilosCssInsertar: "/EstilosCss/Insertar",
-  EstilosCssActualizar: "/EstilosCss/Actualizar",
-  EstilosCssEliminar: "/EstilosCss/Eliminar",
-  EstilosCssCombo: "/EstilosCss/ObtenerCombo",
-  EstillosCssComboTagEstilo: "/EstilosCss/ObtenerComboTagEstilo",
+  EstilosCssObtener: '/EstilosCss/ObtenerEstilosCss',
+  EstilosCssInsertar: '/EstilosCss/Insertar',
+  EstilosCssActualizar: '/EstilosCss/Actualizar',
+  EstilosCssEliminar: '/EstilosCss/Eliminar',
+  EstilosCssCombo: '/EstilosCss/ObtenerCombo',
+  EstillosCssComboTagEstilo: '/EstilosCss/ObtenerComboTagEstilo',
 
   //Tags
 
-  TagsObtener: "/Tags/ObtenerTags",
-  TagsInsertar: "/Tags/Insertar",
-  TagsActualizar: "/Tags/Actualizar",
-  TagsEliminar: "/Tags/Eliminar",
-  TagsCombo: "/Tags/ObtenerCombo",
+  TagsObtener: '/Tags/ObtenerTags',
+  TagsInsertar: '/Tags/Insertar',
+  TagsActualizar: '/Tags/Actualizar',
+  TagsEliminar: '/Tags/Eliminar',
+  TagsCombo: '/Tags/ObtenerCombo',
 
   //TagsEstilo
 
-  TagsEstiloObtener: "/TagsEstilo/ObtenerTagsEstilo",
-  TagsEstiloInsertar: "/TagsEstilo/Insertar",
-  TagsEstiloActualizar: "/TagsEstilo/Actualizar",
-  TagsEstiloEliminar: "/TagsEstilo/Eliminar",
-  TagsEstiloEstiloValor: "/TagsEstilo/ObtenerEstiloValor",
+  TagsEstiloObtener: '/TagsEstilo/ObtenerTagsEstilo',
+  TagsEstiloInsertar: '/TagsEstilo/Insertar',
+  TagsEstiloActualizar: '/TagsEstilo/Actualizar',
+  TagsEstiloEliminar: '/TagsEstilo/Eliminar',
+  TagsEstiloEstiloValor: '/TagsEstilo/ObtenerEstiloValor',
 
   //Seccion
 
-  SeccionObtener: "/Seccion/ObtenerSeccion",
-  SeccionObtenerCombo: "/Seccion/ObtenerCombo",
-  SeccionInsertar: "/Seccion/Insertar",
-  SeccionActualizar: "/Seccion/Actualizar",
-  SeccionEliminar: "/Seccion/Eliminar",
+  SeccionObtener: '/Seccion/ObtenerSeccion',
+  SeccionObtenerCombo: '/Seccion/ObtenerCombo',
+  SeccionInsertar: '/Seccion/Insertar',
+  SeccionActualizar: '/Seccion/Actualizar',
+  SeccionEliminar: '/Seccion/Eliminar',
 
   //PlantillaV2
 
-  PlantillaV2Obtener: "/PlantillaV2/ObtenerPlantillaV2",
-  PlantillaV2Insertar: "/PlantillaV2/Insertar",
-  PlantillaV2Actualizar: "/PlantillaV2/Actualizar",
-  PlantillaV2Eliminar: "/PlantillaV2/Eliminar",
-  PlantillaV2Combo: "/PlantillaV2/ObtenerCombo",
+  PlantillaV2Obtener: '/PlantillaV2/ObtenerPlantillaV2',
+  PlantillaV2Insertar: '/PlantillaV2/Insertar',
+  PlantillaV2Actualizar: '/PlantillaV2/Actualizar',
+  PlantillaV2Eliminar: '/PlantillaV2/Eliminar',
+  PlantillaV2Combo: '/PlantillaV2/ObtenerCombo',
 
   //PlantillaV2Seccion
-  PlantillaV2SeccionObtenerTodo: "/PlantillaV2Seccion/ObtenerTodo",
-  PlantillaV2ActualizacionMasiva: "/PlantillaV2Seccion/ActualizacionMasiva",
+  PlantillaV2SeccionObtenerTodo: '/PlantillaV2Seccion/ObtenerTodo',
+  PlantillaV2ActualizacionMasiva: '/PlantillaV2Seccion/ActualizacionMasiva',
 
   //LandingPage
 
-  LandingPageObtener: "/LandingPage/ObtenerLandingPageC",
-  LandingPageInsertar: "/LandingPage/Insertar",
-  LandingPageActualizar: "/LandingPage/Actualizar",
-  LandingPageEliminar: "/LandingPage/Eliminar",
-  PEspecificoObtener: "/PEspecifico/ObtenerFiltroPorIdPGeneral",
-  ProgramaGneralconPEspecifico: "/ProgramaGeneral/ProgramaGneralconPEspecifico",
+  LandingPageObtener: '/LandingPage/ObtenerLandingPageC',
+  LandingPageInsertar: '/LandingPage/Insertar',
+  LandingPageActualizar: '/LandingPage/Actualizar',
+  LandingPageEliminar: '/LandingPage/Eliminar',
+  PEspecificoObtener: '/PEspecifico/ObtenerFiltroPorIdPGeneral',
+  ProgramaGneralconPEspecifico: '/ProgramaGeneral/ProgramaGneralconPEspecifico',
 
   //Sendinblue
 
-  SendinblueObtener: "/marketing/sendinblue/Campania/PorTipos",
-  SendinblueCrearCampania: "/marketing/sendinblue/Campania/Crear",
-  SendinblueCrearCampaniaABTest: "/marketing/sendinblue/Campania/Crear/AbTest",
-  SendinblueEstadoCampania: "/marketing/sendinblue/Campania/Actualizar/estado",
-  SendinblueObtenerCampaniaId: "/marketing/sendinblue/Campania/ObtenerCampania",
+  SendinblueObtener: '/marketing/sendinblue/Campania/PorTipos',
+  SendinblueCrearCampania: '/marketing/sendinblue/Campania/Crear',
+  SendinblueCrearCampaniaABTest: '/marketing/sendinblue/Campania/Crear/AbTest',
+  SendinblueEstadoCampania: '/marketing/sendinblue/Campania/Actualizar/estado',
+  SendinblueObtenerCampaniaId: '/marketing/sendinblue/Campania/ObtenerCampania',
   SendinblueActualizarCampania:
-    "/marketing/sendinblue/Campania/update/IdCampain",
+    '/marketing/sendinblue/Campania/update/IdCampain',
 
   CrearCampaignEmailHtmlContent:
-    "/marketing/sendinblue/Campania/CrearCampaignEmailHtmlContent",
+    '/marketing/sendinblue/Campania/CrearCampaignEmailHtmlContent',
   CrearCampaignEmailABHtmlContent:
-    "/marketing/sendinblue/Campania/CrearCampaignEmailABHtmlContent",
+    '/marketing/sendinblue/Campania/CrearCampaignEmailABHtmlContent',
 
   //Sender
 
-  SenderObtener: "/marketing/sendinblue/Sender/getSenders",
-  RemitentesObtener: "/RemitenteMailing/ObtenerTodosRemitente",
-  SenderInsertar: "/Sender/Crear/",
-  SenderActualizar: "/Sender/Actualizar/",
-  SenderEliminar: "/Sender/Eliminar/",
+  SenderObtener: '/marketing/sendinblue/Sender/getSenders',
+  RemitentesObtener: '/RemitenteMailing/ObtenerTodosRemitente',
+  SenderInsertar: '/Sender/Crear/',
+  SenderActualizar: '/Sender/Actualizar/',
+  SenderEliminar: '/Sender/Eliminar/',
 
   //FolderSendinblue
 
-  FolderObtener: "/marketing/sendinblue/Folder/limit",
-  CrearFolder: "/marketing/sendinblue/Folder/Crear",
+  FolderObtener: '/marketing/sendinblue/Folder/limit',
+  CrearFolder: '/marketing/sendinblue/Folder/Crear',
   ObtenerListaPorFolder:
-    "/marketing/sendinblue/Folder/Obtener/Listas/por/folder",
+    '/marketing/sendinblue/Folder/Obtener/Listas/por/folder',
 
   //Asignacion  Manual dATOS
-  AsignacionManualDatosVerificacion: "/Oportunidad/VerificarManualmenteDatos",
+  AsignacionManualDatosVerificacion: '/Oportunidad/VerificarManualmenteDatos',
 
   //PlantillaSendinblue
 
-  PlantillaObtener: "/marketing/sendinblue/Template/offset",
+  PlantillaObtener: '/marketing/sendinblue/Template/offset',
 
   //ListasSendinblue
-  AgregarContactosALista: "/marketing/sendinblue/Contacto/Agregar/Lista",
-  ObtenerListaSendinblue: "/marketing/sendinblue/Lista/offset",
-  CrearListaSendinblue: "/marketing/sendinblue/Lista/Crear",
-  ActualizarNumeroContactos: "/marketing/sendinblue/lista/Cargar/contactos",
-  Prueba: "/CampaniaGeneral/ObtenerAlumnosParaSubirALista",
-  Prueba2: "/CampaniaGeneral/agregarListaAlumnos",
+  AgregarContactosALista: '/marketing/sendinblue/Contacto/Agregar/Lista',
+  ObtenerListaSendinblue: '/marketing/sendinblue/Lista/offset',
+  CrearListaSendinblue: '/marketing/sendinblue/Lista/Crear',
+  ActualizarNumeroContactos: '/marketing/sendinblue/lista/Cargar/contactos',
+  Prueba: '/CampaniaGeneral/ObtenerAlumnosParaSubirALista',
+  Prueba2: '/CampaniaGeneral/agregarListaAlumnos',
   //ContactosSendinblue
-  ObtenerContactosPorLista: "/marketing/sendinblue/Contacto/Obtener/por/Lista",
-  ObtenerDetallesLista: "/marketing/sendinblue/Lista/Detalle",
+  ObtenerContactosPorLista: '/marketing/sendinblue/Contacto/Obtener/por/Lista',
+  ObtenerDetallesLista: '/marketing/sendinblue/Lista/Detalle',
 
   //FiltroSegmento
   ObtenerFiltroSegmentoPanel:
-    "/FiltroSegmentoSendingBlue/ObtenerFiltroSegmentoPanel",
+    '/FiltroSegmentoSendingBlue/ObtenerFiltroSegmentoPanel',
   ResultadoFiltroSegmentoPanel:
-    "/FiltroSegmentoSendingBlue/ObtenerResultadoFiltroSegmento",
+    '/FiltroSegmentoSendingBlue/ObtenerResultadoFiltroSegmento',
 
   //NivelSegmentacion
 
-  ObtenerAreasSubAreas: "/CampaniasMailingWhatsapp/ObteneAreasSubAreas",
+  ObtenerAreasSubAreas: '/CampaniasMailingWhatsapp/ObteneAreasSubAreas',
 
   //CampaniaGeneral
 
   ObtenerCampaniaGeneralFiltroMailing:
-    "/CampaniaGeneral/ObtenerCampaniaGeneral",
-  CampaniaGeneralInsertar: "/CampaniaGeneral/Insertar",
-  CampaniaGeneralInsertarTotal: "/CampaniaGeneral/InsertarCampaniaGeneral",
-  CampaniaGeneralPorId: "/CampaniaGeneral/obtener/ById",
+    '/CampaniaGeneral/ObtenerCampaniaGeneral',
+  CampaniaGeneralInsertar: '/CampaniaGeneral/Insertar',
+  CampaniaGeneralInsertarTotal: '/CampaniaGeneral/InsertarCampaniaGeneral',
+  CampaniaGeneralPorId: '/CampaniaGeneral/obtener/ById',
 
   //CampaniaGeneralDetalle
 
-  CampaniaGeneralDetalle: "/CampaniaGeneral/ObtenerCampaniaGeneral",
-  EliminarCampaniaGeneral: "/CampaniaGeneralDetalle/Eliminar",
-  ListaAreasSubareas: "/CampaniaGeneralDetalle/Obtener",
+  CampaniaGeneralDetalle: '/CampaniaGeneral/ObtenerCampaniaGeneral',
+  EliminarCampaniaGeneral: '/CampaniaGeneralDetalle/Eliminar',
+  ListaAreasSubareas: '/CampaniaGeneralDetalle/Obtener',
 
   //CampaniaMailing
-  EliminarCampania: "/CampaniasMailingWhatsapp/Eliminar",
-  UsuarioLogeado: "/CampaniasMailingWhatsapp/ObtenerUsuarioLogeado",
+  EliminarCampania: '/CampaniasMailingWhatsapp/Eliminar',
+  UsuarioLogeado: '/CampaniasMailingWhatsapp/ObtenerUsuarioLogeado',
 
   //CampaniaMailingFiltrado
 
-  FiltradoDatosMailing: "/CampaniaMailingFiltrado/mailing",
-  ObtenerPrioridadesCampaniaGeneral: "/CampaniaMailingFiltrado/ListaDetalle",
-  DatosPrioridades: "/CampaniaMailingFiltrado/mailing/data",
-  EliminarParaActualizar: "/CampaniaMailingFiltrado/mailing/delete",
-  DatosPrioridadesWhatsapp: "/CampaniaWhatsappFiltrado/whatsapp",
-  ObtenerDatosProbabilidadPW: "/ProbabilidadRegistroPw/ObtenerCombo",
+  FiltradoDatosMailing: '/CampaniaMailingFiltrado/mailing',
+  ObtenerPrioridadesCampaniaGeneral: '/CampaniaMailingFiltrado/ListaDetalle',
+  DatosPrioridades: '/CampaniaMailingFiltrado/mailing/data',
+  EliminarParaActualizar: '/CampaniaMailingFiltrado/mailing/delete',
+  DatosPrioridadesWhatsapp: '/CampaniaWhatsappFiltrado/whatsapp',
+  ObtenerDatosProbabilidadPW: '/ProbabilidadRegistroPw/ObtenerCombo',
 
   //CampaniaMailingWhatsapp
 
-  ComboPlantillaWhatsapp: "/PlantillaPw/ObtenerComboWhatsapp",
-  ResponsablesWhatsapp: "/Personal/ObtenerPersonalPorMarketing",
+  ComboPlantillaWhatsapp: '/PlantillaPw/ObtenerComboWhatsapp',
+  ResponsablesWhatsapp: '/Personal/ObtenerPersonalPorMarketing',
   HoraEnvioWhatsapp:
-    "/WhatsAppConfiguracionEnvio/Obtener/Configuracion/HorariosDeEnvio/Combo/1",
+    '/WhatsAppConfiguracionEnvio/Obtener/Configuracion/HorariosDeEnvio/Combo/1',
   ProcesarListasWhatsappEnvioAutomatico:
-    "/WhatsAppConfiguracionEnvio/ProcesarListasWhatsAppEnvioAutomatico",
-  FiltroWhatsapp: "/CampaniaWhatsappFiltrado/whatsapp",
-  CrearCampaniaWhatsapp: "/ConfiguracionWhatsapp/Configuracion/Envio",
+    '/WhatsAppConfiguracionEnvio/ProcesarListasWhatsAppEnvioAutomatico',
+  FiltroWhatsapp: '/CampaniaWhatsappFiltrado/whatsapp',
+  CrearCampaniaWhatsapp: '/ConfiguracionWhatsapp/Configuracion/Envio',
   ObtenerCampaniaWhatsapp:
-    "/CampaniaGeneral/ObtenerConfiguracionDeEnvioParaWhatsAppMasPlantilla",
+    '/CampaniaGeneral/ObtenerConfiguracionDeEnvioParaWhatsAppMasPlantilla',
   ActualizarConfiguracionWhatsapp:
-    "/ConfiguracionWhatsapp/Configuracion/Envio/update",
+    '/ConfiguracionWhatsapp/Configuracion/Envio/update',
   EliminarConfiguracionWhastapp:
-    "/ConfiguracionWhatsapp/Configuracion/Envio/delete",
+    '/ConfiguracionWhatsapp/Configuracion/Envio/delete',
   EliminarRegistrosPasados:
-    "/CampaniaMailingFiltrado/EliminarRegistrosPasados/mail",
-  EnviarCampañiaMailing: "/CampaniaMailingFiltrado/Envio/Mail/SendingBlue",
+    '/CampaniaMailingFiltrado/EliminarRegistrosPasados/mail',
+  EnviarCampañiaMailing: '/CampaniaMailingFiltrado/Envio/Mail/SendingBlue',
   ObtenerConfiguracionWhatsappActualizar:
-    "/ConfiguracionWhatsApp/Configuracion/Envio/porid",
+    '/ConfiguracionWhatsApp/Configuracion/Envio/porid',
   ObtenerCampaniaGeneralPorWhatsapp:
-    "/CampaniaGeneral/ObtenerCampaniaGeneralSoloDatosParaWhatsApp",
+    '/CampaniaGeneral/ObtenerCampaniaGeneralSoloDatosParaWhatsApp',
   FinalizarPreProcesamientoWhatsApp:
-    "/ReemplazoDeEtiquetas/FinalizarPreProcesamientoWhatsApp",
+    '/ReemplazoDeEtiquetas/FinalizarPreProcesamientoWhatsApp',
 
   //Reporte WhatsAppMensaeEnvioErroneo
 
   ObtenerReporteMensajesEnviadosErroneos:
-    "/WhatsAppEnvioAutomatico/ObtenerReporteMensajesEnviadosErroneos",
+    '/WhatsAppEnvioAutomatico/ObtenerReporteMensajesEnviadosErroneos',
 
   //CampaniaWhatsappEdson
   ObtenerCampaniaWhatsappGrilla:
-    "/CampaniaGeneralWhatsApp/ObtenerCampaniaGeneralGrillaWhatsApp",
+    '/CampaniaGeneralWhatsApp/ObtenerCampaniaGeneralGrillaWhatsApp',
   EliminarCampaniaWhatsapp:
-    "/CampaniaGeneralWhatsApp/EliminarCampaniaGeneralWhatsApp",
+    '/CampaniaGeneralWhatsApp/EliminarCampaniaGeneralWhatsApp',
   EliminarCampaniaGeneralDetalleWhatsApp:
-    "/CampaniaGeneralWhatsApp/EliminarCampaniaGeneralDetalleWhatsApp",
+    '/CampaniaGeneralWhatsApp/EliminarCampaniaGeneralDetalleWhatsApp',
   InsertarCampaniarWhatsapp:
-    "/CampaniaGeneralWhatsApp/InsertarCampaniaGeneralWhatsApp",
+    '/CampaniaGeneralWhatsApp/InsertarCampaniaGeneralWhatsApp',
   InsertarCampaniaGeneralDetalleWhatsApp:
-    "/CampaniaGeneralWhatsApp/InsertarCampaniaGeneralDetalleWhatsApp",
+    '/CampaniaGeneralWhatsApp/InsertarCampaniaGeneralDetalleWhatsApp',
   InsertarCampaniaGeneralDetalleExcelWhatsApp:
-    "/CampaniaGeneralWhatsApp/InsertarCampaniaGeneralDetalleExcelWhatsApp",
+    '/CampaniaGeneralWhatsApp/InsertarCampaniaGeneralDetalleExcelWhatsApp',
   ObtenerCammpaniaGeneralDetalle:
-    "/CampaniaGeneralWhatsApp/ObtenerCampaniaGeneralDetalleWhatsApp",
+    '/CampaniaGeneralWhatsApp/ObtenerCampaniaGeneralDetalleWhatsApp',
   ObtenerConfiguracionCampaniaGeneralDetalleWhatsApp:
-    "/CampaniaGeneralWhatsApp/ObtenerConfiguracionCampaniaGeneralDetalleWhatsApp",
+    '/CampaniaGeneralWhatsApp/ObtenerConfiguracionCampaniaGeneralDetalleWhatsApp',
   ActualizarActivarMasivoPorCampania:
-    "/CampaniaGeneralWhatsApp/ActualizarActivarMasivoPorCampania",
+    '/CampaniaGeneralWhatsApp/ActualizarActivarMasivoPorCampania',
   ActualizarCampaniaGeneralWhatsapp:
-    "/CampaniaGeneralWhatsapp/ActualizarCampaniaGeneralWhatsapp",
+    '/CampaniaGeneralWhatsapp/ActualizarCampaniaGeneralWhatsapp',
   ProcesarPrioridades:
-    "/CampaniaGeneralWhatsapp/ProcesarDataPorPrioridadSendinblue",
+    '/CampaniaGeneralWhatsapp/ProcesarDataPorPrioridadSendinblue',
   ActualizarCamposCampaniaGeneralDetalleWhatsApp:
-    "/CampaniaGeneralWhatsapp/ActualizarCamposCampaniaGeneralDetalleWhatsApp",
-  ProcesarExcel: "/CampaniaGeneralWhatsapp/ProcesarDataPorPrioridadExcel",
+    '/CampaniaGeneralWhatsapp/ActualizarCamposCampaniaGeneralDetalleWhatsApp',
+  ProcesarExcel: '/CampaniaGeneralWhatsapp/ProcesarDataPorPrioridadExcel',
   EliminarCampaniaGeneralDetalleResponsableWhatsApp:
-    "/CampaniaGeneralWhatsapp/EliminarCampaniaGeneralDetalleResponsableWhatsApp",
+    '/CampaniaGeneralWhatsapp/EliminarCampaniaGeneralDetalleResponsableWhatsApp',
   ObtenerCampaniaGeneralDetalleResponsablePorPrioridad:
-    "/CampaniaGeneralWhatsapp/ObtenerCampaniaGeneralDetalleResponsablePorPrioridadAlterno",
+    '/CampaniaGeneralWhatsapp/ObtenerCampaniaGeneralDetalleResponsablePorPrioridadAlterno',
   ObtenerComboCampaniaGeneralDetalleResponsableWhatsApp:
-    "/CampaniaGeneralWhatsapp/ObtenerComboCampaniaGeneralDetalleResponsableWhatsApp",
+    '/CampaniaGeneralWhatsapp/ObtenerComboCampaniaGeneralDetalleResponsableWhatsApp',
   InsertarCampaniaGeneralDetalleResponsableWhatsApp:
-    "/CampaniaGeneralWhatsapp/InsertarCampaniaGeneralDetalleResponsableWhatsApp",
+    '/CampaniaGeneralWhatsapp/InsertarCampaniaGeneralDetalleResponsableWhatsApp',
   ObtenerComboCampaniasSendinBlue:
-    "/CampaniaGeneralWhatsapp/ObtenerComboCampaniasSendinBlue",
+    '/CampaniaGeneralWhatsapp/ObtenerComboCampaniasSendinBlue',
   ReporteInteraccionCampaniaGeneralDetalle:
-    "/CampaniaGeneralWhatsApp/ReporteInteraccionCampaniaGeneralDetalle",
+    '/CampaniaGeneralWhatsApp/ReporteInteraccionCampaniaGeneralDetalle',
   CrearDiasWhatsapp:
-    "/ConfiguracionWhatsApp/Configuracion/Envio/segmento/personal",
+    '/ConfiguracionWhatsApp/Configuracion/Envio/segmento/personal',
   ObtenerDiasPorConfiguracion:
-    "/ConfiguracionWhatsApp/Configuracion/Envio/segmento/personal/all",
+    '/ConfiguracionWhatsApp/Configuracion/Envio/segmento/personal/all',
   ActualizarDiasConfiguracion:
-    "/ConfiguracionWhatsApp/Configuracion/Envio/segmento/personal/actualizarEliminar",
-  CreacionWhatsapp: "/CampaniasMailingWhatsapp/Ejecutar/replicado",
+    '/ConfiguracionWhatsApp/Configuracion/Envio/segmento/personal/actualizarEliminar',
+  CreacionWhatsapp: '/CampaniasMailingWhatsapp/Ejecutar/replicado',
   EliminarRegistrosPasadosWhats:
-    "/CampaniaWhatsappFiltrado/EliminarRegistrosPasados/WhatsApp",
-  EnviarRegistroWhats: "/CampaniaWhatsappFiltrado/Envio/WhatsApp",
+    '/CampaniaWhatsappFiltrado/EliminarRegistrosPasados/WhatsApp',
+  EnviarRegistroWhats: '/CampaniaWhatsappFiltrado/Envio/WhatsApp',
 
   ObtenerDiasPorPrioridadWhatsapp:
-    "/CampaniaGeneralWhatsapp/ObtenerDiasPorPrioridadWhatsapp",
+    '/CampaniaGeneralWhatsapp/ObtenerDiasPorPrioridadWhatsapp',
 
   //CampaniaSms
 
   ObtenerCampaniaSmsGrilla:
-    "/CampaniaGeneralSms/ObtenerCampaniaGeneralGrillaSms",
+    '/CampaniaGeneralSms/ObtenerCampaniaGeneralGrillaSms',
   ObtenerCammpaniaGeneralDetalleSms:
-    "/CampaniaGeneralSms/ObtenerCampaniaGeneralDetalleSms",
-  EliminarCampaniaSms: "/CampaniaGeneralSms/EliminarCampaniaGeneralSms",
+    '/CampaniaGeneralSms/ObtenerCampaniaGeneralDetalleSms',
+  EliminarCampaniaSms: '/CampaniaGeneralSms/EliminarCampaniaGeneralSms',
   EliminarCampaniaGeneralDetalleSms:
-    "/CampaniaGeneralSms/EliminarCampaniaGeneralDetalleSms",
-  InsertarCampaniarSms: "/CampaniaGeneralSms/InsertarCampaniaGeneralSms",
+    '/CampaniaGeneralSms/EliminarCampaniaGeneralDetalleSms',
+  InsertarCampaniarSms: '/CampaniaGeneralSms/InsertarCampaniaGeneralSms',
   InsertarCampaniaGeneralDetalleSms:
-    "/CampaniaGeneralSms/InsertarCampaniaGeneralDetalleSms",
+    '/CampaniaGeneralSms/InsertarCampaniaGeneralDetalleSms',
   InsertarCampaniaGeneralDetalleExcelSms:
-    "/CampaniaGeneralSms/InsertarCampaniaGeneralDetalleExcelSms",
+    '/CampaniaGeneralSms/InsertarCampaniaGeneralDetalleExcelSms',
   ObtenerConfiguracionCampaniaGeneralDetalleSms:
-    "/CampaniaGeneralSms/ObtenerConfiguracionCampaniaGeneralDetalleSms",
+    '/CampaniaGeneralSms/ObtenerConfiguracionCampaniaGeneralDetalleSms',
   ActualizarCampaniaGeneralSms:
-    "/CampaniaGeneralSms/ActualizarCampaniaGeneralSms",
+    '/CampaniaGeneralSms/ActualizarCampaniaGeneralSms',
   ActualizarCamposCampaniaGeneralDetalleSms:
-    "/CampaniaGeneralSms/ActualizarCamposCampaniaGeneralDetalleSms",
+    '/CampaniaGeneralSms/ActualizarCamposCampaniaGeneralDetalleSms',
   EliminarCampaniaGeneralDetalleResponsableSms:
-    "/CampaniaGeneralSms/EliminarCampaniaGeneralDetalleResponsableSms",
+    '/CampaniaGeneralSms/EliminarCampaniaGeneralDetalleResponsableSms',
   ObtenerComboCampaniaGeneralDetalleResponsableSms:
-    "/CampaniaGeneralSms/ObtenerComboCampaniaGeneralDetalleResponsableSms",
+    '/CampaniaGeneralSms/ObtenerComboCampaniaGeneralDetalleResponsableSms',
   InsertarCampaniaGeneralDetalleResponsableSms:
-    "/CampaniaGeneralSms/InsertarCampaniaGeneralDetalleResponsableSms",
+    '/CampaniaGeneralSms/InsertarCampaniaGeneralDetalleResponsableSms',
   ProcesarPrioridadesSms:
-    "/CampaniaGeneralSms/ProcesarDataPorPrioridadSendinblue",
+    '/CampaniaGeneralSms/ProcesarDataPorPrioridadSendinblue',
   ObtenerCampaniaGeneralDetalleResponsablePorPrioridadSms:
-    "/CampaniaGeneralSms/ObtenerCampaniaGeneralDetalleResponsablePorPrioridad",
-  ProcesarExcelSms: "/CampaniaGeneralSms/ProcesarDataPorPrioridadExcel",
+    '/CampaniaGeneralSms/ObtenerCampaniaGeneralDetalleResponsablePorPrioridad',
+  ProcesarExcelSms: '/CampaniaGeneralSms/ProcesarDataPorPrioridadExcel',
   ActualizarActivarMasivoPorCampaniaSms:
-    "/CampaniaGeneralSms/ActualizarActivarMasivoPorCampania",
+    '/CampaniaGeneralSms/ActualizarActivarMasivoPorCampania',
   ObtenerComboCampaniasSendinBlueSms:
-    "/CampaniaGeneralSms/ObtenerComboCampaniasSendinBlue",
-  ObtenerGrilllaCOntestacion: "/CampaniaGeneralSms/ObtenerGrillaSms",
-  ObtenerChatPorAlumno: "/CampaniaGeneralSms/ObtenerChatPorAlumno",
-  ObtenerAlumnoPorCelular: "/CampaniaGeneralSms/ObtenerAlumnoPorCelular",
-  EnviarRespuestaSms: "/CampaniaGeneralSms/EnviarRespuestaSms",
+    '/CampaniaGeneralSms/ObtenerComboCampaniasSendinBlue',
+  ObtenerGrilllaCOntestacion: '/CampaniaGeneralSms/ObtenerGrillaSms',
+  ObtenerChatPorAlumno: '/CampaniaGeneralSms/ObtenerChatPorAlumno',
+  ObtenerAlumnoPorCelular: '/CampaniaGeneralSms/ObtenerAlumnoPorCelular',
+  EnviarRespuestaSms: '/CampaniaGeneralSms/EnviarRespuestaSms',
 
   //PlantillaSms
 
-  ObtenerPlantillaSms: "/CampaniaGeneralSms/ObtenerPlantillaSms",
-  InsertarPlantillaSms: "/CampaniaGeneralSms/InsertarPlantillaSms",
+  ObtenerPlantillaSms: '/CampaniaGeneralSms/ObtenerPlantillaSms',
+  InsertarPlantillaSms: '/CampaniaGeneralSms/InsertarPlantillaSms',
   InsertarDetalllePlantillaSms:
-    "/CampaniaGeneralSms/InsertarDetalllePlantillaSms",
-  ObtenerPlantillaGrillaSms: "/CampaniaGeneralSms/ObtenerPlantilla",
-  ObtenerDetallePlantilla: "/CampaniaGeneralSms/ObtenerDetallePlantilla",
-  ActualizarPlantillaSms: "/CampaniaGeneralSms/ActualizarPlantillaSms",
-  EliminarPlantillaSms: "/CampaniaGeneralSms/EliminarPlantillaSms",
+    '/CampaniaGeneralSms/InsertarDetalllePlantillaSms',
+  ObtenerPlantillaGrillaSms: '/CampaniaGeneralSms/ObtenerPlantilla',
+  ObtenerDetallePlantilla: '/CampaniaGeneralSms/ObtenerDetallePlantilla',
+  ActualizarPlantillaSms: '/CampaniaGeneralSms/ActualizarPlantillaSms',
+  EliminarPlantillaSms: '/CampaniaGeneralSms/EliminarPlantillaSms',
   GenerarUrlFormulariosSmsLink:
-    "/CampaniaGeneralSms/GenerarUrlFormulariosSmsLink",
-  EnvioPruebaSms: "/CampaniaGeneralSms/EnviarPruebaSms",
+    '/CampaniaGeneralSms/GenerarUrlFormulariosSmsLink',
+  EnvioPruebaSms: '/CampaniaGeneralSms/EnviarPruebaSms',
 
   //TIPO  DATO: MARKETING
-  InteraccionChatIntegraInsertar: "/InteraccionChatIntegra/Insertar",
-  InteraccionChatIntegraInsertarLista: "/InteraccionChatIntegra/InsertarLista",
-  InteraccionChatIntegraActualizar: "/InteraccionChatIntegra/Actualizar",
+  InteraccionChatIntegraInsertar: '/InteraccionChatIntegra/Insertar',
+  InteraccionChatIntegraInsertarLista: '/InteraccionChatIntegra/InsertarLista',
+  InteraccionChatIntegraActualizar: '/InteraccionChatIntegra/Actualizar',
   InteraccionChatIntegraActualizarLista:
-    "/InteraccionChatIntegra/ActualizarLista",
+    '/InteraccionChatIntegra/ActualizarLista',
   InteraccionChatIntegraActualizarIdAlumno:
-    "/InteraccionChatIntegra/ActualizarIdAlumno",
-  InteraccionChatIntegraEliminar: "/InteraccionChatIntegra/Eliminar",
-  InteraccionChatIntegraListado: "/InteraccionChatIntegra/EliminarListado",
+    '/InteraccionChatIntegra/ActualizarIdAlumno',
+  InteraccionChatIntegraEliminar: '/InteraccionChatIntegra/Eliminar',
+  InteraccionChatIntegraListado: '/InteraccionChatIntegra/EliminarListado',
   InteraccionChatIntegraObtenerCombosReporteChat:
-    "/InteraccionChatIntegra/ObtenerCombosReporteChat",
+    '/InteraccionChatIntegra/ObtenerCombosReporteChat',
   InteraccionChatIntegraReporteChatLog:
-    "/InteraccionChatIntegra/ReporteChatLog",
-  InteraccionChatIntegraReporteChat: "/InteraccionChatIntegra/ReporteChat",
+    '/InteraccionChatIntegra/ReporteChatLog',
+  InteraccionChatIntegraReporteChat: '/InteraccionChatIntegra/ReporteChat',
   ChatIntegraHistorialAsesorObtenerTodoHistorialChatsPorAlumno:
-    "/ChatIntegraHistorialAsesor/ObtenerTodoHistorialChatsPorAlumno",
+    '/ChatIntegraHistorialAsesor/ObtenerTodoHistorialChatsPorAlumno',
 
   // DATO REMARKETING
   ConfiguracionDatoRemarketingInsertar:
-    "/ConfiguracionDatoRemarketing/Insertar",
+    '/ConfiguracionDatoRemarketing/Insertar',
   ConfiguracionDatoRemarketingInsertarLista:
-    "/ConfiguracionDatoRemarketing/InsertarLista",
+    '/ConfiguracionDatoRemarketing/InsertarLista',
   ConfiguracionDatoRemarketingActualizar:
-    "/ConfiguracionDatoRemarketing/Actualizar",
+    '/ConfiguracionDatoRemarketing/Actualizar',
   ConfiguracionDatoRemarketingActualizarLista:
-    "/ConfiguracionDatoRemarketing/ActualizarLista",
+    '/ConfiguracionDatoRemarketing/ActualizarLista',
   ConfiguracionDatoRemarketingEliminar:
-    "/ConfiguracionDatoRemarketing/Eliminar",
+    '/ConfiguracionDatoRemarketing/Eliminar',
   ConfiguracionDatoRemarketingListado:
-    "/ConfiguracionDatoRemarketingEliminarListado",
+    '/ConfiguracionDatoRemarketingEliminarListado',
   ConfiguracionDatoRemarketingObtenerListaConfiguracionesDatoRemarketing:
-    "/ConfiguracionDatoRemarketing/ObtenerListaConfiguracionesDatoRemarketing",
+    '/ConfiguracionDatoRemarketing/ObtenerListaConfiguracionesDatoRemarketing',
   ConfiguracionDatoRemarketingObtenerCombosParaConfiguracionDatoRemarketing:
-    "/ConfiguracionDatoRemarketing/ObtenerCombosParaConfiguracionDatoRemarketing",
+    '/ConfiguracionDatoRemarketing/ObtenerCombosParaConfiguracionDatoRemarketing',
   ConfiguracionDatoRemarketingActualizarConfiguracionDatoRemarketing:
-    "/ConfiguracionDatoRemarketing/ActualizarConfiguracionDatoRemarketing",
+    '/ConfiguracionDatoRemarketing/ActualizarConfiguracionDatoRemarketing',
   ConfiguracionDatoRemarketingEliminarConfiguracionDatoRemarketing:
-    "/ConfiguracionDatoRemarketing/EliminarConfiguracionDatoRemarketing",
+    '/ConfiguracionDatoRemarketing/EliminarConfiguracionDatoRemarketing',
 
   // GrupoFiltroProgramaCriticoComponent
-  GrupoFiltroProgramaCriticoInsertar: "/GrupoFiltroProgramaCritico/Insertar",
+  GrupoFiltroProgramaCriticoInsertar: '/GrupoFiltroProgramaCritico/Insertar',
   GrupoFiltroProgramaCriticoInsertarLista:
-    "/GrupoFiltroProgramaCritico/InsertarLista",
+    '/GrupoFiltroProgramaCritico/InsertarLista',
   GrupoFiltroProgramaCriticoActualizar:
-    "/GrupoFiltroProgramaCritico/Actualizar",
+    '/GrupoFiltroProgramaCritico/Actualizar',
   GrupoFiltroProgramaCriticoActualizarLista:
-    "/GrupoFiltroProgramaCritico/ActualizarLista",
-  GrupoFiltroProgramaCriticoEliminar: "/GrupoFiltroProgramaCritico/Eliminar",
+    '/GrupoFiltroProgramaCritico/ActualizarLista',
+  GrupoFiltroProgramaCriticoEliminar: '/GrupoFiltroProgramaCritico/Eliminar',
   GrupoFiltroProgramaCriticoListado:
-    "/GrupoFiltroProgramaCritico/EliminarListado",
+    '/GrupoFiltroProgramaCritico/EliminarListado',
   GrupoFiltroProgramaCriticoObtenerTodo:
-    "/GrupoFiltroProgramaCritico/ObtenerTodo",
+    '/GrupoFiltroProgramaCritico/ObtenerTodo',
   GrupoFiltroProgramaCriticoObtenerPGeneralAsociado:
-    "/GrupoFiltroProgramaCritico/ObtenerPGeneralAsociado",
+    '/GrupoFiltroProgramaCritico/ObtenerPGeneralAsociado',
   GrupoFiltroProgramaObtenerCombosAreaSubArea:
-    "/GrupoFiltroProgramaCritico/ObtenerCombosAreaSubArea",
+    '/GrupoFiltroProgramaCritico/ObtenerCombosAreaSubArea',
   GrupoFiltroProgramaObtenerComboGrupoFiltroProgramaCritico:
-    "/GrupoFiltroProgramaCritico/ObtenerComboGrupoFiltroProgramaCritico",
+    '/GrupoFiltroProgramaCritico/ObtenerComboGrupoFiltroProgramaCritico',
   GrupoFiltroProgramaObtenerInsertarGrupoFiltro:
-    "/GrupoFiltroProgramaCritico/InsertarGrupoFiltro",
+    '/GrupoFiltroProgramaCritico/InsertarGrupoFiltro',
   GrupoFiltroProgramaObtenerActualizarGrupo:
-    "/GrupoFiltroProgramaCritico/ActualizarGrupo",
+    '/GrupoFiltroProgramaCritico/ActualizarGrupo',
   GrupoFiltroProgramaObtenerEliminarGrupo:
-    "/GrupoFiltroProgramaCritico/EliminarGrupo",
+    '/GrupoFiltroProgramaCritico/EliminarGrupo',
   GrupoFiltroProgramaObtenerAsesoresPorGrupoId:
-    "/GrupoFiltroProgramaCritico/ObtenerAsesoresPorGrupoId",
+    '/GrupoFiltroProgramaCritico/ObtenerAsesoresPorGrupoId',
   GrupoFiltroProgramaGuardarAsociacion:
-    "/GrupoFiltroProgramaCritico/GuardarAsociacion",
+    '/GrupoFiltroProgramaCritico/GuardarAsociacion',
 
   //OrigenSector
-  OrigenSector: "/OrigenSector/ObtenerAsignacionOrigen",
-  ObtenerOrigenSector: "/OrigenSector/ObtenerOrigenSector",
+  OrigenSector: '/OrigenSector/ObtenerAsignacionOrigen',
+  ObtenerOrigenSector: '/OrigenSector/ObtenerOrigenSector',
   ObtenerCategoriaOrigenConfiguracion:
-    "/OrigenDatoCalidadDetalle/ObtenerConfiguracionCategoriaOrigen",
-  EliminarOrigenSector: "/OrigenSector/EliminarSector",
+    '/OrigenDatoCalidadDetalle/ObtenerConfiguracionCategoriaOrigen',
+  EliminarOrigenSector: '/OrigenSector/EliminarSector',
   ActualizarConfiguracionCategoriaOrigen:
-    "/OrigenSector/ActualizarConfiguracionCategoriaOrigen",
+    '/OrigenSector/ActualizarConfiguracionCategoriaOrigen',
 
   //PROGRAMAS  PUNTO DE CORETE
   ProgramaGeneralPuntoCorteObtenerComboModulo:
-    "/ProgramaGeneralPuntoCorte/ObtenerComboModulo",
+    '/ProgramaGeneralPuntoCorte/ObtenerComboModulo',
   ProgramaGeneralPuntoCorteObtenerListaProgramaGeneralPuntoCorte:
-    "/ProgramaGeneralPuntoCorte/ObtenerListaProgramaGeneralPuntoCorte",
+    '/ProgramaGeneralPuntoCorte/ObtenerListaProgramaGeneralPuntoCorte',
   ProgramaGeneralPuntoCorteObtenerConfiguracionPuntoCorte:
-    "/ProgramaGeneralPuntoCorte/ObtenerConfiguracionPuntoCorte",
+    '/ProgramaGeneralPuntoCorte/ObtenerConfiguracionPuntoCorte',
   ProgramaGeneralPuntoCorteActualizarProgramaGeneralPuntoCorte:
-    "/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCorte",
+    '/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCorte',
   ProgramaGeneralPuntoCorteActualizarProgramaGeneralPuntoCortePaises:
-    "/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCortePaises",
+    '/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCortePaises',
   ProgramaGeneralPuntoCorteActualizarProgramaGeneralPuntoCorteMasivo:
-    "/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCorteMasivo",
+    '/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCorteMasivo',
   ProgramaGeneralPuntoCorteActualizarProgramaGeneralPuntoCorteConfiguracion:
-    "/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCorteConfiguracion",
+    '/ProgramaGeneralPuntoCorte/ActualizarProgramaGeneralPuntoCorteConfiguracion',
   ProgramaGeneralPuntoCorteObtenerGrillaPuntoCorte:
-    "/ProgramaGeneralPuntoCorte/ObtenerGrillaPuntoCorte",
+    '/ProgramaGeneralPuntoCorte/ObtenerGrillaPuntoCorte',
   ProgramaGeneralPuntoCorteObtenerPuntoCortePorPrograma:
-    "/ProgramaGeneralPuntoCorte/ObtenerPuntoCortePorPrograma",
+    '/ProgramaGeneralPuntoCorte/ObtenerPuntoCortePorPrograma',
   ProgramaGeneralPuntoCorteObtenerPuntoCortePorProgramaPais:
-    "/ProgramaGeneralPuntoCorte/ObtenerPuntoCortePorProgramaPais",
+    '/ProgramaGeneralPuntoCorte/ObtenerPuntoCortePorProgramaPais',
   ProgramaGeneralPuntoCorteObtenerDetallePuntoCortePorIdPuntoCorte:
-    "/ProgramaGeneralPuntoCorte/ObtenerDetallePuntoCortePorIdPuntoCorte",
+    '/ProgramaGeneralPuntoCorte/ObtenerDetallePuntoCortePorIdPuntoCorte',
 
-  ProgramaGeneralPuntoCorteEliminar: "/ProgramaGeneralPuntoCorte/Eliminar",
+  ProgramaGeneralPuntoCorteEliminar: '/ProgramaGeneralPuntoCorte/Eliminar',
 
   //RegistroLandingPagePortal
 
   ObtenerRegistroLandingPagePortal:
-    "/RegistroLandingPage/ObtenerLandingPagePortal",
+    '/RegistroLandingPage/ObtenerLandingPagePortal',
 
   //Registro Landing Page Facebook
   RegistroLandingPageObtenerLandingPageFacebook:
-    "/RegistroLandingPage/ObtenerLandingPageFacebook",
+    '/RegistroLandingPage/ObtenerLandingPageFacebook',
   //RegistroLandingLinkedIn
 
-  ObtenerRegistroLandingPageLinkedIn: "/LinkedInApi/ObtenerReporte",
-  ObtenerRegistroPendientePageLinkedIn: "/LinkedInApi/ObtenerReportePendientes",
-  ActualizarRegistroLandingPageLinkedIn: "/LinkedInApi/Actualizar",
-  SubirOportunidadesPendientesLinkedIn: "/LinkedInApi/SubirOportunidadesPendientes",
-  SubirOportunidadesPendientesSeleccionadasLinkedIn: "/LinkedInApi/SubirOportunidadesPendientesSeleccionadas",
-  ValidarEstadodeSubidaOportunidadLinkedIn: "/LinkedInApi/ValidarCreacionOportunidadLinkedinEstado",
-  ValidarObtencionLeadLinkedinEstado : "/LinkedInApi/ValidarObtencionLeadLinkedinEstado",
-  LinkedInObtenerCuentasActivas: "/LinkedInApi/ObtenerCuentasActivas",
-  ValidarObtencionLeadLinkedinEstadoPorCuenta : "/LinkedInApi/ValidarObtencionLeadLinkedinEstadoPorCuenta",
+  ObtenerRegistroLandingPageLinkedIn: '/LinkedInApi/ObtenerReporte',
+  ObtenerRegistroPendientePageLinkedIn: '/LinkedInApi/ObtenerReportePendientes',
+  ActualizarRegistroLandingPageLinkedIn: '/LinkedInApi/Actualizar',
+  SubirOportunidadesPendientesLinkedIn:
+    '/LinkedInApi/SubirOportunidadesPendientes',
+  SubirOportunidadesPendientesSeleccionadasLinkedIn:
+    '/LinkedInApi/SubirOportunidadesPendientesSeleccionadas',
+  ValidarEstadodeSubidaOportunidadLinkedIn:
+    '/LinkedInApi/ValidarCreacionOportunidadLinkedinEstado',
+  ValidarObtencionLeadLinkedinEstado:
+    '/LinkedInApi/ValidarObtencionLeadLinkedinEstado',
+  LinkedInObtenerCuentasActivas: '/LinkedInApi/ObtenerCuentasActivas',
+  ValidarObtencionLeadLinkedinEstadoPorCuenta:
+    '/LinkedInApi/ValidarObtencionLeadLinkedinEstadoPorCuenta',
   ObtenerRegistroLandingPageLinkedInByFecha:
-    "/LinkedInApi/ObtenerReporteLeadsByFecha",
+    '/LinkedInApi/ObtenerReporteLeadsByFecha',
   //Reporte Chat Bot
-  ReporteObtenerReporteChatBot: "/ChatBot/ReporteBot",
+  ReporteObtenerReporteChatBot: '/ChatBot/ReporteBot',
 
   // ActualizarConfiguracionAgrupadaCategoriaOrigen: "/OrigenSector/ActualizarConfiguracionCategoriaOrigenAgrupado",
 
   ActualizarConfiguracionAgrupadaCategoriaOrigen:
-    "/OrigenSector/ActualizarConfiguracionCategoriaOrigenAgrupado",
+    '/OrigenSector/ActualizarConfiguracionCategoriaOrigenAgrupado',
   ObtenerBloquePorProgramaCritico:
-    "/AsignacionRegular/ObtenerBloquePorProgramaCritico",
+    '/AsignacionRegular/ObtenerBloquePorProgramaCritico',
   AsignacionRegularObtenerConfiguracionAsignacionRegular:
-    "/AsignacionRegular/ObtenerConfiguracionAsignacionRegular",
-  ActualizarAsignacionRegular: "/AsignacionRegular/ActualizarAsignacionRegular",
+    '/AsignacionRegular/ObtenerConfiguracionAsignacionRegular',
+  ActualizarAsignacionRegular: '/AsignacionRegular/ActualizarAsignacionRegular',
   ObtenerConfiguracionProgramasOtrasAreas:
-    "/AsignacionRegular/ObtenerConfiguracionProgramasOtrasAreas",
+    '/AsignacionRegular/ObtenerConfiguracionProgramasOtrasAreas',
   ObtenerComboListaProgramasGenerales:
-    "/AsignacionRegular/ObtenerComboListaProgramasGenerales",
-  ObtenerComboBusqueda: "/AsignacionRegular/ObtenerComboBusqueda",
+    '/AsignacionRegular/ObtenerComboListaProgramasGenerales',
+  ObtenerComboBusqueda: '/AsignacionRegular/ObtenerComboBusqueda',
   BuscarPorComboSeleccionadosProgramasOtrasAreas:
-    "/AsignacionRegular/BuscarPorComboSeleccionadosProgramasOtrasAreas",
+    '/AsignacionRegular/BuscarPorComboSeleccionadosProgramasOtrasAreas',
   BuscarPorComboSeleccionadosProgramasCriticos:
-    "/AsignacionRegular/BuscarPorComboSeleccionadosProgramasCriticos",
+    '/AsignacionRegular/BuscarPorComboSeleccionadosProgramasCriticos',
   ActualizarProgramasOtrasAreas:
-    "/AsignacionRegular/ActualizarProgramasOtrasAreas",
+    '/AsignacionRegular/ActualizarProgramasOtrasAreas',
   AsignacionAutomatizadaAsesor:
-    "/AsignacionRegular/AsignacionAutomatizadaAsesor",
-  AsignacionDatosWhats:
-    "/AsignacionRegular/AsignacionAutomatizadaAsesorWhats",
-  ObtenerListaAsesor: "/AsignacionRegular/ObtenerListaAsesor",
-  ObtenerComboAsesores: "/AsignacionRegular/ObtenerComboAsesores",
+    '/AsignacionRegular/AsignacionAutomatizadaAsesor',
+  AsignacionDatosWhats: '/AsignacionRegular/AsignacionAutomatizadaAsesorWhats',
+  ObtenerListaAsesor: '/AsignacionRegular/ObtenerListaAsesor',
+  ObtenerComboAsesores: '/AsignacionRegular/ObtenerComboAsesores',
   InsertarAsesorAsignacionRegular:
-    "/AsignacionRegular/InsertarAsesorAsignacionRegular",
-  EliminarAsignacionRegular: "/AsignacionRegular/EliminarAsignacionRegular",
-  ActivarAsignacionAutomatica: "/AsignacionRegular/ActivarAsignacionAutomatica",
-  ObtenerAsesorConfiguracion: "/AsignacionRegular/ObtenerAsesorConfiguracion",
+    '/AsignacionRegular/InsertarAsesorAsignacionRegular',
+  EliminarAsignacionRegular: '/AsignacionRegular/EliminarAsignacionRegular',
+  ActivarAsignacionAutomatica: '/AsignacionRegular/ActivarAsignacionAutomatica',
+  ObtenerAsesorConfiguracion: '/AsignacionRegular/ObtenerAsesorConfiguracion',
   ObtenerAsesorConfiguracionPorPais:
-    "/AsignacionRegular/ObtenerAsesorConfiguracionPorPais",
+    '/AsignacionRegular/ObtenerAsesorConfiguracionPorPais',
   InsertarConfiguracionAsignacionRegular:
-    "/AsignacionRegular/InsertarConfiguracionAsignacionRegular",
+    '/AsignacionRegular/InsertarConfiguracionAsignacionRegular',
   EliminarPaisConfiguracionAsignacionRegular:
-    "/AsignacionRegular/EliminarPaisConfiguracionAsignacionRegular",
-  InsertarOrigenSector: "/AsignacionRegular/InsertarOrigenSector",
+    '/AsignacionRegular/EliminarPaisConfiguracionAsignacionRegular',
+  InsertarOrigenSector: '/AsignacionRegular/InsertarOrigenSector',
   ActualizarConfiguracionAsignacionRegular:
-    "/AsignacionRegular/ActualizarConfiguracionAsignacionRegular",
-  ActualizarTopeOportunidad: "/AsignacionRegular/ActualizarTopeOportunidad",
-  ActualizarTopeAsignacionDiaria: "/AsignacionRegular/ActualizarTopeAsignacionDiaria",
-  ActualizarPrioridad: "/AsignacionRegular/ActualizarPrioridad",
+    '/AsignacionRegular/ActualizarConfiguracionAsignacionRegular',
+  ActualizarTopeOportunidad: '/AsignacionRegular/ActualizarTopeOportunidad',
+  ActualizarTopeAsignacionDiaria:
+    '/AsignacionRegular/ActualizarTopeAsignacionDiaria',
+  ActualizarPrioridad: '/AsignacionRegular/ActualizarPrioridad',
   EliminarOrigenSectorPorParametro:
-    "/AsignacionRegular/EliminarOrigenSectorPorParametro",
-  ObtenerCategoriaOrigen: "/AsignacionRegular/ObtenerCategoriaOrigen",
+    '/AsignacionRegular/EliminarOrigenSectorPorParametro',
+  ObtenerCategoriaOrigen: '/AsignacionRegular/ObtenerCategoriaOrigen',
   ObtenerCategoriaOrigenPorSector:
-    "/AsignacionRegular/ObtenerCategoriaOrigenPorSector",
+    '/AsignacionRegular/ObtenerCategoriaOrigenPorSector',
   InsertarCategoriaOrigenPorSector:
-    "/AsignacionRegular/InsertarCategoriaOrigenPorSector",
-  AgruparCategoriaOrigen: "/AsignacionRegular/AgruparCategoriaOrigen",
+    '/AsignacionRegular/InsertarCategoriaOrigenPorSector',
+  AgruparCategoriaOrigen: '/AsignacionRegular/AgruparCategoriaOrigen',
   EliminarConfiguracionCategoriaOrigen:
-    "/AsignacionRegular/EliminarConfiguracionCategoriaOrigen",
+    '/AsignacionRegular/EliminarConfiguracionCategoriaOrigen',
   //Asignacion  Manual Oportunidad
   AsignacionManualObtenerOportunidades:
-    "/AsignacionManual/ObtenerOportunidades",
-  AsignacionManualObtenerFiltros: "/AsignacionManual/ObtenerFiltros",
-  AsignarManualmenteAsesorAsignarAsesor: "/AsignacionManual/AsignarAsesor",
+    '/AsignacionManual/ObtenerOportunidades',
+  AsignacionManualObtenerFiltros: '/AsignacionManual/ObtenerFiltros',
+  AsignarManualmenteAsesorAsignarAsesor: '/AsignacionManual/AsignarAsesor',
   AsignarManualmenteCerrarOportunidadOD:
-    "/AsignacionManual/CerrarOportunidadOD",
+    '/AsignacionManual/CerrarOportunidadOD',
   AsignarManualmenteCerrarOportunidadOM:
-    "/AsignacionManual/CerrarOportunidadOM",
+    '/AsignacionManual/CerrarOportunidadOM',
   AsignarManualmenteCerrarOportunidadRN5:
-    "/AsignacionManual/CerrarOportunidadRN5",
-  AsignarManualmenteCerrarOportunidadE: "/AsignacionManual/CerrarOportunidadE",
+    '/AsignacionManual/CerrarOportunidadRN5',
+  AsignarManualmenteCerrarOportunidadE: '/AsignacionManual/CerrarOportunidadE',
   AsignarManualmenteCerrarOportunidadBIC:
-    "/AsignacionManual/CerrarOportunidadBIC",
+    '/AsignacionManual/CerrarOportunidadBIC',
   AsignarManualmenteCerrarOportunidadBRM1:
-    "/AsignacionManual/CerrarOportunidadBRM1",
+    '/AsignacionManual/CerrarOportunidadBRM1',
   AsignarManualmenteCerrarOportunidadNS:
-    "/AsignacionManual/CerrarOportunidadNS",
+    '/AsignacionManual/CerrarOportunidadNS',
 
   //Asignacion  Manual Oportunidad
 
-  RevertirCambioFaceObtenerOportunidades: "/RevertirFase/ObtenerOportunidades/",
-  RevertirCambioFaceRevertirOportunidad: "/RevertirFase/RevertirOportunidad",
-  RevertiCambioFaseDetalle: "/RevertirFase/ObtenerDetalleOportunidad",
+  RevertirCambioFaceObtenerOportunidades: '/RevertirFase/ObtenerOportunidades/',
+  RevertirCambioFaceRevertirOportunidad: '/RevertirFase/RevertirOportunidad',
+  RevertiCambioFaseDetalle: '/RevertirFase/ObtenerDetalleOportunidad',
 
   //Campania  Facebook
   AnuncioFacebookMetricaObtenerCombosAnuncioFacebookMetrica:
-    "/ReporteFacebookAnuncio/ObtenerCombosAnuncioFacebookMetrica",
+    '/ReporteFacebookAnuncio/ObtenerCombosAnuncioFacebookMetrica',
   AnuncioFacebookMetricaObtenerReporteAnuncioFacebookMetrica:
-    "/ReporteFacebookAnuncio/ObtenerReporteAnuncioFacebookMetrica",
+    '/ReporteFacebookAnuncio/ObtenerReporteAnuncioFacebookMetrica',
   AnuncioFacebookMetricaActulizarAnuncioFacebookMetrica:
-    "/ReporteFacebookAnuncio/ActualizarMetricaFacebookAnuncioPorIntervaloFecha",
+    '/ReporteFacebookAnuncio/ActualizarMetricaFacebookAnuncioPorIntervaloFecha',
 
   //Reporte Progrma as Criticos
   GenerarReporteAsignacionObtenerReporteGenerarReporteAsignacion:
-    "/ReporteProgramasCriticos/GenerarReporteAsignacion",
+    '/ReporteProgramasCriticos/GenerarReporteAsignacion',
   ObtenerComboUltimoPeriodo:
-    "/ReporteProgramasCriticos/ObtenerComboUltimoPeriodo",
-  ObtenerComboGrupos: "/ReporteProgramasCriticos/ObtenerComboGrupos",
-  ObtenerComboEstado: "/ReporteProgramasCriticos/ObtenerComboEstado",
-  GenerarReporte: "/ReporteProgramasCriticos/GenerarReporte",
+    '/ReporteProgramasCriticos/ObtenerComboUltimoPeriodo',
+  ObtenerComboGrupos: '/ReporteProgramasCriticos/ObtenerComboGrupos',
+  ObtenerComboEstado: '/ReporteProgramasCriticos/ObtenerComboEstado',
+  GenerarReporte: '/ReporteProgramasCriticos/GenerarReporte',
 
   //Filtro Segmento
 
   ObtenerFiltroSegmentoTipoContacto:
-    "/FiltroSegmentoTipoContacto/ObtenerTodoFiltro",
+    '/FiltroSegmentoTipoContacto/ObtenerTodoFiltro',
   ObtenerFIltroSegmentoPanel:
-    "/FiltroSegmentoSendingBlue/ObtenerFiltroSegmentoPanel",
-  ObtenerEstadoMatricula: "/EstadoMatricula/ObtenerCombo",
-  ObtenerModalidadCurso: "/ModalidadCurso/ObtenerCombo",
-  ObtenerComboFiltroSegmento: "/FiltroSegmento/ObtenerCombo",
-  ObtenerAreaCapacitacion: "/AreaCapacitacion/ObtenerCombo",
-  AreaCapacitacionObtener: "/AreaCapacitacion/Obtener",
-  ObtenerSubAreaCapacitacion: "/FiltroSegmento/ObtenerSubAreas",
-  ObtenerProgramaGeneral: "/FiltroSegmento/ObtenerProgramaSubAreas",
-  ObtenerProgramaEspecifico: "/FiltroSegmento/ObtenerProgramaEspecifico",
-  ObtenerOperadorCombo: "/OperadorComparacion/ObtenerComboParaFilroSegmento",
+    '/FiltroSegmentoSendingBlue/ObtenerFiltroSegmentoPanel',
+  ObtenerEstadoMatricula: '/EstadoMatricula/ObtenerCombo',
+  ObtenerModalidadCurso: '/ModalidadCurso/ObtenerCombo',
+  ObtenerComboFiltroSegmento: '/FiltroSegmento/ObtenerCombo',
+  ObtenerAreaCapacitacion: '/AreaCapacitacion/ObtenerCombo',
+  AreaCapacitacionObtener: '/AreaCapacitacion/Obtener',
+  ObtenerSubAreaCapacitacion: '/FiltroSegmento/ObtenerSubAreas',
+  ObtenerProgramaGeneral: '/FiltroSegmento/ObtenerProgramaSubAreas',
+  ObtenerProgramaEspecifico: '/FiltroSegmento/ObtenerProgramaEspecifico',
+  ObtenerOperadorCombo: '/OperadorComparacion/ObtenerComboParaFilroSegmento',
   ObtenerFrecuenciaTiempo:
-    "/FiltroSegmento/ObtenerFrecuenciaParaFiltroSegmento",
-  ObtenerDocumentos: "/FiltroSegmento/ObtenerCriterioPorModalidad",
-  ObtenerActividadCabecera: "/FiltroSegmento/ObtenerActividadCabecera",
-  ObtenerOcurrencia: "/Ocurrencia/ObtenerCombo",
-  OntenerTarifario: "/FiltroSegmento/ObtenerTarifario",
-  ObtenerContactos: "/FiltroSegmentoSendingBlue/ObtenerResultadoFiltroSegmento",
+    '/FiltroSegmento/ObtenerFrecuenciaParaFiltroSegmento',
+  ObtenerDocumentos: '/FiltroSegmento/ObtenerCriterioPorModalidad',
+  ObtenerActividadCabecera: '/FiltroSegmento/ObtenerActividadCabecera',
+  ObtenerOcurrencia: '/Ocurrencia/ObtenerCombo',
+  OntenerTarifario: '/FiltroSegmento/ObtenerTarifario',
+  ObtenerContactos: '/FiltroSegmentoSendingBlue/ObtenerResultadoFiltroSegmento',
   ObtenerHistorialEjecutado:
-    "/LogFiltroSegmentoEjecutado/ObtenerPorIdFiltroSegmento",
+    '/LogFiltroSegmentoEjecutado/ObtenerPorIdFiltroSegmento',
   ObtenerHistorialAudiencia:
-    "/FiltroSegmentoRemarketing/ObtenerHistorialAudiencia",
+    '/FiltroSegmentoRemarketing/ObtenerHistorialAudiencia',
   ObtenerComboFacebookAudiencia:
-    "/FiltroSegmentoRemarketing/ObtenerComboFacebookAudiencia",
+    '/FiltroSegmentoRemarketing/ObtenerComboFacebookAudiencia',
   ObtenerComboFacebookCuentaPublicitaria:
-    "/FiltroSegmentoRemarketing/ObtenerComboFacebookCuentaPublicitaria",
-  ObtenerProbabilidad: "/ProbabilidadRegistroPw/ObtenerCombo",
+    '/FiltroSegmentoRemarketing/ObtenerComboFacebookCuentaPublicitaria',
+  ObtenerProbabilidad: '/ProbabilidadRegistroPw/ObtenerCombo',
   ObtenerCategoriaOrigenPorTipo:
-    "/FiltroSegmento/ObtenerCategoriaOrigenPorTipo",
-  ObtenerFormulario: "/FiltroSegmento/ObtenerListaTipoInteraccion",
+    '/FiltroSegmento/ObtenerCategoriaOrigenPorTipo',
+  ObtenerFormulario: '/FiltroSegmento/ObtenerListaTipoInteraccion',
   ObtenerTipoInteraccion:
-    "/FiltroSegmento/ObtenerPorTipoInteraccionGeneralFormulario ",
-  FiltroSegmentoInsertar: "/FiltroSegmento/InsertarFiltro",
-  FiltroSegmentoObtenerPorId: "/FiltroSegmento/ObtenerDetalleFiltroSegmento",
-  FiltroSegmentoEjecutar: "/FiltroSegmento/EjecutarFiltro",
-  FiltroSegmentoEliminar: "/FiltroSegmento/EliminarFiltro",
-  FiltroSegmentoDuplicar: "/FiltroSegmento/Duplicar",
-  FilltroSegmentoActualizar: "/FiltroSegmento/ActualizarFiltro",
-  FitroSegmentoInsertarAudiencia: "/FiltroSegmento/InsertarAudiencia",
-  FitroSegmentoActualizarAudiencia: "/FiltroSegmento/ActualizarAudiencia",
-  ObtenerComboFase: "/FaseOportunidad/ObtenerComboFiltroSegmento",
-  ObtenerCentroCostoAutocomplete: "/FiltroSegmento/ObtenerCentroCostoAutocomplete",
-  CrearOportunidadPorFiltroSegmento: "/FiltroSegmento/CrearOportunidadPorFiltroSegmento",
-  ObtenerCombosRemarketing: "/FiltroSegmentoRemarketing/ObtenerCombosRemarketing",
-  ObtenerListaPublico: "/FiltroSegmentoRemarketing/ObtenerListaPublico",
+    '/FiltroSegmento/ObtenerPorTipoInteraccionGeneralFormulario ',
+  FiltroSegmentoInsertar: '/FiltroSegmento/InsertarFiltro',
+  FiltroSegmentoObtenerPorId: '/FiltroSegmento/ObtenerDetalleFiltroSegmento',
+  FiltroSegmentoEjecutar: '/FiltroSegmento/EjecutarFiltro',
+  FiltroSegmentoEliminar: '/FiltroSegmento/EliminarFiltro',
+  FiltroSegmentoDuplicar: '/FiltroSegmento/Duplicar',
+  FilltroSegmentoActualizar: '/FiltroSegmento/ActualizarFiltro',
+  FitroSegmentoInsertarAudiencia: '/FiltroSegmento/InsertarAudiencia',
+  FitroSegmentoActualizarAudiencia: '/FiltroSegmento/ActualizarAudiencia',
+  ObtenerComboFase: '/FaseOportunidad/ObtenerComboFiltroSegmento',
+  ObtenerCentroCostoAutocomplete:
+    '/FiltroSegmento/ObtenerCentroCostoAutocomplete',
+  CrearOportunidadPorFiltroSegmento:
+    '/FiltroSegmento/CrearOportunidadPorFiltroSegmento',
+  ObtenerCombosRemarketing:
+    '/FiltroSegmentoRemarketing/ObtenerCombosRemarketing',
+  ObtenerListaPublico: '/FiltroSegmentoRemarketing/ObtenerListaPublico',
   //VerificacionManualDeDatos
-  VerificacionManualDatosInsertar: "/VerificacionManualDatos/Insertar",
+  VerificacionManualDatosInsertar: '/VerificacionManualDatos/Insertar',
   VerificacionManualDatosInsertarLista:
-    "/VerificacionManualDatos/InsertarLista",
-  VerificacionManualDatosActualizar: "/VerificacionManualDatos/Actualizar",
+    '/VerificacionManualDatos/InsertarLista',
+  VerificacionManualDatosActualizar: '/VerificacionManualDatos/Actualizar',
   VerificacionManualDatosActualizarLista:
-    "/VerificacionManualDatos/ActualizarLista",
-  VerificacionManualDatosEliminar: "/VerificacionManualDatos/Eliminar",
+    '/VerificacionManualDatos/ActualizarLista',
+  VerificacionManualDatosEliminar: '/VerificacionManualDatos/Eliminar',
   VerificacionManualDatosElimarninarListado:
-    "/VerificacionManualDatos/EliminarListado",
+    '/VerificacionManualDatos/EliminarListado',
   VerificacionManualDatosObtenerFiltros:
-    "/VerificacionManualDatos/ObtenerFiltroCombos",
+    '/VerificacionManualDatos/ObtenerFiltroCombos',
   VerificacionManualDatosObtenerReporteDatos:
-    "/VerificacionManualDatos/ObtenerReporteVerificacionManualDatos",
+    '/VerificacionManualDatos/ObtenerReporteVerificacionManualDatos',
 
   //REPORTEADWORDS GOOGLE ADS API
   reporteAdWordsObtenerPaises:
-    "/ReporteAdwordsApiVolumenBusqueda/obtener/codigo/google/pais",
+    '/ReporteAdwordsApiVolumenBusqueda/obtener/codigo/google/pais',
   reporteAdWordsObtenerReporte:
-    "/ReporteAdwordsApiVolumenBusqueda/GenerarReporte",
+    '/ReporteAdwordsApiVolumenBusqueda/GenerarReporte',
   reporteAdWordsActualizarReporte:
-    "/ReporteAdwordsApiVolumenBusqueda/ActualizarBusquedaPalabras",
+    '/ReporteAdwordsApiVolumenBusqueda/ActualizarBusquedaPalabras',
 
   //PlantillasIntegra
 
-  ObtenerPlantillaPanel: "/Plantilla/ObtenerPlantillaPanel",
-  ObtenerPlantillaBase: "/PlantillaBase/ObtenerCombo",
-  ObtenerPlantillaClaveValor: "/Plantilla/ObtenerPlantillaClaveValorPorId",
-  InsertarPlantilla: "/Plantilla/InsertarPlantilla",
-  ActualizarPlantilla: "/Plantilla/Actualizar",
-  EliminarPlantilla: "/Plantilla/Eliminar",
-  ObtenerPlantillaPorId: "/Plantilla/ObtenerPorId",
+  ObtenerPlantillaPanel: '/Plantilla/ObtenerPlantillaPanel',
+  ObtenerPlantillaBase: '/PlantillaBase/ObtenerCombo',
+  ObtenerPlantillaClaveValor: '/Plantilla/ObtenerPlantillaClaveValorPorId',
+  InsertarPlantilla: '/Plantilla/InsertarPlantilla',
+  ActualizarPlantilla: '/Plantilla/Actualizar',
+  EliminarPlantilla: '/Plantilla/Eliminar',
+  ObtenerPlantillaPorId: '/Plantilla/ObtenerPorId',
   ObtenerPlantillaClavePorIdPlantilla:
-    "/PlantillaClaveValor/ObtenerPorIdPlantillaTodos",
+    '/PlantillaClaveValor/ObtenerPorIdPlantillaTodos',
   ObtenerPlantillaAsociacionModuloSistemaPorIdPlantilla:
-    "/PlantillaClaveValor/ObtenerPlantillaAsociacionModuloSistemaPorIdPlantilla",
-  ObtenerModuloSistemaV5Combo: "/Plantilla/ObtenerModulo",
+    '/PlantillaClaveValor/ObtenerPlantillaAsociacionModuloSistemaPorIdPlantilla',
+  ObtenerModuloSistemaV5Combo: '/Plantilla/ObtenerModulo',
 
   //ConjuntoLista
 
-  ObtenerConjuntoLista: "/ConjuntoLista/Obtener",
-  ObtenerConjuntoListaPorId: "/ConjuntoLista/ObtenerPorId",
-  ObtenerListaSegmento: "/ConjuntoLista/ObtenerDetalle",
-  ObtenerResultadosConjuntoLista: "/ConjuntoLista/ObtenerResultado",
-  EliminarConjuntoLista: "/ConjuntoLista/Eliminar",
-  DuplicarConjuntoLista: "/ConjuntoLista/Duplicar",
-  InsertarConjuntoLista: "/ConjuntoLista/Insertar",
-  ActualizarConjuntoLista: "/ConjuntoLista/Actualizar",
-  SubirListaCOnjuntoLista: "/ConjuntoLista/SubirLista",
-  ObtenerComboConjuntoLista: "/ConjuntoLista/ObtenerCombo",
-  GenerarUrlFormulariosLink: "/ConjuntoLista/GenerarUrlFormulariosLink",
+  ObtenerConjuntoLista: '/ConjuntoLista/Obtener',
+  ObtenerConjuntoListaPorId: '/ConjuntoLista/ObtenerPorId',
+  ObtenerListaSegmento: '/ConjuntoLista/ObtenerDetalle',
+  ObtenerResultadosConjuntoLista: '/ConjuntoLista/ObtenerResultado',
+  EliminarConjuntoLista: '/ConjuntoLista/Eliminar',
+  DuplicarConjuntoLista: '/ConjuntoLista/Duplicar',
+  InsertarConjuntoLista: '/ConjuntoLista/Insertar',
+  ActualizarConjuntoLista: '/ConjuntoLista/Actualizar',
+  SubirListaCOnjuntoLista: '/ConjuntoLista/SubirLista',
+  ObtenerComboConjuntoLista: '/ConjuntoLista/ObtenerCombo',
+  GenerarUrlFormulariosLink: '/ConjuntoLista/GenerarUrlFormulariosLink',
   //Etiquetas
-  ObtenerCategorias: "/Etiqueta/ObtenerCategoriasPorIdPadre",
+  ObtenerCategorias: '/Etiqueta/ObtenerCategoriasPorIdPadre',
 
   //ActividadEnviosMasivos
   ObtenerActividadCabeceraEnviosMasivos:
-    "/ActividadCabecera/ObtenerTodoActividadAutomatica",
+    '/ActividadCabecera/ObtenerTodoActividadAutomatica',
   EliminarActividadCabeceraReprogramacion:
-    "/ActividadCabecera/EliminarActividadCabecera",
+    '/ActividadCabecera/EliminarActividadCabecera',
   ObtenerActividadesBaseMasivo:
-    "/ActividadCabecera/ObtenerActividadesBaseMasivo",
+    '/ActividadCabecera/ObtenerActividadesBaseMasivo',
   ObtenerListaFrecuenciaActividad:
-    "/ActividadCabecera/ObtenerListaFrecuenciaActividad",
-  ObtenerPlantillasSpeech: "/Plantilla/ObtenerPlantillasSpeech",
+    '/ActividadCabecera/ObtenerListaFrecuenciaActividad',
+  ObtenerPlantillasSpeech: '/Plantilla/ObtenerPlantillasSpeech',
   ObtenerAllPlantillaSpeechDespedida:
-    "/Plantilla/ObtenerAllPlantillaSpeechDespedida",
-  InsertarActividadCabecera: "/ActividadCabecera/InsertarActividadCabecera",
-  ActualizarActividadCabecera: "/ActividadCabecera/ActualizarActividadCabecera",
-  ObteneActividadCabecerarPorId: "/ActividadCabecera/ObtenerActividadPorId",
-  ObtenerActividadDiaPorID: "/ActividadCabecera/ObtenerActividadDiaPorID",
-  ReanudarEnvioAutomatico: "/WhatsAppEnvioAutomatico/ReanudarEnvioAutomatico",
+    '/Plantilla/ObtenerAllPlantillaSpeechDespedida',
+  InsertarActividadCabecera: '/ActividadCabecera/InsertarActividadCabecera',
+  ActualizarActividadCabecera: '/ActividadCabecera/ActualizarActividadCabecera',
+  ObteneActividadCabecerarPorId: '/ActividadCabecera/ObtenerActividadPorId',
+  ObtenerActividadDiaPorID: '/ActividadCabecera/ObtenerActividadDiaPorID',
+  ReanudarEnvioAutomatico: '/WhatsAppEnvioAutomatico/ReanudarEnvioAutomatico',
   ObtenerDatosConjuntoLista:
-    "/ActividadCabecera/ObtenerConjuntoListaMailingMasivo",
+    '/ActividadCabecera/ObtenerConjuntoListaMailingMasivo',
   InsertarConfiguracionEnvioMailing:
-    "/ActividadCabecera/InsertarConfiguracionEnvioMailing",
+    '/ActividadCabecera/InsertarConfiguracionEnvioMailing',
 
   //Reporte Whatsapp
   ObtenerReporteWHatsapp:
-    "/ReporteMensajesWhatsApp/GenerarReporteMensajesMasivosPorArea",
+    '/ReporteMensajesWhatsApp/GenerarReporteMensajesMasivosPorArea',
   ObtenerDesgloceReporteWHatsapp:
-    "/ReporteMensajesWhatsApp/GenerarReporteMensajesMasivosConjuntoLista",
+    '/ReporteMensajesWhatsApp/GenerarReporteMensajesMasivosConjuntoLista',
 
   //Whatsapp Masivo
-  EnvioPlantillasFacebook: "/CampaniaGeneralWhatsApp/WhatsAppPlantillaFacebook",
+  EnvioPlantillasFacebook: '/CampaniaGeneralWhatsApp/WhatsAppPlantillaFacebook',
   ObtenerWhatsappFacebookMasivo:
-    "/WhatsAppMensajeEnviado/ObtenerChatWhatsAppFacebookMarketing",
+    '/WhatsAppMensajeEnviado/ObtenerChatWhatsAppFacebookMarketing',
   ObtenerChats:
-    "/WhatsAppMensajeEnviado/ObtenerChatWhatsAppMarketingPorCelular",
+    '/WhatsAppMensajeEnviado/ObtenerChatWhatsAppMarketingPorCelular',
   ObtenerChatsMasivo:
-    "/WhatsAppMensajeEnviado/ObtenerChatWhatsAppMarketingMasivoPorCelular",
+    '/WhatsAppMensajeEnviado/ObtenerChatWhatsAppMarketingMasivoPorCelular',
   ObtenerDatosAlumnoWhatsApp:
-    "/WhatsAppMensajeEnviado/ObtenerDatosAlumnoWhatsApp",
+    '/WhatsAppMensajeEnviado/ObtenerDatosAlumnoWhatsApp',
   ObtenerChatWhatsAppMarketingPorCelular:
-    "/WhatsAppMensajeEnviado/ObtenerChatWhatsAppMarketingPorCelular",
-  Combos: "/WhatsAppMensajeEnviado/ObtenerCombosAtributosAlumno",
-  DesuscribirChat: "/WhatsAppMensajeEnviado/Desuscribir",
-  ArchivarChat: "/WhatsAppMensajeEnviado/ArchivarChat",
-  DesArchivarChat: "/WhatsAppMensajeEnviado/DesArchivarChat",
-  SuscribirAlumno: "/WhatsAppMensajeEnviado/SuscribirAlumno",
-  ActualizarAlumnoWhatsapp: "/WhatsAppMensajeEnviado/ActualizarDatosAlumno",
-  EnvioWhats: "/WhatsAppMensajes/WhatsAppMensaje",
-  SumaOportunidadWhatsApp: "/CampaniaGeneralWhatsApp/SumaOportunidadWhatsApp",
-  RestaOportunidadWhatsApp: "/CampaniaGeneralWhatsApp/RestaOportunidadWhatsApp",
-  SumaChatValidoWhatsApp: "/CampaniaGeneralWhatsApp/SumaChatValidoWhatsApp",
-  RestaChatValidoWhatsApp: "/CampaniaGeneralWhatsApp/RestaChatValidoWhatsApp",
-  SumaChatInValidoWhatsApp: "/CampaniaGeneralWhatsApp/SumaChatInValidoWhatsApp",
+    '/WhatsAppMensajeEnviado/ObtenerChatWhatsAppMarketingPorCelular',
+  Combos: '/WhatsAppMensajeEnviado/ObtenerCombosAtributosAlumno',
+  DesuscribirChat: '/WhatsAppMensajeEnviado/Desuscribir',
+  ArchivarChat: '/WhatsAppMensajeEnviado/ArchivarChat',
+  DesArchivarChat: '/WhatsAppMensajeEnviado/DesArchivarChat',
+  SuscribirAlumno: '/WhatsAppMensajeEnviado/SuscribirAlumno',
+  ActualizarAlumnoWhatsapp: '/WhatsAppMensajeEnviado/ActualizarDatosAlumno',
+  EnvioWhats: '/WhatsAppMensajes/WhatsAppMensaje',
+  SumaOportunidadWhatsApp: '/CampaniaGeneralWhatsApp/SumaOportunidadWhatsApp',
+  RestaOportunidadWhatsApp: '/CampaniaGeneralWhatsApp/RestaOportunidadWhatsApp',
+  SumaChatValidoWhatsApp: '/CampaniaGeneralWhatsApp/SumaChatValidoWhatsApp',
+  RestaChatValidoWhatsApp: '/CampaniaGeneralWhatsApp/RestaChatValidoWhatsApp',
+  SumaChatInValidoWhatsApp: '/CampaniaGeneralWhatsApp/SumaChatInValidoWhatsApp',
   RestaChatInValidoWhatsApp:
-    "/CampaniaGeneralWhatsApp/RestaChatInValidoWhatsApp",
-  CombosPlantilla: "/CampaniaGeneralWhatsApp/ObtenerComboRespuestaWhatsAppp",
-  EnvioPlantillas: "/CampaniaGeneralWhatsApp/WhatsAppPlantilla",
-  EnvioPlantillasPorLista: "/CampaniaGeneralWhatsApp/ListaWhatsAppPlantilla",
-  EnvioMensaje: "/CampaniaGeneralWhatsApp/WhatsAppMensajeTexto",
-  EnvioMensajeFacebook: "/CampaniaGeneralWhatsApp/WhatsAppMensajeTextoFacebook",
-  CrearOportunidadWhatsapp: "/WhatsAppMensajeEnviado/CrearOportunidadWhatsapp",
-  ObtenerProgramaPorOportunidadWhatsapp: "/WhatsAppMensajeEnviado/ObtenerProgramaPorOportunidadWhatsapp",
-  ValidarProbabilidadOportunidades: "/WhatsAppMensajeEnviado/ValidarProbabilidadOportunidades",
-  AsignarCentroCostoPorPragramaAsesor: "/AsignacionManual/AsignarAsesor",
-  CerrarOportunidadRN5: "/AsignacionManual/CerrarOportunidadRN5",
-  AsignarAsesorFechaProgramacion: "/AsignacionManual/AsignarAsesorFechaProgramacion",
-  ObtenerAsesor: "/WhatsAppMensajeEnviado/ObtenerPersonalOportunidad",
-  ValidarProbabilidadOportunidadesRecalculo: "/WhatsAppMensajeEnviado/ValidarProbabilidadOportunidadesRecalculo",
-  ObtenerIdAsesorActual: "/WhatsAppMensajeEnviado/ObtenerIdAsesorActual",
-  ObtenerModeloPredictivoPorAlumnoYPrograma: "/WhatsAppMensajeEnviado/ObtenerModeloPredictivoPorAlumnoYPrograma",
-  CapturarRegistrosModeloIA: "/WhatsAppMensajeEnviado/CapturarRegistrosModeloIA",
-  DesactivarInteraccionAutomaticaWhatsapp: "/WhatsAppMensajeEnviado/DesactivarInteraccionAutomaticaWhatsapp",
-  ValidarGuardadoDatosInteraccionAutomatica: "/WhatsAppMensajeEnviado/ValidarGuardadoDatosInteraccionAutomatica",
-
-
+    '/CampaniaGeneralWhatsApp/RestaChatInValidoWhatsApp',
+  CombosPlantilla: '/CampaniaGeneralWhatsApp/ObtenerComboRespuestaWhatsAppp',
+  EnvioPlantillas: '/CampaniaGeneralWhatsApp/WhatsAppPlantilla',
+  EnvioPlantillasPorLista: '/CampaniaGeneralWhatsApp/ListaWhatsAppPlantilla',
+  EnvioMensaje: '/CampaniaGeneralWhatsApp/WhatsAppMensajeTexto',
+  EnvioMensajeFacebook: '/CampaniaGeneralWhatsApp/WhatsAppMensajeTextoFacebook',
+  CrearOportunidadWhatsapp: '/WhatsAppMensajeEnviado/CrearOportunidadWhatsapp',
+  ObtenerProgramaPorOportunidadWhatsapp:
+    '/WhatsAppMensajeEnviado/ObtenerProgramaPorOportunidadWhatsapp',
+  ValidarProbabilidadOportunidades:
+    '/WhatsAppMensajeEnviado/ValidarProbabilidadOportunidades',
+  AsignarCentroCostoPorPragramaAsesor: '/AsignacionManual/AsignarAsesor',
+  CerrarOportunidadRN5: '/AsignacionManual/CerrarOportunidadRN5',
+  AsignarAsesorFechaProgramacion:
+    '/AsignacionManual/AsignarAsesorFechaProgramacion',
+  ObtenerAsesor: '/WhatsAppMensajeEnviado/ObtenerPersonalOportunidad',
+  ValidarProbabilidadOportunidadesRecalculo:
+    '/WhatsAppMensajeEnviado/ValidarProbabilidadOportunidadesRecalculo',
+  ObtenerIdAsesorActual: '/WhatsAppMensajeEnviado/ObtenerIdAsesorActual',
+  ObtenerModeloPredictivoPorAlumnoYPrograma:
+    '/WhatsAppMensajeEnviado/ObtenerModeloPredictivoPorAlumnoYPrograma',
+  CapturarRegistrosModeloIA:
+    '/WhatsAppMensajeEnviado/CapturarRegistrosModeloIA',
+  DesactivarInteraccionAutomaticaWhatsapp:
+    '/WhatsAppMensajeEnviado/DesactivarInteraccionAutomaticaWhatsapp',
+  ValidarGuardadoDatosInteraccionAutomatica:
+    '/WhatsAppMensajeEnviado/ValidarGuardadoDatosInteraccionAutomatica',
 
   //SeguimientoOportunidadesMkt
   GenerarReporteFechaCreacionRegistro:
-    "/ReporteSeguimientoOportunidades/GenerarReporteFechaCreacionRegistro",
+    '/ReporteSeguimientoOportunidades/GenerarReporteFechaCreacionRegistro',
   //PlantillasSendinblue
 
-  ObtenerTIpoPlantillas: "/PlantillaSendinblueBase/ObtenerComboPlantillas",
-  ObtenerPlantilla: "/PlantillaSendinblueBase/ObtenerPlantilla",
+  ObtenerTIpoPlantillas: '/PlantillaSendinblueBase/ObtenerComboPlantillas',
+  ObtenerPlantilla: '/PlantillaSendinblueBase/ObtenerPlantilla',
   ObtenerComboPlantillaBase:
-    "/PlantillaSendinblueBase/ObtenerComboPlantillasTodo",
-  ObtenerComboPlantillasTodo: "/PlantillaSendinblue/ObtenerTodo",
+    '/PlantillaSendinblueBase/ObtenerComboPlantillasTodo',
+  ObtenerComboPlantillasTodo: '/PlantillaSendinblue/ObtenerTodo',
   ObtenerEtiquetasPorPlantilla:
-    "/PlantillaSendinblueEtiquetaPlantilla/ObtenerEtiquetasPorPlantilla",
-  InsertarImagen: "/PlantillaSendinblueImagen/InsertarImagen",
-  EliminarImagen: "/PlantillaSendinblueImagen/EliminarImagen",
+    '/PlantillaSendinblueEtiquetaPlantilla/ObtenerEtiquetasPorPlantilla',
+  InsertarImagen: '/PlantillaSendinblueImagen/InsertarImagen',
+  EliminarImagen: '/PlantillaSendinblueImagen/EliminarImagen',
   ObtenerImagenesPlantilla:
-    "/PlantillaSendinblueImagen/ObtenerImagenesPlantilla",
-  InsertarPlantillaDatos: "/PlantillaSendinblue/AgregarPlantillaDatos",
-  ActualizarPlantillaDatos: "/PlantillaSendinblue/ActualizarPlantillaDatos",
-  ObtenerPlantillaSendinbluePorId: "/PlantillaSendinblue/ObtenerPlantillaPorId",
+    '/PlantillaSendinblueImagen/ObtenerImagenesPlantilla',
+  InsertarPlantillaDatos: '/PlantillaSendinblue/AgregarPlantillaDatos',
+  ActualizarPlantillaDatos: '/PlantillaSendinblue/ActualizarPlantillaDatos',
+  ObtenerPlantillaSendinbluePorId: '/PlantillaSendinblue/ObtenerPlantillaPorId',
   ObtenerDatosPlantilllaPorId:
-    "/PlantillaSendinblueDato/ObtenerDatosPlantilllaPorId",
+    '/PlantillaSendinblueDato/ObtenerDatosPlantilllaPorId',
   ComboCentroCosto:
-    "/CampaniaGeneralWhatsapp/ObtenerComboCentroCostoCampaniasSendinBlue",
+    '/CampaniaGeneralWhatsapp/ObtenerComboCentroCostoCampaniasSendinBlue',
 
   //Adowrds
 
-  ObtenerTodoCampaniaAdwords: "/Adwords/ObtenerTodoCampaniaAdwords",
-  ObtenerCampaniaAdwords: "/Adwords/ObtenerCampaniaAdwords",
-  InsertarCampaniaAdwords: "/Adwords/InsertarCampaniaAdwords",
-  ActualizarCampaniaAdwords: "/Adwords/ActualizarCampaniaAdwords",
-  EliminarCampaniaAdwords: "/Adwords/EliminarCampaniaAdwords",
+  ObtenerTodoCampaniaAdwords: '/Adwords/ObtenerTodoCampaniaAdwords',
+  ObtenerCampaniaAdwords: '/Adwords/ObtenerCampaniaAdwords',
+  InsertarCampaniaAdwords: '/Adwords/InsertarCampaniaAdwords',
+  ActualizarCampaniaAdwords: '/Adwords/ActualizarCampaniaAdwords',
+  EliminarCampaniaAdwords: '/Adwords/EliminarCampaniaAdwords',
 
   //WhatsAppUsuario General
-  InsertarWhatsAppUsuario: "/WhatsAppUsuario/Insertar",
-  ActualizarWhatsAppUsuario: "/WhatsAppUsuario/Actualizar",
-  EliminarWhatsAppUsuario: "/WhatsAppUsuario/Eliminar",
-  WhatsAppUsuarioObtenerListaPersonal: "/WhatsAppUsuario/ObtenerListaPersonal",
+  InsertarWhatsAppUsuario: '/WhatsAppUsuario/Insertar',
+  ActualizarWhatsAppUsuario: '/WhatsAppUsuario/Actualizar',
+  EliminarWhatsAppUsuario: '/WhatsAppUsuario/Eliminar',
+  WhatsAppUsuarioObtenerListaPersonal: '/WhatsAppUsuario/ObtenerListaPersonal',
   WhatsAppUsuarioObtenerCredencialesUsuarios:
-    "/WhatsAppUsuario/ObtenerCredencialesUsuarios",
+    '/WhatsAppUsuario/ObtenerCredencialesUsuarios',
 
   //WhatsAppUsuario Comercial
-  InsertarWhatsAppUsuarioCom: "/WhatsAppConfiguracionApi/Insertar",
-  ActualizarWhatsAppUsuarioCom: "/WhatsAppConfiguracionApi/Actualizar",
-  EliminarWhatsAppUsuarioCom: "/WhatsAppConfiguracionApi/Eliminar",
+  InsertarWhatsAppUsuarioCom: '/WhatsAppConfiguracionApi/Insertar',
+  ActualizarWhatsAppUsuarioCom: '/WhatsAppConfiguracionApi/Actualizar',
+  EliminarWhatsAppUsuarioCom: '/WhatsAppConfiguracionApi/Eliminar',
   WhatsAppUsuarioObtenerCredencialesUsuariosCom:
-    "/WhatsAppConfiguracionApi/ObtenerCredencialesUsuarios",
+    '/WhatsAppConfiguracionApi/ObtenerCredencialesUsuarios',
 
-  ObtenerListaFormularioProgresivo: "/FormularioProgresivo/ObtenerRegistros",
-  ObtenerListaFormulariosIniciales: "/FormularioProgresivo/ObtenerFormulariosIniciales",
-  ObtenerListaFormulariosInicialesSinFormularioRespuesta: "/FormularioProgresivo/ObtenerFormulariosInicialesSinFormularioRespuesta",
-  ObtenerConfiguracionAccionBoton: "/FormularioProgresivo/ObtenerConfiguracionAccionBoton",
-  InsertarFormularioProgresivo: "/FormularioProgresivo/Insertar",
-  ActualizarFormularioProgresivo: "/FormularioProgresivo/Actualizar",
-  ActualizarActivadoFormularioProgresivo: "/FormularioProgresivo/ActualizarActivado",
-  EliminarFormularioProgresivo: "/FormularioProgresivo/Eliminar",
+  ObtenerListaFormularioProgresivo: '/FormularioProgresivo/ObtenerRegistros',
+  ObtenerListaFormulariosIniciales:
+    '/FormularioProgresivo/ObtenerFormulariosIniciales',
+  ObtenerListaFormulariosInicialesSinFormularioRespuesta:
+    '/FormularioProgresivo/ObtenerFormulariosInicialesSinFormularioRespuesta',
+  ObtenerConfiguracionAccionBoton:
+    '/FormularioProgresivo/ObtenerConfiguracionAccionBoton',
+  InsertarFormularioProgresivo: '/FormularioProgresivo/Insertar',
+  ActualizarFormularioProgresivo: '/FormularioProgresivo/Actualizar',
+  ActualizarActivadoFormularioProgresivo:
+    '/FormularioProgresivo/ActualizarActivado',
+  EliminarFormularioProgresivo: '/FormularioProgresivo/Eliminar',
 
-  ObtenerConfiguracionBotonPorIdFormularioProgresivo: "/FormularioProgresivoConfiguracionBoton/ObtenerPorIdFormularioProgresivo",
-  ObtenerListaFormularioProgresivoTipo: "/FormularioProgresivoTipo/ObtenerRegistros",
-  ObtenerListaFormularioProgresivoCondicionMostrar: "/FormularioProgresivoCondicionMostrar/ObtenerRegistros",
-  ObtenerListaFormularioProgresivoAccionBoton: "/FormularioProgresivoAccionBoton/ObtenerRegistros",
-  ObtenerListaFormularioProgresivoSeccionPortal: "/FormularioProgresivoSeccionPortal/ObtenerRegistros",
+  ObtenerConfiguracionBotonPorIdFormularioProgresivo:
+    '/FormularioProgresivoConfiguracionBoton/ObtenerPorIdFormularioProgresivo',
+  ObtenerListaFormularioProgresivoTipo:
+    '/FormularioProgresivoTipo/ObtenerRegistros',
+  ObtenerListaFormularioProgresivoCondicionMostrar:
+    '/FormularioProgresivoCondicionMostrar/ObtenerRegistros',
+  ObtenerListaFormularioProgresivoAccionBoton:
+    '/FormularioProgresivoAccionBoton/ObtenerRegistros',
+  ObtenerListaFormularioProgresivoSeccionPortal:
+    '/FormularioProgresivoSeccionPortal/ObtenerRegistros',
   //Descuento Formulario Progresivo Portal Usuario
-  ObtenerDescuentoProfiling: "/MatriculaFormularioProgresivo/ObtenerDescuentoProfiling",
+  ObtenerDescuentoProfiling:
+    '/MatriculaFormularioProgresivo/ObtenerDescuentoProfiling',
 
   //Subir Oportunidades Masivas
-  SubirArchivoOportunidadMasiva: "/OportunidadMasiva/SubirArchivo",
-  ObtenerArchivosOportunidad: "/OportunidadMasiva/ObtenerArchivosOportunidad",
-  DescargarArchivoOportunidadMasiva: "/OportunidadMasiva/DescargarArchivo",
-  ProcesarOportunidadedMasiva: "/OportunidadMasiva/ProcesarOportunidadedMasiva",
-  ObtenerOportunidadesMasivas: "/OportunidadMasiva/ObtenerOportunidadesMasivas",
+  SubirArchivoOportunidadMasiva: '/OportunidadMasiva/SubirArchivo',
+  ObtenerArchivosOportunidad: '/OportunidadMasiva/ObtenerArchivosOportunidad',
+  DescargarArchivoOportunidadMasiva: '/OportunidadMasiva/DescargarArchivo',
+  ProcesarOportunidadedMasiva: '/OportunidadMasiva/ProcesarOportunidadedMasiva',
+  ObtenerOportunidadesMasivas: '/OportunidadMasiva/ObtenerOportunidadesMasivas',
 
   //Adjuntar Archivos
-  AdjuntarArchivoWhatsApp:    
-  "/WhatsAppMensajeRecibido/AdjuntarArchivoWhatsApp/",
+  AdjuntarArchivoWhatsApp: '/WhatsAppMensajeRecibido/AdjuntarArchivoWhatsApp/',
   EnviarMensajeApigraphWhatsappArchivo:
-  "/CampaniaGeneralWhatsApp/WhatsAppMensajeArchivo/",
+    '/CampaniaGeneralWhatsApp/WhatsAppMensajeArchivo/',
 
   // MESSENGER FACEBOOK CHAT
   ObtenerGrillaMessengerFacebookChat:
-    "/MessengerFacebookChat/ObtenerGrillaChats",
+    '/MessengerFacebookChat/ObtenerGrillaChats',
   ObtenerHistorialChatPorPSID:
-    "/MessengerFacebookChat/ObtenerHistorialChatPorPSID",
+    '/MessengerFacebookChat/ObtenerHistorialChatPorPSID',
   EnviarMensajeTextoMessengerFacebook:
-    "/MessengerFacebookChat/EnviarMensajeTexto",
+    '/MessengerFacebookChat/EnviarMensajeTexto',
   ObtenerDatosGeneralesAlumnosPorPSID:
-    "/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID",
-
+    '/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID',
 };
 
 export const constApiGestionPersonal = {
   //Modulo gestion personal junior
-  ObtenerTodoPersonal: "/Personal/ObtenerTodoPersonal",
-  ObtenerPersonaAreaTrabajo:"/Personal/ObtenerPersonalAreaTrabajo",
-  ObtenerDireccionCentralLlamada:"/CentralLlamadaDireccion/Obtener",
-  ObtenerDominioPbx:"/CentralLlamadaDireccion/ObtenerComboDominioPbx",
-  ObtenerZonaHorariaActivo:"/Personal/ObtenerComboZonaHorarioActivo",
-  InsertarNuevoPersonal: "/Personal/InsertarPersonal",
-  ActualizarPersonal: "/Personal/ActualizarPersonal",
-  ValidarClaveAplicacion:"/Personal/EnviarMensajeValidacionAcceso",
-  ObtenerHorarioPorId:"/Personal/ObtenerHorarioPorId/",
+  ObtenerTodoPersonal: '/Personal/ObtenerTodoPersonal',
+  ObtenerPersonaAreaTrabajo: '/Personal/ObtenerPersonalAreaTrabajo',
+  ObtenerDireccionCentralLlamada: '/CentralLlamadaDireccion/Obtener',
+  ObtenerDominioPbx: '/CentralLlamadaDireccion/ObtenerComboDominioPbx',
+  ObtenerZonaHorariaActivo: '/Personal/ObtenerComboZonaHorarioActivo',
+  InsertarNuevoPersonal: '/Personal/InsertarPersonal',
+  ActualizarPersonal: '/Personal/ActualizarPersonal',
+  ValidarClaveAplicacion: '/Personal/EnviarMensajeValidacionAcceso',
+  ObtenerHorarioPorId: '/Personal/ObtenerHorarioPorId/',
 
-  
-  EvaluacionPostulantensertar: "/EvaluacionPostulante/InsertarProcesoSeleccionConfiguracion",
+  EvaluacionPostulantensertar:
+    '/EvaluacionPostulante/InsertarProcesoSeleccionConfiguracion',
   EvaluacionPostulanteObtenerCombosModulo:
-    "/EvaluacionPostulante/ObtenerCombosModulo",
-  EvaluacionPostulanteGenerarReporte: "/EvaluacionPostulante/GenerarReporte",
+    '/EvaluacionPostulante/ObtenerCombosModulo',
+  EvaluacionPostulanteGenerarReporte: '/EvaluacionPostulante/GenerarReporte',
   EvaluacionPostulanteGenerarReporteIntegra:
-    "/EvaluacionPostulante/GenerarReporteIntegra",
+    '/EvaluacionPostulante/GenerarReporteIntegra',
   EvaluacionPostulanteObtenerTipoExamen:
-    "/EvaluacionPostulante/ObtenerTipoExamen",
+    '/EvaluacionPostulante/ObtenerTipoExamen',
   EvaluacionPostulanteObtenerEvaluacionesAsignadasEvaluador:
-    "/EvaluacionPostulante/ObtenerEvaluacionesAsignadasEvaluador",
+    '/EvaluacionPostulante/ObtenerEvaluacionesAsignadasEvaluador',
   EvaluacionPostulanteObtenerPreguntasRespuestasRealizadasTestEvaluador:
-    "/EvaluacionPostulante/ObtenerPreguntasRespuestasRealizadasTestEvaluador",
+    '/EvaluacionPostulante/ObtenerPreguntasRespuestasRealizadasTestEvaluador',
   EvaluacionPostulanteObtenerPreguntasRespuestasTestEvaluador:
-    "/EvaluacionPostulante/ObtenerPreguntasRespuestasTestEvaluador",
+    '/EvaluacionPostulante/ObtenerPreguntasRespuestasTestEvaluador',
   EvaluacionPostulanteObtenerEvaluacionesPortalPostulante:
-    "/EvaluacionPostulante/ObtenerEvaluacionesPortalPostulante",
+    '/EvaluacionPostulante/ObtenerEvaluacionesPortalPostulante',
   EvaluacionPostulanteActualizacionManualEtapaExamenAsignado:
-    "/EvaluacionPostulante/ActualizacionManualEtapaExamenAsignado",
+    '/EvaluacionPostulante/ActualizacionManualEtapaExamenAsignado',
   EvaluacionPostulanteEnviarAccesoAulaVirtualPostulante:
-    "/EvaluacionPostulante/EnviarAccesoAulaVirtualPostulante",
+    '/EvaluacionPostulante/EnviarAccesoAulaVirtualPostulante',
   EvaluacionPostulanteEnviarRespuestasTest:
-    "/EvaluacionPostulante/EnviarRespuestasTest",
+    '/EvaluacionPostulante/EnviarRespuestasTest',
   EvaluacionPostulanteObtenerNotasMatriculaReporte:
-    "/EvaluacionPostulante/ObtenerNotasMatriculaReporte",
+    '/EvaluacionPostulante/ObtenerNotasMatriculaReporte',
   EvaluacionPostulanteRestablecerNotas:
-    "/EvaluacionPostulante/RestablecerNotas",
+    '/EvaluacionPostulante/RestablecerNotas',
   PostulanteObtenerPostulanteFiltroAutocomplete:
-    "/Postulante/ObtenerPostulanteFiltroAutocomplete",
+    '/Postulante/ObtenerPostulanteFiltroAutocomplete',
+  PostulanteObtenerPostulantesInformacionV2:
+    '/Postulante/ObtenerPostulantesInformacionV2',
 
   //Datos Postulantes
   ObtenerDatosPostulantesInscritos: '/Postulante/ObtenerPostulantesInscritos',
   ObtenerCombosPostulante: '/Postulante/ObtenerCombosPostulante',
-  ObtenerComboPlantillas: '/Postulante/ObtenerComboPlantillaEmailWhastAppPostulante',
-  ObtenerCombosAreaFormacionExperiencia: '/Postulante/ObtenerCombosAreaFormacionExperiencia',
-  ObtenerFiltroDatosPostulanteManual: '/Postulante/ObtenerFiltroDatosPostulanteManual',
+  ObtenerComboPlantillas:
+    '/Postulante/ObtenerComboPlantillaEmailWhastAppPostulante',
+  ObtenerCombosAreaFormacionExperiencia:
+    '/Postulante/ObtenerCombosAreaFormacionExperiencia',
+  ObtenerFiltroDatosPostulanteManual:
+    '/Postulante/ObtenerFiltroDatosPostulanteManual',
   InsertarPostulante: '/Postulante/InsertarNuevoPostulante',
   ActualizarPostulante: '/Postulante/ActualizarPostulante',
   EliminarPostulante: '/Postulante/EliminarPostulante',
   ObtenerPostulanteExperiencia: '/Postulante/ObtenerPostulanteExperiencia',
   ObtenerPostulanteFormacion: '/Postulante/ObtenerPostulanteFormacion',
   EnviarPlantillaEmailMasivo: '/Postulante/EnviarPlantillaEmailMasivo',
-  EnviarMensajeWhatsAppPostulante: '/Postulante/EnviarMensajeWhatsAppPostulante',
+  EnviarMensajeWhatsAppPostulante:
+    '/Postulante/EnviarMensajeWhatsAppPostulante',
   ImportarPostulanteExcel: '/Postulante/ImportarExcel',
-  InsertarPostulantePorImportacion: '/Postulante/InsertarPostulantePorImportacion',
+  InsertarPostulantePorImportacion:
+    '/Postulante/InsertarPostulantePorImportacion',
   ObtenerHistorialPostulante: '/Postulante/ObtenerHistorialPostulante',
   RegistrarPostulanteFormacion: '/Postulante/InsertarPostulanteFormacion',
   ActualizarPostulanteFormacion: '/Postulante/ActualizarPostulanteFormacion',
   EliminarPostulanteFormacion: '/Postulante/EliminarPostulanteFormacion',
-  ObtenerHistorialPostulanteFormacion: '/Postulante/ObtenerHistorialPostulanteFormacion',
+  ObtenerHistorialPostulanteFormacion:
+    '/Postulante/ObtenerHistorialPostulanteFormacion',
   RegistrarPostulanteExperiencia: '/Postulante/InsertarPostulanteExperiencia',
-  ActualizarPostulanteExperiencia: '/Postulante/ActualizarPostulanteExperiencia',
+  ActualizarPostulanteExperiencia:
+    '/Postulante/ActualizarPostulanteExperiencia',
   EliminarPostulanteExperiencia: '/Postulante/EliminarPostulanteExperiencia',
-  ObtenerHistorialPostulanteExperiencia: '/Postulante/ObtenerHistorialPostulanteExperiencia',
+  ObtenerHistorialPostulanteExperiencia:
+    '/Postulante/ObtenerHistorialPostulanteExperiencia',
   CompararProcesosSeleccion: '/Postulante/CompararProcesosSeleccion',
-  ActualizarProcesoPostulanteSinNota: '/Postulante/ActualizarProcesoPostulanteSinNota',
+  ActualizarProcesoPostulanteSinNota:
+    '/Postulante/ActualizarProcesoPostulanteSinNota',
   ActualizarProcesoPostulante: '/Postulante/ActualizarProcesoPostulante',
-  ObtenerUltimoMensajeRecibidosChat: '/PostulanteWhatsApp/WhatsAppUltimoMensajeRecibidosChat',
+  ObtenerUltimoMensajeRecibidosChat:
+    '/PostulanteWhatsApp/WhatsAppUltimoMensajeRecibidosChat',
   GenerarPlantillaGPWhatsapp: '/PostulanteWhatsApp/GenerarPlantillaGPWhatsapp',
-  ObtenerWhatsAppHistorialMensajeChat: '/PostulanteWhatsApp/WhatsAppHistorialMensajeChat',
-  ObtenerValidacionMensajeRecibido24Horas: '/PostulanteWhatsApp/ValidarMensajeRecibido24Horas',
-  ObtenerValicacionUltimaPlantillaEnviada: '/PostulanteWhatsApp/validarUltimaPlantillaEnviada',
+  ObtenerWhatsAppHistorialMensajeChat:
+    '/PostulanteWhatsApp/WhatsAppHistorialMensajeChat',
+  ObtenerValidacionMensajeRecibido24Horas:
+    '/PostulanteWhatsApp/ValidarMensajeRecibido24Horas',
+  ObtenerValicacionUltimaPlantillaEnviada:
+    '/PostulanteWhatsApp/validarUltimaPlantillaEnviada',
   EnviarPlantillaPostulante: '/PostulanteWhatsApp/EnvioMensajePlantilla',
   EnviarMensajeTextoPostulante: '/PostulanteWhatsApp/WhatsAppMensajeTexto',
-  EnviarMensajeMasivoWhatsAppPostulante: '/PostulanteWhatsApp/EnviarMensajeMasivoWhatsAppPostulante',
-  AdjuntarArchivoWhatsAppPostulante: '/PostulanteWhatsApp/AdjuntarArchivoWhatsApp',
+  EnviarMensajeMasivoWhatsAppPostulante:
+    '/PostulanteWhatsApp/EnviarMensajeMasivoWhatsAppPostulante',
+  AdjuntarArchivoWhatsAppPostulante:
+    '/PostulanteWhatsApp/AdjuntarArchivoWhatsApp',
   EnvioArchivoWhatsAppPostulante: '/PostulanteWhatsApp/WhatsAppMensajeArchivo',
   ObtenerPostulanteInformacion: '/Postulante/ObtenerPostulanteInformacion',
 
   //Induccion del Personal
   ObtenerCombosInduccion: '/Personal/ObtenerCombosInduccion',
   ObtenerReporteInduccionPersonal: '/Personal/ObtenerReporteInduccionPersonal',
-  ObtenerReporteInduccionPersonalFiltro: '/Personal/ObtenerReporteInduccionPersonalFiltro',
+  ObtenerReporteInduccionPersonalFiltro:
+    '/Personal/ObtenerReporteInduccionPersonalFiltro',
 
   //Gestion Contratos
   ObtenerCombosContrato: '/GestionContrato/ObtenerCombos',
@@ -2497,1546 +2547,1638 @@ export const constApiGestionPersonal = {
   ObtenerContratosPorFiltro: '/GestionContrato/ObtenerContratosPorFiltro',
   ObtenerDataFormulario: '/GestionContrato/ObtenerDataFormulario',
   ObtenerContratosHistoricos: '/GestionContrato/ObtenerContratosHistoricos',
-  ObtenerRemuneracionVariableDisplay: '/GestionContrato/ObtenerRemuneracionVariableDisplay',
+  ObtenerRemuneracionVariableDisplay:
+    '/GestionContrato/ObtenerRemuneracionVariableDisplay',
   InsertarContrato: '/GestionContrato/InsertarContrato',
   ObtenerPDF: '/GestionContrato/ObtenerPDF',
   ObtenerPersonalAutocomplete: '/GestionContrato/ObtenerPersonalAutocomplete',
-  ObtenerComboDatosRemuneracionVariable: '/GestionContrato/ObtenerComboDatosRemuneracionVariable',
+  ObtenerComboDatosRemuneracionVariable:
+    '/GestionContrato/ObtenerComboDatosRemuneracionVariable',
 
   //Maestro Estado Formacion
-  ObtenerListaGradoEstudio: "/GradoEstudio/Obtener",
-  InsertarGradoEstudio: "/GradoEstudio/Insertar",
-  ActualizarGradoEstudio: "/GradoEstudio/Actualizar",
-  EliminarGradoEstudio: "/GradoEstudio/Eliminar",
+  ObtenerListaGradoEstudio: '/GradoEstudio/Obtener',
+  InsertarGradoEstudio: '/GradoEstudio/Insertar',
+  ActualizarGradoEstudio: '/GradoEstudio/Actualizar',
+  EliminarGradoEstudio: '/GradoEstudio/Eliminar',
 
   //Maestro NivelCursoComplementario
-  ObtenerListaNivelCompetenciaTecnica: "/NivelCompetenciaTecnica/Obtener",
-  InsertarNivelCompetenciaTecnica: "/NivelCompetenciaTecnica/Insertar",
-  ActualizarNivelCompetenciaTecnica: "/NivelCompetenciaTecnica/Actualizar",
-  EliminarNivelCompetenciaTecnica: "/NivelCompetenciaTecnica/Eliminar",
+  ObtenerListaNivelCompetenciaTecnica: '/NivelCompetenciaTecnica/Obtener',
+  InsertarNivelCompetenciaTecnica: '/NivelCompetenciaTecnica/Insertar',
+  ActualizarNivelCompetenciaTecnica: '/NivelCompetenciaTecnica/Actualizar',
+  EliminarNivelCompetenciaTecnica: '/NivelCompetenciaTecnica/Eliminar',
 
   //Maestro Instituciones Educativas
-  ObtenerListaCentroEstudio: "/CentroEstudio/Obtener",
-  ObtenerCombosCentroEstudio: "/CentroEstudio/ObtenerCombos",
-  InsertarCentroEstudio: "/CentroEstudio/Insertar",
-  ActualizarCentroEstudio: "/CentroEstudio/Actualizar",
-  EliminarCentroEstudio: "/CentroEstudio/Eliminar",
+  ObtenerListaCentroEstudio: '/CentroEstudio/Obtener',
+  ObtenerCombosCentroEstudio: '/CentroEstudio/ObtenerCombos',
+  InsertarCentroEstudio: '/CentroEstudio/Insertar',
+  ActualizarCentroEstudio: '/CentroEstudio/Actualizar',
+  EliminarCentroEstudio: '/CentroEstudio/Eliminar',
 
   //Maestro Tipo Experiencia
-  ObtenerListaTipoExperiencia: "/TipoExperiencia/Obtener",
-  InsertarTipoExperiencia: "/TipoExperiencia/Insertar",
-  ActualizarTipoExperiencia: "/TipoExperiencia/Actualizar",
-  EliminarTipoExperiencia: "/TipoExperiencia/Eliminar",
+  ObtenerListaTipoExperiencia: '/TipoExperiencia/Obtener',
+  InsertarTipoExperiencia: '/TipoExperiencia/Insertar',
+  ActualizarTipoExperiencia: '/TipoExperiencia/Actualizar',
+  EliminarTipoExperiencia: '/TipoExperiencia/Eliminar',
 
   //Maestro Contrato
-  ObtenerListaTipoContrato: "/TipoContrato/ObtenerTipoContrato",
-  InsertarTipoContrato: "/TipoContrato/Insertar",
-  ActualizarTipoContrato: "/TipoContrato/Actualizar",
-  EliminarTipoContrato: "/TipoContrato/Eliminar",
+  ObtenerListaTipoContrato: '/TipoContrato/ObtenerTipoContrato',
+  InsertarTipoContrato: '/TipoContrato/Insertar',
+  ActualizarTipoContrato: '/TipoContrato/Actualizar',
+  EliminarTipoContrato: '/TipoContrato/Eliminar',
 
   //Maestro Tipo de Experiencia
-  ObtenerComboExperiencia: "/Experiencia/ObtenerCombo",
-  InsertarExperiencia: "/Experiencia/Insertar",
-  ActualizarExperiencia: "/Experiencia/Actualizar",
-  EliminarExperiencia: "/Experiencia/Eliminar",
+  ObtenerComboExperiencia: '/Experiencia/ObtenerCombo',
+  InsertarExperiencia: '/Experiencia/Insertar',
+  ActualizarExperiencia: '/Experiencia/Actualizar',
+  EliminarExperiencia: '/Experiencia/Eliminar',
 
   //Maestro Categoria Evaluacion
-  ObtenerCategoriaEvaluacion: "/CategoriaEvaluacion/Obtener",
-  InsertarCategoriaEvaluacion: "/CategoriaEvaluacion/Insertar",
-  ActualizarCategoriaEvaluacion: "/CategoriaEvaluacion/Actualizar",
-  EliminarCategoriaEvaluacion: "/CategoriaEvaluacion/Eliminar",
+  ObtenerCategoriaEvaluacion: '/CategoriaEvaluacion/Obtener',
+  InsertarCategoriaEvaluacion: '/CategoriaEvaluacion/Insertar',
+  ActualizarCategoriaEvaluacion: '/CategoriaEvaluacion/Actualizar',
+  EliminarCategoriaEvaluacion: '/CategoriaEvaluacion/Eliminar',
 
   //Maestro Categoria Pregunta
-  ObtenerCategoriaPregunta: "/CategoriaPregunta/Obtener",
-  InsertarCategoriaPregunta: "/CategoriaPregunta/Insertar",
-  ActualizarCategoriaPregunta: "/CategoriaPregunta/Actualizar",
-  EliminarCategoriaPregunta: "/CategoriaPregunta/Eliminar",
+  ObtenerCategoriaPregunta: '/CategoriaPregunta/Obtener',
+  InsertarCategoriaPregunta: '/CategoriaPregunta/Insertar',
+  ActualizarCategoriaPregunta: '/CategoriaPregunta/Actualizar',
+  EliminarCategoriaPregunta: '/CategoriaPregunta/Eliminar',
 
   //Maestro  Criterio Evaluacion
-  CriterioEvaluacionProcesoObtener: "/CriterioEvaluacionProceso/Obtener",
-  CriterioEvaluacionProcesoInsertar: "/CriterioEvaluacionProceso/Insertar",
-  CriterioEvaluacionProcesoActualizar: "/CriterioEvaluacionProceso/Actualizar",
-  CriterioEvaluacionProcesoEliminar: "/CriterioEvaluacionProceso/Eliminar",
+  CriterioEvaluacionProcesoObtener: '/CriterioEvaluacionProceso/Obtener',
+  CriterioEvaluacionProcesoInsertar: '/CriterioEvaluacionProceso/Insertar',
+  CriterioEvaluacionProcesoActualizar: '/CriterioEvaluacionProceso/Actualizar',
+  CriterioEvaluacionProcesoEliminar: '/CriterioEvaluacionProceso/Eliminar',
   //Maestro  Estado Etapa Proceso Seleccion
-  EstadoEtapaProcesoSeleccionObtener: "/EstadoEtapaProcesoSeleccion/Obtener",
-  EstadoEtapaProcesoSeleccionInsertar: "/EstadoEtapaProcesoSeleccion/Insertar",
+  EstadoEtapaProcesoSeleccionObtener: '/EstadoEtapaProcesoSeleccion/Obtener',
+  EstadoEtapaProcesoSeleccionInsertar: '/EstadoEtapaProcesoSeleccion/Insertar',
   EstadoEtapaProcesoSeleccionActualizar:
-    "/EstadoEtapaProcesoSeleccion/Actualizar",
-  EstadoEtapaProcesoSeleccionEliminar: "/EstadoEtapaProcesoSeleccion/Eliminar",
+    '/EstadoEtapaProcesoSeleccion/Actualizar',
+  EstadoEtapaProcesoSeleccionEliminar: '/EstadoEtapaProcesoSeleccion/Eliminar',
 
   PerfilPuestoTrabajoEstadoSolicitudObtener:
-    "/PerfilPuestoTrabajoEstadoSolicitud/Obtener",
+    '/PerfilPuestoTrabajoEstadoSolicitud/Obtener',
   PerfilPuestoTrabajoEstadoSolicitudInsertar:
-    "/PerfilPuestoTrabajoEstadoSolicitud/Insertar",
+    '/PerfilPuestoTrabajoEstadoSolicitud/Insertar',
   PerfilPuestoTrabajoEstadoSolicitudActualizar:
-    "/PerfilPuestoTrabajoEstadoSolicitud/Actualizar",
+    '/PerfilPuestoTrabajoEstadoSolicitud/Actualizar',
   PerfilPuestoTrabajoEstadoSolicitudEliminar:
-    "/PerfilPuestoTrabajoEstadoSolicitud/Eliminar",
+    '/PerfilPuestoTrabajoEstadoSolicitud/Eliminar',
 
-  ExamenFeedbackObtener: "/ExamenFeedback/Obtener",
-  ExamenFeedbackInsertar: "/ExamenFeedback/Insertar",
-  ExamenFeedbackActualizar: "/ExamenFeedback/Actualizar",
-  ExamenFeedbackEliminar: "/ExamenFeedback/Eliminar",
+  ExamenFeedbackObtener: '/ExamenFeedback/Obtener',
+  ExamenFeedbackInsertar: '/ExamenFeedback/Insertar',
+  ExamenFeedbackActualizar: '/ExamenFeedback/Actualizar',
+  ExamenFeedbackEliminar: '/ExamenFeedback/Eliminar',
 
   GrupoComparacionProcesoSeleccionObtenerCombosModulo:
-    "/GrupoComparacionProcesoSeleccion/ObtenerCombosModulo",
+    '/GrupoComparacionProcesoSeleccion/ObtenerCombosModulo',
   GrupoComparacionProcesoSeleccionObtener:
-    "/GrupoComparacionProcesoSeleccion/Obtener",
+    '/GrupoComparacionProcesoSeleccion/Obtener',
   GrupoComparacionProcesoSeleccionInsertar:
-    "/GrupoComparacionProcesoSeleccion/Insertar",
+    '/GrupoComparacionProcesoSeleccion/Insertar',
   GrupoComparacionProcesoSeleccionActualizar:
-    "/GrupoComparacionProcesoSeleccion/Actualizar",
+    '/GrupoComparacionProcesoSeleccion/Actualizar',
   GrupoComparacionProcesoSeleccionEliminar:
-    "/GrupoComparacionProcesoSeleccion/Eliminar",
+    '/GrupoComparacionProcesoSeleccion/Eliminar',
 
   //ConfiguracionProcesoSeleccion
 
-
-  ConfiguracionProcesoSeleccionObtenerCombosProcesoSeleccion: "/ConfigurarProcesoSeleccion/ObtenerCombosProcesoSeleccion",
-  ConfiguracionProcesoSeleccionObtenerProcesoSeleccion: "/ConfigurarProcesoSeleccion/ObtenerProcesoSeleccion",
-  ConfiguracionProcesoSeleccionObtenerExamen: "/ConfigurarProcesoSeleccion/ObtenerExamenes",
-  ConfiguracionProcesoSeleccionObtenerEvaluacionesAsociacion: "/ConfigurarProcesoSeleccion/ObtenerEvaluacionesAsociacion",
-  ConfiguracionProcesoSeleccionObtenerEvaluacionPuntaje: "/ConfigurarProcesoSeleccion/ObtenerEvaluacionPuntaje",
-  ConfiguracionProcesoSeleccionInsertar: "/ConfigurarProcesoSeleccion/InsertarProcesoSeleccionConfiguracion",
-  ConfiguracionProcesoSeleccionActualizarProcesoSeleccionConfiguracionCalificacion: "/ConfigurarProcesoSeleccion/ActualizarProcesoSeleccionConfiguracionCalificacion",
-  ConfiguracionProcesoSeleccionObtenerExamenesNoAsociados: "/ConfigurarProcesoSeleccion/ObtenerExamenesNoAsociados",
-  ConfiguracionProcesoSeleccionObtenerExamenesAsociados: "/ConfigurarProcesoSeleccion/ObtenerExamenesAsociados",
-  ConfiguracionProcesoSeleccionObtenerEtapaProcesoSeleccion: "/ConfigurarProcesoSeleccion/ObtenerEtapaProcesoSeleccion",
-  ConfiguracionProcesoSeleccionActualizar: "/ConfigurarProcesoSeleccion/Actualizar",
-  ConfiguracionProcesoSeleccionInsertarProcesoSeleccionConfiguracion: "/ConfigurarProcesoSeleccion/InsertarProcesoSeleccionConfiguracion",
-
-
-
-
+  ConfiguracionProcesoSeleccionObtenerCombosProcesoSeleccion:
+    '/ConfigurarProcesoSeleccion/ObtenerCombosProcesoSeleccion',
+  ConfiguracionProcesoSeleccionObtenerProcesoSeleccion:
+    '/ConfigurarProcesoSeleccion/ObtenerProcesoSeleccion',
+  ConfiguracionProcesoSeleccionObtenerExamen:
+    '/ConfigurarProcesoSeleccion/ObtenerExamenes',
+  ConfiguracionProcesoSeleccionObtenerEvaluacionesAsociacion:
+    '/ConfigurarProcesoSeleccion/ObtenerEvaluacionesAsociacion',
+  ConfiguracionProcesoSeleccionObtenerEvaluacionPuntaje:
+    '/ConfigurarProcesoSeleccion/ObtenerEvaluacionPuntaje',
+  ConfiguracionProcesoSeleccionInsertar:
+    '/ConfigurarProcesoSeleccion/InsertarProcesoSeleccionConfiguracion',
+  ConfiguracionProcesoSeleccionActualizarProcesoSeleccionConfiguracionCalificacion:
+    '/ConfigurarProcesoSeleccion/ActualizarProcesoSeleccionConfiguracionCalificacion',
+  ConfiguracionProcesoSeleccionObtenerExamenesNoAsociados:
+    '/ConfigurarProcesoSeleccion/ObtenerExamenesNoAsociados',
+  ConfiguracionProcesoSeleccionObtenerExamenesAsociados:
+    '/ConfigurarProcesoSeleccion/ObtenerExamenesAsociados',
+  ConfiguracionProcesoSeleccionObtenerEtapaProcesoSeleccion:
+    '/ConfigurarProcesoSeleccion/ObtenerEtapaProcesoSeleccion',
+  ConfiguracionProcesoSeleccionActualizar:
+    '/ConfigurarProcesoSeleccion/Actualizar',
+  ConfiguracionProcesoSeleccionInsertarProcesoSeleccionConfiguracion:
+    '/ConfigurarProcesoSeleccion/InsertarProcesoSeleccionConfiguracion',
 
   //Maestro Curso Complementario
 
-  CursoComplementarioObtener: "/MaestroCursoComplementario/Obtener",
-  CursoComplementarioObtenerCombos: "/MaestroCursoComplementario/ObtenerCombos",
-  CursoComplementarioInsertar: "/MaestroCursoComplementario/Insertar",
-  CursoComplementarioActualizar: "/MaestroCursoComplementario/Actualizar",
-  CursoComplementarioEliminar: "/MaestroCursoComplementario/Eliminar",
+  CursoComplementarioObtener: '/MaestroCursoComplementario/Obtener',
+  CursoComplementarioObtenerCombos: '/MaestroCursoComplementario/ObtenerCombos',
+  CursoComplementarioInsertar: '/MaestroCursoComplementario/Insertar',
+  CursoComplementarioActualizar: '/MaestroCursoComplementario/Actualizar',
+  CursoComplementarioEliminar: '/MaestroCursoComplementario/Eliminar',
 
   //Maestro  Nivel Estudio
-  NivelEstudioObtener: "/NivelEstudio/Obtener",
-  NivelEstudioObtenerFormacion: "/NivelEstudio/ObtenerFormacion",
-  NivelEstudioInsertar: "/NivelEstudio/Insertar",
-  NivelEstudioActualizar: "/NivelEstudio/Actualizar",
-  NivelEstudioEliminar: "/NivelEstudio/Eliminar",
+  NivelEstudioObtener: '/NivelEstudio/Obtener',
+  NivelEstudioObtenerFormacion: '/NivelEstudio/ObtenerFormacion',
+  NivelEstudioInsertar: '/NivelEstudio/Insertar',
+  NivelEstudioActualizar: '/NivelEstudio/Actualizar',
+  NivelEstudioEliminar: '/NivelEstudio/Eliminar',
 
   //Maestro Postulante Nivel Potencial
-  PostulanteNivelPotencialObtener: "/PostulanteNivelPotencial/Obtener",
-  PostulanteNivelPotencialInsertar: "/PostulanteNivelPotencial/Insertar",
-  PostulanteNivelPotencialActualizar: "/PostulanteNivelPotencial/Actualizar",
-  PostulanteNivelPotencialEliminar: "/PostulanteNivelPotencial/Eliminar",
+  PostulanteNivelPotencialObtener: '/PostulanteNivelPotencial/Obtener',
+  PostulanteNivelPotencialInsertar: '/PostulanteNivelPotencial/Insertar',
+  PostulanteNivelPotencialActualizar: '/PostulanteNivelPotencial/Actualizar',
+  PostulanteNivelPotencialEliminar: '/PostulanteNivelPotencial/Eliminar',
 
   //Maestro Personal Tipo Funcion
-  PersonalTipoFuncionObtener: "/PersonalTipoFuncion/Obtener",
-  PersonalTipoFuncionInsertar: "/PersonalTipoFuncion/Insertar",
-  PersonalTipoFuncionActualizar: "/PersonalTipoFuncion/Actualizar",
-  PersonalTipoFuncionEliminar: "/PersonalTipoFuncion/Eliminar",
+  PersonalTipoFuncionObtener: '/PersonalTipoFuncion/Obtener',
+  PersonalTipoFuncionInsertar: '/PersonalTipoFuncion/Insertar',
+  PersonalTipoFuncionActualizar: '/PersonalTipoFuncion/Actualizar',
+  PersonalTipoFuncionEliminar: '/PersonalTipoFuncion/Eliminar',
 
   //Maestro Personal Relacion Externa
-  PersonalRelacionExternaObtener: "/PersonalRelacionExterna/Obtener",
+  PersonalRelacionExternaObtener: '/PersonalRelacionExterna/Obtener',
   PersonalRelacionExternaObtenerAreaTrabajo:
-    "/PersonalRelacionExterna/ObtenerAreaTrabajo",
-  PersonalRelacionExternaInsertar: "/PersonalRelacionExterna/Insertar",
-  PersonalRelacionExternaActualizar: "/PersonalRelacionExterna/Actualizar",
-  PersonalRelacionExternaEliminar: "/PersonalRelacionExterna/Eliminar",
+    '/PersonalRelacionExterna/ObtenerAreaTrabajo',
+  PersonalRelacionExternaInsertar: '/PersonalRelacionExterna/Insertar',
+  PersonalRelacionExternaActualizar: '/PersonalRelacionExterna/Actualizar',
+  PersonalRelacionExternaEliminar: '/PersonalRelacionExterna/Eliminar',
 
   //Maestro Mensaje Tiempo Inactivo
-  MensajeTiempoInactivoObtener: "/MensajeTiempoInactivo/Obtener",
-  MensajeTiempoInactivoInsertar: "/MensajeTiempoInactivo/Insertar",
-  MensajeTiempoInactivoActualizar: "/MensajeTiempoInactivo/Actualizar",
-  MensajeTiempoInactivoEliminar: "/MensajeTiempoInactivo/Eliminar",
+  MensajeTiempoInactivoObtener: '/MensajeTiempoInactivo/Obtener',
+  MensajeTiempoInactivoInsertar: '/MensajeTiempoInactivo/Insertar',
+  MensajeTiempoInactivoActualizar: '/MensajeTiempoInactivo/Actualizar',
+  MensajeTiempoInactivoEliminar: '/MensajeTiempoInactivo/Eliminar',
 
   //Maestro Tipo Formacion
-  ObtenerTipoFormacion: "/TipoFormacion/Obtener",
-  InsertarTipoFormacion: "/TipoFormacion/Insertar",
-  ActualizarTipoFormacion: "/TipoFormacion/Actualizar",
-  EliminarTipoFormacion: "/TipoFormacion/Eliminar",
+  ObtenerTipoFormacion: '/TipoFormacion/Obtener',
+  InsertarTipoFormacion: '/TipoFormacion/Insertar',
+  ActualizarTipoFormacion: '/TipoFormacion/Actualizar',
+  EliminarTipoFormacion: '/TipoFormacion/Eliminar',
 
   //AreaFormacion
-  AreaFormacionObtener:"/AreaFormacion/Obtener",
-  AreaFormacionInsertar: "/AreaFormacion/Insertar",
-  AreaFormacionActualizar: "/AreaFormacion/Actualizar",
-  AreaFormacionEliminar: "/AreaFormacion/Eliminar",
-
-
+  AreaFormacionObtener: '/AreaFormacion/Obtener',
+  AreaFormacionInsertar: '/AreaFormacion/Insertar',
+  AreaFormacionActualizar: '/AreaFormacion/Actualizar',
+  AreaFormacionEliminar: '/AreaFormacion/Eliminar',
 
   //Pregunta Evaluacion<s
-  ObtenerPreguntaEvaluacion: "/preguntum/Obtener",
-  ObtenerRespuestaPregunta: "/preguntum/ObtenerRespuestaPregunta",
-  ObtenerComboTipoPregunta:"/preguntum/ObtenerComboTipoPregunta",
-  ObtenerExamen:"/Examen/ObtenerEvaluacion",
-  ObtenerTipoRespuestaCategoria:"/Preguntum/ObtenerTipoRespuestaCategoria",
-  ObtenerRespuestaCSV:"/Preguntum/ImportarExcel/",
-  InsertarPreguntaEvaluacion:"/preguntum/InsertarPregunta/",
-  ActualizarPreguntaEvaluacion:"/preguntum/ActualizarPregunta",
-  EliminarPreguntaEvaluacion:"/preguntum/EliminarPregunta",
+  ObtenerPreguntaEvaluacion: '/preguntum/Obtener',
+  ObtenerRespuestaPregunta: '/preguntum/ObtenerRespuestaPregunta',
+  ObtenerComboTipoPregunta: '/preguntum/ObtenerComboTipoPregunta',
+  ObtenerExamen: '/Examen/ObtenerEvaluacion',
+  ObtenerTipoRespuestaCategoria: '/Preguntum/ObtenerTipoRespuestaCategoria',
+  ObtenerRespuestaCSV: '/Preguntum/ImportarExcel/',
+  InsertarPreguntaEvaluacion: '/preguntum/InsertarPregunta/',
+  ActualizarPreguntaEvaluacion: '/preguntum/ActualizarPregunta',
+  EliminarPreguntaEvaluacion: '/preguntum/EliminarPregunta',
 
   //Maestro ContratoEstado
-  ObtenerContratoEstado: "/ContratoEstado/Obtener",
-  InsertarContratoEstado: "/ContratoEstado/Insertar",
-  ActualizarContratoEstado: "/ContratoEstado/Actualizar",
-  EliminarContratoEstado: "/ContratoEstado/Eliminar",
+  ObtenerContratoEstado: '/ContratoEstado/Obtener',
+  InsertarContratoEstado: '/ContratoEstado/Insertar',
+  ActualizarContratoEstado: '/ContratoEstado/Actualizar',
+  EliminarContratoEstado: '/ContratoEstado/Eliminar',
 
   // Maestro Convocatorias Personal
   ObtenerConvocatoriasRegistradas:
-    "/ConvocatoriaPersonal/ObtenerConvocatoriasRegistradas",
-  ObtenerComboPorNombreSede: "/ConvocatoriaPersonal/ObtenerComboPorNombreSede",
+    '/ConvocatoriaPersonal/ObtenerConvocatoriasRegistradas',
+  ObtenerComboPorNombreSede: '/ConvocatoriaPersonal/ObtenerComboPorNombreSede',
   ObtenerProveedoresConvocatoriaPersonal:
-    "/ConvocatoriaPersonal/ObtenerProveedoresConvocatoriaPersonal",
+    '/ConvocatoriaPersonal/ObtenerProveedoresConvocatoriaPersonal',
   ObtenerComboPersonalGestionPersonas:
-    "/ConvocatoriaPersonal/ObtenerComboPersonalGestionPersonas",
-  ObtenerSedeTrabajoCombo: "/ConvocatoriaPersonal/ObtenerSedeTrabajoCombo",
+    '/ConvocatoriaPersonal/ObtenerComboPersonalGestionPersonas',
+  ObtenerSedeTrabajoCombo: '/ConvocatoriaPersonal/ObtenerSedeTrabajoCombo',
   ObtenerProcesoSeleccionCombo:
-    "/ConvocatoriaPersonal/ObtenerProcesoSeleccionCombo",
+    '/ConvocatoriaPersonal/ObtenerProcesoSeleccionCombo',
   ObtenerTodosCombosConvotoriaPersonal:
-    "/ConvocatoriaPersonal/ObtenerTodosCombosConvotoriaPersonal",
-  ConvocatoriaPersonalInsertar: "/ConvocatoriaPersonal/Insertar",
-  ConvocatoriaPersonalActualizar: "/ConvocatoriaPersonal/Actualizar",
-  ConvocatoriaPersonalEliminar: "/ConvocatoriaPersonal/Eliminar",
+    '/ConvocatoriaPersonal/ObtenerTodosCombosConvotoriaPersonal',
+  ConvocatoriaPersonalInsertar: '/ConvocatoriaPersonal/Insertar',
+  ConvocatoriaPersonalActualizar: '/ConvocatoriaPersonal/Actualizar',
+  ConvocatoriaPersonalEliminar: '/ConvocatoriaPersonal/Eliminar',
   ObtenerDetalleConvocatorias:
-    "/ConvocatoriaPersonal/ObtenerDetalleConvocatorias",
+    '/ConvocatoriaPersonal/ObtenerDetalleConvocatorias',
 
-  UsuarioObtenerCombo: "/Usuario/ObtenerCombo",
-  UsuarioObtenerTodo: "/Usuario/ObtenerTodo",
-  UsuarioInsertarUsuario: "/Usuario/InsertarUsuario",
-  UsuarioActualizarUsuario: "/Usuario/ActualizarUsuario",
+  UsuarioObtenerCombo: '/Usuario/ObtenerCombo',
+  UsuarioObtenerTodo: '/Usuario/ObtenerTodo',
+  UsuarioInsertarUsuario: '/Usuario/InsertarUsuario',
+  UsuarioActualizarUsuario: '/Usuario/ActualizarUsuario',
 
-  ModuloSistemaObtenerListaModulos: "/ModuloSistema/ObtenerListaModulos",
-  ModuloSistemaObtenerMisModulos: "/ModuloSistema/ObtenerMisModulos",
-  ModuloSistemaAsignarModulos: "/ModuloSistema/AsignarModulos",
-  ModuloSistemaDesasignarModulos: "/ModuloSistema/DesasignarModulos",
+  ModuloSistemaObtenerListaModulos: '/ModuloSistema/ObtenerListaModulos',
+  ModuloSistemaObtenerMisModulos: '/ModuloSistema/ObtenerMisModulos',
+  ModuloSistemaAsignarModulos: '/ModuloSistema/AsignarModulos',
+  ModuloSistemaDesasignarModulos: '/ModuloSistema/DesasignarModulos',
   ModuloSistemaObtenerNombreUrlModulos:
-    "/ModuloSistema/ObtenerNombreUrlModulos",
+    '/ModuloSistema/ObtenerNombreUrlModulos',
 
   //Modulo Sistema Paquetes V5
-  ModuloSistemaPaqueteObtener: "/ModuloSistemaPaquete/Obtener",
-  ModuloSistemaPaqueteObtenerModulos: "/ModuloSistemaPaquete/ObtenerModulos",
+  ModuloSistemaPaqueteObtener: '/ModuloSistemaPaquete/Obtener',
+  ModuloSistemaPaqueteObtenerModulos: '/ModuloSistemaPaquete/ObtenerModulos',
   ModuloSistemaPaqueteObtenerListaModulos:
-    "/ModuloSistemaPaquete/ObtenerListaModulos",
-  ModuloSistemaPaqueteInsertar: "/ModuloSistemaPaquete/Insertar",
-  ModuloSistemaPaqueteActualizar: "/ModuloSistemaPaquete/Actualizar",
-  ModuloSistemaPaqueteEliminar: "/ModuloSistemaPaquete/Eliminar",
+    '/ModuloSistemaPaquete/ObtenerListaModulos',
+  ModuloSistemaPaqueteInsertar: '/ModuloSistemaPaquete/Insertar',
+  ModuloSistemaPaqueteActualizar: '/ModuloSistemaPaquete/Actualizar',
+  ModuloSistemaPaqueteEliminar: '/ModuloSistemaPaquete/Eliminar',
 
   //RegistroMarcacion
   ProcesarExcelRegistroMarcacion:
-    "/RegistroMarcacion/ProcesarExcelRegistroMarcacion",
-  InsertarMarcacionPersonal: "/RegistroMarcacion/InsertarMarcacionPersonal",
+    '/RegistroMarcacion/ProcesarExcelRegistroMarcacion',
+  InsertarMarcacionPersonal: '/RegistroMarcacion/InsertarMarcacionPersonal',
   // Maestros Nivel de Puestos de Trabajo
 
-  ObtenerMaestroPuestoNivelTRabajo: "/PuestoTrabajoNivel/Obtener",
-  InsertarMaestroPuestoNivelTRabajo: "/PuestoTrabajoNivel/Insertar",
-  ActualizarMaestroPuestoNivelTRabajo: "/PuestoTrabajoNivel/Actualizar",
-  EliminarMaestroPuestoNivelTRabajo: "/PuestoTrabajoNivel/Eliminar",
+  ObtenerMaestroPuestoNivelTRabajo: '/PuestoTrabajoNivel/Obtener',
+  InsertarMaestroPuestoNivelTRabajo: '/PuestoTrabajoNivel/Insertar',
+  ActualizarMaestroPuestoNivelTRabajo: '/PuestoTrabajoNivel/Actualizar',
+  EliminarMaestroPuestoNivelTRabajo: '/PuestoTrabajoNivel/Eliminar',
 
   // Puesto Trabajo Modulo
-  PuestoTrabajoObtener: "/PuestoTrabajo/Obtener",
-  PuestoTrabajoObtenerCombos: "/PuestoTrabajo/ObtenerCombos",
-  PuestoTrabajoInsertar: "/PuestoTrabajo/Insertar",
-  PuestoTrabajoEliminar: "/PuestoTrabajo/Eliminar",
-  PuestoTrabajoInsertarActualizarPerfilPuestoTrabajo: "/PuestoTrabajo/InsertarActualizarPerfilPuestoTrabajo",
-  PuestoTrabajoObtenerActualizar: "/PuestoTrabajo/Actualizar",
-  PuestoTrabajoObtenerPerfilPuestoTrabajo: "/PuestoTrabajo/ObtenerPerfilPuestoTrabajo",
-  PuestoTrabajoObtenerListaHistoricoPerfilPuestoTrabajo: "/PuestoTrabajo/ObtenerListaHistoricoPerfilPuestoTrabajo",
-  PuestoTrabajoObtenerGridAsignacionInterfaz: "/PuestoTrabajo/ObtenerGridAsignacionInterfaz",
-  PuestoTrabajoInsertarActualizarInterfaz: "/PuestoTrabajo/InsertarActualizarInterfaz",
-  AprobarRechazarVersionPerfilPuestoTrabajoPuestoTrabajo: "/PuestoTrabajo/AprobarRechazarVersionPerfilPuestoTrabajo",
-  PuestoTrabajoEsPersonalAprobacionVersion: "/PuestoTrabajo/EsPersonalAprobacionVersion",
+  PuestoTrabajoObtener: '/PuestoTrabajo/Obtener',
+  PuestoTrabajoObtenerCombos: '/PuestoTrabajo/ObtenerCombos',
+  PuestoTrabajoInsertar: '/PuestoTrabajo/Insertar',
+  PuestoTrabajoEliminar: '/PuestoTrabajo/Eliminar',
+  PuestoTrabajoInsertarActualizarPerfilPuestoTrabajo:
+    '/PuestoTrabajo/InsertarActualizarPerfilPuestoTrabajo',
+  PuestoTrabajoObtenerActualizar: '/PuestoTrabajo/Actualizar',
+  PuestoTrabajoObtenerPerfilPuestoTrabajo:
+    '/PuestoTrabajo/ObtenerPerfilPuestoTrabajo',
+  PuestoTrabajoObtenerListaHistoricoPerfilPuestoTrabajo:
+    '/PuestoTrabajo/ObtenerListaHistoricoPerfilPuestoTrabajo',
+  PuestoTrabajoObtenerGridAsignacionInterfaz:
+    '/PuestoTrabajo/ObtenerGridAsignacionInterfaz',
+  PuestoTrabajoInsertarActualizarInterfaz:
+    '/PuestoTrabajo/InsertarActualizarInterfaz',
+  AprobarRechazarVersionPerfilPuestoTrabajoPuestoTrabajo:
+    '/PuestoTrabajo/AprobarRechazarVersionPerfilPuestoTrabajo',
+  PuestoTrabajoEsPersonalAprobacionVersion:
+    '/PuestoTrabajo/EsPersonalAprobacionVersion',
 
   //Ficha Datos Postulante
-  PersonalObtenerFichaDatosPersonal: "/Personal/ObtenerFichaDatosPersonal",
-  PersonalObtenerCombosFichaDatosPersonal: "/Personal/ObtenerCombosFichaDatosPersonal",
-  PersonalObtenerPEspecificoPersonalAccesoTemporalCombo: "/Personal/ObtenerPEspecificoPersonalAccesoTemporalCombo",
-  PersonalObtenerInformacionPersonal: "/Personal/ObtenerInformacionPersonal",
-  PersonalInsertarFichaDatosPersonal: "/Personal/Insertar",
-  PersonalActualizarFichaDatosPersonal: "/Personal/Actualizar",
-  PersonalDescargarArchivoPersonal: "/Personal/DescargarArchivoPersonal",
-  PersonalObtenerArchivoPersonal: "/Personal/ObtenerArchivoPersonal",
-  PersonalEliminarPersonal: "/Personal/Eliminar",
-  PersonalActualizarAccesoTemporal: "/Personal/ActualizarAccesoTemporal",
-  PersonalEliminarAccesoTemporal: "/Personal/EliminarAccesoTemporal",
-  PersonalAdjuntarArchivoPersonal: "/Personal/AdjuntarArchivoPersonal",
-  PersonalObteneHorarioPorId: "/Personal/ObteneHorarioPorId",
-  PersonalGuardarHorario: "/Personal/GuardarHorario",
+  PersonalObtenerFichaDatosPersonal: '/Personal/ObtenerFichaDatosPersonal',
+  PersonalObtenerCombosFichaDatosPersonal:
+    '/Personal/ObtenerCombosFichaDatosPersonal',
+  PersonalObtenerPEspecificoPersonalAccesoTemporalCombo:
+    '/Personal/ObtenerPEspecificoPersonalAccesoTemporalCombo',
+  PersonalObtenerInformacionPersonal: '/Personal/ObtenerInformacionPersonal',
+  PersonalInsertarFichaDatosPersonal: '/Personal/Insertar',
+  PersonalActualizarFichaDatosPersonal: '/Personal/Actualizar',
+  PersonalDescargarArchivoPersonal: '/Personal/DescargarArchivoPersonal',
+  PersonalObtenerArchivoPersonal: '/Personal/ObtenerArchivoPersonal',
+  PersonalEliminarPersonal: '/Personal/Eliminar',
+  PersonalActualizarAccesoTemporal: '/Personal/ActualizarAccesoTemporal',
+  PersonalEliminarAccesoTemporal: '/Personal/EliminarAccesoTemporal',
+  PersonalAdjuntarArchivoPersonal: '/Personal/AdjuntarArchivoPersonal',
+  PersonalObteneHorarioPorId: '/Personal/ObteneHorarioPorId',
+  PersonalGuardarHorario: '/Personal/GuardarHorario',
 
   //Reporte Personal Jerarquia
-  PersonalObtenerReporteTodoPersonal: "/Personal/ObtenerReporteTodoPersonal",
-  PersonalObtenerCombosJefatura: "/Personal/ObtenerCombosJefatura",
-  PersonalCargarPersonalAutoComplete: "/Personal/GetPersonalAutocomplete",
-  PersonalObtenergenerarReportePersonalActivo: "/Personal/ObtenergenerarReportePersonalActivo",
-
-
+  PersonalObtenerReporteTodoPersonal: '/Personal/ObtenerReporteTodoPersonal',
+  PersonalObtenerCombosJefatura: '/Personal/ObtenerCombosJefatura',
+  PersonalCargarPersonalAutoComplete: '/Personal/GetPersonalAutocomplete',
+  PersonalObtenergenerarReportePersonalActivo:
+    '/Personal/ObtenergenerarReportePersonalActivo',
 
   /*#region
     #controller: PersonalAreaTrabajo
     #ubicacion: constApiGestionPersonal
   */
-  PersonalAreaTrabajoInsertar: "/PersonalAreaTrabajo/Insertar",
-  PersonalAreaTrabajoActualizar: "/PersonalAreaTrabajo/Actualizar",
-  PersonalAreaTrabajoEliminar: "/PersonalAreaTrabajo/Eliminar",
-  PersonalAreaTrabajoObtenerCombo: "/PersonalAreaTrabajo/ObtenerCombo",
-  PersonalAreaTrabajoObtener: "/PersonalAreaTrabajo/Obtener",
+  PersonalAreaTrabajoInsertar: '/PersonalAreaTrabajo/Insertar',
+  PersonalAreaTrabajoActualizar: '/PersonalAreaTrabajo/Actualizar',
+  PersonalAreaTrabajoEliminar: '/PersonalAreaTrabajo/Eliminar',
+  PersonalAreaTrabajoObtenerCombo: '/PersonalAreaTrabajo/ObtenerCombo',
+  PersonalAreaTrabajoObtener: '/PersonalAreaTrabajo/Obtener',
   /* #endregion */
 
-
   //COMPENSACIONES POR PUESTO
-  ObtenerDetallePuestoTrabajo: '/GestionRemuneracionPuestoTrabajo/ObtenerDetallePuestoTrabajo',
-  EditarDetallePuestoTrabajo: '/GestionRemuneracionPuestoTrabajo/ObtenerDetallePuestoTrabajo',
-  GestionRemuneracionPuestoTrabajoObtener: '/GestionRemuneracionPuestoTrabajo/Obtener',
+  ObtenerDetallePuestoTrabajo:
+    '/GestionRemuneracionPuestoTrabajo/ObtenerDetallePuestoTrabajo',
+  EditarDetallePuestoTrabajo:
+    '/GestionRemuneracionPuestoTrabajo/ObtenerDetallePuestoTrabajo',
+  GestionRemuneracionPuestoTrabajoObtener:
+    '/GestionRemuneracionPuestoTrabajo/Obtener',
   ProcesarArchivo: '/GestionRemuneracionPuestoTrabajo/ProcesarArchivo',
-  GestionRemuneracionPuestoTrabajoObtenerCombo: '/GestionRemuneracionPuestoTrabajo/ObtenerCombosModulo',
-  GestionRemuneracionPuestoTrabajoEliminar: '/GestionRemuneracionPuestoTrabajo/Eliminar',
-  GestionRemuneracionPuestoTrabajoInsertar: '/GestionRemuneracionPuestoTrabajo/Insertar',
-  GestionRemuneracionPuestoTrabajoActualizar: '/GestionRemuneracionPuestoTrabajo/Actualizar',
+  GestionRemuneracionPuestoTrabajoObtenerCombo:
+    '/GestionRemuneracionPuestoTrabajo/ObtenerCombosModulo',
+  GestionRemuneracionPuestoTrabajoEliminar:
+    '/GestionRemuneracionPuestoTrabajo/Eliminar',
+  GestionRemuneracionPuestoTrabajoInsertar:
+    '/GestionRemuneracionPuestoTrabajo/Insertar',
+  GestionRemuneracionPuestoTrabajoActualizar:
+    '/GestionRemuneracionPuestoTrabajo/Actualizar',
 
   //MAESTRO EVALUACIONES
   ObtenerEvaluaciones: '/MaestroEvaluacion/Obtener',
   ObtenerComboEvaluaciones: '/MaestroEvaluacion/ObtenerCombosModulo',
   ObtenerEvaluacionesEditar: '/MaestroEvaluacion/ObtenerEvaluacionEditar',
   ObtenerEvaluacionesAgrupar: '/MaestroEvaluacion/ObtenerEvaluacionesAgrupar',
-  ObtenerEvaluacionesAsociar: '/MaestroEvaluacion/ObtenerAsignacionEvaluaciones',
+  ObtenerEvaluacionesAsociar:
+    '/MaestroEvaluacion/ObtenerAsignacionEvaluaciones',
   ObtenerCentilesComponente: '/MaestroEvaluacion/ObtenerCentilComponente',
   ActualizarEvaluacion: '/MaestroEvaluacion/ActualizarExamenTest',
-  MaestroEvaluacionInsertarCentil: '/MaestroEvaluacion/InsertarCentilGrupoComponente',
-  MaestroEvaluacionActualizarCentil: '/MaestroEvaluacion/ActualizarCentilGrupoComponente',
+  MaestroEvaluacionInsertarCentil:
+    '/MaestroEvaluacion/InsertarCentilGrupoComponente',
+  MaestroEvaluacionActualizarCentil:
+    '/MaestroEvaluacion/ActualizarCentilGrupoComponente',
   MaestroEvaluacionActualizaFactor: '/Examen/ActualizarFactorComponente',
-  MaestroEvaluacionActualizaGrupoFactor: '/GrupoComponenteEvaluacion/ActualizarFactorGrupoComponente',
+  MaestroEvaluacionActualizaGrupoFactor:
+    '/GrupoComponenteEvaluacion/ActualizarFactorGrupoComponente',
   MaestroEvaluacionGuardar: '/MaestroEvaluacion/InsertarExamenTest',
   MaestroEvaluacionEliminar: '/MaestroEvaluacion/Eliminar',
-  MaestroEvaluacionRegistrarAsociacion: '/GrupoComponenteEvaluacion/ActualizarAsignacionComponenteAEvaluacion',
-  MaestroEvaluacionActualizarGrupo: '/GrupoComponenteEvaluacion/ActualizarGrupoComponente',
-  MaestroEvaluacionRegistrarGrupo: '/GrupoComponenteEvaluacion/RegistrarGrupoComponente',
-   //APROBACION PERFILES
-   CombosPerfilAprobacion: '/PerfilPuestoTrabajoPersonalAprobacion/ObtenerCombos',
-   ObtenerPerfilPuestoTrabajoPersonalAprobacion: '/PerfilPuestoTrabajoPersonalAprobacion/ObtenerPerfilPuestoTrabajoPersonalAprobacion',
-   PerfilAprobacionInsertar: '/PerfilPuestoTrabajoPersonalAprobacion/Insertar',
-   PerfilAprobacionEliminar: '/PerfilPuestoTrabajoPersonalAprobacion/Eliminar',
-   PerfilAprobacionActualizar: '/PerfilPuestoTrabajoPersonalAprobacion/Actualizar',
-   InsertarActualizarConfiguracion: '/PerfilPuestoTrabajoPersonalAprobacion/InsertarActualizarConfiguracion',
-   GestionRemuneracionPuestoTrabajoEditar: '/GestionRemuneracionPuestoTrabajo/Actualizar',
-   //Reporte Analisis Proceso Seleccion
-   AnalisisProcesoSeleccionObtenerCombos:'/AnalisisProcesoSeleccion/ObtenerCombos',
-   AnalisisProcesoSeleccionGenerarReporte:'/AnalisisProcesoSeleccion/GenerarReporte',
-   AnalisisProcesoSeleccionGenerarReporte_V2:'/AnalisisProcesoSeleccion/GenerarReporte_V2',
-
-
-
+  MaestroEvaluacionRegistrarAsociacion:
+    '/GrupoComponenteEvaluacion/ActualizarAsignacionComponenteAEvaluacion',
+  MaestroEvaluacionActualizarGrupo:
+    '/GrupoComponenteEvaluacion/ActualizarGrupoComponente',
+  MaestroEvaluacionRegistrarGrupo:
+    '/GrupoComponenteEvaluacion/RegistrarGrupoComponente',
+  //APROBACION PERFILES
+  CombosPerfilAprobacion:
+    '/PerfilPuestoTrabajoPersonalAprobacion/ObtenerCombos',
+  ObtenerPerfilPuestoTrabajoPersonalAprobacion:
+    '/PerfilPuestoTrabajoPersonalAprobacion/ObtenerPerfilPuestoTrabajoPersonalAprobacion',
+  PerfilAprobacionInsertar: '/PerfilPuestoTrabajoPersonalAprobacion/Insertar',
+  PerfilAprobacionEliminar: '/PerfilPuestoTrabajoPersonalAprobacion/Eliminar',
+  PerfilAprobacionActualizar:
+    '/PerfilPuestoTrabajoPersonalAprobacion/Actualizar',
+  InsertarActualizarConfiguracion:
+    '/PerfilPuestoTrabajoPersonalAprobacion/InsertarActualizarConfiguracion',
+  GestionRemuneracionPuestoTrabajoEditar:
+    '/GestionRemuneracionPuestoTrabajo/Actualizar',
+  //Reporte Analisis Proceso Seleccion
+  AnalisisProcesoSeleccionObtenerCombos:
+    '/AnalisisProcesoSeleccion/ObtenerCombos',
+  AnalisisProcesoSeleccionGenerarReporte:
+    '/AnalisisProcesoSeleccion/GenerarReporte',
+  AnalisisProcesoSeleccionGenerarReporte_V2:
+    '/AnalisisProcesoSeleccion/GenerarReporte_V2',
 };
-
 
 export const constApiPlanificacion = {
   //AREA TRABAJO
-  AreaTrabajoInsertar: "/AreaTrabajo/Insertar",
-  AreaTrabajoActualizar: "/AreaTrabajo/Actualizar",
-  AreaTrabajoEliminar: "/AreaTrabajo/Eliminar",
-  AreaTrabajoObtenerCombo: "/AreaTrabajo/ObtenerCombo",
+  AreaTrabajoInsertar: '/AreaTrabajo/Insertar',
+  AreaTrabajoActualizar: '/AreaTrabajo/Actualizar',
+  AreaTrabajoEliminar: '/AreaTrabajo/Eliminar',
+  AreaTrabajoObtenerCombo: '/AreaTrabajo/ObtenerCombo',
 
   //AREA FORMACION
-  AreaFormacionInsertarLista: "/AreaFormacion/InsertarLista",
-  AreaFormacionActualizarLista: "/AreaFormacion/ActualizarLista",
-  AreaFormacionEliminarListado: "/AreaFormacion/EliminarListado",
-  AreaFormacionObtenerAreaFormacion: "/AreaFormacion/ObtenerAreaFormacion",
-  AreaFormacionObtenerCombo: "/AreaFormacion/ObtenerCombo",
+  AreaFormacionInsertarLista: '/AreaFormacion/InsertarLista',
+  AreaFormacionActualizarLista: '/AreaFormacion/ActualizarLista',
+  AreaFormacionEliminarListado: '/AreaFormacion/EliminarListado',
+  AreaFormacionObtenerAreaFormacion: '/AreaFormacion/ObtenerAreaFormacion',
+  AreaFormacionObtenerCombo: '/AreaFormacion/ObtenerCombo',
 
   // CertificadoPartnerController
   CertificadoPartnerComplementoPorId:
-    "/CertificadoPartnerComplemento/ObtenerCentroCostoAsignado",
+    '/CertificadoPartnerComplemento/ObtenerCentroCostoAsignado',
   CertificadoPartnerComplementoEliminar:
-    "/CertificadoPartnerComplemento/Eliminar",
+    '/CertificadoPartnerComplemento/Eliminar',
   CertificadoPartnerComplementoInsertar:
-    "/CertificadoPartnerComplemento/Insertar",
+    '/CertificadoPartnerComplemento/Insertar',
   CertificadoPartnerComplementoActualizar:
-    "/CertificadoPartnerComplemento/Actualizar",
+    '/CertificadoPartnerComplemento/Actualizar',
   CertificadoPartnerComplementoObtener:
-    "/CertificadoPartnerComplemento/ObtenerTodo",
+    '/CertificadoPartnerComplemento/ObtenerTodo',
   CertificadoPartnerComplementoAsignar:
-    "/CertificadoPartnerComplemento/Asignar",
+    '/CertificadoPartnerComplemento/Asignar',
 
   //DOCUMENTOS PORTAL WEB
-  DocumentoPwObtenerTodo: "/DocumentoPw/ObtenerTodo", // GET
+  DocumentoPwObtenerTodo: '/DocumentoPw/ObtenerTodo', // GET
   DocumentoSeccionPwObtenerDocumentoSeccionEditar:
-    "/DocumentoSeccionPw/ObtenerDocumentoSeccionEditar", // GET
-  DocumentoPwInsertarDocumento: "/DocumentoPw/InsertarDocumento", //POST
-  DocumentoPwActualizarDocumento: "/DocumentoPw/ActualizarDocumento", //PUT
-  DocumentoPwEliminarDocumento: "/DocumentoPw/EliminarDocumento", //DELETE
-  DocumentoPwObtenerIntroduccionVersionDocumento: "/DocumentoPw/ObtenerIntroduccionVersionDocumento",// GET
+    '/DocumentoSeccionPw/ObtenerDocumentoSeccionEditar', // GET
+  DocumentoPwInsertarDocumento: '/DocumentoPw/InsertarDocumento', //POST
+  DocumentoPwActualizarDocumento: '/DocumentoPw/ActualizarDocumento', //PUT
+  DocumentoPwEliminarDocumento: '/DocumentoPw/EliminarDocumento', //DELETE
+  DocumentoPwObtenerIntroduccionVersionDocumento:
+    '/DocumentoPw/ObtenerIntroduccionVersionDocumento', // GET
 
   //EMPRESA
-  EmpresaObtenerEmpresa: "/Empresa/ObtenerEmpresa",
-  EmpresaObtenerEmpresas: "/Empresa/ObtenerEmpresas",
-  EmpresaObtenerEmpresaFiltro: "/Empresa/ObtenerEmpresaFiltro",
-  EmpresaObtenerEmpresaPorId: "/Empresa/ObtenerEmpresaPorId",
-  EmpresaObtenerCombo: "/Empresa/ObtenerCombo",
-  EmpresaInsertar: "/Empresa/Insertar",
-  EmpresaActualizar: "/Empresa/Actualizar",
-  EmpresaEliminar: "/Empresa/Eliminar",
+  EmpresaObtenerEmpresa: '/Empresa/ObtenerEmpresa',
+  EmpresaObtenerEmpresas: '/Empresa/ObtenerEmpresas',
+  EmpresaObtenerEmpresaFiltro: '/Empresa/ObtenerEmpresaFiltro',
+  EmpresaObtenerEmpresaPorId: '/Empresa/ObtenerEmpresaPorId',
+  EmpresaObtenerCombo: '/Empresa/ObtenerCombo',
+  EmpresaInsertar: '/Empresa/Insertar',
+  EmpresaActualizar: '/Empresa/Actualizar',
+  EmpresaEliminar: '/Empresa/Eliminar',
   EmpresaObtenerComboTipoIdentificador:
-    "/Empresa/ObtenerComboTipoIdentificador",
-  EmpresaObtenerComboTamanioEmpresa: "/Empresa/ObtenerComboTamanioEmpresa",
-  EmpresaObtenerComboCIUU: "/Empresa/ObtenerComboCodigoCiiuIndustria",
-  EmpresaObtenerAutocomplete: "/Empresa/ObtenerAutocomplete",
-  EmpresaObtenerPorId: "/Empresa/ObtenerPorId",
-  EmpresaObtenerNombreCodigoCIIUPorId: "/Empresa/ObtenerNombreCodigoCIIUPorId",
+    '/Empresa/ObtenerComboTipoIdentificador',
+  EmpresaObtenerComboTamanioEmpresa: '/Empresa/ObtenerComboTamanioEmpresa',
+  EmpresaObtenerComboCIUU: '/Empresa/ObtenerComboCodigoCiiuIndustria',
+  EmpresaObtenerAutocomplete: '/Empresa/ObtenerAutocomplete',
+  EmpresaObtenerPorId: '/Empresa/ObtenerPorId',
+  EmpresaObtenerNombreCodigoCIIUPorId: '/Empresa/ObtenerNombreCodigoCIIUPorId',
   EmpresaObtenerNombreCodigoCIIUPorFiltro:
-    "/Empresa/ObtenerNombreCodigoCIIUPorFiltro",
+    '/Empresa/ObtenerNombreCodigoCIIUPorFiltro',
   // EmpresaObtenerFiltroAutocomplete: '/Empresa/ObtenerFiltroAutocomplete',
 
-  IndustriaInsertar: "/Industria/Insertar",
-  IndustriaInsertarLista: "/Industria/InsertarLista",
-  IndustriaActualizar: "/Industria/Actualizar",
-  IndustriaActualizarLista: "/Industria/ActualizarLista",
-  IndustriaEliminar: "/Industria/Eliminar/", // {id}/{usuario}
-  IndustriaEliminarListado: "/Industria/EliminarListado/", // {usuario}
+  IndustriaInsertar: '/Industria/Insertar',
+  IndustriaInsertarLista: '/Industria/InsertarLista',
+  IndustriaActualizar: '/Industria/Actualizar',
+  IndustriaActualizarLista: '/Industria/ActualizarLista',
+  IndustriaEliminar: '/Industria/Eliminar/', // {id}/{usuario}
+  IndustriaEliminarListado: '/Industria/EliminarListado/', // {usuario}
   // IndustriaObtenerIndustria: '/Industria/ObtenerIndustria',
-  IndustriaObtenerCombo: "/Industria/ObtenerCombo",
-  TiempoExperienciaObtenerCombo: "/Industria/ObtenerComboTiempoExperiencia",
-  TamanioEmpresaAgendaObtenerCombo: "/Industria/ObtenerComboTamanioEmpresa",
+  IndustriaObtenerCombo: '/Industria/ObtenerCombo',
+  TiempoExperienciaObtenerCombo: '/Industria/ObtenerComboTiempoExperiencia',
+  TamanioEmpresaAgendaObtenerCombo: '/Industria/ObtenerComboTamanioEmpresa',
 
-  CargoInsertar: "/Cargo/Insertar",
-  CargoInsertarLista: "/Cargo/InsertarLista",
-  CargoActualizar: "/Cargo/Actualizar",
-  CargoActualizarLista: "/Cargo/ActualizarLista",
-  CargoEliminar: "/Cargo/Eliminar", // {id}/{usuario}
-  CargoEliminarListado: "/Cargo/EliminarListado/", // {usuario}
+  CargoInsertar: '/Cargo/Insertar',
+  CargoInsertarLista: '/Cargo/InsertarLista',
+  CargoActualizar: '/Cargo/Actualizar',
+  CargoActualizarLista: '/Cargo/ActualizarLista',
+  CargoEliminar: '/Cargo/Eliminar', // {id}/{usuario}
+  CargoEliminarListado: '/Cargo/EliminarListado/', // {usuario}
   // CargoObtenerCargo: '/Cargo/ObtenerCargo',
-  CargoObtener: "/Cargo/Obtener",
-  CargoObtenerCombo: "/Cargo/ObtenerCombo",
+  CargoObtener: '/Cargo/Obtener',
+  CargoObtenerCombo: '/Cargo/ObtenerCombo',
 
-  TamanioEmpresaObtenerCombo: "/TamanioEmpresa/ObtenerCombo",
+  TamanioEmpresaObtenerCombo: '/TamanioEmpresa/ObtenerCombo',
 
-  MaterialAccionObtener: "/MaterialAccion/Obtener", //GET
-  MaterialAccionInsertar: "/MaterialAccion/Insertar", //POST
-  MaterialAccionActualizar: "/MaterialAccion/Actualizar", //PUT
-  MaterialAccionEliminar: "/MaterialAccion/Eliminar", //DELETE
+  MaterialAccionObtener: '/MaterialAccion/Obtener', //GET
+  MaterialAccionInsertar: '/MaterialAccion/Insertar', //POST
+  MaterialAccionActualizar: '/MaterialAccion/Actualizar', //PUT
+  MaterialAccionEliminar: '/MaterialAccion/Eliminar', //DELETE
 
   ProgramaGeneralObtenerProgramasGenerales:
-    "/ProgramaGeneral/ObtenerProgramasGenerales", //GET
+    '/ProgramaGeneral/ObtenerProgramasGenerales', //GET
 
   /*Modulo Pespecifico */
   PEspecificoObtenerPorNombreAutocomplete:
-    "/PEspecifico/ObtenerPorNombreAutocomplete", //POST
-  PEspecificoObtenerComboPGeneral: "/PEspecifico/ObtenerComboPGeneral",
+    '/PEspecifico/ObtenerPorNombreAutocomplete', //POST
+  PEspecificoObtenerComboPGeneral: '/PEspecifico/ObtenerComboPGeneral',
   PEspecificoObtenerCombosPEpecificoPorProgramaGeneral:
-    "/PEspecifico/ObtenerCombosPEpecificoPorProgramaGeneral", //POST
-  PEspecificoObtenerPorFiltro: "/PEspecifico/ObtenerPorFiltro", //POST
+    '/PEspecifico/ObtenerCombosPEpecificoPorProgramaGeneral', //POST
+  PEspecificoObtenerPorFiltro: '/PEspecifico/ObtenerPorFiltro', //POST
 
   PEspecificoObtenerFiltroPorIdPGeneral:
-    "/PEspecifico/ObtenerFiltroPorIdPGeneral",
-  PEspecificoObtenerCombosModulo: "/PEspecifico/ObtenerCombosModulo",
-  PEspecificoObtenerCombosModuloAsync: "/PEspecifico/ObtenerCombosModuloAsync",
+    '/PEspecifico/ObtenerFiltroPorIdPGeneral',
+  PEspecificoObtenerCombosModulo: '/PEspecifico/ObtenerCombosModulo',
+  PEspecificoObtenerCombosModuloAsync: '/PEspecifico/ObtenerCombosModuloAsync',
   PEspecificoObtenerProgramaEspecificoPadreIndividual:
-    "/PEspecifico/ObtenerProgramaEspecificoPadreIndividual",
+    '/PEspecifico/ObtenerProgramaEspecificoPadreIndividual',
   PEspecificoValidarPespecificoTieneSesiones:
-    "/PEspecifico/ValidarPespecificoTieneSesiones",
-  PEspecificoActualizarEstadoPrograma: "/PEspecifico/ActualizarEstadoPrograma", //PUT {idPespecifico}/{idEstadoPrograma}
-  PEspecificoActualizarPespecifico: "/PEspecifico/ActualizarPespecifico",
+    '/PEspecifico/ValidarPespecificoTieneSesiones',
+  PEspecificoActualizarEstadoPrograma: '/PEspecifico/ActualizarEstadoPrograma', //PUT {idPespecifico}/{idEstadoPrograma}
+  PEspecificoActualizarPespecifico: '/PEspecifico/ActualizarPespecifico',
   PEspecificoVerificarFrecuenciaPorIdPespecifico:
-    "/PEspecifico/VerificarFrecuenciaPorIdPespecifico",
+    '/PEspecifico/VerificarFrecuenciaPorIdPespecifico',
   PEspecificoVerificarSiTienePadrePEspecifico:
-    "/PEspecifico/VerificarSiTienePadrePEspecifico",
+    '/PEspecifico/VerificarSiTienePadrePEspecifico',
   PEspecificoObtenerTodoPespecificosRelacionados:
-    "/PEspecifico/ObtenerTodoPespecificosRelacionados",
+    '/PEspecifico/ObtenerTodoPespecificosRelacionados',
   PEspecificoObtenerCronogramaParaModulo:
-    "/PEspecifico/ObtenerCronogramaParaModulo",
+    '/PEspecifico/ObtenerCronogramaParaModulo',
   PEspecificoActualizarDocenteAmbienteProgramaEspecifico:
-    "/PEspecifico/ActualizarDocenteAmbienteProgramaEspecifico",
+    '/PEspecifico/ActualizarDocenteAmbienteProgramaEspecifico',
   PEspecificoActualizarInsertarModuloWebinar:
-    "/PEspecifico/ActualizarInsertarModuloWebinar",
+    '/PEspecifico/ActualizarInsertarModuloWebinar',
   PEspecificoVerificarDuracionPorIdPespecificoPadre:
-    "/PEspecifico/VerificarDuracionPorIdPespecificoPadre",
-  PEspecificoObtenerNumeroGrupos: "/PEspecifico/ObtenerNumeroGrupos",
-  PEspecificoInsertarFrecuencia: "/PEspecifico/InsertarFrecuencia",
-  PEspecificoModificarFrecuencia: "/PEspecifico/ModificarFrecuencia",
+    '/PEspecifico/VerificarDuracionPorIdPespecificoPadre',
+  PEspecificoObtenerNumeroGrupos: '/PEspecifico/ObtenerNumeroGrupos',
+  PEspecificoInsertarFrecuencia: '/PEspecifico/InsertarFrecuencia',
+  PEspecificoModificarFrecuencia: '/PEspecifico/ModificarFrecuencia',
   PEspecificoVerificarEsPespecificoIndividual:
-    "/PEspecifico/VerificarEsPespecificoIndividual",
+    '/PEspecifico/VerificarEsPespecificoIndividual',
   PEspecificoObtenerCronogramaPEspecifico:
-    "/PEspecifico/ObtenerCronogramaPEspecifico",
+    '/PEspecifico/ObtenerCronogramaPEspecifico',
   PEspecificoObtenerConfiguracionWebinarPEspecifico:
-    "/PEspecifico/ObtenerConfiguracionWebinarPEspecifico",
-  PEspecificoClonarSesiones: "/PEspecifico/ClonarSesiones",
+    '/PEspecifico/ObtenerConfiguracionWebinarPEspecifico',
+  PEspecificoClonarSesiones: '/PEspecifico/ClonarSesiones',
   PEspecificoGenerarCentroCostoCodigoNombre:
-    "/PEspecifico/GenerarCentroCostoCodigoNombre",
+    '/PEspecifico/GenerarCentroCostoCodigoNombre',
   PEspecificoObtenerCronogramaParaModuloAlterno:
-    "/PEspecifico/ObtenerCronogramaParaModuloAlterno",
-  PEspecificoGenerarCronogramaGrupal: "/PEspecifico/GenerarCronogramaGrupal",
+    '/PEspecifico/ObtenerCronogramaParaModuloAlterno',
+  PEspecificoGenerarCronogramaGrupal: '/PEspecifico/GenerarCronogramaGrupal',
   PEspecificoInsertarCrearCursosConCentroCosto:
-    "/PEspecifico/InsertarCrearCursosConCentroCosto",
+    '/PEspecifico/InsertarCrearCursosConCentroCosto',
   PEspecificoEliminarCronogramaDuplicado:
-    "/PEspecifico/EliminarCronogramaDuplicado",
+    '/PEspecifico/EliminarCronogramaDuplicado',
   PEspecificoGenerarPDFCronogramaModulo:
-    "/PEspecifico/GenerarPDFCronogramaModulo",
+    '/PEspecifico/GenerarPDFCronogramaModulo',
   PEspecificoGenerarPDFCronogramaSemanal:
-    "/PEspecifico/GenerarPDFCronogramaSemanal",
+    '/PEspecifico/GenerarPDFCronogramaSemanal',
 
   PEspecificoActualizarDuracionInsertarSesion:
-    "/PEspecifico/ActualizarDuracionInsertarSesion",
-  PEspecificoInsertarEventoEspecial: "/PEspecifico/InsertarEventoEspecial",
+    '/PEspecifico/ActualizarDuracionInsertarSesion',
+  PEspecificoInsertarEventoEspecial: '/PEspecifico/InsertarEventoEspecial',
   PEspecificoGenerarReporteAmbienteExcel:
-    "/PEspecifico/GenerarReporteAmbienteExcel", //POST
+    '/PEspecifico/GenerarReporteAmbienteExcel', //POST
   PEspecificoActualizarConfigurarWebinar:
-    "/PEspecifico/ActualizarConfigurarWebinar", //POST
+    '/PEspecifico/ActualizarConfigurarWebinar', //POST
   PEspecificoEliminarConfiguracionWebinar:
-    "/PEspecifico/EliminarConfiguracionWebinar", //POST
+    '/PEspecifico/EliminarConfiguracionWebinar', //POST
 
-  PespecificoSesionEliminarSesion: "/PespecificoSesion/EliminarSesion",
+  PespecificoSesionEliminarSesion: '/PespecificoSesion/EliminarSesion',
   PespecificoSesionEstablecerSesionInicial:
-    "/PespecificoSesion/EstablecerSesionInicial",
+    '/PespecificoSesion/EstablecerSesionInicial',
   PEspecificoSesionActualizarDatosCronogramaSesiones:
-    "/PEspecificoSesion/ActualizarDatosCronogramaSesiones",
+    '/PEspecificoSesion/ActualizarDatosCronogramaSesiones',
 
-  PEspecificoPadreFrecuenciaObtener: "/PEspecificoPadreFrecuencia/Obtener",
-  PEspecificoPadreFrecuenciaInsertar: "/PEspecificoPadreFrecuencia/Insertar",
+  PEspecificoPadreFrecuenciaObtener: '/PEspecificoPadreFrecuencia/Obtener',
+  PEspecificoPadreFrecuenciaInsertar: '/PEspecificoPadreFrecuencia/Insertar',
   PEspecificoPadreFrecuenciaActualizar:
-    "/PEspecificoPadreFrecuencia/Actualizar",
+    '/PEspecificoPadreFrecuencia/Actualizar',
 
   PEspecificoConsumoInsertarFurSesiones:
-    "/PEspecificoConsumo/InsertarFurSesiones",
+    '/PEspecificoConsumo/InsertarFurSesiones',
   PEspecificoConsumoInsertarFurPrograma:
-    "/PEspecificoConsumo/InsertarFurPrograma",
-  PEspecificoConsumoEliminarSesionFur: "/PEspecificoConsumo/EliminarSesionFur",
+    '/PEspecificoConsumo/InsertarFurPrograma',
+  PEspecificoConsumoEliminarSesionFur: '/PEspecificoConsumo/EliminarSesionFur',
   PEspecificoConsumoActualizarSesionFur:
-    "/PEspecificoConsumo/ActualizarSesionFur",
+    '/PEspecificoConsumo/ActualizarSesionFur',
 
   PEspecificoObtenerObtenerProgramasEspecificosAdicional:
-    "/PEspecifico/ObtenerProgramasEspecificosAdicional",
+    '/PEspecifico/ObtenerProgramasEspecificosAdicional',
 
   ConfigurarWebinarObtenerPorIdPespecificoPadre:
-    "/ConfigurarWebinar/ObtenerPorIdPespecificoPadre",
+    '/ConfigurarWebinar/ObtenerPorIdPespecificoPadre',
   ConfigurarWebinarInsertarConfiguracionWebinar:
-    "/PEspecifico/InsertarConfiguracionWebinar",
+    '/PEspecifico/InsertarConfiguracionWebinar',
 
-  MaterialCriterioVerificacionObtener: "/MaterialCriterioVerificacion/Obtener", //GET
+  MaterialCriterioVerificacionObtener: '/MaterialCriterioVerificacion/Obtener', //GET
   MaterialCriterioVerificacionInsertar:
-    "/MaterialCriterioVerificacion/Insertar", //POST
+    '/MaterialCriterioVerificacion/Insertar', //POST
   MaterialCriterioVerificacionActualizar:
-    "/MaterialCriterioVerificacion/Actualizar", //PUT
+    '/MaterialCriterioVerificacion/Actualizar', //PUT
   MaterialCriterioVerificacionEliminar:
-    "/MaterialCriterioVerificacion/Eliminar", //DELETE
+    '/MaterialCriterioVerificacion/Eliminar', //DELETE
 
   //CATEGORIA MOODLE @Gretel
-  MoodleCategoriaObtener: "/MoodleCategoria/Obtener", //GET
-  MoodleCategoriaObtenerCombos: "/MoodleCategoria/ObtenerCombos", //GET
-  MoodleCategoriaInsertar: "/MoodleCategoria/Insertar", //POST
-  MoodleCategoriaActualizar: "/MoodleCategoria/Actualizar", //PUT
-  MoodleCategoriaEliminar: "/MoodleCategoria/Eliminar", //DELETE
+  MoodleCategoriaObtener: '/MoodleCategoria/Obtener', //GET
+  MoodleCategoriaObtenerCombos: '/MoodleCategoria/ObtenerCombos', //GET
+  MoodleCategoriaInsertar: '/MoodleCategoria/Insertar', //POST
+  MoodleCategoriaActualizar: '/MoodleCategoria/Actualizar', //PUT
+  MoodleCategoriaEliminar: '/MoodleCategoria/Eliminar', //DELETE
 
   //MATERIAL ESTADO
-  MaterialEstadoObtener: "/MaterialEstado/Obtener", //GET
-  MaterialEstadoInsertar: "/MaterialEstado/Insertar", //POST
-  MaterialEstadoActualizar: "/MaterialEstado/Actualizar", //PUT
-  MaterialEstadoEliminar: "/MaterialEstado/Eliminar", //DELETE
+  MaterialEstadoObtener: '/MaterialEstado/Obtener', //GET
+  MaterialEstadoInsertar: '/MaterialEstado/Insertar', //POST
+  MaterialEstadoActualizar: '/MaterialEstado/Actualizar', //PUT
+  MaterialEstadoEliminar: '/MaterialEstado/Eliminar', //DELETE
 
   //CURSO MOODLE
-  CursoMoodleObtener: "/MaestroMoodleCurso/ObtenerCursosRegistradas", //GET
-  CursoMoodleObtenerCombos: "/MaestroMoodleCurso/ObtenerComboMoodleCategoria", //GET
-  CursoMoodleInsertar: "/MaestroMoodleCurso/InsertarMoodleCurso", //POST
-  CursoMoodleActualizar: "/MaestroMoodleCurso/ActualizarMoodleCurso", //PUT
-  CursoMoodleEliminar: "/MaestroMoodleCurso/EliminarMoodleCurso", //DELETE
+  CursoMoodleObtener: '/MaestroMoodleCurso/ObtenerCursosRegistradas', //GET
+  CursoMoodleObtenerCombos: '/MaestroMoodleCurso/ObtenerComboMoodleCategoria', //GET
+  CursoMoodleInsertar: '/MaestroMoodleCurso/InsertarMoodleCurso', //POST
+  CursoMoodleActualizar: '/MaestroMoodleCurso/ActualizarMoodleCurso', //PUT
+  CursoMoodleEliminar: '/MaestroMoodleCurso/EliminarMoodleCurso', //DELETE
 
   //VERSION PROGRAMA
-  VersionProgramaObtener: "/VersionPrograma/ObtenerVersionPrograma", //GET
-  VersionProgramaInsertar: "/VersionPrograma/Insertar", //POST
-  VersionProgramaActualizar: "/VersionPrograma/Actualizar", //PUT
-  VersionProgramaEliminar: "/VersionPrograma/Eliminar", //DELETE
+  VersionProgramaObtener: '/VersionPrograma/ObtenerVersionPrograma', //GET
+  VersionProgramaInsertar: '/VersionPrograma/Insertar', //POST
+  VersionProgramaActualizar: '/VersionPrograma/Actualizar', //PUT
+  VersionProgramaEliminar: '/VersionPrograma/Eliminar', //DELETE
 
   //PLANIFICACION AREA CENTRO COSTO
-  AreaCentroCostoObtener: "/AreaCc/Obtener", //GET
-  AreaCentroCostoInsertar: "/AreaCc/Insertar", //POST
-  AreaCentroCostoActualizar: "/AreaCc/Actualizar", //PUT
-  AreaCentroCostoEliminar: "/AreaCc/Eliminar", //DELETE
+  AreaCentroCostoObtener: '/AreaCc/Obtener', //GET
+  AreaCentroCostoInsertar: '/AreaCc/Insertar', //POST
+  AreaCentroCostoActualizar: '/AreaCc/Actualizar', //PUT
+  AreaCentroCostoEliminar: '/AreaCc/Eliminar', //DELETE
 
   //PLANIFICACION CATEGORIA CRITERIO EVALUACION AULA VIRTUAL
-  CategoriaCriterioEvaluacionObtener: "/CriterioEvaluacionCategorium/Obtener", //GET
-  CategoriaCriterioEvaluacionInsertar: "/CriterioEvaluacionCategorium/Insertar", //POST
+  CategoriaCriterioEvaluacionObtener: '/CriterioEvaluacionCategorium/Obtener', //GET
+  CategoriaCriterioEvaluacionInsertar: '/CriterioEvaluacionCategorium/Insertar', //POST
   CategoriaCriterioEvaluacionActualizar:
-    "/CriterioEvaluacionCategorium/Actualizar", //PUT
-  CategoriaCriterioEvaluacionEliminar: "/CriterioEvaluacionCategorium/Eliminar", //DELETE
+    '/CriterioEvaluacionCategorium/Actualizar', //PUT
+  CategoriaCriterioEvaluacionEliminar: '/CriterioEvaluacionCategorium/Eliminar', //DELETE
   //PLANIFICACION AREA CAPACITACION
-  AreaCapacitacionObtener: "/AreaCapacitacion/Obtener", //GET
+  AreaCapacitacionObtener: '/AreaCapacitacion/Obtener', //GET
   // AreaCapacitacionObtenerAreaCapacitacion: '/AreaCapacitacion/ObtenerAreaCapacitacion',
-  AreaCapacitacionInsertar: "/AreaCapacitacion/Insertar",
-  AreaCapacitacionActualizar: "/AreaCapacitacion/Actualizar",
-  AreaCapacitacionEliminar: "/AreaCapacitacion/Eliminar",
-  AreaCapacitacionObtenerCombo: "/AreaCapacitacion/ObtenerCombo",
+  AreaCapacitacionInsertar: '/AreaCapacitacion/Insertar',
+  AreaCapacitacionActualizar: '/AreaCapacitacion/Actualizar',
+  AreaCapacitacionEliminar: '/AreaCapacitacion/Eliminar',
+  AreaCapacitacionObtenerCombo: '/AreaCapacitacion/ObtenerCombo',
 
   //PLANIFICACION CONFIGURACION PROGRAMAS
   //TIPO DESCUENTO PROGRAMA
-  TipoDescuentoObtener: "/TipoDescuento/Obtener", //GET
-  TipoDescuentoObtenerCombosModulo: "/TipoDescuento/ObtenerCombosModulo", //GET
-  TipoDescuentoEliminar: "/TipoDescuento/Eliminar", //DELETE
-  TipoDescuentoInsertar: "/TipoDescuento/Insertar", //POST
-  TipoDescuentoActualizar: "/TipoDescuento/Actualizar", //PUT
+  TipoDescuentoObtener: '/TipoDescuento/Obtener', //GET
+  TipoDescuentoObtenerCombosModulo: '/TipoDescuento/ObtenerCombosModulo', //GET
+  TipoDescuentoEliminar: '/TipoDescuento/Eliminar', //DELETE
+  TipoDescuentoInsertar: '/TipoDescuento/Insertar', //POST
+  TipoDescuentoActualizar: '/TipoDescuento/Actualizar', //PUT
   TipoDescuentoObtenerTiposPorIdTipoDescuento:
-    "/TipoDescuento/ObtenerTiposPorIdTipoDescuento", //GET
+    '/TipoDescuento/ObtenerTiposPorIdTipoDescuento', //GET
 
   //Asociar Feedback Programas
   FeedbackConfigurarGrupoPreguntaObtener:
-    "/FeedbackConfigurarGrupoPregunta/Obtener", //GET
+    '/FeedbackConfigurarGrupoPregunta/Obtener', //GET
   FeedbackConfigurarGrupoPreguntaObtenerCombo:
-    "/FeedbackConfigurarGrupoPregunta/ObtenerCombo", //GET
+    '/FeedbackConfigurarGrupoPregunta/ObtenerCombo', //GET
   FeedbackConfigurarGrupoPreguntaObtenerProgramasSelecionados:
-    "/FeedbackConfigurarGrupoPregunta/ObtenerProgramasSelecionados", //GET
+    '/FeedbackConfigurarGrupoPregunta/ObtenerProgramasSelecionados', //GET
   FeedbackConfigurarGrupoPreguntaInsertar:
-    "/FeedbackConfigurarGrupoPregunta/Insertar", //POST
+    '/FeedbackConfigurarGrupoPregunta/Insertar', //POST
   FeedbackConfigurarGrupoPreguntaActualizar:
-    "/FeedbackConfigurarGrupoPregunta/Actualizar", //PUT
+    '/FeedbackConfigurarGrupoPregunta/Actualizar', //PUT
   FeedbackConfigurarGrupoPreguntaEliminar:
-    "/FeedbackConfigurarGrupoPregunta/Eliminar", //ELIMINAR
+    '/FeedbackConfigurarGrupoPregunta/Eliminar', //ELIMINAR
 
   //Asociar Tag Programa
   AsociarTagProgramaObtenerCombosModulo:
-    "/AsociarTagPrograma/ObtenerCombosModulo", //GET
-  AsociarTagProgramaObtenerProgramas: "/AsociarTagPrograma/ObtenerProgramas", //GET
-  AsociarTagProgramaAsociarTag: "/AsociarTagPrograma/AsociarTag", //POST
-  AsociarTagProgramaDesasociarTag: "/AsociarTagPrograma/DesasociarTag", //DELETE
+    '/AsociarTagPrograma/ObtenerCombosModulo', //GET
+  AsociarTagProgramaObtenerProgramas: '/AsociarTagPrograma/ObtenerProgramas', //GET
+  AsociarTagProgramaAsociarTag: '/AsociarTagPrograma/AsociarTag', //POST
+  AsociarTagProgramaDesasociarTag: '/AsociarTagPrograma/DesasociarTag', //DELETE
   AsociarTagProgramaObtenerTodoTagPorPrograma:
-    "/AsociarTagPrograma/ObtenerTodoTagPorPrograma", //GET
+    '/AsociarTagPrograma/ObtenerTodoTagPorPrograma', //GET
   AsociarTagProgramaInsertarTagAsociar:
-    "/AsociarTagPrograma/InsertarTagAsociar", //POST
-  AsociarTagProgramaActualizarTag: "/AsociarTagPrograma/ActualizarTag", //PUT
-  AsociarTagProgramaEliminarTag: "/AsociarTagPrograma/EliminarTag", //DELETE
+    '/AsociarTagPrograma/InsertarTagAsociar', //POST
+  AsociarTagProgramaActualizarTag: '/AsociarTagPrograma/ActualizarTag', //PUT
+  AsociarTagProgramaEliminarTag: '/AsociarTagPrograma/EliminarTag', //DELETE
   AsociarTagProgramaObtenerTagSinAsociar:
-    "/AsociarTagPrograma/ObtenerTagSinAsociar", //GET
+    '/AsociarTagPrograma/ObtenerTagSinAsociar', //GET
   AsociarTagProgramaObtenerTodoParametroContenido:
-    "/AsociarTagPrograma/ObtenerTodoParametroContenido", //GET
+    '/AsociarTagPrograma/ObtenerTodoParametroContenido', //GET
 
-  AsociarProgramaTagObtenerArea: "/AsociarProgramaTag/ObtenerTodoArea", //GET
-  AsociarProgramaTagObtenerSubArea: "/AsociarProgramaTag/ObtenerTodoSubArea", //GET
+  AsociarProgramaTagObtenerArea: '/AsociarProgramaTag/ObtenerTodoArea', //GET
+  AsociarProgramaTagObtenerSubArea: '/AsociarProgramaTag/ObtenerTodoSubArea', //GET
   AsociarProgramaTagObtenerCategoria:
-    "/AsociarProgramaTag/ObtenerTodoCategoriaPrograma", //GET
-  AsociarProgramaTagObtener: "/AsociarProgramaTag/ObtenerTodo", //GET
+    '/AsociarProgramaTag/ObtenerTodoCategoriaPrograma', //GET
+  AsociarProgramaTagObtener: '/AsociarProgramaTag/ObtenerTodo', //GET
   AsociarProgramaTagObtenerSinAsociar:
-    "/AsociarProgramaTag/ObtenerTagSinAsociar", //GET
+    '/AsociarProgramaTag/ObtenerTagSinAsociar', //GET
   AsociarProgramaTagObtenerTodoTagPorPrograma:
-    "/AsociarProgramaTag/ObtenerTodoTagPorPrograma", //GET
-  AsociarProgramaTagAsociar: "/AsociarProgramaTag/Asociar", //POST
-  AsociarProgramaTagDesasociar: "/AsociarProgramaTag/Desasociar", //GET
+    '/AsociarProgramaTag/ObtenerTodoTagPorPrograma', //GET
+  AsociarProgramaTagAsociar: '/AsociarProgramaTag/Asociar', //POST
+  AsociarProgramaTagDesasociar: '/AsociarProgramaTag/Desasociar', //GET
   AsociarProgramaTagObtenerTodoParametroSeo:
-    "/AsociarProgramaTag/ObtenerTodoParametroSeo", //GET
+    '/AsociarProgramaTag/ObtenerTodoParametroSeo', //GET
 
   //PGeneralTipoDescuento
   PGeneralTipoDescuentoAsociarPrograma:
-    "/PGeneralTipoDescuento/AsociarPrograma", //PUT
+    '/PGeneralTipoDescuento/AsociarPrograma', //PUT
   //PGeneralTipoDescuento
   PGeneralTipoDescuentoObtenerProgramaPorDescuento:
-    "/PGeneralTipoDescuento/ObtenerProgramaPorDescuento", //GET
+    '/PGeneralTipoDescuento/ObtenerProgramaPorDescuento', //GET
 
   //REGIONES
-  PaisObtenerPaises: "/Pais/ObtenerPaises", //GET
-  CiudadVisualizarCiudad: "/Ciudad/VisualizarCiudad", //GET
-  CiudadActualizarCiudadesMultiples: "/Ciudad/ActualizarCiudadesMultiples", //PUT
+  PaisObtenerPaises: '/Pais/ObtenerPaises', //GET
+  CiudadVisualizarCiudad: '/Ciudad/VisualizarCiudad', //GET
+  CiudadActualizarCiudadesMultiples: '/Ciudad/ActualizarCiudadesMultiples', //PUT
 
   //REPORTES
   ReporteProblemasAulaVirtualObtenerCombos:
-    "/ReporteProblemasAulaVirtual/ObtenerCombos", //GET
+    '/ReporteProblemasAulaVirtual/ObtenerCombos', //GET
   ReporteProblemasAulaVirtualGenerarReporte:
-    "/ReporteProblemasAulaVirtual/GenerarReporte", //POST
+    '/ReporteProblemasAulaVirtual/GenerarReporte', //POST
   ReporteLibroReclamacionObtenerListaNombreReclamo:
-    "/ReporteLibroReclamacion/ObtenerListaNombreReclamo", //GET
+    '/ReporteLibroReclamacion/ObtenerListaNombreReclamo', //GET
   ReporteLibroReclamacionObtenerListaDniReclamo:
-    "/ReporteLibroReclamacion/ObtenerListaDniReclamo", //GET
+    '/ReporteLibroReclamacion/ObtenerListaDniReclamo', //GET
   ReporteLibroReclamacionGenerarReporteLibroReclamacion:
-    "/ReporteLibroReclamacion/GenerarReporteLibroReclamacion", //POST
+    '/ReporteLibroReclamacion/GenerarReporteLibroReclamacion', //POST
   ReporteControlTareaAlumnoGenerarReporteControlTareaAlumno:
-    "/ReporteControlTareaAlumno/GenerarReporteControlTareaAlumno", //POSTO
+    '/ReporteControlTareaAlumno/GenerarReporteControlTareaAlumno', //POSTO
   ReporteEncuestasGenerarReporteEncuestaInicial:
-    "/ReporteEncuestas/GenerarReporteEncuestaInicial", //POST
+    '/ReporteEncuestas/GenerarReporteEncuestaInicial', //POST
   ReporteEncuestasGenerarReporteEncuestaIntermedia:
-    "/ReporteEncuestas/GenerarReporteEncuestaIntermedia", //POST
+    '/ReporteEncuestas/GenerarReporteEncuestaIntermedia', //POST
   ReporteEncuestasGenerarReporteEncuestaFinal:
-    "/ReporteEncuestas/GenerarReporteEncuestaFinal", //POST
+    '/ReporteEncuestas/GenerarReporteEncuestaFinal', //POST
   ReporteControlTareaAlumnoActualizarPersonaCalificacionControlTareaAlumno:
-    "/ReporteControlTareaAlumno/ActualizarPersonaCalificacionControlTareaAlumno", //POST
-  ObtenerVersionEncuesta:
-    "/ReporteEncuestas/ObtenerVersionEncuesta", //GET
-
+    '/ReporteControlTareaAlumno/ActualizarPersonaCalificacionControlTareaAlumno', //POST
+  ObtenerVersionEncuesta: '/ReporteEncuestas/ObtenerVersionEncuesta', //GET
 
   ReporteEncuestasSincronico:
-    "/ReporteEncuestasSincronico/ObtenerComboDocentes",//GET
+    '/ReporteEncuestasSincronico/ObtenerComboDocentes', //GET
   ReporteEncuestasGenerarReporteEncuestaInicialSincronico:
-    "/ReporteEncuestasSincronico/GenerarReporteEncuestaInicialSincronico",//POST
+    '/ReporteEncuestasSincronico/GenerarReporteEncuestaInicialSincronico', //POST
   ReporteEncuestasGenerarReporteEncuestaIntermediaSincronico:
-    "/ReporteEncuestasSincronico/GenerarReporteEncuestaIntermediaSincronico",//POST
+    '/ReporteEncuestasSincronico/GenerarReporteEncuestaIntermediaSincronico', //POST
   ReporteEncuestasGenerarReporteEncuestaFinalSincronico:
-    "/ReporteEncuestasSincronico/GenerarReporteEncuestaFinalSincronico",//POST
-  ReporteEncuestaDocente: "/ReporteEncuestasSincronico/GenerarReporteEncuestaDocente",
+    '/ReporteEncuestasSincronico/GenerarReporteEncuestaFinalSincronico', //POST
+  ReporteEncuestaDocente:
+    '/ReporteEncuestasSincronico/GenerarReporteEncuestaDocente',
 
   //REPORTE CONSULTA FORO AULA VIRTUAL
   ReporteConsultasForoAulaVirtualObtenerCombo:
-    "/ReporteConsultasForoAulaVirtual/ObtenerCombosModulo",
+    '/ReporteConsultasForoAulaVirtual/ObtenerCombosModulo',
   ReporteConsultasForoAulaVirtualGenerarReporteConsultasForo:
-    "/ReporteConsultasForoAulaVirtual/GenerarReporteConsultasForo",
+    '/ReporteConsultasForoAulaVirtual/GenerarReporteConsultasForo',
   ReporteConsultasForoAulaVirtualActualizarPersonaRevisionForo:
-    "/ReporteConsultasForoAulaVirtual/ActualizarPersonaRevisionForo",
+    '/ReporteConsultasForoAulaVirtual/ActualizarPersonaRevisionForo',
   ReporteConsultasForoAulaVirtualActualizarAperturaForo:
-    "/ReporteConsultasForoAulaVirtual/ActualizarAperturaForo",
+    '/ReporteConsultasForoAulaVirtual/ActualizarAperturaForo',
   ReporteConsultasForoAulaVirtualActualizarEstadoAtencionForo:
-    "/ReporteConsultasForoAulaVirtual/ActualizarEstadoAtencionForo",
+    '/ReporteConsultasForoAulaVirtual/ActualizarEstadoAtencionForo',
   ReporteConsultasForoAulaVirtualEliminarForo:
-    "/ReporteConsultasForoAulaVirtual/EliminarForo",
+    '/ReporteConsultasForoAulaVirtual/EliminarForo',
   ReporteConsultasForoAulaVirtualObtenerDetalleForo:
-    "/ReporteConsultasForoAulaVirtual/ObtenerDetalleForo",
+    '/ReporteConsultasForoAulaVirtual/ObtenerDetalleForo',
   ReporteConsultasForoAulaVirtualEliminarForoRespuesta:
-    "/ReporteConsultasForoAulaVirtual/EliminarForoRespuesta",
+    '/ReporteConsultasForoAulaVirtual/EliminarForoRespuesta',
   ReporteConsultasForoAulaVirtualEnvioCorreoAsignacionForoDocente:
-    "/ReporteConsultasForoAulaVirtual/EnvioCorreoAsignacionForoDocente",
+    '/ReporteConsultasForoAulaVirtual/EnvioCorreoAsignacionForoDocente',
   //PARAMETROSEO
-  ParametroSeoPwObtenerCombo: "/ParametroSeoPw/ObtenerCombo",
+  ParametroSeoPwObtenerCombo: '/ParametroSeoPw/ObtenerCombo',
   ParametroSeoPwObtenerTodoParametroContenidoPorIdSubAreaCapacitacion:
-    "/ParametroSeoPw/ObtenerTodoParametroContenidoPorIdSubAreaCapacitacion",
+    '/ParametroSeoPw/ObtenerTodoParametroContenidoPorIdSubAreaCapacitacion',
 
   ParametroSeoPwObtenerTodoParametroContenidoIdAreaCapacitacion:
-    "/AreaParametroSeoPw/ObtenerContenidoParametroSEO",
+    '/AreaParametroSeoPw/ObtenerContenidoParametroSEO',
 
   //SUB AREA CAPACITACION
-  SubAreaCapacitacionObtener: "/SubAreaCapacitacion/Obtener",
-  SubAreaCapacitacionInsertar: "/SubAreaCapacitacion/Insertar", //POST
-  SubAreaCapacitacionActualizar: "/SubAreaCapacitacion/Actualizar", //PUT
-  SubAreaCapacitacionEliminar: "/SubAreaCapacitacion/Eliminar", //DELETE
+  SubAreaCapacitacionObtener: '/SubAreaCapacitacion/Obtener',
+  SubAreaCapacitacionInsertar: '/SubAreaCapacitacion/Insertar', //POST
+  SubAreaCapacitacionActualizar: '/SubAreaCapacitacion/Actualizar', //PUT
+  SubAreaCapacitacionEliminar: '/SubAreaCapacitacion/Eliminar', //DELETE
   SubAreaCapacitacionObtenerParametroContenidoPorIdSubAreaCapacitacion:
-    "/SubAreaCapacitacion/ObtenerParametroContenidoPorIdSubAreaCapacitacion", //GET
-  SubAreaCapacitacionObtenerCombo: "/SubAreaCapacitacion/ObtenerCombo",
+    '/SubAreaCapacitacion/ObtenerParametroContenidoPorIdSubAreaCapacitacion', //GET
+  SubAreaCapacitacionObtenerCombo: '/SubAreaCapacitacion/ObtenerCombo',
   //SUB NIVEL CC
-  SubNivelCcObtenerPorFiltro: "/SubNivelCc/ObtenerPorFiltro", //GET
-  SubNivelCcInsertar: "/SubNivelCc/Insertar", //POST
-  SubNivelCcActualizar: "/SubNivelCc/Actualizar", //PUT
-  SubNivelCcEliminar: "/SubNivelCc/Eliminar", //DELETE
+  SubNivelCcObtenerPorFiltro: '/SubNivelCc/ObtenerPorFiltro', //GET
+  SubNivelCcInsertar: '/SubNivelCc/Insertar', //POST
+  SubNivelCcActualizar: '/SubNivelCc/Actualizar', //PUT
+  SubNivelCcEliminar: '/SubNivelCc/Eliminar', //DELETE
 
   //FEEDBACK TIPO AULAVIRTUAL
-  FeedbackTipoObtener: "/FeedbackTipo/Obtener", //GET
-  FeedbackTipoInsertar: "/FeedbackTipo/Insertar", //POST
-  FeedbackTipoActualizar: "/FeedbackTipo/Actualizar", //PUT
-  FeedbackTipoEliminar: "/FeedbackTipo/Eliminar", //DELETE
+  FeedbackTipoObtener: '/FeedbackTipo/Obtener', //GET
+  FeedbackTipoInsertar: '/FeedbackTipo/Insertar', //POST
+  FeedbackTipoActualizar: '/FeedbackTipo/Actualizar', //PUT
+  FeedbackTipoEliminar: '/FeedbackTipo/Eliminar', //DELETE
 
   //TIPO DOCUMENTO ALUMNO
-  TipoDocumentoAlumnoObtener: "/TipoDocumentoAlumno/Obtener", //GET
+  TipoDocumentoAlumnoObtener: '/TipoDocumentoAlumno/Obtener', //GET
   TipoDocumentoAlumnoObtenerPlantillaCertificadoConstancia:
-    "/TipoDocumentoAlumno/ObtenerPlantillaCertificadoConstancia", //GET
+    '/TipoDocumentoAlumno/ObtenerPlantillaCertificadoConstancia', //GET
   TipoDocumentoAlumnoObtenerDetalleConfiguracionCerficicado:
-    "/TipoDocumentoAlumno/ObtenerDetalleConfiguracionCerficicado", //GET
+    '/TipoDocumentoAlumno/ObtenerDetalleConfiguracionCerficicado', //GET
   TipoDocumentoAlumnoObtenerDetalleTipoDocumento:
-    "/TipoDocumentoAlumno/ObtenerDetalleTipoDocumento", //GET
-  TipoDocumentoAlumnoObtenerCombos: "/TipoDocumentoAlumno/ObtenerCombos", //GET
-  TipoDocumentoAlumnoInsertar: "/TipoDocumentoAlumno/Insertar", //POST
-  TipoDocumentoAlumnoActualizar: "/TipoDocumentoAlumno/Actualizar", //PUT
-  TipoDocumentoAlumnoEliminar: "/TipoDocumentoAlumno/Eliminar", //DELETE
+    '/TipoDocumentoAlumno/ObtenerDetalleTipoDocumento', //GET
+  TipoDocumentoAlumnoObtenerCombos: '/TipoDocumentoAlumno/ObtenerCombos', //GET
+  TipoDocumentoAlumnoInsertar: '/TipoDocumentoAlumno/Insertar', //POST
+  TipoDocumentoAlumnoActualizar: '/TipoDocumentoAlumno/Actualizar', //PUT
+  TipoDocumentoAlumnoEliminar: '/TipoDocumentoAlumno/Eliminar', //DELETE
 
   //TIPO MATERIAL
-  MaterialTipoObtener: "/MaterialTipo/Obtener", //GET
-  MaterialTipoObtenerCombo: "/MaterialTipo/ObtenerCombo", //GET
-  MaterialTipoObtenerCombosModulo: "/MaterialTipo/ObtenerCombosModulo", //GET
-  MaterialTipoInsertar: "/MaterialTipo/Insertar", //POST
-  MaterialTipoActualizar: "/MaterialTipo/Actualizar", //PUT
-  MaterialTipoEliminar: "/MaterialTipo/Eliminar", //DELETE
+  MaterialTipoObtener: '/MaterialTipo/Obtener', //GET
+  MaterialTipoObtenerCombo: '/MaterialTipo/ObtenerCombo', //GET
+  MaterialTipoObtenerCombosModulo: '/MaterialTipo/ObtenerCombosModulo', //GET
+  MaterialTipoInsertar: '/MaterialTipo/Insertar', //POST
+  MaterialTipoActualizar: '/MaterialTipo/Actualizar', //PUT
+  MaterialTipoEliminar: '/MaterialTipo/Eliminar', //DELETE
 
   //TRONCALES
-  TroncalesObtener: "/Troncales/Obtener",
-  TroncalesObtenerCiudadBsCombo: "/Troncales/ObtenerCiudadBsCombo", //GET
-  TroncalesObtenerCategoriaCombo: "/Troncales/ObtenerCategoriaCombo", //GET
-  TroncalesInsertar: "/Troncales/Insertar", //POST
-  TroncalesActualizar: "/Troncales/Actualizar", //PUT
+  TroncalesObtener: '/Troncales/Obtener',
+  TroncalesObtenerCiudadBsCombo: '/Troncales/ObtenerCiudadBsCombo', //GET
+  TroncalesObtenerCategoriaCombo: '/Troncales/ObtenerCategoriaCombo', //GET
+  TroncalesInsertar: '/Troncales/Insertar', //POST
+  TroncalesActualizar: '/Troncales/Actualizar', //PUT
 
   //ESCALA CALIFICACIO
-  EscalaCalificacionObtener: "/EscalaCalificacion/Obtener", //GET
-  EscalaCalificacionObtenerPorId: "/EscalaCalificacion/ObtenerPorId", //GET
-  EscalaCalificacionInsertar: "/EscalaCalificacion/Insertar", //POST
-  EscalaCalificacionActualizar: "/EscalaCalificacion/Actualizar", //PUT
-  EscalaCalificacionEliminar: "/EscalaCalificacion/Eliminar", //DELETE
+  EscalaCalificacionObtener: '/EscalaCalificacion/Obtener', //GET
+  EscalaCalificacionObtenerPorId: '/EscalaCalificacion/ObtenerPorId', //GET
+  EscalaCalificacionInsertar: '/EscalaCalificacion/Insertar', //POST
+  EscalaCalificacionActualizar: '/EscalaCalificacion/Actualizar', //PUT
+  EscalaCalificacionEliminar: '/EscalaCalificacion/Eliminar', //DELETE
 
   //BSG CELULARES
-  CelularesBsgObtener: "/MaterialVersion/ObtenerGrabacionesCelularCorporativo",
-  CelularesBsgInsertar: "/MaterialVersion/InsertarGrabacionesCelularCorporativo",
+  CelularesBsgObtener: '/MaterialVersion/ObtenerGrabacionesCelularCorporativo',
+  CelularesBsgInsertar:
+    '/MaterialVersion/InsertarGrabacionesCelularCorporativo',
 
   //MATERIAL VERSION
-  MaterialVersionObtener: "/MaterialVersion/Obtener",
-  MaterialVersionInsertar: "/MaterialVersion/Insertar",
-  MaterialVersionActualizar: "/MaterialVersion/Actualizar",
-  MaterialVersionEliminar: "/MaterialVersion/Eliminar",
+  MaterialVersionObtener: '/MaterialVersion/Obtener',
+  MaterialVersionInsertar: '/MaterialVersion/Insertar',
+  MaterialVersionActualizar: '/MaterialVersion/Actualizar',
+  MaterialVersionEliminar: '/MaterialVersion/Eliminar',
 
   //MATERAL ADICIONAL AULA VIRTUAL
-  MaterialAdicionalObtener: "/MaterialAdicionalAulaVirtual/Obtener",
+  MaterialAdicionalObtener: '/MaterialAdicionalAulaVirtual/Obtener',
   MaterialAdicionalObtenerDetalle:
-    "/MaterialAdicionalAulaVirtual/ObtenerDetalle",
-  MaterialAdicionalInsertar: "/MaterialAdicionalAulaVirtual/Insertar",
-  MaterialAdicionalActualizar: "/MaterialAdicionalAulaVirtual/Actualizar",
-  MaterialAdicionalEliminar: "/MaterialAdicionalAulaVirtual/Eliminar",
+    '/MaterialAdicionalAulaVirtual/ObtenerDetalle',
+  MaterialAdicionalInsertar: '/MaterialAdicionalAulaVirtual/Insertar',
+  MaterialAdicionalActualizar: '/MaterialAdicionalAulaVirtual/Actualizar',
+  MaterialAdicionalEliminar: '/MaterialAdicionalAulaVirtual/Eliminar',
 
   //CRITERIO EVALUACION AULA VIRTUAL
-  CriterioEvaluacionObtener: "/CriterioEvaluacion/Obtener", //GET
-  CriterioEvaluacionObtenerCombo: "/CriterioEvaluacion/ObtenerCombo", //GET
-  CriterioEvaluacionObtenerPorId: "/CriterioEvaluacion/ObtenerPorId", //GET
+  CriterioEvaluacionObtener: '/CriterioEvaluacion/Obtener', //GET
+  CriterioEvaluacionObtenerCombo: '/CriterioEvaluacion/ObtenerCombo', //GET
+  CriterioEvaluacionObtenerPorId: '/CriterioEvaluacion/ObtenerPorId', //GET
   CriterioEvaluacionObtenerCombosModulo:
-    "/CriterioEvaluacion/ObtenerCombosModulo", //GET
-  CriterioEvaluacionInsertar: "/CriterioEvaluacion/Insertar", //POST
-  CriterioEvaluacionActualizar: "/CriterioEvaluacion/Actualizar", //PUT
-  CriterioEvaluacionEliminar: "/CriterioEvaluacion/Eliminar", //DELETE
+    '/CriterioEvaluacion/ObtenerCombosModulo', //GET
+  CriterioEvaluacionInsertar: '/CriterioEvaluacion/Insertar', //POST
+  CriterioEvaluacionActualizar: '/CriterioEvaluacion/Actualizar', //PUT
+  CriterioEvaluacionEliminar: '/CriterioEvaluacion/Eliminar', //DELETE
 
   //GESTION MATERIAL
   ProgramaGeneralMaterialEstudioAdicionalObtener:
-    "/ProgramaGeneralMaterialEstudioAdicional/Obtener",
+    '/ProgramaGeneralMaterialEstudioAdicional/Obtener',
   ProgramaGeneralMaterialEstudioAdicionalObtenerDetalle:
-    "/ProgramaGeneralMaterialEstudioAdicional/ObtenerDetalle",
+    '/ProgramaGeneralMaterialEstudioAdicional/ObtenerDetalle',
   ProgramaGeneralMaterialEstudioAdicionalInsertarActualizar:
-    "/ProgramaGeneralMaterialEstudioAdicional/Insertar",
+    '/ProgramaGeneralMaterialEstudioAdicional/Insertar',
   ProgramaGeneralMaterialEstudioAdicionalEliminar:
-    "/ProgramaGeneralMaterialEstudioAdicional/Eliminar",
+    '/ProgramaGeneralMaterialEstudioAdicional/Eliminar',
 
   //CRUCIGRAMA PROGRAMA CAPACITACION
   CrucigramaProgramaCapacitacionObtenerCombos:
-    "/CrucigramaProgramaCapacitacion/ObtenerCombos",
+    '/CrucigramaProgramaCapacitacion/ObtenerCombos',
 
   //PREGUNTAS FRECUENTES AULA VIRTUAL
   PreguntaFrecuenteObtenerCombosModulo:
-    "/PreguntaFrecuente/ObtenerCombosModulo",
-  PreguntaFrecuenteObtenerPorFiltro: "/PreguntaFrecuente/ObtenerPorFiltro",
-  PreguntaFrecuenteObtener: "/PreguntaFrecuente/Obtener",
-  PreguntaFrecuenteInsertar: "/PreguntaFrecuente/Insertar",
-  PreguntaFrecuenteActualizar: "/PreguntaFrecuente/Actualizar",
-  PreguntaFrecuenteEliminar: "/PreguntaFrecuente/Eliminar",
+    '/PreguntaFrecuente/ObtenerCombosModulo',
+  PreguntaFrecuenteObtenerPorFiltro: '/PreguntaFrecuente/ObtenerPorFiltro',
+  PreguntaFrecuenteObtener: '/PreguntaFrecuente/Obtener',
+  PreguntaFrecuenteInsertar: '/PreguntaFrecuente/Insertar',
+  PreguntaFrecuenteActualizar: '/PreguntaFrecuente/Actualizar',
+  PreguntaFrecuenteEliminar: '/PreguntaFrecuente/Eliminar',
 
   //PLANTILLA DOCUMENTOS AULA VIRTUAL
 
-  PlantillaPwInsertar: "/PlantillaPw/Insertar",
-  PlantillaPwActualizar: "/PlantillaPw/Actualizar",
-  PlantillaPwEliminar: "/PlantillaPw/Eliminar",
-  PlantillaPwObtenerCombosModulo: "/PlantillaPw/ObtenerCombosModulo",
+  PlantillaPwInsertar: '/PlantillaPw/Insertar',
+  PlantillaPwActualizar: '/PlantillaPw/Actualizar',
+  PlantillaPwEliminar: '/PlantillaPw/Eliminar',
+  PlantillaPwObtenerCombosModulo: '/PlantillaPw/ObtenerCombosModulo',
   PlantillaPwObtenerSeccionesPlantillaPorIdPlantillaPW:
-    "/PlantillaPw/ObtenerSeccionesPlantillaPorIdPlantillaPW",
+    '/PlantillaPw/ObtenerSeccionesPlantillaPorIdPlantillaPW',
   PlantillaPwObtenerPaisesPorIdPlantillaPw:
-    "/PlantillaPw/ObtenerPaisesPorIdPlantillaPw",
+    '/PlantillaPw/ObtenerPaisesPorIdPlantillaPw',
   PlantillaPwObtenerSeccionesTipoContenidoPorIdSeccionPW:
-    "/PlantillaPw/ObtenerSeccionesTipoContenidoPorIdSeccionPW",
-  PlantillaPwObtenerPlantillaPw: "/PlantillaPw/ObtenerPlantillaPw", // GET
+    '/PlantillaPw/ObtenerSeccionesTipoContenidoPorIdSeccionPW',
+  PlantillaPwObtenerPlantillaPw: '/PlantillaPw/ObtenerPlantillaPw', // GET
   PlantillaMaestroPwObtenerPlantillaSeccionMaestraPorIdPlantilla:
-    "/PlantillaMaestroPw/ObtenerPlantillaSeccionMaestraPorIdPlantilla", // GET
+    '/PlantillaMaestroPw/ObtenerPlantillaSeccionMaestraPorIdPlantilla', // GET
   //Courier
-  CourierObtener: "/Courier/Obtener", //GET
-  CourierObtenerPorId: "/Courier/ObtenerPorId", //GET
-  CourierObtenerCombos: "/Courier/ObtenerCombos", //GET
-  CourierInsertar: "/Courier/Insertar", //POST
-  CourierActualizar: "/Courier/Actualizar", //PUT
-  CourierEliminar: "/Courier/Eliminar", //DELETE
+  CourierObtener: '/Courier/Obtener', //GET
+  CourierObtenerPorId: '/Courier/ObtenerPorId', //GET
+  CourierObtenerCombos: '/Courier/ObtenerCombos', //GET
+  CourierInsertar: '/Courier/Insertar', //POST
+  CourierActualizar: '/Courier/Actualizar', //PUT
+  CourierEliminar: '/Courier/Eliminar', //DELETE
 
-  CourierDetalleObtenerPorIdCourier: "/CourierDetalle/ObtenerPorIdCourier", //GET
-  CourierDetalleObtenerPorId: "/CourierDetalle/ObtenerPorId", //GET
-  CourierDetalleInsertar: "/CourierDetalle/Insertar", //POST
-  CourierDetalleActualizar: "/CourierDetalle/Actualizar", //PUT
-  CourierDetalleEliminar: "/CourierDetalle/Eliminar", //DELETE
+  CourierDetalleObtenerPorIdCourier: '/CourierDetalle/ObtenerPorIdCourier', //GET
+  CourierDetalleObtenerPorId: '/CourierDetalle/ObtenerPorId', //GET
+  CourierDetalleInsertar: '/CourierDetalle/Insertar', //POST
+  CourierDetalleActualizar: '/CourierDetalle/Actualizar', //PUT
+  CourierDetalleEliminar: '/CourierDetalle/Eliminar', //DELETE
 
-  TagPwObtener: "/TagPw/Obtener", //GET
-  TagPwObtenerParametroSeo: "/TagPw/ObtenerParametroSeo", //GET
-  TagPwInsertar: "/TagPw/Insertar", //POST
-  TagPwActualizar: "/TagPw/Actualizar", //PUT
-  TagPwEliminar: "/TagPw/Eliminar", //DELETE
+  TagPwObtener: '/TagPw/Obtener', //GET
+  TagPwObtenerParametroSeo: '/TagPw/ObtenerParametroSeo', //GET
+  TagPwInsertar: '/TagPw/Insertar', //POST
+  TagPwActualizar: '/TagPw/Actualizar', //PUT
+  TagPwEliminar: '/TagPw/Eliminar', //DELETE
 
   ProgramaGeneralObtenerCombosConfigurarVideoPrograma:
-    "/ProgramaGeneral/ObtenerCombosConfigurarVideoPrograma", //GET
+    '/ProgramaGeneral/ObtenerCombosConfigurarVideoPrograma', //GET
   ConfigurarVideoProgramaObtenerConfiguracionVideoPrograma:
-    "/ConfigurarVideoPrograma/ObtenerConfiguracionVideoPrograma", //GET
+    '/ConfigurarVideoPrograma/ObtenerConfiguracionVideoPrograma', //GET
   ConfigurarVideoProgramaObtenerConfiguracionExamenPrograma:
-    "/ConfigurarVideoPrograma/ObtenerConfiguracionExamenPrograma", //GET
+    '/ConfigurarVideoPrograma/ObtenerConfiguracionExamenPrograma', //GET
   ConfigurarVideoProgramaObtenerConfiguracionProyecto:
-    "/ConfigurarVideoPrograma/ObtenerConfiguracionProyecto", //GET
+    '/ConfigurarVideoPrograma/ObtenerConfiguracionProyecto', //GET
   ConfigurarVideoProgramaObtenerEnunciadoPregunta:
-    "/ConfigurarVideoPrograma/ObtenerEnunciadoPregunta", //GET
+    '/ConfigurarVideoPrograma/ObtenerEnunciadoPregunta', //GET
   ConfigurarVideoProgramaObtenerDocumentoProgramaGeneral:
-    "/ConfigurarVideoPrograma/ObtenerDocumentoProgramaGeneral", //GET
+    '/ConfigurarVideoPrograma/ObtenerDocumentoProgramaGeneral', //GET
   ConfigurarVideoProgramaObtenerConfiguracionSesionPrograma:
-    "/ConfigurarVideoPrograma/ObtenerConfiguracionSesionPrograma", //GET
+    '/ConfigurarVideoPrograma/ObtenerConfiguracionSesionPrograma', //GET
   ConfigurarVideoProgramaObtenerConfigurarEvaluacionTrabajoPorConfiguracion:
-    "/ConfigurarVideoPrograma/ObtenerConfigurarEvaluacionTrabajoPorConfiguracion",
+    '/ConfigurarVideoPrograma/ObtenerConfigurarEvaluacionTrabajoPorConfiguracion',
   ConfigurarVideoProgramaObtenerConfiguracionPreguntasEstructura:
-    "/ConfigurarVideoPrograma/ObtenerConfiguracionPreguntasEstructura", //GET
-  ConfigurarVideoProgramaInsertar: "/ConfigurarVideoPrograma/insertar", //POST
-  ConfigurarVideoProgramaActualizar: "/ConfigurarVideoPrograma/Actualizar", //POST
+    '/ConfigurarVideoPrograma/ObtenerConfiguracionPreguntasEstructura', //GET
+  ConfigurarVideoProgramaInsertar: '/ConfigurarVideoPrograma/insertar', //POST
+  ConfigurarVideoProgramaActualizar: '/ConfigurarVideoPrograma/Actualizar', //POST
   ConfigurarVideoProgramaEliminarConfiguracionPrograma:
-    "/ConfigurarVideoPrograma/EliminarConfiguracionPrograma",
+    '/ConfigurarVideoPrograma/EliminarConfiguracionPrograma',
   ConfigurarVideoProgramaDescargarPlantillaExcelConfigurarSecuenciaVideo:
-    "/ConfigurarVideoPrograma/DescargarPlantillaExcelConfigurarSecuenciaVideo",
+    '/ConfigurarVideoPrograma/DescargarPlantillaExcelConfigurarSecuenciaVideo',
   ConfigurarVideoProgramaDescargarPlantillaExcel:
-    "/ConfigurarVideoPrograma/DescargarPlantillaExcel", //GET
+    '/ConfigurarVideoPrograma/DescargarPlantillaExcel', //GET
   ConfigurarVideoProgramaImportarExcelConfigurarSecuenciaVideo:
-    "/ConfigurarVideoPrograma/ImportarExcelConfigurarSecuenciaVideo",
+    '/ConfigurarVideoPrograma/ImportarExcelConfigurarSecuenciaVideo',
   ConfigurarVideoProgramaImportarExcel:
-    "/ConfigurarVideoPrograma/ImportarExcel", //POST
+    '/ConfigurarVideoPrograma/ImportarExcel', //POST
   ConfigurarVideoProgramaEliminarSesionConfigurarVideo:
-    "/ConfigurarVideoPrograma/EliminarSesionConfigurarVideo", //DELETE
+    '/ConfigurarVideoPrograma/EliminarSesionConfigurarVideo', //DELETE
   ConfigurarEvaluacionTrabajoObtenerPorConfiguracion:
-    "/ConfigurarEvaluacionTrabajo/ObtenerPorConfiguracion", //GET
-  ConfigurarEvaluacionTrabajoInsertar: "/ConfigurarEvaluacionTrabajo/Insertar", //POST
+    '/ConfigurarEvaluacionTrabajo/ObtenerPorConfiguracion', //GET
+  ConfigurarEvaluacionTrabajoInsertar: '/ConfigurarEvaluacionTrabajo/Insertar', //POST
   ConfigurarEvaluacionTrabajoActualizar:
-    "/ConfigurarEvaluacionTrabajo/Actualizar",
-  ConfigurarEvaluacionTrabajoEliminar: "/ConfigurarEvaluacionTrabajo/Eliminar", //DELETE
-  ConfigurarVideoProgramaActualizarDescargaReproduccionVideo:"/ConfigurarVideoPrograma/ActualizarDescargaReproduccionVideo", //Put
-  ConfigurarVideoProgramaActualizarObtenerConteosdeVideosTipo:"/ConfigurarVideoPrograma/ObtenerConteosdeVideosTipo", //Put
+    '/ConfigurarEvaluacionTrabajo/Actualizar',
+  ConfigurarEvaluacionTrabajoEliminar: '/ConfigurarEvaluacionTrabajo/Eliminar', //DELETE
+  ConfigurarVideoProgramaActualizarDescargaReproduccionVideo:
+    '/ConfigurarVideoPrograma/ActualizarDescargaReproduccionVideo', //Put
+  ConfigurarVideoProgramaActualizarObtenerConteosdeVideosTipo:
+    '/ConfigurarVideoPrograma/ObtenerConteosdeVideosTipo', //Put
 
   //Modulo Pgeneral
   ProgramaGeneralObtenerCombosModuloAsync:
-    "/ProgramaGeneral/ObtenerCombosModuloAsync",
+    '/ProgramaGeneral/ObtenerCombosModuloAsync',
   MontoPagoObtenerCombosModuloMontoPagoAsync:
-    "/MontoPago/ObtenerCombosModuloAsync",
-  MontoPagoEliminarMontoPago: "/MontoPago/EliminarMontoPago",
+    '/MontoPago/ObtenerCombosModuloAsync',
+  MontoPagoEliminarMontoPago: '/MontoPago/EliminarMontoPago',
   ProgramaGeneralObtenerProgramasGeneral:
-    "/ProgramaGeneral/ObtenerProgramasGeneral",
-  EsquemaEvaluacionObtenerComboAsync: "/EsquemaEvaluacion/ObtenerComboAsync",
-  ModalidadCursoObtenerCombo: "/ModalidadCurso/ObtenerCombo",
-  ModalidadCursoObtener: "/ModalidadCurso/Obtener",
+    '/ProgramaGeneral/ObtenerProgramasGeneral',
+  EsquemaEvaluacionObtenerComboAsync: '/EsquemaEvaluacion/ObtenerComboAsync',
+  ModalidadCursoObtenerCombo: '/ModalidadCurso/ObtenerCombo',
+  ModalidadCursoObtener: '/ModalidadCurso/Obtener',
   ProveedorObtenerNombreProveedorParaHonorario:
-    "/Proveedor/ObtenerNombreProveedorParaHonorario",
+    '/Proveedor/ObtenerNombreProveedorParaHonorario',
 
   //CriteriosEvaluacionProgramasEspecificos
   CriteriosEvaluacionProgramasEspecificosObtenerReporte:
-    "/CriteriosEvaluacionProgramasEspecificos/ObtenerProgramasEspecificoEsquemasFiltrosPadre",
+    '/CriteriosEvaluacionProgramasEspecificos/ObtenerProgramasEspecificoEsquemasFiltrosPadre',
   CriteriosEvaluacionProgramasEspecificosObtenerFiltros:
-    "/CriteriosEvaluacionProgramasEspecificos/ObtenerFiltroCombos",
+    '/CriteriosEvaluacionProgramasEspecificos/ObtenerFiltroCombos',
   ProgramaGeneralObtenerRelacionCursos:
-    "/ProgramaGeneral/ObtenerRelacionCursos",
+    '/ProgramaGeneral/ObtenerRelacionCursos',
   ProgramaGeneralAsociarProgramasAsociados:
-    "/ProgramaGeneral/AsociarProgramasAsociados",
+    '/ProgramaGeneral/AsociarProgramasAsociados',
   ProgramaGeneralObtenerDetalleProgramas:
-    "/ProgramaGeneral/ObtenerDetalleProgramas",
-  ProgramaGeneralObtenerIdModalidad: "/ProgramaGeneral/ObtenerIdModalidad",
+    '/ProgramaGeneral/ObtenerDetalleProgramas',
+  ProgramaGeneralObtenerIdModalidad: '/ProgramaGeneral/ObtenerIdModalidad',
   EsquemaEvaluacionObtenerEsquemaAsociado:
-    "/EsquemaEvaluacion/ObtenerEsquemaAsociado",
+    '/EsquemaEvaluacion/ObtenerEsquemaAsociado',
   MontoPagoObtenerPgeneralMontoPagoDetalle:
-    "/MontoPago/ObtenerPgeneralMontoPagoDetalle",
+    '/MontoPago/ObtenerPgeneralMontoPagoDetalle',
   ProgramaGeneralObtenerPGCriteriosEvaluacionOnline:
-    "/ProgramaGeneral/ObtenerPGCriteriosEvaluacionOnline",
+    '/ProgramaGeneral/ObtenerPGCriteriosEvaluacionOnline',
   ProgramaGeneralObtenerPGCriteriosEvaluacionAOnline:
-    "/ProgramaGeneral/ObtenerPGCriteriosEvaluacionAOnline",
+    '/ProgramaGeneral/ObtenerPGCriteriosEvaluacionAOnline',
   ProgramaGeneralObtenerPGCriteriosEvaluacionPresencial:
-    "/ProgramaGeneral/ObtenerPGCriteriosEvaluacionPresencial",
+    '/ProgramaGeneral/ObtenerPGCriteriosEvaluacionPresencial',
   CriterioEvaluacionObtenerPGCriteriosEvaluacion:
-    "/CriterioEvaluacion/ObtenerPGCriteriosEvaluacion",
+    '/CriterioEvaluacion/ObtenerPGCriteriosEvaluacion',
 
   ProgramaGeneralObtenerPPadreCEvaluacionOnline:
-    "/ProgramaGeneral/ObtenerPPadreCEvaluacionOnline",
+    '/ProgramaGeneral/ObtenerPPadreCEvaluacionOnline',
   ProgramaGeneralObtenerPPadreCEvaluacionAonline:
-    "/ProgramaGeneral/ObtenerPPadreCEvaluacionAonline",
+    '/ProgramaGeneral/ObtenerPPadreCEvaluacionAonline',
   ProgramaGeneralObtenerPPadreCEvaluacionPresencial:
-    "/ProgramaGeneral/ObtenerPPadreCEvaluacionPresencial",
+    '/ProgramaGeneral/ObtenerPPadreCEvaluacionPresencial',
 
   ProgramaGeneralActualizarInsertarPGCEvaluacionHijo:
-    "/ProgramaGeneral/ActualizarInsertarPGCEvaluacionHijo",
+    '/ProgramaGeneral/ActualizarInsertarPGCEvaluacionHijo',
   ProgramaGeneralActualizarInsertarPGCEvaluacion:
-    "/ProgramaGeneral/ActualizarInsertarPGCEvaluacion",
+    '/ProgramaGeneral/ActualizarInsertarPGCEvaluacion',
 
   ProgramaGeneralActualizarEstadoPrograma:
-    "/ProgramaGeneral/ActualizarEstadoPrograma",
+    '/ProgramaGeneral/ActualizarEstadoPrograma',
   ProgramaGeneralObtenerCombosConfiguracionPlantillaAsync:
-    "/ProgramaGeneral/ObtenerCombosConfiguracionPlantillaAsync",
+    '/ProgramaGeneral/ObtenerCombosConfiguracionPlantillaAsync',
   ProgramaGeneralGenerarVistaPreviaCertificado:
-    "/ProgramaGeneral/GenerarVistaPreviaCertificado",
+    '/ProgramaGeneral/GenerarVistaPreviaCertificado',
 
   ProgramaGeneralObtenerDocumentosAsociadosYNoAsociados:
-    "/ProgramaGeneral/ObtenerDocumentosAsociadosYNoAsociados",
+    '/ProgramaGeneral/ObtenerDocumentosAsociadosYNoAsociados',
   ProgramaGeneralActualizarDocumentosAsociados:
-    "/ProgramaGeneral/ActualizarDocumentosAsociados",
+    '/ProgramaGeneral/ActualizarDocumentosAsociados',
   PgeneralProyectoAplicacionAnexoObtenerListaPgeneralProyectoAplicacionAnexo:
-    "/PgeneralProyectoAplicacionAnexo/ObtenerListaPgeneralProyectoAplicacionAnexo",
+    '/PgeneralProyectoAplicacionAnexo/ObtenerListaPgeneralProyectoAplicacionAnexo',
   PgeneralProyectoAplicacionAnexoInsertar:
-    "/PgeneralProyectoAplicacionAnexo/Insertar",
+    '/PgeneralProyectoAplicacionAnexo/Insertar',
   PgeneralProyectoAplicacionAnexoActualizar:
-    "/PgeneralProyectoAplicacionAnexo/Actualizar",
+    '/PgeneralProyectoAplicacionAnexo/Actualizar',
   PgeneralProyectoAplicacionAnexoEliminar:
-    "/PgeneralProyectoAplicacionAnexo/Eliminar",
+    '/PgeneralProyectoAplicacionAnexo/Eliminar',
   PgeneralProyectoAplicacionAnexoGuardarArchivo:
-    "/PgeneralProyectoAplicacionAnexo/GuardarArchivo",
+    '/PgeneralProyectoAplicacionAnexo/GuardarArchivo',
   EsquemaEvaluacionObtenerDetalleEsquemaAsignado:
-    "/EsquemaEvaluacion/ObtenerDetalleEsquemaAsignado",
+    '/EsquemaEvaluacion/ObtenerDetalleEsquemaAsignado',
   EsquemaEvaluacionObtenerDetalleEsquema:
-    "/EsquemaEvaluacion/ObtenerDetalleEsquema",
-  EsquemaEvaluacionSubirArchivo: "/EsquemaEvaluacion/SubirArchivo",
+    '/EsquemaEvaluacion/ObtenerDetalleEsquema',
+  EsquemaEvaluacionSubirArchivo: '/EsquemaEvaluacion/SubirArchivo',
   EsquemaEvaluacionActualizarAsignacion:
-    "/EsquemaEvaluacion/ActualizarAsignacion",
+    '/EsquemaEvaluacion/ActualizarAsignacion',
   EsquemaEvaluacionRegistrarAsignacion:
-    "/EsquemaEvaluacion/RegistrarAsignacion",
+    '/EsquemaEvaluacion/RegistrarAsignacion',
 
   MontoPagoObtenerProgramasMontoPagoPanel:
-    "/MontoPago/ObtenerProgramasMontoPagoPanel",
+    '/MontoPago/ObtenerProgramasMontoPagoPanel',
   PGeneralTipoDescuentoObtenerDescuentosPorPrograma:
-    "/PGeneralTipoDescuento/ObtenerDescuentosPorPrograma",
-  ObtenerTipoDescuento: "/TipoDescuento/Obtener",
-  AsociarDescuentos: "/MontoPago/AsociarDescuentos",
+    '/PGeneralTipoDescuento/ObtenerDescuentosPorPrograma',
+  ObtenerTipoDescuento: '/TipoDescuento/Obtener',
+  AsociarDescuentos: '/MontoPago/AsociarDescuentos',
 
   //CRUCIGRAMA DEL AULA VIRTUAL
   CrucigramaProgramaCapacitacionObtenerCrucigramas:
-    "/CrucigramaProgramaCapacitacion/ObtenerCrucigramas", //GET
+    '/CrucigramaProgramaCapacitacion/ObtenerCrucigramas', //GET
   CrucigramaProgramaCapacitacionObtenerReporteCrucigramasExportacionExcel:
-    "/CrucigramaProgramaCapacitacion/ObtenerReporteCrucigramasExportacionExcel", //GET
+    '/CrucigramaProgramaCapacitacion/ObtenerReporteCrucigramasExportacionExcel', //GET
   CrucigramaProgramaCapacitacionEliminarCrucigrama:
-    "/CrucigramaProgramaCapacitacion/EliminarCrucigrama", //DELETE
+    '/CrucigramaProgramaCapacitacion/EliminarCrucigrama', //DELETE
   CrucigramaProgramaCapacitacionEliminarCrucigramasSeleccionados:
-    "/CrucigramaProgramaCapacitacion/EliminarCrucigramasSeleccionados", //DELETE
+    '/CrucigramaProgramaCapacitacion/EliminarCrucigramasSeleccionados', //DELETE
   CrucigramaProgramaCapacitacionObtenerRespuestasCrucigrama:
-    "/CrucigramaProgramaCapacitacion/ObtenerRespuestasCrucigrama", //GET
+    '/CrucigramaProgramaCapacitacion/ObtenerRespuestasCrucigrama', //GET
   CrucigramaProgramaCapacitacionInsertarCrucigrama:
-    "/CrucigramaProgramaCapacitacion/InsertarCrucigrama", //POST
+    '/CrucigramaProgramaCapacitacion/InsertarCrucigrama', //POST
   CrucigramaProgramaCapacitacionActualizarCrucigrama:
-    "/CrucigramaProgramaCapacitacion/ActualizarCrucigrama", //PUT
+    '/CrucigramaProgramaCapacitacion/ActualizarCrucigrama', //PUT
   CrucigramaProgramaCapacitacionImportarExcel:
-    "/CrucigramaProgramaCapacitacion/ImportarExcel", //POST
+    '/CrucigramaProgramaCapacitacion/ImportarExcel', //POST
 
   //REVISAR Y APROBAR MATERIAL POR PROGRAMA ESPECÍFICO
-  MaterialPespecificoObtenerCombos: "/MaterialPespecifico/ObtenerCombos", //GET
+  MaterialPespecificoObtenerCombos: '/MaterialPespecifico/ObtenerCombos', //GET
   MaterialPespecificoObtenerMaterialesPorProgramaEspecificoGrupoRevisar:
-    "/MaterialPespecifico/ObtenerMaterialesPorProgramaEspecificoGrupoRevisar", //POST
+    '/MaterialPespecifico/ObtenerMaterialesPorProgramaEspecificoGrupoRevisar', //POST
   MaterialPespecificoAprobarMaterialVersion:
-    "/MaterialPespecifico/AprobarMaterialVersion", //GET
+    '/MaterialPespecifico/AprobarMaterialVersion', //GET
   MaterialPespecificoDesaprobarMaterialVersion:
-    "/MaterialPespecifico/DesaprobarMaterialVersion", //GET
+    '/MaterialPespecifico/DesaprobarMaterialVersion', //GET
   MaterialPespecificoDetalleSubirMaterialArchivo:
-    "/MaterialPespecificoDetalle/SubirMaterialArchivo", //POST
+    '/MaterialPespecificoDetalle/SubirMaterialArchivo', //POST
 
   MaterialPespecificoObtenerPorIdPEspecifico:
-    "/MaterialPespecifico/ObtenerPorIdPEspecifico",
+    '/MaterialPespecifico/ObtenerPorIdPEspecifico',
   MaterialPespecificoObtenerComboMaterial:
-    "/MaterialPespecifico/ObtenerComboMaterial", //POST
-  MaterialPEspecificoEliminar: "/MaterialPEspecifico/Eliminar", //DELETE
-  MaterialPespecificoInsertar: "/MaterialPespecifico/Insertar", //POST
-  MaterialPespecificoActualizar: "/MaterialPespecifico/Actualizar", //PUT
+    '/MaterialPespecifico/ObtenerComboMaterial', //POST
+  MaterialPEspecificoEliminar: '/MaterialPEspecifico/Eliminar', //DELETE
+  MaterialPespecificoInsertar: '/MaterialPespecifico/Insertar', //POST
+  MaterialPespecificoActualizar: '/MaterialPespecifico/Actualizar', //PUT
   MaestroPreguntaProgramaCapacitacionObtenerPorEstructura:
-    "/MaestroPreguntaProgramaCapacitacion/ObtenerPorEstructura",
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerPorEstructura',
   MaestroPreguntaProgramaCapacitacionActualizarRespuestaPorSecuenciaVideo:
-    "/MaestroPreguntaProgramaCapacitacion/ActualizarRespuestaPorSecuenciaVideo",
+    '/MaestroPreguntaProgramaCapacitacion/ActualizarRespuestaPorSecuenciaVideo',
   MaestroPreguntaProgramaCapacitacionObtenerRespuestasPregunta:
-    "/MaestroPreguntaProgramaCapacitacion/ObtenerRespuestasPregunta", //GET
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerRespuestasPregunta', //GET
   MaestroPreguntaProgramaCapacitacionObtener:
-    "/MaestroPreguntaProgramaCapacitacion/Obtener", //GET
+    '/MaestroPreguntaProgramaCapacitacion/Obtener', //GET
   MaestroPreguntaProgramaCapacitacionObtenerCapituloSesionesPGeneral:
-    "/MaestroPreguntaProgramaCapacitacion/ObtenerCapituloSesionesPGeneral", //GET-RECIEN SE VA A USAR
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerCapituloSesionesPGeneral', //GET-RECIEN SE VA A USAR
   MaestroPreguntaProgramaCapacitacionObtenerCombosModulo:
-    "/MaestroPreguntaProgramaCapacitacion/ObtenerCombosModulo", //GET
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerCombosModulo', //GET
   MaestroPreguntaProgramaCapacitacionObtenerIntentosPregunta:
-    "/MaestroPreguntaProgramaCapacitacion/ObtenerIntentosPregunta", //GET
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerIntentosPregunta', //GET
   MaestroPreguntaProgramaCapacitacionEliminar:
-    "/MaestroPreguntaProgramaCapacitacion/Eliminar", //DELETE
+    '/MaestroPreguntaProgramaCapacitacion/Eliminar', //DELETE
   MaestroPreguntaProgramaCapacitacionInsertar:
-    "/MaestroPreguntaProgramaCapacitacion/Insertar", //´POST
+    '/MaestroPreguntaProgramaCapacitacion/Insertar', //´POST
   MaestroPreguntaProgramaCapacitacionActualizar:
-    "/MaestroPreguntaProgramaCapacitacion/Actualizar", //´POST
+    '/MaestroPreguntaProgramaCapacitacion/Actualizar', //´POST
   MaestroPreguntaProgramaCapacitacionImportarExcel:
-    "/MaestroPreguntaProgramaCapacitacion/ImportarExcel", //
+    '/MaestroPreguntaProgramaCapacitacion/ImportarExcel', //
   MaestroPreguntaProgramaCapacitacionObtenerReportePreguntasInteractivasExportacionExcel:
-    "/MaestroPreguntaProgramaCapacitacion/ObtenerReportePreguntasInteractivasExportacionExcel", //GET
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerReportePreguntasInteractivasExportacionExcel', //GET
   PGeneralTipoDescuentoAsociarDescuentos:
-    "/PGeneralTipoDescuento/AsociarDescuentos",
+    '/PGeneralTipoDescuento/AsociarDescuentos',
   //GESTION DE MATERIAL
   GestionMaterialObtenerMaterialesGestionEnvio:
-    "/MaterialPespecifico/ObtenerMaterialesGestionEnvio", //POST
+    '/MaterialPespecifico/ObtenerMaterialesGestionEnvio', //POST
   GestionMaterialObtenerMaterialesAlumnoDigital:
-    "/MaterialPespecifico/ObtenerMaterialesAlumnoDigital", //GET
+    '/MaterialPespecifico/ObtenerMaterialesAlumnoDigital', //GET
   GestionMaterialNotificarMaterialVersionAlumnoPorCorreo:
-    "/MaterialPespecifico/NotificarMaterialVersionAlumnoPorCorreo", //POST
+    '/MaterialPespecifico/NotificarMaterialVersionAlumnoPorCorreo', //POST
   GestionMaterialNotificarListaMaterialVersionAlumnoPorCorreo:
-    "/MaterialPespecifico/NotificarListaMaterialVersionAlumnoPorCorreo", //POST
+    '/MaterialPespecifico/NotificarListaMaterialVersionAlumnoPorCorreo', //POST
   GestionMaterialNotificarMaterialVersionAlumnoImpresoPorCorreoAProveedor:
-    "/MaterialPespecifico/NotificarMaterialVersionAlumnoImpresoPorCorreoAProveedor", //POST
+    '/MaterialPespecifico/NotificarMaterialVersionAlumnoImpresoPorCorreoAProveedor', //POST
 
   //ENTREGA MATERIAL FISICO
   EntregaMaterialFisicoObtenerCriteriosMaterialesProgramaEspecifico:
-    "/MaterialPespecifico/ObtenerCriteriosMaterialesProgramaEspecifico", //POST
+    '/MaterialPespecifico/ObtenerCriteriosMaterialesProgramaEspecifico', //POST
   EntregaMaterialFisicoObtenerCombosRegistroMaterial:
-    "/RegistroEntregaMaterial/ObtenerCombosRegistroMaterial",
+    '/RegistroEntregaMaterial/ObtenerCombosRegistroMaterial',
   EntregaMaterialFisicoProveedor:
-    "/RegistroEntregaMaterial/NotificarMaterialVersionAlumnoImpresoPorCorreoAProveedor",
+    '/RegistroEntregaMaterial/NotificarMaterialVersionAlumnoImpresoPorCorreoAProveedor',
   EntregaMaterialFisicoAprobarRechazarRegistroEntrega:
-    "/RegistroEntregaMaterial/AprobarRechazarRegistroEntrega",
+    '/RegistroEntregaMaterial/AprobarRechazarRegistroEntrega',
   EntregaMaterialFisicoActualizarFurRegistroMaterial:
-    "/RegistroEntregaMaterial/ActualizarFurRegistroMaterial",
+    '/RegistroEntregaMaterial/ActualizarFurRegistroMaterial',
 
   // ENTREGA MATERIAL
   //Webinar
   InformacionWebinarObtenerWebinarPorFiltro:
-    "/InformacionWebinar/ObtenerWebinarPorFiltro",
-  InformacionWebinarConfirmarWebinar: "/PespecificoSesion/ConfirmarWebinar",
-  InformacionWebinarCancelarWebinar: "/PespecificoSesion/CancelarWebinar",
-  InformacionWebinarObtenerCombos: "/InformacionWebinar/ObtenerCombosModulo",
+    '/InformacionWebinar/ObtenerWebinarPorFiltro',
+  InformacionWebinarConfirmarWebinar: '/PespecificoSesion/ConfirmarWebinar',
+  InformacionWebinarCancelarWebinar: '/PespecificoSesion/CancelarWebinar',
+  InformacionWebinarObtenerCombos: '/InformacionWebinar/ObtenerCombosModulo',
   InformacionWebinarObtenerPespecifico:
-    "/InformacionWebinar/ObtenerPEspecificoWebinar",
+    '/InformacionWebinar/ObtenerPEspecificoWebinar',
   ProgramaEspecificoSesionDetalleSesionesPorAlumnosFiltrado:
-    "/ProgramaEspecificoSesion/DetalleSesionesPorAlumnosFiltrado",
+    '/ProgramaEspecificoSesion/DetalleSesionesPorAlumnosFiltrado',
 
   //Quejas y Sugerencias
-  QuejaSugerenciaGenerarReporte: "/QuejaSugerencia/GenerarReporte",
+  QuejaSugerenciaGenerarReporte: '/QuejaSugerencia/GenerarReporte',
   //RevisionDocente
   ReporteRevisionDocenteObtenerComboModulo:
-    "/ReporteRevisionDocente/ObtenerComboModulo",
+    '/ReporteRevisionDocente/ObtenerComboModulo',
   ReporteRevisionDocenteObtenerGenerarReporte:
-    "/ReporteRevisionDocente/GenerarReporte",
+    '/ReporteRevisionDocente/GenerarReporte',
   //ProyectoPresentadoPorAlumno
   ProyectoPresentadoPorAlumnoObtenerCombosModulo:
-    "/ProyectoPresentadoPorAlumno/ObtenerCombosModulo",
+    '/ProyectoPresentadoPorAlumno/ObtenerCombosModulo',
   ProyectoPresentadoPorAlumnoGenerarReporte:
-    "/ProyectoPresentadoPorAlumno/GenerarReporte",
+    '/ProyectoPresentadoPorAlumno/GenerarReporte',
   ReportePagosIngresosObtenerCodigoMatriculaAutocomplete:
-    "/ReportePagosIngresos/ObtenerCodigoMatriculaAutocomplete",
+    '/ReportePagosIngresos/ObtenerCodigoMatriculaAutocomplete',
   //Reporte Consultas en foros del Aula Virtual
 
   // PartnerController
   PartnerPwObtenerBeneficioContactoPorId:
-    "/PartnerPw/ObtenerBeneficioContactoPorId",
-  PartnerPwEliminar: "/PartnerPw/Eliminar",
-  PartnerPwInsertar: "/PartnerPw/Insertar",
-  PartnerPwActualizar: "/PartnerPw/Actualizar",
-  PartnerPwObtener: "/PartnerPw/Obtener",
-  PartnerPwObtenerCombo: "/PartnerPw/ObtenerCombo",
+    '/PartnerPw/ObtenerBeneficioContactoPorId',
+  PartnerPwEliminar: '/PartnerPw/Eliminar',
+  PartnerPwInsertar: '/PartnerPw/Insertar',
+  PartnerPwActualizar: '/PartnerPw/Actualizar',
+  PartnerPwObtener: '/PartnerPw/Obtener',
+  PartnerPwObtenerCombo: '/PartnerPw/ObtenerCombo',
 
   //Esquema Evaluacion
-  EsquemaEvaluacionObtener: "/EsquemaEvaluacion/ObtenerTodo",
-  EsquemaEvaluacionInsertar: "/EsquemaEvaluacion/Insertar",
-  EsquemaEvaluacionActualizar: "/EsquemaEvaluacion/Actualizar",
-  EsquemaEvaluacionEliminar: "/EsquemaEvaluacion/Eliminar",
+  EsquemaEvaluacionObtener: '/EsquemaEvaluacion/ObtenerTodo',
+  EsquemaEvaluacionInsertar: '/EsquemaEvaluacion/Insertar',
+  EsquemaEvaluacionActualizar: '/EsquemaEvaluacion/Actualizar',
+  EsquemaEvaluacionEliminar: '/EsquemaEvaluacion/Eliminar',
   EsquemaEvaluacionDetalleObtenerporId:
-    "/EsquemaEvaluacionDetalle/ObtenerporIdEsquemaEvaluacion",
+    '/EsquemaEvaluacionDetalle/ObtenerporIdEsquemaEvaluacion',
   EsquemaEvaluacionObtenerFormaCalculoEvaluacion:
-    "/EsquemaEvaluacion/ObtenerComboFormaCalculoEvaluacion",
+    '/EsquemaEvaluacion/ObtenerComboFormaCalculoEvaluacion',
   CriterioEvaluacionModalidadCursoObtenerCombosCriteriosEvaluacionModalidad:
-    "/CriterioEvaluacionModalidadCurso/ObtenerCombosCriteriosEvaluacionModalidad",
+    '/CriterioEvaluacionModalidadCurso/ObtenerCombosCriteriosEvaluacionModalidad',
 
   //FeedbackConfiguracion
-  FeedBackConfigObtener: "/FeedbackConfigurar/Obtener",
-  FeedBackConfigObtenerComboSexo: "/FeedbackConfigurar/ObtenerComboSexo",
-  FeedBackConfigInsertar: "/FeedbackConfigurar/Insertar",
-  FeedBackConfigActualizar: "/FeedbackConfigurar/Actualizar",
-  FeedBackConfigEliminar: "/FeedbackConfigurar/Eliminar",
-  FeedBackConfigDetalleObtener: "/FeedbackConfigurarDetalle/Obtener",
+  FeedBackConfigObtener: '/FeedbackConfigurar/Obtener',
+  FeedBackConfigObtenerComboSexo: '/FeedbackConfigurar/ObtenerComboSexo',
+  FeedBackConfigInsertar: '/FeedbackConfigurar/Insertar',
+  FeedBackConfigActualizar: '/FeedbackConfigurar/Actualizar',
+  FeedBackConfigEliminar: '/FeedbackConfigurar/Eliminar',
+  FeedBackConfigDetalleObtener: '/FeedbackConfigurarDetalle/Obtener',
 
-  FlujoObtenerCombos: "/Flujo/ObtenerCombos",
+  FlujoObtenerCombos: '/Flujo/ObtenerCombos',
 
-  FlujoObtener: "/Flujo/Obtener",
-  FlujoInsertar: "/Flujo/Insertar",
-  FlujoActualizar: "/Flujo/Actualizar",
-  FlujoEliminar: "/Flujo/Eliminar",
+  FlujoObtener: '/Flujo/Obtener',
+  FlujoInsertar: '/Flujo/Insertar',
+  FlujoActualizar: '/Flujo/Actualizar',
+  FlujoEliminar: '/Flujo/Eliminar',
 
-  FlujoObtenerFlujoFase: "/Flujo/ObtenerFlujoFase",
-  FlujoInsertarFase: "/Flujo/InsertarFase",
-  FlujoActualizarFase: "/Flujo/ActualizarFase",
-  FlujoEliminarFase: "/Flujo/EliminarFase",
+  FlujoObtenerFlujoFase: '/Flujo/ObtenerFlujoFase',
+  FlujoInsertarFase: '/Flujo/InsertarFase',
+  FlujoActualizarFase: '/Flujo/ActualizarFase',
+  FlujoEliminarFase: '/Flujo/EliminarFase',
 
-  FlujoObtenerFlujoActividad: "/Flujo/ObtenerFlujoActividad",
-  FlujoInsertarFaseActividad: "/Flujo/InsertarFaseActividad",
-  FlujoActualizarFaseActividad: "/Flujo/ActualizarFaseActividad",
-  FlujoEliminarFaseActividad: "/Flujo/EliminarFaseActividad",
+  FlujoObtenerFlujoActividad: '/Flujo/ObtenerFlujoActividad',
+  FlujoInsertarFaseActividad: '/Flujo/InsertarFaseActividad',
+  FlujoActualizarFaseActividad: '/Flujo/ActualizarFaseActividad',
+  FlujoEliminarFaseActividad: '/Flujo/EliminarFaseActividad',
 
-  FlujoObtenerFlujoOcurrencia: "/Flujo/ObtenerFlujoOcurrencia",
+  FlujoObtenerFlujoOcurrencia: '/Flujo/ObtenerFlujoOcurrencia',
   FlujoInsertarFaseActividadOcurrencia:
-    "/Flujo/InsertarFaseActividadOcurrencia",
+    '/Flujo/InsertarFaseActividadOcurrencia',
   FlujoActualizarFaseActividadOcurrencia:
-    "/Flujo/ActualizarFaseActividadOcurrencia",
+    '/Flujo/ActualizarFaseActividadOcurrencia',
   FlujoEliminarFaseActividadOcurrencia:
-    "/Flujo/EliminarFaseActividadOcurrencia",
+    '/Flujo/EliminarFaseActividadOcurrencia',
 
   PespecificoParticipacionExpositorObtenerCombosProgramaEspecificoProveedor:
-    "/PespecificoParticipacionExpositor/ObtenerCombosProgramaEspecificoProveedor",
+    '/PespecificoParticipacionExpositor/ObtenerCombosProgramaEspecificoProveedor',
   PespecificoParticipacionExpositorObtenerReporteExpositor:
-    "/PespecificoParticipacionExpositor/ObtenerFiltro",
+    '/PespecificoParticipacionExpositor/ObtenerFiltro',
   PespecificoParticipacionExpositorActualizarProveedorConfirmacion:
-    "/PespecificoParticipacionExpositor/ActualizarProveedorConfirmacion",
+    '/PespecificoParticipacionExpositor/ActualizarProveedorConfirmacion',
   PespecificoParticipacionExpositorActualizarRegistroAsistencia:
-    "/PespecificoParticipacionExpositor/ActualizarRegistroAsistencia",
+    '/PespecificoParticipacionExpositor/ActualizarRegistroAsistencia',
   PespecificoParticipacionExpositorActualizarRegistroNotas:
-    "/PespecificoParticipacionExpositor/ActualizarRegistroNotas",
+    '/PespecificoParticipacionExpositor/ActualizarRegistroNotas',
   PespecificoParticipacionExpositorActualizarProveedor:
-    "/PespecificoParticipacionExpositor/ActualizarProveedor",
+    '/PespecificoParticipacionExpositor/ActualizarProveedor',
 
   //Modulo expositor
-  ExpositorEliminar: "/Expositor/Eliminar", //DELETE
-  ExpositorInsertar: "/Expositor/Insertar", //POST
-  ExpositorActualizar: "/Expositor/Actualizar", //PUT
-  ExpositorObtenerCombosModulo: "/Expositor/ObtenerCombosModulo", //GET
-  ExpositorObtener: "/Expositor/Obtener", //GET
+  ExpositorEliminar: '/Expositor/Eliminar', //DELETE
+  ExpositorInsertar: '/Expositor/Insertar', //POST
+  ExpositorActualizar: '/Expositor/Actualizar', //PUT
+  ExpositorObtenerCombosModulo: '/Expositor/ObtenerCombosModulo', //GET
+  ExpositorObtener: '/Expositor/Obtener', //GET
   ExpositorRegistrarArchivoFotoExpositor:
-    "/Expositor/RegistrarArchivoFotoExpositor",
-  ExpositorObtenerCombo: "/Expositor/ObtenerCombo", //GET
-  MontoPagoObtenerCombosModuloAsync: "/MontoPago/ObtenerCombosModuloAsync",
+    '/Expositor/RegistrarArchivoFotoExpositor',
+  ExpositorObtenerCombo: '/Expositor/ObtenerCombo', //GET
+  MontoPagoObtenerCombosModuloAsync: '/MontoPago/ObtenerCombosModuloAsync',
 
   //Correccion Enpoints CriteriosEvaluacionProgramasEspecificos
   CriteriosEvaluacionProgramasEspecificosObtenerComboEsquemaEvaluacion:
-    "/CriteriosEvaluacionProgramasEspecificos/ObtenerComboEsquemaEvaluacion",
+    '/CriteriosEvaluacionProgramasEspecificos/ObtenerComboEsquemaEvaluacion',
   CriteriosEvaluacionProgramasEspecificosObtenerEsquemaPorIdPEspecifico:
-    "/CriteriosEvaluacionProgramasEspecificos/ObtenerEsquemaPorIdPEspecifico",
+    '/CriteriosEvaluacionProgramasEspecificos/ObtenerEsquemaPorIdPEspecifico',
   CriteriosEvaluacionProgramasEspecificosObtenerCriterioEvaluacionPorEsquema:
-    "/CriteriosEvaluacionProgramasEspecificos/ObtenerCriterioEvaluacionPorIdEsquema",
+    '/CriteriosEvaluacionProgramasEspecificos/ObtenerCriterioEvaluacionPorIdEsquema',
   CriteriosEvaluacionProgramasEspecificosRegistrarCriterioEvaluacionPorEsquema:
-    "/CriteriosEvaluacionProgramasEspecificos/CrearEsquemaEvaluacionProgramaEspecifico",
+    '/CriteriosEvaluacionProgramasEspecificos/CrearEsquemaEvaluacionProgramaEspecifico',
   CriteriosEvaluacionProgramasEspecificosActualizarCriterioEvaluacionPorEsquema:
-    "/CriteriosEvaluacionProgramasEspecificos/ActualizarEsquemaEvaluacionProgramaEspecifico",
+    '/CriteriosEvaluacionProgramasEspecificos/ActualizarEsquemaEvaluacionProgramaEspecifico',
 
   /* #region PgeneralAsubPgeneral*/
   PgeneralAsubPgeneralObtenerCursosHijosPorIdPgeneral:
-    "/Planificacion/PgeneralAsubPgeneral/ObtenerCursosHijosPorIdPgeneral",
-  PgeneralAsubPgeneralEliminar: "/Planificacion/PgeneralAsubPgeneral/Eliminar",
+    '/Planificacion/PgeneralAsubPgeneral/ObtenerCursosHijosPorIdPgeneral',
+  PgeneralAsubPgeneralEliminar: '/Planificacion/PgeneralAsubPgeneral/Eliminar',
   PgeneralAsubPgeneralActualizar:
-    "/Planificacion/PgeneralAsubPgeneral/Actualizar",
-  PgeneralAsubPgeneralInsertar: "/Planificacion/PgeneralAsubPgeneral/Insertar",
+    '/Planificacion/PgeneralAsubPgeneral/Actualizar',
+  PgeneralAsubPgeneralInsertar: '/Planificacion/PgeneralAsubPgeneral/Insertar',
   /* #endregion */
 
   /*Clientes programa general*/
   ProgramaGeneralObtenerBeneficiosYPreRequisitos:
-    "/ProgramaGeneral/ObtenerBeneficiosYPreRequisitos",
+    '/ProgramaGeneral/ObtenerBeneficiosYPreRequisitos',
   ProgramaGeneralPrerequisitoEliminarPreRequisitos:
-    "/ProgramaGeneralPrerequisito/EliminarPreRequisitos",
+    '/ProgramaGeneralPrerequisito/EliminarPreRequisitos',
   ProgramaGeneralPrerequisitoGuardarPreRequisitos:
-    "/ProgramaGeneralPrerequisito/GuardarPreRequisitos",
+    '/ProgramaGeneralPrerequisito/GuardarPreRequisitos',
 
-  ProgramaGeneralInsertar: "/ProgramaGeneral/Insertar",
-  ProgramaGeneralActualizar: "/ProgramaGeneral/Actualizar",
+  ProgramaGeneralInsertar: '/ProgramaGeneral/Insertar',
+  ProgramaGeneralActualizar: '/ProgramaGeneral/Actualizar',
   ProgramaGeneralObtenerInformacionBeneficioRequisitpDetalle:
-    "/ProgramaGeneral/ObtenerInformacionBeneficioRequisitpDetalle",
+    '/ProgramaGeneral/ObtenerInformacionBeneficioRequisitpDetalle',
   ProgramaGeneralActualizarInformacionBeneficioDetalleRequisito:
-    "/ProgramaGeneral/ActualizarInformacionBeneficioDetalleRequisito",
+    '/ProgramaGeneral/ActualizarInformacionBeneficioDetalleRequisito',
 
   ProgramaGeneralGuardarBeneficiosVentas:
-    "/ProgramaGeneral/GuardarBeneficiosVentas",
+    '/ProgramaGeneral/GuardarBeneficiosVentas',
   ProgramaGeneralEliminarBeneficioVenta:
-    "/ProgramaGeneral/EliminarBeneficioVenta",
+    '/ProgramaGeneral/EliminarBeneficioVenta',
 
   ProgramaGeneralGuardarMotivacionesVentas:
-    "/ProgramaGeneral/GuardarMotivacionesVentas",
+    '/ProgramaGeneral/GuardarMotivacionesVentas',
   ProgramaGeneralEliminarMotivacionVentas:
-    "/ProgramaGeneral/EliminarMotivacionVenta",
+    '/ProgramaGeneral/EliminarMotivacionVenta',
 
   ProgramaGeneralGuardarCertificacionesVentas:
-    "/ProgramaGeneral/GuardarCertificacionesVentas",
+    '/ProgramaGeneral/GuardarCertificacionesVentas',
   ProgramaGeneralEliminarCertificacionVenta:
-    "/ProgramaGeneralCertificacion/EliminarCertificacionVenta",
+    '/ProgramaGeneralCertificacion/EliminarCertificacionVenta',
 
   ProgramaGeneralGuardarModeloCertificado:
-    "/ProgramaGeneral/GuardarModeloCertificado",
+    '/ProgramaGeneral/GuardarModeloCertificado',
   ProgramaGeneralEliminarModeloCertificado:
-    "/ProgramaGeneral/EliminarModeloCertificado",
+    '/ProgramaGeneral/EliminarModeloCertificado',
 
   ProgramaGeneralGuardarProblemasVentas:
-    "/ProgramaGeneral/GuardarProblemasVentas",
+    '/ProgramaGeneral/GuardarProblemasVentas',
   ProgramaGeneralEliminarProblemaVenta:
-    "/ProgramaGeneral/EliminarProblemaVenta",
+    '/ProgramaGeneral/EliminarProblemaVenta',
 
   /*Encuestas online*/
   ObtenerPreguntaEncuestaCategoria:
-    "/PreguntaEncuestaCategoria/ObtenerCategoriaEncuesta",
-  InsertPreguntaEncuestaCategoria: "/PreguntaEncuestaCategoria/Insertar",
-  UpdatePreguntaEncuestaCategoria: "/PreguntaEncuestaCategoria/Actualizar",
-  DeletePreguntaEncuestaCategoria: "/PreguntaEncuestaCategoria/Eliminar",
+    '/PreguntaEncuestaCategoria/ObtenerCategoriaEncuesta',
+  InsertPreguntaEncuestaCategoria: '/PreguntaEncuestaCategoria/Insertar',
+  UpdatePreguntaEncuestaCategoria: '/PreguntaEncuestaCategoria/Actualizar',
+  DeletePreguntaEncuestaCategoria: '/PreguntaEncuestaCategoria/Eliminar',
   ObtenerPreguntaEncuestaComboCategoria:
-    "/PreguntaEncuestaCategoria/ObtenerCombo",
+    '/PreguntaEncuestaCategoria/ObtenerCombo',
 
-  ObtenerPreguntaEncuesta: "/PreguntaEncuesta/ObtenerPreguntaEncuesta",
-  InsertPreguntaEncuesta: "/PreguntaEncuesta/Insertar",
-  UpdatePreguntaEncuesta: "/PreguntaEncuesta/Actualizar",
-  DeletePreguntaEncuesta: "/PreguntaEncuesta/Eliminar",
-  ObtenerPreguntaComboEncuesta: "/PreguntaEncuesta/ObtenerCombo",
+  ObtenerPreguntaEncuesta: '/PreguntaEncuesta/ObtenerPreguntaEncuesta',
+  InsertPreguntaEncuesta: '/PreguntaEncuesta/Insertar',
+  UpdatePreguntaEncuesta: '/PreguntaEncuesta/Actualizar',
+  DeletePreguntaEncuesta: '/PreguntaEncuesta/Eliminar',
+  ObtenerPreguntaComboEncuesta: '/PreguntaEncuesta/ObtenerCombo',
 
-  ObtenerPreguntaEncuestaAsincronica: "/Preguntum/ObtenerPreguntaEncuestaAsincronica",
-  InsertPreguntaEncuestaAsincronica: "/Preguntum/Insertar",
-  UpdatePreguntaEncuestaAsincronica: "/Preguntum/Actualizar",
-  DeletePreguntaEncuestaAsincronica: "/Preguntum/Eliminar",
+  ObtenerPreguntaEncuestaAsincronica:
+    '/Preguntum/ObtenerPreguntaEncuestaAsincronica',
+  InsertPreguntaEncuestaAsincronica: '/Preguntum/Insertar',
+  UpdatePreguntaEncuestaAsincronica: '/Preguntum/Actualizar',
+  DeletePreguntaEncuestaAsincronica: '/Preguntum/Eliminar',
 
-  ObtenerPreguntaRespuesta: "/PreguntaEncuestaRespuesta/ObtenerRespuestaPregunta",
-  InsertPreguntaRespuesta: "/PreguntaEncuestaRespuesta/Insertar",
-  InsertListPreguntaRespuesta: "/PreguntaEncuestaRespuesta/InsertarLista",
-  UpdatePreguntaRespuesta: "/PreguntaEncuestaRespuesta/Actualizar",
-  DeletePreguntaRespuesta: "/PreguntaEncuestaRespuesta/Eliminar",
+  ObtenerPreguntaRespuesta:
+    '/PreguntaEncuestaRespuesta/ObtenerRespuestaPregunta',
+  InsertPreguntaRespuesta: '/PreguntaEncuestaRespuesta/Insertar',
+  InsertListPreguntaRespuesta: '/PreguntaEncuestaRespuesta/InsertarLista',
+  UpdatePreguntaRespuesta: '/PreguntaEncuestaRespuesta/Actualizar',
+  DeletePreguntaRespuesta: '/PreguntaEncuestaRespuesta/Eliminar',
 
-  ObtenerPreguntaRespuestaAsincronica: "/RespuestaPregunta/ObtenerRespuestaPregunta",
-  InsertPreguntaRespuestaAsincronica: "/RespuestaPregunta/Insertar",
-  InsertListPreguntaRespuestaAsincronica: "/RespuestaPregunta/InsertarLista",
-  UpdatePreguntaRespuestaAsincronica: "/RespuestaPregunta/Actualizar",
-  DeletePreguntaRespuestaAsincronica: "/RespuestaPregunta/Eliminar",
+  ObtenerPreguntaRespuestaAsincronica:
+    '/RespuestaPregunta/ObtenerRespuestaPregunta',
+  InsertPreguntaRespuestaAsincronica: '/RespuestaPregunta/Insertar',
+  InsertListPreguntaRespuestaAsincronica: '/RespuestaPregunta/InsertarLista',
+  UpdatePreguntaRespuestaAsincronica: '/RespuestaPregunta/Actualizar',
+  DeletePreguntaRespuestaAsincronica: '/RespuestaPregunta/Eliminar',
 
-  ObtenerEncuestaOnline: "/EncuestaOnline/ObtenerEncuestaOnline",
-  InsertEncuestaOnline: "/EncuestaOnline/Insertar",
-  UpdateEncuestaOnline: "/EncuestaOnline/Actualizar",
-  DeleteEncuestaOnline: "/EncuestaOnline/Eliminar",
+  ObtenerEncuestaOnline: '/EncuestaOnline/ObtenerEncuestaOnline',
+  InsertEncuestaOnline: '/EncuestaOnline/Insertar',
+  UpdateEncuestaOnline: '/EncuestaOnline/Actualizar',
+  DeleteEncuestaOnline: '/EncuestaOnline/Eliminar',
 
-  ObtenerVersionEncuestaSincronico: "/EncuestaOnline/ObtenerVersionEncuestaSincronico",
+  ObtenerVersionEncuestaSincronico:
+    '/EncuestaOnline/ObtenerVersionEncuestaSincronico',
 
-  ObtenerTipoEncuesta: "/TipoEncuestum/ObtenerCombo",
-  ObtenerTipoModalidad: "/TipoEncuestum/ObtenerComboTipoModalidad",
+  ObtenerTipoEncuesta: '/TipoEncuestum/ObtenerCombo',
+  ObtenerTipoModalidad: '/TipoEncuestum/ObtenerComboTipoModalidad',
 
-  ObtenerPreguntaEncuestaOnline: "/PreguntaEncuestaOnline/ObtenerPreguntaEncuestaOnline",
-  InsertPreguntaEncuestaOnline: "/PreguntaEncuestaOnline/Insertar",
-  InsertListPreguntaEncuestaOnline: "/PreguntaEncuestaOnline/InsertarLista",
-  UpdatePreguntaEncuestaOnline: "/PreguntaEncuestaOnline/Actualizar",
-  DeletePreguntaEncuestaOnline: "/PreguntaEncuestaOnline/Eliminar",
+  ObtenerPreguntaEncuestaOnline:
+    '/PreguntaEncuestaOnline/ObtenerPreguntaEncuestaOnline',
+  InsertPreguntaEncuestaOnline: '/PreguntaEncuestaOnline/Insertar',
+  InsertListPreguntaEncuestaOnline: '/PreguntaEncuestaOnline/InsertarLista',
+  UpdatePreguntaEncuestaOnline: '/PreguntaEncuestaOnline/Actualizar',
+  DeletePreguntaEncuestaOnline: '/PreguntaEncuestaOnline/Eliminar',
 
-
-  InsertarEncuestaSesionPrograma: "/EncuestaSesionPrograma/Insertar",
-  ActualizarEncuestaSesionPrograma: "/EncuestaSesionPrograma/Actualizar",
-  InsertarListaEncuestaSesionPrograma: "/EncuestaSesionPrograma/InsertarLista",
-  DeleteEncuestaSesionPrograma: "/EncuestaSesionPrograma/Eliminar",
-  ObtenerEncuestaSesionPrograma: "/EncuestaSesionPrograma/ObtenerEncuestasPrograma",
-  ObtenerEncuestaAsignada: "/EncuestaSesionPrograma/ObtenerEncuestaAsignada",
+  InsertarEncuestaSesionPrograma: '/EncuestaSesionPrograma/Insertar',
+  ActualizarEncuestaSesionPrograma: '/EncuestaSesionPrograma/Actualizar',
+  InsertarListaEncuestaSesionPrograma: '/EncuestaSesionPrograma/InsertarLista',
+  DeleteEncuestaSesionPrograma: '/EncuestaSesionPrograma/Eliminar',
+  ObtenerEncuestaSesionPrograma:
+    '/EncuestaSesionPrograma/ObtenerEncuestasPrograma',
+  ObtenerEncuestaAsignada: '/EncuestaSesionPrograma/ObtenerEncuestaAsignada',
 
   //Presentacion Programa Argymentos Argumentos
-  ProgramaGeneralPresentacionArgumentoObtener: "/ProgramaGeneralPresentacionArgumento/Obtener",
-  ProgramaGeneralPresentacionArgumentoInsertar: "/ProgramaGeneralPresentacionArgumento/Insertar",
-  ProgramaGeneralPresentacionArgumentoEliminar: "/ProgramaGeneralPresentacionArgumento/Eliminar",
+  ProgramaGeneralPresentacionArgumentoObtener:
+    '/ProgramaGeneralPresentacionArgumento/Obtener',
+  ProgramaGeneralPresentacionArgumentoInsertar:
+    '/ProgramaGeneralPresentacionArgumento/Insertar',
+  ProgramaGeneralPresentacionArgumentoEliminar:
+    '/ProgramaGeneralPresentacionArgumento/Eliminar',
 
-  ObtenerSubAreaPorIdDeArea: "/CampaniasMailingWhatsapp/ObtenerSubAreaPorIdDeAreaLista",
+  ObtenerSubAreaPorIdDeArea:
+    '/CampaniasMailingWhatsapp/ObtenerSubAreaPorIdDeAreaLista',
 
-  GenerarVistaProgramasOnline: "/GrabacionesClasesOnline/GenerarVistaProgramasOnline",
-  ObtenerSesiones: "/GrabacionesClasesOnline/ObtenerSesiones",
-  ObtenerDisponibilidadPrograma: "/GrabacionesClasesOnline/ObtenerDisponibilidadPrograma",
-  ActualizarSesiones: "/GrabacionesClasesOnline/ActualizarSesiones",
-  ModificarDisponibilidadProgramaDefecto: "/GrabacionesClasesOnline/ModificarDisponibilidadProgramaDefecto",
-  ObtenerDetalleResumenGrabacionSesion: "/GrabacionesClasesOnline/ObtenerDetalleResumenGrabacionSesion",
+  GenerarVistaProgramasOnline:
+    '/GrabacionesClasesOnline/GenerarVistaProgramasOnline',
+  ObtenerSesiones: '/GrabacionesClasesOnline/ObtenerSesiones',
+  ObtenerDisponibilidadPrograma:
+    '/GrabacionesClasesOnline/ObtenerDisponibilidadPrograma',
+  ActualizarSesiones: '/GrabacionesClasesOnline/ActualizarSesiones',
+  ModificarDisponibilidadProgramaDefecto:
+    '/GrabacionesClasesOnline/ModificarDisponibilidadProgramaDefecto',
+  ObtenerDetalleResumenGrabacionSesion:
+    '/GrabacionesClasesOnline/ObtenerDetalleResumenGrabacionSesion',
 
-  ObtenerResumenGrabacionOnline: "/ResumenGrabacionOnline/ObtenerResumenGrabacionOnline",
-  InsertarEliminarConfiguracionResumenGrabacionOnline: "/ConfiguracionResumenGrabacionOnline/InsertarEliminarConfiguracionResumenGrabacionOnline",
-  ObtenerConfiguracionResumenGrabacionOnlinePorSesion: "/ConfiguracionResumenGrabacionOnline/ObtenerConfiguracionResumenGrabacionOnlinePorSesion",
-  GenerarResumenGrabaciones: "/ConfiguracionResumenGrabacionOnline/GenerarResumenGrabaciones",
-  ObtenerTextoTranscripcionPorId: "/ConfiguracionResumenGrabacionOnline/ObtenerTextoTranscripcionPorId",
-  ObtenerTextoGuionAudioPorId: "/ConfiguracionResumenGrabacionOnline/ObtenerTextoGuionAudioPorId",
+  ObtenerResumenGrabacionOnline:
+    '/ResumenGrabacionOnline/ObtenerResumenGrabacionOnline',
+  InsertarEliminarConfiguracionResumenGrabacionOnline:
+    '/ConfiguracionResumenGrabacionOnline/InsertarEliminarConfiguracionResumenGrabacionOnline',
+  ObtenerConfiguracionResumenGrabacionOnlinePorSesion:
+    '/ConfiguracionResumenGrabacionOnline/ObtenerConfiguracionResumenGrabacionOnlinePorSesion',
+  GenerarResumenGrabaciones:
+    '/ConfiguracionResumenGrabacionOnline/GenerarResumenGrabaciones',
+  ObtenerTextoTranscripcionPorId:
+    '/ConfiguracionResumenGrabacionOnline/ObtenerTextoTranscripcionPorId',
+  ObtenerTextoGuionAudioPorId:
+    '/ConfiguracionResumenGrabacionOnline/ObtenerTextoGuionAudioPorId',
 
-  PEspecificoV2Obtener: "/PEspecifico/ObtenerFiltroV2PorIdPGeneral",
+  PEspecificoV2Obtener: '/PEspecifico/ObtenerFiltroV2PorIdPGeneral',
 
   /*Encuesta Asincronica*/
-  InsertarEncuestaProgramaAsincronica: "/EncuestaOnline/InsertarEncuestaSesionProgramaAsincronica",
-  ObtenerEncuestaAsincronicaAsignada: "/EncuestaOnline/ObtenerEncuestaAsincronicaAsignada",
-  ObtenerEncuestaAsincronica: "/EncuestaOnline/ObtenerEncuestaAsincronica",
-  EliminarEncuestaAsincronicaAsignada: "/EncuestaOnline/EliminarEncuestaAsincronicaAsignada",
+  InsertarEncuestaProgramaAsincronica:
+    '/EncuestaOnline/InsertarEncuestaSesionProgramaAsincronica',
+  ObtenerEncuestaAsincronicaAsignada:
+    '/EncuestaOnline/ObtenerEncuestaAsincronicaAsignada',
+  ObtenerEncuestaAsincronica: '/EncuestaOnline/ObtenerEncuestaAsincronica',
+  EliminarEncuestaAsincronicaAsignada:
+    '/EncuestaOnline/EliminarEncuestaAsincronicaAsignada',
 
-  ObtenerCategoriaEncuestaAsincronica: "/PreguntaEncuestaCategoria/ObtenerPreguntaCategoriaAsincronica",
-  ObtenerPreguntaAsincronicaParaEncuesta: "/PreguntaEncuesta/ObtenerPreguntaEncuestaAsincronica",
-  ObtenerPreguntaEncuestaAsincronicaPorId: "/PreguntaEncuesta/ObtenerPreguntaEncuestaAsincronicaPorId",
-  InsertarEncuestaAsincronica: "/EncuestaOnline/InsertarEncuestaAsincronica",
-  InsertarListaPreguntaAsincronica: "/EncuestaOnline/InsertarListaPreguntaAsincronica",
-  InsertarPreguntaEncuestaAsincronica: "/EncuestaOnline/InsertarPreguntaEncuestaAsincronica",
-  DeletePreguntaAsincronicaParaEncuestas: "/EncuestaOnline/DeletePreguntaEncuestaAsincronica",
-  DeleteEncuestaAsincronica: "/EncuestaOnline/DeleteEncuestaAsincronica",
-  UpdateEncuestaAsincronica: "/EncuestaOnline/UpdateEncuestaAsincronica",
+  ObtenerCategoriaEncuestaAsincronica:
+    '/PreguntaEncuestaCategoria/ObtenerPreguntaCategoriaAsincronica',
+  ObtenerPreguntaAsincronicaParaEncuesta:
+    '/PreguntaEncuesta/ObtenerPreguntaEncuestaAsincronica',
+  ObtenerPreguntaEncuestaAsincronicaPorId:
+    '/PreguntaEncuesta/ObtenerPreguntaEncuestaAsincronicaPorId',
+  InsertarEncuestaAsincronica: '/EncuestaOnline/InsertarEncuestaAsincronica',
+  InsertarListaPreguntaAsincronica:
+    '/EncuestaOnline/InsertarListaPreguntaAsincronica',
+  InsertarPreguntaEncuestaAsincronica:
+    '/EncuestaOnline/InsertarPreguntaEncuestaAsincronica',
+  DeletePreguntaAsincronicaParaEncuestas:
+    '/EncuestaOnline/DeletePreguntaEncuestaAsincronica',
+  DeleteEncuestaAsincronica: '/EncuestaOnline/DeleteEncuestaAsincronica',
+  UpdateEncuestaAsincronica: '/EncuestaOnline/UpdateEncuestaAsincronica',
 
   //Testimonios
-  PEspecificoObtenerPEspecificoByPGeneral: "/PEspecifico/ObtenerPEspecificoByPGeneral",
-  ReporteGenerarReporteEncuestaIntermediaVersiones: "/ReporteEncuestasSincronico/GenerarReporteEncuestaIntermediaVersiones",
-  ReporteEncuestasSincronicoObtenerVersionesEncuestas: "/ReporteEncuestasSincronico/ObtenerVersionesEncuestas",
-  ObtenerAnios: "/Periodo/ObtenerAnios",
-  ReporteEncuestaSincronicaGenerarReporteEncuestaFinalVersiones: "/ReporteEncuestasSincronico/GenerarReporteEncuestaFinalVersiones",
-  ReporteEncuestaGenerarReporteTestimonioSincronico: "/ReporteEncuestasSincronico/GenerarReporteTestimonioSincronico",
-  ReporteEncuestaGenerarReporteTestimonioPorModalidad: "/ReporteEncuestasSincronico/GenerarReporteTestimonioPorModalidad",
-  ReporteEncuestaGenerarReporteValoracionTotal: "/ReporteEncuestasSincronico/GenerarReporteValoracionTotal",
-  ReporteEncuestaGenerarReporteValoracionASincronico: "/ReporteEncuestasSincronico/GenerarReporteValoracionASincronico",
-  ReporteEncuestaObtenerRespuestaEncuestaCombo: "/ReporteEncuestasSincronico/ObtenerRespuestaEncuestaCombo",
-  ReporteEncuestaGuardarTestimonio: "/ReporteEncuestasSincronico/GuardarTestimonio",
-  ReporteEncuestaActualizarValoracionVisiblePw: "/ReporteEncuestasSincronico/ActualizarValoracionVisiblePw",
+  PEspecificoObtenerPEspecificoByPGeneral:
+    '/PEspecifico/ObtenerPEspecificoByPGeneral',
+  ReporteGenerarReporteEncuestaIntermediaVersiones:
+    '/ReporteEncuestasSincronico/GenerarReporteEncuestaIntermediaVersiones',
+  ReporteEncuestasSincronicoObtenerVersionesEncuestas:
+    '/ReporteEncuestasSincronico/ObtenerVersionesEncuestas',
+  ObtenerAnios: '/Periodo/ObtenerAnios',
+  ReporteEncuestaSincronicaGenerarReporteEncuestaFinalVersiones:
+    '/ReporteEncuestasSincronico/GenerarReporteEncuestaFinalVersiones',
+  ReporteEncuestaGenerarReporteTestimonioSincronico:
+    '/ReporteEncuestasSincronico/GenerarReporteTestimonioSincronico',
+  ReporteEncuestaGenerarReporteTestimonioPorModalidad:
+    '/ReporteEncuestasSincronico/GenerarReporteTestimonioPorModalidad',
+  ReporteEncuestaGenerarReporteValoracionTotal:
+    '/ReporteEncuestasSincronico/GenerarReporteValoracionTotal',
+  ReporteEncuestaGenerarReporteValoracionASincronico:
+    '/ReporteEncuestasSincronico/GenerarReporteValoracionASincronico',
+  ReporteEncuestaObtenerRespuestaEncuestaCombo:
+    '/ReporteEncuestasSincronico/ObtenerRespuestaEncuestaCombo',
+  ReporteEncuestaGuardarTestimonio:
+    '/ReporteEncuestasSincronico/GuardarTestimonio',
+  ReporteEncuestaActualizarValoracionVisiblePw:
+    '/ReporteEncuestasSincronico/ActualizarValoracionVisiblePw',
 
- //ProgramaGeneralProblemaFactor
-  ProgramaGeneralProblemaFactorObtener:"/ProgramaGeneralProblemaFactor/Obtener",
-  ProgramaGeneralProblemaFactorInsertar:"/ProgramaGeneralProblemaFactor/Insertar",
-  ProgramaGeneralProblemaFactorActualizar:"/ProgramaGeneralProblemaFactor/Actualizar",
-  ProgramaGeneralProblemaFactorEliminar:"/ProgramaGeneralProblemaFactor/Eliminar",
-  ProgramageneralproblemaFactorDetalleObtener:"/ProgramageneralproblemaFactorDetalle/Obtener",
-  ProgramageneralproblemaFactorDetalleInsertar:"/ProgramageneralproblemaFactorDetalle/Insertar",
-  ProgramageneralproblemaFactorDetalleActualizar:"/ProgramageneralproblemaFactorDetalle/Actualizar",
-  ProgramageneralproblemaFactorDetalleEliminar:"/ProgramageneralproblemaFactorDetalle/Eliminar",
-  ProgramaGeneralProblemaFactorDetalleExistePorNombre:"/ProgramageneralproblemaFactorDetalle/Existe",
-  ProgramageneralproblemaFactorSolucionObtener:"/ProgramageneralproblemaFactorSolucion/Obtener",
-  ProgramageneralproblemaFactorSolucionInsertar:"/ProgramageneralproblemaFactorSolucion/Insertar",
-  ProgramageneralproblemaFactorSolucionActualizar:"/ProgramageneralproblemaFactorSolucion/Actualizar",
-  ProgramageneralproblemaFactorSolucionEliminar:"/ProgramageneralproblemaFactorSolucion/Eliminar",
-  ProgramageneralproblemaFactorSubSolucionObtener:"/ProgramageneralproblemaFactorSubSolucion/Obtener",
-  ProgramageneralproblemaFactorSubSolucionInsertar:"/ProgramageneralproblemaFactorSubSolucion/Insertar",
-  ProgramageneralproblemaFactorSubSolucionActualizar:"/ProgramageneralproblemaFactorSubSolucion/Actualizar",
-  ProgramageneralproblemaFactorSubSolucionEliminar:"/ProgramageneralproblemaFactorSubSolucion/Eliminar",
-  ProgramageneralproblemaFactorSubSolucionObtenerPorIdProgramaGeneralProblemaFactorSolucion:"/ProgramageneralproblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion",
-  //Programa Argumentos 
-  ProgramaGeneralArgumentoObtener: "/ProgramaGeneralArgumento/ObtenerProgramaGeneralArgumentoTodo",
-  ProgramaGeneralArgumentoObtenerMotivaciones: "/ProgramaMotivacion/Obtener",
-  ProgramaGeneralArgumentoInsertar: "/ProgramaGeneralArgumento/Insertar",
-  ProgramaGeneralArgumentoActualizar: "/ProgramaGeneralArgumento/Actualizar",
-  ProgramaGeneralArgumentoEliminar: "/ProgramaGeneralArgumento/Eliminar",
-  ProgramaMotivacionInsertar: "/ProgramaMotivacion/Insertar",
-  ProgramaMotivacionActualizar: "/ProgramaMotivacion/Actualizar",
-  ProgramaMotivacionEliminar: "/ProgramaMotivacion/Eliminar",
-  ProgramaGeneralProblemaFactorObtenerCombos: "/ProgramaGeneralProblemaFactor/ObtenerCombo",
+  //ProgramaGeneralProblemaFactor
+  ProgramaGeneralProblemaFactorObtener:
+    '/ProgramaGeneralProblemaFactor/Obtener',
+  ProgramaGeneralProblemaFactorInsertar:
+    '/ProgramaGeneralProblemaFactor/Insertar',
+  ProgramaGeneralProblemaFactorActualizar:
+    '/ProgramaGeneralProblemaFactor/Actualizar',
+  ProgramaGeneralProblemaFactorEliminar:
+    '/ProgramaGeneralProblemaFactor/Eliminar',
+  ProgramageneralproblemaFactorDetalleObtener:
+    '/ProgramageneralproblemaFactorDetalle/Obtener',
+  ProgramageneralproblemaFactorDetalleInsertar:
+    '/ProgramageneralproblemaFactorDetalle/Insertar',
+  ProgramageneralproblemaFactorDetalleActualizar:
+    '/ProgramageneralproblemaFactorDetalle/Actualizar',
+  ProgramageneralproblemaFactorDetalleEliminar:
+    '/ProgramageneralproblemaFactorDetalle/Eliminar',
+  ProgramaGeneralProblemaFactorDetalleExistePorNombre:
+    '/ProgramageneralproblemaFactorDetalle/Existe',
+  ProgramageneralproblemaFactorSolucionObtener:
+    '/ProgramageneralproblemaFactorSolucion/Obtener',
+  ProgramageneralproblemaFactorSolucionInsertar:
+    '/ProgramageneralproblemaFactorSolucion/Insertar',
+  ProgramageneralproblemaFactorSolucionActualizar:
+    '/ProgramageneralproblemaFactorSolucion/Actualizar',
+  ProgramageneralproblemaFactorSolucionEliminar:
+    '/ProgramageneralproblemaFactorSolucion/Eliminar',
+  ProgramageneralproblemaFactorSubSolucionObtener:
+    '/ProgramageneralproblemaFactorSubSolucion/Obtener',
+  ProgramageneralproblemaFactorSubSolucionInsertar:
+    '/ProgramageneralproblemaFactorSubSolucion/Insertar',
+  ProgramageneralproblemaFactorSubSolucionActualizar:
+    '/ProgramageneralproblemaFactorSubSolucion/Actualizar',
+  ProgramageneralproblemaFactorSubSolucionEliminar:
+    '/ProgramageneralproblemaFactorSubSolucion/Eliminar',
+  ProgramageneralproblemaFactorSubSolucionObtenerPorIdProgramaGeneralProblemaFactorSolucion:
+    '/ProgramageneralproblemaFactorSubSolucion/ObtenerPorIdProgramaGeneralProblemaFactorSolucion',
+  //Programa Argumentos
+  ProgramaGeneralArgumentoObtener:
+    '/ProgramaGeneralArgumento/ObtenerProgramaGeneralArgumentoTodo',
+  ProgramaGeneralArgumentoObtenerMotivaciones: '/ProgramaMotivacion/Obtener',
+  ProgramaGeneralArgumentoInsertar: '/ProgramaGeneralArgumento/Insertar',
+  ProgramaGeneralArgumentoActualizar: '/ProgramaGeneralArgumento/Actualizar',
+  ProgramaGeneralArgumentoEliminar: '/ProgramaGeneralArgumento/Eliminar',
+  ProgramaMotivacionInsertar: '/ProgramaMotivacion/Insertar',
+  ProgramaMotivacionActualizar: '/ProgramaMotivacion/Actualizar',
+  ProgramaMotivacionEliminar: '/ProgramaMotivacion/Eliminar',
+  ProgramaGeneralProblemaFactorObtenerCombos:
+    '/ProgramaGeneralProblemaFactor/ObtenerCombo',
 
-
-
-  MontoPagoLogObtenerReporteMontoPagoHistorico : "/MontoPagoLog/ObtenerReporteMontoPagoHistorico",
+  MontoPagoLogObtenerReporteMontoPagoHistorico:
+    '/MontoPagoLog/ObtenerReporteMontoPagoHistorico',
 };
 
 export const constApiFinanzas = {
   //ACTIVAR FURS
-  ActivarFurObtenerDatos: "/ActivarFur/ObtenerFursNoEjecutados",
-  ACtivarFurActivar: "/ActivarFur/ActivarFurNoEjecutado",
+  ActivarFurObtenerDatos: '/ActivarFur/ObtenerFursNoEjecutados',
+  ACtivarFurActivar: '/ActivarFur/ActivarFurNoEjecutado',
 
   //APROBAR FURS
-  AprobarFurObtenerDatosGrilla: "/AprobarFur/ObtenerFurPorAprobar",
-  AprobarFurObservarAprobar: "/AprobarFur/AprobarObservarFurService",
+  AprobarFurObtenerDatosGrilla: '/AprobarFur/ObtenerFurPorAprobar',
+  AprobarFurObservarAprobar: '/AprobarFur/AprobarObservarFurService',
 
   //BENEFICIO LABORAL AREA COMERCIAL
   BeneficioLaboralAreaComercialInsertar:
-    "/BeneficioLaboralPorPeriodo/InsertarBeneficioLaboralPorPeriodo",
+    '/BeneficioLaboralPorPeriodo/InsertarBeneficioLaboralPorPeriodo',
   BeneficioLaboralAreaComercialObtener:
-    "/BeneficioLaboralPorPeriodo/ObtenerBeneficioLaboralSegunPeriodo",
+    '/BeneficioLaboralPorPeriodo/ObtenerBeneficioLaboralSegunPeriodo',
 
   //CUENTA BANCARIA : FINANZAS
-  CuentaBancariaObtener: "/CuentaBancaria/ObtenerCuentaBancaria",
-  CuentaBancariaInsertar: "/CuentaBancaria/Insertar",
-  CuentaBancariaEliminar: "/CuentaBancaria/Eliminar",
-  CuentaBancariaActualizar: "/CuentaBancaria/Actualizar",
-  CuentaBancariaObtenerCombo: "/CuentaBancaria/ObtenerCombo",
+  CuentaBancariaObtener: '/CuentaBancaria/ObtenerCuentaBancaria',
+  CuentaBancariaInsertar: '/CuentaBancaria/Insertar',
+  CuentaBancariaEliminar: '/CuentaBancaria/Eliminar',
+  CuentaBancariaActualizar: '/CuentaBancaria/Actualizar',
+  CuentaBancariaObtenerCombo: '/CuentaBancaria/ObtenerCombo',
 
   //CUENTA CONTABLE PADRE : FINANZAS
-  CuentaContablePadreObtener: "/CuentaContablePadre/ObtenerCuentaContablePadre",
-  CuentaContablePadreInsertar: "/CuentaContablePadre/Insertar",
-  CuentaContablePadreEliminar: "/CuentaContablePadre/Eliminar",
-  CuentaContablePadreEditar: "/CuentaContablePadre/Actualizar",
+  CuentaContablePadreObtener: '/CuentaContablePadre/ObtenerCuentaContablePadre',
+  CuentaContablePadreInsertar: '/CuentaContablePadre/Insertar',
+  CuentaContablePadreEliminar: '/CuentaContablePadre/Eliminar',
+  CuentaContablePadreEditar: '/CuentaContablePadre/Actualizar',
 
   //CAJA : FINANZAS
-  CajaObtener: "/Caja/ObtenerCaja",
-  CajaObtenerCombo: "/Caja/ObtenerCombo",
-  CajaInsertar: "/Caja/Insertar",
-  CajaEliminar: "/Caja/Eliminar",
-  CajaActualizar: "/Caja/Actualizar",
-  CajaObtenerResponsable: "/Caja/ObtenerListaCajaResponsable",
+  CajaObtener: '/Caja/ObtenerCaja',
+  CajaObtenerCombo: '/Caja/ObtenerCombo',
+  CajaInsertar: '/Caja/Insertar',
+  CajaEliminar: '/Caja/Eliminar',
+  CajaActualizar: '/Caja/Actualizar',
+  CajaObtenerResponsable: '/Caja/ObtenerListaCajaResponsable',
 
   //CAJA POR RENDIR:
-  CajaPorRendirObtener: "/CajaPorRendir/ObtenerCajaPorRendir",
+  CajaPorRendirObtener: '/CajaPorRendir/ObtenerCajaPorRendir',
   CajaPorRendirObtenerSolicitante:
-    "/CajaPorRendir/ObtenerCajaPorRendirSolicitante",
+    '/CajaPorRendir/ObtenerCajaPorRendirSolicitante',
   CajaPorRendirEliminarSolicitud:
-    "/CajaPorRendir/EliminarCajaPorRendirSolicitudEnviada",
-  CajaPorRendirDevolverSolicitud: "/CajaPorRendir/DevolverSolicitudEnviada",
-  CajaPorRendirObtenerMontoTotalCaja: "/CajaPorRendir/ObtenerMontoTotalCaja",
-  CajaPorRendirGenerarPr: "/CajaPorRendir/GenerarPorRendir",
-  CajaPorRendirGenerarPrDirecto: "/CajaPorRendir/GenerarPorRendirInmediato",
-  CajaPorRendirObtenerLimiteFur: "/CajaEgreso/ObtenerMontoLimite",
+    '/CajaPorRendir/EliminarCajaPorRendirSolicitudEnviada',
+  CajaPorRendirDevolverSolicitud: '/CajaPorRendir/DevolverSolicitudEnviada',
+  CajaPorRendirObtenerMontoTotalCaja: '/CajaPorRendir/ObtenerMontoTotalCaja',
+  CajaPorRendirGenerarPr: '/CajaPorRendir/GenerarPorRendir',
+  CajaPorRendirGenerarPrDirecto: '/CajaPorRendir/GenerarPorRendirInmediato',
+  CajaPorRendirObtenerLimiteFur: '/CajaEgreso/ObtenerMontoLimite',
   CajaPorRendirObtenerLimiteFurSolicitud:
-    "/CajaPorRendir/ObtenerMontoLimiteSolicitud",
+    '/CajaPorRendir/ObtenerMontoLimiteSolicitud',
   ObtenerCajasPorRendirParaRendicion:
-    "/CajaPorRendir/ObtenerCajasPorRendirParaRendicion",
+    '/CajaPorRendir/ObtenerCajasPorRendirParaRendicion',
   ObtenerCajasPorRendirPorIdPorRendirCabecera:
-    "/CajaPorRendir/ObtenerCajasPorRendirPorIdPorRendirCabecera",
+    '/CajaPorRendir/ObtenerCajasPorRendirPorIdPorRendirCabecera',
   ObtenerCajasPorRendirSolitudEfectivo:
-    "/CajaPorRendir/ObtenerCajasPorRendirSolitudEfectivo",
-  InsertarCajaPorRendir: "/CajaPorRendir/InsertarCajaPorRendir",
-  ActualizarCajaPorRendir: "/CajaPorRendir/ActualizarCajaPorRendir",
+    '/CajaPorRendir/ObtenerCajasPorRendirSolitudEfectivo',
+  InsertarCajaPorRendir: '/CajaPorRendir/InsertarCajaPorRendir',
+  ActualizarCajaPorRendir: '/CajaPorRendir/ActualizarCajaPorRendir',
   ActualizarCajaPorRendirPonerEnviado:
-    "/CajaPorRendir/ActualizarCajaPorRendirPonerEnviado",
+    '/CajaPorRendir/ActualizarCajaPorRendirPonerEnviado',
 
   //CAJA EGRESO
-  CajaEgresoObtener: "/CajaEgreso/ObtenerCajaEgresoEnviado",
+  CajaEgresoObtener: '/CajaEgreso/ObtenerCajaEgresoEnviado',
   CajaEgresoObtenerSolicitantes:
-    "/CajaEgreso/ObtenerCajaPorRendirSolicitanteREC",
-  CajaEgresoDevolverSolicitud: "/CajaEgreso/DevolverSolicitudCajaEgreso",
-  CajaEgresoActualizar: "/CajaEgreso/ActualizarRegistroEgresoCajaEnviado",
-  CajaEgreseGenerarREC: "/CajaEgreso/GenerarRegistroEgresoCaja",
-  CajaEgresoCabeceraPR: "/CajaEgreso/ObtenerComboCabeceraPR",
+    '/CajaEgreso/ObtenerCajaPorRendirSolicitanteREC',
+  CajaEgresoDevolverSolicitud: '/CajaEgreso/DevolverSolicitudCajaEgreso',
+  CajaEgresoActualizar: '/CajaEgreso/ActualizarRegistroEgresoCajaEnviado',
+  CajaEgreseGenerarREC: '/CajaEgreso/GenerarRegistroEgresoCaja',
+  CajaEgresoCabeceraPR: '/CajaEgreso/ObtenerComboCabeceraPR',
   CajaEgresoGenerarRECInmediato:
-    "/CajaEgreso/GenerarRegistroEgresoCajaInmediato",
-  InsertarCajaEgreso: "/CajaEgreso/InsertarCajaEgreso",
-  ObtenerRegistrosCajaEgreso: "/CajaEgreso/ObtenerRegistrosCajaEgreso",
-  CajaEgresoEliminar: "/CajaEgreso/EliminarCajaEgreso",
+    '/CajaEgreso/GenerarRegistroEgresoCajaInmediato',
+  InsertarCajaEgreso: '/CajaEgreso/InsertarCajaEgreso',
+  ObtenerRegistrosCajaEgreso: '/CajaEgreso/ObtenerRegistrosCajaEgreso',
+  CajaEgresoEliminar: '/CajaEgreso/EliminarCajaEgreso',
   ActualizarCajaEgresoEstablecerRendido:
-    "/CajaEgreso/ActualizarCajaEgresoEstablecerRendido",
+    '/CajaEgreso/ActualizarCajaEgresoEstablecerRendido',
 
   //Comprobante de PAGO _
-  CajaEgresoComprobanteAutoComplete: "/ComprobantePago/ObtenerComprobantePago",
-  ComprobantePagoNoAsociado: "/ComprobantePago/ObtenerComprobantesNoAsociados",
-  ComprobantePagoAsociadoFUR: "/ComprobantePago/ObtenerComprobantePagoPorFur",
+  CajaEgresoComprobanteAutoComplete: '/ComprobantePago/ObtenerComprobantePago',
+  ComprobantePagoNoAsociado: '/ComprobantePago/ObtenerComprobantesNoAsociados',
+  ComprobantePagoAsociadoFUR: '/ComprobantePago/ObtenerComprobantePagoPorFur',
   ComprobantePagoDocumnetoSunat:
-    "/ComprobantePago/ObtenerElementosSunatDocumento",
-  ComprobantPagoInsertar: "/ComprobantePago/InsertarComprobante",
-  ComprobantpagoActualizar: "/ComprobantePago/ActualizarComprobante",
-  ComprobantePagoEliminar: "/ComprobantePago/Eliminar",
-  ObtenerComprobantePorRuc: "/ComprobantePago/ObtenerComprobantePorRuc",
+    '/ComprobantePago/ObtenerElementosSunatDocumento',
+  ComprobantPagoInsertar: '/ComprobantePago/InsertarComprobante',
+  ComprobantpagoActualizar: '/ComprobantePago/ActualizarComprobante',
+  ComprobantePagoEliminar: '/ComprobantePago/Eliminar',
+  ObtenerComprobantePorRuc: '/ComprobantePago/ObtenerComprobantePorRuc',
   ObtenerMontoUtilizadoComprobante:
-    "/ComprobantePago/ObtenerMontoUtilizadoComprobante",
+    '/ComprobantePago/ObtenerMontoUtilizadoComprobante',
 
   //Compartivo Ingreso
   ObtenerCombosReporteTasaConversionConsolidada:
-    "/ComparativoIngresos/ObtenerCombosReporteTasaConversionConsolidada",
+    '/ComparativoIngresos/ObtenerCombosReporteTasaConversionConsolidada',
   ObtenerCentroCostoPorAsesorDetalles:
-    "/ComparativoIngresos/ObtenerCentroCostoPorAsesorDetalles",
+    '/ComparativoIngresos/ObtenerCentroCostoPorAsesorDetalles',
   //Cronograma
-  ObtenerCodigoMatricula: "/Cronograma/ObtenerCodigoMatricula",
+  ObtenerCodigoMatricula: '/Cronograma/ObtenerCodigoMatricula',
   ObtenerAlumnoProgramaEspecifico:
-    "/Cronograma/ObtenerAlumnoProgramaEspecifico",
-  ObtenerAlumnoPorValor: "/Cronograma/ObtenerAlumnoPorValor",
+    '/Cronograma/ObtenerAlumnoProgramaEspecifico',
+  ObtenerAlumnoPorValor: '/Cronograma/ObtenerAlumnoPorValor',
   ObtenerCodigoMatriculaPEspecificoPorAlumnos:
-    "/Cronograma/ObtenerCodigoMatriculaPEspecificoPorAlumnos",
+    '/Cronograma/ObtenerCodigoMatriculaPEspecificoPorAlumnos',
   ObtenerCostosAdministrativosCodigoMatricula:
-    "/Cronograma/ObtenerCostosAdministrativosCodigoMatricula",
+    '/Cronograma/ObtenerCostosAdministrativosCodigoMatricula',
   ObtenerDatosMatriculaPorCodigoMatricula:
-    "/Cronograma/ObtenerDatosMatriculaPorCodigoMatricula",
-  ObtenerTodoEstadoMatricula: "/Cronograma/ObtenerTodoEstadoMatricula",
-  ObtenerAsesorPorApellidos: "/Cronograma/ObtenerAsesorPorApellidos",
-  ObtenerCoordinadorPorApellidos: "/Cronograma/ObtenerCoordinadorPorApellidos",
+    '/Cronograma/ObtenerDatosMatriculaPorCodigoMatricula',
+  ObtenerTodoEstadoMatricula: '/Cronograma/ObtenerTodoEstadoMatricula',
+  ObtenerAsesorPorApellidos: '/Cronograma/ObtenerAsesorPorApellidos',
+  ObtenerCoordinadorPorApellidos: '/Cronograma/ObtenerCoordinadorPorApellidos',
   ObtenerPEspecificoPorCentroCosto:
-    "/Cronograma/ObtenerPEspecificoPorCentroCosto",
-  ObtenerCronograma: "/Cronograma/ObtenerCronograma",
-  EliminarMatricula: "/Cronograma/EliminarMatricula",
-  ObtenerDocumentosMatricula: "/Cronograma/ObtenerDocumentosMatricula",
-  ActualizarEntregaControlDocs: "/Cronograma/ActualizarEntregaControlDocs",
-  ObtenerDetalleTasasAcademicas: "/Cronograma/ObtenerDetalleTasasAcademicas",
-  AgregarTasasAcademicas: "/Cronograma/AgregarTasasAcademicas",
-  ActualizarMatricula: "/Cronograma/ActualizarMatricula",
-  ObtenerDatosPago: "/Cronograma/ObtenerDatosPago",
-  ActualizarFormaPago: "/Cronograma/ActualizarFormaPago",
-  ActualizarFechaDeposito: "/Cronograma/ActualizarFechaDeposito",
-  ActualizarFechaPago: "/Cronograma/ActualizarFechaPago",
-  ActualizarGestionDeCobranza: "/Cronograma/ActualizarGestionDeCobranza",
-  ObtenerCentroCostos: "/Cronograma/ObtenerPEspecificoPorCentroCosto",
-  GuardarPago: "/Cronograma/GuardarPago",
-  ObtenerCuotasNoPagadas: "/Cronograma/ObtenerCuotasNoPagadas",
-  ActualizarMoraCAdelanto: "/Cronograma/ActualizarMoraCAdelanto",
-  ObtenerDocumentosFiltrado: "/Cronograma/ObtenerDocumentosFiltrado",
+    '/Cronograma/ObtenerPEspecificoPorCentroCosto',
+  ObtenerCronograma: '/Cronograma/ObtenerCronograma',
+  EliminarMatricula: '/Cronograma/EliminarMatricula',
+  ObtenerDocumentosMatricula: '/Cronograma/ObtenerDocumentosMatricula',
+  ActualizarEntregaControlDocs: '/Cronograma/ActualizarEntregaControlDocs',
+  ObtenerDetalleTasasAcademicas: '/Cronograma/ObtenerDetalleTasasAcademicas',
+  AgregarTasasAcademicas: '/Cronograma/AgregarTasasAcademicas',
+  ActualizarMatricula: '/Cronograma/ActualizarMatricula',
+  ObtenerDatosPago: '/Cronograma/ObtenerDatosPago',
+  ActualizarFormaPago: '/Cronograma/ActualizarFormaPago',
+  ActualizarFechaDeposito: '/Cronograma/ActualizarFechaDeposito',
+  ActualizarFechaPago: '/Cronograma/ActualizarFechaPago',
+  ActualizarGestionDeCobranza: '/Cronograma/ActualizarGestionDeCobranza',
+  ObtenerCentroCostos: '/Cronograma/ObtenerPEspecificoPorCentroCosto',
+  GuardarPago: '/Cronograma/GuardarPago',
+  ObtenerCuotasNoPagadas: '/Cronograma/ObtenerCuotasNoPagadas',
+  ActualizarMoraCAdelanto: '/Cronograma/ActualizarMoraCAdelanto',
+  ObtenerDocumentosFiltrado: '/Cronograma/ObtenerDocumentosFiltrado',
   ObtenerPersonalAprobadoPorApellido:
-    "/Cronograma/ObtenerPersonalAprobadoPorApellido",
-  ObtenerTodoPersonal: "/Cronograma/ObtenerTodoPersonal",
-  GuardarCronograma: "/Cronograma/GuardarCronograma",
-  Download: "/Cronograma/Download",
+    '/Cronograma/ObtenerPersonalAprobadoPorApellido',
+  ObtenerTodoPersonal: '/Cronograma/ObtenerTodoPersonal',
+  GuardarCronograma: '/Cronograma/GuardarCronograma',
+  Download: '/Cronograma/Download',
   //Configuracion Periodo Matricula
   ObtenerConfiguracionPeriodoMatricula:
-    "/ConfiguracionPeriodoMatricula/ObtenerConfiguracionPeriodoMatricula",
+    '/ConfiguracionPeriodoMatricula/ObtenerConfiguracionPeriodoMatricula',
   ConfiguracionPeriodoMatriculaInsertar:
-    "/ConfiguracionPeriodoMatricula/Insertar",
+    '/ConfiguracionPeriodoMatricula/Insertar',
   ConfiguracionPeriodoMatriculaEliminar:
-    "/ConfiguracionPeriodoMatricula/Eliminar",
+    '/ConfiguracionPeriodoMatricula/Eliminar',
   ConfiguracionPeriodoMatriculaEditar:
-    "/ConfiguracionPeriodoMatricula/Actualizar",
+    '/ConfiguracionPeriodoMatricula/Actualizar',
 
   //Disponibilidad de Pago
   GenerarReporteDisponibilidadCuota:
-    "/DisponibilidadPagoCuota/GenerarReporteDisponibilidadCuota",
-  CambiarFechaProcesos: "/DisponibilidadPagoCuota/CambiarFechaProcesos",
+    '/DisponibilidadPagoCuota/GenerarReporteDisponibilidadCuota',
+  CambiarFechaProcesos: '/DisponibilidadPagoCuota/CambiarFechaProcesos',
   CambiarFechaProcesoCronograma:
-    "/DisponibilidadPagoCuota/CambiarFechaProcesoCronograma",
+    '/DisponibilidadPagoCuota/CambiarFechaProcesoCronograma',
 
   // Exportar krep
   ObtenerProgramaespecifioEspecificoAutocomplete:
-    "/PEspecifico/ObtenerProgramaEspecificoAutocomplete",
+    '/PEspecifico/ObtenerProgramaEspecificoAutocomplete',
   CronogromaObtenerListadoAlumnosMatricula:
-    "/Cronograma/ObtenerListadoAlumnosMatricula",
+    '/Cronograma/ObtenerListadoAlumnosMatricula',
   CronogramaObtenerCuotasCrepPorCodigoMatricula:
-    "/Cronograma/ObtenerCuotasCrepPorCodigoMatricula",
+    '/Cronograma/ObtenerCuotasCrepPorCodigoMatricula',
   ObtenerProgramaEspecificoAutocomplete:
-    "/Cronograma/ObtenerProgramaEspecificoAutocomplete",
-  CronogramaObtenerCuentasCorrientes: "/Cronograma/ObtenerCuentasCorrientes",
-  CronogramaGenerarCrep: "/Cronograma/GenerarCrep",
+    '/Cronograma/ObtenerProgramaEspecificoAutocomplete',
+  CronogramaObtenerCuentasCorrientes: '/Cronograma/ObtenerCuentasCorrientes',
+  CronogramaGenerarCrep: '/Cronograma/GenerarCrep',
 
   //Detraccion :'
-  ObtenerReporteDetraccion: "/Detraccion/ObtenerReporteDetraccion",
+  ObtenerReporteDetraccion: '/Detraccion/ObtenerReporteDetraccion',
   //CronogramaMoneda
   MatriculaCabeceraObtenerCronogramaDetallePagoFinal:
-    "/MatriculaCabecera/ObtenerCronogramaDetallePagoFinal",
+    '/MatriculaCabecera/ObtenerCronogramaDetallePagoFinal',
   MatriculaCabeceraObtenerCodigoMatriculaAutocomplete:
-    "/MatriculaCabecera/ObtenerCodigoMatriculaAutocomplete", //POST
-  ObtenerPaisMatricula:
-    "/MatriculaCabecera/ObtenerPaisMatricula",
+    '/MatriculaCabecera/ObtenerCodigoMatriculaAutocomplete', //POST
+  ObtenerPaisMatricula: '/MatriculaCabecera/ObtenerPaisMatricula',
 
   //Cambio Moneda
   CronogramaGuardarCambioMonedaCronograma:
-    "/Cronograma/GuardarCambioMonedaCronograma",
+    '/Cronograma/GuardarCambioMonedaCronograma',
 
   //Cronograma Pago Detalle Final : FINANZAS
   ActualizarComprobantePago:
-    "/CronogramaPagoDetalleFinal/ActualizarComprobantePago",
+    '/CronogramaPagoDetalleFinal/ActualizarComprobantePago',
   ObtenerDetalleCuotasTransaccionAuditoria:
     '/CronogramaPagoDetalleFinal/ObtenerDetalleCuotasTransaccionAuditoria',
   ObtenerDetalleMatriculaTransaccionAuditoria:
@@ -4046,1146 +4188,1148 @@ export const constApiFinanzas = {
 
   //Verificar Inscritos
   VerificacionOportunidadISMObtenerOportunidadesISM:
-    "/VerificacionOportunidadISM/ObtenerOportunidadesISM",
+    '/VerificacionOportunidadISM/ObtenerOportunidadesISM',
   VerificacionOportunidadISMObtenerOportunidadesVerificadas:
-    "/VerificacionOportunidadISM/ObtenerOportunidadesVerificadas",
+    '/VerificacionOportunidadISM/ObtenerOportunidadesVerificadas',
   VerificacionOportunidadISMInsertarOportunidadVerificadaV2:
-    "/VerificacionOportunidadISM/InsertarOportunidadVerificadaV3",
+    '/VerificacionOportunidadISM/InsertarOportunidadVerificadaV3',
 
   //SolicitudCambioCronograma
   CronogramaCabeceraCambioObtenerSolicitudesCambios:
-    "/CronogramaCabeceraCambio/ObtenerSolicitudesCambios",
+    '/CronogramaCabeceraCambio/ObtenerSolicitudesCambios',
   CronogramaCabeceraCambioObtenerCronogramaFinal:
-    "/CronogramaCabeceraCambio/ObtenerCronogramaFinal",
-  CronogramaCabeceraCambioAprobar: "/CronogramaCabeceraCambio/Aprobar",
-  CronogramaCabeceraCambioRechazar: "/CronogramaCabeceraCambio/Rechazar",
+    '/CronogramaCabeceraCambio/ObtenerCronogramaFinal',
+  CronogramaCabeceraCambioAprobar: '/CronogramaCabeceraCambio/Aprobar',
+  CronogramaCabeceraCambioRechazar: '/CronogramaCabeceraCambio/Rechazar',
   //EmpresaAutorizada : FINANZAS
-  EmpresaAutorizadaObtener: "/EmpresaAutorizada/Obtener",
-  EmpresaAutorizadaObtenerCombo: "/EmpresaAutorizada/ObtenerCombo",
-  EmpresaAutorizadaInsertar: "/EmpresaAutorizada/Insertar",
-  EmpresaAutorizadaEliminar: "/EmpresaAutorizada/Eliminar",
-  EmpresaAutorizadaActualizar: "/EmpresaAutorizada/Actualizar",
+  EmpresaAutorizadaObtener: '/EmpresaAutorizada/Obtener',
+  EmpresaAutorizadaObtenerCombo: '/EmpresaAutorizada/ObtenerCombo',
+  EmpresaAutorizadaInsertar: '/EmpresaAutorizada/Insertar',
+  EmpresaAutorizadaEliminar: '/EmpresaAutorizada/Eliminar',
+  EmpresaAutorizadaActualizar: '/EmpresaAutorizada/Actualizar',
   EmpresaAutorizadaObtenerComboPorCiudad:
-    "/EmpresaAutorizada/ObtenerComboPorCiudad",
+    '/EmpresaAutorizada/ObtenerComboPorCiudad',
 
   //ENTIDAD FINANCIERA
-  EntidadFinancieraObtener: "/EntidadFinanciera/ObtenerEntidadFinanciera",
-  EntidadFinancieraObtenerCombo: "/EntidadFinanciera/ObtenerCombo",
-  EntidadFinancieraInsertar: "/EntidadFinanciera/Insertar",
-  EntidadFinancieraEliminar: "/EntidadFinanciera/Eliminar",
-  EntidadFinancieraEditar: "/EntidadFinanciera/Actualizar",
+  EntidadFinancieraObtener: '/EntidadFinanciera/ObtenerEntidadFinanciera',
+  EntidadFinancieraObtenerCombo: '/EntidadFinanciera/ObtenerCombo',
+  EntidadFinancieraInsertar: '/EntidadFinanciera/Insertar',
+  EntidadFinancieraEliminar: '/EntidadFinanciera/Eliminar',
+  EntidadFinancieraEditar: '/EntidadFinanciera/Actualizar',
 
   //ESTADOS DE MATRICULA
   //ESTADOS DE MATRICULA
-  EstadosMatriculaObtener: "/EstadoMatricula/ObtenerEstadoMatricula",
-  EstadosMatriculaObtenerCombo: "/EstadoMatricula/ObtenerCombo",
-  EstadosMatriculaEliminar: "/EstadoMatricula/EliminarEstadoSubEstado",
-  EstadosMatriculaInsertar: "/EstadoMatricula/InsertarEstadoSubEstado",
-  EstadosMatriculaEditar: "/EstadoMatricula/EditarEstado",
+  EstadosMatriculaObtener: '/EstadoMatricula/ObtenerEstadoMatricula',
+  EstadosMatriculaObtenerCombo: '/EstadoMatricula/ObtenerCombo',
+  EstadosMatriculaEliminar: '/EstadoMatricula/EliminarEstadoSubEstado',
+  EstadosMatriculaInsertar: '/EstadoMatricula/InsertarEstadoSubEstado',
+  EstadosMatriculaEditar: '/EstadoMatricula/EditarEstado',
   EstadosMatriculaObtenerSubEstadoInvidial:
-    "/EstadoMatricula/ObtenerSubEstadoIndividual",
+    '/EstadoMatricula/ObtenerSubEstadoIndividual',
   EstadoMatriculaObtenerEstadoMatriculaParaMatriculados:
-    "/EstadoMatricula/ObtenerEstadoMatriculaParaMatriculados",
+    '/EstadoMatricula/ObtenerEstadoMatriculaParaMatriculados',
   EstadoMatriculaObtenerFiltroEstadosMatricula:
-    "/EstadoMatricula/ObtenerFiltroEstadosMatricula",
+    '/EstadoMatricula/ObtenerFiltroEstadosMatricula',
   EstadoMatriculaFiltroObtenerSubEstadosMatricula:
-    "/EstadoMatricula/FiltroObtenerSubEstadosMatricula",
+    '/EstadoMatricula/FiltroObtenerSubEstadosMatricula',
 
   // FUR
-  FurObtenerDatos: "/Fur/ObtenerDatosFur",
-  FUrObtenerREC: "/Fur/ObtenerFursREC",
-  FurEliminar: "/Fur/Eliminar",
-  FurEliminarLista: "/Fur/EliminarListado",
-  ObtenerDatosFurcajaEgreso: "/Fur/ObtenerDatosFurcajaEgreso",
-  ObtenerDatosFurSolicitudEfectivo: "/Fur/ObtenerDatosFurSolicitudEfectivo",
-  FurObtenerFurProgramaEspecifico: "/Fur/ObtenerFurProgramaEspecifico",
-  ObtenerDatosFurAutocomplete: "/Fur/ObtenerDatosFurAutocomplete",
+  FurObtenerDatos: '/Fur/ObtenerDatosFur',
+  FUrObtenerREC: '/Fur/ObtenerFursREC',
+  FurEliminar: '/Fur/Eliminar',
+  FurEliminarLista: '/Fur/EliminarListado',
+  ObtenerDatosFurcajaEgreso: '/Fur/ObtenerDatosFurcajaEgreso',
+  ObtenerDatosFurSolicitudEfectivo: '/Fur/ObtenerDatosFurSolicitudEfectivo',
+  FurObtenerFurProgramaEspecifico: '/Fur/ObtenerFurProgramaEspecifico',
+  ObtenerDatosFurAutocomplete: '/Fur/ObtenerDatosFurAutocomplete',
 
   //FUR FASE APROBACION
-  FurFaseAprobacionObtenerCombo: "/FurFaseAprobacion/ObtenerCombo",
+  FurFaseAprobacionObtenerCombo: '/FurFaseAprobacion/ObtenerCombo',
 
   //Gasto Financiero
   ObtenerGastoFinancieroCronograma:
-    "/GastoFinancieroCronograma/ObtenerGastoFinancieroCronograma",
+    '/GastoFinancieroCronograma/ObtenerGastoFinancieroCronograma',
   ObtenerListaGastoFinancieroCronogramaDetalle:
-    "/GastoFinancieroCronograma/ObtenerListaGastoFinancieroCronogramaDetalle",
+    '/GastoFinancieroCronograma/ObtenerListaGastoFinancieroCronogramaDetalle',
   EliminarCrogramayDetalle:
-    "/GastoFinancieroCronograma/EliminarCrogramayDetalle",
+    '/GastoFinancieroCronograma/EliminarCrogramayDetalle',
   InsertarCronogramaYDetalle:
-    "/GastoFinancieroCronograma/InsertarCronogramaYDetalle",
+    '/GastoFinancieroCronograma/InsertarCronogramaYDetalle',
   ActualizarCronogramaYDetalle:
-    "/GastoFinancieroCronograma/ActualizarCronogramaYDetalle",
+    '/GastoFinancieroCronograma/ActualizarCronogramaYDetalle',
 
   //GENERAR FUR
-  GenerarFurObtenerCiudadSedes: "/GenerarFur/ObtenerCiudadesDeSedesExistentes",
-  GenerarFurObtenerDatosGrilla: "/GenerarFur/ObtenerFursParaGrid",
-  GenerarFurObtenerFurByCodigo: "/GenerarFur/ObtenerFursBusquedaCodigo",
-  GenerarFurCentroCosto: "/GenerarFur/ObtenerCentroCostoAutomatico",
-  GenerarFurTipoPedido: "/GenerarFur/ObtenerTipoPedidoFur",
-  GeneraFurServicioProveedor: "/GenerarFur/ObtenerProductoFur",
-  GenerarFurActualizar: "/GenerarFur/ActualizarFur",
-  GenerarFurNuevo: "/GenerarFur/InsertarFur",
-  GenerarFurAprobarFurProyectado: "/GenerarFur/AprobarFurProyectado",
-  ObtenerNivelAcceso: "/GenerarFur/ObtenerNivelAcceso",
+  GenerarFurObtenerCiudadSedes: '/GenerarFur/ObtenerCiudadesDeSedesExistentes',
+  GenerarFurObtenerDatosGrilla: '/GenerarFur/ObtenerFursParaGrid',
+  GenerarFurObtenerFurByCodigo: '/GenerarFur/ObtenerFursBusquedaCodigo',
+  GenerarFurCentroCosto: '/GenerarFur/ObtenerCentroCostoAutomatico',
+  GenerarFurTipoPedido: '/GenerarFur/ObtenerTipoPedidoFur',
+  GeneraFurServicioProveedor: '/GenerarFur/ObtenerProductoFur',
+  GenerarFurActualizar: '/GenerarFur/ActualizarFur',
+  GenerarFurNuevo: '/GenerarFur/InsertarFur',
+  GenerarFurAprobarFurProyectado: '/GenerarFur/AprobarFurProyectado',
+  ObtenerNivelAcceso: '/GenerarFur/ObtenerNivelAcceso',
 
   //HISTORICO
   ObtenerHistoricoProducto:
-    "/HistoricoProductoProveedor/ObtenerListaProductoPorProveedorUltimaVersion",
+    '/HistoricoProductoProveedor/ObtenerListaProductoPorProveedorUltimaVersion',
 
   // MATRICULA INTERNA
-  ObtenerDatosDelCentrodeCosto: "/CentroCosto/ObtenerDatosDelCentrodeCosto",
-  ObtenerTasaCambioMoneda: "/TipoCambioMoneda/ObtenerTasaCambioMoneda",
-  GenerarMatriculaCabecera: "/MatriculaIntena/GenerarMatriculaCabecera",
+  ObtenerDatosDelCentrodeCosto: '/CentroCosto/ObtenerDatosDelCentrodeCosto',
+  ObtenerTasaCambioMoneda: '/TipoCambioMoneda/ObtenerTasaCambioMoneda',
+  GenerarMatriculaCabecera: '/MatriculaIntena/GenerarMatriculaCabecera',
   ObtenerCronogramaPagoPorCodigoMatricula:
-    "/MatriculaIntena/ObtenerCronogramaPagoPorCodigoMatricula",
-  ObtenerCronogramaBusqueda: "/MatriculaIntena/ObtenerCronogramaBusqueda",
-  CargarMatricula: "/MatriculaIntena/CargarMatricula",
-  ActualizarCronogramaPago: "/MatriculaIntena/ActualizarCronogramaPago",
+    '/MatriculaIntena/ObtenerCronogramaPagoPorCodigoMatricula',
+  ObtenerCronogramaBusqueda: '/MatriculaIntena/ObtenerCronogramaBusqueda',
+  CargarMatricula: '/MatriculaIntena/CargarMatricula',
+  ActualizarCronogramaPago: '/MatriculaIntena/ActualizarCronogramaPago',
 
   // REPORTE INGRESOS
-  ObtenerReporteIngresosVentas: "/ReporteIngreso/ObtenerReporteIngresosVentas",
+  ObtenerReporteIngresosVentas: '/ReporteIngreso/ObtenerReporteIngresosVentas',
   ObtenerReporteIngresosOperaciones:
-    "/ReporteIngreso/ObtenerReporteIngresosOperaciones",
+    '/ReporteIngreso/ObtenerReporteIngresosOperaciones',
   ObtenerReporteIngresosOperacionesTipoCambio:
-    "/ReporteIngreso/ObtenerReporteIngresosOperacionesTipoCambio",
+    '/ReporteIngreso/ObtenerReporteIngresosOperacionesTipoCambio',
   ObtenerReporteIngresosOtrosIngresos:
-    "/ReporteIngreso/ObtenerReporteIngresosOtrosIngresos",
-  ObtenerPagosIngresos: "/ReporteIngreso/ObtenerPagosIngresos",
+    '/ReporteIngreso/ObtenerReporteIngresosOtrosIngresos',
+  ObtenerPagosIngresos: '/ReporteIngreso/ObtenerPagosIngresos',
   ObtenerPagosIngresosPosterior:
-    "/ReporteIngreso/ObtenerPagosIngresosPosterior",
-  ObtenerPagosIngresosAnterior: "/ReporteIngreso/ObtenerPagosIngresosAnterior",
+    '/ReporteIngreso/ObtenerPagosIngresosPosterior',
+  ObtenerPagosIngresosAnterior: '/ReporteIngreso/ObtenerPagosIngresosAnterior',
   ObtenerPagosIngresosGestionCobranza:
-    "/ReporteIngreso/ObtenerPagosIngresosGestionCobranza",
-  ObtenerPagosTasasAcademicas: "/ReporteIngreso/ObtenerPagosTasasAcademicas",
+    '/ReporteIngreso/ObtenerPagosIngresosGestionCobranza',
+  ObtenerPagosTasasAcademicas: '/ReporteIngreso/ObtenerPagosTasasAcademicas',
   ObtenerPagosIngresosAnteriorConDeposito:
-    "/ReporteIngreso/ObtenerPagosIngresosAnteriorConDeposito",
+    '/ReporteIngreso/ObtenerPagosIngresosAnteriorConDeposito',
   ObtenerPagosIngresosPosteriorConDeposito:
-    "/ReporteIngreso/ObtenerPagosIngresosPosteriorConDeposito",
-  ObtenerReporteIngresosFinal: "/ReporteIngreso/ObtenerReporteIngresosFinal",
+    '/ReporteIngreso/ObtenerPagosIngresosPosteriorConDeposito',
+  ObtenerReporteIngresosFinal: '/ReporteIngreso/ObtenerReporteIngresosFinal',
 
   InsertarReporteIngresoCongelamiento:
-    "/ReporteIngreso/InsertarReporteIngresoCongelamiento",
+    '/ReporteIngreso/InsertarReporteIngresoCongelamiento',
   ObtenerReporteIngresoCongelamiento:
-    "/ReporteIngreso/ObtenerReporteIngresoCongelamiento",
+    '/ReporteIngreso/ObtenerReporteIngresoCongelamiento',
   EliminarReporteIngresoCongelamiento:
-    "/ReporteIngreso/EliminarReporteIngresoCongelamiento",
+    '/ReporteIngreso/EliminarReporteIngresoCongelamiento',
 
   // REPORTE PAGOS PROVEEDORES
   //NUEVO ALUMNO CONGELADO
   ObtenerAlumnoCongelado:
-    "/NuevoAlumnoCongelado/ObtenerListaNuevoAlumnoCongelado",
-  AlumnoCongeladoMostrarDatosExcel: "/NuevoAlumnoCongelado/MostrarDatosExcel",
-  AlumnoCongeladoEliminar: "/NuevoAlumnoCongelado/Eliminar",
-  AlumnoCongeladoEditar: "/NuevoAlumnoCongelado/Actualizar",
-  AlumnoCongeladoNuevo: "/NuevoAlumnoCongelado/Insertar",
+    '/NuevoAlumnoCongelado/ObtenerListaNuevoAlumnoCongelado',
+  AlumnoCongeladoMostrarDatosExcel: '/NuevoAlumnoCongelado/MostrarDatosExcel',
+  AlumnoCongeladoEliminar: '/NuevoAlumnoCongelado/Eliminar',
+  AlumnoCongeladoEditar: '/NuevoAlumnoCongelado/Actualizar',
+  AlumnoCongeladoNuevo: '/NuevoAlumnoCongelado/Insertar',
   AlumnoCongeladoObtenerMatricula:
-    "/NuevoAlumnoCongelado/ObtenerDatosMatriculaPorMatricula",
+    '/NuevoAlumnoCongelado/ObtenerDatosMatriculaPorMatricula',
   InsertarExcelAlumnoCongelado:
-    "/NuevoAlumnoCongelado/InsertarExcelAlumnoCongelado",
+    '/NuevoAlumnoCongelado/InsertarExcelAlumnoCongelado',
 
   // PLAN CONTABLE :FINANZAS
-  PlanContableObtener: "/PlanContable/ObtenerPlanContable",
-  PlanContableObteneCuentasHijo: "/PlanContable/ObteneCuentasHijo",
-  PlanContableObtenerCombo: "/PlanContable/ObtenerCombo",
-  PlanContableInsertar: "/PlanContable/InsertarCuentaContable",
-  PlanContableActualizar: "/PlanContable/ActualizarCuentaContable",
-  PlanContableEliminar: "/PlanContable/EliminarCuentaContable",
+  PlanContableObtener: '/PlanContable/ObtenerPlanContable',
+  PlanContableObteneCuentasHijo: '/PlanContable/ObteneCuentasHijo',
+  PlanContableObtenerCombo: '/PlanContable/ObtenerCombo',
+  PlanContableInsertar: '/PlanContable/InsertarCuentaContable',
+  PlanContableActualizar: '/PlanContable/ActualizarCuentaContable',
+  PlanContableEliminar: '/PlanContable/EliminarCuentaContable',
   PlanContableTipoCuentaObtenerCombo:
-    "/PlanContable/ObtenerPlanContableTipoCuenta",
-  PlanContableObtenerHijo: "/PlanContable/ObteneCuentasHijo/",
+    '/PlanContable/ObtenerPlanContableTipoCuenta',
+  PlanContableObtenerHijo: '/PlanContable/ObteneCuentasHijo/',
   //HISTORICO PRODUCTO
 
   //REPORTE COMSIONES VENTAS
-  ObtenerReporteComisiones: "/ReporteComisiones/ObtenerReporteComisiones",
-  ActualizarReporteComisiones: "/ReporteComisiones/ActualizarReporteComisiones",
-  ObtenerPersonalVentasV4: "/ReporteComisiones/ObtenerPersonalVentasV4",
+  ObtenerReporteComisiones: '/ReporteComisiones/ObtenerReporteComisiones',
+  ActualizarReporteComisiones: '/ReporteComisiones/ActualizarReporteComisiones',
+  ObtenerPersonalVentasV4: '/ReporteComisiones/ObtenerPersonalVentasV4',
 
   //REPORTE CONTROL DOCUMENTOS
   ObtenerReporteControlDocumentos:
-    "/ReporteControlDocumento/ObtenerReporteControlDocumentos",
+    '/ReporteControlDocumento/ObtenerReporteControlDocumentos',
 
   //REPORTE CAMBIO CRONOGRAMA-CUOTA-CODIGO-PROGRAMA
-  ObtenerReporteCambios: "/ReporteCambiosCodigosCuotas/ObtenerReporteCambios",
-  ObtenerReporteCodigos: "/ReporteCambiosCodigosCuotas/ObtenerReporteCodigos",
-  ObtenerReporteCuotas: "/ReporteCambiosCodigosCuotas/ObtenerReporteCuotas",
+  ObtenerReporteCambios: '/ReporteCambiosCodigosCuotas/ObtenerReporteCambios',
+  ObtenerReporteCodigos: '/ReporteCambiosCodigosCuotas/ObtenerReporteCodigos',
+  ObtenerReporteCuotas: '/ReporteCambiosCodigosCuotas/ObtenerReporteCuotas',
   ObtenerReporteTraslados:
-    "/ReporteCambiosCodigosCuotas/ObtenerReporteTraslados",
+    '/ReporteCambiosCodigosCuotas/ObtenerReporteTraslados',
   CongelarReporteDeCambios:
-    "/ReporteCambiosCodigosCuotas/CongelarReporteDeCambios",
+    '/ReporteCambiosCodigosCuotas/CongelarReporteDeCambios',
 
   //REPORTE COMISION POR MATRICULA
   ReporteComisionPorMatriculaObtenerSubestados:
-    "/ReporteComisionMatricula/ObtenerListaSubEstadosParaSeguimientoComisiones",
+    '/ReporteComisionMatricula/ObtenerListaSubEstadosParaSeguimientoComisiones',
   ReporteComisionPorMatriculaGenerarReporte:
-    "/ReporteComisionMatricula/ObtenerDatosReporteSeguimientoComisiones",
+    '/ReporteComisionMatricula/ObtenerDatosReporteSeguimientoComisiones',
 
   //REPORTE DEVOLUCION
   ObtenerEstadoPagoMatriculaDevoluciones:
-    "/ReporteDevolucion/ObtenerEstadoPagoMatriculaDevoluciones",
+    '/ReporteDevolucion/ObtenerEstadoPagoMatriculaDevoluciones',
   ObtenerCodigoMatriculaAutocomplete:
-    "/ReporteDevolucion/ObtenerCodigoMatriculaAutocomplete",
-  ObtenerReporteDevoluciones: "/ReporteDevolucion/ObtenerReporteDevoluciones",
+    '/ReporteDevolucion/ObtenerCodigoMatriculaAutocomplete',
+  ObtenerReporteDevoluciones: '/ReporteDevolucion/ObtenerReporteDevoluciones',
   CongelarReporteDeDevoluciones:
-    "/ReporteDevolucion/CongelarReporteDeDevoluciones",
+    '/ReporteDevolucion/CongelarReporteDeDevoluciones',
 
   //REPORTE ESTADOS DE MATRICULA
   ObtenerAsistenteAcademicoMatricula:
-    "/Personal/ObtenerAsistenteAcademicoMatricula",
+    '/Personal/ObtenerAsistenteAcademicoMatricula',
   ObtenerReporteMatriculados:
-    "/ReportePorEstadoMatricula/ObtenerReporteMatriculados",
+    '/ReportePorEstadoMatricula/ObtenerReporteMatriculados',
   ObtenerReportePorEstadosMatricula:
-    "/ReportePorEstadoMatricula/ObtenerReportePorEstadosMatricula",
+    '/ReportePorEstadoMatricula/ObtenerReportePorEstadosMatricula',
 
   //REPORTE FUR POR PAGAR
-  ObtenerFurPorPagarByFecha: "/ReporteFurPorPagar/ObtenerFurPorPagarByFecha",
+  ObtenerFurPorPagarByFecha: '/ReporteFurPorPagar/ObtenerFurPorPagarByFecha',
 
   //REPORTE FLUJO
-  ObtenerReporteFlujos: "/ReporteFlujo/ObtenerReporteFlujos",
-  CongelarReporteDeFlujoPorDia: "/ReporteFlujo/CongelarReporteDeFlujoPorDia",
+  ObtenerReporteFlujos: '/ReporteFlujo/ObtenerReporteFlujos',
+  CongelarReporteDeFlujoPorDia: '/ReporteFlujo/CongelarReporteDeFlujoPorDia',
   CongelarReporteDeFlujoPorPeriodo:
-    "/ReporteFlujo/CongelarReporteDeFlujoPorPeriodo",
+    '/ReporteFlujo/CongelarReporteDeFlujoPorPeriodo',
 
   //REPORTE INDICADORES DE PRODUCTIVIDAD
   ReporteIndicadoresProductividad:
-    "/ReporteIndicadoresProductividad/GenerarReporte",
+    '/ReporteIndicadoresProductividad/GenerarReporte',
   ObtenerReporteProductividadVentasHorasTrabajadas:
-    "/ReporteIndicadoresProductividad/ObtenerReporteProductividadVentasHorasTrabajadas",
+    '/ReporteIndicadoresProductividad/ObtenerReporteProductividadVentasHorasTrabajadas',
   ObtenerReporteProductividadVentasIndicadores:
-    "/ReporteIndicadoresProductividad/ObtenerReporteProductividadVentasIndicadores",
+    '/ReporteIndicadoresProductividad/ObtenerReporteProductividadVentasIndicadores',
 
   //REPORTE INDICADORES DE PRODUCTIVIDAD
 
   // REPORTE PENDIENTE MES Y CORDINADORA
   ObtenerReportePendientePeriodoyCoordinadorPorMesCoordinador:
-    "/ReportePendienteMesCoordinadora/ObtenerReportePendientePeriodoyCoordinadorPorMesCoordinador",
+    '/ReportePendienteMesCoordinadora/ObtenerReportePendientePeriodoyCoordinadorPorMesCoordinador',
   ObtenerReportePendienteCierrePorMesCoordinador:
-    "/ReportePendienteMesCoordinadora/ObtenerReportePendienteCierrePorMesCoordinador",
+    '/ReportePendienteMesCoordinadora/ObtenerReportePendienteCierrePorMesCoordinador',
   ProcesarReporteMesCoordinadora:
-    "/ReportePendienteMesCoordinadora/ProcesarReporteMesCoordinadora",
+    '/ReportePendienteMesCoordinadora/ProcesarReporteMesCoordinadora',
 
   //REPORTE PAGOS POR PERIODO
   ObtenerReportePagosIngresos:
-    "/ReportePagosPorPeriodo/ObtenerReportePagosIngresos",
+    '/ReportePagosPorPeriodo/ObtenerReportePagosIngresos',
   CongelarReporteDePagosPorDia:
-    "/ReportePagosPorPeriodo/CongelarReporteDePagosPorDia",
+    '/ReportePagosPorPeriodo/CongelarReporteDePagosPorDia',
   CongelarReporteDePagosPorPeriodo:
-    "/ReportePagosPorPeriodo/CongelarReporteDePagosPorPeriodo",
+    '/ReportePagosPorPeriodo/CongelarReporteDePagosPorPeriodo',
 
   // REPORTE PAGOS PROVEEDORES
-  ObtenerReportePagos: "/ReportePagoProveedor/ObtenerReportePagos",
+  ObtenerReportePagos: '/ReportePagoProveedor/ObtenerReportePagos',
   ObtenerReporteDocumentosPendientesPago:
-    "/ReportePagoProveedor/ObtenerReporteDocumentosPendientesPago",
+    '/ReportePagoProveedor/ObtenerReporteDocumentosPendientesPago',
 
   //REPORTE PAGOS A CUENTA
-  ObtenerReportePagosACuenta: "/ReportePagosACuenta/ObtenerReportePagosACuenta",
+  ObtenerReportePagosACuenta: '/ReportePagosACuenta/ObtenerReportePagosACuenta',
   ObtenerTasaCambioReportePagoACuenta:
-    "/ReportePagosACuenta/ObtenerTasaCambioReportePagoACuenta",
+    '/ReportePagosACuenta/ObtenerTasaCambioReportePagoACuenta',
 
   //REPORTE PRESUPUESTO
   ObtenerNombresFiltroAutoComplete:
-    "/Personal/ObtenerNombresFiltroAutoComplete",
+    '/Personal/ObtenerNombresFiltroAutoComplete',
   ObtenerReportePresupuestoFinanzas:
-    "/ReportePresupuesto/ObtenerReportePresupuestoFinanzas",
+    '/ReportePresupuesto/ObtenerReportePresupuestoFinanzas',
   ActualizarEsDiferidoListaFur:
-    "/ReportePresupuesto/ActualizarEsDiferidoListaFur",
+    '/ReportePresupuesto/ActualizarEsDiferidoListaFur',
 
   //REPORTE RESUMEN DE MONTOS
   ObtenerReporteResumenMontosCierre:
-    "/ReporteResumenMonto/ObtenerReporteResumenMontosCierre",
+    '/ReporteResumenMonto/ObtenerReporteResumenMontosCierre',
   ObtenerReporteResumenMontosDiferencias:
-    "/ReporteResumenMonto/ObtenerReporteResumenMontosDiferencias",
+    '/ReporteResumenMonto/ObtenerReporteResumenMontosDiferencias',
   ObtenerReporteResumenMontos:
-    "/ReporteResumenMonto/ObtenerReporteResumenMontos",
+    '/ReporteResumenMonto/ObtenerReporteResumenMontos',
   ObtenerReporteResumenMontosCambios:
-    "/ReporteResumenMonto/ObtenerReporteResumenMontosCambios",
+    '/ReporteResumenMonto/ObtenerReporteResumenMontosCambios',
   ObtenerReporteResumenMontosNuevosMatriculados:
-    "/ReporteResumenMonto/ObtenerReporteResumenMontosNuevosMatriculados",
+    '/ReporteResumenMonto/ObtenerReporteResumenMontosNuevosMatriculados',
 
   GenerarReporteResumenMontosTotalizadoPeriodoActual:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoPeriodoActual",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoPeriodoActual',
   GenerarReporteResumenMontosTotalizadoPeriodoCierre:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoPeriodoCierre",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoPeriodoCierre',
   GenerarReporteResumenMontosVariacionMensual:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosVariacionMensual",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosVariacionMensual',
   GenerarReporteResumenMontosNuevosMatriculados:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosNuevosMatriculados",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosNuevosMatriculados',
 
   GenerarReporteResumenMontosTotalizadoPais:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoPais",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoPais',
   GenerarReporteResumenMontosTotalizadoModalidadPresencialPais:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadPresencialPais",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadPresencialPais',
   GenerarReporteResumenMontosTotalizadoModalidadOnlinePais:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadOnlinePais",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadOnlinePais',
   GenerarReporteResumenMontosTotalizadoModalidadAonlinePais:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadAonlinePais",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadAonlinePais',
   GenerarReporteResumenMontosTotalizadoModalidadInHousePais:
-    "/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadInHousePais",
+    '/ReporteResumenMonto/GenerarReporteResumenMontosTotalizadoModalidadInHousePais',
 
   //REPORTE PAGOS POR ASISTENTES
   ObtenerReportePagoPorAsistente:
-    "/ReportePagoPorAsistente/ObtenerReportePagoPorAsistente",
+    '/ReportePagoPorAsistente/ObtenerReportePagoPorAsistente',
   //REPORTE PAGOS POR TASAS ACADEMICAS
-  ObtenercomboConcepto: "/ReportePagoTasaAcademica/ObtenercomboConcepto",
+  ObtenercomboConcepto: '/ReportePagoTasaAcademica/ObtenercomboConcepto',
   ObtenerReportePagosTasasAcademicas:
-    "/ReportePagoTasaAcademica/ObtenerReportePagosTasasAcademicas",
+    '/ReportePagoTasaAcademica/ObtenerReportePagosTasasAcademicas',
 
   //TIPO COMPROBANTE DE PAGO : FINANZAS
-  ObtenerListaTipoComprobante: "/TipoComprobante/ObtenerListaTipoComprobante",
-  InsertarTipoComprobantePago: "/TipoComprobante/Insertar",
-  ActualizarTipoComprobantePago: "/TipoComprobante/Actualizar",
-  EliminarTipoComprobantePago: "/TipoComprobante/Eliminar",
+  ObtenerListaTipoComprobante: '/TipoComprobante/ObtenerListaTipoComprobante',
+  InsertarTipoComprobantePago: '/TipoComprobante/Insertar',
+  ActualizarTipoComprobantePago: '/TipoComprobante/Actualizar',
+  EliminarTipoComprobantePago: '/TipoComprobante/Eliminar',
 
   //TIPO CUENTA : FINANZAS
-  TipoCuentaBancoObtener: "/TipoCuentaBanco/ObtenerTipoCuentaBanco",
-  TipoCuentaBancoInsertar: "/TipoCuentaBanco/Insertar",
-  TipoCuentaBancoEliminar: "/TipoCuentaBanco/Eliminar",
-  TipoCuentaBancoActualizar: "/TipoCuentaBanco/Actualizar",
+  TipoCuentaBancoObtener: '/TipoCuentaBanco/ObtenerTipoCuentaBanco',
+  TipoCuentaBancoInsertar: '/TipoCuentaBanco/Insertar',
+  TipoCuentaBancoEliminar: '/TipoCuentaBanco/Eliminar',
+  TipoCuentaBancoActualizar: '/TipoCuentaBanco/Actualizar',
   //TIPO IMPUESTO : FINANZAS
-  TipoImpuestoObtener: "/TipoImpuesto/ObtenerTipoImpuesto",
-  TipoImpuestoInsertar: "/TipoImpuesto/Insertar",
-  TipoImpuestoEliminar: "/TipoImpuesto/Eliminar",
-  TipoImpuestoEditar: "/TipoImpuesto/Actualizar",
+  TipoImpuestoObtener: '/TipoImpuesto/ObtenerTipoImpuesto',
+  TipoImpuestoInsertar: '/TipoImpuesto/Insertar',
+  TipoImpuestoEliminar: '/TipoImpuesto/Eliminar',
+  TipoImpuestoEditar: '/TipoImpuesto/Actualizar',
 
   //TIPO SERVICIOS : FINANZAS
-  TipoServicioObtener: "/TipoServicio/ObtenerTipoServicio",
-  TipoServicioInsertar: "/TipoServicio/Insertar",
-  TipoServicioEliminar: "/TipoServicio/Eliminar",
-  TipoServicioEditar: "/TipoServicio/Actualizar",
+  TipoServicioObtener: '/TipoServicio/ObtenerTipoServicio',
+  TipoServicioInsertar: '/TipoServicio/Insertar',
+  TipoServicioEliminar: '/TipoServicio/Eliminar',
+  TipoServicioEditar: '/TipoServicio/Actualizar',
 
   //REGISTRAR PAGO FUR: FINANZAS
-  RegistrarPagoFurObtenerDatos: "/RegistrarFurPago/BuscarListaFurPagos",
-  RegsitrarPagoFurAsociarComprobante: "/RegistrarFurPago/AsociarComprobante",
+  RegistrarPagoFurObtenerDatos: '/RegistrarFurPago/BuscarListaFurPagos',
+  RegsitrarPagoFurAsociarComprobante: '/RegistrarFurPago/AsociarComprobante',
   RegistrarPagoFurParaPago:
-    "/RegistrarFurPago/ObtenerComprobantesPorFurParaPago",
+    '/RegistrarFurPago/ObtenerComprobantesPorFurParaPago',
   RegistrarPagoFurPagosRealizados:
-    "/RegistrarFurPago/ObtenerPagosRealizadosPorFur",
-  RegistrarpagoFurFormaPago: "/RegistrarFurPago/ObtenerListaFormaPago",
-  RegistrarpagoFurInsertar: "/RegistrarFurPago/InsertarFurPago",
-  RegistrarpagoFurActualizar: "/RegistrarFurPago/ActualizarFurPago",
-  RegistrarpagoFurElminar: "/RegistrarFurPago/ElminarFurPago",
+    '/RegistrarFurPago/ObtenerPagosRealizadosPorFur',
+  RegistrarpagoFurFormaPago: '/RegistrarFurPago/ObtenerListaFormaPago',
+  RegistrarpagoFurInsertar: '/RegistrarFurPago/InsertarFurPago',
+  RegistrarpagoFurActualizar: '/RegistrarFurPago/ActualizarFurPago',
+  RegistrarpagoFurElminar: '/RegistrarFurPago/ElminarFurPago',
 
   //RESUMEN CAJA
-  ResumenCajaObtener: "/Caja/ObtenerResumenCaja",
-  ResumenCajaGenerarReporteNic: "/ResumenCaja/ObtenerCajaIngresoByFecha",
-  ResumenCajaGenerarReporteREC: "/ResumenCaja/ObtenerCajaEgresoAprobadoByFecha",
-  ResumenCajaGenerarReportePR: "/ResumenCaja/ObtenerCajaPorRendirByFecha",
-  ResumenCajaGenerarPdfNic: "/ResumenCaja/ObtenerDocumentosNIC",
-  ResumenCajaGenerarPdfREC: "/ResumenCaja/ObtenerDocumentosEgresoCaja",
-  ResumenCajaGenerarPdfPR: "/ResumenCaja/ObtenerDocumentosCajaPorRendir",
+  ResumenCajaObtener: '/Caja/ObtenerResumenCaja',
+  ResumenCajaGenerarReporteNic: '/ResumenCaja/ObtenerCajaIngresoByFecha',
+  ResumenCajaGenerarReporteREC: '/ResumenCaja/ObtenerCajaEgresoAprobadoByFecha',
+  ResumenCajaGenerarReportePR: '/ResumenCaja/ObtenerCajaPorRendirByFecha',
+  ResumenCajaGenerarPdfNic: '/ResumenCaja/ObtenerDocumentosNIC',
+  ResumenCajaGenerarPdfREC: '/ResumenCaja/ObtenerDocumentosEgresoCaja',
+  ResumenCajaGenerarPdfPR: '/ResumenCaja/ObtenerDocumentosCajaPorRendir',
 
   //RETENCIONES :FINANZAS
-  RetencionesObtenerRetenciones: "/Retencion/ObtenerRetencion",
-  RetencionesInsertar: "/Retencion/Insertar",
-  RetencionesActualizar: "/Retencion/Actualizar",
-  RetencionesEliminar: "/Retencion/Eliminar",
+  RetencionesObtenerRetenciones: '/Retencion/ObtenerRetencion',
+  RetencionesInsertar: '/Retencion/Insertar',
+  RetencionesActualizar: '/Retencion/Actualizar',
+  RetencionesEliminar: '/Retencion/Eliminar',
 
   //SUBESTADOS MATRICULA
-  SubEstadoMatriculaObtener: "/SubEstadoMatricula/ObtenerSubEstadoMatricula",
+  SubEstadoMatriculaObtener: '/SubEstadoMatricula/ObtenerSubEstadoMatricula',
   SubEstadoMatriculaObtenerSubEstadoMatricula:
-    "/SubEstadoMatricula/ObtenerSubEstadoMatricula",
-  SubEstadoMatriculaEliminar: "/SubEstadoMatricula/Eliminar",
-  SubEstadoMatriculaInsertar: "/SubEstadoMatricula/Insertar",
-  SubEstadoMatriculaEditar: "/SubEstadoMatricula/Actualizar",
+    '/SubEstadoMatricula/ObtenerSubEstadoMatricula',
+  SubEstadoMatriculaEliminar: '/SubEstadoMatricula/Eliminar',
+  SubEstadoMatriculaInsertar: '/SubEstadoMatricula/Insertar',
+  SubEstadoMatriculaEditar: '/SubEstadoMatricula/Actualizar',
 
   SubEstadoMatriculaObtenerSubEstadoMatriculaFiltro:
-    "/SubEstadoMatricula/ObtenerSubEstadoMatriculaFiltro",
+    '/SubEstadoMatricula/ObtenerSubEstadoMatriculaFiltro',
   ObtenerProgramaGeneralPorIdMatricula:
-    "/MatriculaCabecera/ObtenerProgramaGeneralPorIdMatricula",
+    '/MatriculaCabecera/ObtenerProgramaGeneralPorIdMatricula',
 
-  TipoIdentificadorObtenerCombo: "/TipoIdentificador/ObtenerCombo",
+  TipoIdentificadorObtenerCombo: '/TipoIdentificador/ObtenerCombo',
 
   // Disponibilida Flujo Efectivo
 
   PanelDisponibleInsertarPanelDepositoDisponible:
-    "/PanelDepositoDisponible/InsertarPanelDepositoDisponible",
-  PanelDisponibleObtenerFormasPago: "/Cronograma/ObtenerFormasPago",
-  PanelDisponibleObtenerDiaSemana: "/PanelDepositoDisponible/ObtenerDiaSemana",
+    '/PanelDepositoDisponible/InsertarPanelDepositoDisponible',
+  PanelDisponibleObtenerFormasPago: '/Cronograma/ObtenerFormasPago',
+  PanelDisponibleObtenerDiaSemana: '/PanelDepositoDisponible/ObtenerDiaSemana',
   PanelDisponibleActualizarPanelDepositoDisponible:
-    "/PanelDepositoDisponible/ActualizarPanelDepositoDisponible",
+    '/PanelDepositoDisponible/ActualizarPanelDepositoDisponible',
   PanelDepositoDisponibleObtenerPanelDepositoDisponible:
-    "/PanelDepositoDisponible/ObtenerPanelDepositoDisponible",
+    '/PanelDepositoDisponible/ObtenerPanelDepositoDisponible',
 
   // Otro Ingrreso Egreso
   OtroIngresoEgresoVisualizarOtroMovimientoCaja:
-    "/OtroMovimientoCaja/VisualizarOtroMovimientoCaja",
+    '/OtroMovimientoCaja/VisualizarOtroMovimientoCaja',
   OtroIngresoEgresoObtenerListaTipoMovimientoCaja:
-    "/OtroMovimientoCaja/ObtenerListaTipoMovimientoCaja",
+    '/OtroMovimientoCaja/ObtenerListaTipoMovimientoCaja',
   OtroIngresoEgresoObtenerListaSubTipoMovimientoCaja:
-    "/OtroMovimientoCaja/ObtenerListaSubTipoMovimientoCaja",
+    '/OtroMovimientoCaja/ObtenerListaSubTipoMovimientoCaja',
   OtroIngresoEgresoObtenerListaFormaPago:
-    "/OtroMovimientoCaja/ObtenerListaFormaPago",
-  OtroIngresoEgresoObtenerListaMoneda: "/OtroMovimientoCaja/ObtenerListaMoneda",
+    '/OtroMovimientoCaja/ObtenerListaFormaPago',
+  OtroIngresoEgresoObtenerListaMoneda: '/OtroMovimientoCaja/ObtenerListaMoneda',
   OtroIngresoEgresoObtenerListaCuentaCorriente:
-    "/OtroMovimientoCaja/ObtenerListaCuentaCorriente",
+    '/OtroMovimientoCaja/ObtenerListaCuentaCorriente',
   OtroIngresoEgresoObtenerCentroCosto:
-    "/OtroMovimientoCaja/ObtenerListaCentroCosto",
+    '/OtroMovimientoCaja/ObtenerListaCentroCosto',
   OtroIngresoObtenerListaAlumnoAutocomplete:
-    "/OtroMovimientoCaja/ObtenerListaAlumnoAutocomplete",
+    '/OtroMovimientoCaja/ObtenerListaAlumnoAutocomplete',
   OtroIngresoObtenerListaPlanContableAutoComplete:
-    "/OtroMovimientoCaja/ObtenerListaPlanContableAutoComplete",
+    '/OtroMovimientoCaja/ObtenerListaPlanContableAutoComplete',
   OtroIngresoInsertarOtroMovimientoCaja:
-    "/OtroMovimientoCaja/InsertarOtroMovimientoCaja",
+    '/OtroMovimientoCaja/InsertarOtroMovimientoCaja',
   OtroIngresoActualiOtroMovimientoCaja:
-    "/OtroMovimientoCaja/ActualizarOtroMovimientoCaja",
+    '/OtroMovimientoCaja/ActualizarOtroMovimientoCaja',
   OtroIngresoEliminarOtroMovimientoCaja:
-    "/OtroMovimientoCaja/EliminarOtroMovimientoCaja",
+    '/OtroMovimientoCaja/EliminarOtroMovimientoCaja',
 
   //CronogramaPrestamo
   GastoFinancieroCronogramaObtenerListaPrestamos:
-    "/GastoFinancieroCronograma/ObtenerListaPrestamos",
+    '/GastoFinancieroCronograma/ObtenerListaPrestamos',
   GastoFinancieroObtenerListaEntidadesFinancierasConPrestamo:
-    "/GastoFinancieroCronograma/ObtenerListaEntidadesFinancierasConPrestamo",
+    '/GastoFinancieroCronograma/ObtenerListaEntidadesFinancierasConPrestamo',
   GastoFinancieroObtenerGenerarReportePrestamos:
-    "/GastoFinancieroCronograma/GenerarReportePrestamos",
+    '/GastoFinancieroCronograma/GenerarReportePrestamos',
 
   //Reporte Egresos Por RUbro
 
-  ListaSedes: "/ReporteEgresoPorRubro/ObtenerListaSedes",
+  ListaSedes: '/ReporteEgresoPorRubro/ObtenerListaSedes',
   VizualizarReporteEgresoPorRubro:
-    "/ReporteEgresoPorRubro/VizualizarReporteEgresoPorRubro",
+    '/ReporteEgresoPorRubro/VizualizarReporteEgresoPorRubro',
   VizualizarDesgloseReporteEgresoPorRubro:
-    "/ReporteEgresoPorRubro/VizualizarDesgloseReporteEgresoPorRubro",
+    '/ReporteEgresoPorRubro/VizualizarDesgloseReporteEgresoPorRubro',
 
   //Reporte Estado de Cuenta por Proveedor
 
   ListaProveedoresEstadoDeCuenta:
-    "/ReporteEstadoCuentaProveedor/ObtenerListaProveedores",
+    '/ReporteEstadoCuentaProveedor/ObtenerListaProveedores',
   ListaObtenerListaPlanContable:
-    "/ReporteEstadoCuentaProveedor/ObtenerListaPlanContable",
+    '/ReporteEstadoCuentaProveedor/ObtenerListaPlanContable',
   VizualizarReporteEstadoCuentaProveedor:
-    "/ReporteEstadoCuentaProveedor/VizualizarReporteEstadoCuentaProveedor",
+    '/ReporteEstadoCuentaProveedor/VizualizarReporteEstadoCuentaProveedor',
 
   //Rubro
-  ObtenerListaRubro: "/FurTipoSolicitud/Obtener/todos",
-  InsertarRubro: "/FurTipoSolicitud/agregar",
-  ActualizarRubro: "/FurTipoSolicitud/actualizar",
-  EliminarRubro: "/FurTipoSolicitud/eliminar",
+  ObtenerListaRubro: '/FurTipoSolicitud/Obtener/todos',
+  InsertarRubro: '/FurTipoSolicitud/agregar',
+  ActualizarRubro: '/FurTipoSolicitud/actualizar',
+  EliminarRubro: '/FurTipoSolicitud/eliminar',
 
   //Proyeccion Fur
   ObtenerObtenerComboEstadoProyeccionFur:
-    "/EstadoProyeccionFur/ObtenerComboEstadoProyeccionFur",
+    '/EstadoProyeccionFur/ObtenerComboEstadoProyeccionFur',
   CabeceraFurConfiguracionAutomaticaInsertar:
-    "/CabeceraFurConfiguracionAutomatica/Insertar",
+    '/CabeceraFurConfiguracionAutomatica/Insertar',
   CabeceraFurConfiguracionAutomaticaActulizar:
-    "/CabeceraFurConfiguracionAutomatica/Actualizar",
+    '/CabeceraFurConfiguracionAutomatica/Actualizar',
   CabeceraFurConfiguracionAutomaticaEliminar:
-    "/CabeceraFurConfiguracionAutomatica/Eliminar",
+    '/CabeceraFurConfiguracionAutomatica/Eliminar',
   ProyeccionFurObtenerConfiguracionProyeccionFurActivo:
-    "/ProyeccionFur/ObtenerConfiguracionProyeccionFurActivo",
+    '/ProyeccionFur/ObtenerConfiguracionProyeccionFurActivo',
   ProyeccionFurConnfiguracionAutomatica:
-    "/CabeceraFurConfiguracionAutomatica/ObtenerCabeceraFurConfiguracionAutomatica",
+    '/CabeceraFurConfiguracionAutomatica/ObtenerCabeceraFurConfiguracionAutomatica',
   ProyeccionFurObtenerFurConfiguracionAutomaticaByIdArea:
-    "/ProyeccionFur/ObtenerFurConfiguracionAutomaticaByIdArea",
+    '/ProyeccionFur/ObtenerFurConfiguracionAutomaticaByIdArea',
   ProyeccionFurCambiarEstadoAEnRevision:
-    "/ProyeccionFur/CambiarEstadoAEnRevision",
+    '/ProyeccionFur/CambiarEstadoAEnRevision',
   ProyeccionFurCambiarEstadoArechazado:
-    "/ProyeccionFur/CambiarEstadoArechazado",
-  FrecuenciaObtenerFrecuencia: "/Frecuencia/ObtenerFrecuencia",
+    '/ProyeccionFur/CambiarEstadoArechazado',
+  FrecuenciaObtenerFrecuencia: '/Frecuencia/ObtenerFrecuencia',
   ObtenerFurConfiguracionAutomaticaByIdArea:
-    "/ProyeccionFur/ObtenerFurConfiguracionAutomaticaByIdArea",
+    '/ProyeccionFur/ObtenerFurConfiguracionAutomaticaByIdArea',
   ObtenerFurConfiguracionAutomaticaByIdAreaActivo:
-    "/ProyeccionFur/ObtenerFurConfiguracionAutomaticaByIdAreaActivo",
+    '/ProyeccionFur/ObtenerFurConfiguracionAutomaticaByIdAreaActivo',
   ProyeccionFurValidacionByIdArea:
-    "/ProyeccionFur/ValidarCabeceraFurConfiguracionAutomaticaEnProcesoByIdArea",
+    '/ProyeccionFur/ValidarCabeceraFurConfiguracionAutomaticaEnProcesoByIdArea',
   ObtenerFurConfiguracionAutomaticaNoValida:
-    "/ProyeccionFur/ObtenerFurConfiguracionAutomaticaNoValida",
-  ProyectarFurCostosFijos: "/ProyeccionFur/ProyectarFurCostosFijos",
+    '/ProyeccionFur/ObtenerFurConfiguracionAutomaticaNoValida',
+  ProyectarFurCostosFijos: '/ProyeccionFur/ProyectarFurCostosFijos',
   ObtenerConfiguracionProyeccionFurById:
-    "/ProyeccionFur/ObtenerConfiguracionProyeccionFurById",
+    '/ProyeccionFur/ObtenerConfiguracionProyeccionFurById',
   ObtenerCongelamientoProyeccionFur:
-    "/ProyeccionFur/ObtenerCongelamientoProyeccionFur",
+    '/ProyeccionFur/ObtenerCongelamientoProyeccionFur',
   EliminarLogicamenteFurProyectadoPorHistorico:
-    "/ProyeccionFur/EliminarLogicamenteFurProyectadoPorHistorico",
+    '/ProyeccionFur/EliminarLogicamenteFurProyectadoPorHistorico',
 
   //TipoDeCambioFinancieroMensualParaReportes
-  TipoDeCambioInsertar: "/ReporteTipoDeCambioFinancieroMensual/Insertar",
-  TipoDeCambioActualizar: "/ReporteTipoDeCambioFinancieroMensual/Actualizar",
-  TipoDeCambioEliminar: "/ReporteTipoDeCambioFinancieroMensual/Eliminar",
+  TipoDeCambioInsertar: '/ReporteTipoDeCambioFinancieroMensual/Insertar',
+  TipoDeCambioActualizar: '/ReporteTipoDeCambioFinancieroMensual/Actualizar',
+  TipoDeCambioEliminar: '/ReporteTipoDeCambioFinancieroMensual/Eliminar',
   TipoDeCambioObtenerFiltro:
-    "/ReporteTipoDeCambioFinancieroMensual/ObtenerFiltro",
-  TipoCambioObtenerMeses: "/ReporteTipoDeCambioFinancieroMensual/ObtenerTodo",
+    '/ReporteTipoDeCambioFinancieroMensual/ObtenerFiltro',
+  TipoCambioObtenerMeses: '/ReporteTipoDeCambioFinancieroMensual/ObtenerTodo',
 
   //LecturaCrep
 
-  LecturaCrep: "/Cronograma/ProcesarCDPGFinanzas",
-  ProcesarPagos: "/Cronograma/ProcesarPagos",
+  LecturaCrep: '/Cronograma/ProcesarCDPGFinanzas',
+  ProcesarPagos: '/Cronograma/ProcesarPagos',
   //CONFIGURACION FUR : FINANZAS
   ConfiguracionInsertarConfiguracionProyeccionFur:
-    "/ConfiguracionProyeccionFur/InsertarConfiguracionProyeccionFur",
+    '/ConfiguracionProyeccionFur/InsertarConfiguracionProyeccionFur',
   ConfiguracionActualizarConfiguracionProyeccionFur:
-    "/ConfiguracionProyeccionFur/ActualizarConfiguracionProyeccionFur",
+    '/ConfiguracionProyeccionFur/ActualizarConfiguracionProyeccionFur',
   ConfiguracionObtenerConfiguracionProyeccionFur:
-    "/ConfiguracionProyeccionFur/ObtenerConfiguracionProyeccionFur",
+    '/ConfiguracionProyeccionFur/ObtenerConfiguracionProyeccionFur',
   ConfiguracionProyeccionFurGuardarConfiguracion:
-    "/ConfiguracionProyeccionFur/GuardarConfiguracion",
-  ConfiguracionEliminar: "/ConfiguracionProyeccionFur/Eliminar",
+    '/ConfiguracionProyeccionFur/GuardarConfiguracion',
+  ConfiguracionEliminar: '/ConfiguracionProyeccionFur/Eliminar',
   CambiarActivoConfiguracion:
-    "/ConfiguracionProyeccionFur/CambiarActivoConfiguracion",
+    '/ConfiguracionProyeccionFur/CambiarActivoConfiguracion',
   DesactivarConfiguracion:
-    "/ConfiguracionProyeccionFur/DesactivarConfiguracion",
-  FurConfiguracionAutomaticaInsertar: "/FurConfiguracionAutomatica/Insertar",
+    '/ConfiguracionProyeccionFur/DesactivarConfiguracion',
+  FurConfiguracionAutomaticaInsertar: '/FurConfiguracionAutomatica/Insertar',
   FurConfiguracionAutomaticaActualizar:
-    "/FurConfiguracionAutomatica/Actualizar",
-  FurConfiguracionAutomaticaEliminar: "/FurConfiguracionAutomatica/Eliminar",
+    '/FurConfiguracionAutomatica/Actualizar',
+  FurConfiguracionAutomaticaEliminar: '/FurConfiguracionAutomatica/Eliminar',
 
   //ControlDocumentos
 
   //PERIODO MES
   PeriodoObtenerPeriodoMesProyeccionCombo:
-    "/PeriodoMesProyeccion/ObtenerPeriodoMesProyeccionCombo",
+    '/PeriodoMesProyeccion/ObtenerPeriodoMesProyeccionCombo',
   PeriodoInsertarPeriodoMesProyeccion:
-    "/PeriodoMesProyeccion/InsertarPeriodoMesProyeccion",
+    '/PeriodoMesProyeccion/InsertarPeriodoMesProyeccion',
   PeriodoActulizarPeriodoMesProyeccion:
-    "/PeriodoMesProyeccion/ActulizarPeriodoMesProyeccion",
+    '/PeriodoMesProyeccion/ActulizarPeriodoMesProyeccion',
 
   PeriodoObtenerPeriodoMesProyeccion:
-    "/PeriodoMesProyeccion/ObtenerPeriodoMesProyeccion",
+    '/PeriodoMesProyeccion/ObtenerPeriodoMesProyeccion',
   // ObtenerCoordinadorPorApellidos: '/Cronograma/ObtenerCoordinadorPorApellidos',
   //ObtenerAsesorPorApellidos: '/Cronograma/ObtenerAsesorPorApellidos',
   //ObtenerCentroCostos: '/Cronograma/ObtenerPEspecificoPorCentroCosto',
   // ObtenerAlumnoPorValor: '/Cronograma/ObtenerAlumnoPorValor',
   //ObtenerCodigoMatricula: '/Cronograma/ObtenerCodigoMatricula',
-  MatriculaCabeceraCombo: "/Cronograma/ObtenerComboCodigoMatricula",
-  CriterioCalificacionObtenerCombo: "/CriterioCalificacion/ObtenerCombo",
-  ObtenerDocumentosPorMatricula: "/ControlDoc/ObtenerDocumentosPorMatricula",
+  MatriculaCabeceraCombo: '/Cronograma/ObtenerComboCodigoMatricula',
+  CriterioCalificacionObtenerCombo: '/CriterioCalificacion/ObtenerCombo',
+  ObtenerDocumentosPorMatricula: '/ControlDoc/ObtenerDocumentosPorMatricula',
   ActualizarControlDocumentoAlumno:
-    "/ControlDoc/ActualizarControlDocumentoAlumno",
-  ActualizarControlDocumento: "/ControlDoc/ActualizarControlDocumento",
+    '/ControlDoc/ActualizarControlDocumentoAlumno',
+  ActualizarControlDocumento: '/ControlDoc/ActualizarControlDocumento',
   //ReporteComprobantes
 
-  ObtenerTipoAsociado: "/ReporteComprobantes/ObtenerTipoAsociado",
-  ObtenerReporteComprobantes: "/ReporteComprobantes/ObtenerReporteComprobantes",
+  ObtenerTipoAsociado: '/ReporteComprobantes/ObtenerTipoAsociado',
+  ObtenerReporteComprobantes: '/ReporteComprobantes/ObtenerReporteComprobantes',
 
   //ReporteDocumentos
 
-  ObtenerCombosReporteDocumentos: "/ReporteDocumentos/ObtenerCombos",
+  ObtenerCombosReporteDocumentos: '/ReporteDocumentos/ObtenerCombos',
   ObtenerFrecuenciaDocumentos:
-    "/ReporteDocumentos/ObtenerFrecuenciaReporteDocumentos",
-  ObtenerReporteDocumentos: "/ReporteDocumentos/ObtenerReporteDocumentos",
+    '/ReporteDocumentos/ObtenerFrecuenciaReporteDocumentos',
+  ObtenerReporteDocumentos: '/ReporteDocumentos/ObtenerReporteDocumentos',
 
   //ReporteCongelamiento
 
-  CongelamientoReporteFlujo: "/CongelamientoReporteFlujo/ReporteFlujoMaestro",
+  CongelamientoReporteFlujo: '/CongelamientoReporteFlujo/ReporteFlujoMaestro',
   ObtenerPeriodoCongelamiento:
-    "/VerificacionOportunidadISM/ObtenerCombosVerificacionOportunidadISM",
+    '/VerificacionOportunidadISM/ObtenerCombosVerificacionOportunidadISM',
   ObtenerCodigoInHouse:
-    "/CongelamientoReporteFlujo/ObtenerIdMatriculaPorCodigo",
-  ObtenerListaInHouse: "/CongelamientoReporteFlujo/ObtenerListaInHouse",
-  InsertarCambiosPeriodo: "/CongelamientoReporteFlujo/InsertarCambiosPeriodo",
+    '/CongelamientoReporteFlujo/ObtenerIdMatriculaPorCodigo',
+  ObtenerListaInHouse: '/CongelamientoReporteFlujo/ObtenerListaInHouse',
+  InsertarCambiosPeriodo: '/CongelamientoReporteFlujo/InsertarCambiosPeriodo',
   EliminarReporteFlujoMaestro:
-    "/CongelamientoReporteFlujo/EliminarReporteFlujoMaestro",
+    '/CongelamientoReporteFlujo/EliminarReporteFlujoMaestro',
   ObternerTodosCoordinadores:
-    "/CongelamientoReporteFlujo/ObternerTodosCoordinadores",
+    '/CongelamientoReporteFlujo/ObternerTodosCoordinadores',
   CongelarReporteOriginalesPorDia:
-    "/CongelamientoReporteFlujo/CongelarReporteOriginalesPorDia",
+    '/CongelamientoReporteFlujo/CongelarReporteOriginalesPorDia',
   ActualizarEstadoInHouseMatricula:
-    "/CongelamientoReporteFlujo/ActualizarEstadoInHouseMatricula",
+    '/CongelamientoReporteFlujo/ActualizarEstadoInHouseMatricula',
   ActualizarEstadoInHouseCodigoMatricula:
-    "/COngelamientoReporteFlujo/ActualizarEstadoInHouseCodigoMatricula",
+    '/COngelamientoReporteFlujo/ActualizarEstadoInHouseCodigoMatricula',
   EditarReporteFlujoMaestro:
-    "/CongelamientoReporteFlujo/EditarReporteFlujoMaestro",
-  ExportarCongelamiento: "/CongelamientoReporteFlujo/ExportarCongelados",
+    '/CongelamientoReporteFlujo/EditarReporteFlujoMaestro',
+  ExportarCongelamiento: '/CongelamientoReporteFlujo/ExportarCongelados',
 
   //ReportePendientesV2
 
-  ObtenerReportePendienteV2: "/ReportePendienteV2/ObtenerReportePendienteV2",
+  ObtenerReportePendienteV2: '/ReportePendienteV2/ObtenerReportePendienteV2',
 
   //Prueba
 
   ObtenerReportePendientePeriodoyCoordinadorPorPeriodo_Periodo:
-    "/ReportePendienteV2/ObtenerReportePendientePeriodoyCoordinadorPorPeriodo_Periodo",
+    '/ReportePendienteV2/ObtenerReportePendientePeriodoyCoordinadorPorPeriodo_Periodo',
   ObtenerReportePendientePeriodoyCoordinadorPorPeriodo_Periodo_Matriculados:
-    "/ReportePendienteV2/ObtenerReportePendientePeriodoyCoordinadorPorPeriodo_Periodo_Matriculados",
+    '/ReportePendienteV2/ObtenerReportePendientePeriodoyCoordinadorPorPeriodo_Periodo_Matriculados',
   ObtenerReportePendienteCierrePorPeriodo:
-    "/ReportePendienteV2/ObtenerReportePendienteCierrePorPeriodo",
+    '/ReportePendienteV2/ObtenerReportePendienteCierrePorPeriodo',
   GenerarReportePendientePorPeriodoOperacionesGeneralPrueba:
-    "/ReportePendienteV2/GenerarReportePendientePorPeriodoOperacionesGeneralPrueba",
-  GenerarReportePeriodo: "/ReportePendienteV2/GenerarReportePeriodo",
+    '/ReportePendienteV2/GenerarReportePendientePorPeriodoOperacionesGeneralPrueba',
+  GenerarReportePeriodo: '/ReportePendienteV2/GenerarReportePeriodo',
   ObtenerReportePendienteCierrePorPeriodoPrueba:
-    "/ReportePendienteV2/ObtenerReportePendienteCierrePorPeriodoPrueba",
+    '/ReportePendienteV2/ObtenerReportePendienteCierrePorPeriodoPrueba',
 
   //Departamentos para SIIGO
-  ObtenerDepartamentoPaiCombo: "/DepartamentoPai/ObtenerCombo",
-  ObtenerCodigoDepartamentoPaiPorId: "/DepartamentoPai/ObtenerCodigoPorId",
+  ObtenerDepartamentoPaiCombo: '/DepartamentoPai/ObtenerCombo',
+  ObtenerCodigoDepartamentoPaiPorId: '/DepartamentoPai/ObtenerCodigoPorId',
 
   //Ciudades para SIIGO
-  ObtenerCiudadesDepartamentoPaiCombo: "/CiudadDepartamentoPai/ObtenerCombo",
-  ObtenerCiudadesDepartamentoPaiObtenerPorId: "/CiudadDepartamentoPai/ObtenerPorId",
-  ObtenerCodigoCiudadDepartamentoPaiPorId: "/CiudadDepartamentoPai/ObtenerCodigoPorId",
+  ObtenerCiudadesDepartamentoPaiCombo: '/CiudadDepartamentoPai/ObtenerCombo',
+  ObtenerCiudadesDepartamentoPaiObtenerPorId:
+    '/CiudadDepartamentoPai/ObtenerPorId',
+  ObtenerCodigoCiudadDepartamentoPaiPorId:
+    '/CiudadDepartamentoPai/ObtenerCodigoPorId',
 
   //Tipo cambio de Colombia
-  ObtenerPesosDolaresTipoCambioColombia: "/TipoCambioCol/ObtenerPesosDolaresTipoCambioColombia",
+  ObtenerPesosDolaresTipoCambioColombia:
+    '/TipoCambioCol/ObtenerPesosDolaresTipoCambioColombia',
 
   //Envía datos completos para generar (factura / cliente nuevo) en Siigo
-  DatosCompletosSiigo: "/SiigoApi/DatosCompletos",
-  GuardarFacturaInternaSiigo: "/SiigoApi/GuardarFacturaInternaSiigo",
-  EnviarSiigoFacturaApi: "/SiigoApi/EnviarSiigoFacturaApi",
-  ObtenerIdFacturaPorCodigoSiigo: "/SiigoApi/ObtenerIdFacturaPorCodigoSiigo",
-  ListarPendientesEnvioSiigo: "/SiigoApi/ListarPendientesEnvioSiigo",
-  EnviarSiigoMasivasLote: "/SiigoApi/EnviarSiigoMasivasLote",
+  DatosCompletosSiigo: '/SiigoApi/DatosCompletos',
+  GuardarFacturaInternaSiigo: '/SiigoApi/GuardarFacturaInternaSiigo',
+  EnviarSiigoFacturaApi: '/SiigoApi/EnviarSiigoFacturaApi',
+  ObtenerIdFacturaPorCodigoSiigo: '/SiigoApi/ObtenerIdFacturaPorCodigoSiigo',
+  ListarPendientesEnvioSiigo: '/SiigoApi/ListarPendientesEnvioSiigo',
+  EnviarSiigoMasivasLote: '/SiigoApi/EnviarSiigoMasivasLote',
   //Factura Facturama
-  CrearFacturaFacturama: "/FacturamaApi/DatosCompletosFacturama",
-  ValidarFacturaGuardada: "/FacturamaApi/ExisteFacturaConfigurada",
-  GuardarFacturaInterna: "/FacturamaApi/GuardarFacturaInterna",
-  ObtenerIdFacturaPorCodigo: "/FacturamaApi/ObtenerIdFacturaPorCodigo",
-  EnviarFacturaApi: "/FacturamaApi/EnviarFacturaApi",
-  EnviarFacturasMasivas: "/FacturamaApi/EnviarFacturasMasivas",
-  ListarPendientesEnvio: "/FacturamaApi/ListarPendientesEnvio",
-  EnviarFacturasMasivasLote: "/FacturamaApi/EnviarFacturasMasivasLote",
-  EliminarFacturasPendientesFacturama: "/FacturamaApi/EliminarFacturasPendientesFacturama",
-  GuardarFacturaGlobalInterna: "/FacturamaApi/GuardarFacturaGlobalInterna",
-  ObtenerIdFacturaGlobal: "/FacturamaApi/ObtenerIdFacturaGlobal",
-  EnviarFacturaGlobalApi: "/FacturamaApi/EnviarFacturaGlobalApi",
-  ObtenerFacturaPorCodigoMatricula: "/FacturamaApi/ObtenerFacturaPorCodigoMatricula",
-  CrearClienteFacturama: "/FacturamaApi/Crearcliente",
-  ObtenerListaRegimenFiscal: "/FacturamaApi/ObtenerListaRegimenFiscal",
-  ObtenerListaUsoCfdi: "/FacturamaApi/ObtenerListaUsoCfdi",
-  ObtenerFormapagoFacturama: "/FacturamaApi/ObtenerFormapagoFacturama",
-  ActualizarFacturamaEnvio: "/FacturamaApi/ActualizarFacturamaEnvio",
-  InsertarRegimenFiscal: "/FacturamaApi/InsertarRegimenFiscal",
-  ActualizarRegimenFiscal: "/FacturamaApi/ActualizarRegimenFiscal",
-  EliminarRegimenFiscal: "/FacturamaApi/EliminarRegimenFiscal",
-  ObtenerUsoComprobante: "/FacturamaApi/ObtenerListaUsoCfdi",
-  InsertarUsoComprobante: "/FacturamaApi/InsertarUsoComprobante",
-  ActualizarUsoComprobante: "/FacturamaApi/ActualizarUsoComprobante",
-  EliminarUsoComprobante: "/FacturamaApi/EliminarUsoComprobante",
-  ObtenerResumenMatriculas: "/FacturamaApi/ObtenerResumenMatriculas",
-  ObtenerCronogramaFactura: "/Cronograma/ObtenerCronograma",
-  ObtenerCronogramaFacturacion: "/Cronograma/ObtenerCronogramaFacturacion",
-
-
-
+  CrearFacturaFacturama: '/FacturamaApi/DatosCompletosFacturama',
+  ValidarFacturaGuardada: '/FacturamaApi/ExisteFacturaConfigurada',
+  GuardarFacturaInterna: '/FacturamaApi/GuardarFacturaInterna',
+  ObtenerIdFacturaPorCodigo: '/FacturamaApi/ObtenerIdFacturaPorCodigo',
+  EnviarFacturaApi: '/FacturamaApi/EnviarFacturaApi',
+  EnviarFacturasMasivas: '/FacturamaApi/EnviarFacturasMasivas',
+  ListarPendientesEnvio: '/FacturamaApi/ListarPendientesEnvio',
+  EnviarFacturasMasivasLote: '/FacturamaApi/EnviarFacturasMasivasLote',
+  EliminarFacturasPendientesFacturama:
+    '/FacturamaApi/EliminarFacturasPendientesFacturama',
+  GuardarFacturaGlobalInterna: '/FacturamaApi/GuardarFacturaGlobalInterna',
+  ObtenerIdFacturaGlobal: '/FacturamaApi/ObtenerIdFacturaGlobal',
+  EnviarFacturaGlobalApi: '/FacturamaApi/EnviarFacturaGlobalApi',
+  ObtenerFacturaPorCodigoMatricula:
+    '/FacturamaApi/ObtenerFacturaPorCodigoMatricula',
+  CrearClienteFacturama: '/FacturamaApi/Crearcliente',
+  ObtenerListaRegimenFiscal: '/FacturamaApi/ObtenerListaRegimenFiscal',
+  ObtenerListaUsoCfdi: '/FacturamaApi/ObtenerListaUsoCfdi',
+  ObtenerFormapagoFacturama: '/FacturamaApi/ObtenerFormapagoFacturama',
+  ActualizarFacturamaEnvio: '/FacturamaApi/ActualizarFacturamaEnvio',
+  InsertarRegimenFiscal: '/FacturamaApi/InsertarRegimenFiscal',
+  ActualizarRegimenFiscal: '/FacturamaApi/ActualizarRegimenFiscal',
+  EliminarRegimenFiscal: '/FacturamaApi/EliminarRegimenFiscal',
+  ObtenerUsoComprobante: '/FacturamaApi/ObtenerListaUsoCfdi',
+  InsertarUsoComprobante: '/FacturamaApi/InsertarUsoComprobante',
+  ActualizarUsoComprobante: '/FacturamaApi/ActualizarUsoComprobante',
+  EliminarUsoComprobante: '/FacturamaApi/EliminarUsoComprobante',
+  ObtenerResumenMatriculas: '/FacturamaApi/ObtenerResumenMatriculas',
+  ObtenerCronogramaFactura: '/Cronograma/ObtenerCronograma',
+  ObtenerCronogramaFacturacion: '/Cronograma/ObtenerCronogramaFacturacion',
 };
 
 export const constApiGlobal = {
   //ALUMNO
 
-  AlumnoObtenerAutocomplete: "/Alumno/ObtenerAutocomplete",
-  AlumnoEstadoContactoWhatsApp: "/Alumno/EstadoContactoWhatsApp",
-  AlumnoActualizarEmailPrincipal: "/Alumno/ActualizarEmailPrincipal",
+  AlumnoObtenerAutocomplete: '/Alumno/ObtenerAutocomplete',
+  AlumnoEstadoContactoWhatsApp: '/Alumno/EstadoContactoWhatsApp',
+  AlumnoActualizarEmailPrincipal: '/Alumno/ActualizarEmailPrincipal',
   AlumnoReasignacionOportunidadesActualizarEmail:
-    "/Alumno/ReasignacionOportunidadesActualizarEmail",
-  AlumnoObtenerAlumnoAutocomplete: "/Alumno/ObtenerAlumnoAutocomplete", //POST
+    '/Alumno/ReasignacionOportunidadesActualizarEmail',
+  AlumnoObtenerAlumnoAutocomplete: '/Alumno/ObtenerAlumnoAutocomplete', //POST
   AlumnoEnviarIndividualSMSPorOcurrencia:
-    "/Alumno/EnviarIndividualSMSPorOcurrencia",
-  AlumnoActualizarNombreAlumno: "/Alumno/ActualizarNombreAlumno",
+    '/Alumno/EnviarIndividualSMSPorOcurrencia',
+  AlumnoActualizarNombreAlumno: '/Alumno/ActualizarNombreAlumno',
   //Region
 
-  RegionObtenerRegion: "/RegionCiudad/ObtenerRegionCiudad",
+  RegionObtenerRegion: '/RegionCiudad/ObtenerRegionCiudad',
   // RegionObtenerRegion2: '/RegionCiudad/ObtenerRegionCiudad2',
-  RegionFiltroPaisCiudad: "/RegionCiudad/FiltroPaisCiudad",
-  RegionCiudadObtenerTodoFiltro: "/RegionCiudadObtenerTodoFiltro",
-  RegionCiudadObtenerCombo: "/RegionCiudad/ObtenerCombo",
+  RegionFiltroPaisCiudad: '/RegionCiudad/FiltroPaisCiudad',
+  RegionCiudadObtenerTodoFiltro: '/RegionCiudadObtenerTodoFiltro',
+  RegionCiudadObtenerCombo: '/RegionCiudad/ObtenerCombo',
   //CIUDADES
-  CiudadInsertar: "/Ciudad/Insertar",
-  CiudadInsertarLista: "/Ciudad/InsertarLista",
-  CiudadActualizar: "/Ciudad/Actualizar",
-  CiudadActualizarLista: "/Ciudad/ActualizarLista",
-  CiudadObtenerCombo: "/Ciudad/ObtenerCombo",
+  CiudadInsertar: '/Ciudad/Insertar',
+  CiudadInsertarLista: '/Ciudad/InsertarLista',
+  CiudadActualizar: '/Ciudad/Actualizar',
+  CiudadActualizarLista: '/Ciudad/ActualizarLista',
+  CiudadObtenerCombo: '/Ciudad/ObtenerCombo',
   CiudadObtenerCiudadMexicoByEstado:
-    "/Ciudad/ObtenerCiudadMexicoByIdEstadoMexico",
-  CiudadObtenerMunicipios: "/Ciudad/ObtenerMunicipioPorCiudad",
+    '/Ciudad/ObtenerCiudadMexicoByIdEstadoMexico',
+  CiudadObtenerMunicipios: '/Ciudad/ObtenerMunicipioPorCiudad',
   CiudadObtenerMunicipioPorEstadoyCiudad:
-    "/Ciudad/ObtenerMunicipioPorEstadoyCiudad",
-  CiudadObtenerAsentamientos: "/Ciudad/ObtenerAsentamientoPorMunicipio",
+    '/Ciudad/ObtenerMunicipioPorEstadoyCiudad',
+  CiudadObtenerAsentamientos: '/Ciudad/ObtenerAsentamientoPorMunicipio',
   CiudadObtenerAsentamientoPorMunicipioyCiudadMexico:
-    "/Ciudad/ObtenerAsentamientoPorMunicipioyCiudadMexico",
-  CiudadObtenerCiudad: "/Ciudad/ObtenerCiudad",
-  CiudadObtenerComboRegionCiudad: "/Ciudad/ObtenerObtenerComboRegionCiudad",
-  CiudadObtenerIdPais: "/Ciudad/ObtenerNombreCiudadPorIdPais",
-  CiudadEliminar: "/Ciudad/Eliminar",
-  CiudadFiltroSegmento: "/Ciudad/ObtenerCiudadesPorPais",
-  BusquedaPorCodigoPostal: "/Ciudad/BusquedaPorCodigoPostal",
+    '/Ciudad/ObtenerAsentamientoPorMunicipioyCiudadMexico',
+  CiudadObtenerCiudad: '/Ciudad/ObtenerCiudad',
+  CiudadObtenerComboRegionCiudad: '/Ciudad/ObtenerObtenerComboRegionCiudad',
+  CiudadObtenerIdPais: '/Ciudad/ObtenerNombreCiudadPorIdPais',
+  CiudadEliminar: '/Ciudad/Eliminar',
+  CiudadFiltroSegmento: '/Ciudad/ObtenerCiudadesPorPais',
+  BusquedaPorCodigoPostal: '/Ciudad/BusquedaPorCodigoPostal',
 
   //CHATS
   ChatDetalleIntegraObtenerHistorialChatPortal:
-    "/ChatDetalleIntegra/ObtenerHistorialChatPortal",
+    '/ChatDetalleIntegra/ObtenerHistorialChatPortal',
   ChatDetalleIntegraObtenerDetalleChatPorIdInteraccion:
-    "/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccion",
+    '/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccion',
   PortalHistorialObtenerDetalleChatPorIdInteraccionControlMensajeSoporte:
-    "/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccionControlMensajeSoporte",
-  PortalMesajesRecibidosChat: "/ChatDetalleIntegra/ObtenerHistorialChatPortal",
+    '/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccionControlMensajeSoporte',
+  PortalMesajesRecibidosChat: '/ChatDetalleIntegra/ObtenerHistorialChatPortal',
   PortalHistorialMensajesRecibidosChat:
-    "/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccion",
+    '/ChatDetalleIntegra/ObtenerDetalleChatPorIdInteraccion',
 
   // COMPROBANTES ALUMNO OPORTUNIDAD
   ObtenerReporteComprobanteAlumno:
-    "/ComprobantePagoOportunidad/ObtenerReporteComprobanteAlumno",
+    '/ComprobantePagoOportunidad/ObtenerReporteComprobanteAlumno',
 
   //MONEDA
-  MonedaInsertar: "/Moneda/Insertar",
-  MonedaInsertarLista: "/Moneda/InsertarLista",
-  MonedaActualizar: "/Moneda/Actualizar",
-  MonedaActualizarLista: "/Moneda/ActualizarLista",
-  MonedaEliminar: "/Moneda/Eliminar",
-  MonedaEliminarListado: "/Moneda/EliminarListado",
-  MonedaObtenerMoneda: "/Moneda/ObtenerMoneda",
-  MonedaObtenerCombo: "/Moneda/ObtenerCombo",
+  MonedaInsertar: '/Moneda/Insertar',
+  MonedaInsertarLista: '/Moneda/InsertarLista',
+  MonedaActualizar: '/Moneda/Actualizar',
+  MonedaActualizarLista: '/Moneda/ActualizarLista',
+  MonedaEliminar: '/Moneda/Eliminar',
+  MonedaEliminarListado: '/Moneda/EliminarListado',
+  MonedaObtenerMoneda: '/Moneda/ObtenerMoneda',
+  MonedaObtenerCombo: '/Moneda/ObtenerCombo',
   MonedaObtenerCodigoMonedaPorIdAlumno:
-    "/Moneda/ObtenerCodigoMonedaPorIdAlumno",
+    '/Moneda/ObtenerCodigoMonedaPorIdAlumno',
 
   //SEDE
-  ObtenerComboSede: "/ReporteEstadoCuentaProveedor/ObtenerComboListaSedes",
+  ObtenerComboSede: '/ReporteEstadoCuentaProveedor/ObtenerComboListaSedes',
 
   //PAIS
-  PaisEliminar: "/Pais/Eliminar",
-  PaisObtenerPais: "/Pais/ObtenerPais",
-  PaisObtenerPaisCombo: "/Pais/ObtenerPaisCombo",
-  PaisObtenerCombo: "/Pais/ObtenerCombo",
-  PaisObtenerPaisZonaHoraria: "/Pais/ObtenerPaisZonaHoraria",
-  PaisRegistrarPais: "/Pais/RegistrarPais",
-  PaisObtenerRutaUrlBlockStoragePais: "/Pais/ObtenerRutaUrlBlockStoragePais",
-  PaisObtenerComboConMoneda: "/Pais/ObtenerComboConMoneda",
+  PaisEliminar: '/Pais/Eliminar',
+  PaisObtenerPais: '/Pais/ObtenerPais',
+  PaisObtenerPaisCombo: '/Pais/ObtenerPaisCombo',
+  PaisObtenerCombo: '/Pais/ObtenerCombo',
+  PaisObtenerPaisZonaHoraria: '/Pais/ObtenerPaisZonaHoraria',
+  PaisRegistrarPais: '/Pais/RegistrarPais',
+  PaisObtenerRutaUrlBlockStoragePais: '/Pais/ObtenerRutaUrlBlockStoragePais',
+  PaisObtenerComboConMoneda: '/Pais/ObtenerComboConMoneda',
 
   //PERSONAL
-  PersonalInsertar: "/Personal/Insertar",
-  PersonalInsertarLista: "/Personal/InsertarLista",
-  PersonalActualizar: "/Personal/Actualizar",
-  PersonalActualizarLista: "/Personal/ActualizarLista",
-  PersonalObtenerCombo: "/Personal/ObtenerCombo",
-  PersonalObtenerPersonal: "/Personal/ObtenerPersonal",
-  PersonalObtenerDatosPersonal: "/Personal/ObtenerDatosPersonal",
-  PersonalObtenerPersonalAutocomplete: "/Personal/ObtenerPersonalAutocomplete",
-  PersonalObtenerPersonalPorMarketing: "/Personal/ObtenerPersonalPorMarketing",
-  PersonalObtenerPersonalAsignado: "/Personal/ObtenerPersonalAsignado", //GET /{idPersonal}
-  PersonalObtenerPersonalUserName: "/Personal/ObtenerPersonalUserName",
+  PersonalInsertar: '/Personal/Insertar',
+  PersonalInsertarLista: '/Personal/InsertarLista',
+  PersonalActualizar: '/Personal/Actualizar',
+  PersonalActualizarLista: '/Personal/ActualizarLista',
+  PersonalObtenerCombo: '/Personal/ObtenerCombo',
+  PersonalObtenerPersonal: '/Personal/ObtenerPersonal',
+  PersonalObtenerDatosPersonal: '/Personal/ObtenerDatosPersonal',
+  PersonalObtenerPersonalAutocomplete: '/Personal/ObtenerPersonalAutocomplete',
+  PersonalObtenerPersonalPorMarketing: '/Personal/ObtenerPersonalPorMarketing',
+  PersonalObtenerPersonalAsignado: '/Personal/ObtenerPersonalAsignado', //GET /{idPersonal}
+  PersonalObtenerPersonalUserName: '/Personal/ObtenerPersonalUserName',
 
-  IntegraAspNetUserObtenerNombre: "/IntegraAspNetUser/ObtenerNombre",
+  IntegraAspNetUserObtenerNombre: '/IntegraAspNetUser/ObtenerNombre',
   IntegraAspNetUserObtenerModuloporUsuario:
-    "/IntegraAspNetUser/ObtenerModuloporUsuario",
-  IntegraAspNetUserValidarReLogin: "/IntegraAspNetUser/ValidarReLogin",
-  IntegraAspNetUserValidarAcceso: "/IntegraAspNetUser/ValidarAcceso",
-  IntegraAspNetUserActualizarReLogin: "/IntegraAspNetUser/ActualizarReLogin",
-  AvatarObtenerAvatar: "/Avatar/ObtenerAvatar",
+    '/IntegraAspNetUser/ObtenerModuloporUsuario',
+  IntegraAspNetUserValidarReLogin: '/IntegraAspNetUser/ValidarReLogin',
+  IntegraAspNetUserValidarAcceso: '/IntegraAspNetUser/ValidarAcceso',
+  IntegraAspNetUserActualizarReLogin: '/IntegraAspNetUser/ActualizarReLogin',
+  AvatarObtenerAvatar: '/Avatar/ObtenerAvatar',
   //Login
-  AspNetUserAuthenticate: "/AspNetUser/Authenticate",
-  PersonalObtenerDatosPersonalVentas: "/Personal/ObtenerAsesoresVentasOficial",
+  AspNetUserAuthenticate: '/AspNetUser/Authenticate',
+  PersonalObtenerDatosPersonalVentas: '/Personal/ObtenerAsesoresVentasOficial',
   PersonalObtenerAsesorCoordinadorVentasCombo:
-    "/Personal/ObtenerAsesorCoordinadorVentasCombo",
+    '/Personal/ObtenerAsesorCoordinadorVentasCombo',
   //SEDES
-  ListaSedes: "/ReporteEstadoCuentaProveedor/ObtenerComboListaSedes",
+  ListaSedes: '/ReporteEstadoCuentaProveedor/ObtenerComboListaSedes',
 
-  ProgramaGeneralObtenerCombo: "/ProgramaGeneral/ObtenerCombo",
-  PEspecificoObtenerCombo: "/PEspecifico/ObtenerCombo",
+  ProgramaGeneralObtenerCombo: '/ProgramaGeneral/ObtenerCombo',
+  PEspecificoObtenerCombo: '/PEspecifico/ObtenerCombo',
 
   ObtenerCombosConfiguracionPlantilla:
-    "/ProgramaGeneral/ObtenerCombosConfiguracionPlantilla",
+    '/ProgramaGeneral/ObtenerCombosConfiguracionPlantilla',
   ProgramaGeneralObtenerConfiguracionPlantillas:
-    "/ProgramaGeneral/ObtenerConfiguracionPlantillas",
+    '/ProgramaGeneral/ObtenerConfiguracionPlantillas',
   ProgramaGeneralObtenerPgeneralConfiuracionBeneficios:
-    "/ProgramaGeneral/ObtenerPgeneralConfiuracionBeneficios",
+    '/ProgramaGeneral/ObtenerPgeneralConfiuracionBeneficios',
   ConfiguracionAccesoPersonalObtenerPorIdPersonalIdModulo:
-    "/ConfiguracionAccesoPersonal/ObtenerPorIdPersonalIdModulo",
+    '/ConfiguracionAccesoPersonal/ObtenerPorIdPersonalIdModulo',
 
   ConfiguracionIntegraObtenerEstadoValidacionIp:
-    "/ConfiguracionIntegra/ObtenerEstadoValidacionIp",
+    '/ConfiguracionIntegra/ObtenerEstadoValidacionIp',
   ConfiguracionIntegraObtenerApisValidacionIp:
-    "/ConfiguracionIntegra/ObtenerApisValidacionIp",
+    '/ConfiguracionIntegra/ObtenerApisValidacionIp',
   //InteraccionesIntegra
   InteraccionRegistroIntegraRegistroInicioSesion:
-    "/RegistroInicioSesion/RegistrarInicioSesion",
+    '/RegistroInicioSesion/RegistrarInicioSesion',
   InteraccionRegistroIntegraEstadoInicioSesion:
-    "/RegistroInicioSesionEstado/RegistrarInicioSesionEstado",
-  InteraccionModuloInsertar: "/InteraccionModulo/InteraccionModuloInsertar"
+    '/RegistroInicioSesionEstado/RegistrarInicioSesionEstado',
+  InteraccionModuloInsertar: '/InteraccionModulo/InteraccionModuloInsertar',
 };
 
 export const constApi = {
   //AGENDA TAB
-  AgendaTabInsertar: "/AgendaTab/Insertar",
-  AgendaTabInsertarLista: "/AgendaTab/InsertarLista",
-  AgendaTabActualizar: "/AgendaTab/Actualizar",
-  AgendaTabActualizarLista: "/AgendaTab/ActualizarLista",
-  AgendaTabEliminar: "/AgendaTab/Eliminar",
-  AgendaTabEliminarLista: "/AgendaTab/EliminarListado",
-  AgendaTabObtenerAgendaTab: "/AgendaTab/ObtenerAgendaTab",
-  AgendaTabObtenerCombo: "/AgendaTab/ObtenerCombo",
+  AgendaTabInsertar: '/AgendaTab/Insertar',
+  AgendaTabInsertarLista: '/AgendaTab/InsertarLista',
+  AgendaTabActualizar: '/AgendaTab/Actualizar',
+  AgendaTabActualizarLista: '/AgendaTab/ActualizarLista',
+  AgendaTabEliminar: '/AgendaTab/Eliminar',
+  AgendaTabEliminarLista: '/AgendaTab/EliminarListado',
+  AgendaTabObtenerAgendaTab: '/AgendaTab/ObtenerAgendaTab',
+  AgendaTabObtenerCombo: '/AgendaTab/ObtenerCombo',
 
   //AREA TRABAJO
-  AreaTrabajoInsertar: "/AreaTrabajo/Insertar",
-  AreaTrabajoActualizar: "/AreaTrabajo/Actualizar",
-  AreaTrabajoEliminar: "/AreaTrabajo/Eliminar",
-  AreaTrabajoObtenerCombo: "/AreaTrabajo/ObtenerCombo",
-  AreaTrabajoObtenerAreaAgenda: "/AreaTrabajo/ObtenerAreaAgenda",
+  AreaTrabajoInsertar: '/AreaTrabajo/Insertar',
+  AreaTrabajoActualizar: '/AreaTrabajo/Actualizar',
+  AreaTrabajoEliminar: '/AreaTrabajo/Eliminar',
+  AreaTrabajoObtenerCombo: '/AreaTrabajo/ObtenerCombo',
+  AreaTrabajoObtenerAreaAgenda: '/AreaTrabajo/ObtenerAreaAgenda',
 
   //CategoriaOrigen
-  CategoriaOrigenInsertar: "/CategoriaOrigen/Insertar",
-  CategoriaOrigenInsertarLista: "/CategoriaOrigen/InsertarLista",
-  CategoriaOrigenActualizar: "/CategoriaOrigen/Actualizar",
-  CategoriaOrigenActualizarLista: "/CategoriaOrigen/ActualizarLista",
-  CategoriaOrigenObtenerCombo: "/CategoriaOrigen/ObtenerCombo",
+  CategoriaOrigenInsertar: '/CategoriaOrigen/Insertar',
+  CategoriaOrigenInsertarLista: '/CategoriaOrigen/InsertarLista',
+  CategoriaOrigenActualizar: '/CategoriaOrigen/Actualizar',
+  CategoriaOrigenActualizarLista: '/CategoriaOrigen/ActualizarLista',
+  CategoriaOrigenObtenerCombo: '/CategoriaOrigen/ObtenerCombo',
   CategoriaOrigenObtenerCategoriaOrigen:
-    "/CategoriaOrigen/ObtenerCategoriaOrigen",
-  CategoriaOrigenObtenerFiltros: "/CategoriaOrigen/ObtenerFiltros",
+    '/CategoriaOrigen/ObtenerCategoriaOrigen',
+  CategoriaOrigenObtenerFiltros: '/CategoriaOrigen/ObtenerFiltros',
 
   //CAJA : FINANZAS
-  CajaObtener: "/Caja/ObtenerCaja",
-  CajaObtenerCombo: "/Caja/ObtenerCombo",
-  CajaInsertar: "/Caja/Insertar",
-  CajaEliminar: "/Caja/Eliminar",
-  CajaActualizar: "/Caja/Actualizar",
-  CajaObtenerResponsable: "/Caja/ObtenerListaCajaResponsable",
+  CajaObtener: '/Caja/ObtenerCaja',
+  CajaObtenerCombo: '/Caja/ObtenerCombo',
+  CajaInsertar: '/Caja/Insertar',
+  CajaEliminar: '/Caja/Eliminar',
+  CajaActualizar: '/Caja/Actualizar',
+  CajaObtenerResponsable: '/Caja/ObtenerListaCajaResponsable',
 
   //CIUDADES
-  CiudadInsertar: "/Ciudad/Insertar",
-  CiudadInsertarLista: "/Ciudad/InsertarLista",
-  CiudadActualizar: "/Ciudad/Actualizar",
-  CiudadActualizarLista: "/Ciudad/ActualizarLista",
-  CiudadObtenerCombo: "/Ciudad/ObtenerCombo",
-  CiudadObtenerCiudad: "/Ciudad/ObtenerCiudad",
-  CiudadObtenerComboRegionCiudad: "/Ciudad/ObtenerComboRegionCiudad",
+  CiudadInsertar: '/Ciudad/Insertar',
+  CiudadInsertarLista: '/Ciudad/InsertarLista',
+  CiudadActualizar: '/Ciudad/Actualizar',
+  CiudadActualizarLista: '/Ciudad/ActualizarLista',
+  CiudadObtenerCombo: '/Ciudad/ObtenerCombo',
+  CiudadObtenerCiudad: '/Ciudad/ObtenerCiudad',
+  CiudadObtenerComboRegionCiudad: '/Ciudad/ObtenerComboRegionCiudad',
   //MUNICIPIO
-  ObtenerMunicipioPorCiudad: "/Ciudad/ObtenerMunicipioPorCiudad",
+  ObtenerMunicipioPorCiudad: '/Ciudad/ObtenerMunicipioPorCiudad',
 
   //ASENTAMIENTO
-  ObtenerAsentamientoPorMunicipio: "/Ciudad/ObtenerAsentamientoPorMunicipio",
+  ObtenerAsentamientoPorMunicipio: '/Ciudad/ObtenerAsentamientoPorMunicipio',
 
   //DATOS MEXICO POR CODIGO POSTAL
   BusquedaDatosMexicoPorCodigoPostal:
-    "/Ciudad/BusquedaDatosMexicoPorCodigoPostal",
+    '/Ciudad/BusquedaDatosMexicoPorCodigoPostal',
 
   //CUENTA BANCARIA : FINANZAS
-  CuentaBancariaObtener: "/CuentaBancaria/ObtenerCuentaBancaria",
-  CuentaBancariaObtenerCombo: "/CuentaBancaria/ObtenerCombo",
-  CuentaBancariaInsertar: "/CuentaBancaria/Insertar",
-  CuentaBancariaEliminar: "/CuentaBancaria/Eliminar",
-  CuentaBancariaActualizar: "/CuentaBancaria/Actualizar",
+  CuentaBancariaObtener: '/CuentaBancaria/ObtenerCuentaBancaria',
+  CuentaBancariaObtenerCombo: '/CuentaBancaria/ObtenerCombo',
+  CuentaBancariaInsertar: '/CuentaBancaria/Insertar',
+  CuentaBancariaEliminar: '/CuentaBancaria/Eliminar',
+  CuentaBancariaActualizar: '/CuentaBancaria/Actualizar',
 
   //CUENTA CONTABLE PADRE : FINANZAS
-  CuentaContablePadreObtener: "/CuentaContablePadre/ObtenerCuentaContablePadre",
-  CuentaContablePadreInsertar: "/CuentaContablePadre/Insertar",
-  CuentaContablePadreEliminar: "/CuentaContablePadre/Eliminar",
-  CuentaContablePadreEditar: "/CuentaContablePadre/Actualizar",
+  CuentaContablePadreObtener: '/CuentaContablePadre/ObtenerCuentaContablePadre',
+  CuentaContablePadreInsertar: '/CuentaContablePadre/Insertar',
+  CuentaContablePadreEliminar: '/CuentaContablePadre/Eliminar',
+  CuentaContablePadreEditar: '/CuentaContablePadre/Actualizar',
 
   //DETRACCION
-  DetraccionObtenerCombo: "/Detraccion/ObtenerCombo",
+  DetraccionObtenerCombo: '/Detraccion/ObtenerCombo',
   //DOCUMENTO IDENTIDAD
-  DocumentoIdentidadObtenerCombo: "/DocumentoIdentidad/ObtenerCombo",
+  DocumentoIdentidadObtenerCombo: '/DocumentoIdentidad/ObtenerCombo',
 
   //DOCUMENTO LEGAL
-  DocumentoLegalObtener: "/DocumentoLegal/ObtenerDocumentosLegalesGrilla",
-  DocumentoLegalActualizar: "/DocumentoLegal/ActualizarDocumentoLegal",
-  DocumentoLegalInsertar: "/DocumentoLegal/InsertarDocumentoLegal",
-  DocumentoLegalEliminar: "/DocumentoLegal/EliminarDocumentoLegal",
+  DocumentoLegalObtener: '/DocumentoLegal/ObtenerDocumentosLegalesGrilla',
+  DocumentoLegalActualizar: '/DocumentoLegal/ActualizarDocumentoLegal',
+  DocumentoLegalInsertar: '/DocumentoLegal/InsertarDocumentoLegal',
+  DocumentoLegalEliminar: '/DocumentoLegal/EliminarDocumentoLegal',
 
   //EMPRESA
-  EmpresaObtener: "/Empresa/ObtenerEmpresa",
-  EmpresaObtenerCombo: "/Empresa/ObtenerCombo",
-  EmpresaInsertar: "/Empresa/Insertar",
-  EmpresaActualizar: "/Empresa/Actualizar",
-  EmpresaEliminar: "/Empresa/Eliminar",
+  EmpresaObtener: '/Empresa/ObtenerEmpresa',
+  EmpresaObtenerCombo: '/Empresa/ObtenerCombo',
+  EmpresaInsertar: '/Empresa/Insertar',
+  EmpresaActualizar: '/Empresa/Actualizar',
+  EmpresaEliminar: '/Empresa/Eliminar',
   EmpresaObtenerComboTipoIdentificador:
-    "/Empresa/ObtenerComboTipoIdentificador",
-  EmpresaObtenerComboTamanioEmpresa: "/Empresa/ObtenerComboTamanioEmpresa",
-  EmpresaObtenerComboCIUU: "/Empresa/ObtenerComboCodigoCiiuIndustria",
+    '/Empresa/ObtenerComboTipoIdentificador',
+  EmpresaObtenerComboTamanioEmpresa: '/Empresa/ObtenerComboTamanioEmpresa',
+  EmpresaObtenerComboCIUU: '/Empresa/ObtenerComboCodigoCiiuIndustria',
   //EMPRESA AUTORIZADA : FINANZAS
-  EmpresaAutorizadaObtener: "/EmpresaAutorizadum/ObtenerEmpresaAutorizadum",
-  EmpresaAutorizadaObtenerCombo: "/EmpresaAutorizadum/ObtenerCombo",
-  EmpresaAutorizadaInsertar: "/EmpresaAutorizadum/Insertar",
-  EmpresaAutorizadaEliminar: "/EmpresaAutorizadum/Eliminar",
-  EmpresaAutorizadaEditar: "/EmpresaAutorizadum/Actualizar",
+  EmpresaAutorizadaObtener: '/EmpresaAutorizadum/ObtenerEmpresaAutorizadum',
+  EmpresaAutorizadaObtenerCombo: '/EmpresaAutorizadum/ObtenerCombo',
+  EmpresaAutorizadaInsertar: '/EmpresaAutorizadum/Insertar',
+  EmpresaAutorizadaEliminar: '/EmpresaAutorizadum/Eliminar',
+  EmpresaAutorizadaEditar: '/EmpresaAutorizadum/Actualizar',
 
   //ENTIDAD FINANCIERA
-  EntidadFinancieraObtener: "/EntidadFinanciera/ObtenerEntidadFinanciera",
-  EntidadFinancieraObtenerCombo: "/EntidadFinanciera/ObtenerCombo",
-  EntidadFinancieraInsertar: "/EntidadFinanciera/Insertar",
-  EntidadFinancieraEliminar: "/EntidadFinanciera/Eliminar",
-  EntidadFinancieraEditar: "/EntidadFinanciera/Actualizar",
+  EntidadFinancieraObtener: '/EntidadFinanciera/ObtenerEntidadFinanciera',
+  EntidadFinancieraObtenerCombo: '/EntidadFinanciera/ObtenerCombo',
+  EntidadFinancieraInsertar: '/EntidadFinanciera/Insertar',
+  EntidadFinancieraEliminar: '/EntidadFinanciera/Eliminar',
+  EntidadFinancieraEditar: '/EntidadFinanciera/Actualizar',
 
   //ESTADOS DE MATRICULA
-  EstadosMatriculaObtenerCombo: "/EstadoMatricula/ObtenerCombo",
-  EstadosMatriculaEliminar: "/EstadoMatricula/Eliminar",
-  EstadosMatriculaInsertar: "/EstadoMatricula/InsertarEstadoSubEstado",
-  EstadosMatriculaEditar: "/EstadoMatricula/EditarEstado",
+  EstadosMatriculaObtenerCombo: '/EstadoMatricula/ObtenerCombo',
+  EstadosMatriculaEliminar: '/EstadoMatricula/Eliminar',
+  EstadosMatriculaInsertar: '/EstadoMatricula/InsertarEstadoSubEstado',
+  EstadosMatriculaEditar: '/EstadoMatricula/EditarEstado',
   EstadosMatriculaObtenerSubEstadoInvidial:
-    "/EstadoMatricula/ObtenerSubEstadoIndividual",
-  EstadosMatriculaObtener: "/EstadoMatricula/ObtenerEstadoMatricula",
+    '/EstadoMatricula/ObtenerSubEstadoIndividual',
+  EstadosMatriculaObtener: '/EstadoMatricula/ObtenerEstadoMatricula',
 
   // HistoricoProductoProveedor
   HistoricoProductoProveedorObtenerUltimaVersion:
-    "/HistoricoProductoProveedor/ObtenerTodoHistoricoUltimaVersion",
+    '/HistoricoProductoProveedor/ObtenerTodoHistoricoUltimaVersion',
   HistoricoProductoProveedorObtenerCombo:
-    "/HistoricoProductoProveedor/ObtenerNombreHistoricoAutocomplete",
+    '/HistoricoProductoProveedor/ObtenerNombreHistoricoAutocomplete',
   HistoricoProductoCondicionTipoPago:
-    "/HistoricoProductoProveedor/ObtenerCondicionTipoPago",
+    '/HistoricoProductoProveedor/ObtenerCondicionTipoPago',
   HistoricoProductoCondicionPago:
-    "/HistoricoProductoProveedor/ObtenerCondicionPago",
+    '/HistoricoProductoProveedor/ObtenerCondicionPago',
   HistoricoProdcutoInsertarProveedorProducto:
-    "/HistoricoProductoProveedor/InsertarProveedorAProductoEnHistorico",
-  HistoricoProductoActualizar: "/HistoricoProductoProveedor/Actualizar",
-  HistoricoProductoEliminar: "/HistoricoProductoProveedor/Eliminar",
+    '/HistoricoProductoProveedor/InsertarProveedorAProductoEnHistorico',
+  HistoricoProductoActualizar: '/HistoricoProductoProveedor/Actualizar',
+  HistoricoProductoEliminar: '/HistoricoProductoProveedor/Eliminar',
 
   //MONEDA
-  MonedaInsertar: "/Moneda/Insertar",
-  MonedaInsertarLista: "/Moneda/InsertarLista",
-  MonedaActualizar: "/Moneda/Actualizar",
-  MonedaActualizarLista: "/Moneda/ActualizarLista",
-  MonedaEliminar: "/Moneda/Eliminar",
-  MonedaEliminarListado: "/Moneda/EliminarListado",
-  MonedaObtenerMoneda: "/Moneda/ObtenerMoneda",
-  MonedaObtenerCombo: "/Moneda/ObtenerCombo",
+  MonedaInsertar: '/Moneda/Insertar',
+  MonedaInsertarLista: '/Moneda/InsertarLista',
+  MonedaActualizar: '/Moneda/Actualizar',
+  MonedaActualizarLista: '/Moneda/ActualizarLista',
+  MonedaEliminar: '/Moneda/Eliminar',
+  MonedaEliminarListado: '/Moneda/EliminarListado',
+  MonedaObtenerMoneda: '/Moneda/ObtenerMoneda',
+  MonedaObtenerCombo: '/Moneda/ObtenerCombo',
 
   //NOTA INGRESO CAJA
-  NotaIngresoCajaObtener: "/NotaIngresoCaja/ObtenerNotaIngresoCaja",
-  NotaIngresoCajaEliminar: "/NotaIngresoCaja/Eliminar",
-  NotaIngresoCajaActualizar: "/NotaIngresoCaja/Actualizar",
-  NotaIngresoCajaInsertar: "/NotaIngresoCaja/Insertar",
+  NotaIngresoCajaObtener: '/NotaIngresoCaja/ObtenerNotaIngresoCaja',
+  NotaIngresoCajaEliminar: '/NotaIngresoCaja/Eliminar',
+  NotaIngresoCajaActualizar: '/NotaIngresoCaja/Actualizar',
+  NotaIngresoCajaInsertar: '/NotaIngresoCaja/Insertar',
 
   //ORIGEN INGRESO CAJA
-  OrigenIngresoCaja: "/OrigenIngresoCaja/ObtenerCombo",
-  OrigenIngresoCajaInsertar: "/OrigenIngresoCaja/Insertar",
-  OrigenIngresoCajaActualizar: "/OrigenIngresoCaja/Actualizar",
-  OrigenIngresoCajaEliminar: "/OrigenIngresoCaja/Eliminar",
+  OrigenIngresoCaja: '/OrigenIngresoCaja/ObtenerCombo',
+  OrigenIngresoCajaInsertar: '/OrigenIngresoCaja/Insertar',
+  OrigenIngresoCajaActualizar: '/OrigenIngresoCaja/Actualizar',
+  OrigenIngresoCajaEliminar: '/OrigenIngresoCaja/Eliminar',
 
   //PAIS
-  PaisInsertar: "/Pais/Insertar",
-  PaisInsertarLista: "/Pais/InsertarLista",
-  PaisActualizar: "/Pais/Actualizar",
-  PaisActualizarLista: "/Pais/ActualizarLista",
-  PaisEliminar: "/Pais/Eliminar",
-  PaisEliminarListado: "/Pais/EliminarListado",
-  PaisObtenerPais: "/Pais/ObtenerPais",
-  PaisObtenerCombo: "/Pais/ObtenerCombo",
+  PaisInsertar: '/Pais/Insertar',
+  PaisInsertarLista: '/Pais/InsertarLista',
+  PaisActualizar: '/Pais/Actualizar',
+  PaisActualizarLista: '/Pais/ActualizarLista',
+  PaisEliminar: '/Pais/Eliminar',
+  PaisEliminarListado: '/Pais/EliminarListado',
+  PaisObtenerPais: '/Pais/ObtenerPais',
+  PaisObtenerCombo: '/Pais/ObtenerCombo',
 
   // PASARELA PAGO PW
-  PasarelaPagoPwObtenerPasarelaPagoPw: "/PasarelaPagoPw/ObtenerPasarelaPagoPw",
-  PasarelaPagoInsertar: "/PasarelaPagoPw/Insertar",
-  PasarelaPagoActualizar: "/PasarelaPagoPw/Actualizar",
-  PasarelaPagoEliminar: "/PasarelaPagoPw/Eliminar",
+  PasarelaPagoPwObtenerPasarelaPagoPw: '/PasarelaPagoPw/ObtenerPasarelaPagoPw',
+  PasarelaPagoInsertar: '/PasarelaPagoPw/Insertar',
+  PasarelaPagoActualizar: '/PasarelaPagoPw/Actualizar',
+  PasarelaPagoEliminar: '/PasarelaPagoPw/Eliminar',
 
   //PERIODO
-  PeriodosObtener: "/Periodo/ObtenerPeriodo",
-  PeriodoObtenerCombo: "/Periodo/ObtenerCombo",
-  PeriodosActualizar: "/Periodo/Actualizar",
-  PeriodosInsertar: "/Periodo/Insertar",
-  PeriodosEliminar: "/Periodo/Eliminar",
+  PeriodosObtener: '/Periodo/ObtenerPeriodo',
+  PeriodoObtenerCombo: '/Periodo/ObtenerCombo',
+  PeriodosActualizar: '/Periodo/Actualizar',
+  PeriodosInsertar: '/Periodo/Insertar',
+  PeriodosEliminar: '/Periodo/Eliminar',
 
   //PERSONAL
-  PersonalInsertar: "/Personal/Insertar",
-  PersonalInsertarLista: "/Personal/InsertarLista",
-  PersonalActualizar: "/Personal/Actualizar",
-  PersonalActualizarLista: "/Personal/ActualizarLista",
-  PersonalObtenerCombo: "/Personal/ObtenerCombo",
-  PersonalObtenerPersonal: "/Personal/ObtenerPersonal",
+  PersonalInsertar: '/Personal/Insertar',
+  PersonalInsertarLista: '/Personal/InsertarLista',
+  PersonalActualizar: '/Personal/Actualizar',
+  PersonalActualizarLista: '/Personal/ActualizarLista',
+  PersonalObtenerCombo: '/Personal/ObtenerCombo',
+  PersonalObtenerPersonal: '/Personal/ObtenerPersonal',
 
   // PLAN CONTABLE :FINANZAS
-  PlanContableObtener: "/PlanContable/ObtenerPlanContable",
-  PlanContableObteneCuentasHijo: "/PlanContable/ObteneCuentasHijo",
-  PlanContableObtenerCombo: "/PlanContable/ObtenerCombo",
-  PlanContableInsertar: "/PlanContable/InsertarCuentaContable",
-  PlanContableActualizar: "/PlanContable/ActualizarCuentaContable",
-  PlanContableEliminar: "/PlanContable/EliminarCuentaContable",
+  PlanContableObtener: '/PlanContable/ObtenerPlanContable',
+  PlanContableObteneCuentasHijo: '/PlanContable/ObteneCuentasHijo',
+  PlanContableObtenerCombo: '/PlanContable/ObtenerCombo',
+  PlanContableInsertar: '/PlanContable/InsertarCuentaContable',
+  PlanContableActualizar: '/PlanContable/ActualizarCuentaContable',
+  PlanContableEliminar: '/PlanContable/EliminarCuentaContable',
   PlanContableTipoCuentaObtenerCombo:
-    "/PlanContable/ObtenerPlanContableTipoCuenta",
-  PlanContableObtenerCuentas: "/PlanContable/ObtenerPlanContableCuentas",
+    '/PlanContable/ObtenerPlanContableTipoCuenta',
+  PlanContableObtenerCuentas: '/PlanContable/ObtenerPlanContableCuentas',
 
   //PERSONAL
-  ProgramaGeneralProblemaInsertar: "/ProgramaGeneralProblema/Insertar",
+  ProgramaGeneralProblemaInsertar: '/ProgramaGeneralProblema/Insertar',
   ProgramaGeneralProblemaInsertarLista:
-    "/ProgramaGeneralProblema/InsertarLista",
-  ProgramaGeneralProblemaActualizar: "/ProgramaGeneralProblema/Actualizar",
+    '/ProgramaGeneralProblema/InsertarLista',
+  ProgramaGeneralProblemaActualizar: '/ProgramaGeneralProblema/Actualizar',
   ProgramaGeneralProblemaActualizarLista:
-    "/ProgramaGeneralProblema/ActualizarLista",
-  ProgramaGeneralProblemaEliminar: "/ProgramaGeneralProblema/Actualizar",
+    '/ProgramaGeneralProblema/ActualizarLista',
+  ProgramaGeneralProblemaEliminar: '/ProgramaGeneralProblema/Actualizar',
   ProgramaGeneralProblemaEliminarListado:
-    "/ProgramaGeneralProblema/ActualizarLista",
+    '/ProgramaGeneralProblema/ActualizarLista',
   ProgramaGeneralProblemaObtenerProgramaGeneralProblema:
-    "/ProgramaGeneralProblema/ObtenerProgramaGeneralProblema",
-  ProgramaGeneralProblemaObtenerCombo: "/ProgramaGeneralProblema/ObtenerCombo",
+    '/ProgramaGeneralProblema/ObtenerProgramaGeneralProblema',
+  ProgramaGeneralProblemaObtenerCombo: '/ProgramaGeneralProblema/ObtenerCombo',
 
   //Problema General
 
   ProgramaGeneralProblemaObtenerProgramaGeneralProblemaArgumentoModalidad:
-    "/ProgramaGeneralProblema/ObtenerProgramaGeneralProblemaArgumentoModalidad",
+    '/ProgramaGeneralProblema/ObtenerProgramaGeneralProblemaArgumentoModalidad',
   ProgramaGeneralGuardarProblemasVentasV2:
-    "/ProgramaGeneral/GuardarProblemasVentasV2",
+    '/ProgramaGeneral/GuardarProblemasVentasV2',
   ProgramaGeneralProblemaEliminarProblemaVenta:
-    "/ProgramaGeneralProblema/EliminarProblemaVenta",
-  ProgramaGeneralModalidadCursoObtenerCombo: "/ModalidadCurso/ObtenerCombo",
+    '/ProgramaGeneralProblema/EliminarProblemaVenta',
+  ProgramaGeneralModalidadCursoObtenerCombo: '/ModalidadCurso/ObtenerCombo',
   ProgramaGeneralActualizarProblemasVentasV2:
-    "/ProgramaGeneral/ActualizarProblemasVentasV2",
+    '/ProgramaGeneral/ActualizarProblemasVentasV2',
 
   // PRODUCTO
-  ProductoObtener: "/Producto/ObtenerProducto",
-  ProductoObetenerCombo: "/Producto/ObtenerCombo",
-  ProductoObetenerPresentacionCombo: "/Producto/ObtenerPresentacionProducto",
-  ProductoInsertar: "/Producto/Insertar",
-  ProductoActualizar: "/Producto/Actualizar",
+  ProductoObtener: '/Producto/ObtenerProducto',
+  ProductoObetenerCombo: '/Producto/ObtenerCombo',
+  ProductoObetenerPresentacionCombo: '/Producto/ObtenerPresentacionProducto',
+  ProductoInsertar: '/Producto/Insertar',
+  ProductoActualizar: '/Producto/Actualizar',
 
   //PROVEEDOR
-  ProveedorObtenerNombreProveedor: "/Proveedor/ObtenerNombreProveedor",
-  ProveedorObtenerProveedorRuc: "/Proveedor/ObtenerProveedorRuc",
-  ProveedorObtenerProveedorPorId: "/Proveedor/ObtenerProveedorGrilla",
-  ProveedorObtenerTipoContribuyente: "/Proveedor/ObtenerTipoContribuyente",
-  ProveedorObtenerPrestacionRegistro: "/Proveedor/ObtenerPrestacionRegistro",
-  ProveedorObtenerCoordinadores: "/Proveedor/ObtenerTodoCoordinadoresDocentes",
-  ProveedorObtenerCuentasBancarias: "/Proveedor/ObtenerCuentaBancoProveedor",
+  ProveedorObtenerNombreProveedor: '/Proveedor/ObtenerNombreProveedor',
+  ProveedorObtenerProveedorRuc: '/Proveedor/ObtenerProveedorRuc',
+  ProveedorObtenerProveedorPorId: '/Proveedor/ObtenerProveedorGrilla',
+  ProveedorObtenerTipoContribuyente: '/Proveedor/ObtenerTipoContribuyente',
+  ProveedorObtenerPrestacionRegistro: '/Proveedor/ObtenerPrestacionRegistro',
+  ProveedorObtenerCoordinadores: '/Proveedor/ObtenerTodoCoordinadoresDocentes',
+  ProveedorObtenerCuentasBancarias: '/Proveedor/ObtenerCuentaBancoProveedor',
   ProveedorObtenerSubCriteriosCalificacion:
-    "/Proveedor/ObtenerProveedorSubCriterioCalificacion",
+    '/Proveedor/ObtenerProveedorSubCriterioCalificacion',
   ProveedorInsertarSubCalificacion:
-    "/Proveedor/InsertarCriterioCalificacionAProveedor",
-  ProveedorEditar: "/Proveedor/ActualizarProveedorCuentaBanco",
-  ProveedorNuevo: "/Proveedor/InsertarProveedorCuentaBanco",
-  ProveedorEliminar: "/Proveedor/EliminarProveedor",
-  ProveedorEliminarCuentaBanco: "/Proveedor/EliminarProveedorCuentaBanco",
+    '/Proveedor/InsertarCriterioCalificacionAProveedor',
+  ProveedorEditar: '/Proveedor/ActualizarProveedorCuentaBanco',
+  ProveedorNuevo: '/Proveedor/InsertarProveedorCuentaBanco',
+  ProveedorEliminar: '/Proveedor/EliminarProveedor',
+  ProveedorEliminarCuentaBanco: '/Proveedor/EliminarProveedorCuentaBanco',
   ProveedorObtnerComboAutocomplete:
-    "/Proveedor/ObtenerRucNombreProveedorAutocomplete2",
-  ProveedorObtenerProveedor: "/Proveedor/ObtenerProveedor", //GET
+    '/Proveedor/ObtenerRucNombreProveedorAutocomplete2',
+  ProveedorObtenerProveedor: '/Proveedor/ObtenerProveedor', //GET
   //TABLERO COMERCIAL UNIDAD
 
-  TableroComercialUnidadObtenerCombo: "/TableroComercialUnidad/ObtenerCombo",
+  TableroComercialUnidadObtenerCombo: '/TableroComercialUnidad/ObtenerCombo',
 
   //TABLERO COMERCIAL CATEGORIA ASESOR
   TableroComercialCategoriaAsesorObtenerTableroComercialCategoriaAsesor:
-    "/TableroComercialCategoriaAsesor/ObtenerTableroComercialCategoriaAsesor",
+    '/TableroComercialCategoriaAsesor/ObtenerTableroComercialCategoriaAsesor',
   TableroComercialCategoriaAsesorObtenerCombo:
-    "/TableroComercialCategoriaAsesor/ObtenerCombo",
+    '/TableroComercialCategoriaAsesor/ObtenerCombo',
 
   TableroComercialCategoriaAsesorObtenerDatosTablero:
-    "/TableroComercialCategoriaAsesor/ObtenerDatosTablero", //OK
+    '/TableroComercialCategoriaAsesor/ObtenerDatosTablero', //OK
   TableroComercialCategoriaAsesorObtenerCombosIniciales:
-    "/TableroComercialCategoriaAsesor/ObtenerCombosIniciales", //OK
+    '/TableroComercialCategoriaAsesor/ObtenerCombosIniciales', //OK
 
   TableroComercialCategoriaAsesorInsertar:
-    "/TableroComercialCategoriaAsesor/Insertar", //OK
+    '/TableroComercialCategoriaAsesor/Insertar', //OK
   TableroComercialCategoriaAsesorInsertarLista:
-    "/TableroComercialCategoriaAsesor/InsertarLista",
+    '/TableroComercialCategoriaAsesor/InsertarLista',
   TableroComercialCategoriaAsesorActualizar:
-    "/TableroComercialCategoriaAsesor/Actualizar", //OK
+    '/TableroComercialCategoriaAsesor/Actualizar', //OK
   TableroComercialCategoriaAsesorActualizarLista:
-    "/TableroComercialCategoriaAsesor/ActualizarLista",
+    '/TableroComercialCategoriaAsesor/ActualizarLista',
   TableroComercialCategoriaAsesorEliminar:
-    "/Tablerocomercialcategoriaasesor/Eliminar", //OK
+    '/Tablerocomercialcategoriaasesor/Eliminar', //OK
   TableroComercialCategoriaAsesorEliminarListado:
-    "/TableroComercialCategoriaAsesor/EliminarLista",
+    '/TableroComercialCategoriaAsesor/EliminarLista',
 
   // TASA CAMBIO MULTIMONEDA
   TasaCambioMultimonedaObtenerFiltro:
-    "/TipoCambioMoneda/ObtenerTipoCambioFiltro",
-  TasaCambioMultimonedaInsertar: "/TipoCambioMoneda/InsertarGeneral",
-  TasaCambioMultimonedaActualizar: "/TipoCambioMoneda/ActualizarGeneral",
-  TasaCambioMultimonedaEliminar: "/TipoCambioMoneda/EliminarGeneral",
+    '/TipoCambioMoneda/ObtenerTipoCambioFiltro',
+  TasaCambioMultimonedaInsertar: '/TipoCambioMoneda/InsertarGeneral',
+  TasaCambioMultimonedaActualizar: '/TipoCambioMoneda/ActualizarGeneral',
+  TasaCambioMultimonedaEliminar: '/TipoCambioMoneda/EliminarGeneral',
   //TIPO CATEGORIA ORIGEN : MARKETING
-  TipoCateriaOrigenInsertar: "/TipoCategoriaOrigen/Insertar",
-  TipoCateriaOrigenInsertarLista: "/TipoCategoriaOrigen/InsertarLista",
-  TipoCateriaOrigenActualizar: "/TipoCategoriaOrigen/Actualizar",
-  TipoCateriaOrigenActualizarLista: "/TipoCategoriaOrigen/ActualizarLista",
-  TipoCateriaOrigenEliminar: "/TipoCategoriaOrigen/Eliminar",
-  TipoCateriaOrigenEliminarListado: "/TipoCategoriaOrigen/EliminarListado",
-  TipoCateriaOrigenObtenerCombo: "/TipoCategoriaOrigen/ObtenerCombo",
+  TipoCateriaOrigenInsertar: '/TipoCategoriaOrigen/Insertar',
+  TipoCateriaOrigenInsertarLista: '/TipoCategoriaOrigen/InsertarLista',
+  TipoCateriaOrigenActualizar: '/TipoCategoriaOrigen/Actualizar',
+  TipoCateriaOrigenActualizarLista: '/TipoCategoriaOrigen/ActualizarLista',
+  TipoCateriaOrigenEliminar: '/TipoCategoriaOrigen/Eliminar',
+  TipoCateriaOrigenEliminarListado: '/TipoCategoriaOrigen/EliminarListado',
+  TipoCateriaOrigenObtenerCombo: '/TipoCategoriaOrigen/ObtenerCombo',
   TipoCateriaOrigenObtenerTipoCategoriaOrigen:
-    "/TipoCategoriaOrigen/ObtenerTipoCategoriaOrigen",
+    '/TipoCategoriaOrigen/ObtenerTipoCategoriaOrigen',
 
   //TIPO CUENTA : FINANZAS
-  TipoCuentaBancoObtener: "/TipoCuentaBanco/ObtenerTipoCuentaBanco",
-  TipoCuentaBancoInsertar: "/TipoCuentaBanco/Insertar",
-  TipoCuentaBancoEliminar: "/TipoCuentaBanco/Eliminar",
-  TipoCuentaBancoActualizar: "/TipoCuentaBanco/Actualizar",
-  TipoCuentaBancoObtenerCombo: "/TipoCuentaBanco/ObtenerCombo",
+  TipoCuentaBancoObtener: '/TipoCuentaBanco/ObtenerTipoCuentaBanco',
+  TipoCuentaBancoInsertar: '/TipoCuentaBanco/Insertar',
+  TipoCuentaBancoEliminar: '/TipoCuentaBanco/Eliminar',
+  TipoCuentaBancoActualizar: '/TipoCuentaBanco/Actualizar',
+  TipoCuentaBancoObtenerCombo: '/TipoCuentaBanco/ObtenerCombo',
 
   //TIPO IMPUESTO : FINANZAS
-  TipoImpuestoObtener: "/TipoImpuesto/ObtenerTipoImpuesto",
-  TipoImpuestoInsertar: "/TipoImpuesto/Insertar",
-  TipoImpuestoEliminar: "/TipoImpuesto/Eliminar",
-  TipoImpuestoEditar: "/TipoImpuesto/Actualizar",
-  TipoImpuestoObtenerCombo: "/TipoImpuesto/ObtenerCombo",
+  TipoImpuestoObtener: '/TipoImpuesto/ObtenerTipoImpuesto',
+  TipoImpuestoInsertar: '/TipoImpuesto/Insertar',
+  TipoImpuestoEliminar: '/TipoImpuesto/Eliminar',
+  TipoImpuestoEditar: '/TipoImpuesto/Actualizar',
+  TipoImpuestoObtenerCombo: '/TipoImpuesto/ObtenerCombo',
 
   //TIPO SERVICIOS : FINANZAS
-  TipoServicioObtener: "/TipoServicio/ObtenerTipoServicio",
-  TipoServicioInsertar: "/TipoServicio/Insertar",
-  TipoServicioEliminar: "/TipoServicio/Eliminar",
-  TipoServicioEditar: "/TipoServicio/Actualizar",
+  TipoServicioObtener: '/TipoServicio/ObtenerTipoServicio',
+  TipoServicioInsertar: '/TipoServicio/Insertar',
+  TipoServicioEliminar: '/TipoServicio/Eliminar',
+  TipoServicioEditar: '/TipoServicio/Actualizar',
 
   //RETENCIONES :FINANZAS
-  RetencionesObtenerRetenciones: "/Retencion/ObtenerRetencion",
-  RetencionesInsertar: "/Retencion/Insertar",
-  RetencionesActualizar: "/Retencion/Actualizar",
-  RetencionesEliminar: "/Retencion/Eliminar",
-  RetencionObtenerCombo: "/Retencion/ObtenerCombo",
+  RetencionesObtenerRetenciones: '/Retencion/ObtenerRetencion',
+  RetencionesInsertar: '/Retencion/Insertar',
+  RetencionesActualizar: '/Retencion/Actualizar',
+  RetencionesEliminar: '/Retencion/Eliminar',
+  RetencionObtenerCombo: '/Retencion/ObtenerCombo',
 
   //Record Area Comercial
-  RecordAreaComercialInsertar: "/RecordAreaComercial/Insertar",
-  RecordAreaComercialInsertarLista: "/RecordAreaComercial/InsertarLista",
-  RecordAreaComercialActualizar: "/RecordAreaComercial/Actualizar",
-  RecordAreaComercialActualizarLista: "/RecordAreaComercial/Actualizar",
-  RecordAreaComercialEliminar: "/RecordAreaComercial/Eliminar",
-  RecordAreaComercialEliminarListado: "/RecordAreaComercial/EliminarListado",
+  RecordAreaComercialInsertar: '/RecordAreaComercial/Insertar',
+  RecordAreaComercialInsertarLista: '/RecordAreaComercial/InsertarLista',
+  RecordAreaComercialActualizar: '/RecordAreaComercial/Actualizar',
+  RecordAreaComercialActualizarLista: '/RecordAreaComercial/Actualizar',
+  RecordAreaComercialEliminar: '/RecordAreaComercial/Eliminar',
+  RecordAreaComercialEliminarListado: '/RecordAreaComercial/EliminarListado',
   RecordAreaComercialObtenerRecordAreaComercial:
-    "/RecordAreaComercial/ObtenerRecordAreaComercial",
-  RecordAreaComercialObtenerCombo: "/RecordAreaComercial/ObtenerCombo",
+    '/RecordAreaComercial/ObtenerRecordAreaComercial',
+  RecordAreaComercialObtenerCombo: '/RecordAreaComercial/ObtenerCombo',
   RecordAreaComercialObtenerTodoRecordAreaComercial:
-    "/RecordAreaComercial/ObtenerTodoRecordAreaComercial",
+    '/RecordAreaComercial/ObtenerTodoRecordAreaComercial',
   RecordAreaComercialObtenerCombosIniciales:
-    "/RecordAreaComercial/ObtenerCombosIniciales",
+    '/RecordAreaComercial/ObtenerCombosIniciales',
 
   SemaforoFinancieroObtenerSemaforoFinanciero:
-    "/SemaforoFinanciero/ObtenerSemaforoFinanciero",
+    '/SemaforoFinanciero/ObtenerSemaforoFinanciero',
 
-  SemaforoFinancieroObtenerCombos: "/SemaforoFinanciero/ObtenerCombo",
-  SemaforoFinancieroInsertar: "/SemaforoFinanciero/Insertar",
-  SemaforoFinancieroInsertarLista: "/SemaforoFinanciero/InsertarLista",
-  SemaforoFinancieroActualizar: "/SemaforoFinanciero/Actualizar",
-  SemaforoFinancieroActualizarLista: "/SemaforoFinanciero/ActualizarLista",
-  SemaforoFinancieroEliminar: "/SemaforoFinanciero/Eliminar",
-  SemaforoFinancieroEliminarListado: "/SemaforoFinanciero/EliminarListado",
+  SemaforoFinancieroObtenerCombos: '/SemaforoFinanciero/ObtenerCombo',
+  SemaforoFinancieroInsertar: '/SemaforoFinanciero/Insertar',
+  SemaforoFinancieroInsertarLista: '/SemaforoFinanciero/InsertarLista',
+  SemaforoFinancieroActualizar: '/SemaforoFinanciero/Actualizar',
+  SemaforoFinancieroActualizarLista: '/SemaforoFinanciero/ActualizarLista',
+  SemaforoFinancieroEliminar: '/SemaforoFinanciero/Eliminar',
+  SemaforoFinancieroEliminarListado: '/SemaforoFinanciero/EliminarListado',
 
   //SEMAFORO FINANCIERO DETALLE
   SemaforoFinancieroDetalleObtener:
-    "/SemaforoFinancieroDetalle/ObtenerSemaforoFinancieroDetalle",
+    '/SemaforoFinancieroDetalle/ObtenerSemaforoFinancieroDetalle',
 
   SemaforoFinancieroDetalleObtenerId:
-    "/SemaforoFinancieroDetalle/SemaforoFinancieroDetalle/",
+    '/SemaforoFinancieroDetalle/SemaforoFinancieroDetalle/',
   SemaforoFinancieroDetalleObtenerCombo:
-    "/SemaforoFinancieroDetalle/ObtenerCombo",
-  SemaforoFinancieroDetalleInsertar: "/SemaforoFinancieroDetalle/Insertar",
+    '/SemaforoFinancieroDetalle/ObtenerCombo',
+  SemaforoFinancieroDetalleInsertar: '/SemaforoFinancieroDetalle/Insertar',
   SemaforoFinancieroDetalleInsertarLista:
-    "/SemaforoFinancieroDetalle/InsertarLista",
-  SemaforoFinancieroDetalleActualizar: "/SemaforoFinancieroDetalle/Insertar",
+    '/SemaforoFinancieroDetalle/InsertarLista',
+  SemaforoFinancieroDetalleActualizar: '/SemaforoFinancieroDetalle/Insertar',
   SemaforoFinancieroDetalleActualizarLista:
-    "/SemaforoFinancieroDetalle/ActualizarLista",
-  SemaforoFinancieroDetalleEliminar: "/SemaforoFinancieroDetalle/Eliminar",
+    '/SemaforoFinancieroDetalle/ActualizarLista',
+  SemaforoFinancieroDetalleEliminar: '/SemaforoFinancieroDetalle/Eliminar',
   SemaforoFinancieroDetalleEliminarLista:
-    "/SemaforoFinancieroDetalle/EliminarListado",
+    '/SemaforoFinancieroDetalle/EliminarListado',
 
   //SEMAFORO FINANCIERO DETALLE VARIABLE
   SemaforoFinancieroDetalleVariableObtenerSemaforoFinancieroDetalleVariable:
-    "/SemaforoFinancieroDetalleVariable/ObtenerSemaforoFinancieroDetalleVariable",
+    '/SemaforoFinancieroDetalleVariable/ObtenerSemaforoFinancieroDetalleVariable',
 
   SemaforoFinancieroDetalleVariableObtenerPorIdSemaforoFinancieroDetalle:
-    "/SemaforoFinancieroDetalleVariable/ObtenerDetalleVariablePorIdSemaforoFinancieroDetalle",
+    '/SemaforoFinancieroDetalleVariable/ObtenerDetalleVariablePorIdSemaforoFinancieroDetalle',
 
   SemaforoFinancieroDetalleVariableInsertar:
-    "/SemaforoFinancieroDetalleVariable/Insertar",
+    '/SemaforoFinancieroDetalleVariable/Insertar',
   SemaforoFinancieroDetalleVariableInsertarLista:
-    "/SemaforoFinancieroDetalleVariable/InsertarLista",
+    '/SemaforoFinancieroDetalleVariable/InsertarLista',
   SemaforoFinancieroDetalleVariableActualizar:
-    "/SemaforoFinancieroDetalleVariable/Actualizar",
+    '/SemaforoFinancieroDetalleVariable/Actualizar',
   SemaforoFinancieroDetalleVariableActualizarLista:
-    "/SemaforoFinancieroDetalleVariable/ActualizarLista",
+    '/SemaforoFinancieroDetalleVariable/ActualizarLista',
   SemaforoFinancieroDetalleVariableEliminar:
-    "/SemaforoFinancieroDetalleVariable/Eliminar",
+    '/SemaforoFinancieroDetalleVariable/Eliminar',
   SemaforoFinancieroDetalleVariableEliminarListado:
-    "/SemaforoFinancieroDetalleVariable/EliminarListado",
+    '/SemaforoFinancieroDetalleVariable/EliminarListado',
   SemaforoFinancieroDetalleVariableObtenerCombo:
-    "/SemaforoFinancieroDetalleVariable/ObtenerCombo",
+    '/SemaforoFinancieroDetalleVariable/ObtenerCombo',
   //SEMAFORO FINANCIERO VARIABLE
-  SemaforoFinancieroVariableInsertar: "/SemaforoFinancieroVariable/Insertar",
+  SemaforoFinancieroVariableInsertar: '/SemaforoFinancieroVariable/Insertar',
   SemaforoFinancieroVariableInsertarLista:
-    "/SemaforoFinancieroVariable/InsertarLista",
+    '/SemaforoFinancieroVariable/InsertarLista',
   SemaforoFinancieroVariableActualizar:
-    "/SemaforoFinancieroVariable/Actualizar",
+    '/SemaforoFinancieroVariable/Actualizar',
   SemaforoFinancieroVariableActualizarLista:
-    "/SemaforoFinancieroVariable/ActualizarLista",
-  SemaforoFinancieroVariableEliminar: "/SemaforoFinancieroVariable/Eliminar",
+    '/SemaforoFinancieroVariable/ActualizarLista',
+  SemaforoFinancieroVariableEliminar: '/SemaforoFinancieroVariable/Eliminar',
   SemaforoFinancieroVariableEliminarListado:
-    "/SemaforoFinancieroVariable/EliminarListado",
+    '/SemaforoFinancieroVariable/EliminarListado',
   SemaforoFinancieroVariableObtenerSemaforoFinancieroVariable:
-    "/SemaforoFinancieroVariable/ObtenerSemaforoFinancieroVariable",
+    '/SemaforoFinancieroVariable/ObtenerSemaforoFinancieroVariable',
   SemaforoFinancieroVariableObtenerCombo:
-    "/SemaforoFinancieroVariable/ObtenerCombo",
+    '/SemaforoFinancieroVariable/ObtenerCombo',
 
   //SUBESTADOS MATRICULA
-  SubEstadoMatriculaObtener: "/SubEstadoMatricula/ObtenerSubEstadoMatricula",
-  SubEstadoMatriculaEliminar: "/SubEstadoMatricula/Eliminar",
-  SubEstadoMatriculaInsertar: "/SubEstadoMatricula/Insertar",
-  SubEstadoMatriculaEditar: "/SubEstadoMatricula/Actualizar"
+  SubEstadoMatriculaObtener: '/SubEstadoMatricula/ObtenerSubEstadoMatricula',
+  SubEstadoMatriculaEliminar: '/SubEstadoMatricula/Eliminar',
+  SubEstadoMatriculaInsertar: '/SubEstadoMatricula/Insertar',
+  SubEstadoMatriculaEditar: '/SubEstadoMatricula/Actualizar',
 };
