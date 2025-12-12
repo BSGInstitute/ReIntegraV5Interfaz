@@ -61,7 +61,8 @@ export class MarcacionPersonalService {
   }
 
   inicializarMarcacion(usuario: string): void {
-    this.verificarAreaPersonal(usuario);
+    this._mostrarBotonesMarcacion$.next(true);
+    this.iniciarMonitoreoInactividad(usuario);
   }
 
   /**
@@ -69,27 +70,27 @@ export class MarcacionPersonalService {
    * Usa el UserService para obtener el área del personal desde dataPersonal$
    * @param usuario Usuario del personal
    */
-  private verificarAreaPersonal(usuario: string): void {
-    this.userService.dataPersonal$.subscribe({
-      next: (response) => {
-        if (response != null && response.datosPersonal) {
-          const areaAbrev = response.datosPersonal.areaAbrev;
-          if (areaAbrev && areaAbrev !== 'OP' && areaAbrev !== 'VE') {
-            this._mostrarBotonesMarcacion$.next(true);
-            this.iniciarMonitoreoInactividad(usuario);
-          } else {
-            this._mostrarBotonesMarcacion$.next(false);
-          }
-        } else {
-          this._mostrarBotonesMarcacion$.next(false);
-        }
-      },
-      error: (error) => {
-        console.error('Error al obtener datos del personal:', error);
-        this._mostrarBotonesMarcacion$.next(false);
-      },
-    });
-  }
+  // private verificarAreaPersonal(usuario: string): void {
+  //   this.userService.dataPersonal$.subscribe({
+  //     next: (response) => {
+  //       if (response != null && response.datosPersonal) {
+  //         const areaAbrev = response.datosPersonal.areaAbrev;
+  //         if (areaAbrev && areaAbrev !== 'OP' && areaAbrev !== 'VE') {
+  //           this._mostrarBotonesMarcacion$.next(true);
+  //           this.iniciarMonitoreoInactividad(usuario);
+  //         } else {
+  //           this._mostrarBotonesMarcacion$.next(false);
+  //         }
+  //       } else {
+  //         this._mostrarBotonesMarcacion$.next(false);
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Error al obtener datos del personal:', error);
+  //       this._mostrarBotonesMarcacion$.next(false);
+  //     },
+  //   });
+  // }
 
   /**
    * Inserta una marcación del personal con solicitud de DNI
@@ -101,7 +102,6 @@ export class MarcacionPersonalService {
 
     this.solicitarCodigoDocumento(usuario, tipoBoton, tipoTexto);
   }
-
 
   private solicitarCodigoDocumento(
     usuario: string,
@@ -162,7 +162,7 @@ export class MarcacionPersonalService {
         popup: 'swal-marcacion-popup',
         title: 'swal-marcacion-title',
         confirmButton: 'swal-marcacion-btn-confirm',
-        cancelButton: 'swal-marcacion-btn-cancel'
+        cancelButton: 'swal-marcacion-btn-cancel',
       },
       allowOutsideClick: false,
       allowEscapeKey: false,
@@ -170,11 +170,15 @@ export class MarcacionPersonalService {
         const input = document.getElementById('inputDNI') as HTMLInputElement;
         const codigo = input?.value?.trim().toUpperCase();
         if (!codigo) {
-          Swal.showValidationMessage('⚠️ Por favor, ingrese el código del documento');
+          Swal.showValidationMessage(
+            '⚠️ Por favor, ingrese el código del documento'
+          );
           return false;
         }
         if (codigo.length < 4) {
-          Swal.showValidationMessage('⚠️ El código debe tener al menos 4 caracteres');
+          Swal.showValidationMessage(
+            '⚠️ El código debe tener al menos 4 caracteres'
+          );
           return false;
         }
         return codigo;
@@ -217,7 +221,6 @@ export class MarcacionPersonalService {
   ): void {
     this.userService.dataPersonal$.subscribe({
       next: (response) => {
-
         if (response != null && response.datosPersonal) {
           // Intentar obtener el documento desde diferentes propiedades posibles
           const documentoPersonal = (
@@ -227,7 +230,10 @@ export class MarcacionPersonalService {
             response.datosPersonal.dni ||
             response.datosPersonal.numeroDocumentoIdentidad ||
             response.datosPersonal.docIdentidad
-          )?.toString().trim().toUpperCase();
+          )
+            ?.toString()
+            .trim()
+            .toUpperCase();
 
           const codigoIngresado = codigoDocumento.trim().toUpperCase();
 
@@ -242,13 +248,22 @@ export class MarcacionPersonalService {
             console.warn('⚠️ [WARN] Los documentos no coinciden');
             console.warn('Expected:', documentoPersonal);
             console.warn('Got:', codigoIngresado);
-            this.mostrarModalError('No son los datos correctos, intentar otra vez.');
+            this.mostrarModalError(
+              'No son los datos correctos, intentar otra vez.'
+            );
             return;
           }
 
-          this.registrarMarcacion(usuario, tipoBoton, codigoIngresado, tipoTexto);
+          this.registrarMarcacion(
+            usuario,
+            tipoBoton,
+            codigoIngresado,
+            tipoTexto
+          );
         } else {
-          this.alertaService.notificationError('No se pudo obtener los datos del personal');
+          this.alertaService.notificationError(
+            'No se pudo obtener los datos del personal'
+          );
         }
       },
       error: (error) => {
@@ -285,17 +300,28 @@ export class MarcacionPersonalService {
           if (data.exito) {
             const mensajeLower = data.mensaje.toLowerCase();
 
-            if (mensajeLower.includes('ya') && (mensajeLower.includes('marcó') || mensajeLower.includes('registró') || mensajeLower.includes('marcado') || mensajeLower.includes('registrado'))) {
+            if (
+              mensajeLower.includes('ya') &&
+              (mensajeLower.includes('marcó') ||
+                mensajeLower.includes('registró') ||
+                mensajeLower.includes('marcado') ||
+                mensajeLower.includes('registrado'))
+            ) {
               this.mostrarModalYaMarco();
-            }
-            else if (mensajeLower.includes('tiempo mínimo') || mensajeLower.includes('45 minutos') || mensajeLower.includes('1 hora') || mensajeLower.includes('refrigerio')) {
+            } else if (
+              mensajeLower.includes('tiempo mínimo') ||
+              mensajeLower.includes('45 minutos') ||
+              mensajeLower.includes('1 hora') ||
+              mensajeLower.includes('refrigerio')
+            ) {
               this.mostrarModalTiempoMinimo();
-            }
-            else {
+            } else {
               this.mostrarModalExitoso(tipoTexto);
             }
           } else {
-            this.mostrarModalError(data.mensaje || `Hubo un problema en la marcación de ${tipoTexto}`);
+            this.mostrarModalError(
+              data.mensaje || `Hubo un problema en la marcación de ${tipoTexto}`
+            );
           }
         },
         error: (error) => {
@@ -326,7 +352,7 @@ export class MarcacionPersonalService {
       customClass: {
         popup: 'swal-marcacion-popup',
         title: 'swal-marcacion-title',
-        confirmButton: 'swal-marcacion-btn-confirm'
+        confirmButton: 'swal-marcacion-btn-confirm',
       },
       buttonsStyling: true,
     });
@@ -363,7 +389,7 @@ export class MarcacionPersonalService {
       customClass: {
         popup: 'swal-marcacion-popup',
         title: 'swal-marcacion-title',
-        confirmButton: 'swal-marcacion-btn-confirm'
+        confirmButton: 'swal-marcacion-btn-confirm',
       },
       buttonsStyling: true,
     });
@@ -400,7 +426,7 @@ export class MarcacionPersonalService {
       customClass: {
         popup: 'swal-marcacion-popup',
         title: 'swal-marcacion-title',
-        confirmButton: 'swal-marcacion-btn-confirm'
+        confirmButton: 'swal-marcacion-btn-confirm',
       },
       buttonsStyling: true,
     });
@@ -454,7 +480,7 @@ export class MarcacionPersonalService {
       customClass: {
         popup: 'swal-marcacion-popup',
         title: 'swal-marcacion-title',
-        confirmButton: 'swal-marcacion-btn-confirm'
+        confirmButton: 'swal-marcacion-btn-confirm',
       },
       buttonsStyling: true,
       width: '550px',
@@ -486,18 +512,24 @@ export class MarcacionPersonalService {
    * @param usuario Usuario del personal
    * @param tipoBoton Tipo de botón de marcación
    */
-  private mostrarAlertaMarcacion(usuario: string, tipoBoton: TipoMarcacion): void {
+  private mostrarAlertaMarcacion(
+    usuario: string,
+    tipoBoton: TipoMarcacion
+  ): void {
     let mensaje = '';
 
     switch (tipoBoton) {
       case TipoMarcacion.Ingreso:
-        mensaje = 'Ud. no tiene marcación de ingreso, ¿desea marcar su hora de ingreso?';
+        mensaje =
+          'Ud. no tiene marcación de ingreso, ¿desea marcar su hora de ingreso?';
         break;
       case TipoMarcacion.SalidaAlmuerzo:
-        mensaje = 'Ud. está inactivo por más de 15 minutos, se marcará como hora de salida de almuerzo';
+        mensaje =
+          'Ud. está inactivo por más de 15 minutos, se marcará como hora de salida de almuerzo';
         break;
       case TipoMarcacion.Salida:
-        mensaje = 'Ud. está inactivo por más de 15 minutos, se marcará como hora de salida de la empresa';
+        mensaje =
+          'Ud. está inactivo por más de 15 minutos, se marcará como hora de salida de la empresa';
         break;
     }
 
@@ -547,7 +579,10 @@ export class MarcacionPersonalService {
           if (data?.marcacion != null) {
             // Si el tiempo de inactividad es >= 15 minutos y no hay salida de almuerzo
             if (data.tiempoInactivo >= 15 && data.marcacion.m2 == null) {
-              this.mostrarAlertaMarcacion(usuario, TipoMarcacion.SalidaAlmuerzo);
+              this.mostrarAlertaMarcacion(
+                usuario,
+                TipoMarcacion.SalidaAlmuerzo
+              );
             }
             // Si el tiempo de inactividad es >= 15 minutos y ya regresó del almuerzo
             if (data.tiempoInactivo >= 15 && data.marcacion.m3 != null) {
@@ -571,14 +606,12 @@ export class MarcacionPersonalService {
     });
   }
 
-
   private iniciarReloj(): void {
     this.actualizarReloj();
     this.intervaloClock = interval(500).subscribe(() => {
       this.actualizarReloj();
     });
   }
-
 
   private actualizarReloj(): void {
     const today = new Date();
@@ -597,10 +630,28 @@ export class MarcacionPersonalService {
     this._horaActual$.next(`${hr}:${min}:${sec} ${ap}`);
 
     const months = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
     ];
-    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const days = [
+      'Domingo',
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+    ];
 
     const curWeekDay = days[today.getDay()];
     const curDay = today.getDate();
@@ -618,7 +669,6 @@ export class MarcacionPersonalService {
   private checkTime(i: number): string {
     return i < 10 ? '0' + i : i.toString();
   }
-
 
   detenerIntervalos(): void {
     if (this.intervaloClock) {
