@@ -17,6 +17,7 @@ import { UserService } from '@shared/services/user.service';
 import Swal from 'sweetalert2';
 import { distinct } from '@progress/kendo-data-query';
 import { datePipeTransform } from '@shared/functions/date-pipe';
+import { WebinarSignalrService } from './webinar-signalr.service';
 
 interface ConfirmacionWebinar {
   idPEspecificoSesion: number;
@@ -42,6 +43,8 @@ interface WebinarDetalleSesion {
   configuracion: string;
   estadoEnvioCorreo: string;
   estadoEnvioWhatsApp: string;
+  totalParticipantes: number;
+  totalParticipantesConfirmados: number;
 }
 interface IPgenerales {
   id: number;
@@ -65,18 +68,18 @@ interface IdataEnviada {
   FechaPorDefecto?: string;
   CodigoMatricula?: string;
 }
-interface WebinarFiltro{
-    listaPGeneral?:number[] ;
-    listaPEspecifico?:number[];
-    estadoSesion?:string ;
-    fecha?:string ;
-    fechaInicio?:string ;
-    fechaFin?:string ;
-    fechaPorDefecto?:string ;
-    codigoMatricula?:string ;
-    idCentroCosto?:number ;
+interface WebinarFiltro {
+  listaPGeneral?: number[];
+  listaPEspecifico?: number[];
+  estadoSesion?: string;
+  fecha?: string;
+  fechaInicio?: string;
+  fechaFin?: string;
+  fechaPorDefecto?: string;
+  codigoMatricula?: string;
+  idCentroCosto?: number;
 }
-interface FormFiltro{
+interface FormFiltro {
   idPgeneral: number[],
   idPespecifico: number[],
   idEstadoSesion: string,
@@ -151,7 +154,8 @@ export class ConfirmacionWebinarComponent implements OnInit {
     private userService: UserService,
     private alertaService: AlertaService,
     private modalService: NgbModal,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private signalRService: WebinarSignalrService
   ) {
   }
   get obtenerFechaActual() {
@@ -159,6 +163,16 @@ export class ConfirmacionWebinarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.signalRService.startConnection();
+
+    this.signalRService.onAsistenciaRegistrada((data) => {
+      console.log('ws', data);
+      if(data.estado) {
+        this.alertaService.notificationSuccess("Un Alumno confirmó su participación al webinar.");
+      } else {
+        this.alertaService.notificationWarning("Un Alumno canceló su participación al webinar.");
+      }
+    });
     this.estadoSesion = [
       { texto: 'Proxima', valor: '1' },
       { texto: 'Pasada', valor: '2' },
@@ -202,7 +216,6 @@ export class ConfirmacionWebinarComponent implements OnInit {
       .subscribe({
         next: (resp: HttpResponse<WebinarDetalleSesion[]>) => {
           this.gridPrograma.loading = false;
-          console.log(resp.body);
           this.gridPrograma.data = resp.body;
         },
         error: (error) => {
