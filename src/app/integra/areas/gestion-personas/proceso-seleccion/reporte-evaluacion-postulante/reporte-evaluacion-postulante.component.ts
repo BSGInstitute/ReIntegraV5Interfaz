@@ -1260,13 +1260,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
         error: (error) => {
           this.gridEtapaProcesoSeleccion.loading = false;
-          this.enProcesoGuardarRespuesta = false;
-          let resp = this.alertaService.getErrorResponse(error);
-          this.alertaService.swalFireOptions({
-            icon: 'error',
-            title: '¡Ocurrió un problema al registrar las respuestas!',
-            text: `${resp.titulo}: ${resp.mensaje}`,
-          });
+          this.enProcesoGuardarRespuesta = false; 
         },
       });
   }
