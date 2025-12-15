@@ -1212,12 +1212,8 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         error: (error) => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
-          let resp = this.alertaService.getErrorResponse(error);
-          this.alertaService.swalFireOptions({
-            icon: 'error',
-            title: '¡Ocurrio un problema al reestablecer las notas!',
-            text: `${resp.titulo}: ${resp.mensaje}`,
-          });
+          this.modalRef.close();
+          this.generarReporteIntegra();
         },
       });
   }
