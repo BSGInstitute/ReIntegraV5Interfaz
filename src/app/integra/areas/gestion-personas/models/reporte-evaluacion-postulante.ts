@@ -220,3 +220,96 @@ export interface EvaluacionPortalPostulante {
   puntajeCurso: number;
   versionCentil: number;
 }
+
+
+
+
+export interface PostulanteInformacionVisualDTO {
+  id: number;
+  nombre: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  edad: number | null;
+  celular: string;
+  email: string;
+  ciudad: string;
+  urlPerfilFacebook: string;
+  urlPerfilLinkedin: string;
+  tieneHijo: boolean | null;
+  cantidadHijo: number | null;
+}
+
+export interface PostulanteIdiomaDTOV2 {
+  id: number;
+  idPostulante: number;
+  idioma: string;
+  nivelIdioma: string;
+}
+
+
+export interface PostulanteExperienciaDTOV2 {
+  id: number;
+  idPostulante: number;
+  empresa: string;
+  cargo: string;
+  areaTrabajo: string;
+  industria: string;
+  fechaInicio: Date | string | null;
+  fechaFin: Date | string | null;
+  nombreJefe: string;
+  numeroJefe: string;
+  alaActualidad: boolean | null;     
+  esUltimoEmpleo: boolean | null;
+  salario: string;
+  funcion: string;
+  mesesExperiencia: number;
+}
+
+
+export interface PostulanteEquipoComputoDTOV2 {
+  id: number;
+  idPostulante: number;
+  tipoEquipo: string;
+  memoriaRam: string;
+  sistemaOperativo: string;
+  procesador: string;
+  mouse: boolean;
+  auricular: boolean;
+  camara: boolean;
+  esEquipoTrabajo: boolean | null;
+}
+
+
+export interface PostulanteConexionInternetDTOV2 {
+  id: number;
+  idPostulante: number;
+  tipoConexion: string;
+  medioConexion: string;
+  velocidadInternet: string;
+  proveedorInternet: string;
+  costoInternet: string;
+  conexionCompartida: string;
+}
+
+export interface PostulanteFormacionDTOV2 {
+  id: number;
+  idPostulante: number;
+  centroEstudio: string;
+  tipoEstudio: string;
+  areaFormacion: string;
+  estadoEstudio: string;
+  fechaInicio: Date | string | null;
+  fechaFin: Date | string | null;
+  alaActualidad: boolean | null;
+  turnoEstudio: string;
+}
+
+
+export interface InformacionPostulanteDTO {
+  postulanteInformacion: PostulanteInformacionVisualDTO;
+  postulanteFormacion: PostulanteFormacionDTOV2[];
+  postulanteIdioma: PostulanteIdiomaDTOV2[];
+  postulanteExperiencia: PostulanteExperienciaDTOV2[];
+  postulanteEquipoComputo: PostulanteEquipoComputoDTOV2;
+  postulanteConexionInternet: PostulanteConexionInternetDTOV2;
+}

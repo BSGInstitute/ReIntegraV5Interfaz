@@ -1,0 +1,269 @@
+<div class="modal-header py-2 bg-success text-white text-center">
+  <h2 class="modal-title mb-0 w-100">Historial Monto de Pago</h2>
+
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  ></button>
+</div>
+<div class="card mb-3">
+  <div class="card-header bg-secondary text-white text-center fw-bold">
+    Filtros de Búsqueda
+  </div>
+
+  <div class="card-body">
+    <form class="k-form k-form-horizontal" [formGroup]="formFiltros">
+      <div class="row">
+        <!-- FECHA INICIO -->
+        <div class="col-md-3">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">Fecha Inicio</label>
+            <kendo-datepicker
+              formControlName="fechaInicio"
+              placeholder="Seleccione fecha..."
+            ></kendo-datepicker>
+          </kendo-formfield>
+        </div>
+
+        <!-- FECHA FIN -->
+        <div class="col-md-3">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">Fecha Fin</label>
+            <kendo-datepicker
+              formControlName="fechaFin"
+              placeholder="Seleccione fecha..."
+            ></kendo-datepicker>
+          </kendo-formfield>
+        </div>
+
+        <!-- PAÍS -->
+        <div class="col-md-2">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">País</label>
+            <kendo-dropdownlist
+              formControlName="idPais"
+              [data]="listaPaises"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccione país...' }"
+              [kendoDropDownFilter]="filterSettings"
+              [valuePrimitive]="true"
+              style="width: 100%"
+            ></kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+
+        <!-- VERSIÓN -->
+        <div class="col-md-2">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">Versión</label>
+            <kendo-dropdownlist
+              formControlName="idVersion"
+              [data]="listaVersiones"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccione versión...' }"
+              [kendoDropDownFilter]="filterSettings"
+              [valuePrimitive]="true"
+              style="width: 100%"
+            ></kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+
+        <!-- TIPO -->
+        <div class="col-md-2">
+          <kendo-formfield orientation="horizontal">
+            <label class="k-label">Tipo</label>
+            <kendo-dropdownlist
+              formControlName="idTipoPago"
+              [data]="listaTiposPago"
+              textField="nombre"
+              valueField="id"
+              [defaultItem]="{ id: null, nombre: 'Seleccione tipo...' }"
+              [kendoDropDownFilter]="filterSettings"
+              [valuePrimitive]="true"
+              style="width: 100%"
+            ></kendo-dropdownlist>
+          </kendo-formfield>
+        </div>
+        <div class="row mt-3">
+          <div class="col text-end">
+            <button
+              kendoButton
+              themeColor="primary"
+              icon="search"
+              (click)="Obtener()"
+            >
+              Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal-body">
+  <div class="card mb-3">
+    <div class="card-header bg-secondary text-white text-center fw-bold">
+      Historial de Modificaciones de Monto de Pago
+    </div>
+
+    <div class="card-body">
+      <div class="content">
+        <div class="row">
+          <div class="col-12">
+            <kendo-grid
+              [kendoGridBinding]="gridHistorial.data"
+              [loading]="gridHistorial.loading"
+              [pageSize]="10"
+              [pageable]="true"
+              [resizable]="true"
+              scrollable="scrollable"
+            >
+              <!-- FECHA Y USUARIO -->
+              <kendo-grid-column
+                field="fechaModificacion"
+                title="Fecha Modificación"
+                [width]="150"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{ dataItem.fechaModificacion | date : "yyyy-MM-dd" }}
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="usuarioModificacion"
+                title="Usuario Modificación"
+                [width]="160"
+              ></kendo-grid-column>
+
+              <!-- PRECIO -->
+              <kendo-grid-column
+                field="precioOriginal"
+                title="Precio Original"
+                [width]="140"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="precioModificado"
+                title="Precio Modificado"
+                [width]="150"
+              ></kendo-grid-column>
+
+              <!-- MONEDA -->
+              <kendo-grid-column
+                field="nombreMonedaOriginal"
+                title="Moneda Original"
+                [width]="160"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="nombreMonedaModificado"
+                title="Moneda Modificado"
+                [width]="170"
+              ></kendo-grid-column>
+
+              <!-- TIPO DE PAGO -->
+              <kendo-grid-column
+                field="nombreTipoPagoOriginal"
+                title="Tipo Pago Original"
+                [width]="170"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="nombreTipoPagoModificado"
+                title="Tipo Pago Modificado"
+                [width]="180"
+              ></kendo-grid-column>
+
+              <!-- PAIS -->
+              <kendo-grid-column
+                field="nombrePaisOriginal"
+                title="País Original"
+                [width]="150"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="nombrePaisModificado"
+                title="País Modificado"
+                [width]="160"
+              ></kendo-grid-column>
+
+              <!-- DESCRIPCIÓN -->
+              <kendo-grid-column
+                field="descripcionOriginal"
+                title="Descripción Original"
+                [width]="200"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="descripcionModificado"
+                title="Descripción Modificada"
+                [width]="210"
+              ></kendo-grid-column>
+
+              <!-- MATRÍCULA -->
+              <kendo-grid-column
+                field="matriculaOriginal"
+                title="Matrícula Original"
+                [width]="160"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="matriculaModificado"
+                title="Matrícula Modificada"
+                [width]="170"
+              ></kendo-grid-column>
+
+              <!-- CUOTAS -->
+              <kendo-grid-column
+                field="cuotasOriginal"
+                title="Cuotas Originales"
+                [width]="150"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="cuotasModificado"
+                title="Cuotas Modificadas"
+                [width]="160"
+              ></kendo-grid-column>
+
+              <!-- NRO CUOTAS -->
+              <kendo-grid-column
+                field="nroCuotasOriginal"
+                title="Nro Cuotas Original"
+                [width]="170"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="nroCuotasModificado"
+                title="Nro Cuotas Modificado"
+                [width]="180"
+              ></kendo-grid-column>
+
+              <!-- VERSIÓN -->
+              <kendo-grid-column
+                field="versionOriginal"
+                title="Versión Original"
+                [width]="150"
+              ></kendo-grid-column>
+              <kendo-grid-column
+                field="versionModificado"
+                title="Versión Modificada"
+                [width]="160"
+              ></kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <loading [loading]="loaderModal"></loading>
+</div>
+
+<div class="modal-footer">
+  <div class="k-form-buttons m-0">
+    <button
+      kendoButton
+      themeColor="error"
+      icon="close"
+      (click)="activeModal.dismiss('Cross click')"
+    >
+      Cancelar
+    </button>
+  </div>
+</div>

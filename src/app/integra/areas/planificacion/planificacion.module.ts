@@ -132,6 +132,7 @@ import { ProgramaGeneralProblemaFactorSolucionComponent } from './configuracion-
 import { ProgramaGeneralProblemaFactorSubSolucionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/programa-general-problema-factor-sub-solucion/programa-general-problema-factor-sub-solucion.component';
 import { PgArgumentoMotivacionComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-argumento-motivacion/pg-argumento-motivacion.component';
 import { PgProblemasClienteFormComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-problemas-cliente-v2/pg-problemas-cliente-form/pg-problemas-cliente-form.component';
+import { ModalContentPgeneralHistorialMontoPagoComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-historial-monto-pago/modal-content-pgeneral-historial-monto-pago.component';
 
 
 @NgModule({
@@ -263,6 +264,7 @@ import { PgProblemasClienteFormComponent } from './configuracion-programas-capac
     ProgramaGeneralProblemaFactorSolucionComponent,
     ProgramaGeneralProblemaFactorSubSolucionComponent,
     PgProblemasClienteFormComponent,
+    ModalContentPgeneralHistorialMontoPagoComponent,
 
 
   ],

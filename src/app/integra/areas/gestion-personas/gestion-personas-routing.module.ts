@@ -91,7 +91,8 @@ const routes: Routes = [
   { path: 'ConfigurarProcesoSeleccion', component: ConfigurarProcesoSeleccionComponent },
   { path: 'MaestroPerfilPuestoTrabajoPersonalAprobacion', component: AprobacionPerfilesComponent },
   { path: 'ReporteAnalisisProcesoSeleccion', component: ReporteAnalisisProcesoSeleccionComponent },
-  {path: 'PreguntaEvaluacion',component : PreguntasEvaluacionComponent}
+  {path: 'PreguntaEvaluacion',component : PreguntasEvaluacionComponent},
+   {path: 'HabilitarExamenes',component : HabilitarExamenesComponent}
  // { path: '**', redirectTo: 'listado' },
 ];
 

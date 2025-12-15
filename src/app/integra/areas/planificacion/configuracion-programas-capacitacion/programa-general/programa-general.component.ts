@@ -1,3 +1,4 @@
+import { ModalContentPgeneralHistorialMontoPagoComponent } from './modal-content-pgeneral-historial-monto-pago/modal-content-pgeneral-historial-monto-pago.component';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -158,7 +159,7 @@ export class ProgramaGeneralComponent implements OnInit {
   }
   abrirModalDatosPgeneral(dataItem?: Pgeneral) {
     this._pgeneralService.readyAlterno();
-    
+
     this._pgeneralService.dataItemPgeneral = dataItem;
     this._pgeneralService.isNewPgeneral = dataItem == null;
     if (dataItem != null) {
@@ -344,5 +345,20 @@ export class ProgramaGeneralComponent implements OnInit {
           });
         },
       });
+  }
+
+  abrirModalHistorialMontoPago(dataItem: Pgeneral) {
+    this._pgeneralService.readyAlterno();
+    this._pgeneralService.dataItemPgeneral = dataItem;
+
+    const modalRef = this._modalService.open(
+      ModalContentPgeneralHistorialMontoPagoComponent,
+      {
+        size: 'xxl',
+        backdrop: 'static',
+        keyboard: false,
+      }
+    );
+    modalRef.componentInstance.pgeneralService = this._pgeneralService;
   }
 }

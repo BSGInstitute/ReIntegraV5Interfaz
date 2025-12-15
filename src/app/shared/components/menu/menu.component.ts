@@ -16,8 +16,10 @@ import { UserService } from '@shared/services/user.service';
 import { IGrupoModulo, ISubGrupoModulo } from '@shared/models/interfaces/imenu';
 import { Title } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { RingoverSDKService } from '@shared/services/ringover-sdk.service';
+import { MarcacionPersonalService } from '@shared/services/marcacion-personal.service';
+import { TipoMarcacion } from '@shared/models/interfaces/imarcacion-personal';
 
 /**
  * @description Componente principal menu
@@ -42,7 +44,8 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private _crmService: CrmService,
     private _userService: UserService,
     private _titleService: Title,
-    private _ringoverSDKService: RingoverSDKService
+    private _ringoverSDKService: RingoverSDKService,
+    private _marcacionPersonalService: MarcacionPersonalService
   ) {}
 
   private _sourceModulos: IGrupoModulo[] = [];
@@ -54,6 +57,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.configWindow();
     this.initSubscribeObservables();
+    this.inicializarMarcacion();
   }
   ngAfterViewInit(): void {
     this.drawer.toggle(this.toggle);
@@ -61,6 +65,7 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
+    this._marcacionPersonalService.detenerIntervalos();
     this._sourceModulos = null;
     this._subscriptions = null;
     this._itemIndex = null;
@@ -82,6 +87,9 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   get esCrmActivo$(){
     return this._crmService.esCrmActivo$
+  }
+  get mostrarBotonesMarcacion$(): Observable<boolean> {
+    return this._marcacionPersonalService.mostrarBotonesMarcacion$;
   }
   private initSubscribeObservables() {
     let sub1$ = this._userService.moduloUsuario$.subscribe((resp) => {
@@ -392,5 +400,24 @@ export class MenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   get checkStatusRingover(){
     return this._ringoverSDKService.checkStatus();
+  }
+
+ 
+  private inicializarMarcacion(): void {
+    const userName = this._userService.userName;
+    if (userName) {
+      this._marcacionPersonalService.inicializarMarcacion(userName);
+    }
+  }
+
+  /**
+   * Inserta una marcación del personal
+   * @param tipoMarcacion Tipo de marcación (1: Ingreso, 2: Salida Almuerzo, 3: Llegada Almuerzo, 4: Salida)
+   */
+  insertarMarcacion(tipoMarcacion: TipoMarcacion): void {
+    const userName = this._userService.userName;
+    if (userName) {
+      this._marcacionPersonalService.insertarMarcacion(userName, tipoMarcacion);
+    }
   }
 }

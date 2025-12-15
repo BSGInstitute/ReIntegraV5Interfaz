@@ -18,6 +18,7 @@ import {
   RespuestaDetalle,
   ReportePostulanteMatricula,
   EvaluacionPortalPostulante,
+  InformacionPostulanteDTO,
 } from '@gestionPersonas/models/reporte-evaluacion-postulante';
 import { IClaveValor, IComboBase1 } from '@shared/models/interfaces/iglobal';
 import { FormBuilder, FormControl } from '@angular/forms';
@@ -27,6 +28,7 @@ import { datePipeTransform } from '@shared/functions/date-pipe';
 import { SortDescriptor } from '@progress/kendo-data-query';
 import { RowClassArgs } from '@progress/kendo-angular-grid';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { retry } from 'rxjs';
 
 interface FormFiltro {
   procesoSeleccion: number;
@@ -39,9 +41,11 @@ interface FormFiltro {
   filtroPorPostulante: boolean;
   postulantes: number[];
 }
+
 interface ClaveValor {
   [key: string]: string | number | boolean;
 }
+
 /**
  * @module GestionPersonasModule
  * @description Componente de Reporte de Evaluacion de Postulantes
@@ -65,7 +69,12 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
   ) {}
 
   @ViewChild('modalTest') modalTest: any;
-  @ViewChild('modalCalificarExamenAsignado') modalCalificarExamenAsignado: any;
+  @ViewChild('modalCalificarExamenAsignado')
+  modalCalificarExamenAsignado: any;
+
+  // Nuevo modal de información
+  @ViewChild('modalInformacionPostulante')
+  modalInformacionPostulante: any;
 
   gridEtapaProcesoSeleccion = new KendoGrid<ClaveValor>();
   gridReportePostulante = new KendoGrid<ClaveValor>();
@@ -97,6 +106,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     filtroPorPostulante: [false],
     postulantes: [[]],
   });
+
   versionCentilTemp: string = null;
   etapasAprobadas: EtapaAprobada[] = [];
   postulantesTemp: Postulante[] = [];
@@ -139,6 +149,11 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
   idEstadoEtapaProcesoTemp: number = null;
   idPostulanteTemp: number = null;
 
+  // DATA DEL MODAL DE INFORMACIÓN
+  informacionPostulanteData: InformacionPostulanteDTO | null = null;
+  loadingInformacionPostulante = false;
+  activeInfoTab: 'cv' | 'equipo' = 'cv';
+
   dataItemEtapaProcesoSeleccion: ClaveValor = null;
   preguntaTestAgrupadoTemp: PreguntaTestAgrupado;
   evaluacionTemp: EvaluacionesAsignadasEvaluador;
@@ -148,21 +163,13 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
   showBtnActualizarRespuesta: boolean = false;
 
   ngOnInit(): void {
-
     this.obtenerCombosModulo();
   }
-  ngAfterViewInit(): void {
-    let fechaActual = new Date();
-    this.formFiltro
-      .get('fechaFin')
-      .setValue(new Date(fechaActual.setHours(23, 59, 59, 999)));
-    this.formFiltro
-      .get('fechaInicio')
-      .setValue(new Date(fechaActual.setHours(0, 0, 0, 0)));
-  }
+
   get fechaActual(): Date {
     return new Date();
   }
+
   /**
    * Filtro por servidor postulante
    * @param event Cadena string nombre postulante
@@ -181,7 +188,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
           next: (resp: HttpResponse<IComboBase1[]>) => {
             this.comboPostulante = resp.body;
           },
-          error: (error) => {
+          error: () => {
             this.comboPostulante = [];
           },
         });
@@ -189,36 +196,41 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       this.comboPostulante = [];
     }
   }
+
   onChangeFiltroPostulate(event: boolean) {
     if (event) {
-      this.formFiltro.get('procesoSeleccion').disable();
-      this.formFiltro.get('etapasProceso').disable();
-      this.comboEtapaProceso =[];
-      this.formFiltro.get('estadoEtapas').disable();
-      this.formFiltro.get('fechaInicio').disable();
-      this.formFiltro.get('fechaFin').disable();
+      this.formFiltro.get('procesoSeleccion')?.disable();
+      this.formFiltro.get('etapasProceso')?.disable();
+      this.comboEtapaProceso = [];
+      this.formFiltro.get('estadoEtapas')?.disable();
+      this.formFiltro.get('fechaInicio')?.disable();
+      this.formFiltro.get('fechaFin')?.disable();
 
-      this.formFiltro.get('procesoSeleccion').setValue(null);
-      this.formFiltro.get('etapasProceso').setValue([]);
-      this.formFiltro.get('estadoEtapas').setValue([]);
-      this.formFiltro.get('fechaInicio').setValue(null);
-      this.formFiltro.get('fechaFin').setValue(null);
+      this.formFiltro.get('procesoSeleccion')?.setValue(null);
+      this.formFiltro.get('etapasProceso')?.setValue([]);
+      this.formFiltro.get('estadoEtapas')?.setValue([]);
+      this.formFiltro.get('fechaInicio')?.setValue(null);
+      this.formFiltro.get('fechaFin')?.setValue(null);
 
-      this.formFiltro.get('postulantes').enable();
+      this.formFiltro.get('postulantes')?.enable();
     } else {
-      this.formFiltro.get('procesoSeleccion').enable();
-      this.formFiltro.get('etapasProceso').enable();
-      this.formFiltro.get('estadoEtapas').enable();
-      this.formFiltro.get('fechaInicio').enable();
-      this.formFiltro.get('fechaFin').enable();
-      this.formFiltro.get('postulantes').disable();
+      this.formFiltro.get('procesoSeleccion')?.enable();
+      this.formFiltro.get('etapasProceso')?.enable();
+      this.formFiltro.get('estadoEtapas')?.enable();
+      this.formFiltro.get('fechaInicio')?.enable();
+      this.formFiltro.get('fechaFin')?.enable();
+      this.formFiltro.get('postulantes')?.disable();
 
-      this.formFiltro.get('postulantes').setValue([]);
+      this.formFiltro.get('postulantes')?.setValue([]);
     }
   }
-  valueChangeProcesoSeleccion(event: number){
-    this.comboEtapaProceso = this._sourceEtapaProceso.filter(x => x.idProcesoSeleccion == event)
+
+  valueChangeProcesoSeleccion(event: number) {
+    this.comboEtapaProceso = this._sourceEtapaProceso.filter(
+      (x) => x.idProcesoSeleccion == event
+    );
   }
+
   /**
    * Obtiene los combos utilizados en el modulo
    */
@@ -249,6 +261,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   /**
    * Genera el reporte general
    */
@@ -307,23 +320,19 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     this.showReportePostulante = false;
     this.showReporteAsesorCapacitacion = false;
 
+    // Activar loaders
     this.loadingReporteEtapaProceso = true;
     this.loadingReportePostulante = true;
     this.loadingReporteAsesorCapacitacion = true;
 
-    // let dataLocal = localStorage.getItem('dataLocal');
-    // if (dataLocal) {
-    //   let body = JSON.parse(dataLocal) as ReporteEvaluacionPostulante;
-    //   this.generarGridEtapas(body.etapaAprobada);
-    //   this.obtenerEvaluacionesPortalPostulante(jsonEnvio, body);
-    //   this.obtenerNotasMatriculaReporte(
-    //     body.matriculaPostulantes.filter((s) => s.valor != null && s.valor != 0)
-    //   );
-    //   return;
-    // }
+    this.gridEtapaProcesoSeleccion.loading = true;
+    this.gridReportePostulante.loading = true;
+    this.gridCursoAsesorCapacitacion.loading = true;
+
     this.filtroReporteTemporal = jsonEnvio;
     this.gridReportePostulante.data = [];
     this.btnBuscarDisabled = true;
+
     this.integraService
       .postJsonResponse(
         constApiGestionPersonal.EvaluacionPostulanteGenerarReporte,
@@ -333,19 +342,34 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         next: (resp: HttpResponse<ReporteEvaluacionPostulante>) => {
           this.btnBuscarDisabled = false;
 
-          this.obtenerNotasMatriculaReporte(
-            resp.body.matriculaPostulantes
-              .filter((s) => s.valor != null && s.valor != 0)
-              .map((x) => x.id)
-          );
+          // Etapas (ya se deja de cargar)
           this.generarGridEtapas(resp.body.etapaAprobada);
+
+          // Reporte postulante (queda cargando hasta unir datos portal)
           this.obtenerEvaluacionesPortalPostulante(jsonEnvio, resp.body);
+
+          // Curso asesor capacitación
+          const idsMatricula = resp.body.matriculaPostulantes
+            .filter((s) => s.valor != null && s.valor != 0)
+            .map((x) => x.id);
+
+          if (idsMatricula.length > 0) {
+            this.obtenerNotasMatriculaReporte(idsMatricula);
+          } else {
+            this.loadingReporteAsesorCapacitacion = false;
+            this.gridCursoAsesorCapacitacion.loading = false;
+          }
         },
         error: (error) => {
           this.btnBuscarDisabled = false;
+
           this.loadingReporteEtapaProceso = false;
           this.loadingReportePostulante = false;
           this.loadingReporteAsesorCapacitacion = false;
+
+          this.gridEtapaProcesoSeleccion.loading = false;
+          this.gridReportePostulante.loading = false;
+          this.gridCursoAsesorCapacitacion.loading = false;
 
           let resp = this.alertaService.getErrorResponse(error);
           if (error.status == 409) {
@@ -361,12 +385,14 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   /**
-   * Genera el reporte de etapas
+   * Genera el reporte de etapas (solo etapas)
    */
   private generarReporteIntegra() {
     let jsonEnvio = this.filtroReporteTemporal;
-    this.gridEtapaProcesoSeleccion.loading = false;
+    this.gridEtapaProcesoSeleccion.loading = true;
+    this.loadingReporteEtapaProceso = true;
 
     this.integraService
       .postJsonResponse(
@@ -380,11 +406,11 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
             cantidadEtapaAprobada: number;
           }>
         ) => {
-          this.gridEtapaProcesoSeleccion.loading = false;
           this.generarGridEtapas(resp.body.etapaAprobada);
         },
         error: (error) => {
           this.gridEtapaProcesoSeleccion.loading = false;
+          this.loadingReporteEtapaProceso = false;
           let resp = this.alertaService.getErrorResponse(error);
           if (error.status == 409) {
             this.alertaService.swalFireOptions({
@@ -399,10 +425,14 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   obtenerEvaluacionesPortalPostulante(
     jsonEnvio: FiltroReporte,
     reporte: ReporteEvaluacionPostulante
   ) {
+    this.gridReportePostulante.loading = true;
+    this.loadingReportePostulante = true;
+
     this.integraService
       .postJsonResponse(
         constApiGestionPersonal.EvaluacionPostulanteObtenerEvaluacionesPortalPostulante,
@@ -434,7 +464,29 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   generarGridGmatPma(reporte: ReporteEvaluacionPostulante) {
+    if (
+      !reporte ||
+      !reporte.postulantes ||
+      reporte.postulantes.length === 0 ||
+      !reporte.datosEvaluacionAgrupado ||
+      reporte.datosEvaluacionAgrupado.length === 0
+    ) {
+      this.postulantesTemp = [];
+      this.gridReportePostulante.data = [];
+      this.loadingReportePostulante = false;
+      this.gridReportePostulante.loading = false;
+      this.showReportePostulante = false;
+
+      this.alertaService.notificationInfo(
+        'No se encontraron resultados para el reporte de postulantes.'
+      );
+
+      return;
+    }
+
+    // Clasificación NEO
     reporte.postulantes.forEach((x) => {
       let clasificacionNEO: ClasificacionNeo = {
         idProcesoSeleccion: 0,
@@ -458,10 +510,14 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
 
     this.postulantesTemp = reporte.postulantes;
 
-    let todoData: Proceso[] = [];
-    reporte.datosEvaluacionAgrupado.forEach((x) => {
-      todoData = todoData.concat(x.proceso);
-    });
+    // Unificamos todos los procesos
+    const todoData: Proceso[] = [];
+    for (const x of reporte.datosEvaluacionAgrupado) {
+      if (x.proceso && x.proceso.length) {
+        todoData.push(...x.proceso);
+      }
+    }
+
     let registroRP: {
       [key: number]: ClaveValor;
     } = {};
@@ -526,11 +582,8 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       }
     });
 
-    let datosFinal: ClaveValor[] = [];
-    for (let item in registroRP) {
-      datosFinal.push(registroRP[item]);
-    }
-    console.log(datosFinal);
+    const datosFinal = Object.values(registroRP) as ClaveValor[];
+
     let evaluaciones = datosFinal.map((x) => x['evaluacion']);
     let colores = [
       'color1',
@@ -556,15 +609,15 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       contadorColor++;
       this.colorEvaluaciones.push(item);
     }
-    this.gridReportePostulante.data = datosFinal;
+
+    this.gridReportePostulante.data = [...datosFinal];
+    this.gridReportePostulante.loading = false;
     this.loadingReportePostulante = false;
     this.showReportePostulante = true;
   }
+
   /**
-   * Template columna estado postulante
-   * @param dataItem
-   * @param idPostulante
-   * @returns
+   * Template columna Recuperación
    */
   templateRecuperacionPostulante(dataItem: ClaveValor, idPostulante: number) {
     let cantidadConfigurado: number = dataItem[
@@ -598,12 +651,9 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       return '';
     }
   }
+
   /**
    * Template para la grilla etapa estado postulante
-   * @param dataItem
-   * @param idPostulante
-   * @param versionCentil
-   * @returns
    */
   templateEstadoPostulante(
     dataItem: ClaveValor,
@@ -651,6 +701,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       }
     }
   }
+
   /**
    * Evalua caso de simbolo
    */
@@ -692,6 +743,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     }
     return resultado;
   }
+
   templateAccesoTemporalPostulante(dataItem: ClaveValor, idPostulante: number) {
     let notaAprobatoria = dataItem[`notaAprobatoria`] as string;
     let estado = dataItem[`estado_${idPostulante}`] as boolean;
@@ -716,6 +768,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       }
     }
   }
+
   enviarAccesoTemporal(dataItem: ClaveValor, idPostulante: number) {
     this.alertaService
       .swalFireOptions({
@@ -734,6 +787,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         }
       });
   }
+
   enviarAccesoAulaVirtualPostulante(
     dataItem: ClaveValor,
     idPostulante: number
@@ -749,13 +803,13 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         JSON.stringify(jsonEnvio)
       )
       .subscribe({
-        next: (resp) => {},
-        error: (error) => {},
+        next: () => {},
+        error: () => {},
       });
   }
+
   /**
    * Genera la data para el grid de etapas
-   * @param etapasAprobadas
    */
   generarGridEtapas(etapasAprobadas: EtapaAprobada[]) {
     etapasAprobadas = etapasAprobadas.sort((a, b) => {
@@ -808,13 +862,13 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     this.etapasAprobadas = etapasAprobadas;
     this.gridEtapaProcesoSeleccion.data = registroEtapasFinal;
 
+    this.gridEtapaProcesoSeleccion.loading = false;
     this.loadingReporteEtapaProceso = false;
     this.showReporteEtapaProceso = true;
   }
+
   /**
    * Obtiene el nombre del estado etapa proceso
-   * @param idEstadoEtapa
-   * @returns
    */
   getNombreEstadoEtapaProceso(idEstadoEtapa: number) {
     if (idEstadoEtapa != null && idEstadoEtapa != 0) {
@@ -828,10 +882,9 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       return null;
     }
   }
+
   /**
    * Valida el tipo de evaluacion
-   * @param idPostulante
-   * @param dataItem
    */
   funcionModalTipoEvaluacion(idPostulante: number, dataItem: ClaveValor) {
     this.enProcesoGuardarRespuesta = false;
@@ -890,9 +943,9 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   /**
    * Obtener evaluaciones asignadas evaluador
-   * @param tipoExamen
    */
   obtenerEvaluacionesAsignadasEvaluador(tipoExamen: {
     tipoEvaluacion: number;
@@ -942,6 +995,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   /**
    * Obtiene preguntas respuestas realizadas test evaluador
    */
@@ -1035,9 +1089,9 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   /**
    * Obtiene las preguntas respuesta test evaluador
-   * @param evaluacion
    */
   private obtenerPreguntasRespuestasTestEvaluador(
     evaluacion: EvaluacionesAsignadasEvaluador
@@ -1094,10 +1148,9 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
   /**
    * Colores row reporte postulante
-   * @param context
-   * @returns
    */
   rowCallback = (context: RowClassArgs) => {
     let styles: { [key: string]: boolean } = {};
@@ -1119,9 +1172,9 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
     }
     return styles;
   };
+
   /**
-   * Actualizacion de estado
-   * @returns
+   * Actualizacion de estado de etapa
    */
   actualizarEstadoEA() {
     if (this.fcEstadoEtapa.value == null || this.fcEstadoEtapa.value == 0) {
@@ -1150,7 +1203,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         JSON.stringify(jsonEnvio)
       )
       .subscribe({
-        next: (resp: HttpResponse<boolean>) => {
+        next: () => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
           this.modalRef.close();
@@ -1159,15 +1212,12 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         error: (error) => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
-          let resp = this.alertaService.getErrorResponse(error);
-          this.alertaService.swalFireOptions({
-            icon: 'error',
-            title: '¡Ocurrio un problema al reestablecer las notas!',
-            text: `${resp.titulo}: ${resp.mensaje}`,
-          });
+          this.modalRef.close();
+          this.generarReporteIntegra();
         },
       });
   }
+
   /**
    * Actualiza las respuestas
    */
@@ -1181,15 +1231,20 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       idExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
       idPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
     };
+
     this.gridEtapaProcesoSeleccion.loading = true;
     this.enProcesoGuardarRespuesta = true;
+
     this.integraService
       .postJsonResponse(
         constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
         JSON.stringify(jsonEnvio)
       )
+      .pipe(
+        retry(1)
+      )
       .subscribe({
-        next: (resp: HttpResponse<any>) => {
+        next: () => {
           this.enProcesoGuardarRespuesta = false;
           this.gridEtapaProcesoSeleccion.loading = false;
           this.modalRef.close();
@@ -1201,25 +1256,16 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
         error: (error) => {
           this.gridEtapaProcesoSeleccion.loading = false;
-          this.enProcesoGuardarRespuesta = false;
-          let resp = this.alertaService.getErrorResponse(error);
-          this.alertaService.swalFireOptions({
-            icon: 'error',
-            title: '¡Ocurrio un problema al registrar las respuestas!',
-            text: `${resp.titulo}: ${resp.mensaje}`,
-          });
+          this.enProcesoGuardarRespuesta = false; 
         },
       });
   }
-  /**
-   * Enviar respuestas
-   */
+
   sendAnswers() {
     let idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
     let listaRespuestasEvaluador: RespuestaDetalle[] = [];
 
     this.preguntaTestAgrupadoTemp.listaPreguntas.forEach((pregunta) => {
-      //Ingresar texto
       if (pregunta.idTipoRespuesta == 10) {
         pregunta.listaRespuestas.forEach((respuesta) => {
           let rpta = respuesta.fcRespuesta10.value;
@@ -1253,14 +1299,13 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
           listaRespuestasEvaluador.push(item);
         });
       }
-      //Ingresar palabra
+
       if (pregunta.idTipoRespuesta == 6) {
         pregunta.listaRespuestas.forEach((respuesta) => {
           let rpta: string = null;
 
           if (pregunta.enunciadoPregunta == '75 Registros') {
           } else {
-            //Ingresar solo una letra
             if (pregunta.idExamen == 93) {
               rpta = respuesta.fcRespuesta93.value;
             } else {
@@ -1389,7 +1434,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         JSON.stringify(jsonEnvio)
       )
       .subscribe({
-        next: (resp: HttpResponse<any>) => {
+        next: () => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
           this.modalRef.close();
@@ -1411,12 +1456,10 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
-  /**
-   * Obtiene el reporte de curso asesor capacitacion
-   * @param matriculaPostulantes
-   */
+
   private obtenerNotasMatriculaReporte(idsPostulantes: number[]) {
     this.gridCursoAsesorCapacitacion.loading = true;
+    this.loadingReporteAsesorCapacitacion = true;
     this.integraService
       .postJsonResponse(
         constApiGestionPersonal.EvaluacionPostulanteObtenerNotasMatriculaReporte,
@@ -1444,10 +1487,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
-  /**
-   * Confirmacion de reestablecer examen
-   * @param dataItem
-   */
+
   confirmarReestablecerEnviar(dataItem: ReportePostulanteMatricula) {
     this.alertaService
       .swalFireOptions({
@@ -1466,10 +1506,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         }
       });
   }
-  /**
-   * Reestablece las notas del portal
-   * @param dataItem ReportePostulanteMatricula
-   */
+
   private restablecerNotas(dataItem: ReportePostulanteMatricula) {
     let jsonEnvio = {
       idPostulante: dataItem.idPostulante,
@@ -1482,7 +1519,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         JSON.stringify(jsonEnvio)
       )
       .subscribe({
-        next: (resp: HttpResponse<boolean>) => {
+        next: () => {
           this.gridCursoAsesorCapacitacion.loading = false;
           this.alertaService.swalFireOptions({
             icon: 'success',
@@ -1500,4 +1537,60 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         },
       });
   }
+
+  getTiempoExperiencia(meses: number): string {
+    if (!meses || meses <= 0) {
+      return '-';
+    }
+    const anios = Math.floor(meses / 12);
+    const restoMeses = meses % 12;
+    const partes: string[] = [];
+    if (anios > 0) {
+      partes.push(`${anios} año${anios > 1 ? 's' : ''}`);
+    }
+    if (restoMeses > 0) {
+      partes.push(`${restoMeses} mes${restoMeses > 1 ? 'es' : ''}`);
+    }
+    return partes.join(' ');
+  }
+
+  verInformacionPostulante(idPostulante: number) {
+    this.activeInfoTab = 'cv';
+    this.loadingInformacionPostulante = true;
+    this.informacionPostulanteData = null;
+    this.integraService
+      .postJsonResponse(
+        constApiGestionPersonal.PostulanteObtenerPostulantesInformacionV2,
+        JSON.stringify(idPostulante)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<InformacionPostulanteDTO>) => {
+          this.loadingInformacionPostulante = false;
+          this.informacionPostulanteData = resp.body;
+
+          this.modalRef = this.modalService.open(
+            this.modalInformacionPostulante,
+            {
+              size: 'xl',
+              backdrop: 'static',
+              scrollable: true,
+            }
+          );
+        },
+        error: (error) => {
+          this.loadingInformacionPostulante = false;
+          const mensaje = this.alertaService.getMessageErrorService
+            ? this.alertaService.getMessageErrorService(error)
+            : this.alertaService.getErrorResponse(error).mensaje;
+
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  trackByEtapa = (_: number, etapa: EtapaAprobada) => etapa.idPostulante;
+  trackByPostulante = (_: number, p: Postulante) => p.idPostulante;
+  trackByVersionCentil = (_: number, v: IClaveValor) => v.clave;
+  trackByPregunta = (_: number, p: any) => p.idPregunta;
+  trackByRespuesta = (_: number, r: any) => r.idRespuesta;
 }
