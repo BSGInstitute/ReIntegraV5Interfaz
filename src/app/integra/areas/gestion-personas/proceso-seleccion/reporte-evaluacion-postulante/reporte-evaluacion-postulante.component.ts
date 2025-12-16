@@ -1221,241 +1221,312 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
   /**
    * Actualiza las respuestas
    */
-  actualizarRespuestas() {
-    let idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
+ actualizarRespuestas() {
+  const idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
 
-    let jsonEnvio: RespuestaEvaluacionEvaluador = {
-      listaRespuestasEvaluador: [],
-      idEstadoEvaluacionEvaluador: idEstadoEvaluacionEvaluador,
-      idProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
-      idExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
-      idPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
-    };
-
-    this.gridEtapaProcesoSeleccion.loading = true;
-    this.enProcesoGuardarRespuesta = true;
-
-    this.integraService
-      .postJsonResponse(
-        constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
-        JSON.stringify(jsonEnvio)
-      )
-      .pipe(
-        retry(1)
-      )
-      .subscribe({
-        next: () => {
-          this.enProcesoGuardarRespuesta = false;
-          this.gridEtapaProcesoSeleccion.loading = false;
-          this.modalRef.close();
-          this.generarReporteIntegra();
-          this.alertaService.swalFireOptions({
-            icon: 'success',
-            title: 'Se registraron las respuestas correctamente',
-          });
-        },
-        error: (error) => {
-          this.gridEtapaProcesoSeleccion.loading = false;
-          this.enProcesoGuardarRespuesta = false; 
-        },
-      });
+  if (!idEstadoEvaluacionEvaluador) {
+    this.alertaService.swalFireOptions({
+      icon: 'info',
+      text: 'Seleccione el Estado de Evaluación',
+    });
+    return;
   }
 
-  sendAnswers() {
-    let idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
-    let listaRespuestasEvaluador: RespuestaDetalle[] = [];
+  // ✅ Actualizar: enviar lo que exista (sin obligar completar)
+  const listaRespuestasEvaluador: RespuestaDetalle[] = [];
 
-    this.preguntaTestAgrupadoTemp.listaPreguntas.forEach((pregunta) => {
-      if (pregunta.idTipoRespuesta == 10) {
-        pregunta.listaRespuestas.forEach((respuesta) => {
-          let rpta = respuesta.fcRespuesta10.value;
-          let item: RespuestaDetalle = {
-            idExamen: pregunta.idExamen,
-            idRespuesta: respuesta.idRespuesta,
-            idPregunta: pregunta.idPregunta,
-            idExamenAsignado: pregunta.idExamenAsignado,
-            textoRespuesta: '',
-            flag: false,
-          };
-          if (rpta == null || rpta.trim() == '') {
-            if (
-              idEstadoEvaluacionEvaluador != 3 &&
-              idEstadoEvaluacionEvaluador != 4 &&
-              idEstadoEvaluacionEvaluador != 9
-            ) {
-              this.alertaService.swalFireOptions({
-                icon: 'info',
-                title: '¡Tiene que responder todas las preguntas!',
-              });
-              return;
-            } else {
-              item.textoRespuesta = '';
-              item.flag = false;
-            }
-          } else {
-            item.textoRespuesta = rpta.trim();
-            item.flag = true;
-          }
-          listaRespuestasEvaluador.push(item);
+  for (const pregunta of this.preguntaTestAgrupadoTemp.listaPreguntas) {
+    if (pregunta.idPreguntaTipo == 10) {
+      for (const respuesta of pregunta.listaRespuestas) {
+        const rpta = ((respuesta.fcRespuesta10?.value ?? '') + '').trim();
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: respuesta.idRespuesta,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: rpta,
+          flag: !!rpta,
         });
       }
+    }
 
-      if (pregunta.idTipoRespuesta == 6) {
-        pregunta.listaRespuestas.forEach((respuesta) => {
-          let rpta: string = null;
+    if (pregunta.idPreguntaTipo == 6) {
+      if (pregunta.enunciadoPregunta == '75 Registros') continue;
 
-          if (pregunta.enunciadoPregunta == '75 Registros') {
-          } else {
-            if (pregunta.idExamen == 93) {
-              rpta = respuesta.fcRespuesta93.value;
-            } else {
-              rpta = respuesta.fcRespuesta.value;
-            }
-            let item: RespuestaDetalle = {
-              idExamen: pregunta.idExamen,
-              idRespuesta: respuesta.idRespuesta,
-              idPregunta: pregunta.idPregunta,
-              idExamenAsignado: pregunta.idExamenAsignado,
-              textoRespuesta: '',
-              flag: false,
-            };
-            if (rpta == null || rpta.trim() == '') {
-              if (
-                idEstadoEvaluacionEvaluador != 3 &&
-                idEstadoEvaluacionEvaluador != 4 &&
-                idEstadoEvaluacionEvaluador != 9
-              ) {
-                this.alertaService.swalFireOptions({
-                  icon: 'info',
-                  title: '¡Tiene que responder todas las preguntas!',
-                });
-                return;
-              } else {
-                item.textoRespuesta = '';
-                item.flag = false;
-                listaRespuestasEvaluador.push(item);
-              }
-            } else {
-              item.textoRespuesta = rpta;
-              item.flag = true;
-              listaRespuestasEvaluador.push(item);
-            }
-          }
+      for (const respuesta of pregunta.listaRespuestas) {
+        const raw =
+          (pregunta.idExamen == 93
+            ? respuesta.fcRespuesta93?.value
+            : respuesta.fcRespuesta?.value) ?? '';
+        const rptaTrim = ('' + raw).trim();
+
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: respuesta.idRespuesta,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: rptaTrim,
+          flag: !!rptaTrim,
         });
       }
-      if (pregunta.idTipoRespuesta == 5) {
-        let rpta = pregunta.fcPregunta5.value as number;
-        if (rpta == null || rpta == 0) {
-          if (
-            idEstadoEvaluacionEvaluador != 3 &&
-            idEstadoEvaluacionEvaluador != 4 &&
-            idEstadoEvaluacionEvaluador != 9
-          ) {
-            this.alertaService.swalFireOptions({
-              icon: 'info',
-              title: '¡Tiene que responder todas las preguntas!',
-            });
-            return;
-          } else {
-            let item: RespuestaDetalle = {
-              idExamen: pregunta.idExamen,
-              idRespuesta: 0,
-              idPregunta: pregunta.idPregunta,
-              idExamenAsignado: pregunta.idExamenAsignado,
-              textoRespuesta: '',
-              flag: false,
-            };
-            listaRespuestasEvaluador.push(item);
-          }
-        } else {
-          let item: RespuestaDetalle = {
+    }
+
+    if (pregunta.idPreguntaTipo == 5) {
+      const rpta = Number(pregunta.fcPregunta5?.value ?? 0);
+
+      listaRespuestasEvaluador.push({
+        idExamen: pregunta.idExamen,
+        idRespuesta: rpta || 0,
+        idPregunta: pregunta.idPregunta,
+        idExamenAsignado: pregunta.idExamenAsignado,
+        textoRespuesta: '',
+        flag: !!rpta,
+      });
+    }
+
+    if (pregunta.idPreguntaTipo == 4) {
+      const rpta = (pregunta.fcPregunta4?.value ?? []) as number[];
+
+      if (!rpta || rpta.length == 0) {
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: 0,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: '',
+          flag: false,
+        });
+      } else {
+        for (const idRespuesta of rpta) {
+          listaRespuestasEvaluador.push({
             idExamen: pregunta.idExamen,
-            idRespuesta: rpta,
+            idRespuesta,
             idPregunta: pregunta.idPregunta,
             idExamenAsignado: pregunta.idExamenAsignado,
             textoRespuesta: '',
             flag: true,
-          };
-          listaRespuestasEvaluador.push(item);
-        }
-      }
-      if (pregunta.idTipoRespuesta == 4) {
-        let rpta = pregunta.fcPregunta4.value as number[];
-        if (rpta == null || rpta.length == 0) {
-          if (
-            idEstadoEvaluacionEvaluador != 3 &&
-            idEstadoEvaluacionEvaluador != 4 &&
-            idEstadoEvaluacionEvaluador != 9
-          ) {
-            this.alertaService.swalFireOptions({
-              icon: 'info',
-              title: '¡Tiene que responder todas las preguntas!',
-            });
-            return;
-          } else {
-            let item: RespuestaDetalle = {
-              idExamen: pregunta.idExamen,
-              idRespuesta: 0,
-              idPregunta: pregunta.idPregunta,
-              idExamenAsignado: pregunta.idExamenAsignado,
-              textoRespuesta: '',
-              flag: false,
-            };
-            listaRespuestasEvaluador.push(item);
-          }
-        } else {
-          rpta.forEach((x) => {
-            let item: RespuestaDetalle = {
-              idExamen: pregunta.idExamen,
-              idRespuesta: x,
-              idPregunta: pregunta.idPregunta,
-              idExamenAsignado: pregunta.idExamenAsignado,
-              textoRespuesta: '',
-              flag: true,
-            };
-            listaRespuestasEvaluador.push(item);
           });
         }
       }
-    });
-
-    let jsonEnvio: RespuestaEvaluacionEvaluador = {
-      listaRespuestasEvaluador: listaRespuestasEvaluador,
-      idEstadoEvaluacionEvaluador: idEstadoEvaluacionEvaluador,
-      idProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
-      idExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
-      idPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
-    };
-    this.gridEtapaProcesoSeleccion.loading = true;
-    this.enProcesoGuardarRespuesta = true;
-    this.integraService
-      .postJsonResponse(
-        constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
-        JSON.stringify(jsonEnvio)
-      )
-      .subscribe({
-        next: () => {
-          this.gridEtapaProcesoSeleccion.loading = false;
-          this.enProcesoGuardarRespuesta = false;
-          this.modalRef.close();
-          this.generarReporteIntegra();
-          this.alertaService.swalFireOptions({
-            icon: 'success',
-            title: 'Se registraron las respuestas correctamente',
-          });
-        },
-        error: (error) => {
-          this.gridEtapaProcesoSeleccion.loading = false;
-          this.enProcesoGuardarRespuesta = false;
-          let resp = this.alertaService.getErrorResponse(error);
-          this.alertaService.swalFireOptions({
-            icon: 'error',
-            title: '¡Ocurrio un problema al registrar las respuestas!',
-            text: `${resp.titulo}: ${resp.mensaje}`,
-          });
-        },
-      });
+    }
   }
+
+  // ✅ IMPORTANTE: mandar las keys como el backend espera (PascalCase) + Usuario
+  const jsonEnvio = {
+    ListaRespuestasEvaluador: listaRespuestasEvaluador.map((x) => ({
+      flag: x.flag,
+      idexamen: x.idExamen,
+      idexamenasignado: x.idExamenAsignado,
+      idpregunta: x.idPregunta,
+      idrespuesta: x.idRespuesta,
+      textorespuesta: x.textoRespuesta ?? '',
+    })),
+    IdEstadoEvaluacionEvaluador: String(idEstadoEvaluacionEvaluador),
+    IdProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
+    IdExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
+    IdPostulanteEvaluacionEvaluador: this.idPostulanteTemp
+  };
+
+  this.gridEtapaProcesoSeleccion.loading = true;
+  this.enProcesoGuardarRespuesta = true;
+
+  this.integraService
+    .postJsonResponse(
+      constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
+      JSON.stringify(jsonEnvio)
+    )
+    .pipe(retry(1))
+    .subscribe({
+      next: () => {
+        this.enProcesoGuardarRespuesta = false;
+        this.gridEtapaProcesoSeleccion.loading = false;
+        this.modalRef.close();
+        this.generarReporteIntegra();
+        this.alertaService.swalFireOptions({
+          icon: 'success',
+          title: 'Se registraron las respuestas correctamente',
+        });
+      },
+      error: () => {
+        this.gridEtapaProcesoSeleccion.loading = false;
+        this.enProcesoGuardarRespuesta = false;
+      },
+    });
+}
+
+sendAnswers() {
+  const idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
+
+  if (!idEstadoEvaluacionEvaluador) {
+    this.alertaService.swalFireOptions({
+      icon: 'info',
+      text: 'Seleccione el Estado de Evaluación',
+    });
+    return;
+  }
+
+  const listaRespuestasEvaluador: RespuestaDetalle[] = [];
+  const permiteEnviarIncompleto =
+    idEstadoEvaluacionEvaluador == 3 ||
+    idEstadoEvaluacionEvaluador == 4 ||
+    idEstadoEvaluacionEvaluador == 9;
+
+  for (const pregunta of this.preguntaTestAgrupadoTemp.listaPreguntas) {
+    if (pregunta.idPreguntaTipo == 10) {
+      for (const respuesta of pregunta.listaRespuestas) {
+        const rpta = ((respuesta.fcRespuesta10?.value ?? '') + '').trim();
+
+        if (!rpta && !permiteEnviarIncompleto) {
+          this.alertaService.swalFireOptions({
+            icon: 'info',
+            title: '¡Tiene que responder todas las preguntas!',
+          });
+          return;
+        }
+
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: respuesta.idRespuesta,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: rpta,
+          flag: !!rpta,
+        });
+      }
+    }
+
+    if (pregunta.idPreguntaTipo == 6) {
+      if (pregunta.enunciadoPregunta == '75 Registros') continue;
+
+      for (const respuesta of pregunta.listaRespuestas) {
+        const raw =
+          (pregunta.idExamen == 93
+            ? respuesta.fcRespuesta93?.value
+            : respuesta.fcRespuesta?.value) ?? '';
+        const rptaTrim = ('' + raw).trim();
+
+        if (!rptaTrim && !permiteEnviarIncompleto) {
+          this.alertaService.swalFireOptions({
+            icon: 'info',
+            title: '¡Tiene que responder todas las preguntas!',
+          });
+          return;
+        }
+
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: respuesta.idRespuesta,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: rptaTrim,
+          flag: !!rptaTrim,
+        });
+      }
+    }
+
+    if (pregunta.idPreguntaTipo == 5) {
+      const rpta = Number(pregunta.fcPregunta5?.value ?? 0);
+
+      if ((!rpta || rpta == 0) && !permiteEnviarIncompleto) {
+        this.alertaService.swalFireOptions({
+          icon: 'info',
+          title: '¡Tiene que responder todas las preguntas!',
+        });
+        return;
+      }
+
+      listaRespuestasEvaluador.push({
+        idExamen: pregunta.idExamen,
+        idRespuesta: rpta || 0,
+        idPregunta: pregunta.idPregunta,
+        idExamenAsignado: pregunta.idExamenAsignado,
+        textoRespuesta: '',
+        flag: !!rpta,
+      });
+    }
+
+    if (pregunta.idPreguntaTipo == 4) {
+      const rpta = (pregunta.fcPregunta4?.value ?? []) as number[];
+
+      if ((!rpta || rpta.length == 0) && !permiteEnviarIncompleto) {
+        this.alertaService.swalFireOptions({
+          icon: 'info',
+          title: '¡Tiene que responder todas las preguntas!',
+        });
+        return;
+      }
+
+      if (!rpta || rpta.length == 0) {
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: 0,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: '',
+          flag: false,
+        });
+      } else {
+        for (const idRespuesta of rpta) {
+          listaRespuestasEvaluador.push({
+            idExamen: pregunta.idExamen,
+            idRespuesta,
+            idPregunta: pregunta.idPregunta,
+            idExamenAsignado: pregunta.idExamenAsignado,
+            textoRespuesta: '',
+            flag: true,
+          });
+        }
+      }
+    }
+  }
+
+  // ✅ IMPORTANTE: mandar las keys como el backend espera (PascalCase) + Usuario
+  const jsonEnvio = {
+    ListaRespuestasEvaluador: listaRespuestasEvaluador.map((x) => ({
+      flag: x.flag,
+      idexamen: x.idExamen,
+      idexamenasignado: x.idExamenAsignado,
+      idpregunta: x.idPregunta,
+      idrespuesta: x.idRespuesta,
+      textorespuesta: x.textoRespuesta ?? '',
+    })),
+    IdEstadoEvaluacionEvaluador: String(idEstadoEvaluacionEvaluador),
+    IdProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
+    IdExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
+    IdPostulanteEvaluacionEvaluador: this.idPostulanteTemp
+  };
+
+  this.gridEtapaProcesoSeleccion.loading = true;
+  this.enProcesoGuardarRespuesta = true;
+
+  this.integraService
+    .postJsonResponse(
+      constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
+      JSON.stringify(jsonEnvio)
+    )
+    .subscribe({
+      next: () => {
+        this.gridEtapaProcesoSeleccion.loading = false;
+        this.enProcesoGuardarRespuesta = false;
+        this.modalRef.close();
+        this.generarReporteIntegra();
+        this.alertaService.swalFireOptions({
+          icon: 'success',
+          title: 'Se registraron las respuestas correctamente',
+        });
+      },
+      error: (error) => {
+        this.gridEtapaProcesoSeleccion.loading = false;
+        this.enProcesoGuardarRespuesta = false;
+        const resp = this.alertaService.getErrorResponse(error);
+        this.alertaService.swalFireOptions({
+          icon: 'error',
+          title: '¡Ocurrio un problema al registrar las respuestas!',
+          text: `${resp.titulo}: ${resp.mensaje}`,
+        });
+      },
+    });
+}
 
   private obtenerNotasMatriculaReporte(idsPostulantes: number[]) {
     this.gridCursoAsesorCapacitacion.loading = true;
