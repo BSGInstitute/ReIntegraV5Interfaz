@@ -139,6 +139,20 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.obtenerCombosModulo();
     this.initFiltroPostulante();
+
+    const hoy = this.normalizeDateOnly(new Date());
+    this.fechaInicioDefault = hoy;
+    this.fechaFinDefault = hoy;
+
+    this.formFiltro.patchValue(
+      { fechaInicio: hoy, fechaFin: hoy },
+      { emitEvent: false }
+    );
+
+    this.formFiltro.get('fechaInicio')?.markAsPristine();
+    this.formFiltro.get('fechaFin')?.markAsPristine();
+
+    this.cd.markForCheck();
   }
 
   ngOnDestroy(): void {
@@ -174,11 +188,23 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
       this.formFiltro.get('estadoEtapas')?.enable();
       this.formFiltro.get('fechaInicio')?.enable();
       this.formFiltro.get('fechaFin')?.enable();
+
       this.formFiltro.get('postulantes')?.disable();
-
       this.formFiltro.get('postulantes')?.setValue([]);
-    }
 
+      const hoy = this.normalizeDateOnly(new Date());
+      this.fechaInicioDefault = hoy;
+      this.fechaFinDefault = hoy;
+
+      this.formFiltro.patchValue(
+        { fechaInicio: hoy, fechaFin: hoy },
+        { emitEvent: false }
+      );
+
+      // ✅ Que no se considere "modificado"
+      this.formFiltro.get('fechaInicio')?.markAsPristine();
+      this.formFiltro.get('fechaFin')?.markAsPristine();
+    }
     this.cd.markForCheck();
   }
 
@@ -191,7 +217,9 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
 
   private obtenerCombosModulo() {
     this.integraService
-      .getJsonResponse(constApiGestionPersonal.EvaluacionPostulanteObtenerCombosModulo)
+      .getJsonResponse(
+        constApiGestionPersonal.EvaluacionPostulanteObtenerCombosModulo
+      )
       .subscribe({
         next: (resp: HttpResponse<ComboModulo>) => {
           this.comboProcesoSeleccion = resp.body.procesosDeSeleccion;
@@ -214,21 +242,37 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           const resp = this.alertaService.getErrorResponse(error);
-          this.alertaService.notificationWarning(`${resp.titulo}: ${resp.mensaje}`);
+          this.alertaService.notificationWarning(
+            `${resp.titulo}: ${resp.mensaje}`
+          );
         },
       });
   }
 
   private buildEstadoMap() {
-    this.estadoMap = new Map(this.comboEstadoEtapa.map((x) => [x.id, x.nombre]));
+    this.estadoMap = new Map(
+      this.comboEstadoEtapa.map((x) => [x.id, x.nombre])
+    );
   }
 
+  private fechaInicioDefault: Date | null = null;
+  private fechaFinDefault: Date | null = null;
+
+  private normalizeDateOnly(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  private isSameDate(a?: Date | null, b?: Date | null): boolean {
+    if (!a || !b) return false;
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
+  }
   getNombreEstadoEtapaProceso(id: number) {
     return id ? this.estadoMap.get(id) ?? null : null;
   }
-
-  // ----------- AUTOCOMPLETE POSTULANTE (OPTIMIZADO) -----------
-
   private postulanteFilter$ = new Subject<string>();
 
   private initFiltroPostulante() {
@@ -267,7 +311,10 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
   generarReporte() {
     const formFiltro = this.formFiltro.getRawValue() as FormFiltro;
 
-    if (formFiltro.filtroPorPostulante === true && formFiltro.postulantes.length === 0) {
+    if (
+      formFiltro.filtroPorPostulante === true &&
+      formFiltro.postulantes.length === 0
+    ) {
       this.alertaService.swalFireOptions({
         icon: 'info',
         text: '¡Seleccione al menos un postulante!',
@@ -275,7 +322,10 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (formFiltro.filtroPorPostulante === false && formFiltro.procesoSeleccion == null) {
+    if (
+      formFiltro.filtroPorPostulante === false &&
+      formFiltro.procesoSeleccion == null
+    ) {
       this.alertaService.swalFireOptions({
         icon: 'info',
         text: '¡Seleccione un Proceso de Selección!',
@@ -294,14 +344,29 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
 
     this.versionCentilTemp = formFiltro.versionCentil;
 
-    if (formFiltro.fechaInicio != null) {
-      jsonEnvio.fechaInicio = datePipeTransform(formFiltro.fechaInicio, 'yyyy-MM-dd') + 'T00:00:00';
-    }
-    if (formFiltro.fechaFin != null) {
-      jsonEnvio.fechaFin = datePipeTransform(formFiltro.fechaFin, 'yyyy-MM-dd') + 'T23:59:59';
+    const fi = formFiltro.fechaInicio
+      ? this.normalizeDateOnly(formFiltro.fechaInicio)
+      : null;
+    const ff = formFiltro.fechaFin
+      ? this.normalizeDateOnly(formFiltro.fechaFin)
+      : null;
+
+    if (
+      fi &&
+      this.fechaInicioDefault &&
+      !this.isSameDate(fi, this.fechaInicioDefault)
+    ) {
+      jsonEnvio.fechaInicio = datePipeTransform(fi, 'yyyy-MM-dd') + 'T00:00:00';
     }
 
-    // reset
+    if (
+      ff &&
+      this.fechaFinDefault &&
+      !this.isSameDate(ff, this.fechaFinDefault)
+    ) {
+      jsonEnvio.fechaFin = datePipeTransform(ff, 'yyyy-MM-dd') + 'T23:59:59';
+    }
+
     this.gridEtapaProcesoSeleccion.data = [];
     this.gridReportePostulante.data = [];
     this.gridCursoAsesorCapacitacion.data = [];
@@ -369,13 +434,14 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
               title: `${resp.mensaje}`,
             });
           } else {
-            this.alertaService.notificationInfo(`${resp.titulo}: ${resp.mensaje}`);
+            this.alertaService.notificationInfo(
+              `${resp.titulo}: ${resp.mensaje}`
+            );
           }
         },
       });
   }
 
-  // llamado desde el hijo cuando se actualiza algo en etapas
   generarReporteIntegra() {
     const jsonEnvio = this.filtroReporteTemporal;
     if (!jsonEnvio) return;
@@ -410,7 +476,9 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
               title: `${resp.mensaje}`,
             });
           } else {
-            this.alertaService.notificationInfo(`${resp.titulo}: ${resp.mensaje}`);
+            this.alertaService.notificationInfo(
+              `${resp.titulo}: ${resp.mensaje}`
+            );
           }
         },
       });
@@ -418,7 +486,10 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
 
   // ---------------- REPORTE POSTULANTE ----------------
 
-  obtenerEvaluacionesPortalPostulante(jsonEnvio: FiltroReporte, reporte: ReporteEvaluacionPostulante) {
+  obtenerEvaluacionesPortalPostulante(
+    jsonEnvio: FiltroReporte,
+    reporte: ReporteEvaluacionPostulante
+  ) {
     this.gridReportePostulante.loading = true;
     this.loadingReportePostulante = true;
     this.cd.markForCheck();
@@ -433,7 +504,9 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
           (resp.body ?? []).forEach((epp) => {
             reporte.datosEvaluacionAgrupado.forEach((dato) => {
               const item = dato.proceso.find(
-                (x) => x.idExamen === epp.idExamen && x.idPostulante === epp.idPostulante
+                (x) =>
+                  x.idExamen === epp.idExamen &&
+                  x.idPostulante === epp.idPostulante
               );
               if (item) {
                 item.puntajeCurso = epp.puntajeCurso;
@@ -475,20 +548,23 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildPostulanteGridData(
-    reporte: ReporteEvaluacionPostulante
-  ): {
+  private buildPostulanteGridData(reporte: ReporteEvaluacionPostulante): {
     postulantesTemp: Postulante[];
     colorEvaluaciones: { evaluacion: string; color: string }[];
     gridData: ClaveValor[];
   } {
-    if (!reporte?.postulantes?.length || !reporte?.datosEvaluacionAgrupado?.length) {
+    if (
+      !reporte?.postulantes?.length ||
+      !reporte?.datosEvaluacionAgrupado?.length
+    ) {
       return { postulantesTemp: [], colorEvaluaciones: [], gridData: [] };
     }
 
     // 1) clasificación NEO
     reporte.postulantes.forEach((x) => {
-      const item = reporte.clasificacionNEO?.find((n) => n.idPostulante === x.idPostulante);
+      const item = reporte.clasificacionNEO?.find(
+        (n) => n.idPostulante === x.idPostulante
+      );
       const clasificacionNEO: ClasificacionNeo = {
         idProcesoSeleccion: item?.idProcesoSeleccion ?? 0,
         idPostulante: x.idPostulante,
@@ -501,13 +577,11 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
 
     const postulantesTemp = reporte.postulantes;
 
-    // 2) juntar todoData
     const todoData: Proceso[] = [];
     for (const x of reporte.datosEvaluacionAgrupado) {
       if (x.proceso?.length) todoData.push(...x.proceso);
     }
 
-    // 3) armar registroRP
     const registroRP: { [key: number]: ClaveValor } = {};
 
     todoData.forEach((x) => {
@@ -533,35 +607,57 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
       registroRP[key][`postulante_${x.idPostulante}`] = x.registro;
       registroRP[key][`estado_${x.idPostulante}`] = x.esAprobado;
       registroRP[key][`estadoAcceso_${x.idPostulante}`] = x.estadoAcceso;
-      registroRP[key][`cantidadConfigurado_${x.idPostulante}`] = x.cantidadConfigurado;
-      registroRP[key][`cantidadResuelto_${x.idPostulante}`] = x.cantidadResuelto;
+      registroRP[key][`cantidadConfigurado_${x.idPostulante}`] =
+        x.cantidadConfigurado;
+      registroRP[key][`cantidadResuelto_${x.idPostulante}`] =
+        x.cantidadResuelto;
       registroRP[key][`puntajeCurso_${x.idPostulante}`] = x.puntajeCurso;
-      registroRP[key][`aplicaAcceso_${x.idPostulante}`] = x.configuracionComponenteCurso;
+      registroRP[key][`aplicaAcceso_${x.idPostulante}`] =
+        x.configuracionComponenteCurso;
 
       if (x.examenCentilVersion?.length) {
         x.examenCentilVersion.forEach((centil) => {
-          registroRP[key][`postulante_${x.idPostulante}_Centil_${centil.version}`] = centil.registro;
-          registroRP[key][`estado_${x.idPostulante}_Centil_${centil.version}`] = centil.esAprobado;
-          registroRP[key][`notaAprobatoria_${x.idPostulante}_Centil_${centil.version}`] =
-            centil.notaAprobatoria;
-          registroRP[key][`simbolo_${x.idPostulante}_Centil_${centil.version}`] = centil.simbolo;
+          registroRP[key][
+            `postulante_${x.idPostulante}_Centil_${centil.version}`
+          ] = centil.registro;
+          registroRP[key][`estado_${x.idPostulante}_Centil_${centil.version}`] =
+            centil.esAprobado;
+          registroRP[key][
+            `notaAprobatoria_${x.idPostulante}_Centil_${centil.version}`
+          ] = centil.notaAprobatoria;
+          registroRP[key][
+            `simbolo_${x.idPostulante}_Centil_${centil.version}`
+          ] = centil.simbolo;
         });
       } else {
         this.comboVersionCentil.forEach((centil) => {
-          registroRP[key][`postulante_${x.idPostulante}_Centil_${centil.clave}`] = x.registro;
-          registroRP[key][`estado_${x.idPostulante}_Centil_${centil.clave}`] = x.esAprobado;
-          registroRP[key][`notaAprobatoria_${x.idPostulante}_Centil_${centil.clave}`] =
-            x.notaAprobatoria;
-          registroRP[key][`simbolo_${x.idPostulante}_Centil_${centil.clave}`] = x.simbolo;
+          registroRP[key][
+            `postulante_${x.idPostulante}_Centil_${centil.clave}`
+          ] = x.registro;
+          registroRP[key][`estado_${x.idPostulante}_Centil_${centil.clave}`] =
+            x.esAprobado;
+          registroRP[key][
+            `notaAprobatoria_${x.idPostulante}_Centil_${centil.clave}`
+          ] = x.notaAprobatoria;
+          registroRP[key][`simbolo_${x.idPostulante}_Centil_${centil.clave}`] =
+            x.simbolo;
         });
       }
     });
 
     const gridData = Object.values(registroRP) as ClaveValor[];
 
-    // 4) colores
     const evaluaciones = gridData.map((x) => (x['evaluacion'] as string) ?? '');
-    const colores = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8'];
+    const colores = [
+      'color1',
+      'color2',
+      'color3',
+      'color4',
+      'color5',
+      'color6',
+      'color7',
+      'color8',
+    ];
     const evaluacionesUnicas = [...new Set(evaluaciones)].filter((x) => !!x);
 
     const colorEvaluaciones: { evaluacion: string; color: string }[] = [];
@@ -580,7 +676,8 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
 
   generarGridEtapas(etapasAprobadas: EtapaAprobada[]) {
     this.ngZone.runOutsideAngular(() => {
-      const { etapasOrdenadas, gridData } = this.buildEtapasData(etapasAprobadas);
+      const { etapasOrdenadas, gridData } =
+        this.buildEtapasData(etapasAprobadas);
 
       this.ngZone.run(() => {
         this.etapasAprobadas = etapasOrdenadas;
@@ -620,11 +717,12 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
           };
         }
 
-        registroEtapas[key][`idEstadoEtapaProceso_${x.idPostulante}`] = e.idEstadoEtapaProceso;
-        registroEtapas[key][`estadoEtapaProceso_${x.idPostulante}`] = this.getNombreEstadoEtapaProceso(
-          e.idEstadoEtapaProceso
-        );
-        registroEtapas[key][`etapaContactado_${x.idPostulante}`] = e.etapaContactado;
+        registroEtapas[key][`idEstadoEtapaProceso_${x.idPostulante}`] =
+          e.idEstadoEtapaProceso;
+        registroEtapas[key][`estadoEtapaProceso_${x.idPostulante}`] =
+          this.getNombreEstadoEtapaProceso(e.idEstadoEtapaProceso);
+        registroEtapas[key][`etapaContactado_${x.idPostulante}`] =
+          e.etapaContactado;
         registroEtapas[key][`etapaContactadoText_${x.idPostulante}`] =
           e.etapaContactado === true ? 'SI' : 'NO';
       });
