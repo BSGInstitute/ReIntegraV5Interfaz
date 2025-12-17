@@ -170,8 +170,9 @@ export class ConfirmacionWebinarComponent implements OnInit {
       if(data.estado) {
         this.alertaService.notificationSuccess("Un Alumno confirmó su participación al webinar.");
       } else {
-        this.alertaService.notificationWarning("Un Alumno canceló su participación al webinar.");
+        this.alertaService.notificationError("Un Alumno canceló su participación al webinar.");
       }
+      this.filtrarProgramas();
     });
     this.estadoSesion = [
       { texto: 'Proxima', valor: '1' },
@@ -291,7 +292,7 @@ export class ConfirmacionWebinarComponent implements OnInit {
 
     this.gridPrograma.loading = true;
     this.integraService
-      .postJsonResponse(constApiPlanificacion.InformacionWebinarCancelarWebinar, dataEnviada)
+      .postJsonResponse('/AsistenciaWebinar/CancelarWebinarNotificacion', dataEnviada)
       .subscribe({
         next: (response: HttpResponse<boolean>) => {
           this.gridPrograma.loading = false;
