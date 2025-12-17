@@ -168,7 +168,7 @@ export class ConfirmacionWebinarComponent implements OnInit {
     this.signalRService.onAsistenciaRegistrada((data) => {
       console.log('ws', data);
       if(data.estado) {
-        this.alertaService.notificationSuccess("Un Alumno confirmó su participación al webinar.");
+        this.alertaService.notificationSuccessBotom("Un Alumno confirmó su participación al webinar.");
       } else {
         this.alertaService.notificationError("Un Alumno canceló su participación al webinar.");
       }
