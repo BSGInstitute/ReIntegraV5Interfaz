@@ -1,0 +1,771 @@
+<div class="card my-4">
+  <div class="card-header card-header-rep">
+    <h2 class="mb-0">Reporte etapas proceso de selección</h2>
+  </div>
+  <div class="card-body">
+    <kendo-grid
+      *ngIf="showReporteEtapaProceso"
+      [kendoGridBinding]="gridEtapaProcesoSeleccion?.data"
+      [loading]="gridEtapaProcesoSeleccion?.loading"
+      [resizable]="true"
+      [sort]="sortEtapa"
+      [columnVirtualization]="true"
+    >
+      <ng-template kendoGridToolbarTemplate>
+        <button
+          type="button"
+          themeColor="success"
+          kendoGridExcelCommand
+          icon="excel"
+        >
+          Export to Excel
+        </button>
+        <kendo-grid-spacer></kendo-grid-spacer>
+      </ng-template>
+
+      <kendo-grid-column
+        field="procesoSeleccion"
+        title="Proceso de Seleccion"
+        [width]="350"
+        headerClass="rep-header-grid justify-content-center headerEtapaProcesoSeleccionFix"
+        [locked]="true"
+      >
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="etapa"
+        title="Etapas"
+        [width]="250"
+        headerClass="rep-header-grid justify-content-center headerEtapaProcesoSeleccionFix"
+        class="text-center"
+        [locked]="true"
+      >
+      </kendo-grid-column>
+
+      <kendo-grid-column-group
+        *ngFor="let etapa of etapasAprobadas; trackBy: trackByEtapa"
+        headerClass="headerEtapaProcesoSeleccion justify-content-center"
+      >
+        <ng-template
+          kendoGridHeaderTemplate
+          let-column
+          let-columnIndex="columnIndex"
+        >
+          <div class="w-100 text-center">
+            <span
+              class="link-postulante"
+              (click)="verInformacionPostulante(etapa.idPostulante)"
+            >
+              {{ etapa.postulante }}
+            </span>
+          </div>
+        </ng-template>
+
+        <kendo-grid-column
+          [field]="'estadoEtapaProceso_' + etapa.idPostulante"
+          title="Estado etapa"
+          [width]="150"
+          headerClass="rep-header-grid justify-content-center headerEtapaProcesoSeleccion"
+          class="text-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              dataItem['estadoEtapaProceso_' + etapa.idPostulante] ||
+                'Seleccione un estado'
+            }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column
+          [field]="'etapaContactadoText_' + etapa.idPostulante"
+          title="Es Contactado"
+          [width]="100"
+          headerClass="rep-header-grid justify-content-center headerEtapaProcesoSeleccion"
+          class="text-center"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              dataItem['etapaContactado_' + etapa.idPostulante] == true
+                ? 'SI'
+                : 'NO'
+            }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-command-column
+          title="Opciones"
+          [width]="80"
+          class="text-center"
+          headerClass="rep-header-grid justify-content-center headerEtapaProcesoSeleccion"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <button
+              kendoButton
+              [icon]="
+                dataItem.esCalificadoPorPostulante ? 'pencil' : 'spell-checker'
+              "
+              [themeColor]="
+                dataItem.esCalificadoPorPostulante ? 'base' : 'success'
+              "
+              (click)="funcionModalTipoEvaluacion(etapa.idPostulante, dataItem)"
+            ></button>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid-column-group>
+
+      <kendo-grid-excel fileName="Reporte_SeleccionPersonal_Etapas.xlsx">
+      </kendo-grid-excel>
+    </kendo-grid>
+
+    <loading [loading]="loadingReporteEtapaProceso"></loading>
+  </div>
+</div>
+
+<!-- =================== MODAL TEST =================== -->
+<ng-template #modalTest let-modal>
+  <div class="modal-header py-2 bg-primary">
+    <h2 class="modal-title w-100 mb-0 fw-bold text-center text-white">
+      {{ evaluacionTemp?.evaluacion }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body k-form">
+    <ng-container *ngIf="showTiempo && evaluacionTemp?.requiereTiempo">
+      <div class="row">
+        <div class="timer">00:00</div>
+      </div>
+    </ng-container>
+
+    <div class="row my-2">
+      <div class="col-12">
+        <span [innerHtml]="evaluacionTemp?.instrucciones"></span>
+      </div>
+    </div>
+
+    <ng-container
+      *ngFor="
+        let pregunta of preguntaTestAgrupadoTemp?.listaPreguntas;
+        trackBy: trackByPregunta
+      "
+    >
+      <div class="row my-2">
+        <ng-container *ngIf="pregunta.enunciadoPregunta !== '75 Registros'">
+          <div class="col-sm-12 col-md-4">
+            <span [innerHtml]="pregunta.nroOrdenPregunta"></span>.&nbsp;
+            <span [innerHtml]="pregunta.enunciadoPregunta"></span>
+          </div>
+
+          <div class="col-sm-12 col-md-8">
+            <!-- Tipo 5: dropdown (una alternativa) -->
+            <ng-container *ngIf="pregunta.idPreguntaTipo === 5">
+              <kendo-dropdownlist
+                [data]="pregunta.listaRespuestas"
+                textField="enunciadoRespuesta"
+                valueField="idRespuesta"
+                [valuePrimitive]="true"
+                [formControl]="pregunta.fcPregunta5"
+                [defaultItem]="{
+                  idPregunta: null,
+                  idRespuesta: null,
+                  nroOrden: null,
+                  enunciadoRespuesta: 'Seleccione'
+                }"
+                [virtual]="true"
+                [style.width.px]="300"
+              >
+              </kendo-dropdownlist>
+            </ng-container>
+
+            <!-- Tipo 4: multiselect (múltiple) -->
+            <ng-container *ngIf="pregunta.idPreguntaTipo === 4">
+              <kendo-multiselect
+                [data]="pregunta.listaRespuestas"
+                textField="enunciadoRespuesta"
+                valueField="idRespuesta"
+                [valuePrimitive]="true"
+                [formControl]="pregunta.fcPregunta4"
+                [style.width.px]="300"
+                [virtual]="true"
+              >
+              </kendo-multiselect>
+            </ng-container>
+
+            <!-- Respuestas (para tipos 6 y 10) -->
+            <ng-container
+              *ngFor="
+                let respuesta of pregunta.listaRespuestas;
+                trackBy: trackByRespuesta
+              "
+            >
+              <!-- Tipo 6: respuesta corta / numérica -->
+              <ng-container *ngIf="pregunta.idPreguntaTipo === 6">
+                <ng-container *ngIf="pregunta.idExamen === 93">
+                  <kendo-textbox
+                    [formControl]="respuesta.fcRespuesta93"
+                    [maxlength]="1"
+                    pattern="[A-Za-z0-9]"
+                    placeholder="Respuesta"
+                    [style.width.px]="300"
+                  ></kendo-textbox>
+                </ng-container>
+
+                <ng-container *ngIf="pregunta.idExamen !== 93">
+                  <kendo-textbox
+                    [formControl]="respuesta.fcRespuesta"
+                    pattern="[A-Za-z0-9]"
+                    placeholder="Respuesta"
+                    [style.width.px]="300"
+                  ></kendo-textbox>
+                </ng-container>
+              </ng-container>
+
+              <!-- Tipo 10: texto libre -->
+              <ng-container *ngIf="pregunta.idPreguntaTipo === 10">
+                <kendo-textarea
+                  [formControl]="respuesta.fcRespuesta10"
+                  [rows]="3"
+                  placeholder="Respuesta"
+                  [style.width.px]="300"
+                ></kendo-textarea>
+              </ng-container>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="row my-2"></div>
+    </ng-container>
+
+    <div class="row my-2">
+      <div class="col-12 k-form-horizontal">
+        <kendo-formfield orientation="horizontal">
+          <label class="k-label align-items-start fw-bold w-auto">
+            Estado de Evaluación
+          </label>
+          <kendo-dropdownlist
+            [formControl]="fcEstadoEvaluacion"
+            [data]="comboEstadoEtapa"
+            textField="nombre"
+            valueField="id"
+            [kendoDropDownFilter]="filterSettings"
+            [valuePrimitive]="true"
+            [popupSettings]="{ popupClass: 'rep-popup' }"
+            [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+            [style.width.px]="200"
+            [virtual]="true"
+            class="rep-dropDown"
+          >
+          </kendo-dropdownlist>
+          <kendo-formerror>Seleccione un criterio</kendo-formerror>
+        </kendo-formfield>
+      </div>
+    </div>
+
+    <loading [loading]="enProcesoGuardarRespuesta"></loading>
+  </div>
+
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 w-100 justify-content-end">
+      <button
+        *ngIf="showBtnActualizarRespuesta"
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="actualizarRespuestas()"
+      >
+        Actualizar
+      </button>
+      <button
+        *ngIf="showBtnEnviarRespuesta"
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="sendAnswers()"
+      >
+        Enviar
+      </button>
+      <button
+        themeColor="error"
+        size="medium"
+        icon="cancel"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ============ MODAL ESTADO ETAPA EXAMEN ASIGNADO ========== -->
+<ng-template #modalCalificarExamenAsignado let-modal>
+  <div class="modal-header py-2 bg-primary">
+    <h2 class="modal-title w-100 mb-0 fw-bold text-center text-white">
+      Editar Estado Etapa
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body k-form">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <div class="row my-2" *ngFor="let item of estadosEtapaRadio">
+          <div class="col-auto">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="radioEstadoEtapa"
+                [id]="item.idHtml"
+                [value]="item.valor"
+                [formControl]="fcEstadoEtapa"
+              />
+              <label class="form-check-label" [for]="item.idHtml">
+                {{ item.texto }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <loading [loading]="enProcesoGuardarRespuesta"></loading>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 w-100 justify-content-end">
+      <button
+        themeColor="primary"
+        size="medium"
+        icon="save"
+        kendoButton
+        (click)="actualizarEstadoEA()"
+      >
+        Actualizar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ===================== MODAL INFORMACIÓN POSTULANTE =================== -->
+<ng-template #modalInformacionPostulante let-modal>
+  <div class="modal-header py-2 bg-primary">
+    <h2 class="modal-title w-100 mb-0 fw-bold text-center text-white">
+      Información del postulante
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link active"
+          id="tab-cv-postulante"
+          data-bs-toggle="tab"
+          data-bs-target="#cv-postulante"
+          type="button"
+          role="tab"
+          aria-controls="cv-postulante"
+          aria-selected="true"
+        >
+          CURRÍCULUM VITAE DEL POSTULANTE
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link"
+          id="tab-equipo-internet"
+          data-bs-toggle="tab"
+          data-bs-target="#equipo-internet"
+          type="button"
+          role="tab"
+          aria-controls="equipo-internet"
+          aria-selected="false"
+        >
+          INFORMACIÓN EQUIPO COMPUTO Y CONEXIÓN A INTERNET
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+      <!-- ===================== TAB CV ===================== -->
+      <div
+        class="tab-pane fade show active"
+        id="cv-postulante"
+        role="tabpanel"
+        aria-labelledby="tab-cv-postulante"
+      >
+        <div class="container-fluid" *ngIf="informacionPostulanteData">
+          <div class="row mb-3">
+            <div class="col-12 fw-bold">Datos personales</div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Nombres:</div>
+            <div class="col-9">
+              {{ informacionPostulanteData.postulanteInformacion?.nombre }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Apellidos:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteInformacion?.apellidoPaterno
+              }}
+              {{
+                informacionPostulanteData.postulanteInformacion?.apellidoMaterno
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Edad:</div>
+            <div class="col-9">
+              {{ informacionPostulanteData.postulanteInformacion?.edad }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Celular:</div>
+            <div class="col-9">
+              {{ informacionPostulanteData.postulanteInformacion?.celular }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Email:</div>
+            <div class="col-9">
+              {{ informacionPostulanteData.postulanteInformacion?.email }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Ciudad:</div>
+            <div class="col-9">
+              {{ informacionPostulanteData.postulanteInformacion?.ciudad }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Facebook:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteInformacion
+                  ?.urlPerfilFacebook
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Linkedin:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteInformacion
+                  ?.urlPerfilLinkedin
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Tiene Hijos:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteInformacion?.tieneHijo
+                  ? 'SI'
+                  : 'NO'
+              }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-3 fw-bold">Cantidad Hijos:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteInformacion?.cantidadHijo ||
+                  '-'
+              }}
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="row mb-3">
+            <div class="col-12 fw-bold">Formación académica profesional</div>
+          </div>
+
+          <div
+            class="row mb-2"
+            *ngFor="
+              let formacion of informacionPostulanteData.postulanteFormacion
+            "
+          >
+            <div class="col-3 fw-bold">Centro de estudio:</div>
+            <div class="col-9">{{ formacion.centroEstudio }}</div>
+
+            <div class="col-3 fw-bold">Tipo de estudio:</div>
+            <div class="col-9">{{ formacion.tipoEstudio }}</div>
+
+            <div class="col-3 fw-bold">Área formación:</div>
+            <div class="col-9">{{ formacion.areaFormacion }}</div>
+
+            <div class="col-3 fw-bold">Estado estudio:</div>
+            <div class="col-9">{{ formacion.estadoEstudio }}</div>
+
+            <div class="col-3 fw-bold">Fecha Inicio:</div>
+            <div class="col-9">
+              {{ formacion.fechaInicio | date: 'dd/MM/yyyy' }}
+            </div>
+
+            <div class="col-3 fw-bold">Fecha Fin:</div>
+            <div class="col-9">
+              <span *ngIf="!formacion.alaActualidad">
+                {{ formacion.fechaFin | date: 'dd/MM/yyyy' }}
+              </span>
+              <span *ngIf="formacion.alaActualidad">A la actualidad</span>
+            </div>
+
+            <div class="col-12"><hr /></div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-12 fw-bold">Idiomas</div>
+          </div>
+          <div
+            class="row mb-2"
+            *ngFor="
+              let idioma of informacionPostulanteData.postulanteIdioma
+            "
+          >
+            <div class="col-3 fw-bold">Idioma:</div>
+            <div class="col-9">{{ idioma.idioma }}</div>
+
+            <div class="col-3 fw-bold">Nivel:</div>
+            <div class="col-9">{{ idioma.nivelIdioma }}</div>
+
+            <div class="col-12"><hr /></div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-12 fw-bold">Experiencia laboral profesional</div>
+          </div>
+          <div
+            class="row mb-2"
+            *ngFor="
+              let exp of informacionPostulanteData.postulanteExperiencia
+            "
+          >
+            <div class="col-3 fw-bold">Empresa:</div>
+            <div class="col-9">{{ exp.empresa }}</div>
+
+            <div class="col-3 fw-bold">Cargo:</div>
+            <div class="col-9">{{ exp.cargo }}</div>
+
+            <div class="col-3 fw-bold">Área:</div>
+            <div class="col-9">{{ exp.areaTrabajo }}</div>
+
+            <div class="col-3 fw-bold">Industria:</div>
+            <div class="col-9">{{ exp.industria }}</div>
+
+            <div class="col-3 fw-bold">Fecha Inicio:</div>
+            <div class="col-9">
+              {{ exp.fechaInicio | date: 'dd/MM/yyyy' }}
+            </div>
+
+            <div class="col-3 fw-bold">Fecha Fin:</div>
+            <div class="col-9">
+              <span *ngIf="!exp.alaActualidad">
+                {{ exp.fechaFin | date: 'dd/MM/yyyy' }}
+              </span>
+              <span *ngIf="exp.alaActualidad">A la actualidad</span>
+            </div>
+
+            <div class="col-3 fw-bold">Tiempo Experiencia:</div>
+            <div class="col-9">
+              {{ exp.mesesExperiencia }} meses
+            </div>
+
+            <div class="col-3 fw-bold">Jefe inmediato:</div>
+            <div class="col-9">{{ exp.nombreJefe }}</div>
+
+            <div class="col-3 fw-bold">Teléfono jefe inmediato:</div>
+            <div class="col-9">{{ exp.numeroJefe }}</div>
+
+            <div class="col-3 fw-bold">Salario:</div>
+            <div class="col-9">{{ exp.salario }}</div>
+
+            <div class="col-12"><hr /></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== TAB EQUIPO / INTERNET ===================== -->
+      <div
+        class="tab-pane fade"
+        id="equipo-internet"
+        role="tabpanel"
+        aria-labelledby="tab-equipo-internet"
+      >
+        <div class="container-fluid" *ngIf="informacionPostulanteData">
+          <div class="row mb-3">
+            <div class="col-12 fw-bold">Equipo de cómputo</div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Tipo Equipo:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo?.tipoEquipo
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Memoria RAM:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo?.memoriaRam
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Sistema Operativo:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo
+                  ?.sistemaOperativo
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Procesador:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo?.procesador
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Tiene mouse:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo?.mouse
+                  ? 'SI'
+                  : 'NO'
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">
+              Tiene auricular con micrófono:
+            </div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo?.auricular
+                  ? 'SI'
+                  : 'NO'
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Tiene cámara web:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo?.camara
+                  ? 'SI'
+                  : 'NO'
+              }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-3 fw-bold">
+              Se usará el equipo para el trabajo:
+            </div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteEquipoComputo
+                  ?.esEquipoTrabajo
+                  ? 'SI'
+                  : 'NO'
+              }}
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="row mb-3">
+            <div class="col-12 fw-bold">Conexión a internet</div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Tipo de conexión:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteConexionInternet
+                  ?.tipoConexion
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Medio de conexión:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteConexionInternet
+                  ?.medioConexion
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Velocidad de internet:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteConexionInternet
+                  ?.velocidadInternet
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Proveedor:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteConexionInternet
+                  ?.proveedorInternet
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Costo:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteConexionInternet
+                  ?.costoInternet
+              }}
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-3 fw-bold">Conexión compartida:</div>
+            <div class="col-9">
+              {{
+                informacionPostulanteData.postulanteConexionInternet
+                  ?.conexionCompartida
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.dismiss('Cross click')"
+    >
+      Cerrar
+    </button>
+  </div>
+</ng-template>

@@ -1,7 +1,7 @@
+import { ReportePostulanteComponent } from './proceso-seleccion/evaluacion-postulante/reporte-postulante.component/reporte-postulante.component';
 import { PlanificacionModule } from './../planificacion/planificacion.module';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { GestionPersonasRoutingModule } from './gestion-personas-routing.module';
 import { PersonalComponent } from './personal/personal.component';
 import { KendoAngularModule } from '@modules/kendo-angular.module';
@@ -74,6 +74,10 @@ import { ReporteAnalisisProcesoSeleccionComponent } from './gestion-personal/rep
 import { GestionPersonalComponent } from './gestion-personal/gestion-personal/gestion-personal.component';
 import { HabilitarExamenesComponent } from './proceso-seleccion/habilitar-examenes/habilitar-examenes.component';
 import { PreguntasEvaluacionComponent } from './proceso-seleccion/preguntas-evaluacion/preguntas-evaluacion.component';
+import { EvaluacionPostulanteComponent } from './proceso-seleccion/evaluacion-postulante/evaluacion-postulante.component';
+import { FiltroEvaluacionPostulanteComponent } from './proceso-seleccion/evaluacion-postulante/filtro-evaluacion-postulante/filtro-evaluacion-postulante.component';
+import { ReporteEtapasProcesoComponent } from './proceso-seleccion/evaluacion-postulante/reporte-etapas-proceso/reporte-etapas-proceso.component';
+import { ReporteCursoAsesorCapacitacionComponent } from './proceso-seleccion/evaluacion-postulante/reporte-curso-asesor-capacitacion/reporte-curso-asesor-capacitacion.component';
 
 @NgModule({
   declarations: [
@@ -146,6 +150,11 @@ import { PreguntasEvaluacionComponent } from './proceso-seleccion/preguntas-eval
     GestionPersonalComponent,
     HabilitarExamenesComponent,
     PreguntasEvaluacionComponent,
+    EvaluacionPostulanteComponent,
+    FiltroEvaluacionPostulanteComponent,
+    ReporteEtapasProcesoComponent,
+    ReporteCursoAsesorCapacitacionComponent,
+    ReportePostulanteComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

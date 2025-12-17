@@ -45,6 +45,7 @@ import { ConfigurarProcesoSeleccionComponent } from './proceso-seleccion/configu
 import { ReporteAnalisisProcesoSeleccionComponent } from './gestion-personal/reporte-analisis-proceso-seleccion/reporte-analisis-proceso-seleccion.component';
 import { HabilitarExamenesComponent } from './proceso-seleccion/habilitar-examenes/habilitar-examenes.component';
 import { PreguntasEvaluacionComponent } from './proceso-seleccion/preguntas-evaluacion/preguntas-evaluacion.component';
+import { EvaluacionPostulanteComponent } from './proceso-seleccion/evaluacion-postulante/evaluacion-postulante.component';
 
 const routes: Routes = [
   { path: '', component: PersonalComponent },
@@ -92,7 +93,8 @@ const routes: Routes = [
   { path: 'MaestroPerfilPuestoTrabajoPersonalAprobacion', component: AprobacionPerfilesComponent },
   { path: 'ReporteAnalisisProcesoSeleccion', component: ReporteAnalisisProcesoSeleccionComponent },
   {path: 'PreguntaEvaluacion',component : PreguntasEvaluacionComponent},
-   {path: 'HabilitarExamenes',component : HabilitarExamenesComponent}
+  {path: 'HabilitarExamenes',component : HabilitarExamenesComponent},
+  {path: 'EvaluacionPostulante',component : EvaluacionPostulanteComponent}
  // { path: '**', redirectTo: 'listado' },
 ];
 
