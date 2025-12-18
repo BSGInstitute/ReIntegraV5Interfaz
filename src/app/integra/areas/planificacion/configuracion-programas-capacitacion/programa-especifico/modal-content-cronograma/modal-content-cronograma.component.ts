@@ -1575,5 +1575,42 @@ export class ModalContentCronogramaComponent implements OnInit {
       this.gridCronograma.data = this.sourceCronograma
     }
   }
+  validarSoloNumerosPositivos(e: any, max: number = 999): void {
+    const key = e.key;
+    const allowedKeys = [
+      'Backspace',
+      'Tab',
+      'ArrowLeft',
+      'ArrowRight',
+      'Delete',
+      'Home',
+      'End',
+    ];
+
+    if (allowedKeys.includes(key)) {
+      return;
+    }
+
+    if (/^[0-9]$/.test(key)) {
+      const input = e.target;
+      const currentValue = input.value || '';
+      const selectionStart = input.selectionStart || 0;
+      const selectionEnd = input.selectionEnd || 0;
+
+      const newValueStr =
+        currentValue.substring(0, selectionStart) +
+        key +
+        currentValue.substring(selectionEnd);
+
+      const newValue = Number(newValueStr);
+
+      if (newValue > max) {
+        e.preventDefault();
+      }
+      return;
+    }
+
+    e.preventDefault();
+  }
 
 }
