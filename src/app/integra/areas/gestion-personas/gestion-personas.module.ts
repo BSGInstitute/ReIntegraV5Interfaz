@@ -78,6 +78,7 @@ import { EvaluacionPostulanteComponent } from './proceso-seleccion/evaluacion-po
 import { FiltroEvaluacionPostulanteComponent } from './proceso-seleccion/evaluacion-postulante/filtro-evaluacion-postulante/filtro-evaluacion-postulante.component';
 import { ReporteEtapasProcesoComponent } from './proceso-seleccion/evaluacion-postulante/reporte-etapas-proceso/reporte-etapas-proceso.component';
 import { ReporteCursoAsesorCapacitacionComponent } from './proceso-seleccion/evaluacion-postulante/reporte-curso-asesor-capacitacion/reporte-curso-asesor-capacitacion.component';
+import { RegistroMarcadorFechaComponent } from './asistencia-personal/registro-marcador-fecha/registro-marcador-fecha.component';
 
 @NgModule({
   declarations: [
@@ -155,6 +156,7 @@ import { ReporteCursoAsesorCapacitacionComponent } from './proceso-seleccion/eva
     ReporteEtapasProcesoComponent,
     ReporteCursoAsesorCapacitacionComponent,
     ReportePostulanteComponent,
+    RegistroMarcadorFechaComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
