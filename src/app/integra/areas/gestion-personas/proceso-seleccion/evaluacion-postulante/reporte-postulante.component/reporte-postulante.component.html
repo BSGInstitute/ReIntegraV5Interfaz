@@ -1,0 +1,370 @@
+<div class="card mt-3">
+  <div class="card-header card-header-rep">
+    <h2 class="mb-0">Reporte Postulante</h2>
+  </div>
+
+  <div class="card-body">
+    <kendo-grid
+      *ngIf="showReportePostulante"
+      id="kgridReportePostulante"
+      #kgridReportePostulante
+      [kendoGridBinding]="gridReportePostulante?.data"
+      [loading]="gridReportePostulante?.loading"
+      [resizable]="true"
+      [sort]="sortPostulante"
+      [group]="groupPostulante"
+      [rowClass]="rowCallback"
+      [style.maxHeight.px]="900"
+      scrollable="scrollable"
+      [columnVirtualization]="true"
+    >
+      <!-- TOOLBAR -->
+      <ng-template kendoGridToolbarTemplate>
+        <button
+          type="button"
+          themeColor="success"
+          kendoGridExcelCommand
+          icon="excel"
+        >
+          Export to Excel
+        </button>
+        <kendo-grid-spacer></kendo-grid-spacer>
+      </ng-template>
+
+      <!-- COLUMNA OCULTA PARA AGRUPAR -->
+      <kendo-grid-column
+        field="categoria"
+        title="Categoria"
+        [width]="150"
+        [hidden]="true"
+        [locked]="false"
+        headerClass="headerPostulante justify-content-center"
+      >
+        <ng-template kendoGridGroupHeaderTemplate let-group="group">
+          Categoria: {{ group.value }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- COLUMNAS FIJAS -->
+      <kendo-grid-column
+        field="evaluacion"
+        title="Evaluación"
+        [width]="250"
+        [locked]="true"
+        headerClass="headerPostulante justify-content-center"
+      >
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="grupo"
+        title="Grupo"
+        [width]="220"
+        [locked]="true"
+        headerClass="headerPostulante justify-content-center"
+      >
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="examen"
+        title="Componente"
+        [width]="220"
+        [locked]="true"
+        headerClass="headerPostulante justify-content-center"
+      >
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="calificaPorCentilText"
+        title="Calificación por Centil/Directo"
+        [width]="100"
+        [locked]="true"
+        headerClass="headerPostulante justify-content-center"
+        class="text-center"
+      >
+        <ng-template
+          kendoGridHeaderTemplate
+          let-column
+          let-columnIndex="columnIndex"
+        >
+          <div class="w-100 text-center">
+            Calificación<br />por<br />Centil/Directo
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="simbolo"
+        title="Operador Aprobatorio"
+        [width]="80"
+        [locked]="true"
+        headerClass="headerPostulante justify-content-center"
+        class="text-center"
+      >
+        <ng-template
+          kendoGridHeaderTemplate
+          let-column
+          let-columnIndex="columnIndex"
+        >
+          <div class="w-100 text-center">
+            Operador<br />Aprobatorio
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="notaAprobatoria"
+        title="Puntaje Aprobatorio"
+        [width]="80"
+        [locked]="true"
+        headerClass="headerPostulante justify-content-center"
+        class="text-center"
+      >
+        <ng-template
+          kendoGridHeaderTemplate
+          let-column
+          let-columnIndex="columnIndex"
+        >
+          <div class="w-100 text-center">
+            Puntaje<br />Aprobatorio
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column-group
+        *ngFor="let postulante of postulantesTemp; trackBy: trackByPostulante"
+        [title]="postulante.postulante"
+        headerClass="headerPostulante justify-content-center"
+      >
+        <ng-template
+          kendoGridHeaderTemplate
+          let-column
+          let-columnIndex="columnIndex"
+        >
+          <div class="w-100">
+            <div class="row">
+              <div class="col-12 text-center my-2">
+                <span [innerHtml]="postulante.postulante"></span>
+              </div>
+            </div>
+            <div class="row bg-white text-dark">
+              <table class="m-0 p-0" style="font-size: 12px">
+                <tr>
+                  <td
+                    class="fw-bold text-center"
+                    [ngClass]="{
+                      resaltadoNEO: postulante.clasificacionNeo.aquiescenciaAq
+                    }"
+                  >
+                    Aquiescencia Aq
+                  </td>
+                  <td
+                    class="fw-bold text-center"
+                    [ngClass]="{
+                      resaltadoNEO: postulante.clasificacionNeo.negacionesNe
+                    }"
+                  >
+                    Negaciones Ne
+                  </td>
+                  <td
+                    class="fw-bold text-center"
+                    [ngClass]="{
+                      resaltadoNEO:
+                        postulante.clasificacionNeo.respuestaAlAzar
+                    }"
+                  >
+                    Respuesta Al Azar
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </ng-template>
+
+        <kendo-grid-column-group
+          title="Calificación"
+          headerClass="headerPostulante justify-content-center"
+        >
+          <ng-container *ngIf="!versionCentilTemp">
+            <ng-container
+              *ngFor="
+                let versionCentil of comboVersionCentil;
+                trackBy: trackByVersionCentil
+              "
+            >
+              <kendo-grid-column
+                [field]="
+                  'postulante_' +
+                  postulante.idPostulante +
+                  '_Centil_' +
+                  versionCentil.clave
+                "
+                [title]="'Centil(' + versionCentil.clave + ')'"
+                [width]="90"
+                headerClass="headerPostulante justify-content-center"
+                class="text-center"
+                [locked]="false"
+              >
+              </kendo-grid-column>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="versionCentilTemp">
+            <kendo-grid-column
+              [field]="
+                'postulante_' +
+                postulante.idPostulante +
+                '_Centil_' +
+                versionCentilTemp
+              "
+              [title]="'Centil(' + versionCentilTemp + ')'"
+              [width]="90"
+              headerClass="headerPostulante justify-content-center"
+              class="text-center"
+              [locked]="false"
+            >
+            </kendo-grid-column>
+          </ng-container>
+        </kendo-grid-column-group>
+
+        <kendo-grid-column
+          [field]="'recuperacion_' + postulante.idPostulante"
+          title="Recuperación"
+          [width]="90"
+          headerClass="headerPostulante justify-content-center"
+          class="text-center"
+          [locked]="false"
+        >
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+              templateRecuperacionPostulante
+                ? templateRecuperacionPostulante(
+                    dataItem,
+                    postulante.idPostulante
+                  )
+                : ""
+            }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column-group
+          title="Estado"
+          headerClass="headerPostulante justify-content-center"
+        >
+          <ng-container *ngIf="!versionCentilTemp">
+            <ng-container
+              *ngFor="
+                let versionCentil of comboVersionCentil;
+                trackBy: trackByVersionCentil
+              "
+            >
+              <kendo-grid-column
+                [field]="
+                  'estado_' +
+                  postulante.idPostulante +
+                  '_Centil_' +
+                  versionCentil.clave
+                "
+                [title]="'Centil(' + versionCentil.clave + ')'"
+                [width]="110"
+                headerClass="headerPostulante justify-content-center"
+                class="text-center"
+                [locked]="false"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{
+                    templateEstadoPostulante
+                      ? templateEstadoPostulante(
+                          dataItem,
+                          postulante.idPostulante,
+                          versionCentil.clave
+                        )
+                      : ""
+                  }}
+                </ng-template>
+              </kendo-grid-column>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="versionCentilTemp">
+            <kendo-grid-column
+              [field]="
+                'estado_' +
+                postulante.idPostulante +
+                '_Centil_' +
+                versionCentilTemp
+              "
+              [title]="'Centil(' + versionCentilTemp + ')'"
+              [width]="110"
+              headerClass="headerPostulante justify-content-center"
+              class="text-center"
+              [locked]="false"
+            >
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{
+                  templateEstadoPostulante
+                    ? templateEstadoPostulante(
+                        dataItem,
+                        postulante.idPostulante,
+                        versionCentilTemp
+                      )
+                    : ""
+                }}
+              </ng-template>
+            </kendo-grid-column>
+          </ng-container>
+        </kendo-grid-column-group>
+
+        <kendo-grid-column
+          field="nombre"
+          title="Accesos Temporales"
+          [width]="90"
+          headerClass="headerPostulante justify-content-center"
+          class="text-center"
+          [locked]="false"
+        >
+          <ng-template
+            kendoGridHeaderTemplate
+            let-column
+            let-columnIndex="columnIndex"
+          >
+            <div class="w-100 text-center">
+              Accesos<br />Temporales
+            </div>
+          </ng-template>
+
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="w-100 d-flex justify-content-center">
+              <div class="col-auto">
+                <button
+                  *ngIf="
+                    templateAccesoTemporalPostulante &&
+                    templateAccesoTemporalPostulante(
+                      dataItem,
+                      postulante.idPostulante
+                    ) === 1
+                  "
+                  kendoButton
+                  icon="email"
+                  themeColor="success"
+                  (click)="
+                    onEnviarAccesoTemporalPostulante(
+                      dataItem,
+                      postulante.idPostulante
+                    )
+                  "
+                >
+                  Enviar
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid-column-group>
+
+      <kendo-grid-excel fileName="Reporte_SeleccionPersonal.xlsx">
+      </kendo-grid-excel>
+    </kendo-grid>
+
+    <loading [loading]="loadingReportePostulante"></loading>
+  </div>
+</div>
