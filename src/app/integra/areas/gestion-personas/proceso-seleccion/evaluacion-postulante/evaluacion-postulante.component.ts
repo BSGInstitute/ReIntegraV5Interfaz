@@ -442,9 +442,19 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
       });
   }
 
-  generarReporteIntegra() {
-    const jsonEnvio = this.filtroReporteTemporal;
-    if (!jsonEnvio) return;
+  generarReporteIntegra(idPostulante?: number) {
+    if (!this.filtroReporteTemporal) return;
+
+    const jsonEnvio: FiltroReporte = {
+      ...this.filtroReporteTemporal,
+      idsPostulantes: idPostulante
+        ? [idPostulante]
+        : this.filtroReporteTemporal.idsPostulantes,
+    };
+
+    // 🔥 Forzar destrucción visual
+    this.showReporteEtapaProceso = false;
+    this.cd.detectChanges();
 
     this.gridEtapaProcesoSeleccion.loading = true;
     this.loadingReporteEtapaProceso = true;
@@ -456,34 +466,16 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
         JSON.stringify(jsonEnvio)
       )
       .subscribe({
-        next: (
-          resp: HttpResponse<{
-            etapaAprobada: EtapaAprobada[];
-            cantidadEtapaAprobada: number;
-          }>
-        ) => {
+        next: (resp: HttpResponse<{ etapaAprobada: EtapaAprobada[] }>) => {
           this.generarGridEtapas(resp.body.etapaAprobada);
         },
-        error: (error) => {
+        error: () => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.loadingReporteEtapaProceso = false;
           this.cd.markForCheck();
-
-          const resp = this.alertaService.getErrorResponse(error);
-          if (error.status === 409) {
-            this.alertaService.swalFireOptions({
-              icon: 'success',
-              title: `${resp.mensaje}`,
-            });
-          } else {
-            this.alertaService.notificationInfo(
-              `${resp.titulo}: ${resp.mensaje}`
-            );
-          }
         },
       });
   }
-
   // ---------------- REPORTE POSTULANTE ----------------
 
   obtenerEvaluacionesPortalPostulante(
@@ -681,13 +673,15 @@ export class EvaluacionPostulanteComponent implements OnInit, OnDestroy {
 
       this.ngZone.run(() => {
         this.etapasAprobadas = etapasOrdenadas;
-        this.gridEtapaProcesoSeleccion.data = gridData;
 
+        this.gridEtapaProcesoSeleccion = new KendoGrid<ClaveValor>();
+        this.gridEtapaProcesoSeleccion.data = [...gridData];
         this.gridEtapaProcesoSeleccion.loading = false;
+
         this.loadingReporteEtapaProceso = false;
         this.showReporteEtapaProceso = true;
 
-        this.cd.markForCheck();
+        this.cd.detectChanges();
       });
     });
   }

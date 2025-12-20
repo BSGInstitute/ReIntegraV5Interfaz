@@ -45,8 +45,8 @@ export class ReporteEtapasProcesoComponent {
   @Input() comboEstadoEtapa: IComboBase1[] = [];
   @Input() filterSettings: DropDownFilterSettings;
 
-  // cuando el hijo termina de actualizar algo y quiere que el padre recargue
-  @Output() refrescarEtapas = new EventEmitter<void>();
+
+ @Output() refrescarEtapas = new EventEmitter<number>();
 
   // modales
   @ViewChild('modalTest') modalTest: any;
@@ -382,13 +382,13 @@ export class ReporteEtapasProcesoComponent {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
           this.modalRef?.close();
-          this.refrescarEtapas.emit();
+          this.refrescarEtapas.emit(this.idPostulanteTemp);
         },
         error: () => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
           this.modalRef?.close();
-          this.refrescarEtapas.emit();
+          this.refrescarEtapas.emit(this.idPostulanteTemp);
         },
       });
   }
@@ -506,7 +506,7 @@ export class ReporteEtapasProcesoComponent {
           this.enProcesoGuardarRespuesta = false;
           this.gridEtapaProcesoSeleccion.loading = false;
           this.modalRef?.close();
-          this.refrescarEtapas.emit();
+          this.refrescarEtapas.emit(this.idPostulanteTemp);
           this.alertaService.swalFireOptions({
             icon: 'success',
             title: 'Se registraron las respuestas correctamente',
