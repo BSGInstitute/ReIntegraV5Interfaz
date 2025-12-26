@@ -2438,7 +2438,14 @@ export const constApiMarketing = {
 
   // CAMPAÑA REMARKETING GENERAL
   ObtenerListadoRemarketingGeneral: '/CampaniaRemarketingGeneral/ObtenerListadoCampania',
+  VerRendimientoListadoCampaniaRemarketing: '/CampaniaRemarketingGeneral/VerRendimientoListadoCampania',
+  VerDetallesCampaniaRemarketing: '/CampaniaRemarketingGeneral/VerDetallesCampania',
+  EditarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarCampania',
+  EliminarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EliminarCampania',
+  ObtenerMensajeGeneradoPorId: '/CampaniaRemarketingGeneral/ObtenerMensajeGeneradoPorId',
+  ReenviarMensajeGenerado: '/CampaniaRemarketingGeneral/ReenviarMensajeGenerado',
 };
+
 
 export const constApiGestionPersonal = {
   //Modulo gestion personal junior

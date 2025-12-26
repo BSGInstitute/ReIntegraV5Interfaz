@@ -1,16 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { CrearEditarCampaniaComponent } from './crear-editar-campania/crear-editar-campania.component';
 import { constApiMarketing } from '@environments/constApi';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
-
-interface CampaniaRemarketingGeneral {
-  id: number;
-  nombreCampania: string;
-  tipoCampania: string;
-  usuarioCreacion: string;
-  fechaEnvio: Date;
-  cantidad: string;
-}
+import { CampaniaRemarketingGeneral } from '@marketing/models/interfaces/campania-remarketing-general';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-campania-remarketing-general',
@@ -21,9 +16,17 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
   listadoRemarketingGeneral: CampaniaRemarketingGeneral[] = [];
   isLoading: boolean = true;
 
+  selectedCampanias: number[] = [];
+  showRendimientoModal = false;
+  rendimientoData: any = null;
+
+  showDetalleModal = false;
+  detalleCampaniaId: number | null = null;
+
   constructor(
     private integraService: IntegraService,
-    private _alertaService: AlertaService
+    private _alertaService: AlertaService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -31,14 +34,15 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
   }
 
   ObtenerListadoRemarketingGeneral() {
+    this.isLoading = true;
     this.integraService
       .getJsonResponse(`${constApiMarketing.ObtenerListadoRemarketingGeneral}`)
       .subscribe({
         next: (data: any) => {
           this.listadoRemarketingGeneral =
             data.body as CampaniaRemarketingGeneral[];
-
           this.isLoading = false;
+          this.selectedCampanias = [];
         },
         error: (err) => {
           console.error('Error fetching :', err);
@@ -46,17 +50,137 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
           this.isLoading = false;
         },
       });
-
     // Paginacion
   }
 
-  CrearNuevaCampania() {}
+  CrearNuevaCampania() {
+    this.dialog.open(CrearEditarCampaniaComponent, {
+      width: '500px',
+      data: {
+        modo: 'crear',
+        titulo: 'Crear Campaña Remarketing',
+      },
+      disableClose: true,
+    });
+  }
 
-  VerRendimiento() {}
+  ActualizarCampania(id: number) {
+    this.dialog.open(CrearEditarCampaniaComponent, {
+      width: '500px',
+      data: {
+        modo: 'editar',
+        titulo: 'Editar Campaña Remarketing',
+        id,
+      },
+      disableClose: true,
+    });
+  }
 
-  VerDetalleCampania(id: number) {}
+  VerRendimiento() {
+    // Mocks de data para las gráficas y cards
+    this.rendimientoData = {
+      capacidadEntrega: {
+        labels: [
+          '2025-12-01',
+          '2025-12-02',
+          '2025-12-03',
+          '2025-12-04',
+          '2025-12-05',
+        ],
+        enviados: [100, 120, 110, 130, 125],
+        rebotados: [5, 8, 6, 7, 6],
+        rechazados: [2, 1, 3, 2, 1],
+        totalEnviados: 585,
+        totalEntregados: 570,
+        porcentajeEnviadosCorrectos: 97.4,
+      },
+      tasas: {
+        labels: [
+          '2025-12-01',
+          '2025-12-02',
+          '2025-12-03',
+          '2025-12-04',
+          '2025-12-05',
+        ],
+        abiertos: [60, 70, 65, 80, 75],
+        clicks: [20, 25, 22, 30, 28],
+        tasaApertura: 68.4,
+        cantidadApertura: 400,
+        tasaClicks: 22.2,
+        cantidadClicks: 130,
+      },
+    };
+    this.showRendimientoModal = true;
+  }
+  cerrarRendimientoModal() {
+    this.showRendimientoModal = false;
+  }
 
-  ActualizarCampania(id: number) {}
+  VerDetalleCampania(id: number) {
+    this.showDetalleModal = true;
+    this.detalleCampaniaId = id;
+  }
+  cerrarDetalleModal() {
+    this.showDetalleModal = false;
+    this.detalleCampaniaId = null;
+  }
 
-  EliminarCampania(id: number) {}
+  EliminarCampania(id: number) {
+    Swal.fire({
+      title: '¿Desea eliminar esta campaña?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.integraService
+          .postJsonResponse(
+            `${constApiMarketing.EliminarCampaniaRemarketing}`,
+            id
+          )
+          .subscribe({
+            next: (data: any) => {
+              this._alertaService.mensajeIcon(
+                '¡Eliminado!',
+                'El registro ha sido eliminado.',
+                'success'
+              );
+              this.ObtenerListadoRemarketingGeneral();
+            },
+            error: (err) => {
+              console.error('Error fetching :', err);
+              this._alertaService.notificationError(
+                'Error al eliminar campaña'
+              );
+              this.isLoading = false;
+            },
+          });
+      }
+    });
+  }
+
+  toggleCampania(id: number, checked: boolean) {
+    if (checked) {
+      if (!this.selectedCampanias.includes(id)) {
+        this.selectedCampanias.push(id);
+      }
+    } else {
+      this.selectedCampanias = this.selectedCampanias.filter((x) => x !== id);
+    }
+  }
+
+  isAllSelected(): boolean {
+    return (
+      this.listadoRemarketingGeneral.length > 0 &&
+      this.selectedCampanias.length === this.listadoRemarketingGeneral.length
+    );
+  }
+
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.selectedCampanias = [];
+    } else {
+      this.selectedCampanias = this.listadoRemarketingGeneral.map((x) => x.id);
+    }
+  }
 }

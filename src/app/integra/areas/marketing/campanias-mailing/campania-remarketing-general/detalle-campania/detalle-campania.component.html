@@ -1,0 +1,179 @@
+<div class="modal-detalle-campania-backdrop">
+  <div class="modal-detalle-campania">
+    <div class="modal-header">
+      <span>Detalle de Campaña</span>
+      <button mat-icon-button (click)="close.emit()">
+        <i class="material-icons">close</i>
+      </button>
+    </div>
+    <div *ngIf="detalleCampania" class="modal-body">
+      <div class="detalle-cabecera">
+        <span
+          ><b>Aperturas:</b> {{ detalleCampania.aperturas }}
+          <small>({{ porcentajeAperturas }})</small></span
+        >
+        <span
+          ><b>Clicks:</b> {{ detalleCampania.clicks }}
+          <small>({{ porcentajeClicks }})</small></span
+        >
+        <span
+          ><b>Rebotados:</b> {{ detalleCampania.rebotados }}
+          <small>({{ porcentajeRebotados }})</small></span
+        >
+      </div>
+      <div class="detalle-tabla">
+        <table
+          mat-table
+          [dataSource]="detalleCampania.alumnosContactados"
+          class="mat-elevation-z2 tabla-centrada"
+        >
+          <ng-container matColumnDef="idAlumno">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 100px; text-align: center"
+            >
+              ID Alumno
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let alumno"
+              style="width: 100px; text-align: center"
+            >
+              {{ alumno.idAlumno }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="estadoEnvio">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center">
+              Estado Envío
+            </th>
+            <td mat-cell *matCellDef="let alumno" style="text-align: center">
+              {{ alumno.estadoEnvio }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="nombreAlumno">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center">
+              Nombre Alumno
+            </th>
+            <td mat-cell *matCellDef="let alumno" style="text-align: center">
+              {{ alumno.nombreAlumno }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="apertura">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 100px; text-align: center"
+            >
+              Apertura
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let alumno"
+              style="width: 100px; text-align: center"
+            >
+              {{ alumno.apertura ? 1 : 0 }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="click">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              style="width: 100px; text-align: center"
+            >
+              Click
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let alumno"
+              style="width: 100px; text-align: center"
+            >
+              {{ alumno.click ? 1 : 0 }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="accion">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center">
+              Acciones
+            </th>
+            <td mat-cell *matCellDef="let alumno" style="text-align: center">
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  gap: 8px;
+                "
+              >
+                <button
+                  mat-icon-button
+                  class="bg-warning"
+                  matTooltip="Ver mensaje me-2"
+                  (click)="verMensaje(alumno.idAlumno)"
+                >
+                  <i class="material-icons">visibility</i>
+                </button>
+                <button
+                  class="btn btn-outline-secondary"
+                  [disabled]="reenviandoId === alumno.idAlumno"
+                  (click)="reenviarMensaje(alumno.idAlumno)"
+                >
+                  Reenviar
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="[
+              'idAlumno',
+              'estadoEnvio',
+              'nombreAlumno',
+              'apertura',
+              'click',
+              'accion'
+            ]"
+            style="text-align: center"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="
+              let row;
+              columns: [
+                'idAlumno',
+                'estadoEnvio',
+                'nombreAlumno',
+                'apertura',
+                'click',
+                'accion'
+              ]
+            "
+            style="text-align: center"
+          ></tr>
+        </table>
+      </div>
+    </div>
+    <div *ngIf="detalleLoading" class="detalle-loading">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+  </div>
+
+  <!-- Modal Mensaje -->
+  <div *ngIf="mensajeModalOpen" class="modal-detalle-campania-backdrop">
+    <div class="modal-detalle-campania" style="max-width: 500px">
+      <div class="modal-body">
+        <ng-container *ngIf="mensajeLoading; else mensajeContent">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-container>
+        <ng-template #mensajeContent>
+          <div style="white-space: pre-line; font-size: 1.1em; padding: 12px 0">
+            {{ mensajeContenido }}
+          </div>
+        </ng-template>
+      </div>
+      <button class="btn btn-danger" (click)="cerrarMensajeModal()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
