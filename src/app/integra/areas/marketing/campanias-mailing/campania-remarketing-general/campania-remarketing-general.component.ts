@@ -55,7 +55,7 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
 
   CrearNuevaCampania() {
     this.dialog.open(CrearEditarCampaniaComponent, {
-      width: '500px',
+      width: '70vw',
       data: {
         modo: 'crear',
         titulo: 'Crear Campaña Remarketing',
@@ -66,7 +66,7 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
 
   ActualizarCampania(id: number) {
     this.dialog.open(CrearEditarCampaniaComponent, {
-      width: '500px',
+      width: '70vw',
       data: {
         modo: 'editar',
         titulo: 'Editar Campaña Remarketing',

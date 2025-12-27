@@ -1,9 +1,160 @@
-<div class="modal-crear-editar-campania">
-  <h2>{{ data?.titulo }}</h2>
-  <div class="modal-actions">
-    <button mat-flat-button color="primary">
-      {{ data?.modo === "crear" ? "Guardar" : "Actualizar" }}
-    </button>
+<div class="modal-scrollable-content">
+  <!-- Primer Grupo - Campaña remarketing -->
+  <div class="titulo">Campaña Remarketing</div>
+  <form class="d-flex flex-column w-100 pb-4">
+    <div class="d-flex gap-4 w-100">
+      <mat-form-field appearance="fill" style="flex: 2">
+        <mat-label>Segmentos</mat-label>
+        <input matInput placeholder="Selecciona o ingresa segmentos" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" style="flex: 1">
+        <mat-label>Medio de envío</mat-label>
+        <mat-select>
+          <mat-option value="mailing">Mailing</mat-option>
+          <mat-option value="sms">SMS</mat-option>
+          <mat-option value="whatsapp">WhatsApp</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="d-flex gap-4 w-100 align-items-stretch">
+      <div class="d-flex flex-column gap-4 flex-fill" style="flex: 1">
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Tipo de mensaje</mat-label>
+          <mat-chip-list #chipListTipo aria-label="Selección de tipos">
+            <mat-chip
+              *ngFor="let tipo of tiposSeleccionados"
+              [selectable]="true"
+              [removable]="true"
+              (removed)="removeTipo(tipo)"
+            >
+              {{ tipo }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Nuevo tipo..."
+              [matChipInputFor]="chipListTipo"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTipo($event)"
+            />
+          </mat-chip-list>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-100">
+          <mat-label>Lógica de envío</mat-label>
+          <mat-chip-list #chipListLogica>
+            <mat-chip
+              *ngFor="let logica of logicasSeleccionadas"
+              [removable]="true"
+              (removed)="removeLogica(logica)"
+            >
+              {{ logica }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Nueva lógica..."
+              [matChipInputFor]="chipListLogica"
+              (matChipInputTokenEnd)="addLogica($event)"
+            />
+          </mat-chip-list>
+        </mat-form-field>
+      </div>
+
+      <div class="d-flex flex-fill" style="flex: 1">
+        <mat-form-field appearance="fill" class="w-100 h-100">
+          <mat-label>Argumentos</mat-label>
+          <mat-chip-list
+            #chipListArgs
+            class="mat-chip-list-stacked"
+            aria-orientation="vertical"
+          >
+            <mat-chip
+              *ngFor="let arg of argumentosSeleccionados"
+              [removable]="true"
+              (removed)="removeArg(arg)"
+            >
+              {{ arg }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Añadir argumento..."
+              [matChipInputFor]="chipListArgs"
+              (matChipInputTokenEnd)="addArg($event)"
+            />
+          </mat-chip-list>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-4 pb-4">
+      <button matButton class="btn btn-success px-4">Generar textos</button>
+      <button matButton class="btn btn-warning px-4">Revisar resultados</button>
+    </div>
+  </form>
+
+  <!-- Segundo Grupo - Configurar remitente (solo mailing) -->
+  <div class="titulo">Configurar remitente (solo mailing)</div>
+  <form class="d-flex flex-column w-100 pb-4">
+    <div class="d-flex gap-4">
+      <mat-form-field appearance="fill" class="input-full">
+        <mat-label>De</mat-label>
+        <input matInput placeholder="Ej: info@tudominio.com" />
+        <mat-hint>Correo electrónico del remitente</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="input-full">
+        <mat-label>Nombre remitente</mat-label>
+        <input matInput placeholder="Ej: Equipo de Marketing" />
+        <mat-hint>Nombre que verá el destinatario</mat-hint>
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="fill" class="input-full">
+      <mat-label>Asunto</mat-label>
+      <input matInput placeholder="Ej: ¡No te pierdas esta oferta!" />
+      <mat-hint>Asunto del correo que verá el destinatario</mat-hint>
+    </mat-form-field>
+  </form>
+
+  <!-- Tercer Grupo - Configuración de envío -->
+  <div class="titulo">Configuración de envío</div>
+  <div class="d-flex justify-content-center gap-4 mb-4">
+    <div
+      class="opcion-envio"
+      [class.selected]="envioSeleccionado === 'ahora'"
+      (click)="envioSeleccionado = 'ahora'"
+    >
+      <mat-icon>send</mat-icon>
+      <span>Enviar ahora</span>
+    </div>
+    <div
+      class="opcion-envio"
+      [class.selected]="envioSeleccionado === 'programar'"
+      (click)="envioSeleccionado = 'programar'"
+    >
+      <mat-icon>schedule</mat-icon>
+      <span>Programar</span>
+    </div>
+  </div>
+  <div *ngIf="envioSeleccionado === 'programar'" class="programar-fecha-hora">
+    <mat-form-field appearance="fill" class="input-fecha">
+      <mat-label>Fecha de envío</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        placeholder="Selecciona la fecha"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="input-hora">
+      <mat-label>Hora de envío</mat-label>
+      <input matInput type="time" placeholder="Selecciona la hora" />
+    </mat-form-field>
+  </div>
+
+  <!-- Botones envío -->
+  <div class="d-flex justify-content-center align-items-center gap-4 mt-4">
+    <button mat-button [disabled]="!formularioValido">Iniciar envío</button>
     <button mat-button (click)="cerrar()">Cancelar</button>
   </div>
 </div>
