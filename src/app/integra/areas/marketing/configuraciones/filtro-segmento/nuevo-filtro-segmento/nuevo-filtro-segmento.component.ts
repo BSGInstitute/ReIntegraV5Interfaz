@@ -61,6 +61,7 @@ import { FormulariosComponent } from '../actualizar-filtro-segmento/formularios/
 import { HistorialFinComponent } from '../actualizar-filtro-segmento/historial-fin/historial-fin.component';
 import { InterOfflineOnlineComponent } from '../actualizar-filtro-segmento/inter-offline-online/inter-offline-online.component';
 import { MultiSelectComponent } from '@progress/kendo-angular-dropdowns';
+import { UltimaOportunidadComponent } from '../actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
 
 @Component({
   selector: 'app-nuevo-filtro-segmento',
@@ -99,6 +100,7 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
   @ViewChild(PerfilesComponent) perfiles: any;
   @ViewChild(CategoriaDatoComponent) categoriaDato: any;
   @ViewChild(VentaCruzadaComponent) ventaCruzada: any;
+  @ViewChild(UltimaOportunidadComponent) ultimaOportunidad: any;
   @ViewChild(InterCorreoComponent) correo: any;
   @ViewChild(InterChatPortalWebComponent) chatPortal: any;
   @ViewChild(FormulariosComponent) formularios: any;
@@ -290,9 +292,9 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
         console.log(e.Valor)
         var r=this.subestado.filter(s => s.IdEstadoMatricula === e.Valor);
         r.forEach((a:any) => {
-          this.listaSubestado.push(a)  
+          this.listaSubestado.push(a)
         });
-        
+
         console.log(this.listaSubestado)
       });
        console.log(this.listaSubestado)
@@ -457,6 +459,7 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
     ConsiderarInteraccionWhatsApp: false,
     ConsiderarInteraccionChatMessenger: false,
     ConsiderarEnvioAutomatico: false,
+    ConsiderarUltimaOportunidad: false,
     ExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal: false,
     FechaInicioExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal: null,
     FechaFinExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal: null,
@@ -545,6 +548,10 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
     IdConjuntoListaDetalle: null,
     NroListasRepeticionContacto: null,
     NroEjecucion: null,
+
+    ListaUOArea: [],
+    ListaUOSubArea: [],
+    ListaUOPGeneral: [],
   };
 
   ngOnInit(): void {
@@ -1203,7 +1210,7 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
 
   Crear() {
     this.listaSubArea = [];
-  
+
 
     if (this.Nombre == '') {
       this.alertaService.mensajeIcon(
@@ -1380,6 +1387,16 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
             this.categoriaDato.categoriaEnvio;
           this.jsonEnvio.ListaTipoCategoriaOrigen =
             this.categoriaDato.tipoCategoriaEnvio;
+        }
+
+        if (this.ultimaOportunidad != undefined) {
+          //- Ultima Oportunidad -//
+
+          this.jsonEnvio.ConsiderarUltimaOportunidad = this.ultimaOportunidad.datos;
+
+          this.jsonEnvio.ListaUOArea = this.ultimaOportunidad.areaUOEnvio;
+          this.jsonEnvio.ListaUOSubArea = this.ultimaOportunidad.subareaUOEnvio;
+          this.jsonEnvio.ListaUOPGeneral = this.ultimaOportunidad.programaUOEnvio;
         }
 
         if (this.offlineOnline != undefined) {
@@ -1864,6 +1881,16 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
       this.jsonEnvio.ListaTipoCategoriaOrigen =
         this.categoriaDato.tipoCategoriaEnvio;
       this.jsonEnvio.ListaCategoriaOrigen = this.categoriaDato.categoriaEnvio;
+    }
+
+    if (this.ultimaOportunidad != undefined) {
+      //- Ultima Oportunidad -//
+
+      this.jsonEnvio.ConsiderarUltimaOportunidad = this.ultimaOportunidad.datos;
+
+      this.jsonEnvio.ListaUOArea = this.ultimaOportunidad.areaUOEnvio;
+      this.jsonEnvio.ListaUOSubArea = this.ultimaOportunidad.subareaUOEnvio;
+      this.jsonEnvio.ListaUOPGeneral = this.ultimaOportunidad.programaUOEnvio;
     }
 
     if (this.offlineOnline != undefined) {

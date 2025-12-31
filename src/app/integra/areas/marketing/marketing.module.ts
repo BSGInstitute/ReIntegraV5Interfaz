@@ -174,6 +174,8 @@ import { FacebookLeadsRecuperacionDatosService } from '@shared/services/facebook
 import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
 import { MessengerFacebookChatGrillaComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-grilla/messenger-facebook-chat-grilla.component';
 import { MessengerFacebookChatModalComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-modal/messenger-facebook-chat-modal.component';
+import { UltimaOportunidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
+import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
 
 
 @NgModule({
@@ -348,7 +350,9 @@ import { MessengerFacebookChatModalComponent } from './campania-facebook/messeng
     ModalDetalleLeadFacebookComponent,
     MessengerFacebookChatComponent,
     MessengerFacebookChatGrillaComponent,
-    MessengerFacebookChatModalComponent
+    MessengerFacebookChatModalComponent,
+    UltimaOportunidadComponent,
+    MayorProbInscripcionComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
