@@ -53,13 +53,18 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
   }
 
   CrearNuevaCampania() {
-    this.dialog.open(CrearEditarCampaniaComponent, {
+    const dialogRef = this.dialog.open(CrearEditarCampaniaComponent, {
       width: '70vw',
       data: {
         modo: 'crear',
-        titulo: 'Crear Campaña Remarketing',
       },
       disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'refresh') {
+        this.ObtenerListadoRemarketingGeneral();
+      }
     });
   }
 
@@ -68,7 +73,6 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
       width: '70vw',
       data: {
         modo: 'editar',
-        titulo: 'Editar Campaña Remarketing',
         id,
       },
       disableClose: true,

@@ -1,10 +1,11 @@
 export interface CampaniaRemarketingGeneral {
   id: number;
-  nombreCampania: string;
-  tipoCampania: string;
+  nombre: string;
+  fechaEnvioProgramada: Date;
+  envioConfigurado: string;
+  medioEnvio: string;
   usuarioCreacion: string;
-  fechaEnvio: Date;
-  cantidad: number;
+  fechaCreacion: Date;
 }
 
 export interface DetallesCampania {
@@ -45,4 +46,19 @@ export interface ResultadoGeneracionTexto {
   nombreAlumno: string;
   pais: string;
   contenidoGenerado: string;
+}
+
+export interface CampaniaRemarketingGeneralEditar {
+  id: number;
+  nombre: string;
+  idFiltroSegmento: number;
+  tipoMensaje: number;
+  logicaEnvio: number;
+  remitenteCorreo: string;
+  remitenteNombre: string;
+  asunto: string;
+  envioConfigurado: string;
+  fechaEnvioProgramada: Date;
+  mediosEnvio: number[];
+  argumentos: number[];
 }
