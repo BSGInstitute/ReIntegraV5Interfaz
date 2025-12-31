@@ -22,7 +22,7 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
   @Output() close = new EventEmitter<void>();
 
   detalleCampania: any = null;
-  detalleLoading: boolean = false;
+  isLoading: boolean = false;
 
   mensajeContenido: string | null = null;
   mensajeModalOpen: boolean = false;
@@ -34,11 +34,7 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
     private alertaService: AlertaService
   ) {}
 
-  ngOnInit(): void {
-    if (this.id) {
-      this.ObtenerDetallesCampaniaRemarketing(this.id);
-    }
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['id'] && changes['id'].currentValue) {
@@ -47,7 +43,7 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
   }
 
   ObtenerDetallesCampaniaRemarketing(id: number) {
-    this.detalleLoading = true;
+    this.isLoading = true;
     this.detalleCampania = null;
     this.integraService
       .getJsonResponse(
@@ -56,14 +52,14 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
       .subscribe({
         next: (data: any) => {
           this.detalleCampania = data.body as DetallesCampania;
-          this.detalleLoading = false;
+          this.isLoading = false;
         },
         error: (err) => {
           console.error('Error fetching detalle campaña:', err);
           this.alertaService.notificationError(
             'Error al obtener detalles de la campaña'
           );
-          this.detalleLoading = false;
+          this.isLoading = false;
         },
       });
   }

@@ -18,7 +18,6 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
 
   selectedCampanias: number[] = [];
   showRendimientoModal = false;
-  rendimientoData: any = null;
 
   showDetalleModal = false;
   detalleCampaniaId: number | null = null;
@@ -77,39 +76,6 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
   }
 
   VerRendimiento() {
-    // Mocks de data para las gráficas y cards
-    this.rendimientoData = {
-      capacidadEntrega: {
-        labels: [
-          '2025-12-01',
-          '2025-12-02',
-          '2025-12-03',
-          '2025-12-04',
-          '2025-12-05',
-        ],
-        enviados: [100, 120, 110, 130, 125],
-        rebotados: [5, 8, 6, 7, 6],
-        rechazados: [2, 1, 3, 2, 1],
-        totalEnviados: 585,
-        totalEntregados: 570,
-        porcentajeEnviadosCorrectos: 97.4,
-      },
-      tasas: {
-        labels: [
-          '2025-12-01',
-          '2025-12-02',
-          '2025-12-03',
-          '2025-12-04',
-          '2025-12-05',
-        ],
-        abiertos: [60, 70, 65, 80, 75],
-        clicks: [20, 25, 22, 30, 28],
-        tasaApertura: 68.4,
-        cantidadApertura: 400,
-        tasaClicks: 22.2,
-        cantidadClicks: 130,
-      },
-    };
     this.showRendimientoModal = true;
   }
   cerrarRendimientoModal() {

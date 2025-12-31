@@ -2438,7 +2438,11 @@ export const constApiMarketing = {
 
   // CAMPAÑA REMARKETING GENERAL
   ObtenerListadoRemarketingGeneral: '/CampaniaRemarketingGeneral/ObtenerListadoCampania',
-  VerRendimientoListadoCampaniaRemarketing: '/CampaniaRemarketingGeneral/VerRendimientoListadoCampania',
+  ObtenerRendimientoListadoCampanias: '/CampaniaRemarketingGeneral/ObtenerRendimientoListadoCampanias',
+  ObtenerCombosConfiguracionCampania: '/CampaniaRemarketingGeneral/ObtenerCombosConfiguracionCampania',
+  ObtenerListadoSegmentosCreados: '/CampaniaRemarketingGeneral/ObtenerListadoSegmentosCreados',
+  EjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/EjecutarEnvioCampaniaRemarketing',
+  ObtenerResultadosGeneracionTexto: '/CampaniaRemarketingGeneral/ObtenerResultadosGeneracionTextoPorCampania',
   VerDetallesCampaniaRemarketing: '/CampaniaRemarketingGeneral/VerDetallesCampania',
   EditarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarCampania',
   EliminarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EliminarCampania',
