@@ -18,7 +18,7 @@ const routes: Routes = [
       },
       {
         path: 'GestionPersonas',
-        // canActivateChild: [ModuloGuard],
+        canActivateChild: [ModuloGuard],
         loadChildren: () =>
           import(
             '@integra/areas/gestion-personas/gestion-personas.module'
@@ -34,7 +34,7 @@ const routes: Routes = [
       },
       {
         path: 'Marketing',
-        // canActivateChild: [ModuloGuard],
+        canActivateChild: [ModuloGuard],
         loadChildren: () =>
           import('@integra/areas/marketing/marketing.module').then(
             (m) => m.MarketingModule

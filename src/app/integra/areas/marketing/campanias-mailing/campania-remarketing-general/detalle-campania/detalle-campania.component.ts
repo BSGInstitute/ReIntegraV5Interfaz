@@ -74,9 +74,7 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
       )
       .subscribe({
         next: (data: any) => {
-          console.log(data.body);
           this.mensajeContenido = data.body?.contenido || 'Sin contenido';
-          console.log(this.mensajeContenido);
           this.mensajeLoading = false;
         },
         error: (err) => {
