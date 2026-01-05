@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,9 @@ export class WebinarSignalrService {
 
   startConnection() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7288/webinarHub')
+      .withUrl(`${environment.urlSignal}hubIntegraHub`
+        + `?idUsuario=WebHook&usuarioNombre=WebHook&rooms=''`
+      )
       .withAutomaticReconnect()
       .build();
 
@@ -19,6 +22,6 @@ export class WebinarSignalrService {
   }
 
   onAsistenciaRegistrada(callback: (data: any) => void) {
-    this.hubConnection.on('AsistenciaRegistrada', callback);
+    this.hubConnection.on('AsistenciaRegistradaWebinar', callback);
   }
 }
