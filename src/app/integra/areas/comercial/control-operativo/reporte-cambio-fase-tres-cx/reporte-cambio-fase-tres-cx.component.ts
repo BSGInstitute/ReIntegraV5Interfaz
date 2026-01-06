@@ -2528,6 +2528,15 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         // BNC_1: arregloTemp[4].actividadesProgramadasManuales,
       },
       {
+        descripcion: 'Valor de actividades reprogramadas Contesta y Corta',
+        BNC: arregloTemp[0].actividadesContestaCorta,
+        IT: arregloTemp[1].actividadesContestaCorta,
+        IP: arregloTemp[2].actividadesContestaCorta,
+        PF: arregloTemp[3].actividadesContestaCorta,
+        Otros: arregloTemp[4].actividadesContestaCorta,
+        // BNC_1: arregloTemp[4].actividadesProgramadasManuales,
+      },
+      {
         descripcion: 'Actividades Totales',
         BNC: arregloTemp[0].actividadesTotales,
         IT: arregloTemp[1].actividadesTotales,
@@ -2573,6 +2582,15 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IP: (arregloTemp[2].minPromedioprogramadasmanuales / 60).toFixed(1),
         PF: (arregloTemp[3].minPromedioprogramadasmanuales / 60).toFixed(1),
         Otros: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
+        // BNC_1: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
+      },
+            {
+        descripcion: 'Duración promedio de reprogramadas Contesta y Corta en minutos',
+        BNC: (arregloTemp[0].minPromedioContestaCorta / 60).toFixed(1),
+        IT: (arregloTemp[1].minPromedioContestaCorta / 60).toFixed(1),
+        IP: (arregloTemp[2].minPromedioContestaCorta / 60).toFixed(1),
+        PF: (arregloTemp[3].minPromedioContestaCorta / 60).toFixed(1),
+        Otros: (arregloTemp[4].minPromedioContestaCorta / 60).toFixed(1),
         // BNC_1: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
       },
       {

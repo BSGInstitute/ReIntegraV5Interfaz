@@ -206,12 +206,15 @@ export interface IControlCambioFase {
   actividadesEjecutadas: number;
   actividadesProgramadasAutomaticas: number;
   actividadesProgramadasManuales: number;
+  actividadesContestaCorta: number;
   actividadesTotales: number;
   contactabilidad: number;
   faseOrigen: string;
   idFaseOrigen: number;
   minPromedioEjecutadas: number;
   minPromedioprogramadasmanuales: number;
+  minPromedioContestaCorta: number;
+
   numIntentoLlamadasPromedio: number;
   orden: number;
   programadasEjecutadasSinLlamada: number;
@@ -315,12 +318,16 @@ export class ControlCambioFase implements IControlCambioFase {
   actividadesEjecutadas: number = 0;
   actividadesProgramadasAutomaticas: number = 0;
   actividadesProgramadasManuales: number = 0;
+  actividadesContestaCorta: number = 0;
+
   actividadesTotales: number = 0;
   contactabilidad: number = 0;
   faseOrigen: string = '';
   idFaseOrigen: number = 0;
   minPromedioEjecutadas: number = 0;
   minPromedioprogramadasmanuales: number = 0;
+  minPromedioContestaCorta: number = 0;
+
   numIntentoLlamadasPromedio: number = 0;
   orden: number = 0;
   programadasEjecutadasSinLlamada: number = 0;
