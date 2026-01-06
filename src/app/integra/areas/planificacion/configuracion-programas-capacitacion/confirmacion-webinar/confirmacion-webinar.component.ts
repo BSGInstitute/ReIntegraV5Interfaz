@@ -18,6 +18,7 @@ import Swal from 'sweetalert2';
 import { distinct } from '@progress/kendo-data-query';
 import { datePipeTransform } from '@shared/functions/date-pipe';
 import { WebinarSignalrService } from './webinar-signalr.service';
+import { Router } from '@angular/router';
 
 interface ConfirmacionWebinar {
   idPEspecificoSesion: number;
@@ -150,6 +151,7 @@ export class ConfirmacionWebinarComponent implements OnInit {
   dataEnviada: WebinarFiltro = {};
 
   constructor(
+    private router: Router,
     private integraService: IntegraService,
     private userService: UserService,
     private alertaService: AlertaService,
@@ -166,13 +168,15 @@ export class ConfirmacionWebinarComponent implements OnInit {
     this.signalRService.startConnection();
 
     this.signalRService.onAsistenciaRegistrada((data) => {
-      console.log('ws', data);
-      if(data.estadoAsistencia) {
-        this.alertaService.notificationSuccessBotom(`${data.response.alumno.nombreAlumno ?? 'Un Alumno'} confirmó su participación al webinar.`);
-      } else {
-        this.alertaService.notificationError(`${data.response.alumno.nombreAlumno ?? 'Un Alumno'} canceló su participación al webinar.`);
+      if (this.obtenerUrl()) {
+        console.log('ws', data);
+        if(data.estadoAsistencia) {
+          this.alertaService.notificationSuccessBotom(`${data.response.alumno.nombreAlumno ?? 'Un Alumno'} confirmó su participación al webinar.`);
+        } else {
+          this.alertaService.notificationError(`${data.response.alumno.nombreAlumno ?? 'Un Alumno'} canceló su participación al webinar.`);
+        }
+        this.filtrarProgramas();
       }
-      this.filtrarProgramas();
     });
     this.estadoSesion = [
       { texto: 'Proxima', valor: '1' },
@@ -192,6 +196,10 @@ export class ConfirmacionWebinarComponent implements OnInit {
     // };
     this.obtenerCombos();
     this.obtener();
+  }
+
+  obtenerUrl() {
+    return this.router.url.includes('/Planificacion/ConfirmacionWebinar');
   }
 
   filtrarProgramas() {
