@@ -3,7 +3,19 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { constApiPlanificacion } from '@environments/constApi';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { SeccionPlantillaPw, DocumentoSeccionPw, ColumnasReporte, IDocumentosPortaWeb, SubSeccionTipoDetallePw, ListaSubSeccionesPw, ListaGridListaSecciones, SeccionPwFiltroPlantillaPw, EnvioDocumento, DocumentoPw, VersionDocumentoBeneficio } from '@planificacion/models/interfaces/documentosportalweb';
+import {
+  SeccionPlantillaPw,
+  DocumentoSeccionPw,
+  ColumnasReporte,
+  IDocumentosPortaWeb,
+  SubSeccionTipoDetallePw,
+  ListaSubSeccionesPw,
+  ListaGridListaSecciones,
+  SeccionPwFiltroPlantillaPw,
+  EnvioDocumento,
+  DocumentoPw,
+  VersionDocumentoBeneficio,
+} from '@planificacion/models/interfaces/documentosportalweb';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { PageSizeItem, AddEvent } from '@progress/kendo-angular-grid';
 import { SortDescriptor } from '@progress/kendo-data-query';
@@ -14,7 +26,7 @@ import { IntegraService } from '@shared/services/integra.service';
 import Swal from 'sweetalert2';
 
 interface versionesDPW {
-  Id:number;
+  Id: number;
   IdDocumentoPw: number;
   introduccion: string;
   idVersionPrograma: number;
@@ -39,7 +51,7 @@ export class DocumentosPortalWebComponent implements OnInit {
   gridListaRevisionNivel = new KendoGrid();
   listaSeleccion: number[] = [];
   comboPlantilla: IComboBase1[];
-  dataVersion : versionesDPW[] = [];
+  dataVersion: versionesDPW[] = [];
   plantillas: SeccionPlantillaPw[] = [];
   documentos: DocumentoSeccionPw[] = [];
   loaderModal: boolean = false;
@@ -75,17 +87,130 @@ export class DocumentosPortalWebComponent implements OnInit {
     },
   ];
 
+  introduccionModalidad = '';
+
+  comboModalidades = [
+    { id: 'VIVO', nombre: 'Modalidad en vivo' },
+    { id: 'RITMO', nombre: 'Modalidad a tu ritmo' },
+  ];
+
+  comboHoras = [
+    { id: 'PECO', nombre: 'Hora Perú y Colombia' },
+    { id: 'MX', nombre: 'Hora México' },
+    { id: 'CL', nombre: 'Hora Chile' },
+  ];
+
+  listaModalidadHorarios: any[] = [];
+  modalidadActivaIndex: number | null = null;
+
+  agregarModalidadHorario() {
+    this.listaModalidadHorarios.push({
+      idModalidad: null,
+      subtitulo: '',
+      descripcion: '',
+      informacion: [],
+    });
+    this.modalidadActivaIndex = this.listaModalidadHorarios.length - 1;
+  }
+
+  cambioModalidad(mi: number) {
+    this.modalidadActivaIndex = mi;
+
+    const mod = this.listaModalidadHorarios[mi];
+    if (!mod) return;
+
+    mod.informacion = [];
+
+    if (mod.idModalidad === 'VIVO') {
+      mod.informacion.push({
+        etiqueta: 'Hora 1',
+        tipo: 'HORA',
+        valor: null,
+        valorTexto: '',
+      });
+    }
+
+    if (mod.idModalidad === 'RITMO') {
+      mod.informacion.push({
+        etiqueta: 'Beneficio 1',
+        tipo: 'BENEFICIO',
+        valor: null,
+        valorTexto: '',
+      });
+    }
+  }
+
+  obtenerTextoAgregarInformacion() {
+    if (this.modalidadActivaIndex === null) return 'Agregar Información';
+    const mod = this.listaModalidadHorarios[this.modalidadActivaIndex];
+    if (!mod?.idModalidad) return 'Agregar Información';
+    if (mod.idModalidad === 'VIVO') return 'Agregar Hora';
+    if (mod.idModalidad === 'RITMO') return 'Agregar Beneficio';
+    return 'Agregar Información';
+  }
+
+  agregarInformacionHorario() {
+    if (
+      !this.listaModalidadHorarios ||
+      this.listaModalidadHorarios.length === 0
+    )
+      return;
+
+    const idx =
+      this.modalidadActivaIndex !== null
+        ? this.modalidadActivaIndex
+        : this.listaModalidadHorarios.length - 1;
+
+    const mod = this.listaModalidadHorarios[idx];
+    if (!mod) return;
+
+    if (!mod.idModalidad) return;
+
+    if (!mod.informacion) mod.informacion = [];
+
+    if (mod.idModalidad === 'VIVO') {
+      const n =
+        mod.informacion.filter((x: any) => x.tipo === 'HORA').length + 1;
+      mod.informacion.push({
+        etiqueta: `Hora ${n}`,
+        tipo: 'HORA',
+        valor: null,
+        valorTexto: '',
+      });
+    }
+
+    if (mod.idModalidad === 'RITMO') {
+      const n =
+        mod.informacion.filter((x: any) => x.tipo === 'BENEFICIO').length + 1;
+      mod.informacion.push({
+        etiqueta: `Beneficio ${n}`,
+        tipo: 'BENEFICIO',
+        valor: null,
+        valorTexto: '',
+      });
+    }
+  }
+
+  seleccionarModalidad(mi: number) {
+    this.modalidadActivaIndex = mi;
+  }
+
+  eliminarInformacionHorario(mi: number, ii: number) {
+    const mod = this.listaModalidadHorarios[mi];
+    if (!mod?.informacion) return;
+    mod.informacion.splice(ii, 1);
+  }
+
   formDatosDocumento: FormGroup = this.formBuilder.group({
     id: 0,
     nombre: [null, Validators.required],
     idPlantilla: [0, [Validators.required]],
   });
 
-  
   formVersionBeneficios: FormGroup = this.formBuilder.group({
-    Introduccion1: "",
-    Introduccion2: "",
-    Introduccion3: "",
+    Introduccion1: '',
+    Introduccion2: '',
+    Introduccion3: '',
   });
   ngOnInit(): void {
     this.obtenerComboPlantilla();
@@ -137,21 +262,30 @@ export class DocumentosPortalWebComponent implements OnInit {
                     f.field = `_${f.idSeccionTipoDetallePw}_${e.id}`;
                   });
                   e.grid = new KendoGrid();
-                  this.configurarGridConsultasForo(e.grid, e.listaSubSeccionesPw);
+                  this.configurarGridConsultasForo(
+                    e.grid,
+                    e.listaSubSeccionesPw
+                  );
                   e.cabecera = seccionGrid.cabecera;
                   e.piePagina = seccionGrid.piePagina;
-                  let numeroFilas = seccionGrid.listaSubSeccionesPw.map(x => x.numeroFila);
+                  let numeroFilas = seccionGrid.listaSubSeccionesPw.map(
+                    (x) => x.numeroFila
+                  );
                   numeroFilas = Array.from(new Set(numeroFilas));
                   numeroFilas.forEach((x) => {
-                    let fila = seccionGrid.listaSubSeccionesPw.filter((a) => a.numeroFila == x )
+                    let fila = seccionGrid.listaSubSeccionesPw.filter(
+                      (a) => a.numeroFila == x
+                    );
                     let objGrid: {
-                      [key: string]: string 
-                    } = {}
+                      [key: string]: string;
+                    } = {};
                     fila.forEach((i) => {
-                      objGrid[`_${i.idSeccionTipoDetallePw}_${seccionGrid.idSeccionPW}`] = i.contenidoSubSeccion;
+                      objGrid[
+                        `_${i.idSeccionTipoDetallePw}_${seccionGrid.idSeccionPW}`
+                      ] = i.contenidoSubSeccion;
                     });
                     e.grid.data.push(objGrid);
-                  })
+                  });
                 } else {
                   e.idGrid = `grid_${e.id}_${e.id}`;
                   e.listaSubSeccionesPw = e.listaSubSeccionesPw;
@@ -161,14 +295,16 @@ export class DocumentosPortalWebComponent implements OnInit {
                   e.listaSubSeccionesPw.forEach((f) => {
                     f.field = `_${f.idSeccionTipoDetallePw}_${e.id}`;
                   });
-                  this.configurarGridConsultasForo(e.grid, e.listaSubSeccionesPw);
+                  this.configurarGridConsultasForo(
+                    e.grid,
+                    e.listaSubSeccionesPw
+                  );
                 }
-
               } else if (e.idSeccionTipoContenido == 2) {
                 if (seccionGrid == undefined || seccionGrid == null) {
-                  e.contenido = ''
+                  e.contenido = '';
                 } else {
-                  e.contenido = seccionGrid.contenido
+                  e.contenido = seccionGrid.contenido;
                 }
               }
             });
@@ -343,8 +479,11 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
 
   //ABRIR MODALES
-  cargar : boolean =false;
-  async abrirModalNuevoEditarDocumento(modal: any, dataItem?: IDocumentosPortaWeb) {
+  cargar: boolean = false;
+  async abrirModalNuevoEditarDocumento(
+    modal: any,
+    dataItem?: IDocumentosPortaWeb
+  ) {
     this.formDatosDocumento.reset();
     this.formVersionBeneficios.reset();
     this.plantillas = [];
@@ -383,10 +522,10 @@ export class DocumentosPortalWebComponent implements OnInit {
     gridPlantilla.formGroup = this.formBuilder.group(
       this.crearObjetoDesdeListaForm(columnas)
     );
-    gridPlantilla.addEvent$.subscribe((resp) => { 
-      console.log("Resp",resp)
-      console.log(columnas)
-      console.log(gridPlantilla)
+    gridPlantilla.addEvent$.subscribe((resp) => {
+      console.log('Resp', resp);
+      console.log(columnas);
+      console.log(gridPlantilla);
     });
     gridPlantilla.cellCloseEvent$.subscribe((resp) => {
       resp.dataItem[resp.columnField] = resp.formGroup.get(
@@ -403,7 +542,6 @@ export class DocumentosPortalWebComponent implements OnInit {
     });
   }
 
-
   objetoEnviar() {
     let dataFrom = this.formDatosDocumento.getRawValue();
     let objDocumento: IDocumentosPortaWeb = {
@@ -412,22 +550,22 @@ export class DocumentosPortalWebComponent implements OnInit {
       idPlantillaPw: dataFrom.idPlantilla,
       estadoFlujo: 1,
     };
-    let introduccionBasica:VersionDocumentoBeneficio ={
-      IdVersionPrograma : 1,
-      introduccion : this.formVersionBeneficios.get('Introduccion1').value,
-    }
-    let introduccionProfesional:VersionDocumentoBeneficio ={
-      IdVersionPrograma : 2,
-      introduccion : this.formVersionBeneficios.get('Introduccion2').value,
-    }
-    let introduccionGerencial:VersionDocumentoBeneficio ={
-      IdVersionPrograma : 3,
-      introduccion : this.formVersionBeneficios.get('Introduccion3').value,
-    }
-    console.log("Basica : " , introduccionBasica,)
-    console.log("Profesional : " ,introduccionProfesional )
-    console.log("Gerencial : " , introduccionGerencial)
-    let ListaIntroduccionVersiones:Array<VersionDocumentoBeneficio> =[];
+    let introduccionBasica: VersionDocumentoBeneficio = {
+      IdVersionPrograma: 1,
+      introduccion: this.formVersionBeneficios.get('Introduccion1').value,
+    };
+    let introduccionProfesional: VersionDocumentoBeneficio = {
+      IdVersionPrograma: 2,
+      introduccion: this.formVersionBeneficios.get('Introduccion2').value,
+    };
+    let introduccionGerencial: VersionDocumentoBeneficio = {
+      IdVersionPrograma: 3,
+      introduccion: this.formVersionBeneficios.get('Introduccion3').value,
+    };
+    console.log('Basica : ', introduccionBasica);
+    console.log('Profesional : ', introduccionProfesional);
+    console.log('Gerencial : ', introduccionGerencial);
+    let ListaIntroduccionVersiones: Array<VersionDocumentoBeneficio> = [];
     ListaIntroduccionVersiones.push(introduccionBasica);
     ListaIntroduccionVersiones.push(introduccionProfesional);
     ListaIntroduccionVersiones.push(introduccionGerencial);
@@ -439,7 +577,7 @@ export class DocumentosPortalWebComponent implements OnInit {
             id: x.id,
             contenido: window.btoa(unescape(encodeURIComponent(x.contenido))),
             titulo: x.nombre,
-            cabecera: x.cabecera? x.cabecera :'',
+            cabecera: x.cabecera ? x.cabecera : '',
             piePagina: '',
             idPlantillaPw: x.idPlantillaPw,
             idPlantilla: x.idPlantilla,
@@ -452,7 +590,7 @@ export class DocumentosPortalWebComponent implements OnInit {
             ordenEeb: x.ordenEeb,
             idSeccionTipoDetallePw: null,
             idSeccionPW: x.id,
-            idSeccionTipoContenido: x.idSeccionTipoContenido
+            idSeccionTipoContenido: x.idSeccionTipoContenido,
           };
 
           objeto['listaGridListaSecciones'] = [];
@@ -461,9 +599,10 @@ export class DocumentosPortalWebComponent implements OnInit {
         } else if (x.idSeccionTipoContenido == 1) {
           let valorListaSubSeccion;
           if (x.listaSubSeccionesPw[0] != undefined) {
-            valorListaSubSeccion = x.listaSubSeccionesPw[0].idSeccionTipoDetallePw
+            valorListaSubSeccion =
+              x.listaSubSeccionesPw[0].idSeccionTipoDetallePw;
           } else {
-            valorListaSubSeccion = 0
+            valorListaSubSeccion = 0;
           }
           let objeto: SeccionPwFiltroPlantillaPw = {
             id: x.id,
@@ -483,38 +622,38 @@ export class DocumentosPortalWebComponent implements OnInit {
             idSeccionTipoDetallePw: valorListaSubSeccion,
             idSeccionPW: x.id,
             idSeccionTipoContenido: x.idSeccionTipoContenido,
-            listaGridListaSecciones: []
+            listaGridListaSecciones: [],
           };
-          
+
           objeto['listaGridListaSecciones'] = [];
-          
-          let cont = 1
+
+          let cont = 1;
           if (x.grid.data != undefined || x.grid.data != null) {
             x.grid.data.forEach((data: any) => {
               for (const key in data) {
-                  let dataGrilla: ListaGridListaSecciones = {
-                    clave: key,
-                    valor: data[key],
-                    numeroFila: cont,
-                  }
-                  objeto.listaGridListaSecciones.push(dataGrilla);
+                let dataGrilla: ListaGridListaSecciones = {
+                  clave: key,
+                  valor: data[key],
+                  numeroFila: cont,
+                };
+                objeto.listaGridListaSecciones.push(dataGrilla);
               }
-              cont++
+              cont++;
             });
           } else {
             x.grid.data.forEach((data: any) => {
               for (const key in data) {
-                  let dataGrilla: ListaGridListaSecciones = {
-                    clave: '',
-                    valor: '',
-                    numeroFila: cont,
-                  }
-                  objeto.listaGridListaSecciones.push(dataGrilla);
+                let dataGrilla: ListaGridListaSecciones = {
+                  clave: '',
+                  valor: '',
+                  numeroFila: cont,
+                };
+                objeto.listaGridListaSecciones.push(dataGrilla);
               }
-              cont++
+              cont++;
             });
           }
-          
+
           listaPlantilla.push(objeto);
         }
       } else {
@@ -534,35 +673,35 @@ export class DocumentosPortalWebComponent implements OnInit {
           ordenEeb: x.ordenEeb,
           idSeccionTipoDetallePw: null,
           idSeccionPW: x.id,
-          idSeccionTipoContenido: x.idSeccionTipoContenido
-        }
-        
+          idSeccionTipoContenido: x.idSeccionTipoContenido,
+        };
+
         objeto['listaGridListaSecciones'] = [];
 
-        let cont = 1
+        let cont = 1;
         if (x.grid.data != undefined || x.grid.data != null) {
           x.grid.data.forEach((data: any) => {
             for (const key in data) {
-                let dataGrilla: ListaGridListaSecciones = {
-                  clave: key,
-                  valor: data[key],
-                  numeroFila: cont,
-                }
-                objeto.listaGridListaSecciones.push(dataGrilla);
+              let dataGrilla: ListaGridListaSecciones = {
+                clave: key,
+                valor: data[key],
+                numeroFila: cont,
+              };
+              objeto.listaGridListaSecciones.push(dataGrilla);
             }
-            cont++
+            cont++;
           });
         } else {
           x.grid.data.forEach((data: any) => {
             for (const key in data) {
-                let dataGrilla: ListaGridListaSecciones = {
-                  clave: '',
-                  valor: '',
-                  numeroFila: cont,
-                }
-                objeto.listaGridListaSecciones.push(dataGrilla);
+              let dataGrilla: ListaGridListaSecciones = {
+                clave: '',
+                valor: '',
+                numeroFila: cont,
+              };
+              objeto.listaGridListaSecciones.push(dataGrilla);
             }
-            cont++
+            cont++;
           });
         }
         listaPlantilla.push(objeto);
@@ -571,26 +710,31 @@ export class DocumentosPortalWebComponent implements OnInit {
     let envio: EnvioDocumento = {
       objetoDocumento: objDocumento,
       lista: listaPlantilla,
-      listaIntroduccionBeneficios:ListaIntroduccionVersiones,
+      listaIntroduccionBeneficios: ListaIntroduccionVersiones,
     };
     return envio;
   }
 
-  asignarvalores(dataItem :IDocumentosPortaWeb )
-  {
+  asignarvalores(dataItem: IDocumentosPortaWeb) {
     this.obtenerIntroduccion(dataItem.id);
     if (this.dataVersion) {
       this.dataVersion.forEach((version) => {
-        console.log("Versiones:", version);
+        console.log('Versiones:', version);
         switch (version.idVersionPrograma) {
           case 1:
-            this.formVersionBeneficios.get('Introduccion1').setValue(version.introduccion);
+            this.formVersionBeneficios
+              .get('Introduccion1')
+              .setValue(version.introduccion);
             break;
           case 2:
-            this.formVersionBeneficios.get('Introduccion2').setValue(version.introduccion);
+            this.formVersionBeneficios
+              .get('Introduccion2')
+              .setValue(version.introduccion);
             break;
           case 3:
-            this.formVersionBeneficios.get('Introduccion3').setValue(version.introduccion);
+            this.formVersionBeneficios
+              .get('Introduccion3')
+              .setValue(version.introduccion);
             break;
         }
       });
@@ -599,10 +743,12 @@ export class DocumentosPortalWebComponent implements OnInit {
   async obtenerIntroduccion(idDocumentoPw: number): Promise<versionesDPW[]> {
     try {
       const resp: HttpResponse<versionesDPW[]> = await this.integraService
-        .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerIntroduccionVersionDocumento}/${idDocumentoPw}`)
+        .getJsonResponse(
+          `${constApiPlanificacion.DocumentoPwObtenerIntroduccionVersionDocumento}/${idDocumentoPw}`
+        )
         .toPromise();
-  
-      console.log("Introducciones obtenidas:", resp.body);
+
+      console.log('Introducciones obtenidas:', resp.body);
       return resp.body || [];
     } catch (error) {
       console.error('Error al obtener introducciones:', error);
@@ -616,7 +762,9 @@ export class DocumentosPortalWebComponent implements OnInit {
     introducciones.forEach((version) => {
       const controlName = `Introduccion${version.idVersionPrograma}`;
       if (this.formVersionBeneficios.get(controlName)) {
-        this.formVersionBeneficios.get(controlName).setValue(version.introduccion);
+        this.formVersionBeneficios
+          .get(controlName)
+          .setValue(version.introduccion);
       }
     });
     if (!introducciones.some((v) => v.idVersionPrograma === 1)) {
@@ -629,10 +777,4 @@ export class DocumentosPortalWebComponent implements OnInit {
       this.formVersionBeneficios.get('Introduccion3').setValue('');
     }
   }
-
-
-
-
-  
-
 }

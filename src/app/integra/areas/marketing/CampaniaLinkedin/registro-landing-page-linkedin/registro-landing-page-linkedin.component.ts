@@ -239,6 +239,7 @@ export class RegistroLandingPageLinkedinComponent implements OnInit {
         },
       });
   }
+  
   ObtenerIndustria() {
     this._integraService
       .getJsonResponse(constApiPlanificacion.IndustriaObtenerCombo)

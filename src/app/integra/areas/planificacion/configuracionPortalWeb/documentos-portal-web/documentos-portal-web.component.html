@@ -542,7 +542,12 @@
                     </div>
                   </ng-container>
                   <ng-template #inputSection>
-                    <ng-container *ngIf="item.idSeccionTipoContenido === 1 && item.nombre!='Prerrequisitos'">
+                    <ng-container
+                      *ngIf="
+                        item.idSeccionTipoContenido === 1 &&
+                        item.nombre != 'Prerrequisitos'
+                      "
+                    >
                       <div class="row mb-3">
                         <label
                           class="col-sm-4 col-md-2 fw-bold"
@@ -648,6 +653,176 @@
         </div>
       </div>
     </div>
+
+    <!-- Aqui empezamos pummbaa  -->
+    <div class="card mt-4">
+      <div class="card-header bg-color-material">
+        <h2 class="mb-0 w-100 text-center text-white">
+          Seccion Modalidad y Horarios
+        </h2>
+      </div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-header">
+        <h2 class="mb-0 fw-bold" style="color: orange">Modalidad</h2>
+      </div>
+
+      <div class="card-body">
+        <div class="row mb-3 align-items-center">
+          <div class="col-sm-12 col-md-2 fw-bold">Introducción</div>
+          <div class="col-sm-12 col-md-10">
+            <kendo-textbox [(ngModel)]="introduccionModalidad"></kendo-textbox>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-12 d-flex gap-2">
+            <button
+              kendoButton
+              themeColor="primary"
+              icon="plus"
+              (click)="agregarModalidadHorario()"
+            >
+              Agregar Modalidad
+            </button>
+
+            <button
+              kendoButton
+              themeColor="primary"
+              icon="plus"
+              (click)="agregarInformacionHorario()"
+            >
+              {{ obtenerTextoAgregarInformacion() }}
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width: 200px">Modalidad</th>
+                <th style="width: 240px">Subtitulo</th>
+                <th>Descripción</th>
+                <th style="width: 120px"></th>
+                <th style="width: 320px">Información</th>
+                <th style="width: 90px" class="text-center">Eliminar</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <ng-container
+                *ngFor="let mod of listaModalidadHorarios; let mi = index"
+              >
+                <ng-container
+                  *ngIf="mod?.informacion?.length > 0; else sinInfo"
+                >
+                  <ng-container
+                    *ngFor="let info of mod.informacion; let ii = index"
+                  >
+                    <tr (click)="seleccionarModalidad(mi)">
+                      <td
+                        *ngIf="ii === 0"
+                        [attr.rowspan]="mod.informacion.length"
+                      >
+                        <kendo-dropdownlist
+                          [data]="comboModalidades"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [(ngModel)]="mod.idModalidad"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                          (valueChange)="cambioModalidad(mi)"
+                        ></kendo-dropdownlist>
+                      </td>
+
+                      <td
+                        *ngIf="ii === 0"
+                        [attr.rowspan]="mod.informacion.length"
+                      >
+                        <kendo-textbox
+                          [(ngModel)]="mod.subtitulo"
+                        ></kendo-textbox>
+                      </td>
+
+                      <td
+                        *ngIf="ii === 0"
+                        [attr.rowspan]="mod.informacion.length"
+                      >
+                        <kendo-textbox
+                          [(ngModel)]="mod.descripcion"
+                        ></kendo-textbox>
+                      </td>
+
+                      <td class="text-nowrap">
+                        <span>{{ info.etiqueta }}</span>
+                      </td>
+
+                      <td>
+                        <kendo-dropdownlist
+                          *ngIf="mod.idModalidad === 'VIVO'"
+                          [data]="comboHoras"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [(ngModel)]="info.valor"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                        ></kendo-dropdownlist>
+
+                        <kendo-textbox
+                          *ngIf="mod.idModalidad === 'RITMO'"
+                          [(ngModel)]="info.valorTexto"
+                        ></kendo-textbox>
+                      </td>
+
+                      <td class="text-center">
+                        <button
+                          kendoButton
+                          themeColor="error"
+                          icon="trash"
+                          fillMode="solid"
+                          (click)="eliminarInformacionHorario(mi, ii)"
+                        ></button>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+
+                <ng-template #sinInfo>
+                  <tr (click)="seleccionarModalidad(mi)">
+                    <td>
+                      <kendo-dropdownlist
+                        [data]="comboModalidades"
+                        textField="nombre"
+                        valueField="id"
+                        [valuePrimitive]="true"
+                        [(ngModel)]="mod.idModalidad"
+                        [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                        (valueChange)="cambioModalidad(mi)"
+                      ></kendo-dropdownlist>
+                    </td>
+                    <td>
+                      <kendo-textbox
+                        [(ngModel)]="mod.subtitulo"
+                      ></kendo-textbox>
+                    </td>
+                    <td>
+                      <kendo-textbox
+                        [(ngModel)]="mod.descripcion"
+                      ></kendo-textbox>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center"></td>
+                  </tr>
+                </ng-template>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div>
       <div class="card">
         <div class="modal-header bg-primary-header-modal">
@@ -655,7 +830,7 @@
             Introduccion Beneficios
           </h1>
         </div>
-        <div >
+        <div>
           <!-- CONTENT -->
           <form
             class="k-form k-form-horizontal"
@@ -665,13 +840,19 @@
             <div class="row">
               <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
                 <kendo-formfield orientation="horizontal">
-                  <label [for]="nombrebeneficioBasico" class="d-flex align-items-end">
+                  <label
+                    [for]="nombrebeneficioBasico"
+                    class="d-flex align-items-end"
+                  >
                     <span
                       ><b>Beneficios Basico</b
                       ><strong class="text-danger">*</strong>:</span
                     >
                   </label>
-                  <kendo-textbox #nombrebeneficioBasico formControlName="Introduccion1">
+                  <kendo-textbox
+                    #nombrebeneficioBasico
+                    formControlName="Introduccion1"
+                  >
                   </kendo-textbox>
                 </kendo-formfield>
               </div>
@@ -679,13 +860,19 @@
             <div class="row">
               <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
                 <kendo-formfield orientation="horizontal">
-                  <label [for]="nombrebeneficiosProfesional" class="d-flex align-items-end">
+                  <label
+                    [for]="nombrebeneficiosProfesional"
+                    class="d-flex align-items-end"
+                  >
                     <span
                       ><b>Beneficios Profesional</b
                       ><strong class="text-danger">*</strong>:</span
                     >
                   </label>
-                  <kendo-textbox #nombrebeneficiosProfesional formControlName="Introduccion2">
+                  <kendo-textbox
+                    #nombrebeneficiosProfesional
+                    formControlName="Introduccion2"
+                  >
                   </kendo-textbox>
                 </kendo-formfield>
               </div>
@@ -693,13 +880,19 @@
             <div class="row">
               <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
                 <kendo-formfield orientation="horizontal">
-                  <label [for]="nombrebeneficiosGerencial" class="d-flex align-items-end">
+                  <label
+                    [for]="nombrebeneficiosGerencial"
+                    class="d-flex align-items-end"
+                  >
                     <span
                       ><b>Beneficios Gerencial</b
                       ><strong class="text-danger">*</strong>:</span
                     >
                   </label>
-                  <kendo-textbox #nombrebeneficiosGerencial formControlName="Introduccion3">
+                  <kendo-textbox
+                    #nombrebeneficiosGerencial
+                    formControlName="Introduccion3"
+                  >
                   </kendo-textbox>
                 </kendo-formfield>
               </div>
