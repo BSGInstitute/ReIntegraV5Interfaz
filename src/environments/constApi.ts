@@ -2450,6 +2450,17 @@ export const constApiMarketing = {
   EliminarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EliminarCampania',
   ObtenerMensajeGeneradoPorId: '/CampaniaRemarketingGeneral/ObtenerMensajeGeneradoPorId',
   ReenviarMensajeGenerado: '/CampaniaRemarketingGeneral/ReenviarMensajeGenerado',
+
+  // CATEGORIA ARGUMENTOS
+  ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',
+  CrearProgramaConfigurado: '/CategoriaArgumentos/CrearProgramaConfigurado',
+  EditarProgramaConfigurado: '/CategoriaArgumentos/EditarProgramaConfigurado',
+  EliminarProgramaConfigurado: '/CategoriaArgumentos/EliminarProgramaConfigurado',
+  ObtenerListadoProgramaGeneralValido: '/CategoriaArgumentos/ObtenerListadoProgramaGeneralValido',
+  ObtenerListadoCategoriaArgumento: '/CategoriaArgumentos/ObtenerListadoCategoriaArgumento',
+  CrearCategoriaArgumento: '/CategoriaArgumentos/CrearCategoriaArgumento',
+  EditarCategoriaArgumento: '/CategoriaArgumentos/EditarCategoriaArgumento',
+  EliminarCategoriaArgumento: '/CategoriaArgumentos/EliminarCategoriaArgumento',
 };
 
 

@@ -1,0 +1,194 @@
+<!-- Botones de accion -->
+<div class="d-flex justify-content-between my-4">
+  <button
+    class="btn btn-icon me-2"
+    (click)="recargarCategorias()"
+    aria-label="Recargar"
+    title="Recargar categorías"
+  >
+    <i class="material-icons">refresh</i>
+  </button>
+  <button
+    class="btn text-white"
+    style="background-color: #3f51b5"
+    (click)="crearCategoriaArgumento()"
+  >
+    Nueva Campaña
+  </button>
+</div>
+
+<!-- Tabla de categorias-->
+<kendo-grid
+  [data]="listadoCategorias"
+  [style.width]="'100%'"
+  [style.minWidth.px]="600"
+  class="table-striped-rows"
+  [loading]="isLoading"
+>
+  <kendo-grid-column
+    field="id"
+    title="ID"
+    [width]="100"
+    [headerStyle]="{
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      verticalAlign: 'middle',
+      fontWeight: '500'
+    }"
+    [style]="{ textAlign: 'center' }"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ dataItem.id }}
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column
+    field="nombre"
+    title="Nombre"
+    [headerStyle]="{
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      verticalAlign: 'middle',
+      fontWeight: '500'
+    }"
+    [style]="{ textAlign: 'center' }"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ dataItem.nombre }}
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column
+    field="usuarioModificacion"
+    title="Usuario Modificación"
+    [width]="250"
+    [headerStyle]="{
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      verticalAlign: 'middle',
+      fontWeight: '500'
+    }"
+    [style]="{ textAlign: 'center' }"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ dataItem.usuarioModificacion }}
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column
+    field="fechaModificacion"
+    title="Fecha Modificación"
+    [width]="250"
+    [headerStyle]="{
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      verticalAlign: 'middle',
+      fontWeight: '500'
+    }"
+    [style]="{ textAlign: 'center' }"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ dataItem.fechaModificacion | date : "yyyy-MM-dd HH:mm:ss" }}
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column
+    title="Acciones"
+    [width]="300"
+    [headerStyle]="{
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      verticalAlign: 'middle',
+      fontWeight: '500'
+    }"
+    [style]="{ textAlign: 'center' }"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <button
+        class="bg-warning text-white mx-2 btn btn-sm"
+        (click)="editarCategoria(dataItem.id)"
+      >
+        <i class="material-icons">edit</i>
+      </button>
+      <button
+        class="bg-danger text-white mx-2 btn btn-sm"
+        (click)="eliminarCategoria(dataItem.id)"
+      >
+        <i class="material-icons">delete</i>
+      </button>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+<p *ngIf="listadoCategorias.length > 0" class="text-end p-3">
+  Cantidad total: {{ listadoCategorias.length }}
+</p>
+
+<!-- Modal para crear/editar categoría -->
+<div
+  class="modal fade show"
+  tabindex="-1"
+  role="dialog"
+  [ngStyle]="{
+    display: showModal ? 'block' : 'none',
+    background: showModal ? 'rgba(0,0,0,0.4)' : 'transparent'
+  }"
+  [ngClass]="{ 'd-block': showModal }"
+  aria-modal="true"
+  *ngIf="showModal"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #3f51b5">
+        <h3 class="modal-title m-0">
+          {{ isEditMode ? "Editar Categoría" : "Nueva Categoría" }}
+        </h3>
+        <button
+          type="button"
+          aria-label="Close"
+          (click)="cerrarModal()"
+          class="btn-close btn-close-white"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form (ngSubmit)="guardarCategoria()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="categoriaNombre" class="form-label"
+              >Nombre de la categoría</label
+            >
+            <input
+              id="categoriaNombre"
+              class="form-control"
+              [(ngModel)]="categoriaNombre"
+              name="categoriaNombre"
+              required
+              maxlength="100"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cerrarModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="!categoriaNombre || isLoadingModal"
+          >
+            {{ isEditMode ? "Guardar Cambios" : "Crear" }}
+            <span
+              *ngIf="isLoadingModal"
+              class="spinner-border spinner-border-sm ms-2"
+            ></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

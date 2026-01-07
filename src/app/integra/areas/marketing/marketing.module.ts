@@ -178,6 +178,9 @@ import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campani
 import { GraficaRendimientoComponent } from './campanias-mailing/campania-remarketing-general/grafica-rendimiento/grafica-rendimiento.component';
 import { CrearEditarCampaniaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/crear-editar-campania.component';
 import { DetalleCampaniaComponent } from './campanias-mailing/campania-remarketing-general/detalle-campania/detalle-campania.component';
+import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
+import { CategoriasComponent } from './configuraciones/categoria-argumentos/categorias/categorias.component';
+import { ProgramasComponent } from './configuraciones/categoria-argumentos/programas/programas.component';
 
 
 @NgModule({
@@ -356,7 +359,10 @@ import { DetalleCampaniaComponent } from './campanias-mailing/campania-remarketi
     CampaniaRemarketingGeneralComponent,
     GraficaRendimientoComponent,
     CrearEditarCampaniaComponent,
-    DetalleCampaniaComponent
+    DetalleCampaniaComponent,
+    CategoriaArgumentosComponent,
+    CategoriasComponent,
+    ProgramasComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

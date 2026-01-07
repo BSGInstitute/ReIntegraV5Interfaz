@@ -70,6 +70,7 @@ import { FormulariosProgressiveProfilingComponent } from './configuraciones/form
 import { CreacionOportunidadMasivaComponent } from './gestion-oportunidades/creacion-oportunidad-masiva/creacion-oportunidad-masiva.component';
 import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
 import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
+import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
 const routes: Routes = [
   {
     path: '',
@@ -321,6 +322,7 @@ const routes: Routes = [
       {path:'CreacionOportunidadMasiva',component:CreacionOportunidadMasivaComponent},
       {path:'MessengerFacebookChat',component:MessengerFacebookChatComponent},
       {path:'CampaniaRemarketingGeneral',component:CampaniaRemarketingGeneralComponent},
+      {path:'CategoriaArgumentos', component: CategoriaArgumentosComponent},
     ],
   },
 ];
