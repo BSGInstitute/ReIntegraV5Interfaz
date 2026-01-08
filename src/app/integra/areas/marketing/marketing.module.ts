@@ -174,6 +174,10 @@ import { FacebookLeadsRecuperacionDatosService } from '@shared/services/facebook
 import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
 import { MessengerFacebookChatGrillaComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-grilla/messenger-facebook-chat-grilla.component';
 import { MessengerFacebookChatModalComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-modal/messenger-facebook-chat-modal.component';
+import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
+import { GraficaRendimientoComponent } from './campanias-mailing/campania-remarketing-general/grafica-rendimiento/grafica-rendimiento.component';
+import { CrearEditarCampaniaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/crear-editar-campania.component';
+import { DetalleCampaniaComponent } from './campanias-mailing/campania-remarketing-general/detalle-campania/detalle-campania.component';
 
 
 @NgModule({
@@ -348,7 +352,11 @@ import { MessengerFacebookChatModalComponent } from './campania-facebook/messeng
     ModalDetalleLeadFacebookComponent,
     MessengerFacebookChatComponent,
     MessengerFacebookChatGrillaComponent,
-    MessengerFacebookChatModalComponent
+    MessengerFacebookChatModalComponent,
+    CampaniaRemarketingGeneralComponent,
+    GraficaRendimientoComponent,
+    CrearEditarCampaniaComponent,
+    DetalleCampaniaComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
