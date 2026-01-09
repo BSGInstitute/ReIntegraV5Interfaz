@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { constApiMarketing } from '@environments/constApi';
+import { CategoriaArgumento } from '@marketing/models/interfaces/categoria-argumentos';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import Swal from 'sweetalert2';
-
-interface CategoriaArgumento {
-  id: number;
-  nombre: string;
-  usuarioModificacion: string;
-  fechaModificacion: Date;
-}
 
 @Component({
   selector: 'app-categorias',

@@ -181,6 +181,8 @@ import { DetalleCampaniaComponent } from './campanias-mailing/campania-remarketi
 import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
 import { CategoriasComponent } from './configuraciones/categoria-argumentos/categorias/categorias.component';
 import { ProgramasComponent } from './configuraciones/categoria-argumentos/programas/programas.component';
+import { ModalEditarProgramaComponent } from './configuraciones/categoria-argumentos/programas/modal-editar-programa/modal-editar-programa.component';
+import { ModalCrearProgramaComponent } from './configuraciones/categoria-argumentos/programas/modal-crear-programa/modal-crear-programa.component';
 
 
 @NgModule({
@@ -362,7 +364,9 @@ import { ProgramasComponent } from './configuraciones/categoria-argumentos/progr
     DetalleCampaniaComponent,
     CategoriaArgumentosComponent,
     CategoriasComponent,
-    ProgramasComponent
+    ProgramasComponent,
+    ModalEditarProgramaComponent,
+    ModalCrearProgramaComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
