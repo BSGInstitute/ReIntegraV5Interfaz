@@ -168,6 +168,11 @@ export interface EnvioFiltroSegmen{
        ConsiderarInteraccionChatMessenger :boolean,
        ConsiderarEnvioAutomatico :boolean,
        ConsiderarUltimaOportunidad :boolean,
+       ConsiderarMayorProbabilidadInscripcion :boolean,
+       ConsiderarMayorProbabilidadInscripcionVentaCruzada :boolean,
+       ConsiderarProbabilidad :boolean,
+       ConsiderarProbabilidadVentaCruzada :boolean,
+       ConsiderarEmbudo :boolean,
        ExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal :boolean,
          FechaInicioExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal : string,
          FechaFinExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal : string,
@@ -186,6 +191,7 @@ export interface EnvioFiltroSegmen{
          FechaFinMatriculaAlumno : string,
         ConsiderarAlumnosAsignacionAutomaticaOperaciones :boolean,
         ExcluirMatriculados :boolean,
+        ConsiderarExcluirCampania :boolean,
 
        AplicaSobreCreacionOportunidad :boolean,
         IdOperadorMedidaTiempoCreacionOportunidad : number,
@@ -195,7 +201,8 @@ export interface EnvioFiltroSegmen{
         NroMedidaTiempoUltimaActividadEjecutada : number,
         EnvioAutomaticoEstadoActividadDetalle :number,
        ConsiderarYaEnviados :boolean,
-
+        FechaInicioExclusionCampania : string,
+        FechaFinExclusionCampania : string,
 
         ListaArea : Array <any>,
         ListaSubArea : Array <any>,
@@ -263,5 +270,16 @@ export interface EnvioFiltroSegmen{
         ListaUOSubArea : Array <any>,
         ListaUOPGeneral : Array <any>,
 
+        ListaMPIArea : Array <any>,
+        ListaMPISubArea : Array <any>,
+        ListaMPIPGeneral : Array <any>,
+
+        ListaProbabilidadValor : Array <any>,
+        ListaProbabilidadArea : Array <any>,
+        ListaProbabilidadSubArea : Array <any>,
+        ListaProbabilidadPGeneral : Array <any>,
+
+        ListaNivelEmbudoEsquema1 : Array <any>,
+        ListaNivelEmbudoEsquema2 : Array <any>,
 
 }

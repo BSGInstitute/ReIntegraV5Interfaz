@@ -176,6 +176,8 @@ import { MessengerFacebookChatGrillaComponent } from './campania-facebook/messen
 import { MessengerFacebookChatModalComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-modal/messenger-facebook-chat-modal.component';
 import { UltimaOportunidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
 import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
+import { ProbabilidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/probabilidad/probabilidad.component';
+import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/embudo/embudo.component';
 
 
 @NgModule({
@@ -352,7 +354,9 @@ import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento
     MessengerFacebookChatGrillaComponent,
     MessengerFacebookChatModalComponent,
     UltimaOportunidadComponent,
-    MayorProbInscripcionComponent
+    MayorProbInscripcionComponent,
+    ProbabilidadComponent,
+    EmbudoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

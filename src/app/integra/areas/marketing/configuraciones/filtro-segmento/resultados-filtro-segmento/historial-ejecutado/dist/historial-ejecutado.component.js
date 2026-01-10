@@ -29,7 +29,7 @@ var HistorialEjecutadoComponent = /** @class */ (function () {
         }
         setInterval(function () {
             _this.obtenerHistorialEjecutado();
-        }, 5000);
+        }, 60000);
     };
     HistorialEjecutadoComponent.prototype.ngOnInit = function () {
         this.obtenerHistorialEjecutado();

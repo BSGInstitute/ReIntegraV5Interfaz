@@ -16,11 +16,11 @@ import {
 import { MultiSelectComponent } from '@progress/kendo-angular-dropdowns';
 
 @Component({
-  selector: 'app-ultima-oportunidad',
-  templateUrl: './ultima-oportunidad.component.html',
-  styleUrls: ['./ultima-oportunidad.component.scss']
+  selector: 'app-probabilidad',
+  templateUrl: './probabilidad.component.html',
+  styleUrls: ['./probabilidad.component.scss']
 })
-export class UltimaOportunidadComponent implements OnInit, OnChanges {
+export class ProbabilidadComponent implements OnInit, OnChanges {
 
   @ViewChild('areaFiltro') public areaFiltro: MultiSelectComponent;
   @ViewChild('subareaFiltro') public subareaFiltro: MultiSelectComponent;
@@ -33,9 +33,11 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
   ) {}
   ngOnChanges(): void {
     if (this.datosActualizar != undefined) {
-      this.datos = this.datosActualizar.considerarUltimaOportunidad;
+      this.considerarProbabilidad = this.datosActualizar.considerarProbabilidad;
+      this.considerarProbabilidadVentaCruzada = this.datosActualizar.considerarProbabilidadVentaCruzada;
     }
     this.obtenerAreaCapacitacion();
+    this.obtenerProbabilidad();
   }
 
   @Input() datosActualizar: any;
@@ -43,8 +45,10 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
   ngOnInit(): void {
   }
 
-  datos = false;
+  considerarProbabilidad = false;
+  considerarProbabilidadVentaCruzada = false;
   loading: any;
+  listaProbabilidad: any;
 
   listaArea: any = [];
   listaSubArea: any = [];
@@ -54,13 +58,18 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
   enviolistaSubArea = '';
   enviolistaPGeneral = '';
 
-  areaUOEnvio: Array<any> = [];
-  subareaUOEnvio: Array<any> = [];
-  programaUOEnvio: Array<any> = [];
+  areaProbabilidadEnvio: Array<any> = [];
+  subareaProbabilidadEnvio: Array<any> = [];
+  programaProbabilidadEnvio: Array<any> = [];
+  valorProbabilidadEnvio: Array<any> = [];
 
   areaFiltrada: any = [];
   subareaFiltrada: any = [];
   programaFiltrada: any = [];
+
+  //----AutocompleteProbabilidad---------//
+
+  probabilidades: any = [];
 
   //----AutocompleteArea---------//
 
@@ -75,12 +84,61 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
   //----AutocompletePrograma---------//
 
   programas: any = [];
-  //---------------Seteo de Datos------------------//
-  setAll(e: any) {
-    this.datos = e;
+  //---------------Seteo de ConsiderarProbabilidad------------------//
+  setConsiderarProbabilidad(e: any) {
+    if(e){
+      this.considerarProbabilidad = e;
+    }
+    else{
+      this.considerarProbabilidad = false;
+      this.considerarProbabilidadVentaCruzada = false;
+    }
+  }
+  //---------------Seteo de ConsiderarProbabilidadVentaCruzada------------------//
+  setConsiderarProbabilidadVentaCruzada(e: any) {
+    if(e){
+      this.considerarProbabilidad = e;
+      this.considerarProbabilidadVentaCruzada = e;
+    }
+    else{
+      this.considerarProbabilidadVentaCruzada = false;
+    }
   }
 
   //-------------------Funciones Obtener ---------------------//
+
+  obtenerProbabilidad() {
+    this.loading = true;
+    this.integraService
+      .obtener(constApiMarketing.ObtenerProbabilidad)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.loading = false;
+          this.listaProbabilidad = response.body;
+
+          if (this.datosActualizar != undefined) {
+            this.probabilidades = [];
+            this.valorProbabilidadEnvio = [];
+            this.listaProbabilidad.forEach((p: any) => {
+              this.datosActualizar.listaProbabilidadValor.forEach(
+                (e: any) => {
+                  if (p.id == e.valor) {
+                    this.probabilidades.push(p);
+                  }
+                }
+              );
+            });
+            this.probabilidades.forEach((e: any) => {
+              this.valorProbabilidadEnvio.push({ Valor: e.id });
+            });
+          }
+        },
+        error: (error) => {
+          this.alertaService.mensajeError(error);
+        },
+        complete: () => {},
+      });
+  }
 
   obtenerAreaCapacitacion() {
     this.loading = true;
@@ -91,11 +149,12 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
           this.loading = false;
           this.listaArea = response.body;
           this.areas = [];
-          this.areaUOEnvio = [];
+          this.areaProbabilidadEnvio = [];
           this.areaFiltrada = this.listaArea;
+
           if (this.datosActualizar != undefined) {
             this.listaArea.forEach((p: any) => {
-              this.datosActualizar.listaUOArea.forEach((e: any) => {
+              this.datosActualizar.listaProbabilidadArea.forEach((e: any) => {
                 if (p.id == e.valor) {
                   this.areas.push(p);
                   this.areasListaId.push(p.id);
@@ -103,12 +162,12 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
                 }
               });
             });
-            if(this.datosActualizar.listaUOArea.length>0){
+            if(this.datosActualizar.listaProbabilidadArea.length>0){
               this.obtenerSubAreaCapacitacion();
             }
 
             this.areas.forEach((e: any) => {
-              this.areaUOEnvio.push({ Valor: e.id });
+              this.areaProbabilidadEnvio.push({ Valor: e.id });
             });
           }
         },
@@ -135,9 +194,9 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
           this.subareaFiltrada = this.listaSubArea;
 
           if (this.datosActualizar != undefined) {
-            this.subareaUOEnvio = [];
+            this.subareaProbabilidadEnvio = [];
             this.listaSubArea.forEach((p: any) => {
-              this.datosActualizar.listaUOSubArea.forEach((e: any) => {
+              this.datosActualizar.listaProbabilidadSubArea.forEach((e: any) => {
                 if (p.id == e.valor) {
                   this.subareas.push(p);
                   this.subareasListaId.push(p.id);
@@ -146,15 +205,15 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
                 }
               });
             });
-            if(this.datosActualizar.listaUOSubArea.length>0){
+            if(this.datosActualizar.listaProbabilidadSubArea.length>0){
               this.obtenerProgramaGeneral();
             }
 
             this.subareas.forEach((e: any) => {
-              this.subareaUOEnvio.push({ Valor: e.id });
+              this.subareaProbabilidadEnvio.push({ Valor: e.id });
             });
 
-            this.datosActualizar.listaUOSubArea = [];
+            this.datosActualizar.listaProbabilidadSubArea = [];
           }
         },
         error: (error) => {
@@ -183,9 +242,9 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
           this.listaPrograma = response.body;
           this.programaFiltrada = this.listaPrograma;
           if (this.datosActualizar != undefined) {
-            this.programaUOEnvio = [];
+            this.programaProbabilidadEnvio = [];
             this.listaPrograma.forEach((p: any) => {
-              this.datosActualizar.listaUOPGeneral.forEach((e: any) => {
+              this.datosActualizar.listaProbabilidadPGeneral.forEach((e: any) => {
                 if (p.id == e.valor) {
                   this.programas.push(p);
                 }
@@ -193,10 +252,10 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
             });
 
             this.programas.forEach((e: any) => {
-              this.programaUOEnvio.push({ Valor: e.id });
+              this.programaProbabilidadEnvio.push({ Valor: e.id });
             });
 
-            this.datosActualizar.listaUOPGeneral = [];
+            this.datosActualizar.listaProbabilidadPGeneral = [];
           }
         },
         error: (error) => {
@@ -208,11 +267,11 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
   //---------AutocompleteArea----------------//
 
   valueChangeArea(e: any) {
-    this.areaUOEnvio = [];
+    this.areaProbabilidadEnvio = [];
     this.listaSubArea=[]
     this.areasListaId = []
     this.enviolistaArea=''
-    this.subareaUOEnvio = [];
+    this.subareaProbabilidadEnvio = [];
     this.subareaFiltrada=[]
     this.subareas = []
     this.subareasListaId = []
@@ -220,10 +279,10 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
     this.programas = []
     this.listaPrograma=[]
     this.programaFiltrada=[]
-    this.programaUOEnvio = []
+    this.programaProbabilidadEnvio = []
     if (e.length >0){
     e.forEach((f: any) => {
-      this.areaUOEnvio.push({ Valor: f.id });
+      this.areaProbabilidadEnvio.push({ Valor: f.id });
       this.areasListaId.push(f.id);
       this.enviolistaArea = this.areasListaId.join(',');
     });
@@ -243,11 +302,11 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
     }
   }
   removeTagArea(e: any) {
-    this.areaUOEnvio.splice(e.id, 1);
+    this.areaProbabilidadEnvio.splice(e.id, 1);
     this.listaSubArea=[]
     this.areasListaId = []
     this.enviolistaArea=''
-    this.subareaUOEnvio = [];
+    this.subareaProbabilidadEnvio = [];
     this.subareaFiltrada=[]
     this.subareas = []
     this.subareasListaId = []
@@ -255,23 +314,23 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
     this.programas = []
     this.listaPrograma=[]
     this.programaFiltrada=[]
-    this.programaUOEnvio = []
+    this.programaProbabilidadEnvio = []
   }
 
   //---------AutocompleteSubArea----------------//
 
   valueChangeSubArea(e: any) {
 
-    this.subareaUOEnvio = [];
+    this.subareaProbabilidadEnvio = [];
     this.subareasListaId = []
     this.enviolistaSubArea=''
     this.programas = []
     this.listaPrograma=[]
     this.programaFiltrada=[]
-    this.programaUOEnvio = []
+    this.programaProbabilidadEnvio = []
     if (e.length >0){
     e.forEach((f: any) => {
-      this.subareaUOEnvio.push({ Valor: f.id });
+      this.subareaProbabilidadEnvio.push({ Valor: f.id });
       this.subareasListaId.push(f.id);
       this.enviolistaSubArea = this.subareasListaId.join(',');
     });
@@ -291,7 +350,7 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
     }
   }
   removeTagSubArea(e: any) {
-    this.subareaUOEnvio.splice(e.id, 1);
+    this.subareaProbabilidadEnvio.splice(e.id, 1);
     this.subareaFiltrada=[]
     this.subareas = []
     this.subareasListaId = []
@@ -301,10 +360,10 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
   //---------AutocompleteProgramaGeneral----------------//
 
   valueChangePrograma(e: any) {
-    this.programaUOEnvio = [];
+    this.programaProbabilidadEnvio = [];
 
     e.forEach((f: any) => {
-      this.programaUOEnvio.push({ Valor: f.id });
+      this.programaProbabilidadEnvio.push({ Valor: f.id });
     });
   }
 
@@ -319,6 +378,22 @@ export class UltimaOportunidadComponent implements OnInit, OnChanges {
     }
   }
   removeTagPrograma(e: any) {
-    this.programaUOEnvio.splice(e.id, 1);
+    this.programaProbabilidadEnvio.splice(e.id, 1);
   }
+
+  //---------AutocompleteProbabilidad----------------//
+
+  valueChangeProbabilidad(e: any) {
+    this.valorProbabilidadEnvio = [];
+    e.forEach((f: any) => {
+      this.valorProbabilidadEnvio.push({ Valor: f.id });
+    });
+  }
+
+  filterChangeProbabilidad(e: any) {}
+  removeTagProbabilidad(e: any) {
+    this.valorProbabilidadEnvio.splice(e.id, 1);
+  }
+
 }
+
