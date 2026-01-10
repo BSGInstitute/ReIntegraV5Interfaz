@@ -54,41 +54,6 @@ export class ProgramasComponent implements OnInit {
       });
   }
 
-  // crearProgramaConfigurado(): void {
-  //   if (!this.programaSeleccionado) {
-  //     this._alertaService.notificationError(
-  //       'Debe seleccionar un programa válido'
-  //     );
-  //     return;
-  //   }
-
-  //   this.isLoadingModalCrearPrograma = true;
-  //   const request = {
-  //     IdProgramaGeneral: this.programaSeleccionado.id,
-  //     nombre: this.programaSeleccionado.nombre,
-  //   };
-
-  //   this.integraService
-  //     .postJsonResponse(constApiMarketing.CrearProgramaConfigurado, request)
-  //     .subscribe({
-  //       next: (data: any) => {
-  //         this._alertaService.notificationSuccess(
-  //           'Programa creado exitosamente'
-  //         );
-  //         this.cerrarModalCrearPrograma();
-  //         this.recargarProgramasConfigurados();
-  //         this.abrirModalEditarPrograma(
-  //           data.body,
-  //           true,
-  //           this.programaSeleccionado.nombre
-  //         );
-  //       },
-  //       error: (err) => {
-  //         this._alertaService.notificationError('Error al crear el programa');
-  //         this.isLoadingModalCrearPrograma = false;
-  //       },
-  //     });
-  // }
   recargarProgramasConfigurados(): void {
     this.obtenerProgramasConfigurados();
   }
