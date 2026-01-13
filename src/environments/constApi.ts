@@ -2966,7 +2966,7 @@ export const constApiPlanificacion = {
   EmpresaObtenerNombreCodigoCIIUPorFiltro:
     '/Empresa/ObtenerNombreCodigoCIIUPorFiltro',
   // EmpresaObtenerFiltroAutocomplete: '/Empresa/ObtenerFiltroAutocomplete',
-
+  
   IndustriaInsertar: '/Industria/Insertar',
   IndustriaInsertarLista: '/Industria/InsertarLista',
   IndustriaActualizar: '/Industria/Actualizar',
@@ -4000,6 +4000,7 @@ export const constApiPlanificacion = {
 
   MontoPagoLogObtenerReporteMontoPagoHistorico:
     '/MontoPagoLog/ObtenerReporteMontoPagoHistorico',
+  DocumentoPWModalidadObtenerCombo: '/DocumentoPWModalidad/ObtenerCombo',
 };
 
 export const constApiFinanzas = {

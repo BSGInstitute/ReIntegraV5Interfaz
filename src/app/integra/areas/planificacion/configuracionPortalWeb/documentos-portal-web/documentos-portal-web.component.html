@@ -654,7 +654,7 @@
       </div>
     </div>
 
-    <!-- Aqui empezamos pummbaa  -->
+    <!-- Aqui empezamos pummbaa Req de Opa  -->
     <div class="card mt-4">
       <div class="card-header bg-color-material">
         <h2 class="mb-0 w-100 text-center text-white">
@@ -682,6 +682,7 @@
               themeColor="primary"
               icon="plus"
               (click)="agregarModalidadHorario()"
+              [disabled]="!puedeAgregarModalidad()"
             >
               Agregar Modalidad
             </button>
@@ -691,6 +692,7 @@
               themeColor="primary"
               icon="plus"
               (click)="agregarInformacionHorario()"
+              [disabled]="!puedeAgregarInformacion()"
             >
               {{ obtenerTextoAgregarInformacion() }}
             </button>
@@ -704,7 +706,7 @@
                 <th style="width: 200px">Modalidad</th>
                 <th style="width: 240px">Subtitulo</th>
                 <th>Descripción</th>
-                <th style="width: 120px"></th>
+                <th style="width: 140px"></th>
                 <th style="width: 320px">Información</th>
                 <th style="width: 90px" class="text-center">Eliminar</th>
               </tr>
@@ -732,7 +734,7 @@
                           [valuePrimitive]="true"
                           [(ngModel)]="mod.idModalidad"
                           [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
-                          (valueChange)="cambioModalidad(mi)"
+                          (valueChange)="cambioModalidad(mi, $event)"
                         ></kendo-dropdownlist>
                       </td>
 
@@ -759,29 +761,53 @@
                       </td>
 
                       <td>
-                        <kendo-dropdownlist
-                          *ngIf="mod.idModalidad === 'VIVO'"
-                          [data]="comboHoras"
-                          textField="nombre"
-                          valueField="id"
-                          [valuePrimitive]="true"
-                          [(ngModel)]="info.valor"
-                          [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
-                        ></kendo-dropdownlist>
+                        <div class="d-flex align-items-center gap-2">
+                          <kendo-dropdownlist
+                            *ngIf="mod.idModalidad === 'VIVO'"
+                            class="flex-grow-1"
+                            [data]="comboHoras"
+                            textField="nombre"
+                            valueField="id"
+                            [valuePrimitive]="true"
+                            [(ngModel)]="info.valor"
+                            [defaultItem]="{
+                              id: null,
+                              nombre: 'Seleccione...'
+                            }"
+                          ></kendo-dropdownlist>
 
-                        <kendo-textbox
-                          *ngIf="mod.idModalidad === 'RITMO'"
-                          [(ngModel)]="info.valorTexto"
-                        ></kendo-textbox>
+                          <kendo-textbox
+                            *ngIf="mod.idModalidad === 'RITMO'"
+                            class="flex-grow-1"
+                            [(ngModel)]="info.valorTexto"
+                          ></kendo-textbox>
+
+                          <button
+                            kendoButton
+                            themeColor="error"
+                            icon="trash"
+                            fillMode="solid"
+                            title="Eliminar hora/beneficio"
+                            (click)="
+                              eliminarInformacionHorario(mi, ii);
+                              $event.stopPropagation()
+                            "
+                          ></button>
+                        </div>
                       </td>
 
-                      <td class="text-center">
+                      <td
+                        *ngIf="ii === 0"
+                        class="text-center"
+                        [attr.rowspan]="mod.informacion.length"
+                      >
                         <button
                           kendoButton
                           themeColor="error"
                           icon="trash"
                           fillMode="solid"
-                          (click)="eliminarInformacionHorario(mi, ii)"
+                          title="Eliminar modalidad"
+                          (click)="eliminarModalidad(mi, $event)"
                         ></button>
                       </td>
                     </tr>
@@ -798,7 +824,7 @@
                         [valuePrimitive]="true"
                         [(ngModel)]="mod.idModalidad"
                         [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
-                        (valueChange)="cambioModalidad(mi)"
+                        (valueChange)="cambioModalidad(mi, $event)"
                       ></kendo-dropdownlist>
                     </td>
                     <td>
@@ -813,7 +839,16 @@
                     </td>
                     <td></td>
                     <td></td>
-                    <td class="text-center"></td>
+                    <td class="text-center">
+                      <button
+                        kendoButton
+                        themeColor="error"
+                        icon="trash"
+                        fillMode="solid"
+                        title="Eliminar modalidad"
+                        (click)="eliminarModalidad(mi, $event)"
+                      ></button>
+                    </td>
                   </tr>
                 </ng-template>
               </ng-container>
@@ -822,6 +857,266 @@
         </div>
       </div>
     </div>
+    <!-- Duracion -->
+
+    <div class="card mt-2">
+      <div class="card-header">
+        <h2 class="mb-0 fw-bold" style="color: orange">Duración</h2>
+      </div>
+
+      <div class="card-body">
+        <div class="row mb-3 align-items-center">
+          <div class="col-sm-12 col-md-2 fw-bold">Titulo</div>
+          <div class="col-sm-12 col-md-10">
+            <kendo-textbox [(ngModel)]="tituloDuracion"></kendo-textbox>
+          </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+          <div class="col-sm-12 col-md-2 fw-bold">Introducción</div>
+          <div class="col-sm-12 col-md-10">
+            <kendo-textbox [(ngModel)]="introduccionDuracion"></kendo-textbox>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-12 d-flex gap-2">
+            <button
+              kendoButton
+              themeColor="primary"
+              icon="plus"
+              (click)="agregarDuracionDetalle()"
+              [disabled]="!puedeAgregarDuracionDetalle()"
+            >
+              Agregar
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width: 260px">Versión</th>
+                <th>Meses</th>
+                <th>Horas</th>
+                <th style="width: 90px" class="text-center">Eliminar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container
+                *ngIf="listaDuracionDetalle?.length > 0; else sinDuracion"
+              >
+                <tr *ngFor="let det of listaDuracionDetalle; let di = index">
+                  <td>
+                    <kendo-dropdownlist
+                      [data]="comboVersionPrograma"
+                      textField="nombre"
+                      valueField="id"
+                      [valuePrimitive]="true"
+                      [(ngModel)]="det.idVersionPrograma"
+                      [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                      (valueChange)="cambioVersionDuracion(di, $event)"
+                    ></kendo-dropdownlist>
+                  </td>
+
+                  <td>
+                    <kendo-textbox [(ngModel)]="det.meses"></kendo-textbox>
+                  </td>
+
+                  <td>
+                    <kendo-textbox [(ngModel)]="det.horas"></kendo-textbox>
+                  </td>
+
+                  <td class="text-center">
+                    <button
+                      kendoButton
+                      themeColor="error"
+                      icon="trash"
+                      fillMode="solid"
+                      title="Eliminar"
+                      (click)="eliminarDuracionDetalle(di, $event)"
+                    ></button>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-template #sinDuracion>
+                <tr>
+                  <td colspan="4" class="text-center">Sin registros</td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row mt-3 align-items-center">
+          <div class="col-sm-12 col-md-2 fw-bold">Pie de página</div>
+          <div class="col-sm-12 col-md-10">
+            <kendo-textbox [(ngModel)]="pieDePaginaDuracion"></kendo-textbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fecha Inicio -->
+
+    <div class="card mt-4">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h2 class="mb-0 fw-bold" style="color: orange">Fechas de Inicio</h2>
+
+        <div class="d-flex align-items-center gap-2">
+          <span class="fw-bold">Mostrar en la Web</span>
+          <input
+            type="checkbox"
+            class="form-check-input m-0"
+            [(ngModel)]="fechaInicioMostrarEnLaWeb"
+          />
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="row mb-3 align-items-center">
+          <div class="col-sm-12 col-md-2 fw-bold">Titulo</div>
+          <div class="col-sm-12 col-md-10">
+            <kendo-textbox [(ngModel)]="fechaInicioTitulo"></kendo-textbox>
+          </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+          <div class="col-sm-12 col-md-2 fw-bold">Subtitulo</div>
+          <div class="col-sm-12 col-md-10">
+            <kendo-textbox [(ngModel)]="fechaInicioSubTitulo"></kendo-textbox>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-12 d-flex gap-2">
+            <button
+              kendoButton
+              themeColor="primary"
+              icon="plus"
+              (click)="agregarPaisFechaInicio()"
+              [disabled]="!puedeAgregarPaisFechaInicio()"
+            >
+              Agregar Pais
+            </button>
+
+            <button
+              kendoButton
+              themeColor="primary"
+              icon="plus"
+              (click)="agregarModoFechaInicio()"
+              [disabled]="!puedeAgregarModoFechaInicio()"
+            >
+              Agregar Modo
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle mb-0">
+            <thead>
+              <tr>
+                <th style="width: 200px">Pais</th>
+                <th style="width: 200px">Modo</th>
+                <th style="width: 220px">Fecha</th>
+                <th>Horario</th>
+                <th style="width: 90px" class="text-center">Eliminar</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <ng-container
+                *ngFor="let p of listaFechaInicioPaises; let pi = index"
+              >
+                <ng-container *ngIf="p?.detalles?.length > 0; else sinDetalle">
+                  <ng-container *ngFor="let d of p.detalles; let di = index">
+                    <tr (click)="seleccionarPaisFechaInicio(pi)">
+                      <td *ngIf="di === 0" [attr.rowspan]="p.detalles.length">
+                        <kendo-dropdownlist
+                          [data]="obtenerComboPaisesFechaInicio(pi)"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [(ngModel)]="p.idPais"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                          (valueChange)="cambioPaisFechaInicio(pi, $event)"
+                        ></kendo-dropdownlist>
+                      </td>
+
+                      <td>
+                        <kendo-dropdownlist
+                          [data]="comboFechaInicioModos"
+                          textField="nombre"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [(ngModel)]="d.idModo"
+                          [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                          (valueChange)="cambioModoFechaInicio(pi, di, $event)"
+                        ></kendo-dropdownlist>
+                      </td>
+
+                      <td>
+                        <kendo-datetimepicker
+                          [(ngModel)]="d.fecha"
+                        ></kendo-datetimepicker>
+                      </td>
+
+                      <td>
+                        <kendo-textbox [(ngModel)]="d.horario"></kendo-textbox>
+                      </td>
+
+                      <td class="text-center">
+                        <button
+                          kendoButton
+                          themeColor="error"
+                          icon="trash"
+                          fillMode="solid"
+                          (click)="eliminarDetalleFechaInicio(pi, di, $event)"
+                        ></button>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+
+                <ng-template #sinDetalle>
+                  <tr (click)="seleccionarPaisFechaInicio(pi)">
+                    <td>
+                      <kendo-dropdownlist
+                        [data]="obtenerComboPaisesFechaInicio(pi)"
+                        textField="nombre"
+                        valueField="id"
+                        [valuePrimitive]="true"
+                        [(ngModel)]="p.idPais"
+                        [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
+                        (valueChange)="cambioPaisFechaInicio(pi, $event)"
+                      ></kendo-dropdownlist>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center">
+                      <button
+                        kendoButton
+                        themeColor="error"
+                        icon="trash"
+                        fillMode="solid"
+                        (click)="eliminarPaisFechaInicio(pi, $event)"
+                      ></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Notas  -->
+    <!-- Aqui terminamos pummbaa Req de Opa  -->
 
     <div>
       <div class="card">
