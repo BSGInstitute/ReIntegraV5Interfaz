@@ -174,6 +174,10 @@ import { FacebookLeadsRecuperacionDatosService } from '@shared/services/facebook
 import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
 import { MessengerFacebookChatGrillaComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-grilla/messenger-facebook-chat-grilla.component';
 import { MessengerFacebookChatModalComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-modal/messenger-facebook-chat-modal.component';
+import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
+import { GraficaRendimientoComponent } from './campanias-mailing/campania-remarketing-general/grafica-rendimiento/grafica-rendimiento.component';
+import { CrearEditarCampaniaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/crear-editar-campania.component';
+import { DetalleCampaniaComponent } from './campanias-mailing/campania-remarketing-general/detalle-campania/detalle-campania.component';
 import { UltimaOportunidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
 import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
 import { ProbabilidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/probabilidad/probabilidad.component';
@@ -352,6 +356,11 @@ import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-fi
     ModalDetalleLeadFacebookComponent,
     MessengerFacebookChatComponent,
     MessengerFacebookChatGrillaComponent,
+    MessengerFacebookChatModalComponent,
+    CampaniaRemarketingGeneralComponent,
+    GraficaRendimientoComponent,
+    CrearEditarCampaniaComponent,
+    DetalleCampaniaComponent
     MessengerFacebookChatModalComponent,
     UltimaOportunidadComponent,
     MayorProbInscripcionComponent,

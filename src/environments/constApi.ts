@@ -2435,9 +2435,25 @@ export const constApiMarketing = {
     '/MessengerFacebookChat/EnviarMensajeTexto',
   ObtenerDatosGeneralesAlumnosPorPSID:
     '/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID',
+
+  // CAMPAÑA REMARKETING GENERAL
+  ObtenerListadoRemarketingGeneral: '/CampaniaRemarketingGeneral/ObtenerListadoCampania',
+  ObtenerRendimientoListadoCampanias: '/CampaniaRemarketingGeneral/ObtenerRendimientoListadoCampanias',
+  ObtenerCombosConfiguracionCampania: '/CampaniaRemarketingGeneral/ObtenerCombosConfiguracionCampania',
+  ObtenerListadoSegmentosCreados: '/CampaniaRemarketingGeneral/ObtenerListadoSegmentosCreados',
+  ObtenerCampaniaRemarketingPorId: '/CampaniaRemarketingGeneral/ObtenerCampaniaRemarketingPorId',
+  GuardarEjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/GuardarEjecutarEnvioCampaniaRemarketing',
+  EditarEjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarEjecutarEnvioCampaniaRemarketing',
+  ObtenerResultadosGeneracionTexto: '/CampaniaRemarketingGeneral/ObtenerResultadosGeneracionTextoPorCampania',
+  VerDetallesCampaniaRemarketing: '/CampaniaRemarketingGeneral/VerDetallesCampania',
+  EditarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarCampania',
+  EliminarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EliminarCampania',
+  ObtenerMensajeGeneradoPorId: '/CampaniaRemarketingGeneral/ObtenerMensajeGeneradoPorId',
+  ReenviarMensajeGenerado: '/CampaniaRemarketingGeneral/ReenviarMensajeGenerado',
   RemarketingEmbudoNivelEsquema: '/RemarketingEmbudoHistorico/ObtenerNivelEsquemaEmbudoRemarketing',
 
 };
+
 
 export const constApiGestionPersonal = {
   //Modulo gestion personal junior
