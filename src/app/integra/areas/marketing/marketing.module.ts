@@ -178,6 +178,10 @@ import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campani
 import { GraficaRendimientoComponent } from './campanias-mailing/campania-remarketing-general/grafica-rendimiento/grafica-rendimiento.component';
 import { CrearEditarCampaniaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/crear-editar-campania.component';
 import { DetalleCampaniaComponent } from './campanias-mailing/campania-remarketing-general/detalle-campania/detalle-campania.component';
+import { UltimaOportunidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
+import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
+import { ProbabilidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/probabilidad/probabilidad.component';
+import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/embudo/embudo.component';
 import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
 import { CategoriasComponent } from './configuraciones/categoria-argumentos/categorias/categorias.component';
 import { ProgramasComponent } from './configuraciones/categoria-argumentos/programas/programas.component';
@@ -361,6 +365,12 @@ import { ModalCrearProgramaComponent } from './configuraciones/categoria-argumen
     CampaniaRemarketingGeneralComponent,
     GraficaRendimientoComponent,
     CrearEditarCampaniaComponent,
+    DetalleCampaniaComponent,
+    MessengerFacebookChatModalComponent,
+    UltimaOportunidadComponent,
+    MayorProbInscripcionComponent,
+    ProbabilidadComponent,
+    EmbudoComponent
     DetalleCampaniaComponent,
     CategoriaArgumentosComponent,
     CategoriasComponent,

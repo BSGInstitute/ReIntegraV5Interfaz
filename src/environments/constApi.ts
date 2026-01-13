@@ -2450,6 +2450,8 @@ export const constApiMarketing = {
   EliminarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EliminarCampania',
   ObtenerMensajeGeneradoPorId: '/CampaniaRemarketingGeneral/ObtenerMensajeGeneradoPorId',
   ReenviarMensajeGenerado: '/CampaniaRemarketingGeneral/ReenviarMensajeGenerado',
+  RemarketingEmbudoNivelEsquema: '/RemarketingEmbudoHistorico/ObtenerNivelEsquemaEmbudoRemarketing',
+
 
   // CATEGORIA ARGUMENTOS
   ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',
