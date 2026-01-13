@@ -360,7 +360,7 @@ import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-fi
     CampaniaRemarketingGeneralComponent,
     GraficaRendimientoComponent,
     CrearEditarCampaniaComponent,
-    DetalleCampaniaComponent
+    DetalleCampaniaComponent,
     MessengerFacebookChatModalComponent,
     UltimaOportunidadComponent,
     MayorProbInscripcionComponent,
