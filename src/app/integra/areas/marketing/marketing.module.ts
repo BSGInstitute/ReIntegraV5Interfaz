@@ -370,7 +370,7 @@ import { ModalCrearProgramaComponent } from './configuraciones/categoria-argumen
     UltimaOportunidadComponent,
     MayorProbInscripcionComponent,
     ProbabilidadComponent,
-    EmbudoComponent
+    EmbudoComponent,
     DetalleCampaniaComponent,
     CategoriaArgumentosComponent,
     CategoriasComponent,
