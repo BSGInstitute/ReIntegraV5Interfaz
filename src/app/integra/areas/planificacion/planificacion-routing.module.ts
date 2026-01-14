@@ -80,6 +80,7 @@ import { ConfigurarGrabacionesOnlineComponent } from './configuracion-portal-web
 import { BsgCelularesComponent } from './maestros/bsgcelulares/bsgcelulares.component';
 import { ProblemaClienteConfiguracionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/problema-cliente-configuracion.component';
 import { CostoCreditosComponent } from './maestros/costo-creditos/costo-creditos.component';
+import { AprobacionDescuentoComponent } from './configuracionprogramascapacitacion/aprobacion-descuento/aprobacion-descuento.component';
 
 const routes: Routes = [
   {
@@ -128,6 +129,7 @@ const routes: Routes = [
 
       //CONFIGURACION PROGRAMAS CAPACITACION
       { path: 'TipoDescuento', component: TipoDescuentoProgramaComponent },
+      { path: 'AprobacionDescuento', component: AprobacionDescuentoComponent },
 
       //CONFIGURACION DOCENTE
       {

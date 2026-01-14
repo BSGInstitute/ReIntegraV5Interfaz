@@ -27,6 +27,7 @@ interface ITipoDescuento {
   fraccionesMatricula: number;
   porcentajeCuotas: number;
   cuotasAdicionales: number;
+  idTipoDescuentoNivelAprobacion: number;
 }
 interface coordinadorContenido {
   id: number;
@@ -36,6 +37,7 @@ interface Combo{
   tiposUsuario : IComboBase1[];
   formulaTipoDescuentos: IComboBase1[];
   programasGeneral:IComboBase1[];
+  nivelesTipoDescuento:IComboBase1[];
 }
 
 /**
@@ -61,6 +63,7 @@ export class TipoDescuentoProgramaComponent implements OnInit {
   idsAsesorCoordinador: coordinadorContenido[] = [];
  
   dataAgendaTipoUsuario: IComboBase1[]=[];
+  dataNivelTipoDescuento: IComboBase1[]=[];
   dataFormulaTipoDescuento: IComboBase1[]=[];
   dataProgramaGeneral:IComboBase1[]=[];
   listaPGeneral:any[] = [];
@@ -89,6 +92,7 @@ export class TipoDescuentoProgramaComponent implements OnInit {
     porcentajeCuotas: [0],
     cuotasAdicionales: [0],
     idsAsesorCoordinador: [null],
+    idNivelTipoDescuento: [null],
   });
   // formAreaEditarAsociar: FormGroup = this.formBuilder.group({
   //   id: [0],
@@ -111,6 +115,7 @@ export class TipoDescuentoProgramaComponent implements OnInit {
   ngOnInit(): void {
     this.obtenerTipoDescuento();
     this.obtenerCombos();
+    this.obtenerNivelesAprobacion();
     this.obtenerPGeneral();
     this.userService.userData;
   }
@@ -151,6 +156,21 @@ export class TipoDescuentoProgramaComponent implements OnInit {
           this.loaderModal = false;
           this.alertaService.notificationWarning(
             `Surgio un error: ${e.error.title}`
+          );
+        },
+      });
+  }
+
+  obtenerNivelesAprobacion(): void {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.ObtenerNivelesAprobacion)
+      .subscribe({
+        next: (response: HttpResponse<IComboBase1[]>) => {
+          this.dataNivelTipoDescuento = response.body;
+        },
+        error: (e: any) => {
+          this.alertaService.notificationWarning(
+            `Surgio un error al cargar los niveles de aprobacion: ${e.error?.title || e.message}`
           );
         },
       });
@@ -260,6 +280,7 @@ export class TipoDescuentoProgramaComponent implements OnInit {
       porcentajeCuotas: dataItem.porcentajeCuotas ?? 0,
       cuotasAdicionales: dataItem.cuotasAdicionales ?? 0,
       idsAsesorCoordinador: [],
+      idNivelTipoDescuento: dataItem.idTipoDescuentoNivelAprobacion ?? 0,
     });
     this.obtenerTiposPorIdTipoDescuento(dataItem.id);
   }
@@ -287,6 +308,7 @@ export class TipoDescuentoProgramaComponent implements OnInit {
         fraccionesMatricula: dataCompleta.fraccionesMatricula,
         porcentajeCuotas: dataCompleta.porcentajeCuotas,
         cuotasAdicionales: dataCompleta.cuotasAdicionales,
+        idTipoDescuentoNivelAprobacion:dataCompleta.idNivelTipoDescuento,
 
         TipoDescuentoAsesorCoordinadorPw: dataCompleta.idsAsesorCoordinador,
       };
@@ -308,6 +330,7 @@ export class TipoDescuentoProgramaComponent implements OnInit {
               fraccionesMatricula: response.body.fraccionesMatricula,
               porcentajeCuotas: response.body.porcentajeCuotas,
               cuotasAdicionales: response.body.cuotasAdicionales,
+              idTipoDescuentoNivelAprobacion: response.body?.idTipoDescuentoNivelAprobacion ?? 0,
             };
             this.gridTipoDescuentoPrograma.data.unshift(nuevaFila);
             this.gridTipoDescuentoPrograma.loadData();
@@ -345,6 +368,7 @@ export class TipoDescuentoProgramaComponent implements OnInit {
         fraccionesMatricula: dataCompleta.fraccionesMatricula,
         porcentajeCuotas: dataCompleta.porcentajeCuotas,
         cuotasAdicionales: dataCompleta.cuotasAdicionales,
+        idTipoDescuentoNivelAprobacion:dataCompleta.idNivelTipoDescuento,
 
         tipoDescuentoAsesorCoordinadorPw: dataCompleta.idsAsesorCoordinador,
       };
@@ -365,7 +389,8 @@ export class TipoDescuentoProgramaComponent implements OnInit {
             this.dataItemTemp.fraccionesMatricula = response.body.fraccionesMatricula;
             this.dataItemTemp.porcentajeCuotas = response.body.porcentajeCuotas;
             this.dataItemTemp.cuotasAdicionales = response.body.cuotasAdicionales;
-
+            this.dataItemTemp.idTipoDescuentoNivelAprobacion = response.body.idTipoDescuentoNivelAprobacion;
+            this.gridTipoDescuentoPrograma.loadData();
             this.loaderModal = false;
             Swal.fire(
               '¡Actualizado!',

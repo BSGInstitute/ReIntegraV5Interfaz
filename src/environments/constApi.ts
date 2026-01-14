@@ -3147,14 +3147,15 @@ export const constApiPlanificacion = {
 
   //PLANIFICACION CONFIGURACION PROGRAMAS
   //TIPO DESCUENTO PROGRAMA
-  TipoDescuentoObtener: '/TipoDescuento/Obtener', //GET
+  TipoDescuentoObtener: '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
   TipoDescuentoObtenerCombosModulo: '/TipoDescuento/ObtenerCombosModulo', //GET
   TipoDescuentoEliminar: '/TipoDescuento/Eliminar', //DELETE
   TipoDescuentoInsertar: '/TipoDescuento/Insertar', //POST
   TipoDescuentoActualizar: '/TipoDescuento/Actualizar', //PUT
   TipoDescuentoObtenerTiposPorIdTipoDescuento:
     '/TipoDescuento/ObtenerTiposPorIdTipoDescuento', //GET
-
+  ObtenerTipoDescuentoConNivelAprobacion : '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
+  ObtenerNivelesAprobacion: '/TipoDescuento/ObtenerNivelesAprobacion', //GET
   //Asociar Feedback Programas
   FeedbackConfigurarGrupoPreguntaObtener:
     '/FeedbackConfigurarGrupoPregunta/Obtener', //GET
