@@ -11,53 +11,78 @@
   </div>
 
   <div class="card-body p-4">
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-      <div class="col-md-4 mb-3">
-        <mat-card class="stats-card">
-          <mat-card-content>
-            <p class="text-muted mb-1">Solicitudes Pendientes</p>
-            <h2 class="text-amber-600 mb-0">{{ pendingCount }}</h2>
-          </mat-card-content>
-        </mat-card>
-      </div>
-      <div class="col-md-4 mb-3">
-        <mat-card class="stats-card">
-          <mat-card-content>
-            <p class="text-muted mb-1">Aprobadas (este mes)</p>
-            <h2 class="text-green-600 mb-0">{{ approvedThisMonth }}</h2>
-          </mat-card-content>
-        </mat-card>
-      </div>
-      <div class="col-md-4 mb-3">
-        <mat-card class="stats-card">
-          <mat-card-content>
-            <p class="text-muted mb-1">Rechazadas (este mes)</p>
-            <h2 class="text-red-600 mb-0">{{ rejectedThisMonth }}</h2>
-          </mat-card-content>
-        </mat-card>
-      </div>
+    <!-- Filtros de Búsqueda -->
+    <div class="filtros-section mb-4">
+      <h3 class="filtros-title mb-2">Filtros de Búsqueda</h3>
+      <p class="filtros-subtitle mb-3">Usa los filtros para refinar los resultados del reporte.</p>
+      
+      <form [formGroup]="filtrosForm">
+        <div class="row g-3 mb-3">
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Fecha Inicio</mat-label>
+              <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
+              <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+              <mat-datepicker #pickerInicio></mat-datepicker>
+              <mat-icon matPrefix>calendar_today</mat-icon>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Fecha Fin</mat-label>
+              <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
+              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFin></mat-datepicker>
+              <mat-icon matPrefix>calendar_today</mat-icon>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Asesores</mat-label>
+              <mat-select formControlName="asesor" [disabled]="loadingAsesores">
+                <mat-option value="">Todos los asesores</mat-option>
+                <mat-option *ngFor="let asesor of listaAsesores" [value]="asesor.id">
+                  {{ asesor.nombres }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>person</mat-icon>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Estado</mat-label>
+              <mat-select formControlName="estado">
+                <mat-option value="all">Todos</mat-option>
+                <mat-option value="pendiente">Pendientes</mat-option>
+                <mat-option value="aprobado">Aprobados</mat-option>
+                <mat-option value="rechazado">Rechazados</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>filter_list</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12 text-end">
+            <button mat-raised-button color="primary" 
+                    class="btn-generar-reporte"
+                    (click)="generarReporte()"
+                    [disabled]="loading">
+              <mat-icon>arrow_upward</mat-icon>
+              CARGAR SOLICITUDES
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
 
-    <!-- Filters -->
+    <!-- Filtro de búsqueda por nombre -->
     <div class="row mb-3">
-      <div class="col-md-8">
+      <div class="col-md-12">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Buscar por alumno, programa o ID...</mat-label>
           <input matInput (input)="onSearchChange($event)" placeholder="Buscar...">
           <mat-icon matPrefix>search</mat-icon>
-        </mat-form-field>
-      </div>
-      <div class="col-md-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Filtrar por estado</mat-label>
-          <mat-select [formControl]="statusControl">
-            <mat-option value="all">Todos</mat-option>
-            <mat-option value="pendiente">Pendientes</mat-option>
-            <mat-option value="aprobado">Aprobados</mat-option>
-            <mat-option value="rechazado">Rechazados</mat-option>
-          </mat-select>
-          <mat-icon matPrefix>filter_list</mat-icon>
         </mat-form-field>
       </div>
     </div>

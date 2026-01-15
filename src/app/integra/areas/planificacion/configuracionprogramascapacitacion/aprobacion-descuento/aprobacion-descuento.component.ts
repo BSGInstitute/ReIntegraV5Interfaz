@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild, TemplateRef, OnDestroy } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AlertaService } from '@shared/services/alerta.service';
@@ -8,6 +8,7 @@ import { IntegraService } from '@shared/services/integra.service';
 import { HttpResponse } from '@angular/common/http';
 import { constApiPlanificacion } from '@environments/constApi';
 import { Subscription } from 'rxjs';
+import { getFechaInicio, getFechaFin, datePipeTransform } from '@shared/functions/date-pipe';
 
 export interface ArchivoAdjunto {
   id?: number;
@@ -75,6 +76,11 @@ export class AprobacionDescuentoComponent implements OnInit, OnDestroy {
     status: new FormControl('all'),
     comments: new FormControl('')
   });
+
+  filtrosForm: FormGroup;
+  
+  listaAsesores: any[] = [];
+  loadingAsesores = false;
   
   get statusControl(): FormControl {
     return this.filterForm.get('status') as FormControl;
@@ -130,20 +136,31 @@ export class AprobacionDescuentoComponent implements OnInit, OnDestroy {
     private modalService: NgbModal,
     private alertaService: AlertaService,
     private userService: UserService,
-    private integraService: IntegraService
-  ) {}
+    private integraService: IntegraService,
+    private formBuilder: FormBuilder
+  ) {
+    this.filtrosForm = this.formBuilder.group({
+      asesor: [''],
+      fechaInicio: [null],
+      fechaFin: [null],
+      estado: ['all']
+    });
+  }
 
   ngOnInit(): void {
     // Obtener datos del personal para determinar el nivel
     this.obtenerDatosPersonal();
     
-    // Suscribirse a cambios en el filtro
-    const filterSub = this.filterForm.get('status')?.valueChanges.subscribe(value => {
+    // Cargar lista de asesores
+    this.cargarAsesores();
+    
+    // Suscribirse a cambios en el filtro de estado
+    const estadoSub = this.filtrosForm.get('estado')?.valueChanges.subscribe(value => {
       this.filterStatus = value || 'all';
       this.applyFilters();
     });
-    if (filterSub) {
-      this.subscriptions.add(filterSub);
+    if (estadoSub) {
+      this.subscriptions.add(estadoSub);
     }
   }
 
@@ -290,6 +307,45 @@ export class AprobacionDescuentoComponent implements OnInit, OnDestroy {
   applyFilters(): void {
     let filtered = [...this.mockRequests.filter(r => r.nivelRequerido === this.userLevel)];
 
+    // Aplicar filtros del formulario de reporte
+    const filtros = this.filtrosForm.getRawValue();
+    
+    // Filtro por asesor (si está disponible en los datos)
+    if (filtros.asesor) {
+      // TODO: Aplicar filtro por asesor cuando los datos incluyan esta información
+      // filtered = filtered.filter(r => r.idAsesor === filtros.asesor);
+    }
+
+    // Filtro por rango de fechas
+    if (filtros.fechaInicio) {
+      const fechaInicio = new Date(filtros.fechaInicio);
+      fechaInicio.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(r => {
+        const fechaSolicitud = typeof r.fechaSolicitud === 'string' 
+          ? new Date(r.fechaSolicitud) 
+          : r.fechaSolicitud;
+        fechaSolicitud.setHours(0, 0, 0, 0);
+        return fechaSolicitud >= fechaInicio;
+      });
+    }
+
+    if (filtros.fechaFin) {
+      const fechaFin = new Date(filtros.fechaFin);
+      fechaFin.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(r => {
+        const fechaSolicitud = typeof r.fechaSolicitud === 'string' 
+          ? new Date(r.fechaSolicitud) 
+          : r.fechaSolicitud;
+        fechaSolicitud.setHours(23, 59, 59, 999);
+        return fechaSolicitud <= fechaFin;
+      });
+    }
+
+    // Aplicar filtro de estado desde filtrosForm
+    if (filtros.estado && filtros.estado !== 'all') {
+      filtered = filtered.filter(r => r.estado === filtros.estado);
+    }
+
     // Aplicar filtro de búsqueda
     if (this.searchTerm) {
       const search = this.searchTerm.toLowerCase();
@@ -298,11 +354,6 @@ export class AprobacionDescuentoComponent implements OnInit, OnDestroy {
         r.programaNombre.toLowerCase().includes(search) ||
         r.id.toLowerCase().includes(search)
       );
-    }
-
-    // Aplicar filtro de estado
-    if (this.filterStatus !== 'all') {
-      filtered = filtered.filter(r => r.estado === this.filterStatus);
     }
 
     this.dataSource.data = filtered;
@@ -437,6 +488,101 @@ export class AprobacionDescuentoComponent implements OnInit, OnDestroy {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  cargarAsesores(): void {
+    this.loadingAsesores = true;
+    // TODO: Reemplazar con el endpoint real de la API
+    // Por ahora usamos datos mock, pero estructurado para fácil integración
+    /*
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.ObtenerAsesores)
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          this.listaAsesores = resp.body || [];
+          this.loadingAsesores = false;
+        },
+        error: (error) => {
+          this.loadingAsesores = false;
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        }
+      });
+    */
+    
+    // Datos mock para desarrollo
+    setTimeout(() => {
+      this.listaAsesores = [
+        { id: 1, nombres: 'Juan Pérez' },
+        { id: 2, nombres: 'María López' },
+        { id: 3, nombres: 'Carlos Rodríguez' },
+        { id: 4, nombres: 'Ana Martínez' }
+      ];
+      this.loadingAsesores = false;
+    }, 300);
+  }
+
+  generarReporte(): void {
+    const filtros = this.filtrosForm.getRawValue();
+    
+    // Validar rango de fechas solo si ambas fechas están presentes
+    if (filtros.fechaInicio && filtros.fechaFin) {
+      const fechaInicio = new Date(filtros.fechaInicio);
+      const fechaFin = new Date(filtros.fechaFin);
+      
+      if (fechaFin < fechaInicio) {
+        this.alertaService.swalFireOptions({
+          icon: 'warning',
+          text: 'Rango de fechas no válido. La fecha fin debe ser mayor o igual a la fecha inicio.'
+        });
+        return;
+      }
+    }
+
+    this.loading = true;
+    
+    // TODO: Aquí se debería llamar a la API con los filtros
+    // Solo se envían las fechas si están presentes
+    /*
+    const params: any = {
+      idAsesor: filtros.asesor || null,
+      estado: filtros.estado !== 'all' ? filtros.estado : null
+    };
+    
+    // Solo agregar fechas si están presentes
+    if (filtros.fechaInicio) {
+      params.fechaInicio = datePipeTransform(filtros.fechaInicio, 'yyyy-MM-dd') + 'T00:00:00';
+    }
+    
+    if (filtros.fechaFin) {
+      params.fechaFin = datePipeTransform(filtros.fechaFin, 'yyyy-MM-dd') + 'T23:59:59';
+    }
+    
+    this.integraService
+      .getJsonResponse(`${constApiPlanificacion.ObtenerSolicitudesAprobacionDescuento}/${this.userLevel}`, params)
+      .subscribe({
+        next: (resp: HttpResponse<ApprovalRequest[]>) => {
+          this.allRequests = resp.body || [];
+          this.mockRequests = this.allRequests.filter(r => r.nivelRequerido === this.userLevel);
+          this.applyFilters();
+          this.loading = false;
+        },
+        error: (error) => {
+          this.loading = false;
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        }
+      });
+    */
+    
+    // Por ahora aplicamos los filtros localmente
+    this.applyFilters();
+    
+    // Simular delay de API
+    setTimeout(() => {
+      this.loading = false;
+      this.alertaService.mensajeExitoso('Solicitudes cargadas correctamente');
+    }, 500);
   }
 }
 
