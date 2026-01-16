@@ -99,11 +99,69 @@ export interface ListaGridListaSecciones {
     valor: string;
     numeroFila?: number;
 }
-export interface EnvioDocumento {
-    objetoDocumento: IDocumentosPortaWeb
-    lista: SeccionPwFiltroPlantillaPw[]
-    listaIntroduccionBeneficios : Array<VersionDocumentoBeneficio>
+export interface SeccionModalidadHorarioDTO {
+    idDocumentoPw: number;
+    introduccion: string;
+    modalidades: Array<{
+        id: number;
+        modalidadCodigo: string | null;
+        subTitulo: string;
+        descripcion: string;
+        detalles: Array<{
+            id: number;
+            orden: number;
+            tipo: string;
+            horarioZona: string | null;
+            beneficio: string | null;
+        }>;
+    }>;
+    modalidadesEliminadas: number[];
+    detallesEliminados: number[];
 }
+
+export interface SeccionDuracionDTO {
+    idDocumentoPw: number;
+    titulo: string;
+    introduccion: string;
+    pieDePagina: string;
+    detalles: Array<{
+        id: number;
+        idVersionPrograma: number | null;
+        meses: string;
+        horas: string;
+    }>;
+    detallesEliminados: number[];
+}
+
+export interface SeccionFechaInicioDTO {
+    idDocumentoPw: number;
+    mostrarEnLaWeb: boolean;
+    titulo: string;
+    subTitulo: string;
+    paises: Array<{
+        id: number;
+        idPais: number | null;
+        detalles: Array<{
+            id: number;
+            idModo: number | null;
+            fecha: any;
+            horario: string;
+        }>;
+    }>;
+    paisesEliminados: number[];
+    detallesEliminados: number[];
+}
+
+export interface EnvioDocumento {
+    objetoDocumento: IDocumentosPortaWeb;
+    lista: SeccionPwFiltroPlantillaPw[];
+    listaIntroduccionBeneficios: Array<VersionDocumentoBeneficio>;
+
+    seccionModalidadHorario?: SeccionModalidadHorarioDTO;
+    seccionDuracion?: SeccionDuracionDTO;
+    seccionFechaInicio?: SeccionFechaInicioDTO;
+}
+
 export interface DocumentoPw {
     nombre: string
     idPlantillaPw: number
@@ -119,9 +177,9 @@ export interface DocumentoPw {
     usuarioCreacion: string
     usuarioModificacion: string
     rowVersion: string
-  }
-  
-  export interface DocumentoSeccionPw {
+}
+
+export interface DocumentoSeccionPw {
     titulo: string
     contenido: string
     idPlantillaPw: number
@@ -143,11 +201,17 @@ export interface DocumentoPw {
     usuarioCreacion: string
     usuarioModificacion: string
     rowVersion: string
-  }
+}
 
 
-  export interface VersionDocumentoBeneficio {
-    IdVersionPrograma:number
-    
-    introduccion:string
-  }
+export interface VersionDocumentoBeneficio {
+    IdVersionPrograma: number
+    introduccion: string
+}
+
+
+export interface ModalidadPortal{
+    id: number
+    nombre: string
+    propiedad:string
+}

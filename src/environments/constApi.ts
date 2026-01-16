@@ -4001,6 +4001,12 @@ export const constApiPlanificacion = {
   MontoPagoLogObtenerReporteMontoPagoHistorico:
     '/MontoPagoLog/ObtenerReporteMontoPagoHistorico',
   DocumentoPWModalidadObtenerCombo: '/DocumentoPWModalidad/ObtenerCombo',
+  DocumentoPWObtenerModalidadPortal:'/DocumentoPw/ObtenerModalidadPortal',
+  DocumentoPwObtenerModoFechaInicio:'/DocumentoPw/ObtenerModoFechaInicio',
+  ProgramaGeneralObtenerPGeneralActivo: '/ProgramaGeneral/ObtenerPGeneralActivo',
+  DocumentoPWObtenerNotasTipo:'/DocumentoPw/ObtenerNotasTipo',
+  DocumentoPwObtenerDocumentoPWModalidad:'/DocumentoPw/ObtenerDocumentoPWModalidad',
+  
 };
 
 export const constApiFinanzas = {

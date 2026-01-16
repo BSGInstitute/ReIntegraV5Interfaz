@@ -1,7 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { constApiPlanificacion } from '@environments/constApi';
+import { constApiPlanificacion, constApiGlobal } from '@environments/constApi';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import {
   SeccionPlantillaPw,
@@ -32,14 +32,26 @@ interface versionesDPW {
   idVersionPrograma: number;
 }
 
-type ModalidadId = 'VIVO' | 'RITMO';
+type ModalidadId = number;
 type InfoTipo = 'HORA' | 'BENEFICIO';
+
+export interface ModalidadPortal {
+  id: number;
+  nombre: string;
+  propiedad: string;
+}
+
+interface PaisCombo {
+  id?: number;
+  codigoPais: number;
+  nombrePais: string;
+}
 
 interface InfoVM {
   idDetalle?: number;
   etiqueta: string;
   tipo: InfoTipo;
-  valor: string | null;
+  valor: number | null;
   valorTexto: string;
 }
 
@@ -74,7 +86,24 @@ interface FechaInicioPaisVM {
   detalles: FechaInicioDetalleVM[];
   _prevIdPais?: number | null;
 }
+type NotaInfoTipo = 'EXTRA' | 'HORA';
 
+interface NotaDetalleVM {
+  idDetalle?: number;
+  etiqueta: string;
+  tipo: NotaInfoTipo;
+  valorTexto: string;
+  idPais: number | null;
+}
+
+interface NotaVM {
+  id?: number;
+  idNotaTipo: number | null;
+  idPGeneral: number | null;
+  descripcion: string;
+  detalles: NotaDetalleVM[];
+  _prevIdNotaTipo?: number | null;
+}
 @Component({
   selector: 'app-documentos-portal-web',
   templateUrl: './documentos-portal-web.component.html',
@@ -87,7 +116,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     private alertaService: AlertaService,
     private modalService: NgbModal,
     private formBuilder: FormBuilder
-  ) {}
+  ) { }
 
   gridDocumentosPw = new KendoGrid();
   gridListaRevisionNivel = new KendoGrid();
@@ -101,7 +130,16 @@ export class DocumentosPortalWebComponent implements OnInit {
   esNuevo: boolean = false;
   modalRef: NgbModalRef = null;
   listaColumna: ColumnasReporte[] = [];
+  notasMostrarEnLaWeb = false;
 
+  programaGenerales: IComboBase1[] = [];
+  ListaNotasTipo: IComboBase1[] = [];
+
+  listaNotas: NotaVM[] = [];
+  notaActivaIndex: number | null = null;
+
+  notasEliminadas: number[] = [];
+  notasDetallesEliminados: number[] = [];
   cantidadItems: PageSizeItem[] = [
     { text: '5', value: 5 },
     { text: '10', value: 10 },
@@ -133,16 +171,9 @@ export class DocumentosPortalWebComponent implements OnInit {
 
   introduccionModalidad = '';
 
-  comboModalidades = [
-    { id: 'VIVO', nombre: 'Online en Vivo' },
-    { id: 'RITMO', nombre: 'Online a tu Ritmo' },
-  ];
+  listaModalidad: ModalidadPortal[] = [];
 
-  comboHoras = [
-    { id: 'PECO', nombre: 'Hora Perú y Colombia' },
-    { id: 'MX', nombre: 'Hora México' },
-    { id: 'CL', nombre: 'Hora Chile' },
-  ];
+  comboHoras: IComboBase1[] = [];
 
   listaModalidadHorarios: ModalidadVM[] = [];
   modalidadActivaIndex: number | null = null;
@@ -161,11 +192,7 @@ export class DocumentosPortalWebComponent implements OnInit {
   fechaInicioTitulo = '';
   fechaInicioSubTitulo = '';
 
-  comboFechaInicioPaises: IComboBase1[] = [];
-  comboFechaInicioModos: IComboBase1[] = [
-    { id: 1, nombre: 'Regular' },
-    { id: 2, nombre: 'Intensivo' },
-  ];
+  comboFechaInicioPaises: PaisCombo[] = [];
 
   listaFechaInicioPaises: FechaInicioPaisVM[] = [];
   fechaInicioPaisActivoIndex: number | null = null;
@@ -173,41 +200,118 @@ export class DocumentosPortalWebComponent implements OnInit {
   fechaInicioPaisesEliminados: number[] = [];
   fechaInicioDetallesEliminados: number[] = [];
 
-  private modalidadesDisponibles(): ModalidadId[] {
+  obtenerModalidadPortal() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.DocumentoPWObtenerModalidadPortal)
+      .subscribe({
+        next: (resp: HttpResponse<ModalidadPortal[]>) => {
+          this.listaModalidad = resp.body ?? [];
+        },
+        error: (error) => {
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  private propiedadModalidad(idModalidad: number | null): string {
+    const m = (this.listaModalidad ?? []).find((x) => x.id === idModalidad);
+    return (m?.propiedad ?? '').trim();
+  }
+
+  private textoPropiedadModalidad(idModalidad: number | null): string {
+    const p = this.propiedadModalidad(idModalidad);
+    if (!p) return '';
+    if (p === p.toUpperCase()) {
+      return p.charAt(0) + p.slice(1).toLowerCase();
+    }
+    return p;
+  }
+
+  private tipoPropiedadModalidad(idModalidad: number | null): InfoTipo | null {
+    const p = this.propiedadModalidad(idModalidad).toUpperCase();
+    if (!p) return null;
+    if (p.includes('HORA')) return 'HORA';
+    if (p.includes('BENEF')) return 'BENEFICIO';
+    return 'BENEFICIO';
+  }
+
+  private etiquetaBaseModalidad(idModalidad: number | null): string {
+    const t = this.textoPropiedadModalidad(idModalidad);
+    return t || 'Información';
+  }
+
+  private modalidadesDisponibles(): ModalidadPortal[] {
     const usadas = new Set(
       this.listaModalidadHorarios
         .map((x) => x.idModalidad)
-        .filter((x): x is ModalidadId => !!x)
+        .filter((x): x is number => x !== null && x !== undefined)
+    );
+    return (this.listaModalidad ?? []).filter((x) => !usadas.has(x.id));
+  }
+
+  obtenerComboModalidades(mi: number): ModalidadPortal[] {
+    const combo = this.listaModalidad ?? [];
+    if (!combo.length) return [];
+
+    const actual = this.listaModalidadHorarios[mi]?.idModalidad ?? null;
+
+    const usadas = new Set(
+      this.listaModalidadHorarios
+        .map((x, idx) => (idx === mi ? null : x.idModalidad))
+        .filter((x): x is number => x !== null && x !== undefined)
     );
 
-    const todas: ModalidadId[] = ['VIVO', 'RITMO'];
-    return todas.filter((x) => !usadas.has(x));
+    return combo.filter((x) => x.id === actual || !usadas.has(x.id));
   }
 
   puedeAgregarModalidad(): boolean {
+    const combo = this.listaModalidad ?? [];
+    if (!combo.length) {
+      return !this.listaModalidadHorarios.some((x) => x.idModalidad === null);
+    }
     return (
       this.modalidadesDisponibles().length > 0 &&
-      this.listaModalidadHorarios.length < 2
+      this.listaModalidadHorarios.length < combo.length
     );
   }
 
   puedeAgregarInformacion(): boolean {
     if (this.modalidadActivaIndex === null) return false;
     const mod = this.listaModalidadHorarios[this.modalidadActivaIndex];
-    return !!mod && !!mod.idModalidad;
+    return mod?.idModalidad !== null && mod?.idModalidad !== undefined;
   }
 
   agregarModalidadHorario() {
-    const disponibles = this.modalidadesDisponibles();
-    if (disponibles.length === 0 || this.listaModalidadHorarios.length >= 2)
+    const combo = this.listaModalidad ?? [];
+
+    if (!combo.length) {
+      if (this.listaModalidadHorarios.some((x) => x.idModalidad === null)) return;
+
+      const nueva: ModalidadVM = {
+        idModalidad: null,
+        subtitulo: '',
+        descripcion: '',
+        informacion: [],
+        _prevIdModalidad: null,
+      };
+
+      this.listaModalidadHorarios.push(nueva);
+      this.modalidadActivaIndex = this.listaModalidadHorarios.length - 1;
       return;
+    }
+
+    const disponibles = this.modalidadesDisponibles();
+    if (!disponibles.length) return;
+
+    const m = disponibles[0];
 
     const nuevaModalidad: ModalidadVM = {
-      idModalidad: disponibles[0],
+      idModalidad: m.id,
       subtitulo: '',
       descripcion: '',
       informacion: [],
-      _prevIdModalidad: disponibles[0],
+      _prevIdModalidad: m.id,
     };
 
     this.listaModalidadHorarios.push(nuevaModalidad);
@@ -216,11 +320,11 @@ export class DocumentosPortalWebComponent implements OnInit {
     this.inicializarInformacion(this.modalidadActivaIndex);
   }
 
-  cambioModalidad(mi: number, nuevoValor: ModalidadId | null) {
+  cambioModalidad(mi: number, nuevoValor: number | null) {
     const mod = this.listaModalidadHorarios[mi];
     if (!mod) return;
 
-    if (nuevoValor) {
+    if (nuevoValor !== null && nuevoValor !== undefined) {
       const duplicada = this.listaModalidadHorarios.some(
         (x, idx) => idx !== mi && x.idModalidad === nuevoValor
       );
@@ -244,32 +348,25 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     mod.informacion = [];
 
-    if (mod.idModalidad === 'VIVO') {
-      mod.informacion.push({
-        etiqueta: 'Hora 1',
-        tipo: 'HORA',
-        valor: null,
-        valorTexto: '',
-      });
-    }
+    const tipo = this.tipoPropiedadModalidad(mod.idModalidad);
+    if (!tipo) return;
 
-    if (mod.idModalidad === 'RITMO') {
-      mod.informacion.push({
-        etiqueta: 'Beneficio 1',
-        tipo: 'BENEFICIO',
-        valor: null,
-        valorTexto: '',
-      });
-    }
+    const base = this.etiquetaBaseModalidad(mod.idModalidad);
+
+    mod.informacion.push({
+      etiqueta: `${base} 1`,
+      tipo,
+      valor: null,
+      valorTexto: '',
+    });
   }
 
   obtenerTextoAgregarInformacion() {
     if (this.modalidadActivaIndex === null) return 'Agregar Información';
     const mod = this.listaModalidadHorarios[this.modalidadActivaIndex];
-    if (!mod?.idModalidad) return 'Agregar Información';
-    if (mod.idModalidad === 'VIVO') return 'Agregar Hora';
-    if (mod.idModalidad === 'RITMO') return 'Agregar Beneficio';
-    return 'Agregar Información';
+    if (mod?.idModalidad === null || mod?.idModalidad === undefined) return 'Agregar Información';
+    const base = this.etiquetaBaseModalidad(mod.idModalidad);
+    return `Agregar ${base}`;
   }
 
   agregarInformacionHorario() {
@@ -281,26 +378,18 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     if (!mod.informacion) mod.informacion = [];
 
-    if (mod.idModalidad === 'VIVO') {
-      const n = mod.informacion.filter((x) => x.tipo === 'HORA').length + 1;
-      mod.informacion.push({
-        etiqueta: `Hora ${n}`,
-        tipo: 'HORA',
-        valor: null,
-        valorTexto: '',
-      });
-    }
+    const tipo = this.tipoPropiedadModalidad(mod.idModalidad);
+    if (!tipo) return;
 
-    if (mod.idModalidad === 'RITMO') {
-      const n =
-        mod.informacion.filter((x) => x.tipo === 'BENEFICIO').length + 1;
-      mod.informacion.push({
-        etiqueta: `Beneficio ${n}`,
-        tipo: 'BENEFICIO',
-        valor: null,
-        valorTexto: '',
-      });
-    }
+    const base = this.etiquetaBaseModalidad(mod.idModalidad);
+    const n = mod.informacion.filter((x) => x.tipo === tipo).length + 1;
+
+    mod.informacion.push({
+      etiqueta: `${base} ${n}`,
+      tipo,
+      valor: null,
+      valorTexto: '',
+    });
   }
 
   seleccionarModalidad(mi: number) {
@@ -347,68 +436,10 @@ export class DocumentosPortalWebComponent implements OnInit {
 
   private reindexEtiquetas(mod: ModalidadVM) {
     if (!mod?.informacion?.length) return;
-    const tipo = mod.informacion[0]?.tipo;
+    const base = this.etiquetaBaseModalidad(mod.idModalidad);
     mod.informacion.forEach((x, i) => {
-      x.etiqueta = tipo === 'HORA' ? `Hora ${i + 1}` : `Beneficio ${i + 1}`;
+      x.etiqueta = `${base} ${i + 1}`;
     });
-  }
-
-  cargarSeccionModalidad(idDocumentoPw: number) {
-    this.idPlantilla = idDocumentoPw;
-
-    this.integraService
-      .getJsonResponse(
-        `${constApiPlanificacion.DocumentoPWModalidadObtenerCombo}/${idDocumentoPw}`
-      )
-      .subscribe({
-        next: (resp: any) => {
-          this.introduccionModalidad = resp?.introduccion ?? '';
-
-          this.listaModalidadHorarios = (resp?.modalidades ?? []).map((m: any) => {
-            const vm: ModalidadVM = {
-              id: m.id,
-              idModalidad: m.modalidadCodigo ?? null,
-              subtitulo: m.subTitulo ?? '',
-              descripcion: m.descripcion ?? '',
-              informacion: [],
-              _prevIdModalidad: m.modalidadCodigo ?? null,
-            };
-
-            const detalles = m.detalles ?? [];
-            vm.informacion = detalles.map((d: any) => ({
-              idDetalle: d.id,
-              etiqueta:
-                d.tipo === 'HORA' ? `Hora ${d.orden}` : `Beneficio ${d.orden}`,
-              tipo: d.tipo,
-              valor: d.tipo === 'HORA' ? (d.idModalidadHorario ?? null) : null,
-              valorTexto: d.tipo === 'BENEFICIO' ? (d.beneficio ?? '') : '',
-            }));
-
-            if (!vm.informacion.length && vm.idModalidad) {
-              vm.informacion = [];
-              if (vm.idModalidad === 'VIVO')
-                vm.informacion.push({
-                  etiqueta: 'Hora 1',
-                  tipo: 'HORA',
-                  valor: null,
-                  valorTexto: '',
-                });
-              if (vm.idModalidad === 'RITMO')
-                vm.informacion.push({
-                  etiqueta: 'Beneficio 1',
-                  tipo: 'BENEFICIO',
-                  valor: null,
-                  valorTexto: '',
-                });
-            }
-
-            return vm;
-          });
-
-          this.modalidadActivaIndex = this.listaModalidadHorarios.length ? 0 : null;
-        },
-        error: (err: any) => console.error(err),
-      });
   }
 
   obtenerComboVersionPrograma() {
@@ -470,7 +501,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     const det = this.listaDuracionDetalle[di];
     if (!det) return;
 
-    if (nuevoId) {
+    if (nuevoId !== null && nuevoId !== undefined) {
       const duplicado = this.listaDuracionDetalle.some(
         (x, idx) => idx !== di && x.idVersionPrograma === nuevoId
       );
@@ -500,7 +531,42 @@ export class DocumentosPortalWebComponent implements OnInit {
     this.listaDuracionDetalle.splice(di, 1);
   }
 
-  private paisesDisponiblesFechaInicio(): IComboBase1[] {
+  obtenerComboPaisesFechaInicio(): void;
+  obtenerComboPaisesFechaInicio(pi: number): IComboBase1[];
+  obtenerComboPaisesFechaInicio(pi?: number): any {
+    if (pi === undefined) {
+      this.integraService.getJsonResponse(constApiGlobal.PaisObtenerPaisCombo).subscribe({
+        next: (resp: HttpResponse<PaisCombo[]>) => {
+          const raw: any[] = (resp.body as any) ?? [];
+          this.comboFechaInicioPaises = raw.map((x: any) => ({
+            id: x.id ?? x.Id ?? x.idPais ?? x.IdPais ?? x.codigoPais ?? x.CodigoPais ?? null,
+            codigoPais: x.codigoPais ?? x.CodigoPais ?? 0,
+            nombrePais: x.nombrePais ?? x.NombrePais ?? x.nombre ?? x.Nombre ?? '',
+          }));
+        },
+        error: (error) => {
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          if (mensaje) this.alertaService.notificationWarning(mensaje);
+        },
+      });
+      return;
+    }
+
+    const combo = this.comboFechaInicioPaises ?? [];
+    if (!combo.length) return [];
+
+    const actual = this.listaFechaInicioPaises[pi]?.idPais ?? null;
+
+    const usados = new Set(
+      this.listaFechaInicioPaises
+        .map((x, idx) => (idx === pi ? null : x.idPais))
+        .filter((x): x is number => x !== null && x !== undefined)
+    );
+
+    return combo.filter((x) => x.id === actual || !usados.has(x.id));
+  }
+
+  private paisesDisponiblesFechaInicio(): PaisCombo[] {
     const usados = new Set(
       this.listaFechaInicioPaises
         .map((x) => x.idPais)
@@ -510,10 +576,29 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
 
   puedeAgregarPaisFechaInicio(): boolean {
+    const combo = this.comboFechaInicioPaises ?? [];
+    if (!combo.length) {
+      return !this.listaFechaInicioPaises.some((x) => x.idPais === null);
+    }
     return this.paisesDisponiblesFechaInicio().length > 0;
   }
 
   agregarPaisFechaInicio() {
+    const combo = this.comboFechaInicioPaises ?? [];
+
+    if (!combo.length) {
+      if (this.listaFechaInicioPaises.some((x) => x.idPais === null)) return;
+
+      this.listaFechaInicioPaises.push({
+        idPais: null,
+        detalles: [],
+        _prevIdPais: null,
+      });
+
+      this.fechaInicioPaisActivoIndex = this.listaFechaInicioPaises.length - 1;
+      return;
+    }
+
     const disponibles = this.paisesDisponiblesFechaInicio();
     if (!disponibles.length) return;
 
@@ -532,25 +617,11 @@ export class DocumentosPortalWebComponent implements OnInit {
     this.fechaInicioPaisActivoIndex = pi;
   }
 
-  obtenerComboPaisesFechaInicio(pi: number): IComboBase1[] {
-    const actual = this.listaFechaInicioPaises[pi]?.idPais ?? null;
-
-    const usados = new Set(
-      this.listaFechaInicioPaises
-        .map((x, idx) => (idx === pi ? null : x.idPais))
-        .filter((x): x is number => x !== null && x !== undefined)
-    );
-
-    return (this.comboFechaInicioPaises ?? []).filter(
-      (x) => x.id === actual || !usados.has(x.id)
-    );
-  }
-
   cambioPaisFechaInicio(pi: number, nuevoIdPais: number | null) {
     const pais = this.listaFechaInicioPaises[pi];
     if (!pais) return;
 
-    if (nuevoIdPais) {
+    if (nuevoIdPais !== null && nuevoIdPais !== undefined) {
       const duplicado = this.listaFechaInicioPaises.some(
         (x, idx) => idx !== pi && x.idPais === nuevoIdPais
       );
@@ -575,14 +646,14 @@ export class DocumentosPortalWebComponent implements OnInit {
         .filter((x): x is number => x !== null && x !== undefined)
     );
 
-    return (this.comboFechaInicioModos ?? []).filter((m) => !usados.has(m.id));
+    return (this.listaModoFechaInicio ?? []).filter((m) => !usados.has(m.id));
   }
 
   puedeAgregarModoFechaInicio(): boolean {
     if (this.fechaInicioPaisActivoIndex === null) return false;
     const pi = this.fechaInicioPaisActivoIndex as number;
     const pais = this.listaFechaInicioPaises[pi];
-    if (!pais || !pais.idPais) return false;
+    if (!pais || pais.idPais === null || pais.idPais === undefined) return false;
     return this.modosDisponiblesFechaInicio(pi).length > 0;
   }
 
@@ -614,13 +685,15 @@ export class DocumentosPortalWebComponent implements OnInit {
     const det = pais.detalles[di];
     if (!det) return;
 
-    if (nuevoIdModo) {
+    if (nuevoIdModo !== null && nuevoIdModo !== undefined) {
       const duplicado = pais.detalles.some(
         (x, idx) => idx !== di && x.idModo === nuevoIdModo
       );
       if (duplicado) {
         det.idModo = det._prevIdModo ?? null;
-        this.alertaService.notificationWarning('Ese modo ya fue agregado en este país.');
+        this.alertaService.notificationWarning(
+          'Ese modo ya fue agregado en este país.'
+        );
         return;
       }
     }
@@ -636,7 +709,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (!pais?.detalles) return;
 
     const det = pais.detalles[di];
-    if (det?.idDetalle && det.idDetalle > 0) this.fechaInicioDetallesEliminados.push(det.idDetalle);
+    if (det?.idDetalle && det.idDetalle > 0)
+      this.fechaInicioDetallesEliminados.push(det.idDetalle);
 
     pais.detalles.splice(di, 1);
   }
@@ -648,7 +722,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (!pais) return;
 
     (pais.detalles ?? []).forEach((d) => {
-      if (d?.idDetalle && d.idDetalle > 0) this.fechaInicioDetallesEliminados.push(d.idDetalle);
+      if (d?.idDetalle && d.idDetalle > 0)
+        this.fechaInicioDetallesEliminados.push(d.idDetalle);
     });
 
     if (pais.id && pais.id > 0) this.fechaInicioPaisesEliminados.push(pais.id);
@@ -679,8 +754,14 @@ export class DocumentosPortalWebComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtenerComboPlantilla();
+    this.obtenerModalidadPortal();
     this.obtenerComboVersionPrograma();
+    this.obtenerComboPaisesFechaInicio();
+    this.obtenerPaisesModalidad();
     this.generarReporte();
+    this.obtenerModos();
+    this.obtenerNotasTipo();
+    this.obtenerProgramaGenerales();
   }
 
   obtenerComboPlantilla() {
@@ -731,14 +812,19 @@ export class DocumentosPortalWebComponent implements OnInit {
                   this.configurarGridConsultasForo(e.grid, e.listaSubSeccionesPw);
                   e.cabecera = seccionGrid.cabecera;
                   e.piePagina = seccionGrid.piePagina;
-                  let numeroFilas = seccionGrid.listaSubSeccionesPw.map((x) => x.numeroFila);
+                  let numeroFilas = seccionGrid.listaSubSeccionesPw.map(
+                    (x) => x.numeroFila
+                  );
                   numeroFilas = Array.from(new Set(numeroFilas));
                   numeroFilas.forEach((x) => {
-                    let fila = seccionGrid.listaSubSeccionesPw.filter((a) => a.numeroFila == x);
+                    let fila = seccionGrid.listaSubSeccionesPw.filter(
+                      (a) => a.numeroFila == x
+                    );
                     let objGrid: { [key: string]: string } = {};
                     fila.forEach((i) => {
-                      objGrid[`_${i.idSeccionTipoDetallePw}_${seccionGrid.idSeccionPW}`] =
-                        i.contenidoSubSeccion;
+                      objGrid[
+                        `_${i.idSeccionTipoDetallePw}_${seccionGrid.idSeccionPW}`
+                      ] = i.contenidoSubSeccion;
                     });
                     e.grid.data.push(objGrid);
                   });
@@ -804,7 +890,9 @@ export class DocumentosPortalWebComponent implements OnInit {
     return objetoResultado;
   }
 
-  crearObjetoDesdeListaForm(lista: ListaSubSeccionesPw[]): Record<string, string> {
+  crearObjetoDesdeListaForm(
+    lista: ListaSubSeccionesPw[]
+  ): Record<string, string> {
     const objetoResultado: Record<string, any> = {};
     for (const elemento of lista) {
       objetoResultado[elemento.field] = null;
@@ -964,8 +1052,8 @@ export class DocumentosPortalWebComponent implements OnInit {
       });
       this.obtenerDocumentosSeccionEditar(dataItem);
       const introducciones = await this.obtenerIntroduccion(dataItem.id);
+      this.ObtenerDocumentoPWModalidad(dataItem.id);
       this.asignarIntroducciones(introducciones);
-      this.cargarSeccionModalidad(dataItem.id);
     } else {
       this.esNuevo = true;
     }
@@ -981,19 +1069,12 @@ export class DocumentosPortalWebComponent implements OnInit {
     return item?.nombre ?? 'Sin Plantilla';
   }
 
-  configurarGridConsultasForo(
-    gridPlantilla: KendoGrid,
-    columnas: ListaSubSeccionesPw[]
-  ) {
+  configurarGridConsultasForo(gridPlantilla: KendoGrid, columnas: ListaSubSeccionesPw[]) {
     gridPlantilla.habilitarEstadoNewRow = true;
     gridPlantilla.formGroup = this.formBuilder.group(
       this.crearObjetoDesdeListaForm(columnas)
     );
-    gridPlantilla.addEvent$.subscribe((resp) => {
-      console.log('Resp', resp);
-      console.log(columnas);
-      console.log(gridPlantilla);
-    });
+    gridPlantilla.addEvent$.subscribe((resp) => { });
     gridPlantilla.cellCloseEvent$.subscribe((resp) => {
       resp.dataItem[resp.columnField] = resp.formGroup.get(resp.columnField).value;
     });
@@ -1177,71 +1258,186 @@ export class DocumentosPortalWebComponent implements OnInit {
       listaIntroduccionBeneficios: ListaIntroduccionVersiones,
     };
 
-    const seccionModalidadHorario = {
-      idDocumentoPw: objDocumento.id,
-      introduccion: this.introduccionModalidad,
-      modalidades: this.listaModalidadHorarios.map((m) => ({
-        id: m.id ?? 0,
-        modalidadCodigo: m.idModalidad,
-        subTitulo: m.subtitulo,
-        descripcion: m.descripcion,
-        detalles: (m.informacion ?? []).map((d, i) => ({
-          id: d.idDetalle ?? 0,
-          orden: i + 1,
-          tipo: d.tipo,
-          horarioZona: d.tipo === 'HORA' ? d.valor : null,
-          beneficio: d.tipo === 'BENEFICIO' ? d.valorTexto : null,
-        })),
-      })),
-      modalidadesEliminadas: this.modalidadesEliminadas,
-      detallesEliminados: this.detallesEliminados,
-    };
+    const hasModalidadHorario =
+      (this.introduccionModalidad ?? '').trim().length > 0 ||
+      (this.listaModalidadHorarios ?? []).some((m) => {
+        const sub = (m.subtitulo ?? '').trim();
+        const des = (m.descripcion ?? '').trim();
+        const infoLen = (m.informacion ?? []).length;
+        return (
+          (m.id ?? 0) > 0 ||
+          (m.idModalidad ?? null) !== null ||
+          sub.length > 0 ||
+          des.length > 0 ||
+          infoLen > 0
+        );
+      }) ||
+      (this.modalidadesEliminadas ?? []).length > 0 ||
+      (this.detallesEliminados ?? []).length > 0;
 
-    const seccionDuracion = {
-      idDocumentoPw: objDocumento.id,
-      titulo: this.tituloDuracion,
-      introduccion: this.introduccionDuracion,
-      pieDePagina: this.pieDePaginaDuracion,
-      detalles: this.listaDuracionDetalle.map((d) => ({
-        id: d.idDetalle ?? 0,
-        idVersionPrograma: d.idVersionPrograma,
-        meses: d.meses,
-        horas: d.horas,
-      })),
-      detallesEliminados: this.duracionDetallesEliminados,
-    };
-
-    const seccionFechaInicio = {
-      idDocumentoPw: objDocumento.id,
-      mostrarEnLaWeb: this.fechaInicioMostrarEnLaWeb,
-      titulo: this.fechaInicioTitulo,
-      subTitulo: this.fechaInicioSubTitulo,
-      paises: this.listaFechaInicioPaises.map((p) => ({
-        id: p.id ?? 0,
-        idPais: p.idPais,
-        detalles: (p.detalles ?? []).map((d) => ({
-          id: d.idDetalle ?? 0,
-          idModo: d.idModo,
-          fecha: d.fecha,
-          horario: d.horario,
+    const seccionModalidadHorario = hasModalidadHorario
+      ? {
+        idDocumentoPw: objDocumento.id,
+        introduccion: this.introduccionModalidad,
+        modalidades: this.listaModalidadHorarios.map((m) => ({
+          id: m.id ?? 0,
+          idModalidad: m.idModalidad,
+          subTitulo: m.subtitulo,
+          descripcion: m.descripcion,
+          detalles: (m.informacion ?? []).map((d, i) => ({
+            id: d.idDetalle ?? 0,
+            orden: i + 1,
+            tipo: d.tipo,
+            idPais: d.tipo === 'HORA' ? d.valor : null,
+            beneficio: d.tipo === 'BENEFICIO' ? d.valorTexto : null,
+          })),
         })),
-      })),
-      paisesEliminados: this.fechaInicioPaisesEliminados,
-      detallesEliminados: this.fechaInicioDetallesEliminados,
-    };
+        modalidadesEliminadas: this.modalidadesEliminadas,
+        detallesEliminados: this.detallesEliminados,
+      }
+      : null;
+
+    const hasDuracion =
+      (this.tituloDuracion ?? '').trim().length > 0 ||
+      (this.introduccionDuracion ?? '').trim().length > 0 ||
+      (this.pieDePaginaDuracion ?? '').trim().length > 0 ||
+      (this.listaDuracionDetalle ?? []).length > 0 ||
+      (this.duracionDetallesEliminados ?? []).length > 0;
+
+    const seccionDuracion = hasDuracion
+      ? {
+        idDocumentoPw: objDocumento.id,
+        titulo: this.tituloDuracion,
+        introduccion: this.introduccionDuracion,
+        pieDePagina: this.pieDePaginaDuracion,
+        detalles: this.listaDuracionDetalle.map((d) => ({
+          id: d.idDetalle ?? 0,
+          idVersionPrograma: d.idVersionPrograma,
+          meses: d.meses,
+          horas: d.horas,
+        })),
+        detallesEliminados: this.duracionDetallesEliminados,
+      }
+      : null;
+
+    const paisesFechaInicioLimpios = (this.listaFechaInicioPaises ?? [])
+      .map((p) => {
+        const detallesLimpios = (p.detalles ?? []).filter((d) => {
+          const tieneAlgo =
+            (d.idDetalle ?? 0) > 0 ||
+            (d.idModo !== null && d.idModo !== undefined) ||
+            (d.fecha !== null && d.fecha !== undefined) ||
+            (d.horario ?? '').trim().length > 0;
+          return tieneAlgo;
+        });
+
+        return {
+          ...p,
+          detalles: detallesLimpios,
+        };
+      })
+      .filter((p) => {
+        const tieneAlgo =
+          (p.id ?? 0) > 0 ||
+          (p.idPais !== null && p.idPais !== undefined) ||
+          (p.detalles ?? []).length > 0;
+        return tieneAlgo;
+      });
+
+    const hasFechaInicio =
+      this.fechaInicioMostrarEnLaWeb === true ||
+      (this.fechaInicioTitulo ?? '').trim().length > 0 ||
+      (this.fechaInicioSubTitulo ?? '').trim().length > 0 ||
+      paisesFechaInicioLimpios.length > 0 ||
+      (this.fechaInicioPaisesEliminados ?? []).length > 0 ||
+      (this.fechaInicioDetallesEliminados ?? []).length > 0;
+
+    const seccionFechaInicio = hasFechaInicio
+      ? {
+        idDocumentoPw: objDocumento.id,
+        mostrarEnLaWeb: this.fechaInicioMostrarEnLaWeb,
+        titulo: this.fechaInicioTitulo,
+        subTitulo: this.fechaInicioSubTitulo,
+        paises: paisesFechaInicioLimpios.map((p) => ({
+          id: p.id ?? 0,
+          idPais: p.idPais,
+          detalles: (p.detalles ?? []).map((d) => ({
+            id: d.idDetalle ?? 0,
+            idModo: d.idModo,
+            fecha: d.fecha,
+            horario: d.horario,
+          })),
+        })),
+        paisesEliminados: this.fechaInicioPaisesEliminados,
+        detallesEliminados: this.fechaInicioDetallesEliminados,
+      }
+      : null;
+
+    const notasLimpias = (this.listaNotas ?? [])
+      .map((n) => {
+        const detallesLimpios = (n.detalles ?? []).filter((d) => {
+          if ((d.idDetalle ?? 0) > 0) return true;
+          if (d.tipo === 'EXTRA') return (d.valorTexto ?? '').trim().length > 0;
+          if (d.tipo === 'HORA') return d.idPais !== null && d.idPais !== undefined;
+          return false;
+        });
+
+        return {
+          ...n,
+          detalles: detallesLimpios,
+        };
+      })
+      .filter((n) => {
+        const desc = (n.descripcion ?? '').trim();
+        const tieneAlgo =
+          (n.id ?? 0) > 0 ||
+          (n.idPGeneral !== null && n.idPGeneral !== undefined) ||
+          desc.length > 0 ||
+          (n.detalles ?? []).length > 0;
+        return tieneAlgo;
+      });
+
+    const hasNotas =
+      this.notasMostrarEnLaWeb === true ||
+      notasLimpias.length > 0 ||
+      (this.notasEliminadas ?? []).length > 0 ||
+      (this.notasDetallesEliminados ?? []).length > 0;
+
+    const seccionNotas = hasNotas
+      ? {
+        idDocumentoPw: objDocumento.id,
+        mostrarEnLaWeb: this.notasMostrarEnLaWeb,
+        notas: notasLimpias.map((n) => ({
+          id: n.id ?? 0,
+          idNotaTipo: n.idNotaTipo,
+          idPGeneral: n.idPGeneral,
+          descripcion: n.descripcion,
+          detalles: (n.detalles ?? []).map((d, i) => ({
+            id: d.idDetalle ?? 0,
+            orden: i + 1,
+            informacionExtra: d.tipo === 'EXTRA' ? d.valorTexto : null,
+            idPais: d.tipo === 'HORA' ? d.idPais : null,
+          })),
+        })),
+        notasEliminadas: this.notasEliminadas,
+        detallesEliminados: this.notasDetallesEliminados,
+      }
+      : null;
 
     (envio as any).seccionModalidadHorario = seccionModalidadHorario;
     (envio as any).seccionDuracion = seccionDuracion;
     (envio as any).seccionFechaInicio = seccionFechaInicio;
+    (envio as any).seccionNotas = seccionNotas;
 
     return envio;
   }
+
+
 
   asignarvalores(dataItem: IDocumentosPortaWeb) {
     this.obtenerIntroduccion(dataItem.id);
     if (this.dataVersion) {
       this.dataVersion.forEach((version) => {
-        console.log('Versiones:', version);
         switch (version.idVersionPrograma) {
           case 1:
             this.formVersionBeneficios
@@ -1271,21 +1467,35 @@ export class DocumentosPortalWebComponent implements OnInit {
         )
         .toPromise();
 
-      console.log('Introducciones obtenidas:', resp.body);
       return resp.body || [];
     } catch (error) {
-      console.error('Error al obtener introducciones:', error);
       const mensaje = this.alertaService.getMessageErrorService(error);
       this.alertaService.notificationWarning(mensaje);
       return [];
     }
   }
+ObtenerDocumentoPWModalidad(id:number) {
+    this.integraService
+      .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWModalidad}/${id}`)
+      .subscribe({
+        next: (resp: HttpResponse<any[]>) => {
+        },
+        error: (error) => {
+          console.log('aqui entro error');
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
 
+  
   asignarIntroducciones(introducciones: versionesDPW[]): void {
     introducciones.forEach((version) => {
       const controlName = `Introduccion${version.idVersionPrograma}`;
       if (this.formVersionBeneficios.get(controlName)) {
-        this.formVersionBeneficios.get(controlName).setValue(version.introduccion);
+        this.formVersionBeneficios
+          .get(controlName)
+          .setValue(version.introduccion);
       }
     });
     if (!introducciones.some((v) => v.idVersionPrograma === 1)) {
@@ -1296,6 +1506,240 @@ export class DocumentosPortalWebComponent implements OnInit {
     }
     if (!introducciones.some((v) => v.idVersionPrograma === 3)) {
       this.formVersionBeneficios.get('Introduccion3').setValue('');
+    }
+  }
+
+  ListaPaises: PaisCombo[] = [];
+  obtenerPaisesModalidad() {
+    this.integraService
+      .getJsonResponse(constApiGlobal.PaisObtenerPaisCombo)
+      .subscribe({
+        next: (resp: HttpResponse<PaisCombo[]>) => {
+          const raw: any[] = (resp.body as any) ?? [];
+          this.ListaPaises = raw.map((x: any) => ({
+            id: x.id ?? x.Id ?? x.idPais ?? x.IdPais ?? x.codigoPais ?? x.CodigoPais ?? null,
+            codigoPais: x.codigoPais ?? x.CodigoPais ?? 0,
+            nombrePais: x.nombrePais ?? x.NombrePais ?? x.nombre ?? x.Nombre ?? '',
+          }));
+
+          this.comboHoras = (this.ListaPaises ?? []).map((x) => ({
+            id: x.id ?? 0,
+            nombre: x.nombrePais,
+          }));
+        },
+        error: (error) => {
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+
+  listaModoFechaInicio: IComboBase1[] = [];
+  obtenerModos() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.DocumentoPwObtenerModoFechaInicio)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.listaModoFechaInicio = resp.body ?? [];
+        },
+        error: (error) => {
+          console.log('aqui entro error');
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+  programaGeneralesFiltrados: IComboBase1[] = [];
+  obtenerProgramaGenerales() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.ProgramaGeneralObtenerPGeneralActivo)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.programaGenerales = resp.body ?? [];
+          this.programaGeneralesFiltrados = [...this.programaGenerales];
+        },
+        error: (error) => {
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+  filtrarProgramaGenerales(valor: string) {
+    const v = (valor ?? '').toLowerCase().trim();
+    if (!v) {
+      this.programaGeneralesFiltrados = [...(this.programaGenerales ?? [])];
+      return;
+    }
+
+    this.programaGeneralesFiltrados = (this.programaGenerales ?? []).filter((x) =>
+      (x.nombre ?? '').toLowerCase().includes(v)
+    );
+  }
+  obtenerNotasTipo() {
+    this.integraService
+      .getJsonResponse(constApiPlanificacion.DocumentoPWObtenerNotasTipo)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          this.ListaNotasTipo = resp.body ?? [];
+        },
+        error: (error) => {
+          console.log('aqui entro error');
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+  private tipoNota(idNotaTipo: number | null): NotaInfoTipo | null {
+    if (idNotaTipo === null || idNotaTipo === undefined) return null;
+    return idNotaTipo === 1 ? 'EXTRA' : 'HORA';
+  }
+
+  private etiquetaBaseNota(idNotaTipo: number | null): string {
+    if (idNotaTipo === 1) return 'Extra';
+    if (idNotaTipo === null || idNotaTipo === undefined) return 'Información';
+    return 'Hora';
+  }
+
+  private inicializarDetalleNota(ni: number) {
+    const n = this.listaNotas[ni];
+    if (!n) return;
+
+    const tipo = this.tipoNota(n.idNotaTipo);
+    if (!tipo) {
+      n.detalles = [];
+      return;
+    }
+
+    const base = this.etiquetaBaseNota(n.idNotaTipo);
+    n.detalles = [
+      {
+        etiqueta: `${base} 1`,
+        tipo,
+        valorTexto: '',
+        idPais: null,
+      },
+    ];
+  }
+  agregarNota() {
+    const tipoPorDefecto = this.ListaNotasTipo?.length ? (this.ListaNotasTipo[0].id as number) : null;
+
+    const nueva: NotaVM = {
+      idNotaTipo: tipoPorDefecto,
+      idPGeneral: null,
+      descripcion: '',
+      detalles: [],
+      _prevIdNotaTipo: tipoPorDefecto,
+    };
+
+    this.listaNotas.push(nueva);
+    this.notaActivaIndex = this.listaNotas.length - 1;
+
+    this.inicializarDetalleNota(this.notaActivaIndex);
+  }
+
+  seleccionarNota(ni: number) {
+    this.notaActivaIndex = ni;
+  }
+
+  cambioTipoNota(ni: number, nuevoId: number | null) {
+    const n = this.listaNotas[ni];
+    if (!n) return;
+
+    (n.detalles ?? []).forEach((d) => {
+      if (d?.idDetalle && d.idDetalle > 0) this.notasDetallesEliminados.push(d.idDetalle);
+    });
+
+    n.idNotaTipo = nuevoId;
+    n._prevIdNotaTipo = nuevoId;
+
+    this.notaActivaIndex = ni;
+    this.inicializarDetalleNota(ni);
+  }
+
+  puedeAgregarInformacionNota(): boolean {
+    if (this.notaActivaIndex === null) return false;
+    const n = this.listaNotas[this.notaActivaIndex];
+    return n?.idNotaTipo !== null && n?.idNotaTipo !== undefined;
+  }
+
+  obtenerTextoAgregarInformacionNota(): string {
+    if (this.notaActivaIndex === null) return 'Agregar Información';
+    const n = this.listaNotas[this.notaActivaIndex];
+    if (n?.idNotaTipo === null || n?.idNotaTipo === undefined) return 'Agregar Información';
+    const base = this.etiquetaBaseNota(n.idNotaTipo);
+    return `Agregar ${base}`;
+  }
+
+  agregarInformacionNota() {
+    if (!this.puedeAgregarInformacionNota()) return;
+
+    const ni = this.notaActivaIndex as number;
+    const n = this.listaNotas[ni];
+    if (!n) return;
+
+    const tipo = this.tipoNota(n.idNotaTipo);
+    if (!tipo) return;
+
+    const base = this.etiquetaBaseNota(n.idNotaTipo);
+    const next = (n.detalles ?? []).length + 1;
+
+    if (!n.detalles) n.detalles = [];
+    n.detalles.push({
+      etiqueta: `${base} ${next}`,
+      tipo,
+      valorTexto: '',
+      idPais: null,
+    });
+  }
+
+  private reindexNota(n: NotaVM) {
+    const base = this.etiquetaBaseNota(n.idNotaTipo);
+    (n.detalles ?? []).forEach((d, i) => {
+      d.etiqueta = `${base} ${i + 1}`;
+    });
+  }
+
+  eliminarDetalleNota(ni: number, di: number, ev?: MouseEvent) {
+    ev?.stopPropagation();
+
+    const n = this.listaNotas[ni];
+    if (!n?.detalles) return;
+
+    const det = n.detalles[di];
+    if (det?.idDetalle && det.idDetalle > 0) this.notasDetallesEliminados.push(det.idDetalle);
+
+    n.detalles.splice(di, 1);
+
+    if (!n.detalles.length) {
+      this.eliminarNota(ni);
+      return;
+    }
+
+    this.reindexNota(n);
+  }
+
+  eliminarNota(ni: number, ev?: MouseEvent) {
+    ev?.stopPropagation();
+
+    const n = this.listaNotas[ni];
+    if (!n) return;
+
+    (n.detalles ?? []).forEach((d) => {
+      if (d?.idDetalle && d.idDetalle > 0) this.notasDetallesEliminados.push(d.idDetalle);
+    });
+
+    if (n.id && n.id > 0) this.notasEliminadas.push(n.id);
+
+    this.listaNotas.splice(ni, 1);
+
+    if (this.notaActivaIndex === null) return;
+    if (!this.listaNotas.length) {
+      this.notaActivaIndex = null;
+      return;
+    }
+    if (this.notaActivaIndex >= this.listaNotas.length) {
+      this.notaActivaIndex = this.listaNotas.length - 1;
     }
   }
 }
