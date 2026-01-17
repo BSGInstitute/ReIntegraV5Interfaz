@@ -11,97 +11,19 @@
   </div>
 
   <div class="card-body p-4">
-    <!-- Filtros de Búsqueda -->
-    <div class="filtros-section mb-4">
-      <h3 class="filtros-title mb-2">Filtros de Búsqueda</h3>
-      <p class="filtros-subtitle mb-3">Usa los filtros para refinar los resultados del reporte.</p>
-      
-      <form [formGroup]="filtrosForm">
-        <div class="row g-3 mb-3">
-          <div class="col-md-3">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Fecha Inicio</mat-label>
-              <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
-              <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-              <mat-datepicker #pickerInicio></mat-datepicker>
-              <mat-icon matPrefix>calendar_today</mat-icon>
-            </mat-form-field>
+    <!-- Tabs -->
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)" class="tabs-container">
+      <!-- Tab Pendientes -->
+      <mat-tab label="Pendientes" *ngIf="idPersonal === 213">        <div class="tab-content pt-4">
+          <!-- Loading indicator -->
+          <div *ngIf="loadingPendientes" class="text-center py-5">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p class="mt-3 text-muted">Cargando solicitudes pendientes...</p>
           </div>
-          <div class="col-md-3">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Fecha Fin</mat-label>
-              <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
-              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-              <mat-datepicker #pickerFin></mat-datepicker>
-              <mat-icon matPrefix>calendar_today</mat-icon>
-            </mat-form-field>
-          </div>
-          <div class="col-md-3">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Asesores</mat-label>
-              <mat-select formControlName="asesor" [disabled]="loadingAsesores">
-                <mat-option value="">Todos los asesores</mat-option>
-                <mat-option *ngFor="let asesor of listaAsesores" [value]="asesor.id">
-                  {{ asesor.nombres }}
-                </mat-option>
-              </mat-select>
-              <mat-icon matPrefix>person</mat-icon>
-            </mat-form-field>
-          </div>
-          <div class="col-md-3">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Estado</mat-label>
-              <mat-select formControlName="estado">
-                <mat-option value="all">Todos</mat-option>
-                <mat-option value="pendiente">Pendientes</mat-option>
-                <mat-option value="aprobado">Aprobados</mat-option>
-                <mat-option value="rechazado">Rechazados</mat-option>
-              </mat-select>
-              <mat-icon matPrefix>filter_list</mat-icon>
-            </mat-form-field>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-12 text-end">
-            <button mat-raised-button color="primary" 
-                    class="btn-generar-reporte"
-                    (click)="generarReporte()"
-                    [disabled]="loading">
-              <mat-icon>arrow_upward</mat-icon>
-              CARGAR SOLICITUDES
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
 
-    <!-- Filtro de búsqueda por nombre -->
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Buscar por alumno, programa o ID...</mat-label>
-          <input matInput (input)="onSearchChange($event)" placeholder="Buscar...">
-          <mat-icon matPrefix>search</mat-icon>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <!-- Loading indicator -->
-    <div *ngIf="loading" class="text-center py-5">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p class="mt-3 text-muted">Cargando solicitudes...</p>
-    </div>
-
-    <!-- Table -->
-    <div class="table-responsive" *ngIf="!loading">
-      <table mat-table [dataSource]="dataSource" class="w-100">
-        <!-- ID Column -->
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let request" class="font-mono text-sm">{{ request.id }}</td>
-        </ng-container>
-
+          <!-- Table -->
+          <div class="table-responsive" *ngIf="!loadingPendientes">
+            <table mat-table [dataSource]="dataSource" class="w-100">
         <!-- Alumno Column -->
         <ng-container matColumnDef="alumno">
           <th mat-header-cell *matHeaderCellDef>Alumno</th>
@@ -115,8 +37,8 @@
 
         <!-- Programa Column -->
         <ng-container matColumnDef="programa">
-          <th mat-header-cell *matHeaderCellDef>Programa</th>
-          <td mat-cell *matCellDef="let request" [matTooltip]="request.programaNombre" class="text-truncate" style="max-width: 200px;">
+          <th mat-header-cell *matHeaderCellDef style="min-width: 300px;">Programa</th>
+          <td mat-cell *matCellDef="let request" style="min-width: 300px; white-space: normal; word-wrap: break-word; max-width: 400px;">
             {{ request.programaNombre }}
           </td>
         </ng-container>
@@ -131,10 +53,15 @@
 
         <!-- Nivel Column -->
         <ng-container matColumnDef="nivel">
-          <th mat-header-cell *matHeaderCellDef class="text-center">Nivel</th>
+          <th mat-header-cell *matHeaderCellDef class="text-center">Nivel Aprobación</th>
           <td mat-cell *matCellDef="let request" class="text-center">
-            <span class="badge" [ngClass]="request.nivelRequerido === 1 ? 'bg-primary' : 'bg-danger'">
-              Nivel {{ request.nivelRequerido }}: {{ request.nivelRequerido === 1 ? 'Jefes/Coordinadores' : 'Gerencia' }}
+            <span class="badge" 
+                  [ngClass]="{
+                    'bg-info': request.nivelRequerido === 1,
+                    'bg-primary': request.nivelRequerido === 2,
+                    'bg-danger': request.nivelRequerido === 3
+                  }">
+              {{ getNivelTexto(request.nivelRequerido) }}
             </span>
           </td>
         </ng-container>
@@ -148,8 +75,9 @@
                     'bg-warning text-dark': request.estado === 'pendiente',
                     'bg-success': request.estado === 'aprobado',
                     'bg-danger': request.estado === 'rechazado'
-                  }">
-              {{ request.estado | titlecase }}
+                  }"
+                  [matTooltip]="getEstadoNombre(request)">
+              {{ getEstadoNombre(request) }}
             </span>
           </td>
         </ng-container>
@@ -172,6 +100,12 @@
                       matTooltip="Ver detalle">
                 <mat-icon>visibility</mat-icon>
               </button>
+              <button mat-icon-button color="accent" 
+                      (click)="handleAction(request, 'cronograma')"
+                      matTooltip="Ver cronograma"
+                      *ngIf="request.idOportunidad">
+                <mat-icon>calendar_month</mat-icon>
+              </button>
               <ng-container *ngIf="request.estado === 'pendiente'">
                 <button mat-icon-button color="primary" 
                         class="text-success"
@@ -189,15 +123,221 @@
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index" 
-            [ngClass]="{'bg-light': i % 2 === 1}"></tr>
-      </table>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index" 
+                  [ngClass]="{'bg-light': i % 2 === 1}"></tr>
+            </table>
 
-      <div *ngIf="dataSource.data.length === 0" class="text-center py-5 text-muted">
-        No se encontraron solicitudes
-      </div>
-    </div>
+            <div *ngIf="dataSource.data.length === 0" class="text-center py-5 text-muted">
+              No se encontraron solicitudes pendientes
+            </div>
+            
+            <!-- Paginación -->
+            <mat-paginator 
+              *ngIf="totalRegistros > 0"
+              [length]="totalRegistros"
+              [pageSize]="registrosPorPagina"
+              [pageIndex]="numeroPagina - 1"
+              [pageSizeOptions]="pageSizeOptions"
+              [showFirstLastButtons]="true"
+              (page)="onPageChange($event)">
+            </mat-paginator>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Tab Histórico -->
+      <mat-tab label="Histórico">
+        <div class="tab-content pt-4">
+          <!-- Filtros de Búsqueda -->
+          <div class="filtros-section mb-4">
+            <h3 class="filtros-title mb-2">Filtros de Búsqueda</h3>
+            <p class="filtros-subtitle mb-3">Usa los filtros para refinar los resultados del reporte.</p>
+            
+            <form [formGroup]="filtrosForm">
+              <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Fecha Inicio</mat-label>
+                    <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
+                    <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerInicio></mat-datepicker>
+                    <mat-icon matPrefix>calendar_today</mat-icon>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Fecha Fin</mat-label>
+                    <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
+                    <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerFin></mat-datepicker>
+                    <mat-icon matPrefix>calendar_today</mat-icon>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Asesores</mat-label>
+                    <mat-select formControlName="asesor" [disabled]="loadingAsesores">
+                      <mat-option value="">Todos los asesores</mat-option>
+                      <mat-option *ngFor="let asesor of listaAsesores" [value]="asesor.id">
+                        {{ asesor.nombres }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-icon matPrefix>person</mat-icon>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-3">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Estado</mat-label>
+                    <mat-select formControlName="estado" [disabled]="loadingEstados">
+                      <mat-option value="all">Todos</mat-option>
+                      <mat-option *ngFor="let grupo of gruposEstados" [value]="grupo.codigo">
+                        {{ grupo.nombre }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-icon matPrefix>filter_list</mat-icon>
+                  </mat-form-field>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-12 text-end">
+                  <button mat-raised-button color="primary" 
+                          class="btn-generar-reporte"
+                          (click)="generarReporte()"
+                          [disabled]="loading">
+                    <mat-icon>search</mat-icon>
+                    CARGAR SOLICITUDES
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Loading indicator -->
+          <div *ngIf="loading" class="text-center py-5">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p class="mt-3 text-muted">Cargando solicitudes...</p>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive" *ngIf="!loading">
+            <table mat-table [dataSource]="dataSource" class="w-100">
+              <ng-container matColumnDef="alumno">
+                <th mat-header-cell *matHeaderCellDef>Alumno</th>
+                <td mat-cell *matCellDef="let request">
+                  <div>
+                    <div class="fw-medium">{{ request.alumnoNombre }}</div>
+                    <div class="text-muted small">{{ request.alumnoId }}</div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="programa">
+                <th mat-header-cell *matHeaderCellDef style="min-width: 300px;">Programa</th>
+                <td mat-cell *matCellDef="let request" style="min-width: 300px; white-space: normal; word-wrap: break-word; max-width: 400px;">
+                  {{ request.programaNombre }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="descuento">
+                <th mat-header-cell *matHeaderCellDef>Descuento</th>
+                <td mat-cell *matCellDef="let request" class="font-mono text-sm">
+                  {{ request.descuentoCodigo }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="nivel">
+                <th mat-header-cell *matHeaderCellDef class="text-center">Nivel Aprobación</th> 
+                <td mat-cell *matCellDef="let request" class="text-center">
+                  <span class="badge" 
+                        [ngClass]="{
+                          'bg-info': request.nivelRequerido === 1,
+                          'bg-primary': request.nivelRequerido === 2,
+                          'bg-danger': request.nivelRequerido === 3
+                        }">
+                    {{ getNivelTexto(request.nivelRequerido) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef class="text-center">Estado</th>
+                <td mat-cell *matCellDef="let request" class="text-center">
+                  <span class="badge" 
+                        [ngClass]="{
+                          'bg-warning text-dark': request.estado === 'pendiente',
+                          'bg-success': request.estado === 'aprobado',
+                          'bg-danger': request.estado === 'rechazado'
+                        }"
+                        [matTooltip]="getEstadoNombre(request)">
+                    {{ getEstadoNombre(request) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let request" class="text-sm">
+                  {{ formatDate(request.fechaSolicitud) }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef class="text-center">Acciones</th>
+                <td mat-cell *matCellDef="let request" class="text-center">
+                  <div class="d-flex justify-content-center gap-2">
+                    <button mat-icon-button color="primary" 
+                            (click)="handleAction(request, 'view')"
+                            matTooltip="Ver detalle">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button color="accent" 
+                            (click)="handleAction(request, 'cronograma')"
+                            matTooltip="Ver cronograma"
+                            *ngIf="request.idOportunidad">
+                      <mat-icon>calendar_month</mat-icon>
+                    </button>
+                    <ng-container *ngIf="request.estado === 'pendiente'">
+                      <button mat-icon-button color="primary" 
+                              class="text-success"
+                              (click)="handleAction(request, 'approve')"
+                              matTooltip="Aprobar">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                      <button mat-icon-button color="warn" 
+                              (click)="handleAction(request, 'reject')"
+                              matTooltip="Rechazar">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </ng-container>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index" 
+                  [ngClass]="{'bg-light': i % 2 === 1}"></tr>
+            </table>
+
+            <div *ngIf="dataSource.data.length === 0" class="text-center py-5 text-muted">
+              No se encontraron solicitudes
+            </div>
+            
+            <!-- Paginación -->
+            <mat-paginator 
+              *ngIf="totalRegistros > 0"
+              [length]="totalRegistros"
+              [pageSize]="registrosPorPagina"
+              [pageIndex]="numeroPagina - 1"
+              [pageSizeOptions]="pageSizeOptions"
+              [showFirstLastButtons]="true"
+              (page)="onPageChange($event)">
+            </mat-paginator>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>
 
@@ -311,38 +451,7 @@
           <textarea matInput rows="4" [formControl]="commentsControl" placeholder="Agregue un comentario..."></textarea>
         </mat-form-field>
 
-        <!-- Subir archivos adjuntos -->
-        <div class="mb-3">
-          <label class="form-label fw-medium">Archivos adjuntos (opcional)</label>
-          <div class="input-group">
-            <input type="file" 
-                   #fileInput
-                   class="form-control" 
-                   multiple
-                   (change)="onFileSelected($event)"
-                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
-            <button class="btn btn-outline-secondary" type="button" (click)="fileInput.click()">
-              <mat-icon class="align-middle">attach_file</mat-icon>
-              Seleccionar archivos
-            </button>
-          </div>
-          <small class="text-muted">Formatos permitidos: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG</small>
-          
-          <!-- Lista de archivos seleccionados -->
-          <div *ngIf="archivosSeleccionados.length > 0" class="mt-2">
-            <div *ngFor="let archivo of archivosSeleccionados; let i = index" 
-                 class="alert alert-info d-flex justify-content-between align-items-center py-2">
-              <div class="d-flex align-items-center">
-                <mat-icon class="me-2">description</mat-icon>
-                <span>{{ archivo.name }} ({{ formatFileSize(archivo.size) }})</span>
-              </div>
-              <button type="button" 
-                      class="btn-close" 
-                      (click)="removeFile(i)"
-                      aria-label="Eliminar archivo"></button>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -361,3 +470,165 @@
   </div>
 </ng-template>
 
+<!-- Dialog for Cronograma -->
+<ng-template #cronogramaTemplate let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0">
+      <mat-icon class="align-middle me-2">calendar_month</mat-icon>
+      Cronograma de Pagos - {{ selectedRequest?.alumnoNombre }}
+    </h3>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeCronogramaDialog()"></button>
+  </div>
+  
+  <div class="modal-body">
+    <!-- Loading indicator -->
+    <div *ngIf="loadingCronograma" class="text-center py-5">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="mt-3 text-muted">Cargando cronograma de pagos...</p>
+    </div>
+
+    <!-- Cronograma content -->
+    <div *ngIf="!loadingCronograma && cronogramaData" class="cronograma-container">
+      <!-- Información de Montos - Cards destacadas -->
+      <div class="row g-3 mb-4" *ngIf="cronogramaData.montoPago && cronogramaData.cronograma">
+        <!-- Card Código Matrícula -->
+        <div class="col-12" *ngIf="cronogramaData.montoPago.codigoMatricula">
+          <div class="card shadow-sm border-start border-primary border-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <mat-icon class="text-primary me-3" style="font-size: 28px; width: 28px; height: 28px;">badge</mat-icon>
+                <div>
+                  <h6 class="mb-1 text-muted fw-normal">Código Matrícula</h6>
+                  <p class="mb-0 fs-5 fw-bold text-primary">{{ cronogramaData.montoPago.codigoMatricula }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen de Totales -->
+      <div class="row g-3 mb-4" *ngIf="cronogramaData.cronograma?.detalle && cronogramaData.cronograma.detalle.length > 0">
+        <div class="col-md-6">
+          <div class="card shadow-sm border-top border-success border-4">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted mb-1 fw-medium">Total Monto Cuota</h6>
+                  <h4 class="mb-0 fw-bold text-success">
+                    {{ getTotalMonto(cronogramaData.cronograma.detalle) | number:'1.2-2' }}
+                    <small class="fs-6 fw-normal text-muted">{{ cronogramaData.cronograma.nombrePlural || 'Pesos' }}</small>
+                  </h4>
+                </div>
+                <mat-icon class="text-success" style="font-size: 40px; width: 40px; height: 40px;">account_balance_wallet</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm border-top border-info border-4">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted mb-1 fw-medium">Total con Descuento</h6>
+                  <h4 class="mb-0 fw-bold text-info">
+                    {{ getTotalMontoDescuento(cronogramaData.cronograma.detalle) | number:'1.2-2' }}
+                    <small class="fs-6 fw-normal text-muted">{{ cronogramaData.cronograma.nombrePlural || 'Pesos' }}</small>
+                  </h4>
+                </div>
+                <mat-icon class="text-info" style="font-size: 40px; width: 40px; height: 40px;">discount</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de cuotas -->
+      <div class="card shadow-sm border-0" *ngIf="cronogramaData.cronograma?.detalle && cronogramaData.cronograma.detalle.length > 0">
+        <div class="card-header bg-light border-bottom py-3">
+          <h5 class="mb-0 d-flex align-items-center">
+            <mat-icon class="me-2 text-primary">receipt_long</mat-icon>
+            Detalle de Cuotas
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0" style="font-size: 0.9rem;">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center" style="width: 80px;">Nro.</th>
+                  <th>Descripción</th>
+                  <th class="text-end">Monto Cuota</th>
+                  <th class="text-end">Monto con Descuento</th>
+                  <th class="text-center" style="min-width: 140px;">Fecha Vencimiento</th>
+                  <th class="text-center" style="width: 120px;">Estado</th>
+                  <th class="text-center" style="width: 110px;" *ngIf="cronogramaData.cronograma.detalle[0]?.matricula !== undefined">Tipo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cuota of cronogramaData.cronograma.detalle; let i = index" 
+                    [ngClass]="{'table-active': i % 2 === 1}">
+                  <td class="text-center fw-bold align-middle">{{ cuota.numeroCuota || (i + 1) }}</td>
+                  <td class="align-middle">
+                    <div class="fw-medium">{{ cuota.cuotaDescripcion || 'Cuota ' + (i + 1) }}</div>
+                  </td>
+                  <td class="text-end align-middle">
+                    <span class="text-muted">
+                      {{ cuota.montoCuota | number:'1.2-2' }}
+                    </span>
+                    <small class="text-muted d-block">{{ cronogramaData.cronograma.nombrePlural || 'Pesos' }}</small>
+                  </td>
+                  <td class="text-end align-middle">
+                    <span class="fw-semibold text-primary">
+                      {{ cuota.montoCuotaDescuento | number:'1.2-2' }}
+                    </span>
+                    <small class="text-muted d-block">{{ cronogramaData.cronograma.nombrePlural || 'Pesos' }}</small>
+                  </td>
+                  <td class="text-center align-middle">
+                    <div class="d-flex flex-column align-items-center">
+                      <span class="small">{{ formatDate(cuota.fechaPago) }}</span>
+                    </div>
+                  </td>
+                  <td class="text-center align-middle">
+                    <span class="badge rounded-pill px-3 py-2" 
+                          [ngClass]="cuota.pagado ? 'bg-success' : 'bg-warning text-dark'">
+                      <mat-icon class="align-middle me-1" style="font-size: 16px; width: 16px; height: 16px;">
+                        {{ cuota.pagado ? 'check_circle' : 'schedule' }}
+                      </mat-icon>
+                      {{ cuota.pagado ? 'Pagado' : 'Pendiente' }}
+                    </span>
+                  </td>
+                  <td class="text-center align-middle" *ngIf="cuota.matricula !== undefined">
+                    <span class="badge rounded-pill px-3 py-2" 
+                          [ngClass]="cuota.matricula ? 'bg-info' : 'bg-secondary'">
+                      {{ cuota.matricula ? 'MATRÍCULA' : 'CUOTA' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="!loadingCronograma && !cronogramaData" class="text-center py-5">
+      <div class="card border-warning shadow-sm">
+        <div class="card-body py-5">
+          <mat-icon class="text-warning mb-3" style="font-size: 64px; width: 64px; height: 64px;">error_outline</mat-icon>
+          <h5 class="text-muted mb-2">No se pudo cargar el cronograma</h5>
+          <p class="text-muted small mb-0">Por favor, intente nuevamente más tarde</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer bg-light border-top">
+    <button type="button" class="btn btn-secondary" (click)="closeCronogramaDialog()">
+      <mat-icon class="align-middle me-1">close</mat-icon>
+      Cerrar
+    </button>
+  </div>
+</ng-template>

@@ -3152,10 +3152,15 @@ export const constApiPlanificacion = {
   TipoDescuentoEliminar: '/TipoDescuento/Eliminar', //DELETE
   TipoDescuentoInsertar: '/TipoDescuento/Insertar', //POST
   TipoDescuentoActualizar: '/TipoDescuento/Actualizar', //PUT
-  TipoDescuentoObtenerTiposPorIdTipoDescuento:
-    '/TipoDescuento/ObtenerTiposPorIdTipoDescuento', //GET
+  TipoDescuentoObtenerTiposPorIdTipoDescuento:'/TipoDescuento/ObtenerTiposPorIdTipoDescuento', //GET
   ObtenerTipoDescuentoConNivelAprobacion : '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
   ObtenerNivelesAprobacion: '/TipoDescuento/ObtenerNivelesAprobacion', //GET
+  ObtenerEstadosAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ObtenerEstadosSolicitud', //GET
+  ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes', 
+  AprobarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudGerencia', //POST
+  RechazarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudGerencia', //POST
+  AprobarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudCoordinador', //POST
+  RechazarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudCoordinador', //POST
   //Asociar Feedback Programas
   FeedbackConfigurarGrupoPreguntaObtener:
     '/FeedbackConfigurarGrupoPregunta/Obtener', //GET
