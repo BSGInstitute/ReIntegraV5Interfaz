@@ -4006,7 +4006,9 @@ export const constApiPlanificacion = {
   ProgramaGeneralObtenerPGeneralActivo: '/ProgramaGeneral/ObtenerPGeneralActivo',
   DocumentoPWObtenerNotasTipo:'/DocumentoPw/ObtenerNotasTipo',
   DocumentoPwObtenerDocumentoPWModalidad:'/DocumentoPw/ObtenerDocumentoPWModalidad',
-  
+  DocumentoPwObtenerDocumentoPWDuracion: '/DocumentoPw/ObtenerDocumentoPWDuracion',
+  DocumentoPwObtenerDocumentoPWFechaInicio: '/DocumentoPw/ObtenerDocumentoPWFechaInicio',
+  DocumentoPwObtenerDocumentoPWNotas: '/DocumentoPw/ObtenerDocumentoPWNotas',
 };
 
 export const constApiFinanzas = {

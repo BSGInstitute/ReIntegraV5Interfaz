@@ -206,6 +206,7 @@ export class DocumentosPortalWebComponent implements OnInit {
       .subscribe({
         next: (resp: HttpResponse<ModalidadPortal[]>) => {
           this.listaModalidad = resp.body ?? [];
+          this.refrescarEtiquetasModalidad();
         },
         error: (error) => {
           let mensaje = this.alertaService.getMessageErrorService(error);
@@ -214,6 +215,19 @@ export class DocumentosPortalWebComponent implements OnInit {
       });
   }
 
+  private refrescarEtiquetasModalidad() {
+    (this.listaModalidadHorarios ?? []).forEach((m) => this.reindexEtiquetas(m));
+  }
+
+  private etiquetaBaseModalidadFallback(idModalidad: number | null, tipoFallback?: any): string {
+    const base = this.etiquetaBaseModalidad(idModalidad);
+    if (base && base !== 'Información') return base;
+
+    const t = ((tipoFallback ?? '') + '').trim().toUpperCase();
+    if (t.includes('HORA')) return 'Hora';
+    if (t.includes('BENEF')) return 'Beneficio';
+    return 'Información';
+  }
   private propiedadModalidad(idModalidad: number | null): string {
     const m = (this.listaModalidad ?? []).find((x) => x.id === idModalidad);
     return (m?.propiedad ?? '').trim();
@@ -618,6 +632,8 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
 
   cambioPaisFechaInicio(pi: number, nuevoIdPais: number | null) {
+    this.fechaInicioPaisActivoIndex = pi;
+
     const pais = this.listaFechaInicioPaises[pi];
     if (!pais) return;
 
@@ -1053,6 +1069,9 @@ export class DocumentosPortalWebComponent implements OnInit {
       this.obtenerDocumentosSeccionEditar(dataItem);
       const introducciones = await this.obtenerIntroduccion(dataItem.id);
       this.ObtenerDocumentoPWModalidad(dataItem.id);
+      this.ObtenerDocumentoPWDuracion(dataItem.id);
+      this.ObtenerDocumentoPWFechaInicio(dataItem.id);
+      this.ObtenerDocumentoPWNotas(dataItem.id);
       this.asignarIntroducciones(introducciones);
     } else {
       this.esNuevo = true;
@@ -1474,21 +1493,84 @@ export class DocumentosPortalWebComponent implements OnInit {
       return [];
     }
   }
-ObtenerDocumentoPWModalidad(id:number) {
+  ObtenerDocumentoPWModalidad(id: number) {
     this.integraService
       .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWModalidad}/${id}`)
       .subscribe({
-        next: (resp: HttpResponse<any[]>) => {
+        next: (resp: HttpResponse<any>) => {
+          const body: any = resp.body ?? null;
+
+          this.introduccionModalidad = '';
+          this.listaModalidadHorarios = [];
+          this.modalidadActivaIndex = null;
+          this.modalidadesEliminadas = [];
+          this.detallesEliminados = [];
+
+          if (!body) return;
+
+          const intro = body.introduccion ?? body.Introduccion ?? '';
+          this.introduccionModalidad = intro ?? '';
+
+          const modalidades = (body.modalidades ?? body.Modalidades ?? []) as any[];
+
+          this.listaModalidadHorarios = (modalidades ?? []).map((m: any) => {
+            const idModalidad = (m.idModalidad ?? m.IdModalidad ?? null) as number | null;
+
+            const detallesRaw = (m.detalles ?? m.Detalles ?? []) as any[];
+            const detallesOrdenados = (detallesRaw ?? [])
+              .slice()
+              .sort((a, b) => (a.orden ?? a.Orden ?? 0) - (b.orden ?? b.Orden ?? 0));
+
+            const tipoFallback = detallesOrdenados?.[0]?.tipo ?? detallesOrdenados?.[0]?.Tipo ?? null;
+            const baseEtiqueta = this.etiquetaBaseModalidadFallback(idModalidad, tipoFallback);
+
+            const informacion: InfoVM[] = (detallesOrdenados ?? []).map((d: any, idx: number) => {
+              const idDetalle = (d.id ?? d.Id ?? 0) as number;
+
+              const orden = (d.orden ?? d.Orden ?? (idx + 1)) as number;
+
+              const tipoRaw = ((d.tipo ?? d.Tipo ?? '') + '').trim().toUpperCase();
+              const tipo: InfoTipo = tipoRaw.includes('HORA') ? 'HORA' : 'BENEFICIO';
+
+              const idPais = (d.idPais ?? d.IdPais ?? null) as number | null;
+              const beneficio = (d.beneficio ?? d.Beneficio ?? '') as string;
+
+              return {
+                idDetalle: idDetalle > 0 ? idDetalle : undefined,
+                etiqueta: `${baseEtiqueta} ${orden}`,
+                tipo,
+                valor: tipo === 'HORA' ? idPais : null,
+                valorTexto: tipo === 'BENEFICIO' ? (beneficio ?? '') : '',
+              };
+            });
+
+            const id = (m.id ?? m.Id ?? 0) as number;
+            const subTitulo = (m.subTitulo ?? m.SubTitulo ?? '') as string;
+            const descripcion = (m.descripcion ?? m.Descripcion ?? '') as string;
+
+            const vm: ModalidadVM = {
+              id: id > 0 ? id : undefined,
+              idModalidad,
+              subtitulo: subTitulo ?? '',
+              descripcion: descripcion ?? '',
+              informacion,
+              _prevIdModalidad: idModalidad,
+            };
+
+            return vm;
+          });
+
+          this.modalidadActivaIndex = this.listaModalidadHorarios.length ? 0 : null;
+
+          this.refrescarEtiquetasModalidad();
         },
         error: (error) => {
-          console.log('aqui entro error');
           let mensaje = this.alertaService.getMessageErrorService(error);
           this.alertaService.notificationWarning(mensaje);
         },
       });
   }
 
-  
   asignarIntroducciones(introducciones: versionesDPW[]): void {
     introducciones.forEach((version) => {
       const controlName = `Introduccion${version.idVersionPrograma}`;
@@ -1742,4 +1824,173 @@ ObtenerDocumentoPWModalidad(id:number) {
       this.notaActivaIndex = this.listaNotas.length - 1;
     }
   }
+
+
+  ObtenerDocumentoPWDuracion(id: number) {
+    this.integraService
+      .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWDuracion}/${id}`)
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          const body: any = resp.body ?? null;
+
+          this.tituloDuracion = '';
+          this.introduccionDuracion = '';
+          this.pieDePaginaDuracion = '';
+          this.listaDuracionDetalle = [];
+          this.duracionDetallesEliminados = [];
+
+          if (!body) return;
+
+          this.tituloDuracion = body.titulo ?? body.Titulo ?? '';
+          this.introduccionDuracion = body.introduccion ?? body.Introduccion ?? '';
+          this.pieDePaginaDuracion = body.pieDePagina ?? body.PieDePagina ?? '';
+
+          const detalles = (body.detalles ?? body.Detalles ?? []) as any[];
+
+          const ordenados = (detalles ?? [])
+            .slice()
+            .sort(
+              (a, b) =>
+                (a.idVersionPrograma ?? a.IdVersionPrograma ?? 0) -
+                (b.idVersionPrograma ?? b.IdVersionPrograma ?? 0)
+            );
+
+          this.listaDuracionDetalle = ordenados.map((d: any) => {
+            const idDetalle = (d.id ?? d.Id ?? 0) as number;
+            const idVersionPrograma = (d.idVersionPrograma ?? d.IdVersionPrograma ?? null) as number | null;
+
+            const vm: DuracionDetalleVM = {
+              idDetalle: idDetalle > 0 ? idDetalle : undefined,
+              idVersionPrograma,
+              meses: d.meses ?? d.Meses ?? '',
+              horas: d.horas ?? d.Horas ?? '',
+              _prevIdVersionPrograma: idVersionPrograma,
+            };
+
+            return vm;
+          });
+        },
+        error: (error) => {
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+  ObtenerDocumentoPWFechaInicio(id: number) {
+    this.integraService
+      .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWFechaInicio}/${id}`)
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          const data = resp.body;
+          if (!data) {
+            this.fechaInicioMostrarEnLaWeb = false;
+            this.fechaInicioTitulo = '';
+            this.fechaInicioSubTitulo = '';
+            this.listaFechaInicioPaises = [];
+            this.fechaInicioPaisActivoIndex = null;
+            this.fechaInicioPaisesEliminados = [];
+            this.fechaInicioDetallesEliminados = [];
+            return;
+          }
+
+          this.fechaInicioMostrarEnLaWeb = !!data.mostrarEnLaWeb;
+          this.fechaInicioTitulo = data.titulo ?? '';
+          this.fechaInicioSubTitulo = data.subTitulo ?? '';
+
+          const paises = (data.paises ?? []) as any[];
+
+          this.listaFechaInicioPaises = paises.map((p: any) => {
+            const detalles = (p.detalles ?? []) as any[];
+            const detallesVM: FechaInicioDetalleVM[] = detalles.map((d: any) => ({
+              idDetalle: d.id ?? 0,
+              idModo: d.idModo ?? null,
+              fecha: d.fecha ? new Date(d.fecha) : null,
+              horario: d.horario ?? '',
+              _prevIdModo: d.idModo ?? null,
+            }));
+
+            return {
+              id: p.id ?? 0,
+              idPais: p.idPais ?? null,
+              detalles: detallesVM,
+              _prevIdPais: p.idPais ?? null,
+            } as FechaInicioPaisVM;
+          });
+
+          this.fechaInicioPaisesEliminados = [];
+          this.fechaInicioDetallesEliminados = [];
+
+          if (this.listaFechaInicioPaises.length) {
+            this.fechaInicioPaisActivoIndex = 0;
+          } else {
+            this.fechaInicioPaisActivoIndex = null;
+          }
+        },
+        error: (error) => {
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+ObtenerDocumentoPWNotas(id: number) {
+  this.integraService
+    .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWNotas}/${id}`)
+    .subscribe({
+      next: (resp: HttpResponse<any>) => {
+        const data = resp.body;
+
+        this.notasEliminadas = [];
+        this.notasDetallesEliminados = [];
+        this.notaActivaIndex = null;
+
+        if (!data) {
+          this.notasMostrarEnLaWeb = false;
+          this.listaNotas = [];
+          return;
+        }
+
+        this.notasMostrarEnLaWeb = !!data.mostrarEnLaWeb;
+
+        const notas = (data.notas ?? []) as any[];
+
+        this.listaNotas = notas.map((n: any) => {
+          const detalles = (n.detalles ?? []) as any[];
+
+          const detallesVM: NotaDetalleVM[] = detalles
+            .slice()
+            .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
+            .map((d: any, i: number) => {
+              const isHora = d.idPais !== null && d.idPais !== undefined;
+              const tipo: NotaInfoTipo = isHora ? 'HORA' : 'EXTRA';
+              const base = n.idNotaTipo === 1 ? 'Extra' : 'Hora';
+
+              return {
+                idDetalle: d.id ?? 0,
+                etiqueta: `${base} ${i + 1}`,
+                tipo,
+                valorTexto: d.informacionExtra ?? '',
+                idPais: isHora ? d.idPais : null,
+              } as NotaDetalleVM;
+            });
+
+          return {
+            id: n.id ?? 0,
+            idNotaTipo: n.idNotaTipo ?? null,
+            idPGeneral: n.idPGeneral ?? null,
+            descripcion: n.descripcion ?? '',
+            detalles: detallesVM,
+            _prevIdNotaTipo: n.idNotaTipo ?? null,
+          } as NotaVM;
+        });
+
+        if (this.listaNotas.length) this.notaActivaIndex = 0;
+      },
+      error: (error) => {
+        let mensaje = this.alertaService.getMessageErrorService(error);
+        this.alertaService.notificationWarning(mensaje);
+      },
+    });
+}
+
 }
