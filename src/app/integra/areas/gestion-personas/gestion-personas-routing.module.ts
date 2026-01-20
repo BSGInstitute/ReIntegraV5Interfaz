@@ -11,7 +11,7 @@ import { TipoContratoComponent } from './maestro/tipo-contrato/tipo-contrato.com
 import { PersonalAreaTrabajoComponent } from './maestro/personal-area-trabajo/personal-area-trabajo.component';
 import { AreaFormacionComponent } from './maestro/area-formacion/area-formacion.component';
 import { GestionUsuariosComponent } from './gestion-personal/gestion-usuarios/gestion-usuarios.component';
-import {GestionPersonalComponent} from './gestion-personal/gestion-personal/gestion-personal.component';
+import { GestionPersonalComponent } from './gestion-personal/gestion-personal/gestion-personal.component';
 import { GestionModulosComponent } from './maestro/gestion-modulos/gestion-modulos.component';
 import { CategoriaEvaluacionComponent } from './maestro/categoria-evaluacion/categoria-evaluacion.component';
 import { CategoriaPreguntaComponent } from './maestro/categoria-pregunta/categoria-pregunta.component';
@@ -45,12 +45,17 @@ import { ConfigurarProcesoSeleccionComponent } from './proceso-seleccion/configu
 import { ReporteAnalisisProcesoSeleccionComponent } from './gestion-personal/reporte-analisis-proceso-seleccion/reporte-analisis-proceso-seleccion.component';
 import { HabilitarExamenesComponent } from './proceso-seleccion/habilitar-examenes/habilitar-examenes.component';
 import { PreguntasEvaluacionComponent } from './proceso-seleccion/preguntas-evaluacion/preguntas-evaluacion.component';
+import { EvaluacionPostulanteComponent } from './proceso-seleccion/evaluacion-postulante/evaluacion-postulante.component';
+import { RegistroMarcadorFechaComponent } from './asistencia-personal/registro-marcador-fecha/registro-marcador-fecha.component';
 
 const routes: Routes = [
   { path: '', component: PersonalComponent },
   { path: 'personal', component: PersonalComponent },
   { path: 'MaestroConvocatoriaPersonal', component: AvisoLaboralComponent },
-  { path: 'ImportarMaracionPersonal', component: ImportarMarcacionPersonalComponent },
+  {
+    path: 'ImportarMaracionPersonal',
+    component: ImportarMarcacionPersonalComponent,
+  },
   { path: 'MaestroExperienciaRequerida', component: ExperienciaComponent },
   { path: 'MaestroContrato', component: TipoContratoComponent },
   { path: 'CategoriaEvaluacion', component: CategoriaEvaluacionComponent },
@@ -60,44 +65,91 @@ const routes: Routes = [
   { path: 'NivelPuestoTrabajo', component: NivelPuestoTrabajoComponent },
   { path: 'AreaFormacion', component: AreaFormacionComponent },
   { path: 'TipoFormacion', component: TipoFormacionComponent },
-  { path: 'CriterioEvaluacionProceso', component: CriterioEvaluacionProcesoComponent },
+  {
+    path: 'CriterioEvaluacionProceso',
+    component: CriterioEvaluacionProcesoComponent,
+  },
   { path: 'MaestroGradoInstruccion', component: GradoEstudioComponent },
-  { path: 'MaestroNivelCursoComplementario', component: NivelCompetenciaTecnicaComponent },
+  {
+    path: 'MaestroNivelCursoComplementario',
+    component: NivelCompetenciaTecnicaComponent,
+  },
   { path: 'MaestroTipoExperiencia', component: TipoExperienciaComponent },
-  { path: 'MaestroCursoComplementario', component: CursoComplementarioComponent },
+  {
+    path: 'MaestroCursoComplementario',
+    component: CursoComplementarioComponent,
+  },
   { path: 'MaestroCentroEstudio', component: CentroEstudioComponent },
   { path: 'GestionUsuarios', component: GestionUsuariosComponent },
   { path: 'GestionPersonal', component: GestionPersonalComponent },
   { path: 'GestionModulos', component: GestionModulosComponent },
-  { path: 'EstadoEtapaProcesoSeleccion', component: EstadoEtapaProcesoSeleccionComponent },//FR
-  { path: 'PerfilPuestoTrabajoEstadoSolicitud', component: PerfilPuestoTrabajoEstadoSolicitudComponent },//FR
-  { path: 'ExamenFeedback', component: ExamenFeedbackComponent },//FR
-  { path: 'FrecuenciaPuestoTrabajo', component: FrecuenciaPuestoTrabajoComponent },//FR
-  { path: 'GrupoComparacionProcesoSeleccion', component: GrupoComparacionProcesoSeleccionComponent },//FR
+  {
+    path: 'EstadoEtapaProcesoSeleccion',
+    component: EstadoEtapaProcesoSeleccionComponent,
+  }, //FR
+  {
+    path: 'PerfilPuestoTrabajoEstadoSolicitud',
+    component: PerfilPuestoTrabajoEstadoSolicitudComponent,
+  }, //FR
+  { path: 'ExamenFeedback', component: ExamenFeedbackComponent }, //FR
+  {
+    path: 'FrecuenciaPuestoTrabajo',
+    component: FrecuenciaPuestoTrabajoComponent,
+  }, //FR
+  {
+    path: 'GrupoComparacionProcesoSeleccion',
+    component: GrupoComparacionProcesoSeleccionComponent,
+  }, //FR
   { path: 'NivelEstudio', component: NivelEstudioComponent },
-  { path: 'PostulanteNivelPotencial', component: PostulanteNivelPotencialComponent },
+  {
+    path: 'PostulanteNivelPotencial',
+    component: PostulanteNivelPotencialComponent,
+  },
   { path: 'PersonalTipoFuncion', component: PersonalTipoFuncionComponent },
-  { path: 'PersonalRelacionExterna', component: PersonalRelacionExternaComponent },
+  {
+    path: 'PersonalRelacionExterna',
+    component: PersonalRelacionExternaComponent,
+  },
   { path: 'MensajeTiempoInactivo', component: MensajeTiempoInactivoComponent },
-  { path: 'ReporteEvaluacionPostulante', component: ReporteEvaluacionPostulanteComponent },
+  {
+    path: 'ReporteEvaluacionPostulante',
+    component: ReporteEvaluacionPostulanteComponent,
+  },
   { path: 'ProcesoSeleccion', component: DatosPostulanteComponent },
   { path: 'ReporteInduccionPersonal', component: InduccionPersonalComponent },
   { path: 'GestionContrato', component: GestionContratosComponent },
-  { path: 'GestionRemuneracionPuestoTrabajo', component: CompensacionPuestoComponent },
+  {
+    path: 'GestionRemuneracionPuestoTrabajo',
+    component: CompensacionPuestoComponent,
+  },
   { path: 'MaestroEvaluacion', component: EvaluacionesComponent },
   { path: 'PuestoTrabajo', component: PuestoTrabajoComponent },
   { path: 'MaestroPersonal', component: FichaDatosPersonalComponent },
-  { path: 'ReportePersonalJefatura', component: ConsultaPersonalACargoComponent },
-  { path: 'ConfigurarProcesoSeleccion', component: ConfigurarProcesoSeleccionComponent },
-  { path: 'MaestroPerfilPuestoTrabajoPersonalAprobacion', component: AprobacionPerfilesComponent },
-  { path: 'ReporteAnalisisProcesoSeleccion', component: ReporteAnalisisProcesoSeleccionComponent },
-  {path: 'PreguntaEvaluacion',component : PreguntasEvaluacionComponent},
-   {path: 'HabilitarExamenes',component : HabilitarExamenesComponent}
- // { path: '**', redirectTo: 'listado' },
+  {
+    path: 'ReportePersonalJefatura',
+    component: ConsultaPersonalACargoComponent,
+  },
+  {
+    path: 'ConfigurarProcesoSeleccion',
+    component: ConfigurarProcesoSeleccionComponent,
+  },
+  {
+    path: 'MaestroPerfilPuestoTrabajoPersonalAprobacion',
+    component: AprobacionPerfilesComponent,
+  },
+  {
+    path: 'ReporteAnalisisProcesoSeleccion',
+    component: ReporteAnalisisProcesoSeleccionComponent,
+  },
+  { path: 'PreguntaEvaluacion', component: PreguntasEvaluacionComponent },
+  { path: 'HabilitarExamenes', component: HabilitarExamenesComponent },
+  { path: 'EvaluacionPostulante', component: EvaluacionPostulanteComponent },
+  { path: 'RegistroMarcadorFecha', component: RegistroMarcadorFechaComponent },
+  // { path: '**', redirectTo: 'listado' },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class GestionPersonasRoutingModule { }
+export class GestionPersonasRoutingModule {}

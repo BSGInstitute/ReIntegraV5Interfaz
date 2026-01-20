@@ -174,6 +174,19 @@ import { FacebookLeadsRecuperacionDatosService } from '@shared/services/facebook
 import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
 import { MessengerFacebookChatGrillaComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-grilla/messenger-facebook-chat-grilla.component';
 import { MessengerFacebookChatModalComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat-modal/messenger-facebook-chat-modal.component';
+import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
+import { GraficaRendimientoComponent } from './campanias-mailing/campania-remarketing-general/grafica-rendimiento/grafica-rendimiento.component';
+import { CrearEditarCampaniaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/crear-editar-campania.component';
+import { DetalleCampaniaComponent } from './campanias-mailing/campania-remarketing-general/detalle-campania/detalle-campania.component';
+import { UltimaOportunidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
+import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
+import { ProbabilidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/probabilidad/probabilidad.component';
+import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/embudo/embudo.component';
+import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
+import { CategoriasComponent } from './configuraciones/categoria-argumentos/categorias/categorias.component';
+import { ProgramasComponent } from './configuraciones/categoria-argumentos/programas/programas.component';
+import { ModalEditarProgramaComponent } from './configuraciones/categoria-argumentos/programas/modal-editar-programa/modal-editar-programa.component';
+import { ModalCrearProgramaComponent } from './configuraciones/categoria-argumentos/programas/modal-crear-programa/modal-crear-programa.component';
 
 
 @NgModule({
@@ -348,7 +361,22 @@ import { MessengerFacebookChatModalComponent } from './campania-facebook/messeng
     ModalDetalleLeadFacebookComponent,
     MessengerFacebookChatComponent,
     MessengerFacebookChatGrillaComponent,
-    MessengerFacebookChatModalComponent
+    MessengerFacebookChatModalComponent,
+    CampaniaRemarketingGeneralComponent,
+    GraficaRendimientoComponent,
+    CrearEditarCampaniaComponent,
+    DetalleCampaniaComponent,
+    MessengerFacebookChatModalComponent,
+    UltimaOportunidadComponent,
+    MayorProbInscripcionComponent,
+    ProbabilidadComponent,
+    EmbudoComponent,
+    DetalleCampaniaComponent,
+    CategoriaArgumentosComponent,
+    CategoriasComponent,
+    ProgramasComponent,
+    ModalEditarProgramaComponent,
+    ModalCrearProgramaComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

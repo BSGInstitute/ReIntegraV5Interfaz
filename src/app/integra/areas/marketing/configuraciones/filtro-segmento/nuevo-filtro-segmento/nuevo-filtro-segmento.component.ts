@@ -61,6 +61,10 @@ import { FormulariosComponent } from '../actualizar-filtro-segmento/formularios/
 import { HistorialFinComponent } from '../actualizar-filtro-segmento/historial-fin/historial-fin.component';
 import { InterOfflineOnlineComponent } from '../actualizar-filtro-segmento/inter-offline-online/inter-offline-online.component';
 import { MultiSelectComponent } from '@progress/kendo-angular-dropdowns';
+import { UltimaOportunidadComponent } from '../actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
+import { MayorProbInscripcionComponent } from '../actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
+import { ProbabilidadComponent } from '../actualizar-filtro-segmento/probabilidad/probabilidad.component';
+import { EmbudoComponent } from '../actualizar-filtro-segmento/embudo/embudo.component';
 
 @Component({
   selector: 'app-nuevo-filtro-segmento',
@@ -99,6 +103,10 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
   @ViewChild(PerfilesComponent) perfiles: any;
   @ViewChild(CategoriaDatoComponent) categoriaDato: any;
   @ViewChild(VentaCruzadaComponent) ventaCruzada: any;
+  @ViewChild(UltimaOportunidadComponent) ultimaOportunidad: any;
+  @ViewChild(MayorProbInscripcionComponent) mayorOportunidadInscripcion: any;
+  @ViewChild(ProbabilidadComponent) probabilidad: any;
+  @ViewChild(EmbudoComponent) embudo: any;
   @ViewChild(InterCorreoComponent) correo: any;
   @ViewChild(InterChatPortalWebComponent) chatPortal: any;
   @ViewChild(FormulariosComponent) formularios: any;
@@ -129,6 +137,11 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
   ConsiderarFiltroEspecifico: any = false;
   ConsiderarAlumnosAsignacionAutomaticaOperaciones: any = false;
   ExcluirMatriculados: any = false;
+  ConsiderarExcluirCampania: any = false;
+  FechaInicioExclusionCampania: any;
+  FechaFinExclusionCampania: any;
+  ListaExclusionCampania: any;
+  ExclusionCampania: any;
   loader: boolean = false;
   virtual: any = {
     itemHeight: 28,
@@ -290,9 +303,9 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
         console.log(e.Valor)
         var r=this.subestado.filter(s => s.IdEstadoMatricula === e.Valor);
         r.forEach((a:any) => {
-          this.listaSubestado.push(a)  
+          this.listaSubestado.push(a)
         });
-        
+
         console.log(this.listaSubestado)
       });
        console.log(this.listaSubestado)
@@ -457,6 +470,13 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
     ConsiderarInteraccionWhatsApp: false,
     ConsiderarInteraccionChatMessenger: false,
     ConsiderarEnvioAutomatico: false,
+    ConsiderarUltimaOportunidad: false,
+    ConsiderarMayorProbabilidadInscripcion: false,
+    ConsiderarMayorProbabilidadInscripcionVentaCruzada: false,
+    ConsiderarProbabilidad: false,
+    ConsiderarProbabilidadVentaCruzada: false,
+    ConsiderarEmbudo: false,
+
     ExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal: false,
     FechaInicioExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal: null,
     FechaFinExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal: null,
@@ -475,6 +495,7 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
     FechaFinMatriculaAlumno: null,
     ConsiderarAlumnosAsignacionAutomaticaOperaciones: false,
     ExcluirMatriculados: false,
+    ConsiderarExcluirCampania: false,
 
     AplicaSobreCreacionOportunidad: false,
     IdOperadorMedidaTiempoCreacionOportunidad: null,
@@ -484,6 +505,8 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
     NroMedidaTiempoUltimaActividadEjecutada: null,
     EnvioAutomaticoEstadoActividadDetalle: null,
     ConsiderarYaEnviados: false,
+    FechaInicioExclusionCampania: null,
+    FechaFinExclusionCampania: null,
 
     ListaArea: [],
     ListaSubArea: [],
@@ -545,6 +568,23 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
     IdConjuntoListaDetalle: null,
     NroListasRepeticionContacto: null,
     NroEjecucion: null,
+
+    ListaUOArea: [],
+    ListaUOSubArea: [],
+    ListaUOPGeneral: [],
+
+    ListaMPIArea: [],
+    ListaMPISubArea: [],
+    ListaMPIPGeneral: [],
+
+    ListaProbabilidadValor : [],
+    ListaProbabilidadArea : [],
+    ListaProbabilidadSubArea : [],
+    ListaProbabilidadPGeneral : [],
+
+    ListaNivelEmbudoEsquema1 : [],
+    ListaNivelEmbudoEsquema2 : [],
+
   };
 
   ngOnInit(): void {
@@ -588,6 +628,17 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
           this.ConsiderarAlumnosAsignacionAutomaticaOperaciones =
             this.actualizarDatos.considerarAlumnosAsignacionAutomaticaOperaciones;
           this.ExcluirMatriculados = this.actualizarDatos.excluirMatriculados;
+          this.ConsiderarExcluirCampania = this.actualizarDatos.considerarExcluirCampania;
+            this.FechaInicioExclusionCampania = this.actualizarDatos.fechaInicioExclusionCampania != null
+            ? new Date(this.actualizarDatos.fechaInicioExclusionCampania)
+            : null;
+          this.FechaFinExclusionCampania = this.actualizarDatos.fechaFinExclusionCampania != null
+            ? new Date(this.actualizarDatos.fechaFinExclusionCampania)
+            : null;
+
+          console.log(this.ConsiderarExcluirCampania);
+          console.log(this.FechaInicioExclusionCampania);
+          console.log(this.FechaFinExclusionCampania);
 
           this.listaEstadoMatricula.forEach((p: any) => {
             this.actualizarDatos.listaEstadoMatricula.forEach((e: any) => {
@@ -1203,7 +1254,7 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
 
   Crear() {
     this.listaSubArea = [];
-  
+
 
     if (this.Nombre == '') {
       this.alertaService.mensajeIcon(
@@ -1246,6 +1297,9 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
         this.jsonEnvio.ListaExcluirPorFiltroSegmento = this.filtroEnvio;
 
         this.jsonEnvio.ExcluirMatriculados = this.ExcluirMatriculados;
+        this.jsonEnvio.ConsiderarExcluirCampania = this.ConsiderarExcluirCampania;
+        this.jsonEnvio.FechaInicioExclusionCampania = this.FechaInicioExclusionCampania;
+        this.jsonEnvio.FechaFinExclusionCampania = this.FechaFinExclusionCampania;
 
         //- Inter-offline-sitioweb (39) -//
 
@@ -1380,6 +1434,48 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
             this.categoriaDato.categoriaEnvio;
           this.jsonEnvio.ListaTipoCategoriaOrigen =
             this.categoriaDato.tipoCategoriaEnvio;
+        }
+
+        if (this.ultimaOportunidad != undefined) {
+          //- Ultima Oportunidad -//
+
+          this.jsonEnvio.ConsiderarUltimaOportunidad = this.ultimaOportunidad.datos;
+
+          this.jsonEnvio.ListaUOArea = this.ultimaOportunidad.areaUOEnvio;
+          this.jsonEnvio.ListaUOSubArea = this.ultimaOportunidad.subareaUOEnvio;
+          this.jsonEnvio.ListaUOPGeneral = this.ultimaOportunidad.programaUOEnvio;
+        }
+
+        if (this.mayorOportunidadInscripcion != undefined) {
+          //- Mayor Oportunidad Inscripcion -//
+
+          this.jsonEnvio.ConsiderarMayorProbabilidadInscripcion = this.mayorOportunidadInscripcion.considerarMayorProbabilidadInscripcion;
+          this.jsonEnvio.ConsiderarMayorProbabilidadInscripcionVentaCruzada = this.mayorOportunidadInscripcion.considerarMayorProbabilidadInscripcionVentaCruzada;
+
+          this.jsonEnvio.ListaMPIArea = this.mayorOportunidadInscripcion.areaMPIEnvio;
+          this.jsonEnvio.ListaMPISubArea = this.mayorOportunidadInscripcion.subareaMPIEnvio;
+          this.jsonEnvio.ListaMPIPGeneral = this.mayorOportunidadInscripcion.programaMPIEnvio;
+        }
+
+        if (this.probabilidad != undefined) {
+          //- Probabilidad -//
+
+          this.jsonEnvio.ConsiderarProbabilidad = this.probabilidad.considerarProbabilidad;
+          this.jsonEnvio.ConsiderarProbabilidadVentaCruzada = this.probabilidad.considerarProbabilidadVentaCruzada;
+
+
+          this.jsonEnvio.ListaProbabilidadValor = this.probabilidad.valorProbabilidadEnvio;
+          this.jsonEnvio.ListaProbabilidadArea = this.probabilidad.areaProbabilidadEnvio;
+          this.jsonEnvio.ListaProbabilidadSubArea = this.probabilidad.subareaProbabilidadEnvio;
+          this.jsonEnvio.ListaProbabilidadPGeneral = this.probabilidad.programaProbabilidadEnvio;
+        }
+        if (this.embudo != undefined) {
+          //- Embudo Esquema -//
+          console.log(this.embudo);
+          this.jsonEnvio.ConsiderarEmbudo = this.embudo.considerarEmbudo;
+
+          this.jsonEnvio.ListaNivelEmbudoEsquema1 = this.embudo.nivelEmbudoEsquema1Envio;
+          this.jsonEnvio.ListaNivelEmbudoEsquema2 = this.embudo.nivelEmbudoEsquema2Envio;
         }
 
         if (this.offlineOnline != undefined) {
@@ -1721,7 +1817,9 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
       this.ConsiderarAlumnosAsignacionAutomaticaOperaciones;
 
     this.jsonEnvio.ExcluirMatriculados = this.ExcluirMatriculados;
-
+    this.jsonEnvio.ConsiderarExcluirCampania = this.ConsiderarExcluirCampania;
+    this.jsonEnvio.FechaInicioExclusionCampania = this.FechaInicioExclusionCampania;
+    this.jsonEnvio.FechaFinExclusionCampania = this.FechaFinExclusionCampania;
     this.jsonEnvio.ListaEstadoMatricula =
       this.estadoEnvio == undefined ? [] : this.estadoEnvio;
     this.jsonEnvio.ListaSubEstadoMatricula =
@@ -1864,6 +1962,47 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
       this.jsonEnvio.ListaTipoCategoriaOrigen =
         this.categoriaDato.tipoCategoriaEnvio;
       this.jsonEnvio.ListaCategoriaOrigen = this.categoriaDato.categoriaEnvio;
+    }
+
+    if (this.ultimaOportunidad != undefined) {
+      //- Ultima Oportunidad -//
+
+      this.jsonEnvio.ConsiderarUltimaOportunidad = this.ultimaOportunidad.datos;
+
+      this.jsonEnvio.ListaUOArea = this.ultimaOportunidad.areaUOEnvio;
+      this.jsonEnvio.ListaUOSubArea = this.ultimaOportunidad.subareaUOEnvio;
+      this.jsonEnvio.ListaUOPGeneral = this.ultimaOportunidad.programaUOEnvio;
+    }
+    if (this.mayorOportunidadInscripcion != undefined) {
+      //- Mayor Oportunidad Inscripcion -//
+
+      this.jsonEnvio.ConsiderarMayorProbabilidadInscripcion = this.mayorOportunidadInscripcion.considerarMayorProbabilidadInscripcion;
+      this.jsonEnvio.ConsiderarMayorProbabilidadInscripcionVentaCruzada = this.mayorOportunidadInscripcion.considerarMayorProbabilidadInscripcionVentaCruzada;
+
+      this.jsonEnvio.ListaMPIArea = this.mayorOportunidadInscripcion.areaMPIEnvio;
+      this.jsonEnvio.ListaMPISubArea = this.mayorOportunidadInscripcion.subareaMPIEnvio;
+      this.jsonEnvio.ListaMPIPGeneral = this.mayorOportunidadInscripcion.programaMPIEnvio;
+    }
+
+    if (this.probabilidad != undefined) {
+      //- Probabilidad -//
+
+      this.jsonEnvio.ConsiderarProbabilidad = this.probabilidad.considerarProbabilidad;
+      this.jsonEnvio.ConsiderarProbabilidadVentaCruzada = this.probabilidad.considerarProbabilidadVentaCruzada;
+
+
+      this.jsonEnvio.ListaProbabilidadValor = this.probabilidad.valorProbabilidadEnvio;
+      this.jsonEnvio.ListaProbabilidadArea = this.probabilidad.areaProbabilidadEnvio;
+      this.jsonEnvio.ListaProbabilidadSubArea = this.probabilidad.subareaProbabilidadEnvio;
+      this.jsonEnvio.ListaProbabilidadPGeneral = this.probabilidad.programaProbabilidadEnvio;
+    }
+    if (this.embudo != undefined) {
+      //- Embudo Esquema -//
+      console.log(this.embudo);
+      this.jsonEnvio.ConsiderarEmbudo = this.embudo.considerarEmbudo;
+
+      this.jsonEnvio.ListaNivelEmbudoEsquema1 = this.embudo.nivelEmbudoEsquema1Envio;
+      this.jsonEnvio.ListaNivelEmbudoEsquema2 = this.embudo.nivelEmbudoEsquema2Envio;
     }
 
     if (this.offlineOnline != undefined) {
@@ -2182,5 +2321,11 @@ export class NuevoFiltroSegmentoComponent implements OnInit, AfterViewInit {
 
   Cerrar() {
     this.dialogRef.close();
+  }
+  valueChangeCampaniaExclusion(e: any){
+  }
+  filterChangeCampaniaExclusion(e: any){
+  }
+  removeTagCampaniaExclusion(e: any){
   }
 }

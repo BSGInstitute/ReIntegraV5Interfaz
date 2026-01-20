@@ -11,11 +11,11 @@
     <h2 *ngIf="data[0]==2">Filtro Segmento: Profesor</h2>
     <h2 *ngIf="data[0]==6">Filtro Segmento: Prospecto</h2>
   </div>
-  
+
   <div class="contenedor">
     <h2>Filtro General</h2>
     <hr/>
-  
+
     <div class="formulario">
       <div class="column">
         <h3>Nombre:</h3>
@@ -49,7 +49,7 @@
               [virtual]="virtual"
             ></kendo-multiselect>
         </div>
-        
+
       </div>
       <div class="column" *ngIf="data[0]==1">
         <h3>Sub estado de matricula:</h3>
@@ -171,44 +171,101 @@
             [valueField]="'id'"
             (valueChange)="valueChangeFil($event)"
             (filterChange)="filterChangeFil($event)"
-            (removeTag)="removeTagFil($event)" 
+            (removeTag)="removeTagFil($event)"
             [virtual]="virtual"
           ></kendo-multiselect>
       </div>
       </div>
-      <div class="column">
-        <mat-checkbox class="example-margin" [(ngModel)]="ConsiderarFiltroGeneral"
-          >¿Considerar Filtro General?</mat-checkbox
-        >
-      </div>
-      <div class="column">
-        <mat-checkbox class="example-margin" [(ngModel)]="ConsiderarFiltroEspecifico"
-          >¿Considerar Filtro Especifico?</mat-checkbox
-        >
-      </div>
+      <div class="contenedor-principal">
+      <div class="columna-izquierda">
+        <div class="column">
+          <mat-checkbox class="example-margin" [(ngModel)]="ConsiderarFiltroGeneral"
+            >¿Considerar Filtro General?</mat-checkbox
+          >
+        </div>
+        <div class="column">
+          <mat-checkbox class="example-margin" [(ngModel)]="ConsiderarFiltroEspecifico"
+            >¿Considerar Filtro Especifico?</mat-checkbox
+          >
+        </div>
 
-      <ng-container *ngIf="data[0]==1">
-      <div class="column">
-        <mat-checkbox class="example-margin" [(ngModel)]="ConsiderarAlumnosAsignacionAutomaticaOperaciones"
-          >¿Considerar Alumnos Asigandos a "Asignacion automatica
-          operaciones"?</mat-checkbox
-        >
+        <ng-container *ngIf="data[0]==1">
+          <div class="column">
+            <mat-checkbox class="example-margin" [(ngModel)]="ConsiderarAlumnosAsignacionAutomaticaOperaciones"
+              >¿Considerar Alumnos Asigandos a "Asignacion automatica
+              operaciones"?</mat-checkbox
+            >
+          </div>
+        </ng-container>
+        <ng-container *ngIf="data[0]==6">
+          <div class="column">
+            <mat-checkbox class="example-margin" [(ngModel)]="ExcluirMatriculados"
+              >¿Excluir alumnos con matricula "registrada"?</mat-checkbox
+            >
+          </div>
+        </ng-container>
       </div>
-    </ng-container>
-    <ng-container *ngIf="data[0]==6">
-      <div class="column">
-        <mat-checkbox class="example-margin" [(ngModel)]="ExcluirMatriculados"
-          >¿Excluir alumnos con matricula registrada"?</mat-checkbox
-        >
+      <div class="columna-derecha">
+        <ng-container *ngIf="data[0]==6">
+          <div class="campanias-card">
+            <div class="campanias-checkbox">
+              <mat-checkbox class="example-margin" [(ngModel)]="ConsiderarExcluirCampania"
+                >¿Excluir campañas?</mat-checkbox
+              >
+            </div>
+            <div class="card-content">
+              <div class="fecha-exclusion-horizontal">
+                <h3 class="titulo-fecha">Fecha de exclusión:</h3>
+                <div class="fecha-inputs-horizontal">
+                  <div class="fecha-item-horizontal">
+                    <span class="fecha-label-horizontal">Desde:</span>
+                    <kendo-datepicker
+                      calendarType="classic"
+                      [format]="'dd/MM/yyyy'"
+                      [(ngModel)]="FechaInicioExclusionCampania"
+                      class="fecha-picker-horizontal"
+                    ></kendo-datepicker>
+                  </div>
+                  <div class="fecha-item-horizontal">
+                    <span class="fecha-label-horizontal">Hasta:</span>
+                    <kendo-datepicker
+                      calendarType="classic"
+                      [format]="'dd/MM/yyyy'"
+                      [(ngModel)]="FechaFinExclusionCampania"
+                      class="fecha-picker-horizontal"
+                    ></kendo-datepicker>
+                  </div>
+                </div>
+              </div>
+
+              <div class="campanias-multiselect-horizontal">
+                <h3 class="campanias-label">Campañas:</h3>
+                <div class="multiselect-container">
+                  <kendo-multiselect
+                    class="w-100"
+                    [data]="ListaExclusionCampania"
+                    [(ngModel)]="ExclusionCampania"
+                    placeholder="-Todos-"
+                    [textField]="'nombre'"
+                    [valueField]="'id'"
+                    (valueChange)="valueChangeCampaniaExclusion($event)"
+                    (filterChange)="filterChangeCampaniaExclusion($event)"
+                    (removeTag)="removeTagCampaniaExclusion($event)"
+                  ></kendo-multiselect>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        </div>
       </div>
-    </ng-container>
     </div>
   </div>
-  
+
   <div class="titulo">
     <h2>Filtro Específico</h2>
   </div>
-  
+
   <mat-tab-group>
     <mat-tab *ngIf="data[0]==1 || data[0]==6" label="Pais y Ciudad">
       <app-pais-yciudad [datosActualizar]="actualizarDatos"></app-pais-yciudad>
@@ -258,6 +315,18 @@
     <mat-tab *ngIf="data[0]==6"  label="Categoria Dato">
       <app-categoria-dato [datosActualizar]="actualizarDatos"></app-categoria-dato>
     </mat-tab>
+    <mat-tab *ngIf="data[0]==6"  label="Ultima oportunidad">
+      <app-ultima-oportunidad [datosActualizar]="actualizarDatos"></app-ultima-oportunidad>
+    </mat-tab>
+    <mat-tab *ngIf="data[0]==6"  label="Mayor Prob. Inscripción">
+      <app-mayor-prob-inscripcion [datosActualizar]="actualizarDatos"></app-mayor-prob-inscripcion>
+    </mat-tab>
+    <mat-tab *ngIf="data[0]==6"  label="Probabilidad">
+      <app-probabilidad [datosActualizar]="actualizarDatos"></app-probabilidad>
+    </mat-tab>
+    <mat-tab *ngIf="data[0]==6"  label="Embudo">
+      <app-embudo [datosActualizar]="actualizarDatos"></app-embudo>
+    </mat-tab>
     <mat-tab *ngIf="data[0]==6"  label="Perfiles">
       <app-perfiles [datosActualizar]="actualizarDatos"></app-perfiles>
     </mat-tab>
@@ -286,7 +355,7 @@
       <app-envio-automatico [datosActualizar]="actualizarDatos"></app-envio-automatico>
     </mat-tab>
   </mat-tab-group>
-  
+
   <ng-container *ngIf="data[1] == 0">
   <div class="agregar">
     <button mat-flat-button class="botonAgregar" (click)="Crear()">

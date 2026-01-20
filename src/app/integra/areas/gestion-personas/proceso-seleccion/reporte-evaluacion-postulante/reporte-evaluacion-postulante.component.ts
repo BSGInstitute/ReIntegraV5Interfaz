@@ -164,6 +164,18 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtenerCombosModulo();
+
+    const hoy = this.normalizeDateOnly(new Date());
+    this.fechaInicioDefault = hoy;
+    this.fechaFinDefault = hoy;
+
+    this.formFiltro.patchValue(
+      { fechaInicio: hoy, fechaFin: hoy },
+      { emitEvent: false }
+    );
+
+    this.formFiltro.get('fechaInicio')?.markAsPristine();
+    this.formFiltro.get('fechaFin')?.markAsPristine();
   }
 
   get fechaActual(): Date {
@@ -300,13 +312,27 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
 
     this.versionCentilTemp = formFiltro.versionCentil;
 
-    if (formFiltro.fechaInicio != null) {
-      jsonEnvio.fechaInicio =
-        datePipeTransform(formFiltro.fechaInicio, 'yyyy-MM-dd') + 'T00:00:00';
+    const fi = formFiltro.fechaInicio
+      ? this.normalizeDateOnly(formFiltro.fechaInicio)
+      : null;
+    const ff = formFiltro.fechaFin
+      ? this.normalizeDateOnly(formFiltro.fechaFin)
+      : null;
+
+    if (
+      fi &&
+      this.fechaInicioDefault &&
+      !this.isSameDate(fi, this.fechaInicioDefault)
+    ) {
+      jsonEnvio.fechaInicio = datePipeTransform(fi, 'yyyy-MM-dd') + 'T00:00:00';
     }
-    if (formFiltro.fechaFin != null) {
-      jsonEnvio.fechaFin =
-        datePipeTransform(formFiltro.fechaFin, 'yyyy-MM-dd') + 'T23:59:59';
+
+    if (
+      ff &&
+      this.fechaFinDefault &&
+      !this.isSameDate(ff, this.fechaFinDefault)
+    ) {
+      jsonEnvio.fechaFin = datePipeTransform(ff, 'yyyy-MM-dd') + 'T23:59:59';
     }
 
     this.gridEtapaProcesoSeleccion.data = [];
@@ -386,6 +412,21 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
       });
   }
 
+  private fechaInicioDefault: Date | null = null;
+  private fechaFinDefault: Date | null = null;
+
+  private normalizeDateOnly(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  private isSameDate(a?: Date | null, b?: Date | null): boolean {
+    if (!a || !b) return false;
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
+  }
   /**
    * Genera el reporte de etapas (solo etapas)
    */
@@ -1212,12 +1253,8 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         error: (error) => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
-          let resp = this.alertaService.getErrorResponse(error);
-          this.alertaService.swalFireOptions({
-            icon: 'error',
-            title: '¡Ocurrio un problema al reestablecer las notas!',
-            text: `${resp.titulo}: ${resp.mensaje}`,
-          });
+          this.modalRef.close();
+          this.generarReporteIntegra();
         },
       });
   }
@@ -1226,14 +1263,109 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
    * Actualiza las respuestas
    */
   actualizarRespuestas() {
-    let idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
+    const idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
 
-    let jsonEnvio: RespuestaEvaluacionEvaluador = {
-      listaRespuestasEvaluador: [],
-      idEstadoEvaluacionEvaluador: idEstadoEvaluacionEvaluador,
-      idProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
-      idExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
-      idPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
+    if (!idEstadoEvaluacionEvaluador) {
+      this.alertaService.swalFireOptions({
+        icon: 'info',
+        text: 'Seleccione el Estado de Evaluación',
+      });
+      return;
+    }
+
+    // ✅ Actualizar: enviar lo que exista (sin obligar completar)
+    const listaRespuestasEvaluador: RespuestaDetalle[] = [];
+
+    for (const pregunta of this.preguntaTestAgrupadoTemp.listaPreguntas) {
+      if (pregunta.idPreguntaTipo == 10) {
+        for (const respuesta of pregunta.listaRespuestas) {
+          const rpta = ((respuesta.fcRespuesta10?.value ?? '') + '').trim();
+          listaRespuestasEvaluador.push({
+            idExamen: pregunta.idExamen,
+            idRespuesta: respuesta.idRespuesta,
+            idPregunta: pregunta.idPregunta,
+            idExamenAsignado: pregunta.idExamenAsignado,
+            textoRespuesta: rpta,
+            flag: !!rpta,
+          });
+        }
+      }
+
+      if (pregunta.idPreguntaTipo == 6) {
+        if (pregunta.enunciadoPregunta == '75 Registros') continue;
+
+        for (const respuesta of pregunta.listaRespuestas) {
+          const raw =
+            (pregunta.idExamen == 93
+              ? respuesta.fcRespuesta93?.value
+              : respuesta.fcRespuesta?.value) ?? '';
+          const rptaTrim = ('' + raw).trim();
+
+          listaRespuestasEvaluador.push({
+            idExamen: pregunta.idExamen,
+            idRespuesta: respuesta.idRespuesta,
+            idPregunta: pregunta.idPregunta,
+            idExamenAsignado: pregunta.idExamenAsignado,
+            textoRespuesta: rptaTrim,
+            flag: !!rptaTrim,
+          });
+        }
+      }
+
+      if (pregunta.idPreguntaTipo == 5) {
+        const rpta = Number(pregunta.fcPregunta5?.value ?? 0);
+
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: rpta || 0,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: '',
+          flag: !!rpta,
+        });
+      }
+
+      if (pregunta.idPreguntaTipo == 4) {
+        const rpta = (pregunta.fcPregunta4?.value ?? []) as number[];
+
+        if (!rpta || rpta.length == 0) {
+          listaRespuestasEvaluador.push({
+            idExamen: pregunta.idExamen,
+            idRespuesta: 0,
+            idPregunta: pregunta.idPregunta,
+            idExamenAsignado: pregunta.idExamenAsignado,
+            textoRespuesta: '',
+            flag: false,
+          });
+        } else {
+          for (const idRespuesta of rpta) {
+            listaRespuestasEvaluador.push({
+              idExamen: pregunta.idExamen,
+              idRespuesta,
+              idPregunta: pregunta.idPregunta,
+              idExamenAsignado: pregunta.idExamenAsignado,
+              textoRespuesta: '',
+              flag: true,
+            });
+          }
+        }
+      }
+    }
+
+    // ✅ IMPORTANTE: mandar las keys como el backend espera (PascalCase) + Usuario
+    const jsonEnvio = {
+      ListaRespuestasEvaluador: listaRespuestasEvaluador.map((x) => ({
+        flag: x.flag,
+        idexamen: x.idExamen,
+        idexamenasignado: x.idExamenAsignado,
+        idpregunta: x.idPregunta,
+        idrespuesta: x.idRespuesta,
+        textorespuesta: x.textoRespuesta ?? '',
+      })),
+      IdEstadoEvaluacionEvaluador: String(idEstadoEvaluacionEvaluador),
+      IdProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
+      IdExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
+      IdPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
     };
 
     this.gridEtapaProcesoSeleccion.loading = true;
@@ -1244,9 +1376,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
         JSON.stringify(jsonEnvio)
       )
-      .pipe(
-        retry(1)
-      )
+      .pipe(retry(1))
       .subscribe({
         next: () => {
           this.enProcesoGuardarRespuesta = false;
@@ -1258,180 +1388,158 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
             title: 'Se registraron las respuestas correctamente',
           });
         },
-        error: (error) => {
+        error: () => {
           this.gridEtapaProcesoSeleccion.loading = false;
-          this.enProcesoGuardarRespuesta = false; 
+          this.enProcesoGuardarRespuesta = false;
         },
       });
   }
 
   sendAnswers() {
-    let idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
-    let listaRespuestasEvaluador: RespuestaDetalle[] = [];
+    const idEstadoEvaluacionEvaluador = this.fcEstadoEvaluacion.value as number;
 
-    this.preguntaTestAgrupadoTemp.listaPreguntas.forEach((pregunta) => {
-      if (pregunta.idTipoRespuesta == 10) {
-        pregunta.listaRespuestas.forEach((respuesta) => {
-          let rpta = respuesta.fcRespuesta10.value;
-          let item: RespuestaDetalle = {
+    if (!idEstadoEvaluacionEvaluador) {
+      this.alertaService.swalFireOptions({
+        icon: 'info',
+        text: 'Seleccione el Estado de Evaluación',
+      });
+      return;
+    }
+
+    const listaRespuestasEvaluador: RespuestaDetalle[] = [];
+    const permiteEnviarIncompleto =
+      idEstadoEvaluacionEvaluador == 3 ||
+      idEstadoEvaluacionEvaluador == 4 ||
+      idEstadoEvaluacionEvaluador == 9;
+
+    for (const pregunta of this.preguntaTestAgrupadoTemp.listaPreguntas) {
+      if (pregunta.idPreguntaTipo == 10) {
+        for (const respuesta of pregunta.listaRespuestas) {
+          const rpta = ((respuesta.fcRespuesta10?.value ?? '') + '').trim();
+
+          if (!rpta && !permiteEnviarIncompleto) {
+            this.alertaService.swalFireOptions({
+              icon: 'info',
+              title: '¡Tiene que responder todas las preguntas!',
+            });
+            return;
+          }
+
+          listaRespuestasEvaluador.push({
             idExamen: pregunta.idExamen,
             idRespuesta: respuesta.idRespuesta,
             idPregunta: pregunta.idPregunta,
             idExamenAsignado: pregunta.idExamenAsignado,
-            textoRespuesta: '',
-            flag: false,
-          };
-          if (rpta == null || rpta.trim() == '') {
-            if (
-              idEstadoEvaluacionEvaluador != 3 &&
-              idEstadoEvaluacionEvaluador != 4 &&
-              idEstadoEvaluacionEvaluador != 9
-            ) {
-              this.alertaService.swalFireOptions({
-                icon: 'info',
-                title: '¡Tiene que responder todas las preguntas!',
-              });
-              return;
-            } else {
-              item.textoRespuesta = '';
-              item.flag = false;
-            }
-          } else {
-            item.textoRespuesta = rpta.trim();
-            item.flag = true;
-          }
-          listaRespuestasEvaluador.push(item);
-        });
+            textoRespuesta: rpta,
+            flag: !!rpta,
+          });
+        }
       }
 
-      if (pregunta.idTipoRespuesta == 6) {
-        pregunta.listaRespuestas.forEach((respuesta) => {
-          let rpta: string = null;
+      if (pregunta.idPreguntaTipo == 6) {
+        if (pregunta.enunciadoPregunta == '75 Registros') continue;
 
-          if (pregunta.enunciadoPregunta == '75 Registros') {
-          } else {
-            if (pregunta.idExamen == 93) {
-              rpta = respuesta.fcRespuesta93.value;
-            } else {
-              rpta = respuesta.fcRespuesta.value;
-            }
-            let item: RespuestaDetalle = {
-              idExamen: pregunta.idExamen,
-              idRespuesta: respuesta.idRespuesta,
-              idPregunta: pregunta.idPregunta,
-              idExamenAsignado: pregunta.idExamenAsignado,
-              textoRespuesta: '',
-              flag: false,
-            };
-            if (rpta == null || rpta.trim() == '') {
-              if (
-                idEstadoEvaluacionEvaluador != 3 &&
-                idEstadoEvaluacionEvaluador != 4 &&
-                idEstadoEvaluacionEvaluador != 9
-              ) {
-                this.alertaService.swalFireOptions({
-                  icon: 'info',
-                  title: '¡Tiene que responder todas las preguntas!',
-                });
-                return;
-              } else {
-                item.textoRespuesta = '';
-                item.flag = false;
-                listaRespuestasEvaluador.push(item);
-              }
-            } else {
-              item.textoRespuesta = rpta;
-              item.flag = true;
-              listaRespuestasEvaluador.push(item);
-            }
-          }
-        });
-      }
-      if (pregunta.idTipoRespuesta == 5) {
-        let rpta = pregunta.fcPregunta5.value as number;
-        if (rpta == null || rpta == 0) {
-          if (
-            idEstadoEvaluacionEvaluador != 3 &&
-            idEstadoEvaluacionEvaluador != 4 &&
-            idEstadoEvaluacionEvaluador != 9
-          ) {
+        for (const respuesta of pregunta.listaRespuestas) {
+          const raw =
+            (pregunta.idExamen == 93
+              ? respuesta.fcRespuesta93?.value
+              : respuesta.fcRespuesta?.value) ?? '';
+          const rptaTrim = ('' + raw).trim();
+
+          if (!rptaTrim && !permiteEnviarIncompleto) {
             this.alertaService.swalFireOptions({
               icon: 'info',
               title: '¡Tiene que responder todas las preguntas!',
             });
             return;
-          } else {
-            let item: RespuestaDetalle = {
-              idExamen: pregunta.idExamen,
-              idRespuesta: 0,
-              idPregunta: pregunta.idPregunta,
-              idExamenAsignado: pregunta.idExamenAsignado,
-              textoRespuesta: '',
-              flag: false,
-            };
-            listaRespuestasEvaluador.push(item);
           }
-        } else {
-          let item: RespuestaDetalle = {
+
+          listaRespuestasEvaluador.push({
             idExamen: pregunta.idExamen,
-            idRespuesta: rpta,
+            idRespuesta: respuesta.idRespuesta,
+            idPregunta: pregunta.idPregunta,
+            idExamenAsignado: pregunta.idExamenAsignado,
+            textoRespuesta: rptaTrim,
+            flag: !!rptaTrim,
+          });
+        }
+      }
+
+      if (pregunta.idPreguntaTipo == 5) {
+        const rpta = Number(pregunta.fcPregunta5?.value ?? 0);
+
+        if ((!rpta || rpta == 0) && !permiteEnviarIncompleto) {
+          this.alertaService.swalFireOptions({
+            icon: 'info',
+            title: '¡Tiene que responder todas las preguntas!',
+          });
+          return;
+        }
+
+        listaRespuestasEvaluador.push({
+          idExamen: pregunta.idExamen,
+          idRespuesta: rpta || 0,
+          idPregunta: pregunta.idPregunta,
+          idExamenAsignado: pregunta.idExamenAsignado,
+          textoRespuesta: '',
+          flag: !!rpta,
+        });
+      }
+
+      if (pregunta.idPreguntaTipo == 4) {
+        const rpta = (pregunta.fcPregunta4?.value ?? []) as number[];
+
+        if ((!rpta || rpta.length == 0) && !permiteEnviarIncompleto) {
+          this.alertaService.swalFireOptions({
+            icon: 'info',
+            title: '¡Tiene que responder todas las preguntas!',
+          });
+          return;
+        }
+
+        if (!rpta || rpta.length == 0) {
+          listaRespuestasEvaluador.push({
+            idExamen: pregunta.idExamen,
+            idRespuesta: 0,
             idPregunta: pregunta.idPregunta,
             idExamenAsignado: pregunta.idExamenAsignado,
             textoRespuesta: '',
-            flag: true,
-          };
-          listaRespuestasEvaluador.push(item);
-        }
-      }
-      if (pregunta.idTipoRespuesta == 4) {
-        let rpta = pregunta.fcPregunta4.value as number[];
-        if (rpta == null || rpta.length == 0) {
-          if (
-            idEstadoEvaluacionEvaluador != 3 &&
-            idEstadoEvaluacionEvaluador != 4 &&
-            idEstadoEvaluacionEvaluador != 9
-          ) {
-            this.alertaService.swalFireOptions({
-              icon: 'info',
-              title: '¡Tiene que responder todas las preguntas!',
-            });
-            return;
-          } else {
-            let item: RespuestaDetalle = {
-              idExamen: pregunta.idExamen,
-              idRespuesta: 0,
-              idPregunta: pregunta.idPregunta,
-              idExamenAsignado: pregunta.idExamenAsignado,
-              textoRespuesta: '',
-              flag: false,
-            };
-            listaRespuestasEvaluador.push(item);
-          }
+            flag: false,
+          });
         } else {
-          rpta.forEach((x) => {
-            let item: RespuestaDetalle = {
+          for (const idRespuesta of rpta) {
+            listaRespuestasEvaluador.push({
               idExamen: pregunta.idExamen,
-              idRespuesta: x,
+              idRespuesta,
               idPregunta: pregunta.idPregunta,
               idExamenAsignado: pregunta.idExamenAsignado,
               textoRespuesta: '',
               flag: true,
-            };
-            listaRespuestasEvaluador.push(item);
-          });
+            });
+          }
         }
       }
-    });
+    }
 
-    let jsonEnvio: RespuestaEvaluacionEvaluador = {
-      listaRespuestasEvaluador: listaRespuestasEvaluador,
-      idEstadoEvaluacionEvaluador: idEstadoEvaluacionEvaluador,
-      idProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
-      idExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
-      idPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
+    // ✅ IMPORTANTE: mandar las keys como el backend espera (PascalCase) + Usuario
+    const jsonEnvio = {
+      ListaRespuestasEvaluador: listaRespuestasEvaluador.map((x) => ({
+        flag: x.flag,
+        idexamen: x.idExamen,
+        idexamenasignado: x.idExamenAsignado,
+        idpregunta: x.idPregunta,
+        idrespuesta: x.idRespuesta,
+        textorespuesta: x.textoRespuesta ?? '',
+      })),
+      IdEstadoEvaluacionEvaluador: String(idEstadoEvaluacionEvaluador),
+      IdProcesoSeleccionEvaluacionEvaluador: this.idProcesoSeleccionTemp,
+      IdExamenEvaluacionEvaluador: this.evaluacionTemp.idExamen,
+      IdPostulanteEvaluacionEvaluador: this.idPostulanteTemp,
     };
+
     this.gridEtapaProcesoSeleccion.loading = true;
     this.enProcesoGuardarRespuesta = true;
+
     this.integraService
       .postJsonResponse(
         constApiGestionPersonal.EvaluacionPostulanteEnviarRespuestasTest,
@@ -1451,7 +1559,7 @@ export class ReporteEvaluacionPostulanteComponent implements OnInit {
         error: (error) => {
           this.gridEtapaProcesoSeleccion.loading = false;
           this.enProcesoGuardarRespuesta = false;
-          let resp = this.alertaService.getErrorResponse(error);
+          const resp = this.alertaService.getErrorResponse(error);
           this.alertaService.swalFireOptions({
             icon: 'error',
             title: '¡Ocurrio un problema al registrar las respuestas!',

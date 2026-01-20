@@ -2435,7 +2435,40 @@ export const constApiMarketing = {
     '/MessengerFacebookChat/EnviarMensajeTexto',
   ObtenerDatosGeneralesAlumnosPorPSID:
     '/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID',
+
+  // CAMPAÑA REMARKETING GENERAL
+  ObtenerListadoRemarketingGeneral: '/CampaniaRemarketingGeneral/ObtenerListadoCampania',
+  ObtenerRendimientoListadoCampanias: '/CampaniaRemarketingGeneral/ObtenerRendimientoListadoCampanias',
+  ObtenerCombosConfiguracionCampania: '/CampaniaRemarketingGeneral/ObtenerCombosConfiguracionCampania',
+  ObtenerListadoSegmentosCreados: '/CampaniaRemarketingGeneral/ObtenerListadoSegmentosCreados',
+  ObtenerCampaniaRemarketingPorId: '/CampaniaRemarketingGeneral/ObtenerCampaniaRemarketingPorId',
+  GuardarEjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/GuardarEjecutarEnvioCampaniaRemarketing',
+  EditarEjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarEjecutarEnvioCampaniaRemarketing',
+  ObtenerResultadosGeneracionTexto: '/CampaniaRemarketingGeneral/ObtenerResultadosGeneracionTextoPorCampania',
+  VerDetallesCampaniaRemarketing: '/CampaniaRemarketingGeneral/VerDetallesCampania',
+  EditarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarCampania',
+  EliminarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EliminarCampania',
+  ObtenerMensajeGeneradoPorId: '/CampaniaRemarketingGeneral/ObtenerMensajeGeneradoPorId',
+  ReenviarMensajeGenerado: '/CampaniaRemarketingGeneral/ReenviarMensajeGenerado',
+  RemarketingEmbudoNivelEsquema: '/RemarketingEmbudoHistorico/ObtenerNivelEsquemaEmbudoRemarketing',
+
+
+  // CATEGORIA ARGUMENTOS
+  ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',
+  CrearProgramaConfigurado: '/CategoriaArgumentos/CrearProgramaConfigurado',
+  EditarProgramaConfigurado: '/CategoriaArgumentos/EditarProgramaConfigurado',
+  EliminarProgramaConfigurado: '/CategoriaArgumentos/EliminarProgramaConfigurado',
+  AgregarArgumentoPorCategoria: '/CategoriaArgumentos/AgregarArgumentoPorCategoria',
+  EditarArgumentoPorCategoria: '/CategoriaArgumentos/EditarArgumentoPorCategoria',
+  EliminarArgumentoPorCategoria: '/CategoriaArgumentos/EliminarArgumentoPorCategoria',
+  ObtenerListadoProgramaGeneralValido: '/CategoriaArgumentos/ObtenerListadoProgramaGeneralValido',
+  ObtenerListadoCategoriaArgumento: '/CategoriaArgumentos/ObtenerListadoCategoriaArgumento',
+  ObtenerProgramaConfiguradoDetalle: '/CategoriaArgumentos/ObtenerProgramaConfiguradoDetalle',
+  CrearCategoriaArgumento: '/CategoriaArgumentos/CrearCategoriaArgumento',
+  EditarCategoriaArgumento: '/CategoriaArgumentos/EditarCategoriaArgumento',
+  EliminarCategoriaArgumento: '/CategoriaArgumentos/EliminarCategoriaArgumento',
 };
+
 
 export const constApiGestionPersonal = {
   //Modulo gestion personal junior

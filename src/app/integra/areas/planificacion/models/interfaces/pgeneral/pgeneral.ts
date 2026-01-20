@@ -322,6 +322,8 @@ export interface PgeneralVersionPrograma {
   duracion: number;
   idModalidadCurso?: number;
   creditoDisponibleTutorVirtual: number;
+  cantidadWebinarAsignado: number;
+  cantidadMesAccesoAdicionalWebinar: number;
 }
 
 export interface PgeneralProyectoAplicacion {

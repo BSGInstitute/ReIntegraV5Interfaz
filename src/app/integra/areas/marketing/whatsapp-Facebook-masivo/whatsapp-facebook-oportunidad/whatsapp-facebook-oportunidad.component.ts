@@ -51,6 +51,7 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   @ViewChild('modalOportunidad') modalOportunidad: any;
   @ViewChild('modalSemaforoFinanciero') modalSemaforoFinanciero: any;
   @ViewChild('modalSeleccionarArchivo') modalSeleccionarArchivo: any;
+  @ViewChild('modalExtraerRegistros') modalExtraerRegistros: any;
   @ViewChildren(ExpansionPanelComponent)
   panels: QueryList<ExpansionPanelComponent>;
   @ViewChild('nroDoc') nroDoc: ElementRef;
@@ -147,6 +148,20 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
   showCrearOportunidadContenedor = false;
   comboOrigen: Array<IComboBase1> = [];
 
+  // Propiedades para Capturar Registros IA
+  formExtraccionRegistros: FormGroup;
+  rangoExtraccionRegistros = [
+    { label: '1 día', value: 1 },
+    { label: '2 días', value: 2 },
+    { label: '3 días', value: 3 },
+    { label: '4 días', value: 4 },
+    { label: '5 días', value: 5 },
+    { label: '6 días', value: 6 },
+    { label: '7 días', value: 7 },
+  ];
+  originalValues: { [key: string]: any } = {};
+  mostrarOriginales: boolean = false;
+
   ngOnInit(): void {
     this.loader = true;
     // Obtener el nombre del usuario actual
@@ -181,6 +196,11 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
         this.loaderMensajes = false;
       }, 500);
     }
+
+    // Inicializar FormGroup para extracción de registros IA
+    this.formExtraccionRegistros = this.formBuilder.group({
+      rangoExtraccion: [null, Validators.required],
+    });
   }
 
   ngAfterViewInit() {
@@ -662,6 +682,10 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
           );
           this.obtenerChat();
           this.newMessage = '';
+
+          this.originalValues = {};
+          this.mostrarOriginales = false;
+
           this.loader = false;
         },
         error: (error) => {
@@ -1781,5 +1805,161 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
           console.error('Error al obtener el combo de Origen:', error);
         },
       });
+  }
+
+  // ==================== MÉTODOS PARA CAPTURAR REGISTROS IA ====================
+
+  abrirModalCapturarRegistrosIA() {
+    this.modalRef = this.modalService.open(this.modalExtraerRegistros, {
+      backdrop: 'static',
+    });
+  }
+
+  extraerRegistros() {
+    this.modalRef.close();
+    this.loader = true;
+
+    const valorSeleccionado =
+      this.formExtraccionRegistros.value.rangoExtraccion;
+
+    let jsonRequest = {
+      rango: valorSeleccionado,
+      celularAlumno: this.celularAlumno,
+    };
+
+    this.integraService
+      .postJsonResponse(
+        constApiMarketing.CapturarRegistrosModeloIA,
+        jsonRequest
+      )
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          // Guardar valores originales ANTES de modificar
+          this.originalValues = {
+            nombre: this.nombre,
+            apellidoPaterno: this.apellidoPaterno,
+            profesion: this.profesion,
+            cargo: this.cargo,
+            areaLaboral: this.areaLaboral,
+            industria: this.industria,
+          };
+
+          // Activar modo edición
+          this.Editar();
+
+          // Activar visualización de valores originales
+          this.mostrarOriginales = true;
+
+          // Mapear valores - STRINGS
+          if (response.body.nombres && response.body.nombres.trim() !== '') {
+            this.nombre = response.body.nombres;
+          }
+
+          if (response.body.apellidos && response.body.apellidos.trim() !== '') {
+            this.apellidoPaterno = response.body.apellidos;
+          }
+
+          // Mapear valores - IDs (asignar directamente)
+          if (response.body.area_De_Formacion?.id) {
+            this.profesion = response.body.area_De_Formacion.id;
+          }
+
+          if (response.body.cargo?.id) {
+            this.cargo = response.body.cargo.id;
+          }
+
+          if (response.body.area_De_Trabajo?.id) {
+            this.areaLaboral = response.body.area_De_Trabajo.id;
+          }
+
+          if (response.body.industria?.id) {
+            this.industria = response.body.industria.id;
+          }
+
+          this.cdRef.detectChanges();
+          this.alertaService.swalFireOptions({
+            icon: 'success',
+            title: '¡Exitoso!',
+            text: 'Se capturaron los datos exitosamente.',
+          });
+          this.loader = false;
+        },
+        error: (error) => {
+          this.alertaService.swalFireOptions({
+            icon: 'warning',
+            title: 'Error de Comunicación',
+            text: 'Lo sentimos, no se pudo completar la acción.',
+          });
+          this.loader = false;
+          this.cdRef.detectChanges();
+          console.error('Error al extraer registros: ', error);
+        },
+      });
+  }
+
+  getNombreDesdeLista(
+    lista: { id: number; nombre: string }[],
+    id: number
+  ): string {
+    return lista.find((item) => item.id === id)?.nombre ?? 'Desconocido';
+  }
+
+  // ==================== MÉTODOS PARA DESACTIVAR INTERACCIÓN IA ====================
+
+  desactivarInteraccionIA() {
+    Swal.fire({
+      title:
+        '¿Desea desactivar la interacción automática del Asistente Whatsapp?',
+      icon: 'warning',
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Desactivar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loader = true;
+
+        // Buscar el idCampaniaGeneralDetalleWhatsApp más reciente que sea distinto de 0
+        const ultimaCampania = this.grilla.find(
+          (item: any) => item.idCampaniaGeneralDetalleWhatsApp !== 0
+        );
+
+        if (ultimaCampania) {
+          const idCampania = ultimaCampania.idCampaniaGeneralDetalleWhatsApp;
+          this.integraService
+            .postJsonResponse(
+              `${constApiMarketing.DesactivarInteraccionAutomaticaWhatsapp}/${this.celularAlumno}/${idCampania}`,
+              null
+            )
+            .subscribe({
+              next: (response: HttpResponse<any>) => {
+                Swal.fire({
+                  title: response.body.descripcion,
+                  icon: 'success',
+                });
+                this.loader = false;
+                console.log(response);
+              },
+              error: (error) => {
+                this.loader = false;
+                console.error(
+                  'Error al desactivar la interacción automática:',
+                  error
+                );
+                Swal.fire({
+                  title: 'Error al desactivar la interacción automática',
+                  icon: 'error',
+                });
+              },
+            });
+        } else {
+          Swal.fire({
+            title: 'No se encontró una campaña válida.',
+            icon: 'error',
+          });
+          this.loader = false;
+        }
+      }
+    });
   }
 }

@@ -9,13 +9,16 @@ import {
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AgendaService } from '@integra/areas/comercial/services/agenda/agenda.service';
 import { KendoGrid } from '@shared/models/kendo-grid';
-import {
-  AggregateDescriptor,
-  aggregateBy,
-} from '@progress/kendo-data-query';
+import { AggregateDescriptor, aggregateBy } from '@progress/kendo-data-query';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IRowActual } from '@comercial/models/interfaces/iagenda';
-import { ICronogramaPago, IMetodoPagoMatricula, IMontoPagoCronograma, IPasarelaPago, ITipoDescuentoCronograma } from '@comercial/models/interfaces/iagenda-cronograma-pago';
+import {
+  ICronogramaPago,
+  IMetodoPagoMatricula,
+  IMontoPagoCronograma,
+  IPasarelaPago,
+  ITipoDescuentoCronograma,
+} from '@comercial/models/interfaces/iagenda-cronograma-pago';
 import { Subscription } from 'rxjs';
 import { AlertaService } from '@shared/services/alerta.service';
 import { constApiFinanzas, constApiMarketing } from '@environments/constApi';
@@ -29,11 +32,11 @@ import { IAlumnoInformacion } from '@comercial/models/interfaces/iagenda-datos-a
   encapsulation: ViewEncapsulation.None,
 })
 export class CronogramaPagoComponent implements OnInit {
-  @ViewChild("modalTransaccionesPagos") modalTransaccionesPagos: any;
+  @ViewChild('modalTransaccionesPagos') modalTransaccionesPagos: any;
 
   modalRefTransaccionesPagos: any;
-  grillaModalTransaccionesPagos:any;
-  loaderModalTransPagos: boolean = true
+  grillaModalTransaccionesPagos: any;
+  loaderModalTransPagos: boolean = true;
 
   inputCostoTotal = '';
   inputCostoDescuento = '';
@@ -88,7 +91,7 @@ export class CronogramaPagoComponent implements OnInit {
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     private alertaService: AlertaService,
-    private integraService: IntegraService,
+    private integraService: IntegraService
   ) {}
 
   dataMontoPago: any = {};
@@ -133,8 +136,8 @@ export class CronogramaPagoComponent implements OnInit {
 
   verVistaPortal = false;
   metodoPagoIdMatriculaCabecera = 0;
-  descuentoProfilingAprobado:boolean=false;
-  cuponDescuentoProfiling:any;
+  descuentoProfilingAprobado: boolean = false;
+  cuponDescuentoProfiling: any;
   @Input() agendaService: AgendaService;
   @ViewChild('modalFraccionarCuota') modalFraccionarCuota: any;
   @ViewChild('modalEliminarCuota') modalEliminarCuota: any;
@@ -181,25 +184,28 @@ export class CronogramaPagoComponent implements OnInit {
       (resp) => (this.esCoordinadora = resp)
     );
 
-    let sub2$ = this.agendaService.agendaCronogramaPagoService.oportunidadCronogramaPago$.subscribe(resp => {
-      if(resp != null){
-        if (resp.cronograma.detalle != null) {
-          resp.cronograma.detalle.map((data) => {
-            data.fechaPago = new Date(data.fechaPago);
-          });
+    let sub2$ =
+      this.agendaService.agendaCronogramaPagoService.oportunidadCronogramaPago$.subscribe(
+        (resp) => {
+          if (resp != null) {
+            if (resp.cronograma.detalle != null) {
+              resp.cronograma.detalle.map((data) => {
+                data.fechaPago = new Date(data.fechaPago);
+              });
+            }
+            this.dataMontoPago = resp;
+            this.montoPagoFiltro = resp.cronograma.montosPago;
+            this.montoPagoFiltroAux = resp.cronograma.montosPago;
+            this.tipoDescuentoFiltro = resp.cronograma.tiposDescuento;
+            this.tipoDescuentoFiltroAux = resp.cronograma.tiposDescuento;
+            this.cargaInicial(resp);
+          }
         }
-        this.dataMontoPago = resp;
-        this.montoPagoFiltro = resp.cronograma.montosPago;
-        this.montoPagoFiltroAux = resp.cronograma.montosPago;
-        this.tipoDescuentoFiltro = resp.cronograma.tiposDescuento;
-        this.tipoDescuentoFiltroAux = resp.cronograma.tiposDescuento;
-        this.cargaInicial(resp);
-      }
-    });
+      );
     let sub3$ = this.agendaService.agendaAlumnoService.alumno$.subscribe({
       next: (resp: IAlumnoInformacion) => {
         if (resp != null) {
-          this.obtenerDescuentoProfiling(resp.email1)
+          this.obtenerDescuentoProfiling(resp.email1);
         }
       },
     });
@@ -255,7 +261,10 @@ export class CronogramaPagoComponent implements OnInit {
           this.dataMedioPago = response.body;
           this.dataMedioPagoAux = response.body;
           this.agendaService.agendaCronogramaPagoService
-            .obtenerMatriculaPorAlumnoCosto$(rowActual.idAlumno, rowActual.idCentroCosto)
+            .obtenerMatriculaPorAlumnoCosto$(
+              rowActual.idAlumno,
+              rowActual.idCentroCosto
+            )
             .subscribe({
               next: (response: HttpResponse<number>) => {
                 if (response.body != null && response.body != 0) {
@@ -271,7 +280,7 @@ export class CronogramaPagoComponent implements OnInit {
                             .get('idMedioPago')
                             .setValue(
                               this.dataMedioPago.find(
-                                (x:any) => x.id == response.body.idMedioPago
+                                (x: any) => x.id == response.body.idMedioPago
                               )
                             );
                         } else {
@@ -279,7 +288,7 @@ export class CronogramaPagoComponent implements OnInit {
                             .get('idMedioPago')
                             .setValue(
                               this.dataMedioPago.find(
-                                (x:any) => x.id == idPagoPrioridad
+                                (x: any) => x.id == idPagoPrioridad
                               )
                             );
                         }
@@ -314,7 +323,9 @@ export class CronogramaPagoComponent implements OnInit {
       let dataMonotoPagoCronograma = datos.cronograma;
       if (dataMonotoPagoCronograma.esAprobado) {
         this.cronogramaAprobado = true;
-        this.agendaService.agendaCronogramaPagoService.cronogramaAprobado$.next(true);
+        this.agendaService.agendaCronogramaPagoService.cronogramaAprobado$.next(
+          true
+        );
         this.estadoMensaje = 'Cronograma fue aprobado';
         this.btnAprobar.disabled = true;
         this.btnVerCronogramaPortal.disabled = false;
@@ -365,6 +376,8 @@ export class CronogramaPagoComponent implements OnInit {
     this.inputCostoDescuentoOtorgado = '';
     this.formCronogramapago.get('idTipoDescuento').enable();
 
+    this.montoPagoFiltro = this.montoPagoFiltroAux;
+
     /*Buscar detalles */
     if (event.id != null) {
       this.agendaService.agendaCronogramaPagoService
@@ -378,7 +391,6 @@ export class CronogramaPagoComponent implements OnInit {
       this.textoDetalle = null;
     }
 
-    /* Todo excepto credito */
     if (event.cuotasTipoPago !== 1) {
       //var tempContado = this.montoPagoFiltro.filter(
       //  (c:any) => c.cuotasTipoPago==2
@@ -425,10 +437,10 @@ export class CronogramaPagoComponent implements OnInit {
     //   this.dataGrillaMontoPago = this.formCronogramapago.get('idMontosPago').value;
     // }
     // if (event.length >= 0) {
-    /*Se valida si el tipo de descuento es 25% */
+
+    this.filtrarMontosPagoPorDescuento(event);
+
     if (event.codigo === 'Promoción 25% Descuento') {
-      //console.log(this.montoPagoFiltro);
-      //console.log(this.dataGrillaMontoPago);
       let creditoAplicarDescuento = this.montoPagoFiltro.filter(
         (x: any) =>
           x.idPais == this.dataGrillaMontoPago.idPais &&
@@ -474,7 +486,13 @@ export class CronogramaPagoComponent implements OnInit {
   }
 
   calcularPrecioInicialConDescuento(data: any) {
-    let desc:string = '', matr:number, num: number, ccu:string, m: string, c: string, d: number;
+    let desc: string = '',
+      matr: number,
+      num: number,
+      ccu: string,
+      m: string,
+      c: string,
+      d: number;
     switch (data.formula) {
       case 0: //sin descuento
         matr = this.tipoDescuentoGeneral(
@@ -535,9 +553,9 @@ export class CronogramaPagoComponent implements OnInit {
           sindescuento / tamaniocuotas,
           data.porcentajeCuotas
         );
-        m  = (matr * tamanioMatricula).toFixed(2);
-        c  = (cuotas * tamaniocuotas).toFixed(2);
-        d  = parseFloat(m) + parseFloat(c);
+        m = (matr * tamanioMatricula).toFixed(2);
+        c = (cuotas * tamaniocuotas).toFixed(2);
+        d = parseFloat(m) + parseFloat(c);
         desc = d.toFixed(2);
         break;
       case 4: //general
@@ -875,9 +893,7 @@ export class CronogramaPagoComponent implements OnInit {
     //console.log(data);
     this.gridCronogramaPago.data = data;
     this.total = aggregateBy(this.gridCronogramaPago.data, this.aggregates);
-    if (
-      this.precioDescuento == this.total['montoCuotaDescuento'].sum
-    ) {
+    if (this.precioDescuento == this.total['montoCuotaDescuento'].sum) {
       this.cuadraSumatoria = true;
     } else {
       this.cuadraSumatoria = false;
@@ -1225,26 +1241,61 @@ export class CronogramaPagoComponent implements OnInit {
 
   filtrarTipoDescuento(value: string) {
     this.tipoDescuentoFiltro = this.tipoDescuentoFiltroAux.filter(
-      (x:ITipoDescuentoCronograma) => x.codigo.toLowerCase().indexOf(value.toLowerCase()) !== -1
-    )
+      (x: ITipoDescuentoCronograma) =>
+        x.codigo.toLowerCase().indexOf(value.toLowerCase()) !== -1
+    );
   }
 
   filtrarMedioPago(value: string) {
     this.dataMedioPago = this.dataMedioPagoAux.filter(
-      (x:IPasarelaPago) => x.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
-    )
+      (x: IPasarelaPago) =>
+        x.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+    );
   }
 
   filtrarMontoPago(value: string) {
     this.montoPagoFiltro = this.montoPagoFiltroAux.filter(
-      (x:IMontoPagoCronograma) => x.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
-    )
+      (x: IMontoPagoCronograma) =>
+        x.nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+    );
+  }
+
+  filtrarMontosPagoPorDescuento(tipoDescuento: any) {
+    if (!tipoDescuento) {
+      this.montoPagoFiltro = this.montoPagoFiltroAux;
+      return;
+    }
+
+    const porcentajeMayorA20 =
+      (tipoDescuento.porcentajeGeneral &&
+        tipoDescuento.porcentajeGeneral > 20) ||
+      (tipoDescuento.porcentajeMatricula &&
+        tipoDescuento.porcentajeMatricula > 20) ||
+      (tipoDescuento.porcentajeCuotas && tipoDescuento.porcentajeCuotas > 20);
+
+    if (porcentajeMayorA20) {
+      this.montoPagoFiltro = this.montoPagoFiltroAux.filter(
+        (x: IMontoPagoCronograma) =>
+          x.nombre.toLowerCase().includes('crédito') ||
+          x.nombre.toLowerCase().includes('credito')
+      );
+    } else {
+      this.montoPagoFiltro = this.montoPagoFiltroAux;
+    }
+
+    if (this.montoPagoFiltro.length > 0) {
+      this.formCronogramapago
+        .get('idMontosPago')
+        .setValue(this.montoPagoFiltro[0]);
+    } else {
+      this.formCronogramapago.get('idMontosPago').setValue(null);
+    }
   }
 
   filtrarAsignarCuota(value: string) {
     this.dataAsignacionCuota = this.dataAsignacionCuotaAux.filter(
-      (x:any) => x.Nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
-    )
+      (x: any) => x.Nombre.toLowerCase().indexOf(value.toLowerCase()) !== -1
+    );
   }
 
   modificacionEnGrilla(celda: any) {
@@ -1575,10 +1626,14 @@ export class CronogramaPagoComponent implements OnInit {
             this.dataCronogramaServicios = response.cronograma;
             if (this.agendaService.esCoordinadora$) {
               this.cronogramaAprobado = true;
-              this.agendaService.agendaCronogramaPagoService.cronogramaAprobado$.next(true);
+              this.agendaService.agendaCronogramaPagoService.cronogramaAprobado$.next(
+                true
+              );
               this.vistaPortal = response.vistaPortalWeb;
               this.estadoMensaje = 'El Cronograma se Aprobo Correctamente.';
-              this.alertaService.notificationSuccess("El Cronograma se Aprobo Correctamente.");
+              this.alertaService.notificationSuccess(
+                'El Cronograma se Aprobo Correctamente.'
+              );
               this.formCronogramapago.get('idTipoDescuento').disable();
               this.formCronogramapago.get('idMontosPago').disable();
               this.btnAprobar.disabled = true;
@@ -1658,10 +1713,7 @@ export class CronogramaPagoComponent implements OnInit {
     obj.Usuario = this.agendaService.userName;
     obj.IdPersonal = this.rowActual.idPersonal_Asignado;
     this.agendaService.agendaCronogramaPagoService
-      .eliminarCronogramaVentas$(
-        this.rowActual.idAlumno,
-        obj
-      )
+      .eliminarCronogramaVentas$(this.rowActual.idAlumno, obj)
       .subscribe({
         // this.agendaService.agendaCronogramaPagoService.eliminarCronogramaPago$(this.rowActual.idOportunidad,this.rowActual.idAlumno, obj).subscribe({
         next: (response: any) => {
@@ -1679,7 +1731,7 @@ export class CronogramaPagoComponent implements OnInit {
             this.alertaService.swalFireOptions({
               icon: 'error',
               title: 'No se puedo realizar la eliminacion',
-              text: 'El alumno ya se encuentra en estado matriculado'
+              text: 'El alumno ya se encuentra en estado matriculado',
             });
           }
           this.estadoMensaje = 'No se pudo realizar la eliminacion.';
@@ -1727,23 +1779,28 @@ export class CronogramaPagoComponent implements OnInit {
 
   abrirModalTransacciones(e: any) {
     this.loaderModalTransPagos = true;
-    this.grillaModalTransaccionesPagos="";
+    this.grillaModalTransaccionesPagos = '';
     let params: any;
     params = {
       idMontoPagoCronograma: e.idMontoPagoCronograma,
-      nroCuota: e.numeroCuota
+      nroCuota: e.numeroCuota,
     };
     this.integraService
-      .obtenerPorFiltro(constApiFinanzas.ObtenerDetalleMatriculaTransaccionAuditoria, params)
+      .obtenerPorFiltro(
+        constApiFinanzas.ObtenerDetalleMatriculaTransaccionAuditoria,
+        params
+      )
       .subscribe({
         next: (response: any) => {
           console.log('Detalle Transacción:', response);
-          if (response.body !=null) {
-            this.modalRefTransaccionesPagos = this.modalService.open(this.modalTransaccionesPagos,{size:'xl'});
-            this.grillaModalTransaccionesPagos=response.body;
+          if (response.body != null) {
+            this.modalRefTransaccionesPagos = this.modalService.open(
+              this.modalTransaccionesPagos,
+              { size: 'xl' }
+            );
+            this.grillaModalTransaccionesPagos = response.body;
             this.loaderModalTransPagos = false;
-          }
-          else{
+          } else {
             this.mostrarMensajeTransacciones();
             this.loaderModalTransPagos = false;
           }
@@ -1756,18 +1813,12 @@ export class CronogramaPagoComponent implements OnInit {
   }
 
   mostrarMensajeTransacciones() {
-    this.alertaService.mensajeIcon(
-      '',
-      'El pago está pendiente',
-      null
-    );
+    this.alertaService.mensajeIcon('', 'El pago está pendiente', null);
   }
-  obtenerDescuentoProfiling(email:string) {
-    this.descuentoProfilingAprobado=false;
-    this.cuponDescuentoProfiling=undefined;
-    var parametros: any[] = [
-          { clave: 'EmailUsuario', valor: email }
-    ];
+  obtenerDescuentoProfiling(email: string) {
+    this.descuentoProfilingAprobado = false;
+    this.cuponDescuentoProfiling = undefined;
+    var parametros: any[] = [{ clave: 'EmailUsuario', valor: email }];
     this.integraService
       .obtenerPorPathParams(
         constApiMarketing.ObtenerDescuentoProfiling,
@@ -1775,13 +1826,12 @@ export class CronogramaPagoComponent implements OnInit {
       )
       .subscribe({
         next: (response: any) => {
-          if(response.body!=null){
-            this.descuentoProfilingAprobado=true
-            this.cuponDescuentoProfiling=response.body
+          if (response.body != null) {
+            this.descuentoProfilingAprobado = true;
+            this.cuponDescuentoProfiling = response.body;
           }
         },
-        error: (error) => {
-        },
+        error: (error) => {},
         complete: () => {},
       });
   }
