@@ -2966,7 +2966,7 @@ export const constApiPlanificacion = {
   EmpresaObtenerNombreCodigoCIIUPorFiltro:
     '/Empresa/ObtenerNombreCodigoCIIUPorFiltro',
   // EmpresaObtenerFiltroAutocomplete: '/Empresa/ObtenerFiltroAutocomplete',
-  
+
   IndustriaInsertar: '/Industria/Insertar',
   IndustriaInsertarLista: '/Industria/InsertarLista',
   IndustriaActualizar: '/Industria/Actualizar',
@@ -3147,14 +3147,20 @@ export const constApiPlanificacion = {
 
   //PLANIFICACION CONFIGURACION PROGRAMAS
   //TIPO DESCUENTO PROGRAMA
-  TipoDescuentoObtener: '/TipoDescuento/Obtener', //GET
+  TipoDescuentoObtener: '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
   TipoDescuentoObtenerCombosModulo: '/TipoDescuento/ObtenerCombosModulo', //GET
   TipoDescuentoEliminar: '/TipoDescuento/Eliminar', //DELETE
   TipoDescuentoInsertar: '/TipoDescuento/Insertar', //POST
   TipoDescuentoActualizar: '/TipoDescuento/Actualizar', //PUT
-  TipoDescuentoObtenerTiposPorIdTipoDescuento:
-    '/TipoDescuento/ObtenerTiposPorIdTipoDescuento', //GET
-
+  TipoDescuentoObtenerTiposPorIdTipoDescuento:'/TipoDescuento/ObtenerTiposPorIdTipoDescuento', //GET
+  ObtenerTipoDescuentoConNivelAprobacion : '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
+  ObtenerNivelesAprobacion: '/TipoDescuento/ObtenerNivelesAprobacion', //GET
+  ObtenerEstadosAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ObtenerEstadosSolicitud', //GET
+  ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes', 
+  AprobarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudGerencia', //POST
+  RechazarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudGerencia', //POST
+  AprobarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudCoordinador', //POST
+  RechazarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudCoordinador', //POST
   //Asociar Feedback Programas
   FeedbackConfigurarGrupoPreguntaObtener:
     '/FeedbackConfigurarGrupoPregunta/Obtener', //GET
@@ -4000,7 +4006,7 @@ export const constApiPlanificacion = {
 
   MontoPagoLogObtenerReporteMontoPagoHistorico:
     '/MontoPagoLog/ObtenerReporteMontoPagoHistorico',
-  DocumentoPWModalidadObtenerCombo: '/DocumentoPWModalidad/ObtenerCombo',
+    DocumentoPWModalidadObtenerCombo: '/DocumentoPWModalidad/ObtenerCombo',
   DocumentoPWObtenerModalidadPortal:'/DocumentoPw/ObtenerModalidadPortal',
   DocumentoPwObtenerModoFechaInicio:'/DocumentoPw/ObtenerModoFechaInicio',
   ProgramaGeneralObtenerPGeneralActivo: '/ProgramaGeneral/ObtenerPGeneralActivo',
