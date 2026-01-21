@@ -69,7 +69,7 @@ import { RegistroLandingPageLinkedinComponent } from './CampaniaLinkedin/registr
 import { FormulariosProgressiveProfilingComponent } from './configuraciones/formularios-progressive-profiling/formularios-progressive-profiling/formularios-progressive-profiling.component';
 import { CreacionOportunidadMasivaComponent } from './gestion-oportunidades/creacion-oportunidad-masiva/creacion-oportunidad-masiva.component';
 import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
-//import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
+import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
 import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
 const routes: Routes = [
   {
@@ -321,7 +321,7 @@ const routes: Routes = [
       {path:'FormulariosProgressiveProfiling',component:FormulariosProgressiveProfilingComponent},
       {path:'CreacionOportunidadMasiva',component:CreacionOportunidadMasivaComponent},
       {path:'MessengerFacebookChat',component:MessengerFacebookChatComponent},
-      //{path:'CampaniaRemarketingGeneral',component:CampaniaRemarketingGeneralComponent},
+      {path:'CampaniaRemarketingGeneral',component:CampaniaRemarketingGeneralComponent},
       {path:'CategoriaArgumentos', component: CategoriaArgumentosComponent},
     ],
   },
