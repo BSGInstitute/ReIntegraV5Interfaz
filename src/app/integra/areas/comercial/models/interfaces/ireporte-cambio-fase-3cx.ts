@@ -207,6 +207,7 @@ export interface IControlCambioFase {
   actividadesProgramadasAutomaticas: number;
   actividadesProgramadasManuales: number;
   actividadesContestaCorta: number;
+  actividadesContestaOcupado: number;
   actividadesTotales: number;
   contactabilidad: number;
   faseOrigen: string;
@@ -214,6 +215,7 @@ export interface IControlCambioFase {
   minPromedioEjecutadas: number;
   minPromedioprogramadasmanuales: number;
   minPromedioContestaCorta: number;
+  minPromedioContestaOcupado: number;
 
   numIntentoLlamadasPromedio: number;
   orden: number;
@@ -280,6 +282,7 @@ export interface IReporteTasaContacto {
   totalLlamadasEjecutadas: number;
   totalLlamadasManual: number;
   totalLlamadasContestaCorta: number;
+  totalLlamadasContestaOcupado: number;
   totalLlamadasEjecutadasConLlamada: number;
 }
 export interface IReporteTasaContactoConySinLlamada {
@@ -319,6 +322,7 @@ export class ControlCambioFase implements IControlCambioFase {
   actividadesProgramadasAutomaticas: number = 0;
   actividadesProgramadasManuales: number = 0;
   actividadesContestaCorta: number = 0;
+  actividadesContestaOcupado: number = 0;
 
   actividadesTotales: number = 0;
   contactabilidad: number = 0;
@@ -327,6 +331,7 @@ export class ControlCambioFase implements IControlCambioFase {
   minPromedioEjecutadas: number = 0;
   minPromedioprogramadasmanuales: number = 0;
   minPromedioContestaCorta: number = 0;
+  minPromedioContestaOcupado: number = 0;
 
   numIntentoLlamadasPromedio: number = 0;
   orden: number = 0;
