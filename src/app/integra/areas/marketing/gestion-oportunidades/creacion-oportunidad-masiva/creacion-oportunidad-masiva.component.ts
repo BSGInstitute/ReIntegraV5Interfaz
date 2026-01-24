@@ -209,11 +209,23 @@ export class CreacionOportunidadMasivaComponent implements OnInit {
           this.obtenerHistorialArchivos();
         },
         error: (error) => {
-          Swal.fire(
-            'Error',
-            'Hubo un problema al procesar el archivo.',
-            'error',
-          );
+          console.error('Error al procesar archivo:', error);
+          // Timeout / conexión cerrada / error de red
+          if (error.status === 0) {
+            Swal.fire(
+              'Proceso en ejecución',
+              'El proceso está tomando más tiempo de lo esperado. ' +
+                'Se está ejecutando en segundo plano y recibirás un correo al finalizar.',
+              'info',
+            );
+          } else {
+            Swal.fire(
+              'Error',
+              'Hubo un problema al procesar el archivo.',
+              'error',
+            );
+          }
+
           this.isUploading = false;
         },
       });
