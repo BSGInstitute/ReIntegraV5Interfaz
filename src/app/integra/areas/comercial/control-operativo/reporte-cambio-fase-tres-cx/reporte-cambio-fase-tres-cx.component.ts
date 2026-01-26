@@ -1346,6 +1346,10 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
       ((reporteTasaContacto.totalLlamadasEjecutadasConLlamada + reporteTasaContacto.totalLlamadasManual + reporteTasaContacto.totalLlamadasContestaCorta)/
         reporteTasaContacto.totalLlamadas) *
       100;
+    let tasaContactoEjecutadoContestaOcupado =
+      ((reporteTasaContacto.totalLlamadasEjecutadasConLlamada + reporteTasaContacto.totalLlamadasManual + reporteTasaContacto.totalLlamadasContestaCorta + reporteTasaContacto.totalLlamadasContestaOcupado)/
+        reporteTasaContacto.totalLlamadas) *
+      100;
     let cambioFaseEjecutada =
       (reporteTasaContactoConySinLlamada.cambiosFaseConLlamada /
         reporteTasaContacto.totalLlamadasEjecutadasConLlamada) *
@@ -1368,6 +1372,10 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         valor: reporteTasaContacto.totalLlamadasContestaCorta,
       },
       {
+        descripcion: 'Actividades reprogramadas Contesta esta Ocupado no puede atender en este momento',
+        valor: reporteTasaContacto.totalLlamadasContestaOcupado,
+      },
+      {
         descripcion: 'Tasa de contacto ejecutadas',
         valor: !isNaN(tasaContacto) ? `${tasaContacto.toFixed(0)}%` : '0.0%',
       },
@@ -1378,6 +1386,10 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
       {
         descripcion: 'Tasa de contacto (Ejecutadas+Manuales+Contesta y Corta)',
         valor: !isNaN(tasaContactoEjecutadoContestaCorta) ? `${tasaContactoEjecutadoContestaCorta.toFixed(0)}%` : '0.0%',
+      },
+      {
+        descripcion: 'Tasa de contacto (Ejecutadas+Manuales+Contesta y Corta+Contesta esta Ocupado)',
+        valor: !isNaN(tasaContactoEjecutadoContestaOcupado) ? `${tasaContactoEjecutadoContestaOcupado.toFixed(0)}%` : '0.0%',
       },
       // {
       //   descripcion: 'Número de cambios de fase (solo con llamadas)',
@@ -2528,6 +2540,24 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         // BNC_1: arregloTemp[4].actividadesProgramadasManuales,
       },
       {
+        descripcion: 'Valor de actividades reprogramadas Contesta y Corta',
+        BNC: arregloTemp[0].actividadesContestaCorta,
+        IT: arregloTemp[1].actividadesContestaCorta,
+        IP: arregloTemp[2].actividadesContestaCorta,
+        PF: arregloTemp[3].actividadesContestaCorta,
+        Otros: arregloTemp[4].actividadesContestaCorta,
+        // BNC_1: arregloTemp[4].actividadesProgramadasManuales,
+      },
+      {
+        descripcion: 'Valor de actividades reprogramadas Contesta esta Ocupado no puede atender en este momento',
+        BNC: arregloTemp[0].actividadesContestaOcupado,
+        IT: arregloTemp[1].actividadesContestaOcupado,
+        IP: arregloTemp[2].actividadesContestaOcupado,
+        PF: arregloTemp[3].actividadesContestaOcupado,
+        Otros: arregloTemp[4].actividadesContestaOcupado,
+        // BNC_1: arregloTemp[4].actividadesProgramadasManuales,
+      },
+      {
         descripcion: 'Actividades Totales',
         BNC: arregloTemp[0].actividadesTotales,
         IT: arregloTemp[1].actividadesTotales,
@@ -2573,6 +2603,24 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         IP: (arregloTemp[2].minPromedioprogramadasmanuales / 60).toFixed(1),
         PF: (arregloTemp[3].minPromedioprogramadasmanuales / 60).toFixed(1),
         Otros: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
+        // BNC_1: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
+      },
+      {
+        descripcion: 'Duración promedio de reprogramadas Contesta y Corta en minutos',
+        BNC: (arregloTemp[0].minPromedioContestaCorta / 60).toFixed(1),
+        IT: (arregloTemp[1].minPromedioContestaCorta / 60).toFixed(1),
+        IP: (arregloTemp[2].minPromedioContestaCorta / 60).toFixed(1),
+        PF: (arregloTemp[3].minPromedioContestaCorta / 60).toFixed(1),
+        Otros: (arregloTemp[4].minPromedioContestaCorta / 60).toFixed(1),
+        // BNC_1: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
+      },
+      {
+        descripcion: 'Duración promedio de reprogramadas Contesta esta Ocupado no puede atender en este momento en minutos',
+        BNC: (arregloTemp[0].minPromedioContestaOcupado / 60).toFixed(1),
+        IT: (arregloTemp[1].minPromedioContestaOcupado / 60).toFixed(1),
+        IP: (arregloTemp[2].minPromedioContestaOcupado / 60).toFixed(1),
+        PF: (arregloTemp[3].minPromedioContestaOcupado / 60).toFixed(1),
+        Otros: (arregloTemp[4].minPromedioContestaOcupado / 60).toFixed(1),
         // BNC_1: (arregloTemp[4].minPromedioprogramadasmanuales / 60).toFixed(1),
       },
       {
