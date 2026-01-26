@@ -4551,6 +4551,7 @@ export const constApiFinanzas = {
   RegistrarpagoFurInsertar: '/RegistrarFurPago/InsertarFurPago',
   RegistrarpagoFurActualizar: '/RegistrarFurPago/ActualizarFurPago',
   RegistrarpagoFurElminar: '/RegistrarFurPago/ElminarFurPago',
+  RegistrarPagoFurConvertirMoneda: '/RegistrarFurPago/ConvertirMoneda',
 
   //RESUMEN CAJA
   ResumenCajaObtener: '/Caja/ObtenerResumenCaja',
