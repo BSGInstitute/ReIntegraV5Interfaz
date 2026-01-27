@@ -134,6 +134,7 @@ import { PgArgumentoMotivacionComponent } from './configuracion-programas-capaci
 import { PgProblemasClienteFormComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-problemas-cliente-v2/pg-problemas-cliente-form/pg-problemas-cliente-form.component';
 import { ModalContentPgeneralHistorialMontoPagoComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-historial-monto-pago/modal-content-pgeneral-historial-monto-pago.component';
 import { AprobacionDescuentoComponent } from './configuracionprogramascapacitacion/aprobacion-descuento/aprobacion-descuento.component';
+import { ModalConfiguracionTutorVirtualComponent } from './configuracion-portal-web/video-evaluaciones-estructura-programa/modal-configuracion-tutor-virtual/modal-configuracion-tutor-virtual.component';
 
 
 @NgModule({
@@ -267,6 +268,7 @@ import { AprobacionDescuentoComponent } from './configuracionprogramascapacitaci
     PgProblemasClienteFormComponent,
     ModalContentPgeneralHistorialMontoPagoComponent,
     AprobacionDescuentoComponent,
+    ModalConfiguracionTutorVirtualComponent,
 
 
   ],

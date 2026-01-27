@@ -3187,7 +3187,7 @@ export const constApiPlanificacion = {
   ObtenerTipoDescuentoConNivelAprobacion : '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
   ObtenerNivelesAprobacion: '/TipoDescuento/ObtenerNivelesAprobacion', //GET
   ObtenerEstadosAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ObtenerEstadosSolicitud', //GET
-  ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes', 
+  ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes',
   AprobarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudGerencia', //POST
   RechazarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudGerencia', //POST
   AprobarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudCoordinador', //POST
@@ -3456,6 +3456,8 @@ export const constApiPlanificacion = {
     '/ProgramaGeneral/ObtenerCombosConfigurarVideoPrograma', //GET
   ConfigurarVideoProgramaObtenerConfiguracionVideoPrograma:
     '/ConfigurarVideoPrograma/ObtenerConfiguracionVideoPrograma', //GET
+  ConfigurarVideoProgramaObtenerConfiguracionTutorVirtualAonline:
+    '/ConfigurarVideoPrograma/ObtenerConfiguracionTutorVirtualAonline', //GET
   ConfigurarVideoProgramaObtenerConfiguracionExamenPrograma:
     '/ConfigurarVideoPrograma/ObtenerConfiguracionExamenPrograma', //GET
   ConfigurarVideoProgramaObtenerConfiguracionProyecto:
@@ -3494,7 +3496,8 @@ export const constApiPlanificacion = {
     '/ConfigurarVideoPrograma/ActualizarDescargaReproduccionVideo', //Put
   ConfigurarVideoProgramaActualizarObtenerConteosdeVideosTipo:
     '/ConfigurarVideoPrograma/ObtenerConteosdeVideosTipo', //Put
-
+  ConfigurarVideoProgramaProcesarTutorVirtualAonline:
+    '/ConfigurarVideoPrograma/ProcesarTutorVirtualAonline',
   //Modulo Pgeneral
   ProgramaGeneralObtenerCombosModuloAsync:
     '/ProgramaGeneral/ObtenerCombosModuloAsync',

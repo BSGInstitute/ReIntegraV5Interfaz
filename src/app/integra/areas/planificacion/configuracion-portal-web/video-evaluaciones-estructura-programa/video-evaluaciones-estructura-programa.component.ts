@@ -12,6 +12,7 @@ import { ModalConfiguracionEvaluacionComponent } from './modal-configuracion-eva
 import { ModalConfiguracionProyectoComponent } from './modal-configuracion-proyecto/modal-configuracion-proyecto.component';
 import { ModalConfiguracionVideoComponent } from './modal-configuracion-video/modal-configuracion-video.component';
 import { ModalConfiguracionReproduccionDescargaComponent } from './modal-configuracion-reproduccion-descarga/modal-configuracion-reproduccion-descarga.component';
+import { ModalConfiguracionTutorVirtualComponent } from './modal-configuracion-tutor-virtual/modal-configuracion-tutor-virtual.component';
 interface FiltroVideoEvaluacion {
   idPgeneral: number[];
   idArea: number[];
@@ -89,6 +90,27 @@ export interface ConfiguracionVideo {
   ordenCapitulo: number;
   ordenSeccion: number;
   totalSegundos: number;
+}
+export interface ConfiguracionVideoTutorVirtual {
+  idPgeneral: number;
+  idDocumentoSeccionPw: number;
+  nombre: string;
+  capitulo: string;
+  sesion: string;
+  subSesion: string;
+  ordenFila: number;
+  ordenCapitulo: number;
+  ordenSeccion: number;
+  totalSegundos: number;
+  videoIdBrightcove: string;
+  videoIdVimeo: string;
+  reproduccionVideo?: number;
+  idTipoVista?: number;
+  nroDiapositiva?: number;
+  estadoProcesamiento: string;
+  fechaProcesamiento?: Date;
+  tieneVideo: boolean;
+  tutorVirtualActivo: boolean;
 }
 @Component({
   selector: 'app-video-evaluaciones-estructura-programa',
@@ -221,6 +243,11 @@ export class VideoEvaluacionesEstructuraProgramaComponent implements OnInit {
           modalRef.componentInstance.configuracionVideoPrincipal = dataSource;
           modalRef.componentInstance.modalContext = modalRef;
           this.loaderModal = false;
+          console.log(this.listaTipoVista);
+          console.log(this.listaTipoMarcador);
+          console.log(response.body);
+          console.log(dataSource);
+          console.log(modalRef);
         },
         error: (err) => {
           this._alertaService.notificationWarning(
@@ -398,5 +425,43 @@ export class VideoEvaluacionesEstructuraProgramaComponent implements OnInit {
         dataForm.partnerts.length > 0 ? dataForm.partnerts.join(',') : null,
     };
     return objetoCompleto;
+  }
+  abrirModalConfiguracionTutorVirtual(
+    dataSource: ConfiguracionVideoPrincipal
+  ): void {
+    this.loaderModal = true;
+    this._integraService
+      .getJsonResponse(
+        `${constApiPlanificacion.ConfigurarVideoProgramaObtenerConfiguracionTutorVirtualAonline}/${dataSource.idPgeneral}`
+      )
+      .subscribe({
+        next: (response: HttpResponse<ConfiguracionVideoTutorVirtual[]>) => {
+          const modalRef = this._modalService.open(
+            ModalConfiguracionTutorVirtualComponent,
+            {
+              size: 'xl',
+              backdrop: 'static',
+              keyboard: false,
+            }
+          );
+          modalRef.componentInstance.listaTipoVista = this.listaTipoVista;
+          modalRef.componentInstance.listaTipoMarcador = this.listaTipoMarcador;
+          modalRef.componentInstance.configuracionVideo = response.body;
+          modalRef.componentInstance.configuracionVideoPrincipal = dataSource;
+          modalRef.componentInstance.modalContext = modalRef;
+          this.loaderModal = false;
+          console.log(this.listaTipoVista);
+          console.log(this.listaTipoMarcador);
+          console.log(response.body);
+          console.log(dataSource);
+          console.log(modalRef);
+        },
+        error: (err) => {
+          this._alertaService.notificationWarning(
+            `No existe informacion a mostrar`
+          );
+          this.loaderModal = false;
+        },
+      });
   }
 }
