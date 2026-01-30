@@ -200,7 +200,7 @@ export class ModalConfiguracionTutorVirtualComponent
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        this.refrescarDatos();
+        // this.refrescarDatos();
       }
     });
   }
@@ -237,13 +237,28 @@ export class ModalConfiguracionTutorVirtualComponent
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          this.refrescarDatos();
+          // this.refrescarDatos();
         }
       });
     } else {
-      // Procesar directamente sin mostrar confirmación
-      this.ejecutarProcesamiento(videos);
-      this.refrescarDatos();
+      Swal.fire({
+        title: 'Se procesará el video',
+        text: '¿Desea procesar este video?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, procesar',
+        cancelButtonText: 'Cancelar',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+          return this.ejecutarProcesamiento(videos);
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // this.refrescarDatos();
+        }
+      });
     }
   }
 
@@ -258,14 +273,14 @@ export class ModalConfiguracionTutorVirtualComponent
       this._integraService.postJsonResponse(constApiPlanificacion.ConfigurarVideoProgramaProcesarTutorVirtualAonline, videosEnvio)
         .subscribe({
           next: () => {
-            Swal.fire("Éxito!", "Se inició el proceso de resumen", "success");
+            Swal.fire("Éxito!", "Se inició el procesamiento", "success");
             setTimeout(() => {
               this.refrescarDatos();
               resolve({ success: true });
             }, 1000);
           },
           error: (err) => {
-            Swal.fire('Error!', 'Ocurrió un problema al iniciar el proceso de resúmenes', 'warning');
+            Swal.fire('Error!', 'Ocurrió un problema al iniciar el procesamiento', 'warning');
             reject(err);
           },
         });

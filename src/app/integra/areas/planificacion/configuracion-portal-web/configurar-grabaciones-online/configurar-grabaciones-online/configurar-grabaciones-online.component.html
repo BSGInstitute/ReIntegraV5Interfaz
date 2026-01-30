@@ -241,226 +241,276 @@
 <loading [loading]="loading"></loading>
 
 <ng-template #modalSesion let-modal>
-    <div class="modal-header bg-primary-header-modal">
-        <h3 class="modal-title m-0 p-0">
-            Configuración general
-        </h3>
-        <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            (click)="cerrarModalSesiones()">
-        </button>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0">
+      Configuración general
+    </h3>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="cerrarModalSesiones()">
+    </button>
+  </div>
+
+  <div class="modal-body px-4 pb-0">
+    <div class="d-flex align-items-center pb-3">
+      <button class="btn btn-success me-3" [disabled]="isGuardarDisabled" (click)="guardarCambiosSesiones()">
+        Guardar Cambios
+      </button>
+      <span
+        class="badge px-3 py-2 me-2"
+        [ngClass]="resumenClaseActivo ? 'border border-success text-success bg-white' : 'border border-secondary text-secondary bg-white'"
+        style="font-size: 1rem; font-weight: 400; border-radius: 1rem; cursor: default;">
+        <i *ngIf="resumenClaseActivo" class="k-icon k-i-check-circle text-success me-1"></i>
+        <i *ngIf="!resumenClaseActivo" class="k-icon k-i-minus-circle text-secondary me-1"></i>
+        Resumen de Clase {{ resumenClaseActivo ? 'Habilitado' : 'Deshabilitado' }}
+      </span>
+      <span
+        class="badge px-3 py-2"
+        [ngClass]="tutorVirtualActivo ? 'border border-success text-success bg-white' : 'border border-secondary text-secondary bg-white'"
+        style="font-size: 1rem; font-weight: 400; border-radius: 1rem; cursor: default;">
+        <i *ngIf="tutorVirtualActivo" class="k-icon k-i-check-circle text-success me-1"></i>
+        <i *ngIf="!tutorVirtualActivo" class="k-icon k-i-minus-circle text-secondary me-1"></i>
+        Tutor Virtual {{ tutorVirtualActivo ? 'Habilitado' : 'Deshabilitado' }}
+      </span>
     </div>
-  
-    <div class="modal-body px-4">
-        <div class="pb-3">
-            <button class="btn btn-success" [disabled]="isGuardarDisabled" (click)="guardarCambiosSesiones()">
-                Guardar Cambios
-            </button>
+
+    <div style="max-height: 65vh; overflow-y: auto; overflow-x: auto; min-height: 20vh;">
+      <ng-container *ngIf="!gridSesiones.loading; else loadingGridSesiones">
+        <kendo-grid
+          [kendoGridBinding]="gridSesiones"
+          [loading]="gridSesiones.loading"
+          [scrollable]="'none'"
+          [navigable]="true"
+          [selectable]="true"
+          [resizable]="true"
+          filterable="menu"
+          (click)="stopEditing()"
+          style="min-width: 2200px;">
+
+          <kendo-grid-column title="Sesión"
+            field="sesion"
+            [width]="110"
+            headerClass="header-grid-single">
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Fecha de la sesión"
+            field="fechaSesion"
+            [width]="150"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fechaSesion | date: 'dd-MM-yyyy' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Nombre de sesión"
+            field="nombreSesion"
+            [width]="190"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div class="editable-cell-container"
+                (click)="editRow(rowIndex, 'nombreSesion', $event)">
+                <ng-container *ngIf="!isEditingCell(rowIndex, 'nombreSesion'); else editTemplate">
+                  {{ dataItem.nombreSesion || '' }}
+                </ng-container>
+                <ng-template #editTemplate>
+                  <input
+                    [(ngModel)]="dataItem.nombreSesion"
+                    (blur)="stopEditing()"
+                    class="editable-input">
+                </ng-template>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Id de video"
+            field="video"
+            [width]="200"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div class="editable-cell-container"
+                (click)="editRow(rowIndex, 'video', $event)">
+                <ng-container *ngIf="!isEditingCell(rowIndex, 'video'); else editTemplate">
+                  {{ dataItem.video || '' }}
+                </ng-container>
+                <ng-template #editTemplate>
+                  <input
+                    [(ngModel)]="dataItem.video"
+                    (blur)="onVideoBlur(dataItem)"
+                    class="editable-input">
+                </ng-template>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Disponible desde"
+            field="fechaInicio"
+            [width]="150"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div class="editable-cell-container"
+                (click)="editRow(rowIndex, 'fechaInicio', $event)">
+                <ng-container *ngIf="!isEditingCell(rowIndex, 'fechaInicio'); else editTemplate">
+                  {{ dataItem.fechaInicio | date: 'dd-MM-yyyy' }}
+                </ng-container>
+                <ng-template #editTemplate>
+                  <kendo-datepicker
+                    [(ngModel)]="dataItem.fechaInicio"
+                    (blur)="stopEditing()"
+                    class="editable-input"
+                    format="dd-MM-yyyy">
+                  </kendo-datepicker>
+                </ng-template>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Disponible hasta"
+            field="fechaFin"
+            [width]="150"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div class="editable-cell-container"
+                (click)="editRow(rowIndex, 'fechaFin', $event)">
+                <ng-container *ngIf="!isEditingCell(rowIndex, 'fechaFin'); else editTemplate">
+                  {{ dataItem.fechaFin | date: 'dd-MM-yyyy' }}
+                </ng-container>
+                <ng-template #editTemplate>
+                  <kendo-datepicker
+                    [(ngModel)]="dataItem.fechaFin"
+                    (blur)="stopEditing()"
+                    class="editable-input"
+                    format="dd-MM-yyyy">
+                  </kendo-datepicker>
+                </ng-template>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Video Habilitado"
+            field="habilitado"
+            [width]="130"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <div class="editable-cell-container" (click)="editRow(rowIndex, 'habilitado', $event)">
+                <span *ngIf="!isEditingCell(rowIndex, 'habilitado')">
+                  {{ dataItem.habilitado === 'Habilitado' ? 'Si' : 'No' }}
+                </span>
+                <div *ngIf="isEditingCell(rowIndex, 'habilitado')" class="input-wrapper">
+                  <kendo-dropdownlist
+                    [data]="['Habilitado', 'Deshabilitado']"
+                    [value]="dataItem.habilitado"
+                    (valueChange)="onHabilitadoChange($event, rowIndex)"
+                    class="editable-input">
+                  </kendo-dropdownlist>
+                </div>
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-command-column
+            title="Procesar"
+            [width]="150"
+            headerClass="header-grid-single">
+            <ng-template
+              kendoGridCellTemplate
+              let-dataItem="dataItem"
+              let-rowindex="rowindex">
+              <div class="w-100 d-flex justify-content-center">
+                <button
+                  kendoButton
+                  themeColor="warning"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  (click)="abrirConfiguracionResumen(modalConfiguracionResumen, dataItem)">
+                  <span class="k-icon k-i-arrow-right k-icon-20"></span>
+                </button>
+                <button
+                  kendoButton
+                  themeColor="primary"
+                  fillMode="solid"
+                  rounded="large"
+                  size="large"
+                  class="p-2 me-1 ms-1"
+                  container="body"
+                  placement="top"
+                  [disabled]="dataItem.estadoResumen === 'En proceso' || dataItem.estadoTutor === 'En proceso' || (!dataItem.resumenClaseActivo && !dataItem.tutorVirtualActivo) || dataItem.video === ''"
+                  (click)="iniciaProcesoResumen(dataItem)">
+                  <span class="k-icon k-i-play k-icon-20"></span>
+                </button>
+              </div>
+            </ng-template>
+          </kendo-grid-command-column>
+
+          <kendo-grid-column title="Estado RES"
+            field="estadoResumen"
+            [width]="140"
+            headerClass="header-grid-single">
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Fecha Finalización RES"
+            field="fechaFinalizacionResumen"
+            [width]="200"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fechaFinalizacionResumen | date: 'dd-MM-yyyy HH:mm:ss' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Fidelidad RES"
+            field="porcentajeFidelidad"
+            [width]="120"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="d-flex justify-content-center">
+                {{ dataItem.porcentajeFidelidad != null ? (dataItem.porcentajeFidelidad + '%') : '' }}
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Estado TV"
+            field="estadoTutor"
+            [width]="140"
+            headerClass="header-grid-single">
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Fecha Finalización TV"
+            field="fechaFinalizacionTutor"
+            [width]="200"
+            headerClass="header-grid-single">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.fechaFinalizacionTutor | date: 'dd-MM-yyyy HH:mm:ss' }}
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </ng-container>
+      <ng-template #loadingGridSesiones>
+        <div style="min-height: 300px; display: flex; align-items: center; justify-content: center;">
+          <loading [loading]="loading"></loading>
         </div>
-        <div class="card-body">
-            <kendo-grid
-                [kendoGridBinding]="gridSesiones"
-                [loading]="gridSesiones.loading"
-                [scrollable]="'scrollable'"
-                [navigable]="true"
-                [selectable]="true"
-                [resizable]="true"
-                filterable="menu"
-                (click)="stopEditing()">
-
-                <kendo-grid-column title="Sesión"
-                    field="sesion"
-                    [width]="110"
-                    headerClass="header-grid-single">
-                </kendo-grid-column>
-
-                <kendo-grid-column title="Fecha de la sesión"
-                    field="fechaSesion"
-                    [width]="150"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        {{ dataItem.fechaSesion | date: 'dd-MM-yyyy' }}
-                    </ng-template>
-                </kendo-grid-column>
-
-                <kendo-grid-column title="Nombre de sesión"
-                    field="nombreSesion"
-                    [width]="170"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                        <div class="editable-cell-container"
-                            (click)="editRow(rowIndex, 'nombreSesion', $event)">
-                            <ng-container *ngIf="!isEditingCell(rowIndex, 'nombreSesion'); else editTemplate">
-                                {{ dataItem.nombreSesion || '' }}
-                            </ng-container>
-                            <ng-template #editTemplate>
-                                <input
-                                    [(ngModel)]="dataItem.nombreSesion"
-                                    (blur)="stopEditing()"
-                                    class="editable-input">
-                            </ng-template>
-                        </div>
-                    </ng-template>
-                </kendo-grid-column>
-
-                <kendo-grid-column title="Id de video"
-                    field="video"
-                    [width]="200"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                        <div class="editable-cell-container"
-                             (click)="editRow(rowIndex, 'video', $event)">
-                            <ng-container *ngIf="!isEditingCell(rowIndex, 'video'); else editTemplate">
-                                {{ dataItem.video || '' }}
-                            </ng-container>
-                            <ng-template #editTemplate>
-                                <input
-                                    [(ngModel)]="dataItem.video"
-                                    (blur)="onVideoBlur(dataItem)"
-                                    class="editable-input">
-                            </ng-template>
-                        </div>
-                    </ng-template>
-                </kendo-grid-column>
-
-                <kendo-grid-column title="Disponible desde"
-                    field="fechaInicio"
-                    [width]="150"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                        <div class="editable-cell-container"
-                             (click)="editRow(rowIndex, 'fechaInicio', $event)">
-                            <ng-container *ngIf="!isEditingCell(rowIndex, 'fechaInicio'); else editTemplate">
-                                {{ dataItem.fechaInicio | date: 'dd-MM-yyyy' }}
-                            </ng-container>
-                            <ng-template #editTemplate>
-                                <kendo-datepicker
-                                    [(ngModel)]="dataItem.fechaInicio"
-                                    (blur)="stopEditing()"
-                                    class="editable-input"
-                                    format="dd-MM-yyyy">
-                                </kendo-datepicker>
-                            </ng-template>
-                        </div>
-                    </ng-template>
-                </kendo-grid-column>
-
-                <kendo-grid-column title="Disponible hasta"
-                    field="fechaFin"
-                    [width]="150"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                        <div class="editable-cell-container"
-                             (click)="editRow(rowIndex, 'fechaFin', $event)">
-                            <ng-container *ngIf="!isEditingCell(rowIndex, 'fechaFin'); else editTemplate">
-                                {{ dataItem.fechaFin | date: 'dd-MM-yyyy' }}
-                            </ng-container>
-                            <ng-template #editTemplate>
-                                <kendo-datepicker
-                                    [(ngModel)]="dataItem.fechaFin"
-                                    (blur)="stopEditing()"
-                                    class="editable-input"
-                                    format="dd-MM-yyyy">
-                                </kendo-datepicker>
-                            </ng-template>
-                        </div>
-                    </ng-template>
-                </kendo-grid-column>
-                
-                <kendo-grid-column title="Video Habilitado"
-                    field="habilitado"
-                    [width]="150"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                        <div class="editable-cell-container" (click)="editRow(rowIndex, 'habilitado', $event)">
-                            <span *ngIf="!isEditingCell(rowIndex, 'habilitado')">
-                                {{ dataItem.habilitado === 'Habilitado' ? 'Si' : 'No' }}
-                            </span>
-                            <div *ngIf="isEditingCell(rowIndex, 'habilitado')" class="input-wrapper">
-                                <kendo-dropdownlist
-                                    [data]="['Habilitado', 'Deshabilitado']"
-                                    [value]="dataItem.habilitado"
-                                    (valueChange)="onHabilitadoChange($event, rowIndex)"
-                                    class="editable-input">
-                                </kendo-dropdownlist>
-                            </div>
-                        </div>
-                    </ng-template>
-                </kendo-grid-column>
-
-                <kendo-grid-command-column
-                    title="Generar Resúmenes"
-                    [width]="150"
-                    headerClass="header-grid-single">
-                    <ng-template
-                        kendoGridCellTemplate
-                        let-dataItem="dataItem"
-                        let-rowindex="rowindex">
-                        <div class="w-100 d-flex justify-content-center">
-                            <button
-                                kendoButton
-                                themeColor="warning"
-                                fillMode="solid"
-                                rounded="large"
-                                size="large"
-                                class="p-2 me-1 ms-1"
-                                container="body"
-                                placement="top"
-                                (click)="abrirConfiguracionResumen(modalConfiguracionResumen, dataItem)">
-                                <span class="k-icon k-i-arrow-right k-icon-20"></span>
-                            </button>
-                            <button
-                                kendoButton
-                                themeColor="primary"
-                                fillMode="solid"
-                                rounded="large"
-                                size="large"
-                                class="p-2 me-1 ms-1"
-                                container="body"
-                                placement="top"
-                                [disabled]="dataItem.estadoResumen === 'En proceso' || !dataItem.resumenClaseActivo"
-                                (click)="iniciaProcesoResumen(dataItem)">
-                                <span class="k-icon k-i-play k-icon-20"></span>
-                            </button>
-                        </div>
-                    </ng-template>
-                </kendo-grid-command-column>
-
-                <kendo-grid-column title="Estado"
-                    field="estadoResumen"
-                    [width]="150"
-                    headerClass="header-grid-single">
-                </kendo-grid-column>
-
-                <kendo-grid-column title="Fecha/Hora finalización proceso"
-                    field="fechaCreacionProcesamientoTipoGenerar"
-                    [width]="220"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        {{ dataItem.fechaCreacionProcesamientoTipoGenerar | date: 'dd-MM-yyyy HH:mm:ss' }}
-                    </ng-template>
-                </kendo-grid-column>
-
-                <kendo-grid-column title="Fidelidad"
-                    field="porcentajeFidelidad"
-                    [width]="120"
-                    headerClass="header-grid-single">
-                    <ng-template kendoGridCellTemplate let-dataItem>
-                        {{ dataItem.porcentajeFidelidad != null ? (dataItem.porcentajeFidelidad + '%') : '' }}
-                    </ng-template>
-                </kendo-grid-column>
-
-            </kendo-grid>
-        </div>
-        
-        <div class="p-3 text-right">
-            <button class="btn btn-danger" (click)="cerrarModalSesiones()">
-                Cerrar
-            </button>
-        </div>
+      </ng-template>
     </div>
+
+    <div class="p-3 text-end" style="gap: 10px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+      <span class="me-3"><strong>RES</strong> = Resumen de Clase</span>
+      <span><strong>TV</strong> = Tutor Virtual</span>
+      </div>
+      <div style="display: flex; gap: 10px;">
+      <button class="btn btn-outline-secondary" (click)="recargarConfiguracionGeneral(gridSesiones[0]?.idPEspecifico)">
+        Refrescar
+      </button>
+      <button class="btn btn-danger" (click)="cerrarModalSesiones()">
+        Cerrar
+      </button>
+      </div>
+    </div>
+  </div>
 </ng-template>
 
 <ng-template #modalConfiguracionResumen let-modal>
@@ -476,7 +526,7 @@
             (click)="cerrarModalConfiguracionResumen()">
         </button>
     </div>
-    
+
     <div class="modal-body px-4">
         <div class="card-header pb-0 bg-color-material">
             <div class="col text-aling-center">
@@ -616,7 +666,7 @@
 
             <kendo-grid-column title="Sesión"
                 field="sesion"
-                [width]="110"
+                [width]="90"
                 headerClass="header-grid-single">
             </kendo-grid-column>
 
@@ -674,9 +724,9 @@
                 [width]="150"
                 headerClass="header-grid-single">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                    <a *ngIf="dataItem.urlPdf && dataItem.urlPdf !== 'Pendiente'" 
-                       [href]="dataItem.urlPdf" 
-                       target="_blank" 
+                    <a *ngIf="dataItem.urlPdf && dataItem.urlPdf !== 'Pendiente'"
+                       [href]="dataItem.urlPdf"
+                       target="_blank"
                        rel="noopener noreferrer">
                         {{ dataItem.urlPdf }}
                     </a>
@@ -684,29 +734,29 @@
                 </ng-template>
             </kendo-grid-column>
 
-            <kendo-grid-column title="Url Mapa"
+            <!-- <kendo-grid-column title="Url Mapa"
                 field="urlMapa"
                 [width]="150"
                 headerClass="header-grid-single">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                    <a *ngIf="dataItem.urlMapa && dataItem.urlMapa !== 'Pendiente'" 
-                       [href]="dataItem.urlMapa" 
-                       target="_blank" 
+                    <a *ngIf="dataItem.urlMapa && dataItem.urlMapa !== 'Pendiente'"
+                       [href]="dataItem.urlMapa"
+                       target="_blank"
                        rel="noopener noreferrer">
                         {{ dataItem.urlMapa }}
                     </a>
                     <span *ngIf="!dataItem.urlMapa || dataItem.urlMapa === 'Pendiente'">Pendiente</span>
                 </ng-template>
-            </kendo-grid-column>
+            </kendo-grid-column> -->
 
             <kendo-grid-column title="Url Audio"
                 field="urlAudio"
                 [width]="150"
                 headerClass="header-grid-single">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                    <a *ngIf="dataItem.urlAudio && dataItem.urlAudio !== 'Pendiente'" 
-                       [href]="dataItem.urlAudio" 
-                       target="_blank" 
+                    <a *ngIf="dataItem.urlAudio && dataItem.urlAudio !== 'Pendiente'"
+                       [href]="dataItem.urlAudio"
+                       target="_blank"
                        rel="noopener noreferrer">
                         {{ dataItem.urlAudio }}
                     </a>
@@ -714,24 +764,24 @@
                 </ng-template>
             </kendo-grid-column>
 
-            <kendo-grid-column title="Url Video"
+            <!-- <kendo-grid-column title="Url Video"
                 field="urlVideo"
                 [width]="150"
                 headerClass="header-grid-single">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                    <a *ngIf="dataItem.urlVideo && dataItem.urlVideo !== 'Pendiente'" 
-                       [href]="dataItem.urlVideo" 
-                       target="_blank" 
+                    <a *ngIf="dataItem.urlVideo && dataItem.urlVideo !== 'Pendiente'"
+                       [href]="dataItem.urlVideo"
+                       target="_blank"
                        rel="noopener noreferrer">
                         {{ dataItem.urlVideo }}
                     </a>
                     <span *ngIf="!dataItem.urlVideo || dataItem.urlVideo === 'Pendiente'">Pendiente</span>
                 </ng-template>
-            </kendo-grid-column>
+            </kendo-grid-column> -->
 
             <kendo-grid-column title="Transcripción Original"
                 field="idProcesamientoSesionOnline"
-                [width]="200"
+                [width]="170"
                 headerClass="header-grid-single">
                 <ng-template kendoGridCellTemplate let-dataItem>
                     <a href="#" (click)="descargarTextoOriginal(dataItem.idProcesamientoSesionOnline); $event.preventDefault()">
@@ -742,7 +792,7 @@
 
             <kendo-grid-column title="Transcripción Resumen Audio"
                 field="idProcesamientoSesionOnline"
-                [width]="220"
+                [width]="210"
                 headerClass="header-grid-single">
                 <ng-template kendoGridCellTemplate let-dataItem>
                     <a href="#" (click)="descargarResumenAudio(dataItem.idProcesamientoSesionOnline); $event.preventDefault()">
@@ -753,7 +803,7 @@
 
         </kendo-grid>
     </div>
-  
+
     <div class="modal-body">
         <div class="p-3 text-right">
             <button class="btn btn-danger" (click)="cerrarModalDetalleResumen()">
