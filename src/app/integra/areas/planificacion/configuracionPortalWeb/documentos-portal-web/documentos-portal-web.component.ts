@@ -115,8 +115,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     private integraService: IntegraService,
     private alertaService: AlertaService,
     private modalService: NgbModal,
-    private formBuilder: FormBuilder
-  ) { }
+    private formBuilder: FormBuilder,
+  ) {}
 
   gridDocumentosPw = new KendoGrid();
   gridListaRevisionNivel = new KendoGrid();
@@ -216,10 +216,15 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
 
   private refrescarEtiquetasModalidad() {
-    (this.listaModalidadHorarios ?? []).forEach((m) => this.reindexEtiquetas(m));
+    (this.listaModalidadHorarios ?? []).forEach((m) =>
+      this.reindexEtiquetas(m),
+    );
   }
 
-  private etiquetaBaseModalidadFallback(idModalidad: number | null, tipoFallback?: any): string {
+  private etiquetaBaseModalidadFallback(
+    idModalidad: number | null,
+    tipoFallback?: any,
+  ): string {
     const base = this.etiquetaBaseModalidad(idModalidad);
     if (base && base !== 'Información') return base;
 
@@ -259,7 +264,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     const usadas = new Set(
       this.listaModalidadHorarios
         .map((x) => x.idModalidad)
-        .filter((x): x is number => x !== null && x !== undefined)
+        .filter((x): x is number => x !== null && x !== undefined),
     );
     return (this.listaModalidad ?? []).filter((x) => !usadas.has(x.id));
   }
@@ -273,7 +278,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     const usadas = new Set(
       this.listaModalidadHorarios
         .map((x, idx) => (idx === mi ? null : x.idModalidad))
-        .filter((x): x is number => x !== null && x !== undefined)
+        .filter((x): x is number => x !== null && x !== undefined),
     );
 
     return combo.filter((x) => x.id === actual || !usadas.has(x.id));
@@ -300,7 +305,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     const combo = this.listaModalidad ?? [];
 
     if (!combo.length) {
-      if (this.listaModalidadHorarios.some((x) => x.idModalidad === null)) return;
+      if (this.listaModalidadHorarios.some((x) => x.idModalidad === null))
+        return;
 
       const nueva: ModalidadVM = {
         idModalidad: null,
@@ -340,7 +346,7 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     if (nuevoValor !== null && nuevoValor !== undefined) {
       const duplicada = this.listaModalidadHorarios.some(
-        (x, idx) => idx !== mi && x.idModalidad === nuevoValor
+        (x, idx) => idx !== mi && x.idModalidad === nuevoValor,
       );
       if (duplicada) {
         mod.idModalidad = mod._prevIdModalidad ?? null;
@@ -378,7 +384,8 @@ export class DocumentosPortalWebComponent implements OnInit {
   obtenerTextoAgregarInformacion() {
     if (this.modalidadActivaIndex === null) return 'Agregar Información';
     const mod = this.listaModalidadHorarios[this.modalidadActivaIndex];
-    if (mod?.idModalidad === null || mod?.idModalidad === undefined) return 'Agregar Información';
+    if (mod?.idModalidad === null || mod?.idModalidad === undefined)
+      return 'Agregar Información';
     const base = this.etiquetaBaseModalidad(mod.idModalidad);
     return `Agregar ${base}`;
   }
@@ -430,7 +437,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (!mod) return;
 
     (mod.informacion ?? []).forEach((d) => {
-      if (d?.idDetalle && d.idDetalle > 0) this.detallesEliminados.push(d.idDetalle);
+      if (d?.idDetalle && d.idDetalle > 0)
+        this.detallesEliminados.push(d.idDetalle);
     });
 
     if (mod.id && mod.id > 0) this.modalidadesEliminadas.push(mod.id);
@@ -474,7 +482,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     const usados = new Set(
       this.listaDuracionDetalle
         .map((x) => x.idVersionPrograma)
-        .filter((x): x is number => x !== null && x !== undefined)
+        .filter((x): x is number => x !== null && x !== undefined),
     );
     return (this.comboVersionPrograma ?? []).filter((x) => !usados.has(x.id));
   }
@@ -485,11 +493,11 @@ export class DocumentosPortalWebComponent implements OnInit {
     const usados = new Set(
       this.listaDuracionDetalle
         .map((x, idx) => (idx === di ? null : x.idVersionPrograma))
-        .filter((x): x is number => x !== null && x !== undefined)
+        .filter((x): x is number => x !== null && x !== undefined),
     );
 
     return (this.comboVersionPrograma ?? []).filter(
-      (x) => x.id === actual || !usados.has(x.id)
+      (x) => x.id === actual || !usados.has(x.id),
     );
   }
 
@@ -517,12 +525,12 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     if (nuevoId !== null && nuevoId !== undefined) {
       const duplicado = this.listaDuracionDetalle.some(
-        (x, idx) => idx !== di && x.idVersionPrograma === nuevoId
+        (x, idx) => idx !== di && x.idVersionPrograma === nuevoId,
       );
       if (duplicado) {
         det.idVersionPrograma = det._prevIdVersionPrograma ?? null;
         this.alertaService.notificationWarning(
-          'Ya existe esa versión en Duración. Solo se permite 1 vez.'
+          'Ya existe esa versión en Duración. Solo se permite 1 vez.',
         );
         return;
       }
@@ -549,20 +557,30 @@ export class DocumentosPortalWebComponent implements OnInit {
   obtenerComboPaisesFechaInicio(pi: number): IComboBase1[];
   obtenerComboPaisesFechaInicio(pi?: number): any {
     if (pi === undefined) {
-      this.integraService.getJsonResponse(constApiGlobal.PaisObtenerPaisCombo).subscribe({
-        next: (resp: HttpResponse<PaisCombo[]>) => {
-          const raw: any[] = (resp.body as any) ?? [];
-          this.comboFechaInicioPaises = raw.map((x: any) => ({
-            id: x.id ?? x.Id ?? x.idPais ?? x.IdPais ?? x.codigoPais ?? x.CodigoPais ?? null,
-            codigoPais: x.codigoPais ?? x.CodigoPais ?? 0,
-            nombrePais: x.nombrePais ?? x.NombrePais ?? x.nombre ?? x.Nombre ?? '',
-          }));
-        },
-        error: (error) => {
-          let mensaje = this.alertaService.getMessageErrorService(error);
-          if (mensaje) this.alertaService.notificationWarning(mensaje);
-        },
-      });
+      this.integraService
+        .getJsonResponse(constApiGlobal.PaisObtenerPaisCombo)
+        .subscribe({
+          next: (resp: HttpResponse<PaisCombo[]>) => {
+            const raw: any[] = (resp.body as any) ?? [];
+            this.comboFechaInicioPaises = raw.map((x: any) => ({
+              id:
+                x.id ??
+                x.Id ??
+                x.idPais ??
+                x.IdPais ??
+                x.codigoPais ??
+                x.CodigoPais ??
+                null,
+              codigoPais: x.codigoPais ?? x.CodigoPais ?? 0,
+              nombrePais:
+                x.nombrePais ?? x.NombrePais ?? x.nombre ?? x.Nombre ?? '',
+            }));
+          },
+          error: (error) => {
+            let mensaje = this.alertaService.getMessageErrorService(error);
+            if (mensaje) this.alertaService.notificationWarning(mensaje);
+          },
+        });
       return;
     }
 
@@ -574,7 +592,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     const usados = new Set(
       this.listaFechaInicioPaises
         .map((x, idx) => (idx === pi ? null : x.idPais))
-        .filter((x): x is number => x !== null && x !== undefined)
+        .filter((x): x is number => x !== null && x !== undefined),
     );
 
     return combo.filter((x) => x.id === actual || !usados.has(x.id));
@@ -584,7 +602,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     const usados = new Set(
       this.listaFechaInicioPaises
         .map((x) => x.idPais)
-        .filter((x): x is number => x !== null && x !== undefined)
+        .filter((x): x is number => x !== null && x !== undefined),
     );
     return (this.comboFechaInicioPaises ?? []).filter((x) => !usados.has(x.id));
   }
@@ -639,7 +657,7 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     if (nuevoIdPais !== null && nuevoIdPais !== undefined) {
       const duplicado = this.listaFechaInicioPaises.some(
-        (x, idx) => idx !== pi && x.idPais === nuevoIdPais
+        (x, idx) => idx !== pi && x.idPais === nuevoIdPais,
       );
       if (duplicado) {
         pais.idPais = pais._prevIdPais ?? null;
@@ -659,7 +677,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     const usados = new Set(
       (pais.detalles ?? [])
         .map((d) => d.idModo)
-        .filter((x): x is number => x !== null && x !== undefined)
+        .filter((x): x is number => x !== null && x !== undefined),
     );
 
     return (this.listaModoFechaInicio ?? []).filter((m) => !usados.has(m.id));
@@ -669,7 +687,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (this.fechaInicioPaisActivoIndex === null) return false;
     const pi = this.fechaInicioPaisActivoIndex as number;
     const pais = this.listaFechaInicioPaises[pi];
-    if (!pais || pais.idPais === null || pais.idPais === undefined) return false;
+    if (!pais || pais.idPais === null || pais.idPais === undefined)
+      return false;
     return this.modosDisponiblesFechaInicio(pi).length > 0;
   }
 
@@ -703,12 +722,12 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     if (nuevoIdModo !== null && nuevoIdModo !== undefined) {
       const duplicado = pais.detalles.some(
-        (x, idx) => idx !== di && x.idModo === nuevoIdModo
+        (x, idx) => idx !== di && x.idModo === nuevoIdModo,
       );
       if (duplicado) {
         det.idModo = det._prevIdModo ?? null;
         this.alertaService.notificationWarning(
-          'Ese modo ya fue agregado en este país.'
+          'Ese modo ya fue agregado en este país.',
         );
         return;
       }
@@ -797,7 +816,7 @@ export class DocumentosPortalWebComponent implements OnInit {
   obtenerPlantillas(idPlantilla: number, documentos?: DocumentoSeccionPw[]) {
     this.integraService
       .getJsonResponse(
-        `${constApiPlanificacion.PlantillaMaestroPwObtenerPlantillaSeccionMaestraPorIdPlantilla}/${idPlantilla}`
+        `${constApiPlanificacion.PlantillaMaestroPwObtenerPlantillaSeccionMaestraPorIdPlantilla}/${idPlantilla}`,
       )
       .subscribe({
         next: (resp: HttpResponse<SeccionPlantillaPw[]>) => {
@@ -825,16 +844,19 @@ export class DocumentosPortalWebComponent implements OnInit {
                     f.field = `_${f.idSeccionTipoDetallePw}_${e.id}`;
                   });
                   e.grid = new KendoGrid();
-                  this.configurarGridConsultasForo(e.grid, e.listaSubSeccionesPw);
+                  this.configurarGridConsultasForo(
+                    e.grid,
+                    e.listaSubSeccionesPw,
+                  );
                   e.cabecera = seccionGrid.cabecera;
                   e.piePagina = seccionGrid.piePagina;
                   let numeroFilas = seccionGrid.listaSubSeccionesPw.map(
-                    (x) => x.numeroFila
+                    (x) => x.numeroFila,
                   );
                   numeroFilas = Array.from(new Set(numeroFilas));
                   numeroFilas.forEach((x) => {
                     let fila = seccionGrid.listaSubSeccionesPw.filter(
-                      (a) => a.numeroFila == x
+                      (a) => a.numeroFila == x,
                     );
                     let objGrid: { [key: string]: string } = {};
                     fila.forEach((i) => {
@@ -853,7 +875,10 @@ export class DocumentosPortalWebComponent implements OnInit {
                   e.listaSubSeccionesPw.forEach((f) => {
                     f.field = `_${f.idSeccionTipoDetallePw}_${e.id}`;
                   });
-                  this.configurarGridConsultasForo(e.grid, e.listaSubSeccionesPw);
+                  this.configurarGridConsultasForo(
+                    e.grid,
+                    e.listaSubSeccionesPw,
+                  );
                 }
               } else if (e.idSeccionTipoContenido == 2) {
                 if (seccionGrid == undefined || seccionGrid == null) {
@@ -876,7 +901,7 @@ export class DocumentosPortalWebComponent implements OnInit {
   obtenerDocumentosSeccionEditar(dataItem: IDocumentosPortaWeb) {
     this.integraService
       .getJsonResponse(
-        `${constApiPlanificacion.DocumentoSeccionPwObtenerDocumentoSeccionEditar}/${dataItem.id}`
+        `${constApiPlanificacion.DocumentoSeccionPwObtenerDocumentoSeccionEditar}/${dataItem.id}`,
       )
       .subscribe({
         next: (resp: HttpResponse<DocumentoSeccionPw[]>) => {
@@ -893,13 +918,13 @@ export class DocumentosPortalWebComponent implements OnInit {
 
   crearObjetoDesdeLista(
     lista: ColumnasReporte[],
-    data: SubSeccionTipoDetallePw[]
+    data: SubSeccionTipoDetallePw[],
   ): Record<string, string> {
     const objetoResultado: Record<string, any> = {};
 
     for (const elemento of lista) {
       objetoResultado[elemento.field] = data.find(
-        (e) => e.nombreSubSeccion == elemento.title
+        (e) => e.nombreSubSeccion == elemento.title,
       ).contenidoSubSeccion;
     }
     0;
@@ -907,7 +932,7 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
 
   crearObjetoDesdeListaForm(
-    lista: ListaSubSeccionesPw[]
+    lista: ListaSubSeccionesPw[],
   ): Record<string, string> {
     const objetoResultado: Record<string, any> = {};
     for (const elemento of lista) {
@@ -927,7 +952,7 @@ export class DocumentosPortalWebComponent implements OnInit {
           this.gridDocumentosPw.data = resp.body;
           if (resp.body.length)
             this.alertaService.notificationSuccessBotom(
-              'Documentos generados exitosamente.'
+              'Documentos generados exitosamente.',
             );
           else this.alertaService.notificationSuccessBotom('Sin datos.');
         },
@@ -946,7 +971,7 @@ export class DocumentosPortalWebComponent implements OnInit {
       this.integraService
         .postJsonResponse(
           constApiPlanificacion.DocumentoPwInsertarDocumento,
-          JSON.stringify(data)
+          JSON.stringify(data),
         )
         .subscribe({
           next: (response: HttpResponse<DocumentoPw>) => {
@@ -954,7 +979,7 @@ export class DocumentosPortalWebComponent implements OnInit {
             Swal.fire(
               '¡Creado!',
               'El documento ha sido creado correctamente.',
-              'success'
+              'success',
             );
             this.generarReporte();
             this.modalRef.close();
@@ -974,7 +999,7 @@ export class DocumentosPortalWebComponent implements OnInit {
       this.integraService
         .putJsonResponse(
           constApiPlanificacion.DocumentoPwActualizarDocumento,
-          JSON.stringify(data)
+          JSON.stringify(data),
         )
         .subscribe({
           next: (response: HttpResponse<DocumentoPw>) => {
@@ -982,7 +1007,7 @@ export class DocumentosPortalWebComponent implements OnInit {
             Swal.fire(
               '¡Actualizado!',
               'El documento ha sido modificado correctamente.',
-              'success'
+              'success',
             );
             this.generarReporte();
             this.modalRef.close();
@@ -1010,7 +1035,7 @@ export class DocumentosPortalWebComponent implements OnInit {
         if (result.isConfirmed) {
           this.integraService
             .deleteJsonResponse(
-              `${constApiPlanificacion.DocumentoPwEliminarDocumento}/${dataItem.id}`
+              `${constApiPlanificacion.DocumentoPwEliminarDocumento}/${dataItem.id}`,
             )
             .subscribe({
               next: (response: HttpResponse<Boolean[]>) => {
@@ -1018,7 +1043,7 @@ export class DocumentosPortalWebComponent implements OnInit {
                 Swal.fire(
                   '¡Eliminado!',
                   'Documento eliminado correctamente.',
-                  'success'
+                  'success',
                 );
                 this.generarReporte();
               },
@@ -1033,7 +1058,10 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
 
   cargar: boolean = false;
-  async abrirModalNuevoEditarDocumento(modal: any, dataItem?: IDocumentosPortaWeb) {
+  async abrirModalNuevoEditarDocumento(
+    modal: any,
+    dataItem?: IDocumentosPortaWeb,
+  ) {
     this.formDatosDocumento.reset();
     this.formVersionBeneficios.reset();
     this.plantillas = [];
@@ -1058,6 +1086,9 @@ export class DocumentosPortalWebComponent implements OnInit {
     this.fechaInicioPaisActivoIndex = null;
     this.fechaInicioPaisesEliminados = [];
     this.fechaInicioDetallesEliminados = [];
+    this.notasEliminadas = [];
+    this.notasDetallesEliminados = [];
+    this.notaActivaIndex = null;
 
     if (dataItem) {
       this.esNuevo = false;
@@ -1088,14 +1119,19 @@ export class DocumentosPortalWebComponent implements OnInit {
     return item?.nombre ?? 'Sin Plantilla';
   }
 
-  configurarGridConsultasForo(gridPlantilla: KendoGrid, columnas: ListaSubSeccionesPw[]) {
+  configurarGridConsultasForo(
+    gridPlantilla: KendoGrid,
+    columnas: ListaSubSeccionesPw[],
+  ) {
     gridPlantilla.habilitarEstadoNewRow = true;
     gridPlantilla.formGroup = this.formBuilder.group(
-      this.crearObjetoDesdeListaForm(columnas)
+      this.crearObjetoDesdeListaForm(columnas),
     );
-    gridPlantilla.addEvent$.subscribe((resp) => { });
+    gridPlantilla.addEvent$.subscribe((resp) => {});
     gridPlantilla.cellCloseEvent$.subscribe((resp) => {
-      resp.dataItem[resp.columnField] = resp.formGroup.get(resp.columnField).value;
+      resp.dataItem[resp.columnField] = resp.formGroup.get(
+        resp.columnField,
+      ).value;
     });
     gridPlantilla.removeEvent$.subscribe((resp) => {
       gridPlantilla.data.splice(resp.index, 1);
@@ -1163,7 +1199,8 @@ export class DocumentosPortalWebComponent implements OnInit {
         } else if (x.idSeccionTipoContenido == 1) {
           let valorListaSubSeccion;
           if (x.listaSubSeccionesPw[0] != undefined) {
-            valorListaSubSeccion = x.listaSubSeccionesPw[0].idSeccionTipoDetallePw;
+            valorListaSubSeccion =
+              x.listaSubSeccionesPw[0].idSeccionTipoDetallePw;
           } else {
             valorListaSubSeccion = 0;
           }
@@ -1296,24 +1333,24 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     const seccionModalidadHorario = hasModalidadHorario
       ? {
-        idDocumentoPw: objDocumento.id,
-        introduccion: this.introduccionModalidad,
-        modalidades: this.listaModalidadHorarios.map((m) => ({
-          id: m.id ?? 0,
-          idModalidad: m.idModalidad,
-          subTitulo: m.subtitulo,
-          descripcion: m.descripcion,
-          detalles: (m.informacion ?? []).map((d, i) => ({
-            id: d.idDetalle ?? 0,
-            orden: i + 1,
-            tipo: d.tipo,
-            idPais: d.tipo === 'HORA' ? d.valor : null,
-            beneficio: d.tipo === 'BENEFICIO' ? d.valorTexto : null,
+          idDocumentoPw: objDocumento.id,
+          introduccion: this.introduccionModalidad,
+          modalidades: this.listaModalidadHorarios.map((m) => ({
+            id: m.id ?? 0,
+            idModalidad: m.idModalidad,
+            subTitulo: m.subtitulo,
+            descripcion: m.descripcion,
+            detalles: (m.informacion ?? []).map((d, i) => ({
+              id: d.idDetalle ?? 0,
+              orden: i + 1,
+              tipo: d.tipo,
+              idPais: d.tipo === 'HORA' ? d.valor : null,
+              beneficio: d.tipo === 'BENEFICIO' ? d.valorTexto : null,
+            })),
           })),
-        })),
-        modalidadesEliminadas: this.modalidadesEliminadas,
-        detallesEliminados: this.detallesEliminados,
-      }
+          modalidadesEliminadas: this.modalidadesEliminadas,
+          detallesEliminados: this.detallesEliminados,
+        }
       : null;
 
     const hasDuracion =
@@ -1325,18 +1362,18 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     const seccionDuracion = hasDuracion
       ? {
-        idDocumentoPw: objDocumento.id,
-        titulo: this.tituloDuracion,
-        introduccion: this.introduccionDuracion,
-        pieDePagina: this.pieDePaginaDuracion,
-        detalles: this.listaDuracionDetalle.map((d) => ({
-          id: d.idDetalle ?? 0,
-          idVersionPrograma: d.idVersionPrograma,
-          meses: d.meses,
-          horas: d.horas,
-        })),
-        detallesEliminados: this.duracionDetallesEliminados,
-      }
+          idDocumentoPw: objDocumento.id,
+          titulo: this.tituloDuracion,
+          introduccion: this.introduccionDuracion,
+          pieDePagina: this.pieDePaginaDuracion,
+          detalles: this.listaDuracionDetalle.map((d) => ({
+            id: d.idDetalle ?? 0,
+            idVersionPrograma: d.idVersionPrograma,
+            meses: d.meses,
+            horas: d.horas,
+          })),
+          detallesEliminados: this.duracionDetallesEliminados,
+        }
       : null;
 
     const paisesFechaInicioLimpios = (this.listaFechaInicioPaises ?? [])
@@ -1373,23 +1410,23 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     const seccionFechaInicio = hasFechaInicio
       ? {
-        idDocumentoPw: objDocumento.id,
-        mostrarEnLaWeb: this.fechaInicioMostrarEnLaWeb,
-        titulo: this.fechaInicioTitulo,
-        subTitulo: this.fechaInicioSubTitulo,
-        paises: paisesFechaInicioLimpios.map((p) => ({
-          id: p.id ?? 0,
-          idPais: p.idPais,
-          detalles: (p.detalles ?? []).map((d) => ({
-            id: d.idDetalle ?? 0,
-            idModo: d.idModo,
-            fecha: d.fecha,
-            horario: d.horario,
+          idDocumentoPw: objDocumento.id,
+          mostrarEnLaWeb: this.fechaInicioMostrarEnLaWeb,
+          titulo: this.fechaInicioTitulo,
+          subTitulo: this.fechaInicioSubTitulo,
+          paises: paisesFechaInicioLimpios.map((p) => ({
+            id: p.id ?? 0,
+            idPais: p.idPais,
+            detalles: (p.detalles ?? []).map((d) => ({
+              id: d.idDetalle ?? 0,
+              idModo: d.idModo,
+              fecha: d.fecha,
+              horario: d.horario,
+            })),
           })),
-        })),
-        paisesEliminados: this.fechaInicioPaisesEliminados,
-        detallesEliminados: this.fechaInicioDetallesEliminados,
-      }
+          paisesEliminados: this.fechaInicioPaisesEliminados,
+          detallesEliminados: this.fechaInicioDetallesEliminados,
+        }
       : null;
 
     const notasLimpias = (this.listaNotas ?? [])
@@ -1397,7 +1434,8 @@ export class DocumentosPortalWebComponent implements OnInit {
         const detallesLimpios = (n.detalles ?? []).filter((d) => {
           if ((d.idDetalle ?? 0) > 0) return true;
           if (d.tipo === 'EXTRA') return (d.valorTexto ?? '').trim().length > 0;
-          if (d.tipo === 'HORA') return d.idPais !== null && d.idPais !== undefined;
+          if (d.tipo === 'HORA')
+            return d.idPais !== null && d.idPais !== undefined;
           return false;
         });
 
@@ -1424,23 +1462,23 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     const seccionNotas = hasNotas
       ? {
-        idDocumentoPw: objDocumento.id,
-        mostrarEnLaWeb: this.notasMostrarEnLaWeb,
-        notas: notasLimpias.map((n) => ({
-          id: n.id ?? 0,
-          idNotaTipo: n.idNotaTipo,
-          idPGeneral: n.idPGeneral,
-          descripcion: n.descripcion,
-          detalles: (n.detalles ?? []).map((d, i) => ({
-            id: d.idDetalle ?? 0,
-            orden: i + 1,
-            informacionExtra: d.tipo === 'EXTRA' ? d.valorTexto : null,
-            idPais: d.tipo === 'HORA' ? d.idPais : null,
+          idDocumentoPw: objDocumento.id,
+          mostrarEnLaWeb: this.notasMostrarEnLaWeb,
+          notas: notasLimpias.map((n) => ({
+            id: n.id ?? 0,
+            idNotaTipo: n.idNotaTipo,
+            idPGeneral: n.idPGeneral,
+            descripcion: n.descripcion,
+            detalles: (n.detalles ?? []).map((d, i) => ({
+              id: d.idDetalle ?? 0,
+              orden: i + 1,
+              informacionExtra: d.tipo === 'EXTRA' ? d.valorTexto : null,
+              idPais: d.tipo === 'HORA' ? d.idPais : null,
+            })),
           })),
-        })),
-        notasEliminadas: this.notasEliminadas,
-        detallesEliminados: this.notasDetallesEliminados,
-      }
+          notasEliminadas: this.notasEliminadas,
+          detallesEliminados: this.notasDetallesEliminados,
+        }
       : null;
 
     (envio as any).seccionModalidadHorario = seccionModalidadHorario;
@@ -1450,8 +1488,6 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     return envio;
   }
-
-
 
   asignarvalores(dataItem: IDocumentosPortaWeb) {
     this.obtenerIntroduccion(dataItem.id);
@@ -1482,7 +1518,7 @@ export class DocumentosPortalWebComponent implements OnInit {
     try {
       const resp: HttpResponse<versionesDPW[]> = await this.integraService
         .getJsonResponse(
-          `${constApiPlanificacion.DocumentoPwObtenerIntroduccionVersionDocumento}/${idDocumentoPw}`
+          `${constApiPlanificacion.DocumentoPwObtenerIntroduccionVersionDocumento}/${idDocumentoPw}`,
         )
         .toPromise();
 
@@ -1495,7 +1531,9 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
   ObtenerDocumentoPWModalidad(id: number) {
     this.integraService
-      .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWModalidad}/${id}`)
+      .getJsonResponse(
+        `${constApiPlanificacion.DocumentoPwObtenerDocumentoPWModalidad}/${id}`,
+      )
       .subscribe({
         next: (resp: HttpResponse<any>) => {
           const body: any = resp.body ?? null;
@@ -1511,42 +1549,62 @@ export class DocumentosPortalWebComponent implements OnInit {
           const intro = body.introduccion ?? body.Introduccion ?? '';
           this.introduccionModalidad = intro ?? '';
 
-          const modalidades = (body.modalidades ?? body.Modalidades ?? []) as any[];
+          const modalidades = (body.modalidades ??
+            body.Modalidades ??
+            []) as any[];
 
           this.listaModalidadHorarios = (modalidades ?? []).map((m: any) => {
-            const idModalidad = (m.idModalidad ?? m.IdModalidad ?? null) as number | null;
+            const idModalidad = (m.idModalidad ?? m.IdModalidad ?? null) as
+              | number
+              | null;
 
             const detallesRaw = (m.detalles ?? m.Detalles ?? []) as any[];
             const detallesOrdenados = (detallesRaw ?? [])
               .slice()
-              .sort((a, b) => (a.orden ?? a.Orden ?? 0) - (b.orden ?? b.Orden ?? 0));
+              .sort(
+                (a, b) => (a.orden ?? a.Orden ?? 0) - (b.orden ?? b.Orden ?? 0),
+              );
 
-            const tipoFallback = detallesOrdenados?.[0]?.tipo ?? detallesOrdenados?.[0]?.Tipo ?? null;
-            const baseEtiqueta = this.etiquetaBaseModalidadFallback(idModalidad, tipoFallback);
+            const tipoFallback =
+              detallesOrdenados?.[0]?.tipo ??
+              detallesOrdenados?.[0]?.Tipo ??
+              null;
+            const baseEtiqueta = this.etiquetaBaseModalidadFallback(
+              idModalidad,
+              tipoFallback,
+            );
 
-            const informacion: InfoVM[] = (detallesOrdenados ?? []).map((d: any, idx: number) => {
-              const idDetalle = (d.id ?? d.Id ?? 0) as number;
+            const informacion: InfoVM[] = (detallesOrdenados ?? []).map(
+              (d: any, idx: number) => {
+                const idDetalle = (d.id ?? d.Id ?? 0) as number;
 
-              const orden = (d.orden ?? d.Orden ?? (idx + 1)) as number;
+                const orden = (d.orden ?? d.Orden ?? idx + 1) as number;
 
-              const tipoRaw = ((d.tipo ?? d.Tipo ?? '') + '').trim().toUpperCase();
-              const tipo: InfoTipo = tipoRaw.includes('HORA') ? 'HORA' : 'BENEFICIO';
+                const tipoRaw = ((d.tipo ?? d.Tipo ?? '') + '')
+                  .trim()
+                  .toUpperCase();
+                const tipo: InfoTipo = tipoRaw.includes('HORA')
+                  ? 'HORA'
+                  : 'BENEFICIO';
 
-              const idPais = (d.idPais ?? d.IdPais ?? null) as number | null;
-              const beneficio = (d.beneficio ?? d.Beneficio ?? '') as string;
+                const idPais = (d.idPais ?? d.IdPais ?? null) as number | null;
+                const beneficio = (d.beneficio ?? d.Beneficio ?? '') as string;
 
-              return {
-                idDetalle: idDetalle > 0 ? idDetalle : undefined,
-                etiqueta: `${baseEtiqueta} ${orden}`,
-                tipo,
-                valor: tipo === 'HORA' ? idPais : null,
-                valorTexto: tipo === 'BENEFICIO' ? (beneficio ?? '') : '',
-              };
-            });
+                return {
+                  idDetalle: idDetalle > 0 ? idDetalle : undefined,
+                  etiqueta: `${baseEtiqueta} ${orden}`,
+                  tipo,
+                  valor: tipo === 'HORA' ? idPais : null,
+                  valorTexto: tipo === 'BENEFICIO' ? (beneficio ?? '') : '',
+                };
+              },
+            );
 
             const id = (m.id ?? m.Id ?? 0) as number;
             const subTitulo = (m.subTitulo ?? m.SubTitulo ?? '') as string;
-            const descripcion = (m.descripcion ?? m.Descripcion ?? '') as string;
+            const descripcion = (m.descripcion ??
+              m.Descripcion ??
+              '') as string;
 
             const vm: ModalidadVM = {
               id: id > 0 ? id : undefined,
@@ -1560,7 +1618,9 @@ export class DocumentosPortalWebComponent implements OnInit {
             return vm;
           });
 
-          this.modalidadActivaIndex = this.listaModalidadHorarios.length ? 0 : null;
+          this.modalidadActivaIndex = this.listaModalidadHorarios.length
+            ? 0
+            : null;
 
           this.refrescarEtiquetasModalidad();
         },
@@ -1599,9 +1659,17 @@ export class DocumentosPortalWebComponent implements OnInit {
         next: (resp: HttpResponse<PaisCombo[]>) => {
           const raw: any[] = (resp.body as any) ?? [];
           this.ListaPaises = raw.map((x: any) => ({
-            id: x.id ?? x.Id ?? x.idPais ?? x.IdPais ?? x.codigoPais ?? x.CodigoPais ?? null,
+            id:
+              x.id ??
+              x.Id ??
+              x.idPais ??
+              x.IdPais ??
+              x.codigoPais ??
+              x.CodigoPais ??
+              null,
             codigoPais: x.codigoPais ?? x.CodigoPais ?? 0,
-            nombrePais: x.nombrePais ?? x.NombrePais ?? x.nombre ?? x.Nombre ?? '',
+            nombrePais:
+              x.nombrePais ?? x.NombrePais ?? x.nombre ?? x.Nombre ?? '',
           }));
 
           this.comboHoras = (this.ListaPaises ?? []).map((x) => ({
@@ -1615,7 +1683,6 @@ export class DocumentosPortalWebComponent implements OnInit {
         },
       });
   }
-
 
   listaModoFechaInicio: IComboBase1[] = [];
   obtenerModos() {
@@ -1635,7 +1702,9 @@ export class DocumentosPortalWebComponent implements OnInit {
   programaGeneralesFiltrados: IComboBase1[] = [];
   obtenerProgramaGenerales() {
     this.integraService
-      .getJsonResponse(constApiPlanificacion.ProgramaGeneralObtenerPGeneralActivo)
+      .getJsonResponse(
+        constApiPlanificacion.ProgramaGeneralObtenerPGeneralActivo,
+      )
       .subscribe({
         next: (resp: HttpResponse<IComboBase1[]>) => {
           this.programaGenerales = resp.body ?? [];
@@ -1654,8 +1723,8 @@ export class DocumentosPortalWebComponent implements OnInit {
       return;
     }
 
-    this.programaGeneralesFiltrados = (this.programaGenerales ?? []).filter((x) =>
-      (x.nombre ?? '').toLowerCase().includes(v)
+    this.programaGeneralesFiltrados = (this.programaGenerales ?? []).filter(
+      (x) => (x.nombre ?? '').toLowerCase().includes(v),
     );
   }
   obtenerNotasTipo() {
@@ -1704,7 +1773,9 @@ export class DocumentosPortalWebComponent implements OnInit {
     ];
   }
   agregarNota() {
-    const tipoPorDefecto = this.ListaNotasTipo?.length ? (this.ListaNotasTipo[0].id as number) : null;
+    const tipoPorDefecto = this.ListaNotasTipo?.length
+      ? (this.ListaNotasTipo[0].id as number)
+      : null;
 
     const nueva: NotaVM = {
       idNotaTipo: tipoPorDefecto,
@@ -1729,7 +1800,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (!n) return;
 
     (n.detalles ?? []).forEach((d) => {
-      if (d?.idDetalle && d.idDetalle > 0) this.notasDetallesEliminados.push(d.idDetalle);
+      if (d?.idDetalle && d.idDetalle > 0)
+        this.notasDetallesEliminados.push(d.idDetalle);
     });
 
     n.idNotaTipo = nuevoId;
@@ -1748,7 +1820,8 @@ export class DocumentosPortalWebComponent implements OnInit {
   obtenerTextoAgregarInformacionNota(): string {
     if (this.notaActivaIndex === null) return 'Agregar Información';
     const n = this.listaNotas[this.notaActivaIndex];
-    if (n?.idNotaTipo === null || n?.idNotaTipo === undefined) return 'Agregar Información';
+    if (n?.idNotaTipo === null || n?.idNotaTipo === undefined)
+      return 'Agregar Información';
     const base = this.etiquetaBaseNota(n.idNotaTipo);
     return `Agregar ${base}`;
   }
@@ -1789,7 +1862,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (!n?.detalles) return;
 
     const det = n.detalles[di];
-    if (det?.idDetalle && det.idDetalle > 0) this.notasDetallesEliminados.push(det.idDetalle);
+    if (det?.idDetalle && det.idDetalle > 0)
+      this.notasDetallesEliminados.push(det.idDetalle);
 
     n.detalles.splice(di, 1);
 
@@ -1808,7 +1882,8 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (!n) return;
 
     (n.detalles ?? []).forEach((d) => {
-      if (d?.idDetalle && d.idDetalle > 0) this.notasDetallesEliminados.push(d.idDetalle);
+      if (d?.idDetalle && d.idDetalle > 0)
+        this.notasDetallesEliminados.push(d.idDetalle);
     });
 
     if (n.id && n.id > 0) this.notasEliminadas.push(n.id);
@@ -1825,10 +1900,11 @@ export class DocumentosPortalWebComponent implements OnInit {
     }
   }
 
-
   ObtenerDocumentoPWDuracion(id: number) {
     this.integraService
-      .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWDuracion}/${id}`)
+      .getJsonResponse(
+        `${constApiPlanificacion.DocumentoPwObtenerDocumentoPWDuracion}/${id}`,
+      )
       .subscribe({
         next: (resp: HttpResponse<any>) => {
           const body: any = resp.body ?? null;
@@ -1842,7 +1918,8 @@ export class DocumentosPortalWebComponent implements OnInit {
           if (!body) return;
 
           this.tituloDuracion = body.titulo ?? body.Titulo ?? '';
-          this.introduccionDuracion = body.introduccion ?? body.Introduccion ?? '';
+          this.introduccionDuracion =
+            body.introduccion ?? body.Introduccion ?? '';
           this.pieDePaginaDuracion = body.pieDePagina ?? body.PieDePagina ?? '';
 
           const detalles = (body.detalles ?? body.Detalles ?? []) as any[];
@@ -1852,12 +1929,14 @@ export class DocumentosPortalWebComponent implements OnInit {
             .sort(
               (a, b) =>
                 (a.idVersionPrograma ?? a.IdVersionPrograma ?? 0) -
-                (b.idVersionPrograma ?? b.IdVersionPrograma ?? 0)
+                (b.idVersionPrograma ?? b.IdVersionPrograma ?? 0),
             );
 
           this.listaDuracionDetalle = ordenados.map((d: any) => {
             const idDetalle = (d.id ?? d.Id ?? 0) as number;
-            const idVersionPrograma = (d.idVersionPrograma ?? d.IdVersionPrograma ?? null) as number | null;
+            const idVersionPrograma = (d.idVersionPrograma ??
+              d.IdVersionPrograma ??
+              null) as number | null;
 
             const vm: DuracionDetalleVM = {
               idDetalle: idDetalle > 0 ? idDetalle : undefined,
@@ -1878,7 +1957,9 @@ export class DocumentosPortalWebComponent implements OnInit {
   }
   ObtenerDocumentoPWFechaInicio(id: number) {
     this.integraService
-      .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWFechaInicio}/${id}`)
+      .getJsonResponse(
+        `${constApiPlanificacion.DocumentoPwObtenerDocumentoPWFechaInicio}/${id}`,
+      )
       .subscribe({
         next: (resp: HttpResponse<any>) => {
           const data = resp.body;
@@ -1901,13 +1982,15 @@ export class DocumentosPortalWebComponent implements OnInit {
 
           this.listaFechaInicioPaises = paises.map((p: any) => {
             const detalles = (p.detalles ?? []) as any[];
-            const detallesVM: FechaInicioDetalleVM[] = detalles.map((d: any) => ({
-              idDetalle: d.id ?? 0,
-              idModo: d.idModo ?? null,
-              fecha: d.fecha ? new Date(d.fecha) : null,
-              horario: d.horario ?? '',
-              _prevIdModo: d.idModo ?? null,
-            }));
+            const detallesVM: FechaInicioDetalleVM[] = detalles.map(
+              (d: any) => ({
+                idDetalle: d.id ?? 0,
+                idModo: d.idModo ?? null,
+                fecha: d.fecha ? new Date(d.fecha) : null,
+                horario: d.horario ?? '',
+                _prevIdModo: d.idModo ?? null,
+              }),
+            );
 
             return {
               id: p.id ?? 0,
@@ -1933,64 +2016,65 @@ export class DocumentosPortalWebComponent implements OnInit {
       });
   }
 
-ObtenerDocumentoPWNotas(id: number) {
-  this.integraService
-    .getJsonResponse(`${constApiPlanificacion.DocumentoPwObtenerDocumentoPWNotas}/${id}`)
-    .subscribe({
-      next: (resp: HttpResponse<any>) => {
-        const data = resp.body;
+  ObtenerDocumentoPWNotas(id: number) {
+    this.integraService
+      .getJsonResponse(
+        `${constApiPlanificacion.DocumentoPwObtenerDocumentoPWNotas}/${id}`,
+      )
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          const data = resp.body;
 
-        this.notasEliminadas = [];
-        this.notasDetallesEliminados = [];
-        this.notaActivaIndex = null;
+          this.notasEliminadas = [];
+          this.notasDetallesEliminados = [];
+          this.notaActivaIndex = null;
 
-        if (!data) {
-          this.notasMostrarEnLaWeb = false;
-          this.listaNotas = [];
-          return;
-        }
+          if (!data) {
+            this.notasMostrarEnLaWeb = false;
+            this.listaNotas = [];
+            return;
+          }
 
-        this.notasMostrarEnLaWeb = !!data.mostrarEnLaWeb;
+          this.notasMostrarEnLaWeb = !!data.mostrarEnLaWeb;
 
-        const notas = (data.notas ?? []) as any[];
+          const notas = (data.notas ?? []) as any[];
 
-        this.listaNotas = notas.map((n: any) => {
-          const detalles = (n.detalles ?? []) as any[];
+          this.listaNotas = notas.map((n: any) => {
+            const detalles = (n.detalles ?? []) as any[];
 
-          const detallesVM: NotaDetalleVM[] = detalles
-            .slice()
-            .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
-            .map((d: any, i: number) => {
-              const isHora = d.idPais !== null && d.idPais !== undefined;
-              const tipo: NotaInfoTipo = isHora ? 'HORA' : 'EXTRA';
-              const base = n.idNotaTipo === 1 ? 'Extra' : 'Hora';
+            const detallesVM: NotaDetalleVM[] = detalles
+              .slice()
+              .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
+              .map((d: any, i: number) => {
+                const isHora = d.idPais !== null && d.idPais !== undefined;
+                const tipo: NotaInfoTipo = isHora ? 'HORA' : 'EXTRA';
+                const base = n.idNotaTipo === 1 ? 'Extra' : 'Hora';
 
-              return {
-                idDetalle: d.id ?? 0,
-                etiqueta: `${base} ${i + 1}`,
-                tipo,
-                valorTexto: d.informacionExtra ?? '',
-                idPais: isHora ? d.idPais : null,
-              } as NotaDetalleVM;
-            });
+                return {
+                  idDetalle: d.id ?? 0,
+                  etiqueta: `${base} ${i + 1}`,
+                  tipo,
+                  valorTexto: d.informacionExtra ?? '',
+                  idPais: isHora ? d.idPais : null,
+                } as NotaDetalleVM;
+              });
 
-          return {
-            id: n.id ?? 0,
-            idNotaTipo: n.idNotaTipo ?? null,
-            idPGeneral: n.idPGeneral ?? null,
-            descripcion: n.descripcion ?? '',
-            detalles: detallesVM,
-            _prevIdNotaTipo: n.idNotaTipo ?? null,
-          } as NotaVM;
-        });
+            return {
+              id: n.id ?? 0,
+              idNotaTipo: n.idNotaTipo ?? null,
+              idPGeneral: n.idPGeneral ?? null,
+              descripcion: n.descripcion ?? '',
+              detalles: detallesVM,
+              _prevIdNotaTipo: n.idNotaTipo ?? null,
+            } as NotaVM;
+          });
 
-        if (this.listaNotas.length) this.notaActivaIndex = 0;
-      },
-      error: (error) => {
-        let mensaje = this.alertaService.getMessageErrorService(error);
-        this.alertaService.notificationWarning(mensaje);
-      },
-    });
-}
-
+          if (this.listaNotas.length) this.notaActivaIndex = 0;
+        },
+        error: (error) => {
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
 }
