@@ -86,3 +86,11 @@ export interface InsertPagoFur{
   idComprobantePagoPorFur: number
 }
 
+export interface ConversionMonedaDTO {
+  montoConvertido: number;
+  tipoCambioUtilizado: number;
+  fechaTipoCambio: Date | string;
+  monedaOrigenNombre: string;
+  monedaDestinoNombre: string;
+}
+

@@ -38,6 +38,7 @@ export class PgDatosGeneralesComponent implements OnInit {
     partner: [null],
     codigoRegistroPartner: [null],
     esChatActivo: [null],
+    esTutorVirtualActivo: [null],
     tieneProyectoAplicacionPractica: [null],
     fotoPrograma: [null],
     urlFoto: [null],
@@ -213,6 +214,9 @@ export class PgDatosGeneralesComponent implements OnInit {
     this.formConfiguracionBase
       .get('esChatActivo')
       .setValue(dataItem.chatActivo ?? false);
+    this.formConfiguracionBase
+      .get('esTutorVirtualActivo')
+      .setValue(dataItem.tutorVirtualActivo ?? false);
     this.formConfiguracionBase
       .get('tieneProyectoAplicacionPractica')
       .setValue(dataItem.tieneProyectoDeAplicacion ?? false);

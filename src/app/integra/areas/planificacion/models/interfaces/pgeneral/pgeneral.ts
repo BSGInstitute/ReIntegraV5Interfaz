@@ -27,6 +27,7 @@ export interface Pgeneral {
   nombreCorto?: string;
   idPagina: number;
   chatActivo: number;
+  tutorVirtualActivo: boolean;
   pwDescripcionGeneral: string;
   tieneProyectoDeAplicacion: boolean;
   idTipoPrograma: number;
@@ -75,7 +76,7 @@ export interface CombosModulo {
   tipoPrograma: IComboBase1[];
   proveedor: IComboBase1[];
   pGeneralPeriodoAsincronico: PGeneralPeriodoAsincronico[];
-  
+
 }
 // export interface VersionPrograma {
 //   id: number;
@@ -696,6 +697,7 @@ export interface FormConfiguracionBase {
   partner: number;
   codigoRegistroPartner: string;
   esChatActivo: boolean;
+  esTutorVirtualActivo: boolean;
   tieneProyectoAplicacionPractica: boolean;
   fotoPrograma: any;
   urlFoto: string;

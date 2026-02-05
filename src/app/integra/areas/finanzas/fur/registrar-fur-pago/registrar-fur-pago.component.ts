@@ -9,7 +9,7 @@ import { CuentaBancariaCombo } from '@integra/models/cuenta-bancaria';
 import { DetraccionCombo } from '@integra/models/detraccion';
 import { MonedaCombo } from '@integra/models/moneda';
 import { proveedorComboEgreso } from '@integra/models/proveedor';
-import { AsociarFurDataEnvio, FiltroBusqueda, PagosPorFur, RegistrarPagoFur } from '@integra/models/registrar-pago-fur';
+import { AsociarFurDataEnvio, ConversionMonedaDTO, FiltroBusqueda, PagosPorFur, RegistrarPagoFur } from '@integra/models/registrar-pago-fur';
 import { RetencionCombo } from '@integra/models/retencion';
 import { TipoImpuestoCombo } from '@integra/models/tipo-impuesto';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -46,6 +46,8 @@ export class RegistrarFurPagoComponent implements OnInit {
 
   //------Variables ------------------
   isCancelado=false;
+  convirtiendo:boolean=false;
+  deseaPagarMonedaComprobante:boolean=false;
   registroFurTemp:RegistrarPagoFur
   nombreModalComprobante:string=""
   nombreBTNComprobante:string=""
@@ -155,7 +157,8 @@ export class RegistrarFurPagoComponent implements OnInit {
     precioTotalMonedaDolares: [null],
     usuario: [null],
     idCancelado: [null],
-    idComprobantePagoPorFur: [null]
+    idComprobantePagoPorFur: [null],
+    precioMonedaLocal: [null]
   });
 
 
@@ -665,6 +668,8 @@ export class RegistrarFurPagoComponent implements OnInit {
     if(this.valorTotalFUR>=1)
     {
       this.formGroupRegistarPago.reset()
+      this.deseaPagarMonedaComprobante=false
+      this.convirtiendo=false
       this.listaComprobanteParaPago=[]
       this.obtenerComprobantesAsociadosParaPago(this.registroFurTemp.idFur)
       this.nombreModalCrearPago="Crear Pago FUR"
@@ -782,6 +787,105 @@ export class RegistrarFurPagoComponent implements OnInit {
       this.formGroupRegistarPago.get("idMoneda").setValue(data.idMoneda);
     }
     else this.formGroupRegistarPago.get("idMoneda").setValue(null);
+  }
+
+  convertirMoneda() {
+    const montoLocal = this.formGroupRegistarPago.get('precioMonedaLocal')?.value;
+    const idMonedaComprobante = this.formGroupRegistarPago.get('idMoneda')?.value;
+
+    // Validación 1: Monto válido
+    if (!montoLocal || montoLocal <= 0) {
+      return;
+    }
+
+    // Validación 2: Comprobante seleccionado
+    if (!idMonedaComprobante) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'Debe seleccionar un comprobante asociado',
+        timer: 3000,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    // Validación 3: FUR disponible
+    if (!this.registroFurTemp || !this.registroFurTemp.monedaFur) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo obtener la moneda del FUR',
+        timer: 3000,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    const idMonedaFur = this.registroFurTemp.monedaFur;
+
+    // Optimización: Si son la misma moneda, copiar directamente
+    if (idMonedaComprobante === idMonedaFur) {
+      this.formGroupRegistarPago.get('precioTotalMonedaOrigen').setValue(montoLocal);
+      return;
+    }
+
+    // Llamar al endpoint
+    this.convirtiendo = true;
+    let params: Parametro[] = [
+      { clave: 'idMonedaOrigen', valor: idMonedaComprobante },
+      { clave: 'idMonedaDestino', valor: idMonedaFur },
+      { clave: 'monto', valor: montoLocal }
+    ];
+
+    this.integraService
+      .obtenerPorPathParams(constApiFinanzas.RegistrarPagoFurConvertirMoneda, params)
+      .subscribe({
+        next: (response: HttpResponse<ConversionMonedaDTO>) => {
+          this.convirtiendo = false;
+          const resultado = response.body;
+
+          // Actualizar el campo de precio total
+          this.formGroupRegistarPago.get('precioTotalMonedaOrigen').setValue(
+            resultado.montoConvertido
+          );
+
+          // Toast informativo
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Conversión realizada',
+            html: `
+              <div style="text-align: left; font-size: 12px;">
+                <p><b>Monto original:</b> ${montoLocal} ${resultado.monedaOrigenNombre}</p>
+                <p><b>Monto convertido:</b> ${resultado.montoConvertido} ${resultado.monedaDestinoNombre}</p>
+                <p><b>Tipo de cambio:</b> ${resultado.tipoCambioUtilizado.toFixed(6)}</p>
+              </div>
+            `,
+            timer: 3000,
+            showConfirmButton: false
+          });
+        },
+        error: (error) => {
+          this.convirtiendo = false;
+
+          // Mostrar mensaje de error genérico
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo ejecutar el tipo de cambio',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        }
+      });
   }
 
 
