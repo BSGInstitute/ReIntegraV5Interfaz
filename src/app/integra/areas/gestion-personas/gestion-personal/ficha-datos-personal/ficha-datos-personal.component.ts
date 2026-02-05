@@ -357,7 +357,9 @@ export class FichaDatosPersonalComponent implements OnInit {
   acceso: boolean = false;
   DataPersonalFicha: DatosPersonal;
   isNew: boolean = false;
+  isNewAccesoTemporal: boolean = true;
   dataItemTemp: FichaDatosPersonal;
+  dataItemAccesoTemp: any = null;
   idPersonalTmp: number = 0;
   tmpcontrolviadireccion: boolean = false;
   valorEstado: boolean = true;
@@ -445,6 +447,47 @@ export class FichaDatosPersonalComponent implements OnInit {
       keyboard: false,
     });
   }
+
+  abrirModalNuevoAcceso(context: any): void {
+    this.isNewAccesoTemporal = true;
+    this.dataItemAccesoTemp = null;
+    this.formConfigurarAccesos.reset();
+    this.enProcesoSolicitud = false;
+    this.modalRef = this._modalService.open(context, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+  }
+
+  abrirModalEditarAccesoTemporal(context: any, dataItem: any): void {
+    this.isNewAccesoTemporal = false;
+    this.dataItemAccesoTemp = dataItem;
+    this.formConfigurarAccesos.reset();
+    this.enProcesoSolicitud = false;
+    this.formConfigurarAccesos.patchValue({
+      idPEspecificoPadre: dataItem.idPEspecificoPadre,
+      fechaInicio: dataItem.fechaInicio ? new Date(dataItem.fechaInicio) : null,
+      fechaFin: dataItem.fechaFin ? new Date(dataItem.fechaFin) : null,
+      evaluacionHabilitada: dataItem.evaluacionHabilitada ?? false,
+      FechaInicioAnterior: dataItem.fechaInicio ? new Date(dataItem.fechaInicio) : null,
+      FechaFinAnterior: dataItem.fechaFin ? new Date(dataItem.fechaFin) : null
+    });
+    if (dataItem.idPEspecificoPadre) {
+      this.onProgramSelectionChange(dataItem.idPEspecificoPadre);
+      setTimeout(() => {
+        if (dataItem.listaPEspecificoHijo && dataItem.listaPEspecificoHijo.length > 0) {
+          this.formConfigurarAccesos.get('idPEspecifico')?.setValue(dataItem.listaPEspecificoHijo);
+        }
+      }, 500);
+    }
+    this.modalRef = this._modalService.open(context, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+  }
+
   limpiarCamposForm(): void {
     if (this.modalRef != null) {
       this.modalRef.close();
@@ -2471,5 +2514,72 @@ export class FichaDatosPersonalComponent implements OnInit {
           this.gridFichaDatosPersonal.loading = false;
         },
       });
+  }
+  actualizarAccesosPortal()
+  {
+    let jsonEnvio = this.procesarActualizarAccesoTemporal();
+    this.gridFichaDatosPersonal.loading = true;
+    this.gridAccesoTemporal.loading = true;
+    this.enProcesoSolicitud = true;
+
+    this._integraService
+      .postJsonResponse(
+        constApiGestionPersonal.PersonalActualizarAccesoTemporal,
+        JSON.stringify(jsonEnvio)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<boolean>) => {
+          this.gridFichaDatosPersonal.loading = false;
+          this.gridAccesoTemporal.loading = false;
+          this.enProcesoSolicitud = false;
+          this.gridFichaDatosPersonal.data.unshift(resp.body);
+          this.gridFichaDatosPersonal.loadData();
+          this.obtenerTodo();
+          this.modalRef.close();
+          this._alertaService.mensajeExitoso();
+        },
+        error: (error) => {
+          this.gridFichaDatosPersonal.loading = false;
+          this.gridAccesoTemporal.loading = false;
+          this.enProcesoSolicitud = false;
+          this._alertaService.notificationWarning(error.message);
+          this._alertaService.swalFireOptions({
+            icon: 'error',
+            text: 'No se pudo guardar el Accesos',
+          });
+          this.gridFichaDatosPersonal.loading = false;
+          this.gridAccesoTemporal.loading = false;
+        },
+      });
+  }
+
+
+  procesarActualizarAccesoTemporal() {
+    let lista: number[] = [];
+
+    if (
+      Array.isArray(this.AccesoTemporal?.idPEspecificoHijo) &&
+      this.AccesoTemporal.idPEspecificoHijo.length > 0
+    ) {
+      lista = this.AccesoTemporal.idPEspecificoHijo;
+    } else if (this.AccesoTemporal?.idPEspecificoHijo) {
+      lista.push(this.AccesoTemporal.idPEspecificoHijo);
+    } else {
+      lista = [this.AccesoTemporal?.idPEspecificoPadre ?? 0];
+    }
+
+    let accesos: PersonalGrupoAccesoTemporalDTO = {
+      idPersonal: this.idPersonalTmp,
+      idPEspecificoPadre: this.AccesoTemporal?.idPEspecificoPadre ?? null,
+      idPEspecificoPadreAnterior: this.dataItemAccesoTemp?.idPEspecificoPadre ?? null,
+      evaluacionHabilitada: !!this.AccesoTemporal?.evaluacionHabilitada,
+      listaPEspecificoHijo: lista,
+      fechaInicio: this.AccesoTemporal?.fechaInicio ?? null,
+      fechaFin: this.AccesoTemporal?.fechaFin ?? null,
+      fechaInicioAnterior: this.dataItemAccesoTemp?.fechaInicio ?? null,
+      fechaFinAnterior: this.dataItemAccesoTemp?.fechaFin ?? null,
+    };
+
+    return accesos;
   }
 }

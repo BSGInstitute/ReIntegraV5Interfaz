@@ -1,0 +1,205 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card p-3">
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          Certificaciones
+        </h3>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-12">
+            <kendo-grid
+              #kgridPersonalCertificacion
+              [kendoGridBinding]="gridPersonalCertificacion.data"
+              [loading]="gridPersonalCertificacion.loading"
+              (remove)="gridPersonalCertificacion.removeHandler($event)"
+              (cancel)="gridPersonalCertificacion.cancelHandler($event)"
+              (save)="gridPersonalCertificacion.saveHandler($event)"
+              (add)="gridPersonalCertificacion.addHandler($event)"
+              (edit)="gridPersonalCertificacion.editHandler($event)"
+              [pageSize]="10"
+              [pageable]="true"
+              [resizable]="true"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <button
+                  kendoGridAddCommand
+                  fillMode="flat"
+                  themeColor="primary"
+                  icon="plus"
+                >
+                  Añadir
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="idCentroEstudio"
+                title="Institucion"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ ObtenerNombreFormacion(dataItem.idCentroEstudio) }}
+                </ng-template>
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <kendo-dropdownlist
+                    [data]="DataFormacion"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                    [formControl]="formGroup.get('idCentroEstudio')"
+                    [kendoDropDownFilter]="filterSettings"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="programa"
+                title="Programa"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <textarea
+                    [formControl]="formGroup.get('programa')"
+                    rows="3"
+                    class="form-control"
+                  ></textarea>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="fechaCertificacion"
+                title="Fecha Certificacion"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ dataItem.fechaCertificacion | date : "MM/yyyy" }}
+                </ng-template>
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <kendo-datepicker
+                    [formControl]="formGroup.get('fechaCertificacion')"
+                    format="MM/yyyy"
+                    [placeholder]="'Seleccione una fecha...'"
+                  >
+                  </kendo-datepicker>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idPersonalArchivo"
+                title="Documento"
+                [width]="200"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <button
+                    *ngIf="dataItem.idPersonalArchivo"
+                    class="btn btn-primary claseVisualizarArchivo"
+                    (click)="BuscarArchivoMostrar(dataItem.idPersonalArchivo)"
+                  >
+                    <i class="k-icon k-i-preview"></i>
+                  </button>
+                  <button
+                    *ngIf="dataItem.idPersonalArchivo"
+                    class="btn btn-secondary claseDescargarArchivo"
+                    (click)="BuscarArchivoDescargar(dataItem.idPersonalArchivo)"
+                  >
+                    <i class="k-icon k-i-download"></i>
+                  </button>
+                  <span *ngIf="!dataItem.idPersonalArchivo">Archivo png/pdf</span>
+                </ng-template>
+
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <kendo-upload
+                    [multiple]="false"
+                    [restrictions]="{
+                      allowedExtensions: ['.jpg', '.png', '.pdf'],
+                      maxFileSize: 10485760
+                    }"
+                    (select)="onFileSelect($event, formGroup)"
+                  >
+                  </kendo-upload>
+                  <p *ngIf="formGroup.get('idPersonalArchivo')?.value">
+                    Archivo cargado:
+                    {{ formGroup.get("idPersonalArchivo").value.name }}
+                  </p>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Comando"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <button
+                      kendoGridEditCommand
+                      rounded="large"
+                      themeColor="warning"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-trash k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridSaveCommand
+                      themeColor="primary"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      [disabled]="gridPersonalCertificacion.formGroup?.invalid"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Guardar"
+                    >
+                      <span class="k-icon k-i-save k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridCancelCommand
+                      themeColor="secondary"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Cancelar"
+                    >
+                      <span class="k-icon k-i-cancel k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

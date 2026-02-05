@@ -36,8 +36,19 @@ import { NivelEstudioComponent } from './maestro/nivel-estudio/nivel-estudio.com
 import { PostulanteNivelPotencialComponent } from './maestro/postulante-nivel-potencial/postulante-nivel-potencial.component';
 import { PersonalTipoFuncionComponent } from './maestro/personal-tipo-funcion/personal-tipo-funcion.component';
 import { PersonalRelacionExternaComponent } from './maestro/personal-relacion-externa/personal-relacion-externa.component';
-import { MensajeTiempoInactivoComponent } from './maestro/mensaje-tiempo-inactivo/mensaje-tiempo-inactivo.component';import { ImportarMarcacionPersonalComponent } from './gestion-personal/importar-marcacion-personal/importar-marcacion-personal.component';
+import { MensajeTiempoInactivoComponent } from './maestro/mensaje-tiempo-inactivo/mensaje-tiempo-inactivo.component';
+import { ImportarMarcacionPersonalComponent } from './gestion-personal/importar-marcacion-personal/importar-marcacion-personal.component';
 import { TipoSangreComponent } from './maestro/tipo-sangre/tipo-sangre.component';
+import { TabDatosPersonalComponent } from './gestion-personal/ficha-datos-personal/components/tab-datos-personal/tab-datos-personal.component';
+import { TabInformacionPuestoComponent } from './gestion-personal/ficha-datos-personal/components/tab-informacion-puesto/tab-informacion-puesto.component';
+import { TabFormacionComponent } from './gestion-personal/ficha-datos-personal/components/tab-formacion/tab-formacion.component';
+import { TabCertificacionesComponent } from './gestion-personal/ficha-datos-personal/components/tab-certificaciones/tab-certificaciones.component';
+import { TabExperienciaLaboralComponent } from './gestion-personal/ficha-datos-personal/components/tab-experiencia-laboral/tab-experiencia-laboral.component';
+import { TabDatosFamiliaresComponent } from './gestion-personal/ficha-datos-personal/components/tab-datos-familiares/tab-datos-familiares.component';
+import { TabInformacionMedicaComponent } from './gestion-personal/ficha-datos-personal/components/tab-informacion-medica/tab-informacion-medica.component';
+import { TabAccesosTemporalesComponent } from './gestion-personal/ficha-datos-personal/components/tab-accesos-temporales/tab-accesos-temporales.component';
+import { ModalAccesosPortalComponent } from './gestion-personal/ficha-datos-personal/components/modal-accesos-portal/modal-accesos-portal.component';
+import { ModalHorarioComponent } from './gestion-personal/ficha-datos-personal/components/modal-horario/modal-horario.component';
 import { ReporteEvaluacionPostulanteComponent } from './proceso-seleccion/reporte-evaluacion-postulante/reporte-evaluacion-postulante.component';
 import { CompensacionPuestoComponent } from './gestion-personal/compensacion-puesto/compensacion-puesto.component';
 import { EvaluacionesComponent } from './proceso-seleccion/evaluaciones/evaluaciones.component';
@@ -157,6 +168,16 @@ import { RegistroMarcadorFechaComponent } from './asistencia-personal/registro-m
     ReporteCursoAsesorCapacitacionComponent,
     ReportePostulanteComponent,
     RegistroMarcadorFechaComponent,
+    TabDatosPersonalComponent,
+    TabInformacionPuestoComponent,
+    TabFormacionComponent,
+    TabCertificacionesComponent,
+    TabExperienciaLaboralComponent,
+    TabDatosFamiliaresComponent,
+    TabInformacionMedicaComponent,
+    TabAccesosTemporalesComponent,
+    ModalAccesosPortalComponent,
+    ModalHorarioComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

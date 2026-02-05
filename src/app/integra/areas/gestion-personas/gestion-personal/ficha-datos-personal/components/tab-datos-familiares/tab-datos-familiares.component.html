@@ -1,0 +1,271 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card p-3">
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          Datos Familiares
+        </h3>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-12">
+            <kendo-grid
+              #kgridPersonalFamiliar
+              [kendoGridBinding]="gridPersonalFamiliar.data"
+              [loading]="gridPersonalFamiliar.loading"
+              (remove)="gridPersonalFamiliar.removeHandler($event)"
+              (cancel)="gridPersonalFamiliar.cancelHandler($event)"
+              (save)="gridPersonalFamiliar.saveHandler($event)"
+              (add)="gridPersonalFamiliar.addHandler($event)"
+              (edit)="gridPersonalFamiliar.editHandler($event)"
+              [pageSize]="10"
+              [pageable]="true"
+              [resizable]="true"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <button
+                  kendoGridAddCommand
+                  fillMode="flat"
+                  themeColor="primary"
+                  icon="plus"
+                >
+                  Añadir
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="idParentescoPersonal"
+                title="Parentesco"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <ng-container *ngIf="dataItem.idParentescoPersonal != null; else elseTemplateVersion">
+                    <span>{{ ObtenerNombreParentesco(dataItem.idParentescoPersonal) }}</span>
+                  </ng-container>
+                  <ng-template #elseTemplateVersion>
+                    <div class="text-center">Seleccione Parentesco</div>
+                  </ng-template>
+                </ng-template>
+
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <kendo-dropdownlist
+                    [data]="DataParentesco"
+                    textField="nombre"
+                    [virtual]="virtual"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ id: null, nombre: '<Seleccione Parentesco>' }"
+                    [formControl]="formGroup.get('idParentescoPersonal')"
+                    [kendoDropDownFilter]="filterSettings"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="nombres"
+                title="Nombres"
+                [width]="100"
+                headerClass="justify-content-center"
+                [editable]="true"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="apellidos"
+                title="Apellidos"
+                [width]="100"
+                headerClass="justify-content-center"
+                [editable]="true"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idSexo"
+                title="Sexo"
+                [width]="130"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ ObtenerNombreSexo(dataItem.idSexo) }}
+                </ng-template>
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <kendo-dropdownlist
+                    [data]="DataSexo"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                    [formControl]="formGroup.get('idSexo')"
+                    [kendoDropDownFilter]="filterSettings"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="fechaNacimiento"
+                title="FechaNacimiento"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ dataItem.fechaNacimiento | date : "dd/MM/yyyy" }}
+                </ng-template>
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <kendo-datepicker
+                    [formControl]="formGroup.get('fechaNacimiento')"
+                    format="dd/MM/yyyy"
+                    [placeholder]="'Seleccione una fecha...'"
+                  >
+                  </kendo-datepicker>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idTipoDocumentoPersonal"
+                title="Tipo Documento"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ ObtenerNombreTipoDocumento(dataItem.idTipoDocumentoPersonal) }}
+                </ng-template>
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <kendo-dropdownlist
+                    [data]="DataTipoDocumento"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                    [formControl]="formGroup.get('idTipoDocumentoPersonal')"
+                    [kendoDropDownFilter]="filterSettings"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="numeroDocumento"
+                title="Numero Documento"
+                [width]="120"
+                headerClass="justify-content-center"
+                [editable]="true"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="numeroReferencia"
+                title="Numero Referencia"
+                [width]="150"
+                headerClass="justify-content-center"
+                [editable]="true"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="derechoHabiente"
+                title="Es Derecho Habiente"
+                [width]="120"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ dataItem.derechoHabiente ? "Si" : "No" }}
+                </ng-template>
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <input
+                    type="checkbox"
+                    [formControl]="formGroup.get('derechoHabiente')"
+                  />
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="esContactoInmediato"
+                title="Es Contacto Inmediato"
+                [width]="120"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ dataItem.esContactoInmediato ? "Si" : "No" }}
+                </ng-template>
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <input
+                    type="checkbox"
+                    [formControl]="formGroup.get('esContactoInmediato')"
+                  />
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Comando"
+                [width]="100"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <button
+                      kendoGridEditCommand
+                      rounded="large"
+                      themeColor="warning"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-trash k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridSaveCommand
+                      themeColor="primary"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      [disabled]="gridPersonalFamiliar.formGroup?.invalid"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Guardar"
+                    >
+                      <span class="k-icon k-i-save k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridCancelCommand
+                      themeColor="secondary"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Cancelar"
+                    >
+                      <span class="k-icon k-i-cancel k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,289 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card p-3">
+      <div class="modal-header bg-primary-header-modal">
+        <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+          Experiencia Laboral
+        </h3>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-12">
+            <kendo-grid
+              #kgridPersonalExperiencia
+              [kendoGridBinding]="gridPersonalExperiencia.data"
+              [loading]="gridPersonalExperiencia.loading"
+              (remove)="gridPersonalExperiencia.removeHandler($event)"
+              (cancel)="gridPersonalExperiencia.cancelHandler($event)"
+              (save)="gridPersonalExperiencia.saveHandler($event)"
+              (add)="gridPersonalExperiencia.addHandler($event)"
+              (edit)="gridPersonalExperiencia.editHandler($event)"
+              [pageSize]="10"
+              [pageable]="true"
+              [resizable]="true"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <button
+                  kendoGridAddCommand
+                  fillMode="flat"
+                  themeColor="primary"
+                  icon="plus"
+                >
+                  Añadir
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="idEmpresa"
+                title="Empresa"
+                [width]="250"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <ng-container *ngIf="dataItem.idEmpresa != null; else elseTemplateVersion">
+                    <span>{{ ObtenerNombreEmpresa(dataItem.idEmpresa) }}</span>
+                  </ng-container>
+                  <ng-template #elseTemplateVersion>
+                    <div class="text-center">Seleccione Empresa</div>
+                  </ng-template>
+                </ng-template>
+
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <kendo-dropdownlist
+                    [data]="DataEmpresa"
+                    textField="nombre"
+                    [virtual]="virtual"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                    [formControl]="formGroup.get('idEmpresa')"
+                    [kendoDropDownFilter]="filterSettings"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="idAreaTrabajo"
+                title="Area"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ ObtenerNombreAreadeEmpresa(dataItem.idAreaTrabajo) }}
+                </ng-template>
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <kendo-dropdownlist
+                    [data]="DataArea"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                    [formControl]="formGroup.get('idAreaTrabajo')"
+                    [kendoDropDownFilter]="filterSettings"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idCargo"
+                title="Cargo"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ ObtenerNombreCargo(dataItem.idCargo) }}
+                </ng-template>
+                <ng-template
+                  kendoGridEditTemplate
+                  let-formGroup="formGroup"
+                  let-dataItem="dataItem"
+                >
+                  <kendo-dropdownlist
+                    [data]="DataCargo"
+                    textField="nombre"
+                    valueField="id"
+                    [valuePrimitive]="true"
+                    [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+                    [formControl]="formGroup.get('idCargo')"
+                    [kendoDropDownFilter]="filterSettings"
+                  >
+                  </kendo-dropdownlist>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="fechaIngreso"
+                title="Fecha Ingreso"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ dataItem.fechaIngreso | date : "dd/MM/yyyy" }}
+                </ng-template>
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <kendo-datepicker
+                    [formControl]="formGroup.get('fechaIngreso')"
+                    format="dd/MM/yyyy"
+                    [placeholder]="'Seleccione una fecha...'"
+                  >
+                  </kendo-datepicker>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="fechaRetiro"
+                title="Fecha Retiro"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  {{ dataItem.fechaRetiro | date : "dd/MM/yyyy" }}
+                </ng-template>
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <kendo-datepicker
+                    [formControl]="formGroup.get('fechaRetiro')"
+                    format="dd/MM/yyyy"
+                    [placeholder]="'Seleccione una fecha...'"
+                  >
+                  </kendo-datepicker>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="motivoRetiro"
+                title="Motivo Retiro"
+                [width]="150"
+                headerClass="justify-content-center"
+                [editable]="true"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="nombreJefeInmediato"
+                title="NombreJefeInmediato"
+                [width]="150"
+                headerClass="justify-content-center"
+                [editable]="true"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="telefonoJefeInmediato"
+                title="Telefono Jefe Inmediato"
+                [width]="150"
+                headerClass="justify-content-center"
+                [editable]="true"
+              >
+              </kendo-grid-column>
+              <kendo-grid-column
+                field="idPersonalArchivo"
+                title="Documento"
+                [width]="200"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <button
+                    *ngIf="dataItem.idPersonalArchivo"
+                    class="btn btn-primary claseVisualizarArchivo"
+                    (click)="BuscarArchivoMostrar(dataItem.idPersonalArchivo)"
+                  >
+                    <i class="k-icon k-i-preview"></i>
+                  </button>
+                  <button
+                    *ngIf="dataItem.idPersonalArchivo"
+                    class="btn btn-secondary claseDescargarArchivo"
+                    (click)="BuscarArchivoDescargar(dataItem.idPersonalArchivo)"
+                  >
+                    <i class="k-icon k-i-download"></i>
+                  </button>
+                  <span *ngIf="!dataItem.idPersonalArchivo">Archivo png/pdf</span>
+                </ng-template>
+
+                <ng-template kendoGridEditTemplate let-formGroup="formGroup">
+                  <kendo-upload
+                    [multiple]="false"
+                    [restrictions]="{
+                      allowedExtensions: ['.jpg', '.png', '.pdf'],
+                      maxFileSize: 10485760
+                    }"
+                    (select)="onFileSelect($event, formGroup)"
+                  >
+                  </kendo-upload>
+                  <p *ngIf="formGroup.get('idPersonalArchivo')?.value">
+                    Archivo cargado:
+                    {{ formGroup.get("idPersonalArchivo").value.name }}
+                  </p>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column
+                title="Comando"
+                [width]="150"
+                headerClass="justify-content-center"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <div class="text-center">
+                    <button
+                      kendoGridEditCommand
+                      rounded="large"
+                      themeColor="warning"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                    >
+                      <span class="k-icon k-i-edit k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridRemoveCommand
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                    >
+                      <span class="k-icon k-i-trash k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridSaveCommand
+                      themeColor="primary"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      [disabled]="gridPersonalExperiencia.formGroup?.invalid"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Guardar"
+                    >
+                      <span class="k-icon k-i-save k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoGridCancelCommand
+                      themeColor="secondary"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Cancelar"
+                    >
+                      <span class="k-icon k-i-cancel k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
