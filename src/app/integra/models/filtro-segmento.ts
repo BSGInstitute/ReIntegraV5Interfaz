@@ -1,40 +1,40 @@
 export interface Subestado{
  Id : number,
- Nombre : string, 
+ Nombre : string,
  IdEstadoMatricula:number
 }
 
 export interface EstadoPago{
     Id : number,
- Nombre : string, 
+ Nombre : string,
 }
 
 
 export interface EnvioFiltroSegmen{
         Id : number,
         IdFiltroSegmentoTipoContacto : number,
-        Nombre : string, 
-        Descripcion : string, 
+        Nombre : string,
+        Descripcion : string,
         IdOperadorComparacionNroSolicitudInformacion : number,
         NroSolicitudInformacion : number,
         IdOperadorComparacionNroOportunidades : number,
         NroOportunidades : number,
 
-         FechaInicioCreacionUltimaOportunidad : string, 
-         FechaFinCreacionUltimaOportunidad : string, 
-         FechaInicioModificacionUltimaActividadDetalle : string, 
-         FechaFinModificacionUltimaActividadDetalle : string, 
+         FechaInicioCreacionUltimaOportunidad : string,
+         FechaFinCreacionUltimaOportunidad : string,
+         FechaInicioModificacionUltimaActividadDetalle : string,
+         FechaFinModificacionUltimaActividadDetalle : string,
 
         EsRn2 :boolean,
-         FechaInicioProgramacionUltimaActividadDetalleRn2 : string, 
-         FechaFinProgramacionUltimaActividadDetalleRn2 : string, 
+         FechaInicioProgramacionUltimaActividadDetalleRn2 : string,
+         FechaFinProgramacionUltimaActividadDetalleRn2 : string,
 
         //Fecha formulario
-         FechaInicioFormulario : string, 
-         FechaFinFormulario : string, 
+         FechaInicioFormulario : string,
+         FechaFinFormulario : string,
         //Fecha chat
-         FechaInicioChatIntegra : string, 
-         FechaFinChatIntegra : string, 
+         FechaInicioChatIntegra : string,
+         FechaFinChatIntegra : string,
         IdOperadorComparacionTiempoMaximoRespuestaChatOnline : number,
         TiempoMaximoRespuestaChatOnline : number,
         IdOperadorComparacionNroPalabrasClienteChatOnline : number,
@@ -44,8 +44,8 @@ export interface EnvioFiltroSegmen{
         IdOperadorComparacionNroPalabrasClienteChatOffline : number,
         NroPalabrasClienteChatOffline : number,
         //correo
-         FechaInicioCorreo : string, 
-         FechaFinCorreo : string, 
+         FechaInicioCorreo : string,
+         FechaFinCorreo : string,
         IdOperadorComparacionNroCorreosAbiertos : number,
         NroCorreosAbiertos : number,
         IdOperadorComparacionNroCorreosNoAbiertos : number,
@@ -87,8 +87,8 @@ export interface EnvioFiltroSegmen{
         MontoMinimoOtorgadoEnUnaTc : number,
         IdOperadorComparacionMontoDisponibleTotalEnTcs : number,
         MontoDisponibleTotalEnTcs : number,
-         FechaInicioLlamada : string, 
-         FechaFinLlamada : string, 
+         FechaInicioLlamada : string,
+         FechaFinLlamada : string,
         IdOperadorComparacionDuracionPromedioLlamadaPorOportunidad : number,
         DuracionPromedioLlamadaPorOportunidad : number,
         IdOperadorComparacionDuracionTotalLlamadaPorOportunidad : number,
@@ -101,8 +101,8 @@ export interface EnvioFiltroSegmen{
         TasaEjecucionLlamada : number,
 
         //Tab interaccion sitio web
-        FechaInicioInteraccionSitioWeb : string, 
-        FechaFinInteraccionSitioWeb : string, 
+        FechaInicioInteraccionSitioWeb : string,
+        FechaFinInteraccionSitioWeb : string,
         IdOperadorComparacionTiempoVisualizacionTotalSitioWeb : number,
         TiempoVisualizacionTotalSitioWeb : number,
         IdOperadorComparacionNroClickEnlaceTodoSitioWeb : number,
@@ -167,9 +167,15 @@ export interface EnvioFiltroSegmen{
        ConsiderarInteraccionWhatsApp :boolean,
        ConsiderarInteraccionChatMessenger :boolean,
        ConsiderarEnvioAutomatico :boolean,
+       ConsiderarUltimaOportunidad :boolean,
+       ConsiderarMayorProbabilidadInscripcion :boolean,
+       ConsiderarMayorProbabilidadInscripcionVentaCruzada :boolean,
+       ConsiderarProbabilidad :boolean,
+       ConsiderarProbabilidadVentaCruzada :boolean,
+       ConsiderarEmbudo :boolean,
        ExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal :boolean,
-         FechaInicioExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal : string, 
-         FechaFinExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal : string, 
+         FechaInicioExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal : string,
+         FechaFinExcluirPorCorreoEnviadoMismoProgramaGeneralPrincipal : string,
 
         IdTiempoFrecuenciaMatriculaAlumno : number,
         CantidadTiempoMatriculaAlumno : number,
@@ -181,11 +187,12 @@ export interface EnvioFiltroSegmen{
         IdTiempoFrecuenciaCumpleaniosContactoDentroDe : number,
         CantidadTiempoCumpleaniosContactoDentroDe : number,
 
-         FechaInicioMatriculaAlumno : string, 
-         FechaFinMatriculaAlumno : string, 
+         FechaInicioMatriculaAlumno : string,
+         FechaFinMatriculaAlumno : string,
         ConsiderarAlumnosAsignacionAutomaticaOperaciones :boolean,
         ExcluirMatriculados :boolean,
-   
+        ConsiderarExcluirCampania :boolean,
+
        AplicaSobreCreacionOportunidad :boolean,
         IdOperadorMedidaTiempoCreacionOportunidad : number,
         NroMedidaTiempoCreacionOportunidad : number,
@@ -194,8 +201,9 @@ export interface EnvioFiltroSegmen{
         NroMedidaTiempoUltimaActividadEjecutada : number,
         EnvioAutomaticoEstadoActividadDetalle :number,
        ConsiderarYaEnviados :boolean,
+        FechaInicioExclusionCampania : string,
+        FechaFinExclusionCampania : string,
 
-       
         ListaArea : Array <any>,
         ListaSubArea : Array <any>,
         ListaProgramaGeneral : Array <any>,
@@ -257,6 +265,21 @@ export interface EnvioFiltroSegmen{
         IdConjuntoListaDetalle : number,
         NroListasRepeticionContacto : number,
         NroEjecucion : number,
-        
+
+        ListaUOArea : Array <any>,
+        ListaUOSubArea : Array <any>,
+        ListaUOPGeneral : Array <any>,
+
+        ListaMPIArea : Array <any>,
+        ListaMPISubArea : Array <any>,
+        ListaMPIPGeneral : Array <any>,
+
+        ListaProbabilidadValor : Array <any>,
+        ListaProbabilidadArea : Array <any>,
+        ListaProbabilidadSubArea : Array <any>,
+        ListaProbabilidadPGeneral : Array <any>,
+
+        ListaNivelEmbudoEsquema1 : Array <any>,
+        ListaNivelEmbudoEsquema2 : Array <any>,
 
 }
