@@ -13,6 +13,12 @@ export interface Partners {
   encabezadoCorreoPartner?: string;
   beneficios?: Beneficios[];
   contactos?: Contacto[];
+  // Campos de certificación BSG
+  paginaLink?: string;
+  certificadoLogo?: string;
+  certificadoBSG?: string;
+  urlCertificadoLogo?: string;
+  urlCertificadoBSG?: string;
 }
 
 export interface Beneficios {
