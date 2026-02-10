@@ -219,7 +219,7 @@ export interface PgeneralCodigoPartner {
   codigo: string;
   modalidadesCurso: number[];
   versionesPrograma: number[];
-  pdu:number;
+  pdu: number;
 }
 export interface DescripcionGeneral {
   id?: number;
@@ -323,6 +323,8 @@ export interface PgeneralVersionPrograma {
   duracion: number;
   idModalidadCurso?: number;
   creditoDisponibleTutorVirtual: number;
+  cantidadWebinarAsignado: number;
+  cantidadMesAccesoAdicionalWebinar: number;
 }
 
 export interface PgeneralProyectoAplicacion {
@@ -459,47 +461,44 @@ export interface AsociarTagPrograma {
 }
 //CRITERIOS DE EVALUACION
 
-export interface EsquemaEvaluacionDetalleCompuesto
-{
-    id: number;
-    idEsquemaEvaluacion: number;
-    idCriterioEvaluacion: number;
-    nombreCriterioEvaluacion: string;
-    ponderacion: number;
+export interface EsquemaEvaluacionDetalleCompuesto {
+  id: number;
+  idEsquemaEvaluacion: number;
+  idCriterioEvaluacion: number;
+  nombreCriterioEvaluacion: string;
+  ponderacion: number;
 }
-export interface EsquemaEvaluacionPgeneralDetalleCompuesto
-{
-   id?: number;
-   idCriterioEvaluacion: number;
-   nombre: string;
-   urlArchivoInstrucciones: string;
-   idProveedor?: number;
-   nombreCriterioEvaluacion?: string; //!No se envia al registrar
+export interface EsquemaEvaluacionPgeneralDetalleCompuesto {
+  id?: number;
+  idCriterioEvaluacion: number;
+  nombre: string;
+  urlArchivoInstrucciones: string;
+  idProveedor?: number;
+  nombreCriterioEvaluacion?: string; //!No se envia al registrar
 }
-export interface DetalleEsquemaAsignado
-{
-    idCriterioEvaluacion: number;
-    detalle: EsquemaEvaluacionPgeneralDetalleCompuesto[]
-    nombreCriterioEvaluacion?: string
+export interface DetalleEsquemaAsignado {
+  idCriterioEvaluacion: number;
+  detalle: EsquemaEvaluacionPgeneralDetalleCompuesto[]
+  nombreCriterioEvaluacion?: string
 }
-export interface EsquemaEvaluacionRegistrarAsignacion{
-  id: number ;
-  idEsquemaEvaluacion: number ;
+export interface EsquemaEvaluacionRegistrarAsignacion {
+  id: number;
+  idEsquemaEvaluacion: number;
   idModalidad: number[];
-  idProveedor: number[] ;
-  idPGeneral: number ;
+  idProveedor: number[];
+  idPGeneral: number;
   fechaInicio: string;
-  fechaFin?: string ;
+  fechaFin?: string;
   esquemaPredeterminado: boolean;
-  listadoDetalleAsignacion: EsquemaEvaluacionPgeneralDetalleCompuesto[] ;
+  listadoDetalleAsignacion: EsquemaEvaluacionPgeneralDetalleCompuesto[];
 }
-export interface PgeneralCriterioEvaluacionHijo{
-   id: number;
-   idPgeneral: number;
-   considerarNota: boolean;
-   porcentaje: number;
-   idModalidadCurso: number;
-   idTipoPromedio: number;
+export interface PgeneralCriterioEvaluacionHijo {
+  id: number;
+  idPgeneral: number;
+  considerarNota: boolean;
+  porcentaje: number;
+  idModalidadCurso: number;
+  idTipoPromedio: number;
 }
 
 export interface PGeneralCriterioEvaluacion {
@@ -537,7 +536,7 @@ export interface PlantillaDocumentoNoAsociado {
   estadoFlujo: number;
   asignado: boolean;
 }
-export interface PgeneralEnvio{
+export interface PgeneralEnvio {
   [x: string]: {};
   pgeneral: Pgeneral
   detallesProgramaGeneral: DetalleProgramas
@@ -613,12 +612,12 @@ export interface CompuestoProblemaModeloCertificadoDTO {
   modalidades: ModalidadCursoAlternoDTO[];
 }
 export interface CompuestoModeloCertificadoModalidadDTO {
-    idModeloCertificado: number;
-    idPGeneral: number;
-    nombreModeloCertificado: string;
-    modalidades: string;
-    urlAnterior: string;
-    files: File;
+  idModeloCertificado: number;
+  idPGeneral: number;
+  nombreModeloCertificado: string;
+  modalidades: string;
+  urlAnterior: string;
+  files: File;
 }
 
 export interface ProblemaDetalleSolucionAlternoDTO {
@@ -628,12 +627,12 @@ export interface ProblemaDetalleSolucionAlternoDTO {
 }
 
 export interface CompuestoPreRequisitoModalidadAlternaDTO {
-    idPreRequisito: number;
-    idPGeneral: number;
-    nombrePreRequisito: string | null;
-    orden: number;
-    tipo: number;
-    modalidades: ModalidadCursoProblemaDTO[];
+  idPreRequisito: number;
+  idPGeneral: number;
+  nombrePreRequisito: string | null;
+  orden: number;
+  tipo: number;
+  modalidades: ModalidadCursoProblemaDTO[];
 }
 
 export interface CompuestoBeneficioModalidadDTO {
@@ -651,19 +650,19 @@ export interface CompuestoMotivacionModalidadDTO {
   modalidades: ModalidadCursoProblemaDTO[];
 }
 export interface CompuestoProblemaModeloCertificadoDTO {
-    idModeloCertificado: number;
-    idPGeneral: number;
-    nombreModeloCertificado: string;
-    urlModeloCertificado: string;
-    modalidades: ModalidadCursoAlternoDTO[];
+  idModeloCertificado: number;
+  idPGeneral: number;
+  nombreModeloCertificado: string;
+  urlModeloCertificado: string;
+  modalidades: ModalidadCursoAlternoDTO[];
 }
 export interface CompuestoProblemaModalidadDTO {
-    idProblema: number;
-    idPGeneral: number;
-    nombreProblema: string | null;
-    esVisibleAgenda: boolean;
-    problemasArgumentos: ProgramaGeneralProblemaArgumentoDetalleSolucionDTO[] | null;
-    modalidades: ModalidadCursoProblemaDTO[] | null;
+  idProblema: number;
+  idPGeneral: number;
+  nombreProblema: string | null;
+  esVisibleAgenda: boolean;
+  problemasArgumentos: ProgramaGeneralProblemaArgumentoDetalleSolucionDTO[] | null;
+  modalidades: ModalidadCursoProblemaDTO[] | null;
 }
 export interface ProgramaGeneralProblemaArgumentoDetalleSolucionDTO {
   id: number | null;
@@ -709,7 +708,7 @@ export interface FormConfiguracionBase {
   modalidades: number[];
   requierePagoCertificado: boolean;
   proveedores: number[];
-  docentes:number[]
+  docentes: number[]
 }
 export interface FormParametroSeo {
   parametrosSeo: ParametrosSeoPgeneral[];
@@ -734,7 +733,7 @@ export interface CompuestoPresentacionArgumentoModalidadDTO {
   idPresentacionArgumento: number;
   idPGeneral: number;
   nombrePresentacionArgumento: string;
-  descripcionPresentacionArgumento:string;
+  descripcionPresentacionArgumento: string;
   esVisibleAgenda: boolean;
   presentacionArgumento: ProgramaGeneralProblemaArgumentoDetalleSolucionDTO[] | null;
   modalidades: ModalidadCursoProblemaDTO[] | null;
@@ -745,33 +744,30 @@ export interface PresentacionArgumentoDetalleSolucionAlternoDTO {
   solucion: string;
 }
 
-export interface PEspecificoComboPartner
-{
-  id:number;
-  nombre:string;
-  idPGeneral:number;
-  fechaInicio:Date;
+export interface PEspecificoComboPartner {
+  id: number;
+  nombre: string;
+  idPGeneral: number;
+  fechaInicio: Date;
 }
 export interface PEspecificoCodigoPartner {
-  id?:number;
+  id?: number;
   idPespecifico?: number;
   codigo?: string;
-  pdu?:number;
-  fechaInicio?:Date;
+  pdu?: number;
+  fechaInicio?: Date;
 }
 
 
-export interface PEspecificoByPGeneral
-{
-  idPEspecifico:number;
-  nombrePEspecifico:string;
-  idPGeneral:number;
+export interface PEspecificoByPGeneral {
+  idPEspecifico: number;
+  nombrePEspecifico: string;
+  idPGeneral: number;
 }
 
 
 
-export interface PGeneralArgumentoMotivacion
-{
-  id:number;
-  nombre:string;
+export interface PGeneralArgumentoMotivacion {
+  id: number;
+  nombre: string;
 }
