@@ -1,0 +1,105 @@
+<div class="card">
+  <div class="all">
+    <!-- Checkbox principal -->
+    <div class="column">
+      <mat-checkbox
+        class="example-margin"
+        [(ngModel)]="considerarEmbudo"
+        (ngModelChange)="setConsiderarEmbudo($event)"
+        [disabled]="cargando"
+        >¿Considerar fases de embudo?</mat-checkbox>
+      <div
+        class="alert alert-danger"
+        role="alert"
+        style="margin: 0px; margin-left: 10px"
+      >
+        <b>Nota:</b> **Los filtros de mayor probabilidad de inscripción aplican sobre el contacto.
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div *ngIf="cargando" class="loading-container">
+      <mat-spinner diameter="30"></mat-spinner>
+      <span>Cargando esquemas...</span>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="!cargando && !esquemasCargados && esquemas.length === 0" class="error-container">
+      <span>No se pudieron cargar los esquemas. Intente nuevamente.</span>
+    </div>
+
+    <!-- Esquemas dinámicos -->
+    <ng-container *ngIf="considerarEmbudo && !cargando && esquemasCargados">
+      <div class="formulario">
+        <div class="card-section esquemas-container">
+
+          <!-- Esquema 1 (Izquierda) -->
+          <div *ngIf="esquemas[0]" class="esquema-card">
+            <div class="esquema-header">
+              <mat-checkbox
+                class="esquema-checkbox"
+                [(ngModel)]="esquemas[0].seleccionado"
+                (ngModelChange)="toggleEsquema(0, $event)"
+                [disabled]="!considerarEmbudo"
+                >{{ esquemas[0].nombre }}</mat-checkbox>
+            </div>
+
+            <div class="niveles-container">
+              <div class="nivel-item" *ngFor="let nivel of esquemas[0].niveles; let j = index">
+                <mat-checkbox
+                  [(ngModel)]="esquemas[0].nivelesSeleccionados[j]"
+                  (ngModelChange)="actualizarNivelesEsquema(0, j, $event)"
+                  [disabled]="!considerarEmbudo || !esquemas[0].seleccionado"
+                >
+                  {{ nivel.nivel }}
+                </mat-checkbox>
+              </div>
+            </div>
+          </div>
+
+          <!-- Esquema 2 (Derecha) -->
+          <div *ngIf="esquemas[1]" class="esquema-card esquema-2-card">
+            <div class="esquema-header">
+              <mat-checkbox
+                class="esquema-checkbox"
+                [(ngModel)]="esquemas[1].seleccionado"
+                (ngModelChange)="toggleEsquema(1, $event)"
+                [disabled]="!considerarEmbudo"
+                >{{ esquemas[1].nombre }}</mat-checkbox>
+            </div>
+
+            <div class="esquema-2-listas">
+              <!-- Primera columna de Esquema 2 -->
+              <div class="niveles-columna columna-1">
+                <div class="nivel-item" *ngFor="let nivel of esquemas[1].niveles | slice:0:5; let j = index">
+                  <mat-checkbox
+                    [(ngModel)]="esquemas[1].nivelesSeleccionados[j]"
+                    (ngModelChange)="actualizarNivelesEsquema(1, j, $event)"
+                    [disabled]="!considerarEmbudo || !esquemas[1].seleccionado"
+                  >
+                    {{ nivel.nivel }}
+                  </mat-checkbox>
+                </div>
+              </div>
+
+              <!-- Segunda columna de Esquema 2 -->
+              <div class="niveles-columna columna-2">
+                <div class="nivel-item" *ngFor="let nivel of esquemas[1].niveles | slice:5; let j = index">
+                  <mat-checkbox
+                    [(ngModel)]="esquemas[1].nivelesSeleccionados[j + 5]"
+                    (ngModelChange)="actualizarNivelesEsquema(1, j + 5, $event)"
+                    [disabled]="!considerarEmbudo || !esquemas[1].seleccionado"
+                  >
+                    {{ nivel.nivel }}
+                  </mat-checkbox>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

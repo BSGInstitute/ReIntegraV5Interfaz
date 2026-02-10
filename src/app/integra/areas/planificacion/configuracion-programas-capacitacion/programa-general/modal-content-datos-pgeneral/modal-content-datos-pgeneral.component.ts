@@ -136,6 +136,7 @@ export class ModalContentDatosPgeneralComponent implements OnInit, OnDestroy {
       // nombreCorto: '',
       idPagina: datosWeb.publicacionWeb ?? 0,
       chatActivo: configuracionBase.esChatActivo ? 1 : 0,
+      tutorVirtualActivo: configuracionBase.esTutorVirtualActivo != null ? configuracionBase.esTutorVirtualActivo : false,
       pwDescripcionGeneral: parametroSeo.descripcionGeneral ?? '',
       tieneProyectoDeAplicacion:
         configuracionBase.tieneProyectoAplicacionPractica,

@@ -56,7 +56,7 @@ export class HistorialEjecutadoComponent implements OnInit {
     }
     setInterval(() => {
       this.obtenerHistorialEjecutado();
-    }, 5000);
+    }, 60000);
   }
 
   ngOnInit(): void {

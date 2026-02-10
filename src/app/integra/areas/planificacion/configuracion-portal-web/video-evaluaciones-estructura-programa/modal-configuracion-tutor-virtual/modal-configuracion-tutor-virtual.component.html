@@ -1,0 +1,209 @@
+<div class="modal-header bg-primary-header-modal">
+  <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+    Procesamiento de videos Tutor Virtual
+  </h3>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="modalContext.close()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <!-- GRID PRINCIPAL SIN PAGINACIÓN CON COLUMNA FIJA -->
+  <kendo-grid
+    [kendoGridBinding]="gridConfiguracionSecuenciaVideo.data"
+    [loading]="gridConfiguracionSecuenciaVideo.loading"
+    [selectable]="false"
+    [resizable]="true"
+    [scrollable]="'virtual'"
+    [style.maxHeight]="'70vh'"
+    [style.minHeight]="'200px'"
+    class="no-pagination-grid"
+  >
+    <!-- COLUMNA CHECKBOX EN CABECERA - FIJA -->
+    <kendo-grid-column
+      [width]="60"
+      [locked]="true"
+      [headerClass]="'text-center'"
+    >
+      <ng-template kendoGridHeaderTemplate>
+        <input
+          type="checkbox"
+          [checked]="todosSeleccionados"
+          (change)="seleccionarTodos($event)"
+          class="form-check-input cursor-pointer"
+          [title]="
+            todosSeleccionados ? 'Deseleccionar todos' : 'Seleccionar todos'
+          "
+        />
+      </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <input
+          type="checkbox"
+          [checked]="estaSeleccionado(dataItem.videoIdBrightcove)"
+          (change)="toggleSeleccion(dataItem)"
+          class="form-check-input cursor-pointer"
+          [disabled]="!dataItem.videoIdBrightcove"
+          [title]="dataItem.videoIdBrightcove ? 'Seleccionar' : 'Sin ID Video'"
+        />
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="ordenCapitulo"
+      title="Orden"
+      [width]="70"
+      [headerClass]="'text-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-center">{{ dataItem.ordenCapitulo }}</div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="capitulo"
+      title="Capítulo"
+      [width]="220"
+      [headerClass]="'justify-content-start'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-wrap" [title]="dataItem.capitulo">
+          {{ dataItem.capitulo }}
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="sesion"
+      title="Sesión"
+      [width]="350"
+      [headerClass]="'justify-content-start'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-wrap" [title]="dataItem.sesion">
+          {{ dataItem.sesion }}
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="subSesion"
+      title="SubSesión"
+      [width]="280"
+      [headerClass]="'justify-content-start'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-wrap" [title]="dataItem.subSesion">
+          {{ dataItem.subSesion || "-" }}
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="videoIdBrightcove"
+      title="ID Video"
+      [width]="140"
+      [headerClass]="'text-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div
+          class="text-center"
+          [title]="dataItem.videoIdBrightcove || 'Sin Video'"
+        >
+          {{ dataItem.videoIdBrightcove || "Sin Video" }}
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <!-- COLUMNA PROCESAR INDIVIDUAL -->
+    <kendo-grid-column
+      title="Procesar"
+      [width]="90"
+      [headerClass]="'text-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-center">
+          <button
+            kendoButton
+            themeColor="primary"
+            fillMode="solid"
+            rounded="medium"
+            size="small"
+            class="p-1"
+            [disabled]="
+              !dataItem.videoIdBrightcove ||
+              dataItem.estadoProcesamiento === 'En Proceso'
+            "
+            (click)="procesarIndividual(dataItem)"
+            [title]="
+              dataItem.videoIdBrightcove ? 'Procesar Video' : 'Sin ID Video'
+            "
+          >
+            <span class="k-icon k-i-play k-icon-16"></span>
+          </button>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="estadoProcesamiento"
+      title="Estado"
+      [width]="110"
+      [headerClass]="'text-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-center">
+          <span>
+            {{ dataItem.estadoProcesamiento }}
+          </span>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column
+      field="fechaProcesamiento"
+      title="Fecha Hora Finalización de proceso"
+      [width]="190"
+      [headerClass]="'text-center'"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+        <div class="text-center">
+          <div
+            *ngIf="dataItem.fechaProcesamiento; else sinFecha"
+            class="fecha-text"
+          >
+            {{ formatDate(dataItem.fechaProcesamiento) }}
+          </div>
+          <ng-template #sinFecha>
+            <span class="text-muted">-</span>
+          </ng-template>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+
+  <!-- FOOTER CON BOTONES -->
+  <div class="row mt-4">
+    <div class="col-md-12 d-flex justify-content-end gap-2">
+      <button class="btn btn-outline-secondary" (click)="refrescarDatos()">
+        Refrescar
+      </button>
+
+      <button
+        class="btn btn-success"
+        [disabled]="videosSeleccionados.length === 0"
+        (click)="procesarSeleccionados()"
+      >
+        Procesar Videos ({{ videosSeleccionados.length }})
+      </button>
+
+      <button class="btn btn-danger" (click)="modalContext.close()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+<loading [loading]="loaderModal"></loading>

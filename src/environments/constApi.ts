@@ -2436,7 +2436,7 @@ export const constApiMarketing = {
   ObtenerDatosGeneralesAlumnosPorPSID:
     '/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID',
 
-  // CAMPAÑA REMARKETING GENERAL
+    // CAMPAÑA REMARKETING GENERAL
   ObtenerListadoRemarketingGeneral: '/CampaniaRemarketingGeneral/ObtenerListadoCampania',
   ObtenerRendimientoListadoCampanias: '/CampaniaRemarketingGeneral/ObtenerRendimientoListadoCampanias',
   ObtenerCombosConfiguracionCampania: '/CampaniaRemarketingGeneral/ObtenerCombosConfiguracionCampania',
@@ -2465,8 +2465,10 @@ export const constApiMarketing = {
   CrearCategoriaArgumento: '/CategoriaArgumentos/CrearCategoriaArgumento',
   EditarCategoriaArgumento: '/CategoriaArgumentos/EditarCategoriaArgumento',
   EliminarCategoriaArgumento: '/CategoriaArgumentos/EliminarCategoriaArgumento',
-};
+    
+  RemarketingEmbudoNivelEsquema: '/RemarketingEmbudoHistorico/ObtenerNivelEsquemaEmbudoRemarketing',
 
+};
 
 export const constApiGestionPersonal = {
   //Modulo gestion personal junior
@@ -3178,7 +3180,8 @@ export const constApiPlanificacion = {
 
   //PLANIFICACION CONFIGURACION PROGRAMAS
   //TIPO DESCUENTO PROGRAMA
-  TipoDescuentoObtener: '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
+  TipoDescuentoObtener: '/TipoDescuento/Obtener', //GET
+  //TipoDescuentoObtener: '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
   TipoDescuentoObtenerCombosModulo: '/TipoDescuento/ObtenerCombosModulo', //GET
   TipoDescuentoEliminar: '/TipoDescuento/Eliminar', //DELETE
   TipoDescuentoInsertar: '/TipoDescuento/Insertar', //POST
@@ -3187,12 +3190,12 @@ export const constApiPlanificacion = {
   ObtenerTipoDescuentoConNivelAprobacion : '/TipoDescuento/ObtenerTipoDescuentoConNivelAprobacion', //GET
   ObtenerNivelesAprobacion: '/TipoDescuento/ObtenerNivelesAprobacion', //GET
   ObtenerEstadosAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ObtenerEstadosSolicitud', //GET
-  ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes', 
+  ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes',
   AprobarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudGerencia', //POST
   RechazarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudGerencia', //POST
   AprobarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudCoordinador', //POST
   RechazarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudCoordinador', //POST
-    //Asociar Feedback Programas
+  //Asociar Feedback Programas
   FeedbackConfigurarGrupoPreguntaObtener:
     '/FeedbackConfigurarGrupoPregunta/Obtener', //GET
   FeedbackConfigurarGrupoPreguntaObtenerCombo:
@@ -3456,6 +3459,8 @@ export const constApiPlanificacion = {
     '/ProgramaGeneral/ObtenerCombosConfigurarVideoPrograma', //GET
   ConfigurarVideoProgramaObtenerConfiguracionVideoPrograma:
     '/ConfigurarVideoPrograma/ObtenerConfiguracionVideoPrograma', //GET
+  ConfigurarVideoProgramaObtenerConfiguracionTutorVirtualAonline:
+    '/ConfigurarVideoPrograma/ObtenerConfiguracionTutorVirtualAonline', //GET
   ConfigurarVideoProgramaObtenerConfiguracionExamenPrograma:
     '/ConfigurarVideoPrograma/ObtenerConfiguracionExamenPrograma', //GET
   ConfigurarVideoProgramaObtenerConfiguracionProyecto:
@@ -3494,7 +3499,8 @@ export const constApiPlanificacion = {
     '/ConfigurarVideoPrograma/ActualizarDescargaReproduccionVideo', //Put
   ConfigurarVideoProgramaActualizarObtenerConteosdeVideosTipo:
     '/ConfigurarVideoPrograma/ObtenerConteosdeVideosTipo', //Put
-
+  ConfigurarVideoProgramaProcesarTutorVirtualAonline:
+    '/ConfigurarVideoPrograma/ProcesarTutorVirtualAonline',
   //Modulo Pgeneral
   ProgramaGeneralObtenerCombosModuloAsync:
     '/ProgramaGeneral/ObtenerCombosModuloAsync',
