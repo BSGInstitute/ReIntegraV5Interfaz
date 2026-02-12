@@ -3712,6 +3712,8 @@ export const constApiPlanificacion = {
   PartnerPwActualizar: '/PartnerPw/Actualizar',
   PartnerPwObtener: '/PartnerPw/Obtener',
   PartnerPwObtenerCombo: '/PartnerPw/ObtenerCombo',
+  PartnerPwInsertarConArchivos: '/PartnerPw/InsertarConArchivos',
+  PartnerPwActualizarConArchivos: '/PartnerPw/ActualizarConArchivos',
 
   //Esquema Evaluacion
   EsquemaEvaluacionObtener: '/EsquemaEvaluacion/ObtenerTodo',
