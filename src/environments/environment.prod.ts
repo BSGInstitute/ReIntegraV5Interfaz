@@ -5,7 +5,7 @@ export const environment = {
   //urlServicioAPI: 'https://integrav5-prepublicacion-servicios.bsginstitute.com/api',
   // urlServicioAPI: 'https://integrav5-mejora-servicios.bsginstitute.com/api',
   //urlServicioAPI: 'https://integrav5-servicios-prod.bsginstitute.com/api',
-  urlServicioAPI: 'https://integrav5-servicios-respaldo.bsginstitute.com/api',
+  urlServicioAPI: 'https://integrav5-servicios-asistenteia.bsginstitute.com/api',
   urlServicioAPIReplica: 'https://integrav5-replica-servicios.bsginstitute.com/api',
   //urlServicioAPIReplica: 'https://integrav5-servicios.bsginstitute.com/api',
   urlApi: 'https://integrav5-servicios-respaldo.bsginstitute.com/api'
