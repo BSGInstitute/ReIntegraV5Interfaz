@@ -6,7 +6,7 @@ import { constApiMarketing } from '@environments/constApi';
 import {
   CampaniaRemarketingGeneralEditar,
   CombosConfiguracionCampaniaDTO,
-  ResultadoGeneracionTexto,
+  EstadoEjecucionLlamadaIA,
   SegmentoCreado,
 } from '@marketing/models/interfaces/campania-remarketing-general';
 import { AlertaService } from '@shared/services/alerta.service';
@@ -18,18 +18,21 @@ import { IntegraService } from '@shared/services/integra.service';
   styleUrls: ['./crear-editar-campania.component.scss'],
 })
 export class CrearEditarCampaniaComponent implements OnInit {
-  envioSeleccionado: 'enviar ahora' | 'programado' = 'enviar ahora';
+  envioSeleccionado: 'no programado' | 'enviar ahora' | 'programado' = 'no programado';
   formularioValido = false;
+  minDate = new Date();
 
   isLoadingCombos = true;
   isLoadingSegmentos = true;
   isLoadingEjecutarEnvio = false;
+  isLoadingGenerarTextos = false;
   get isLoading() {
     return (
       this.isLoadingCombos ||
       this.isLoadingSegmentos ||
       this.isLoadingEjecutarEnvio ||
-      this.isLoadingDatosEditar
+      this.isLoadingDatosEditar ||
+      this.isLoadingGenerarTextos
     );
   }
 
@@ -42,10 +45,11 @@ export class CrearEditarCampaniaComponent implements OnInit {
   mediosEnvioSeleccionados: number[] = [];
   tipoMensajeSeleccionado: number | null = null;
   logicaEnvioSeleccionada: number | null = null;
-  argumentosSeleccionados: number[] = [];
+  categoriaArgumentoSeleccionada: number | null = null;
+  prioridadesSeleccionadas: number[] = [];
 
   isLoadingResultadosGeneracionTexto = false;
-  resultadosGeneracionTexto: ResultadoGeneracionTexto[] = [];
+  resultadosGeneracionTexto: EstadoEjecucionLlamadaIA;
   mensajeGeneradoSeleccionado: string | null = null;
 
   datosEditar: CampaniaRemarketingGeneralEditar;
@@ -69,10 +73,11 @@ export class CrearEditarCampaniaComponent implements OnInit {
     this.campaniaForm = new FormGroup({
       // Campaña Remarketing
       segmentoSeleccionado: new FormControl(null, Validators.required),
-      mediosEnvioSeleccionados: new FormControl([], Validators.required),
+      mediosEnvioSeleccionados: new FormControl(null, Validators.required),
       tipoMensajeSeleccionado: new FormControl(null, Validators.required),
       logicaEnvioSeleccionada: new FormControl(null, Validators.required),
-      argumentosSeleccionados: new FormControl([], Validators.required),
+      categoriaArgumentoSeleccionada: new FormControl(null, Validators.required),
+      prioridadesSeleccionadas: new FormControl([], Validators.required),
       // Configurar remitente
       remitenteCorreo: new FormControl('', [
         Validators.required,
@@ -81,7 +86,7 @@ export class CrearEditarCampaniaComponent implements OnInit {
       remitenteNombre: new FormControl('', Validators.required),
       asunto: new FormControl('', Validators.required),
       // Configuración de envío
-      envioSeleccionado: new FormControl('ahora', Validators.required),
+      envioSeleccionado: new FormControl('no programado', Validators.required),
       fechaEnvio: new FormControl(''),
       horaEnvio: new FormControl(''),
     });
@@ -170,15 +175,20 @@ export class CrearEditarCampaniaComponent implements OnInit {
           this.datosEditar = data.body as CampaniaRemarketingGeneralEditar;
 
           // Setear valores en el formulario y variables auxiliares
+          const medioEnvioValue = this.datosEditar.mediosEnvio?.length > 0
+            ? this.datosEditar.mediosEnvio[0]
+            : null;
+
           this.campaniaForm.patchValue({
-            mediosEnvioSeleccionados: this.datosEditar.mediosEnvio || [],
+            mediosEnvioSeleccionados: medioEnvioValue,
             tipoMensajeSeleccionado: this.datosEditar.tipoMensaje || null,
             logicaEnvioSeleccionada: this.datosEditar.logicaEnvio || null,
-            argumentosSeleccionados: this.datosEditar.argumentos || [],
+            categoriaArgumentoSeleccionada: this.datosEditar.categoriaArgumento || null,
+            prioridadesSeleccionadas: this.datosEditar.prioridades || [],
             remitenteCorreo: this.datosEditar.remitenteCorreo || '',
             remitenteNombre: this.datosEditar.remitenteNombre || '',
             asunto: this.datosEditar.asunto || '',
-            envioSeleccionado: this.datosEditar.envioConfigurado || 'ahora',
+            envioSeleccionado: this.datosEditar.envioConfigurado || 'no programado',
             fechaEnvio: this.datosEditar.fechaEnvioProgramada
               ? new Date(this.datosEditar.fechaEnvioProgramada)
               : '',
@@ -191,9 +201,10 @@ export class CrearEditarCampaniaComponent implements OnInit {
           this.mediosEnvioSeleccionados = this.datosEditar.mediosEnvio || [];
           this.tipoMensajeSeleccionado = this.datosEditar.tipoMensaje || null;
           this.logicaEnvioSeleccionada = this.datosEditar.logicaEnvio || null;
-          this.argumentosSeleccionados = this.datosEditar.argumentos || [];
+          this.categoriaArgumentoSeleccionada = this.datosEditar.categoriaArgumento || null;
+          this.prioridadesSeleccionadas = this.datosEditar.prioridades || [];
           this.envioSeleccionado =
-            (this.datosEditar.envioConfigurado as any) || 'enviar ahora';
+            (this.datosEditar.envioConfigurado as any) || 'no programado';
 
           // Si los segmentos ya están cargados, setear el segmento
           if (this.listadoSegmentos && this.listadoSegmentos.length > 0) {
@@ -224,12 +235,12 @@ export class CrearEditarCampaniaComponent implements OnInit {
     this.isLoadingResultadosGeneracionTexto = true;
     this.integraService
       .getJsonResponse(
-        `${constApiMarketing.ObtenerResultadosGeneracionTexto}/${this.segmentoSeleccionado.id}`
+        `${constApiMarketing.ObtenerResultadosGeneracionTexto}/${this.datosEditar.identificadorLlamadaIA}`
       )
       .subscribe({
         next: (data: any) => {
           this.resultadosGeneracionTexto =
-            data.body as ResultadoGeneracionTexto[];
+            data.body as EstadoEjecucionLlamadaIA;
           this.isLoadingResultadosGeneracionTexto = false;
         },
         error: (err) => {
@@ -241,15 +252,18 @@ export class CrearEditarCampaniaComponent implements OnInit {
   }
 
   generarTextos() {
+    const medioEnvioSeleccionado = this.campaniaForm.get('mediosEnvioSeleccionados').value;
+
     const valid = !!(
       this.segmentoSeleccionado &&
-      this.mediosEnvioSeleccionados &&
-      this.mediosEnvioSeleccionados.length > 0 &&
+      medioEnvioSeleccionado != null &&
       this.tipoMensajeSeleccionado &&
       this.logicaEnvioSeleccionada &&
-      this.argumentosSeleccionados &&
-      this.argumentosSeleccionados.length > 0
+      this.categoriaArgumentoSeleccionada &&
+      this.prioridadesSeleccionadas &&
+      this.prioridadesSeleccionadas.length > 0
     );
+
     if (!valid) {
       this._alertaService.notificationError(
         'Debe completar todos los campos requeridos para generar los textos.'
@@ -257,14 +271,73 @@ export class CrearEditarCampaniaComponent implements OnInit {
       return;
     }
 
+    const medioEnvioCompleto = this.combosConfiguracionCampania.medioEnvio.find(
+      (m) => m.id === medioEnvioSeleccionado
+    );
+    const tipoMensajeCompleto = this.combosConfiguracionCampania.tipoMensaje.find(
+      (t) => t.id === this.tipoMensajeSeleccionado
+    );
+    const logicaEnvioCompleta = this.combosConfiguracionCampania.logicaEnvio.find(
+      (l) => l.id === this.logicaEnvioSeleccionada
+    );
+    const categoriaArgumentoCompleta = this.combosConfiguracionCampania.categoriaArgumento.find(
+      (c) => c.id === this.categoriaArgumentoSeleccionada
+    );
+
     const payload = {
+      id: this.data.id || null,
       segmento: this.segmentoSeleccionado,
-      mediosEnvio: this.mediosEnvioSeleccionados,
-      tipoMensaje: this.tipoMensajeSeleccionado,
-      logicaEnvio: this.logicaEnvioSeleccionada,
-      argumentos: this.argumentosSeleccionados,
+      mediosEnvio: [medioEnvioCompleto],
+      tipoMensaje: tipoMensajeCompleto,
+      logicaEnvio: logicaEnvioCompleta,
+      categoriaArgumento: categoriaArgumentoCompleta,
+      prioridades: this.prioridadesSeleccionadas,
+      identificadorLlamadaIA: '',
+      envioSeleccionado: "no programado",
+      flagEditar: false,
     };
-    console.log('Payload para API:', payload);
+
+    this.isLoadingGenerarTextos = true; 
+
+    if (this.data && this.data.modo === 'editar' ) {
+      payload.flagEditar = true
+      payload.identificadorLlamadaIA = this.datosEditar.identificadorLlamadaIA
+    }
+
+    this.integraService
+        .postJsonResponse(
+          `${constApiMarketing.GenerarListadoTextosRemarketing}`,
+          payload
+        )
+        .subscribe({
+          next: (data: any) => {
+            if(data.body.resultado){
+              this._alertaService.mensajeIcon(
+                '¡Exito!',
+                'Se inicio correctamente la generacion de textos',
+                'success'
+              );
+              this.dialogRef.close('refresh');
+            } else {
+              this._alertaService.mensajeIcon(
+                '¡Alerta!',
+                'Ya existe una generacion en curso para esta campaña',
+                'warning'
+              );
+            }
+
+            this.isLoadingGenerarTextos = false;
+          },
+          error: (err) => {
+            this._alertaService.mensajeIcon(
+              'Error',
+              'Hubo un error al intentar generar los textos.',
+              'error'
+            );
+
+            this.isLoadingGenerarTextos = false;
+          },
+        });
   }
 
   cerrar(): void {
@@ -278,16 +351,17 @@ export class CrearEditarCampaniaComponent implements OnInit {
   iniciarEnvio() {
     this.campaniaForm.patchValue({
       segmentoSeleccionado: this.segmentoSeleccionado,
-      mediosEnvioSeleccionados: this.mediosEnvioSeleccionados,
+      mediosEnvioSeleccionados: this.mediosEnvioSeleccionados?.[0] || null,
       tipoMensajeSeleccionado: this.tipoMensajeSeleccionado,
       logicaEnvioSeleccionada: this.logicaEnvioSeleccionada,
-      argumentosSeleccionados: this.argumentosSeleccionados,
+      categoriaArgumentoSeleccionada: this.categoriaArgumentoSeleccionada,
+      prioridadesSeleccionadas: this.prioridadesSeleccionadas,
       envioSeleccionado: this.envioSeleccionado,
     });
 
     // Validaciones del formulario
     const form = this.campaniaForm;
-    const envioProgramado = form.value.envioSeleccionado === 'programar';
+    const envioProgramado = form.value.envioSeleccionado === 'programado';
     if (form.get('remitenteCorreo').invalid) {
       this._alertaService.notificationError(
         'Debe ingresar un correo válido en "De".'
@@ -309,11 +383,11 @@ export class CrearEditarCampaniaComponent implements OnInit {
     if (
       !form.value.segmentoSeleccionado ||
       !form.value.mediosEnvioSeleccionados ||
-      form.value.mediosEnvioSeleccionados.length === 0 ||
       !form.value.tipoMensajeSeleccionado ||
       !form.value.logicaEnvioSeleccionada ||
-      !form.value.argumentosSeleccionados ||
-      form.value.argumentosSeleccionados.length === 0
+      !form.value.categoriaArgumentoSeleccionada ||
+      !form.value.prioridadesSeleccionadas ||
+      form.value.prioridadesSeleccionadas.length === 0
     ) {
       this._alertaService.notificationError(
         'Debe completar todos los campos de la sección Campaña Remarketing.'
@@ -337,11 +411,21 @@ export class CrearEditarCampaniaComponent implements OnInit {
         );
         return;
       }
+      // Validar que la fecha programada sea en el futuro
+      const fechaStr =
+        typeof fecha === 'string' ? fecha : fecha.toISOString().slice(0, 10);
+      const fechaHoraProgramada = new Date(`${fechaStr}T${hora}:00`);
+      if (fechaHoraProgramada <= new Date()) {
+        this._alertaService.notificationError(
+          'La fecha y hora de envío deben ser posteriores a la fecha y hora actual.'
+        );
+        return;
+      }
     }
 
     // Si todo es válido, mostrar los datos configurados
     let fechaEnvioFinal = null;
-    if (form.value.envioSeleccionado === 'programar') {
+    if (form.value.envioSeleccionado === 'programado') {
       const fecha = form.get('fechaEnvio').value;
       const hora = form.get('horaEnvio').value;
       if (fecha && hora) {
@@ -351,35 +435,76 @@ export class CrearEditarCampaniaComponent implements OnInit {
         fechaEnvioFinal = `${fechaStr}T${hora}:00`;
       }
     }
+    
+    // Recuperar IDs desde el form
+    const medioEnvioId = this.campaniaForm.get('mediosEnvioSeleccionados').value;
+    const tipoMensajeId = this.campaniaForm.get('tipoMensajeSeleccionado').value;
+    const logicaEnvioId = this.campaniaForm.get('logicaEnvioSeleccionada').value;
+    const categoriaArgumentoId = this.campaniaForm.get('categoriaArgumentoSeleccionada').value;
+
+    // Buscar objetos completos en combos
+    const medioEnvioCompleto = this.combosConfiguracionCampania.medioEnvio
+      .find(m => m.id === medioEnvioId);
+    const tipoMensajeCompleto = this.combosConfiguracionCampania.tipoMensaje
+      .find(t => t.id === tipoMensajeId);
+    const logicaEnvioCompleta = this.combosConfiguracionCampania.logicaEnvio
+      .find(l => l.id === logicaEnvioId);
+    const categoriaArgumentoCompleta = this.combosConfiguracionCampania.categoriaArgumento
+      .find(c => c.id === categoriaArgumentoId);
+
+    // Seguridad extra
+    if (
+      !medioEnvioCompleto ||
+      !tipoMensajeCompleto ||
+      !logicaEnvioCompleta ||
+      !categoriaArgumentoCompleta
+    ) {
+      this._alertaService.notificationError(
+        'Error al obtener la configuración seleccionada.'
+      );
+      return;
+    }
+
     const datosConfigurados = {
       id: this.data.id || null,
-      segmento: form.value.segmentoSeleccionado,
-      mediosEnvio: form.value.mediosEnvioSeleccionados,
-      tipoMensaje: form.value.tipoMensajeSeleccionado,
-      logicaEnvio: form.value.logicaEnvioSeleccionada,
-      argumentos: form.value.argumentosSeleccionados,
-      remitenteCorreo: form.value.remitenteCorreo,
-      remitenteNombre: form.value.remitenteNombre,
-      asunto: form.value.asunto,
-      envioSeleccionado: form.value.envioSeleccionado,
+      segmento: this.segmentoSeleccionado,
+      mediosEnvio: [medioEnvioCompleto],
+      tipoMensaje: tipoMensajeCompleto,
+      logicaEnvio: logicaEnvioCompleta,
+      categoriaArgumento: categoriaArgumentoCompleta,
+      prioridades: this.prioridadesSeleccionadas,
+      remitenteCorreo: this.campaniaForm.value.remitenteCorreo,
+      remitenteNombre: this.campaniaForm.value.remitenteNombre,
+      asunto: this.campaniaForm.value.asunto,
+      envioSeleccionado: this.campaniaForm.value.envioSeleccionado,
       fechaEnvio: fechaEnvioFinal,
+      identificadorLlamadaIA: this.datosEditar.identificadorLlamadaIA
     };
 
     this.isLoadingEjecutarEnvio = true;
 
-    if (this.data.modo === 'editar') {
       this.integraService
         .postJsonResponse(
-          `${constApiMarketing.EditarEjecutarEnvioCampaniaRemarketing}`,
+          `${constApiMarketing.ActualizarEjecutarEnvioCampaniaRemarketing}`,
           datosConfigurados
         )
         .subscribe({
-          next: () => {
-            this._alertaService.mensajeIcon(
-              '¡Exito!',
-              'La campaña fue programada exitosamente.',
-              'success'
-            );
+          next: (data: any) => {
+               if(data.body){
+              this._alertaService.mensajeIcon(
+                '¡Exito!',
+                'La campaña fue programada exitosamente.',
+                'success'
+              );
+              this.dialogRef.close('refresh');
+            } else {
+              this._alertaService.mensajeIcon(
+                '¡Alerta!',
+                'Hubo un error al configurar la campaña, no se iniciará el envio',
+                'warning'
+              );
+            }
+
             this.isLoadingEjecutarEnvio = false;
             this.dialogRef.close('refresh');
           },
@@ -393,33 +518,6 @@ export class CrearEditarCampaniaComponent implements OnInit {
             this.isLoadingEjecutarEnvio = false;
           },
         });
-    } else {
-      this.integraService
-        .postJsonResponse(
-          `${constApiMarketing.GuardarEjecutarEnvioCampaniaRemarketing}`,
-          datosConfigurados
-        )
-        .subscribe({
-          next: () => {
-            this._alertaService.mensajeIcon(
-              '¡Exito!',
-              'La campaña fue programada exitosamente.',
-              'success'
-            );
-            this.isLoadingEjecutarEnvio = false;
-            this.dialogRef.close('refresh');
-          },
-          error: (err) => {
-            this._alertaService.mensajeIcon(
-              'Error',
-              'Hubo un error al intentar programar la campaña.',
-              'error'
-            );
-
-            this.isLoadingEjecutarEnvio = false;
-          },
-        });
-    }
   }
 
   onHoraEnvioChange(event: Event) {

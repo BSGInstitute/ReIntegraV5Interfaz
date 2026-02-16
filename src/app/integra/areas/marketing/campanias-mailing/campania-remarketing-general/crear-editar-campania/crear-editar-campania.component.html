@@ -4,7 +4,14 @@
 
 <div class="modal-scrollable-content" *ngIf="!isLoading">
   <!-- Primer Grupo - Campaña remarketing -->
-  <div class="titulo">Campaña Remarketing</div>
+  <div class="titulo">
+    <span class="flex-grow-1">Campaña Remarketing</span>
+    
+    <button mat-icon-button (click)="cerrar()" class="">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
   <form class="d-flex flex-column w-100 pb-4" [formGroup]="campaniaForm">
     <mat-form-field appearance="fill" style="flex: 2">
       <mat-label>Segmentos</mat-label>
@@ -33,9 +40,6 @@
     <mat-form-field appearance="fill" style="flex: 1">
       <mat-label>Medio de envío</mat-label>
       <mat-select
-        multiple
-        [(ngModel)]="mediosEnvioSeleccionados"
-        name="mediosEnvioSeleccionados"
         required
         formControlName="mediosEnvioSeleccionados"
       >
@@ -81,18 +85,34 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="w-100">
-        <mat-label>Argumentos</mat-label>
+        <mat-label>Categoría de argumento</mat-label>
         <mat-select
-          multiple
-          [(ngModel)]="argumentosSeleccionados"
-          name="argumentosSeleccionados"
+          [(ngModel)]="categoriaArgumentoSeleccionada"
+          name="categoriaArgumentoSeleccionada"
           required
-          formControlName="argumentosSeleccionados"
+          formControlName="categoriaArgumentoSeleccionada"
         >
           <mat-option
-            *ngFor="let argumento of combosConfiguracionCampania.argumento"
-            [value]="argumento.id"
-            >{{ argumento.nombre }}</mat-option
+            *ngFor="let categoria of combosConfiguracionCampania.categoriaArgumento"
+            [value]="categoria.id"
+            >{{ categoria.nombre }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="w-100">
+        <mat-label>Prioridades</mat-label>
+        <mat-select
+          multiple
+          [(ngModel)]="prioridadesSeleccionadas"
+          name="prioridadesSeleccionadas"
+          required
+          formControlName="prioridadesSeleccionadas"
+        >
+          <mat-option
+            *ngFor="let prioridad of combosConfiguracionCampania.prioridadesUnicas"
+            [value]="prioridad"
+            >{{ prioridad }}</mat-option
           >
         </mat-select>
       </mat-form-field>
@@ -108,6 +128,7 @@
         Generar textos
       </button>
       <button
+        *ngIf="data.modo === 'editar'"
         matButton
         class="btn btn-warning px-4"
         (click)="ObtenerResultadosGeneracionTexto()"
@@ -117,6 +138,7 @@
     </div>
   </form>
 
+  <ng-container *ngIf="data.modo === 'editar'">
   <!-- Segundo Grupo - Configurar remitente (solo mailing) -->
   <div class="titulo">Configurar remitente (solo mailing)</div>
   <form class="d-flex flex-column w-100 pb-4" [formGroup]="campaniaForm">
@@ -155,6 +177,7 @@
 
   <!-- Tercer Grupo - Configuración de envío -->
   <div class="titulo">Configuración de envío</div>
+  <form [formGroup]="campaniaForm">
   <div class="d-flex justify-content-center gap-4 mb-4">
     <div
       class="opcion-envio"
@@ -194,6 +217,7 @@
         [matDatepicker]="picker"
         placeholder="Selecciona la fecha"
         formControlName="fechaEnvio"
+        [min]="minDate"
         (dateChange)="campaniaForm.get('fechaEnvio').setValue($event.value)"
       />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -210,6 +234,7 @@
       />
     </mat-form-field>
   </div>
+  </form>
 
   <!-- Botones envío -->
   <div class="d-flex justify-content-center align-items-center gap-4 mt-4">
@@ -222,11 +247,13 @@
     </button>
     <button matButton class="btn btn-light" (click)="cerrar()">Cancelar</button>
   </div>
+  </ng-container>
+
 </div>
 
-<!-- Modal de RResultados de Generación de Texto -->
+<!-- Modal de Resultados de Generación de Texto -->
 <div
-  *ngIf="resultadosGeneracionTexto.length > 0"
+  *ngIf="resultadosGeneracionTexto != null || isLoadingResultadosGeneracionTexto"
   class="modal-resultado-generacion-texto"
 >
   <div class="modal-overlay"></div>
@@ -239,7 +266,7 @@
 
         <button
           mat-icon-button
-          (click)="resultadosGeneracionTexto = []"
+          (click)="resultadosGeneracionTexto = null"
           aria-label="Cerrar"
         >
           <mat-icon>close</mat-icon>
@@ -247,35 +274,59 @@
       </div>
     </div>
     <div class="modal-body">
-      <table class="table table-bordered table-striped w-100">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Alumno</th>
-            <th>País</th>
-            <th>Contenido Generado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let resultado of resultadosGeneracionTexto">
-            <td>{{ resultado.id }}</td>
-            <td>{{ resultado.nombreAlumno }}</td>
-            <td>{{ resultado.pais }}</td>
-            <td>
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="
-                  mensajeGeneradoSeleccionado = resultado.contenidoGenerado
-                "
-                aria-label="Ver mensaje"
-              >
-                <mat-icon>visibility</mat-icon>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div
+        *ngIf="isLoadingResultadosGeneracionTexto"
+        class="loader-container"
+      >
+        <mat-spinner diameter="50" class="mx-auto"></mat-spinner>
+      </div>
+
+      <div *ngIf="!isLoadingResultadosGeneracionTexto">
+        <div class="d-flex justify-content-around align-items-center bg-light p-2 mb-4 border rounded">
+          <div class="text-center">
+            <span class="fw-bold text-secondary">Total:</span> 
+            <span class="badge bg-primary ms-1 fs-6">{{ resultadosGeneracionTexto?.total }}</span>
+          </div>
+          <div class="text-center">
+            <span class="fw-bold text-secondary">Pendientes:</span> 
+            <span class="badge bg-warning text-dark ms-1 fs-6">{{ resultadosGeneracionTexto?.pendientes }}</span>
+          </div>
+          <div class="text-center">
+            <span class="fw-bold text-secondary">Finalizados:</span> 
+            <span class="badge bg-success ms-1 fs-6">{{ resultadosGeneracionTexto?.finalizados }}</span>
+          </div>
+        </div>
+
+        <table class="table table-bordered table-striped w-100">
+          <thead>
+            <tr>
+              <th>ID Alumno</th>
+              <th>Canal</th>
+              <th>Fecha Generacion</th>
+              <th>Contenido Generado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let resultado of resultadosGeneracionTexto?.mensajesGenerados">
+              <td>{{ resultado.id_alumno }}</td>
+              <td>{{ resultado.canal }}</td>
+              <td>{{ resultado.fecha_generacion | date : 'short' }}</td>
+              <td>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="
+                    mensajeGeneradoSeleccionado = resultado.contenido
+                  "
+                  aria-label="Ver mensaje"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -285,7 +336,7 @@
     class="modal-resultado-generacion-texto"
   >
     <div class="modal-overlay"></div>
-    <div class="modal-content" style="max-width: 600px">
+    <div class="modal-content" style="max-width: 800px">
       <div class="modal-body">
         <div style="white-space: pre-line; font-size: 1.1em; padding: 12px 0">
           {{ mensajeGeneradoSeleccionado }}

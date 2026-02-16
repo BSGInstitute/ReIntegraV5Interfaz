@@ -21,6 +21,7 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
 
   showDetalleModal = false;
   detalleCampaniaId: number | null = null;
+  detallecampaniaIdLlamadaIA: string | null = null;
 
   constructor(
     private integraService: IntegraService,
@@ -69,13 +70,19 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
   }
 
   ActualizarCampania(id: number) {
-    this.dialog.open(CrearEditarCampaniaComponent, {
+    const dialogRef = this.dialog.open(CrearEditarCampaniaComponent, {
       width: '70vw',
       data: {
         modo: 'editar',
         id,
       },
       disableClose: true,
+    });
+
+     dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'refresh') {
+        this.ObtenerListadoRemarketingGeneral();
+      }
     });
   }
 
@@ -86,13 +93,16 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
     this.showRendimientoModal = false;
   }
 
-  VerDetalleCampania(id: number) {
+  VerDetalleCampania(id: number, identificadorLlamadaIA: string) {
     this.showDetalleModal = true;
     this.detalleCampaniaId = id;
+    this.detallecampaniaIdLlamadaIA = identificadorLlamadaIA;
+
   }
   cerrarDetalleModal() {
     this.showDetalleModal = false;
     this.detalleCampaniaId = null;
+    this.detallecampaniaIdLlamadaIA = null;
   }
 
   EliminarCampania(id: number) {
@@ -103,6 +113,7 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
       confirmButtonText: 'Eliminar',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.isLoading = true
         this.integraService
           .postJsonResponse(
             `${constApiMarketing.EliminarCampaniaRemarketing}`,

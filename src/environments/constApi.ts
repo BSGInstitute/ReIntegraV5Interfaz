@@ -2443,13 +2443,14 @@ export const constApiMarketing = {
   ObtenerListadoSegmentosCreados: '/CampaniaRemarketingGeneral/ObtenerListadoSegmentosCreados',
   ObtenerCampaniaRemarketingPorId: '/CampaniaRemarketingGeneral/ObtenerCampaniaRemarketingPorId',
   GuardarEjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/GuardarEjecutarEnvioCampaniaRemarketing',
-  EditarEjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarEjecutarEnvioCampaniaRemarketing',
+  ActualizarEjecutarEnvioCampaniaRemarketing: '/CampaniaRemarketingGeneral/ActualizarEjecutarEnvioCampaniaRemarketing',
   ObtenerResultadosGeneracionTexto: '/CampaniaRemarketingGeneral/ObtenerResultadosGeneracionTextoPorCampania',
   VerDetallesCampaniaRemarketing: '/CampaniaRemarketingGeneral/VerDetallesCampania',
   EditarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EditarCampania',
   EliminarCampaniaRemarketing: '/CampaniaRemarketingGeneral/EliminarCampania',
   ObtenerMensajeGeneradoPorId: '/CampaniaRemarketingGeneral/ObtenerMensajeGeneradoPorId',
   ReenviarMensajeGenerado: '/CampaniaRemarketingGeneral/ReenviarMensajeGenerado',
+  GenerarListadoTextosRemarketing: '/CampaniaRemarketingGeneral/GenerarListadoTextosRemarketing',
 
   // CATEGORIA ARGUMENTOS
   ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',
