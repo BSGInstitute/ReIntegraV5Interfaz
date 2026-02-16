@@ -73,7 +73,7 @@ export class ModalContentCronogramaComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private _alertaService: AlertaService,
     public activeModal: NgbActiveModal
-  ) {}
+  ) { }
 
   @Input() pEspecificoService: PespecificoService;
   dataItemPespecificoTemp: PEspecificoPadreIndividual;
@@ -135,10 +135,10 @@ export class ModalContentCronogramaComponent implements OnInit {
     operator: 'contains',
   };
   sourcePespecificos: IComboBase1[] = [];
-  get showOpcionPespecifico(){
-    if(this.formInsertarSesion.get('tipo').value == 'Programa Especifico'){
+  get showOpcionPespecifico() {
+    if (this.formInsertarSesion.get('tipo').value == 'Programa Especifico') {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -198,7 +198,7 @@ export class ModalContentCronogramaComponent implements OnInit {
     if (this.pEspecificoService.tieneFrecuencia == true) {
       if (
         this.dataItemPespecificoTemp.tipoProgramaGeneral ==
-          'Webinar Recurrente' ||
+        'Webinar Recurrente' ||
         this.dataItemPespecificoTemp.tipoProgramaGeneral == 'Padre' ||
         this.dataItemPespecificoTemp.tipoProgramaGeneral == 'Modulo'
       ) {
@@ -552,7 +552,7 @@ export class ModalContentCronogramaComponent implements OnInit {
         },
       });
   }
-  asignarValoresGridCronograma() {}
+  asignarValoresGridCronograma() { }
   cargarConfiguracionWebinar(data: ConfigurarWebinar[]) {
     this.gridConfiguracionWebinar.data = data.slice();
     this.gridConfiguracionWebinar.loading = false;
@@ -689,12 +689,12 @@ export class ModalContentCronogramaComponent implements OnInit {
   //Hoario Semanalinstituto
   generarPDFCronogramaSemanal() {
 
-    let nombreCurso : string =   this.dataItemPespecificoTemp.nombre;
-    if( this.formControlCiclo.value != null) {
-      nombreCurso = nombreCurso+  " /Ciclo:" + this.sourceCiclo.find(x => x.id == this.formControlCiclo.value ).nombre;
+    let nombreCurso: string = this.dataItemPespecificoTemp.nombre;
+    if (this.formControlCiclo.value != null) {
+      nombreCurso = nombreCurso + " /Ciclo:" + this.sourceCiclo.find(x => x.id == this.formControlCiclo.value).nombre;
     }
-    if( this.formControlPeriodoLectivo.value != null) {
-      nombreCurso = nombreCurso+  " /Periodo Lectivo:" + this.sourcePeriodoLectivo.find(x => x.id == this.formControlPeriodoLectivo.value).nombre;
+    if (this.formControlPeriodoLectivo.value != null) {
+      nombreCurso = nombreCurso + " /Periodo Lectivo:" + this.sourcePeriodoLectivo.find(x => x.id == this.formControlPeriodoLectivo.value).nombre;
     }
 
     let jsonEnvio: GenerarPDFEnvio = {
@@ -1155,7 +1155,7 @@ export class ModalContentCronogramaComponent implements OnInit {
             x.valorAvance != item.valorAvance ||
             x.valorAvanceOpc != item.valorAvanceOpc ||
             x.idOperadorComparacionPromedio !=
-              item.idOperadorComparacionPromedio ||
+            item.idOperadorComparacionPromedio ||
             x.valorPromedio != item.valorPromedio ||
             x.valorPromedioOpc != item.valorPromedioOpc
           ) {
@@ -1324,7 +1324,7 @@ export class ModalContentCronogramaComponent implements OnInit {
         if (this.pEspecificoService.esCursoIndividual) {
           this.insertarSesionEnCurso(this.dataItemPespecificoTemp.id);
         } else {
-          if(datosForm.idPespecifico == null || datosForm.idPespecifico == 0){
+          if (datosForm.idPespecifico == null || datosForm.idPespecifico == 0) {
             this._alertaService.swalFireOptions({
               icon: 'info',
               title: 'Seleccione un Programa especifico',
@@ -1482,7 +1482,7 @@ export class ModalContentCronogramaComponent implements OnInit {
         },
       });
   }
-  reloadModal() {}
+  reloadModal() { }
   eliminarFurSesion(dataItem: ProgramaEspecificoFUR) {
     this._alertaService.mensajeEliminar().then((result) => {
       if (result.isConfirmed) {
@@ -1542,38 +1542,75 @@ export class ModalContentCronogramaComponent implements OnInit {
       },
     });
   }
-  checkedRadioInserarSesion(event: any){
+  checkedRadioInserarSesion(event: any) {
 
   }
 
-  filtrarSesionesCiclo( _idCiclo: number){
+  filtrarSesionesCiclo(_idCiclo: number) {
     this.gridCronograma.loading = true;
     let filtroTemp;
 
-    if(_idCiclo != null ) {
+    if (_idCiclo != null) {
       filtroTemp = this.sourceCronograma.filter(x => x.idCiclo == _idCiclo);
       this.gridCronograma.loading = false;
       this.gridCronograma.data = filtroTemp;
     }
-    else{
+    else {
       this.gridCronograma.loading = false;
       this.gridCronograma.data = this.sourceCronograma
     }
   }
 
-  filtrarSesionesPeriodoLectivo( _idPeriodoLectivo: number){
+  filtrarSesionesPeriodoLectivo(_idPeriodoLectivo: number) {
     this.gridCronograma.loading = true;
     let filtroTemp;
 
-    if(_idPeriodoLectivo != null ) {
+    if (_idPeriodoLectivo != null) {
       filtroTemp = this.sourceCronograma.filter(x => x.idPeriodoLectivo == _idPeriodoLectivo);
       this.gridCronograma.loading = false;
       this.gridCronograma.data = filtroTemp;
     }
-    else{
+    else {
       this.gridCronograma.loading = false;
       this.gridCronograma.data = this.sourceCronograma
     }
+  }
+  validarSoloNumerosPositivos(e: any, max: number = 999): void {
+    const key = e.key;
+    const allowedKeys = [
+      'Backspace',
+      'Tab',
+      'ArrowLeft',
+      'ArrowRight',
+      'Delete',
+      'Home',
+      'End',
+    ];
+
+    if (allowedKeys.includes(key)) {
+      return;
+    }
+
+    if (/^[0-9]$/.test(key)) {
+      const input = e.target;
+      const currentValue = input.value || '';
+      const selectionStart = input.selectionStart || 0;
+      const selectionEnd = input.selectionEnd || 0;
+
+      const newValueStr =
+        currentValue.substring(0, selectionStart) +
+        key +
+        currentValue.substring(selectionEnd);
+
+      const newValue = Number(newValueStr);
+
+      if (newValue > max) {
+        e.preventDefault();
+      }
+      return;
+    }
+
+    e.preventDefault();
   }
 
 }

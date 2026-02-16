@@ -396,6 +396,10 @@ export abstract class IntegraService {
   {
     return this.http.post<any>(`${baseURL}${urlApi}`, FormData)
   }
+  putFormDataResponse(urlApi: string, FormData: any): Observable<HttpResponse<any>>
+  {
+    return this.http.put<any>(`${baseURL}${urlApi}`, FormData)
+  }
   insertarLlamadaWebphonePanel(body: any): Observable<HttpResponse<any>> {
     return this.http.get<any>('https://integrav4-registrollamada.bsginstitute.com/Home/InsertarLlamadaWebphonePanel', {
       headers: this.headersJSON,

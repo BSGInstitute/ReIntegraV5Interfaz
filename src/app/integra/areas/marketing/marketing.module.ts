@@ -183,6 +183,10 @@ import { CategoriasComponent } from './configuraciones/categoria-argumentos/cate
 import { ProgramasComponent } from './configuraciones/categoria-argumentos/programas/programas.component';
 import { ModalEditarProgramaComponent } from './configuraciones/categoria-argumentos/programas/modal-editar-programa/modal-editar-programa.component';
 import { ModalCrearProgramaComponent } from './configuraciones/categoria-argumentos/programas/modal-crear-programa/modal-crear-programa.component';
+import { UltimaOportunidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/ultima-oportunidad/ultima-oportunidad.component';
+import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
+import { ProbabilidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/probabilidad/probabilidad.component';
+import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/embudo/embudo.component';
 
 
 @NgModule({
@@ -366,7 +370,11 @@ import { ModalCrearProgramaComponent } from './configuraciones/categoria-argumen
     CategoriasComponent,
     ProgramasComponent,
     ModalEditarProgramaComponent,
-    ModalCrearProgramaComponent
+    ModalCrearProgramaComponent,
+    UltimaOportunidadComponent,
+    MayorProbInscripcionComponent,
+    ProbabilidadComponent,
+    EmbudoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

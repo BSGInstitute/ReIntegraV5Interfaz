@@ -38,6 +38,7 @@ interface FormPartners {
   descripcion: string;
   descripcionCorta: string;
   checked: boolean;
+  paginaLink: string;
 }
 
 /* -----Grid de Contactos----- */
@@ -70,6 +71,10 @@ export class PartnertsComponent implements OnInit, OnDestroy {
 
   enProcesoSolicitud: boolean = false;
 
+  // Archivos seleccionados para certificación BSG
+  archivoLogoSeleccionado: File | null = null;
+  archivoCertificadoSeleccionado: File | null = null;
+
   gridPartners: KendoGrid = new KendoGrid();
   gridContactos: KendoGrid = new KendoGrid();
   gridBeneficios: KendoGrid = new KendoGrid();
@@ -91,7 +96,17 @@ export class PartnertsComponent implements OnInit, OnDestroy {
     descripcionCorta: [null, Validators.required],
     posicion: null,
     checked: [false],
+    paginaLink: [null, [this.urlPersonalizadoValidator]],
   });
+
+  /* -----------Validador personalizado de URL ----------- */
+  urlPersonalizadoValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null; // Campo opcional
+    }
+    const urlPattern = /^https?:\/\/.+/;
+    return urlPattern.test(control.value) ? null : { invalidUrl: true };
+  }
   dataItemPartnerTmp: Partners;
 
   filterSettings: DropDownFilterSettings = {
@@ -133,6 +148,11 @@ export class PartnertsComponent implements OnInit, OnDestroy {
     this.gridContactos.data = [];
     this.gridBeneficios.data = [];
     this.enProcesoSolicitud = false;
+
+    // Resetear archivos seleccionados
+    this.archivoLogoSeleccionado = null;
+    this.archivoCertificadoSeleccionado = null;
+
     if (!isNew) {
       this.dataItemPartnerTmp = dataItem;
       this.asignarValoresToForm(dataItem);
@@ -158,8 +178,12 @@ export class PartnertsComponent implements OnInit, OnDestroy {
     this.formDatosPartners
       .get('descripcionCorta')
       .setValue(dataItem.descripcionCorta);
-
     this.formDatosPartners.get('checked').setValue(dataItem.posicion == 1);
+
+    // Campo BSG
+    this.formDatosPartners
+      .get('paginaLink')
+      .setValue(dataItem.paginaLink);
   }
 
   get partnersForm(): FormPartners {
@@ -169,19 +193,19 @@ export class PartnertsComponent implements OnInit, OnDestroy {
   /* ---------------Guardar Nuevo Partners ------------------------*/
   guardarPartner() {
     if (this.formDatosPartners.valid) {
-      let jsonEnvio = this.procesarPartners();
+      const formData = this.construirFormData();
       this.gridPartners.loading = true;
       this.enProcesoSolicitud = true;
       this._integraService
-        .postJsonResponse(
-          constApiPlanificacion.PartnerPwInsertar,
-          JSON.stringify(jsonEnvio)
+        .postFormDataResponse(
+          constApiPlanificacion.PartnerPwInsertarConArchivos,
+          formData
         )
         .subscribe({
-          next: (resp: HttpResponse<Partners>) => {
+          next: (resp: any) => {
             this.gridPartners.loading = false;
             this.enProcesoSolicitud = false;
-            this.gridPartners.data.unshift(resp.body);
+            this.gridPartners.data.unshift(resp);
             this.gridPartners.loadData();
             this.obtener();
             this.modalRef.close();
@@ -374,29 +398,32 @@ export class PartnertsComponent implements OnInit, OnDestroy {
   actualizar(nuevoNombre?: string) {
     if (this.formDatosPartners.valid) {
       this.enProcesoSolicitud = true;
-      const materialAccion = this.procesarPartners();
+      const formData = this.construirFormData();
       this.gridPartners.loading = true;
 
       this._integraService
-        .putJsonResponse(
-          constApiPlanificacion.PartnerPwActualizar,
-          JSON.stringify(materialAccion)
+        .putFormDataResponse(
+          constApiPlanificacion.PartnerPwActualizarConArchivos,
+          formData
         )
         .subscribe({
-          next: (resp: HttpResponse<Partners>) => {
-            console.log(resp.body);
-
+          next: (resp: any) => {
             // Actualiza el objeto dataItem con la respuesta del servidor.
-            this.dataItemPartnerTmp.nombre = resp.body.nombre;
-            this.dataItemPartnerTmp.imgPrincipal = resp.body.imgPrincipal;
-            this.dataItemPartnerTmp.imgPrincipalAlf = resp.body.imgPrincipalAlf;
-            this.dataItemPartnerTmp.imgSecundaria = resp.body.imgSecundaria;
-            this.dataItemPartnerTmp.imgSecundariaAlf =
-              resp.body.imgSecundariaAlf;
-            this.dataItemPartnerTmp.descripcion = resp.body.descripcion;
-            this.dataItemPartnerTmp.descripcionCorta =
-              resp.body.descripcionCorta;
-            this.dataItemPartnerTmp.posicion = resp.body.posicion;
+            this.dataItemPartnerTmp.nombre = resp.nombre;
+            this.dataItemPartnerTmp.imgPrincipal = resp.imgPrincipal;
+            this.dataItemPartnerTmp.imgPrincipalAlf = resp.imgPrincipalAlf;
+            this.dataItemPartnerTmp.imgSecundaria = resp.imgSecundaria;
+            this.dataItemPartnerTmp.imgSecundariaAlf = resp.imgSecundariaAlf;
+            this.dataItemPartnerTmp.descripcion = resp.descripcion;
+            this.dataItemPartnerTmp.descripcionCorta = resp.descripcionCorta;
+            this.dataItemPartnerTmp.posicion = resp.posicion;
+
+            // Campos BSG
+            this.dataItemPartnerTmp.paginaLink = resp.paginaLink;
+            this.dataItemPartnerTmp.urlCertificadoLogo =
+              resp.urlCertificadoLogo;
+            this.dataItemPartnerTmp.urlCertificadoBSG =
+              resp.urlCertificadoBSG;
 
             this.gridPartners.loading = false;
             this.modalRef.close();
@@ -527,5 +554,106 @@ export class PartnertsComponent implements OnInit, OnDestroy {
 
     // El número de teléfono es válido
     return null;
+  }
+
+  /* -----------Métodos para selección de archivos BSG ----------- */
+  onLogoSeleccionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const archivo = input.files[0];
+
+      // Validar tipo de archivo (solo imágenes)
+      const tiposPermitidos = [
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        'image/gif',
+      ];
+
+      if (!tiposPermitidos.includes(archivo.type)) {
+        this._alertaService.notificationWarning(
+          'Solo se permiten archivos de imagen (PNG, JPG, GIF)'
+        );
+        input.value = '';
+        return;
+      }
+
+      this.archivoLogoSeleccionado = archivo;
+    }
+  }
+
+  onCertificadoSeleccionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const archivo = input.files[0];
+
+      // Validar tipo de archivo (solo PDF)
+      if (archivo.type !== 'application/pdf') {
+        this._alertaService.notificationWarning('Solo se permiten archivos PDF');
+        input.value = '';
+        return;
+      }
+
+      this.archivoCertificadoSeleccionado = archivo;
+    }
+  }
+
+  /* -----------Construir FormData para envío con archivos ----------- */
+  construirFormData(): FormData {
+    const formData = new FormData();
+
+    // Campos básicos existentes
+    formData.append(
+      'Id',
+      this.isNew ? '0' : this.dataItemPartnerTmp.id.toString()
+    );
+    formData.append('Nombre', this.partnersForm.nombre || '');
+    formData.append('ImgPrincipal', this.partnersForm.imgPrincipal || '');
+    formData.append('ImgPrincipalAlf', this.partnersForm.imgPrincipalAlf || '');
+    formData.append('ImgSecundaria', this.partnersForm.imgSecundaria || '');
+    formData.append(
+      'ImgSecundariaAlf',
+      this.partnersForm.imgSecundariaAlf || ''
+    );
+    formData.append('Descripcion', this.partnersForm.descripcion || '');
+    formData.append('DescripcionCorta', this.partnersForm.descripcionCorta || '');
+    formData.append('Posicion', this.partnersForm.checked ? '1' : '0');
+
+    // Nuevo campo de texto
+    formData.append(
+      'PaginaLink',
+      this.partnersForm.paginaLink || ''
+    );
+
+    // Archivos (si fueron seleccionados)
+    if (this.archivoLogoSeleccionado) {
+      formData.append(
+        'ArchivoCertificadoLogo',
+        this.archivoLogoSeleccionado,
+        this.archivoLogoSeleccionado.name
+      );
+    }
+
+    if (this.archivoCertificadoSeleccionado) {
+      formData.append(
+        'ArchivoCertificadoBSG',
+        this.archivoCertificadoSeleccionado,
+        this.archivoCertificadoSeleccionado.name
+      );
+    }
+
+    // Beneficios y Contactos como JSON string
+    formData.append(
+      'BeneficiosJson',
+      JSON.stringify(this.gridBeneficios.data || [])
+    );
+    formData.append(
+      'ContactosJson',
+      JSON.stringify(this.gridContactos.data || [])
+    );
+
+    return formData;
   }
 }
