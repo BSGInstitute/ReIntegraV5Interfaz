@@ -2451,6 +2451,10 @@ export const constApiMarketing = {
   ObtenerMensajeGeneradoPorId: '/CampaniaRemarketingGeneral/ObtenerMensajeGeneradoPorId',
   ReenviarMensajeGenerado: '/CampaniaRemarketingGeneral/ReenviarMensajeGenerado',
   GenerarListadoTextosRemarketing: '/CampaniaRemarketingGeneral/GenerarListadoTextosRemarketing',
+  InsertarCampaniaCanvas: '/CampaniaRemarketingGeneral/InsertarCampaniaCanvas',
+  ActualizarCampaniaCanvas: '/CampaniaRemarketingGeneral/ActualizarCampaniaCanvas',
+  ObtenerCampaniaCanvas: '/CampaniaRemarketingGeneral/ObtenerCampaniaCanvas',
+  EliminarCampaniaCanvas: '/CampaniaRemarketingGeneral/EliminarCampaniaCanvas',
 
   // CATEGORIA ARGUMENTOS
   ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',

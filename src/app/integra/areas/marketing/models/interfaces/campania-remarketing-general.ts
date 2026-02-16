@@ -1,5 +1,5 @@
 export interface CampaniaRemarketingGeneral {
-  id: number;
+  idRemarketingCampaniaGeneral: number;
   nombre: string;
   fechaEnvioProgramada: Date;
   envioConfigurado: string;

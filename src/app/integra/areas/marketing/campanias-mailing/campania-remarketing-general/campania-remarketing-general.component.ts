@@ -161,7 +161,7 @@ export class CampaniaRemarketingGeneralComponent implements OnInit {
     if (this.isAllSelected()) {
       this.selectedCampanias = [];
     } else {
-      this.selectedCampanias = this.listadoRemarketingGeneral.map((x) => x.id);
+      this.selectedCampanias = this.listadoRemarketingGeneral.map((x) => x.idRemarketingCampaniaGeneral);
     }
   }
 }
