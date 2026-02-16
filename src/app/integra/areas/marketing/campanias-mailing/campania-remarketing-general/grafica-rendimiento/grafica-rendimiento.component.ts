@@ -25,6 +25,7 @@ export class GraficaRendimientoComponent implements OnInit {
   }
 
   ObtenerRendimiento() {
+    console.log(this.selectedCampanias)
     this.isLoading = true;
     this.integraService
       .postJsonResponse(
