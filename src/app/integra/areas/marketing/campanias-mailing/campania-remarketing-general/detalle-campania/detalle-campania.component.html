@@ -12,15 +12,18 @@
     </ng-container>
 
     <!-- Tabla detalles campaña -->
-    <div *ngIf="!isLoading && detalleCampania" class="modal-body">
+    <div *ngIf="!isLoading && detalleCampania?.totalMensajes > 0; else noProgramados" class="modal-body">
       <div class="detalle-cabecera">
+        <span>
+          <b>Total Programados:</b> {{ detalleCampania.totalMensajes }}
+        </span>
         <span
-          ><b>Aperturas:</b> {{ detalleCampania.aperturas }}
-          <small>({{ porcentajeAperturas }})</small></span
+          ><b>Entregados:</b> {{ detalleCampania.enviados }}
+          <small>({{ porcentajeEnviados }})</small></span
         >
         <span
-          ><b>Clicks:</b> {{ detalleCampania.clicks }}
-          <small>({{ porcentajeClicks }})</small></span
+          ><b>Abiertos:</b> {{ detalleCampania.abiertos }}
+          <small>({{ porcentajeAbiertos }})</small></span
         >
         <span
           ><b>Rebotados:</b> {{ detalleCampania.rebotados }}
@@ -30,7 +33,7 @@
       <div class="detalle-tabla">
         <table
           mat-table
-          [dataSource]="detalleCampania.alumnosContactados"
+          [dataSource]="detalleCampania.estadoAlumnos"
           class="mat-elevation-z2 tabla-centrada"
         >
           <ng-container matColumnDef="estadoEnvio">
@@ -57,15 +60,7 @@
               {{ alumno.idAlumno }}
             </td>
           </ng-container>
-          <ng-container matColumnDef="nombreAlumno">
-            <th mat-header-cell *matHeaderCellDef style="text-align: center">
-              Nombre Alumno
-            </th>
-            <td mat-cell *matCellDef="let alumno" style="text-align: center">
-              {{ alumno.nombreAlumno }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="apertura">
+          <ng-container matColumnDef="abierto">
             <th
               mat-header-cell
               *matHeaderCellDef
@@ -78,23 +73,39 @@
               *matCellDef="let alumno"
               style="width: 100px; text-align: center"
             >
-              {{ alumno.apertura ? 1 : 0 }}
+              {{ alumno.abierto ? 1 : 0 }}
             </td>
           </ng-container>
-          <ng-container matColumnDef="click">
+          <ng-container matColumnDef="rebotado">
             <th
               mat-header-cell
               *matHeaderCellDef
               style="width: 100px; text-align: center"
             >
-              Click
+              Rebotado
             </th>
             <td
               mat-cell
               *matCellDef="let alumno"
               style="width: 100px; text-align: center"
             >
-              {{ alumno.click ? 1 : 0 }}
+              {{ alumno.rebotado ? 1 : 0 }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="fechaEnvio">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center">
+              Fecha Envio
+            </th>
+            <td mat-cell *matCellDef="let alumno" style="text-align: center">
+              {{ alumno.fechaEnvio | date : 'short' }}            
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="razonRechazo">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center">
+              Razon Rechazo
+            </th>
+            <td mat-cell *matCellDef="let alumno" style="text-align: center">
+              {{ alumno.razonRechazo }}
             </td>
           </ng-container>
           <ng-container matColumnDef="accion">
@@ -114,17 +125,17 @@
                   mat-icon-button
                   class="bg-warning"
                   matTooltip="Ver mensaje me-2"
-                  (click)="verMensaje(alumno.idAlumno)"
+                  (click)="verUltimoMensaje(alumno.idAlumno)"
                 >
                   <i class="material-icons">visibility</i>
                 </button>
-                <button
+                <!-- <button
                   class="btn btn-outline-secondary"
                   [disabled]="reenviandoId === alumno.idAlumno"
                   (click)="reenviarMensaje(alumno.idAlumno)"
                 >
                   Reenviar
-                </button>
+                </button> -->
               </div>
             </td>
           </ng-container>
@@ -132,11 +143,12 @@
           <tr
             mat-header-row
             *matHeaderRowDef="[
-              'idAlumno',
               'estadoEnvio',
-              'nombreAlumno',
-              'apertura',
-              'click',
+              'idAlumno',
+              'abierto',
+              'rebotado',
+              'fechaEnvio',
+              'razonRechazo',
               'accion'
             ]"
             style="text-align: center"
@@ -146,11 +158,12 @@
             *matRowDef="
               let row;
               columns: [
-                'idAlumno',
                 'estadoEnvio',
-                'nombreAlumno',
-                'apertura',
-                'click',
+                'idAlumno',
+                'abierto',
+                'rebotado',
+                'fechaEnvio',
+                'razonRechazo',
                 'accion'
               ]
             "
@@ -159,11 +172,17 @@
         </table>
       </div>
     </div>
+
+    <ng-template #noProgramados>
+      <div *ngIf="!isLoading" class="py-5 mx-auto">
+        Esta campañaa esta en proceso de ejecución o no existe alguna en curso
+      </div>
+    </ng-template>
   </div>
 
   <!-- Modal Mensaje -->
   <div *ngIf="mensajeModalOpen" class="modal-detalle-campania-backdrop">
-    <div class="modal-detalle-campania" style="max-width: 500px">
+    <div class="modal-detalle-campania" style="width: 1000px">
       <div class="modal-body">
         <ng-container *ngIf="mensajeLoading; else mensajeContent">
           <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -174,9 +193,11 @@
           </div>
         </ng-template>
       </div>
-      <button class="btn btn-danger" (click)="cerrarMensajeModal()">
-        Cerrar
-      </button>
+      <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-danger" (click)="cerrarMensajeModal()">
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 </div>
