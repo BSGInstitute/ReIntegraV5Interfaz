@@ -93,7 +93,7 @@ export class PespecificoService {
     return this._dataItemPespecificoTemp;
   }
   ready() {
-    this.obtenerCombosModulo();
+    this.obtenerCombosModulo().subscribe();
     this.obtenerComboEmpresaAutorizada();
   }
   obtenerPespecificos() {
@@ -102,62 +102,67 @@ export class PespecificoService {
   obtenerPespecificoFur() {
     this._reloadPespecificoFur$.next(true);
   }
-  private obtenerCombosModulo() {
-    this._integraService
-      .getJsonResponse(
-        constApiPlanificacion.PEspecificoObtenerCombosModuloAsync
-      )
-      .subscribe({
-        next: (resp: HttpResponse<CombosModulo>) => {
-          let combos = resp.body as any;
-          for (const key in combos) {
-            combos[key] = combos[key].sort((a: any, b: any) =>
+  public obtenerCombosModulo(): Observable<void> {
+    return new Observable<void>((observer) => {
+      this._integraService
+        .getJsonResponse(
+          constApiPlanificacion.PEspecificoObtenerCombosModuloAsync
+        )
+        .subscribe({
+          next: (resp: HttpResponse<CombosModulo>) => {
+            let combos = resp.body as any;
+            for (const key in combos) {
+              combos[key] = combos[key].sort((a: any, b: any) =>
+                a.nombre.localeCompare(b.nombre)
+              );
+            }
+            let resultado = combos as CombosModulo;
+            let combosModulo = this._combosModulo$.value;
+            combosModulo.producto = resultado.producto.sort((a, b) =>
               a.nombre.localeCompare(b.nombre)
             );
-          }
-          let resultado = combos as CombosModulo;
-          let combosModulo = this._combosModulo$.value;
-          combosModulo.producto = resultado.producto.sort((a, b) =>
-            a.nombre.localeCompare(b.nombre)
-          );
-          combosModulo.proveedor = resultado.proveedor;
-          combosModulo.proveedorCurso = resultado.proveedorCurso;
-          combosModulo.productoPresentacion = resultado.productoPresentacion;
-          combosModulo.programaGeneral = resultado.programaGeneral;
-          combosModulo.centroCosto = resultado.centroCosto;
-          combosModulo.modalidad = resultado.modalidad;
-          combosModulo.locacionTroncal = resultado.locacionTroncal;
-          combosModulo.ambiente = resultado.ambiente;
-          combosModulo.origen = resultado.origen;
-          combosModulo.locacion = resultado.locacion;
-          combosModulo.expositor = resultado.expositor;
-          combosModulo.frecuencia = resultado.frecuencia;
-          combosModulo.estadoPEspecifico = resultado.estadoPEspecifico;
-          combosModulo.personalAreaTrabajo = resultado.personalAreaTrabajo;
-          combosModulo.ciudad = resultado.ciudad;
-          combosModulo.ciudadBS = resultado.ciudadBS;
-          combosModulo.areaCapacitacion = resultado.areaCapacitacion;
-          combosModulo.subAreaCapacitacion = resultado.subAreaCapacitacion;
-          combosModulo.programaGeneralP = resultado.programaGeneralP;
-          combosModulo.programaEspecifico = resultado.programaEspecifico;
-          combosModulo.programaEspecificoHijos =
-            resultado.programaEspecificoHijos;
-          combosModulo.centroCostoP = resultado.centroCostoP;
-          combosModulo.programaEspecificoWebinar =
-            resultado.programaEspecificoWebinar;
-          combosModulo.plantillaCorreo = resultado.plantillaCorreo;
-          combosModulo.plantillaWhatsApp = resultado.plantillaWhatsApp;
-          combosModulo.tiempoFrecuencia = resultado.tiempoFrecuencia;
-          combosModulo.dias = resultado.dias;
-          combosModulo.periodoLectivo = resultado.periodoLectivo;
-          combosModulo.ciclo = resultado.ciclo;
-          this._combosModulo$.next(combosModulo);
-        },
-        error: (error) => {
-          let mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
-        },
-      });
+            combosModulo.proveedor = resultado.proveedor;
+            combosModulo.proveedorCurso = resultado.proveedorCurso;
+            combosModulo.productoPresentacion = resultado.productoPresentacion;
+            combosModulo.programaGeneral = resultado.programaGeneral;
+            combosModulo.centroCosto = resultado.centroCosto;
+            combosModulo.modalidad = resultado.modalidad;
+            combosModulo.locacionTroncal = resultado.locacionTroncal;
+            combosModulo.ambiente = resultado.ambiente;
+            combosModulo.origen = resultado.origen;
+            combosModulo.locacion = resultado.locacion;
+            combosModulo.expositor = resultado.expositor;
+            combosModulo.frecuencia = resultado.frecuencia;
+            combosModulo.estadoPEspecifico = resultado.estadoPEspecifico;
+            combosModulo.personalAreaTrabajo = resultado.personalAreaTrabajo;
+            combosModulo.ciudad = resultado.ciudad;
+            combosModulo.ciudadBS = resultado.ciudadBS;
+            combosModulo.areaCapacitacion = resultado.areaCapacitacion;
+            combosModulo.subAreaCapacitacion = resultado.subAreaCapacitacion;
+            combosModulo.programaGeneralP = resultado.programaGeneralP;
+            combosModulo.programaEspecifico = resultado.programaEspecifico;
+            combosModulo.programaEspecificoHijos =
+              resultado.programaEspecificoHijos;
+            combosModulo.centroCostoP = resultado.centroCostoP;
+            combosModulo.programaEspecificoWebinar =
+              resultado.programaEspecificoWebinar;
+            combosModulo.plantillaCorreo = resultado.plantillaCorreo;
+            combosModulo.plantillaWhatsApp = resultado.plantillaWhatsApp;
+            combosModulo.tiempoFrecuencia = resultado.tiempoFrecuencia;
+            combosModulo.dias = resultado.dias;
+            combosModulo.periodoLectivo = resultado.periodoLectivo;
+            combosModulo.ciclo = resultado.ciclo;
+            this._combosModulo$.next(combosModulo);
+            observer.next();
+            observer.complete();
+          },
+          error: (error) => {
+            let mensaje = this._alertaService.getMessageErrorService(error);
+            this._alertaService.notificationWarning(mensaje);
+            observer.error(error);
+          },
+        });
+    });
   }
   private obtenerComboEmpresaAutorizada() {
     let sub$ = this._integraService

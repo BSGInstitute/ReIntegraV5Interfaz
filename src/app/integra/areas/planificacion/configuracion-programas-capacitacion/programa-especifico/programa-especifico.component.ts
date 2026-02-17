@@ -465,6 +465,7 @@ export class ProgramaEspecificoComponent implements OnInit {
               modalRef.componentInstance.datosFormGeneracionAutomatica =
                 datosForm;
               modalRef.componentInstance.centroCostoGenerado = resp.body;
+            
             }
           },
           error: (error) => {
@@ -721,6 +722,7 @@ export class ProgramaEspecificoComponent implements OnInit {
       },
     });
   }
+  
   private abrirModalCronograma() {
     let observable1$ = this._pEspecificoService.obtenerCronogramaPEspecifico$(
       [],

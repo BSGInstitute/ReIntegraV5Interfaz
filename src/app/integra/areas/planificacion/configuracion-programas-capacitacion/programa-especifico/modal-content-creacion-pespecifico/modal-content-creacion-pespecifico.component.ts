@@ -124,6 +124,8 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
     operator: 'contains',
   };
   centroCostoCreacion: IComboBase1[] = [];
+  centroCostoFiltrado: IComboBase1[] = [];
+  private readonly MIN_CARACTERES_FILTRO_CC = 3;
   controlesFormPespecifico = {
     showUrlDocumentoCronograma: true,
     showUrlDocumentoCronogramaM: false,
@@ -189,6 +191,7 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
         itemCentroCosto,
         ...this.combosModulo.centroCosto,
       ];
+      this.centroCostoFiltrado = [itemCentroCosto];
       this.formPespecifico
         .get('nombrePespecifico')
         .setValue(this.centroCostoGenerado.nombreProgramaEspecifico);
@@ -216,12 +219,34 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
     }else{
       this.controlesFormPespecifico.showCiudad = true;
       this.centroCostoCreacion = [...this.combosModulo.centroCosto];
+      this.centroCostoFiltrado = [];
     }
   }
   initSubscribeObservables() {
     this.pEspecificoService.combosModulo$.subscribe((resp) => {
       this.combosModulo = resp;
     });
+  }
+  onFilterCentroCosto(filtro: string) {
+    if (filtro.length >= this.MIN_CARACTERES_FILTRO_CC) {
+      const textoFiltro = filtro.toLowerCase();
+      this.centroCostoFiltrado = this.centroCostoCreacion.filter(
+        (cc) => cc.nombre.toLowerCase().includes(textoFiltro)
+      );
+    } else {
+      this.cargarCentroCostoInicial();
+    }
+  }
+  private cargarCentroCostoInicial() {
+    const idCentroCosto = this.formPespecifico.get('idCentroCosto')?.value;
+    if (idCentroCosto != null) {
+      const ccSeleccionado = this.centroCostoCreacion.find(
+        (cc) => cc.id === idCentroCosto
+      );
+      this.centroCostoFiltrado = ccSeleccionado ? [ccSeleccionado] : [];
+    } else {
+      this.centroCostoFiltrado = [];
+    }
   }
   generarUrlCronograma() {
     let idPespecifico = 0;
@@ -305,6 +330,14 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
   }
 
   insertarPespecifico() {
+    if (!this.formPespecifico.valid) {
+      this.formPespecifico.markAllAsTouched();
+      this._alertaService.swalFireOptions({
+        icon: 'info',
+        text: 'Por favor completar campos obligatorios',
+      });
+      return;
+    }
     let pespecifico = this.recuperarValoresFormPespecifico();
     if (pespecifico == null) {
       return;
@@ -333,12 +366,24 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
         next: (resp: HttpResponse<RegistroProgramaEspecifico>) => {
           if (resp.body != null) {
             this.pEspecificoService.obtenerPespecificos();
+            this.pEspecificoService.obtenerCombosModulo().subscribe({
+              next: () => {
+                this.loadingCreacionPespecifico = false;
+                this.activeModal.close();
+              },
+              error: () => {
+                this.loadingCreacionPespecifico = false;
+                this.activeModal.close();
+              }
+            });
             this._alertaService.mensajeExitoso(
               'El programa especifico se creo correctamente'
             );
+          } else {
+            this.formPespecifico.markAllAsTouched();
+            this.loadingCreacionPespecifico = false;
+            this.activeModal.close();
           }
-          this.loadingCreacionPespecifico = false;
-          this.activeModal.close();
         },
         error: (error) => {
           this.loadingCreacionPespecifico = false
@@ -430,6 +475,10 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
   private asignarValoresFormPespecifico(dataItem: PEspecificoPadreIndividual) {
     this.dataItemPespecificoTemp = dataItem;
     this.centroCostoCreacion = [...this.combosModulo.centroCosto];
+    const ccActual = this.combosModulo.centroCosto.find(
+      (cc) => cc.id === dataItem.idCentroCosto
+    );
+    this.centroCostoFiltrado = ccActual ? [ccActual] : [];
     this.controlesFormPespecifico.showUrlDocumentoCronogramaM = false;
     this.controlesFormPespecifico.showUrlDocumentoCronogramaB = false;
     this.controlesFormPespecifico.showUrlDocumentoCronogramaI = false;
