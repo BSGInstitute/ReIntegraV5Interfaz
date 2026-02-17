@@ -18,10 +18,11 @@ import { DetallesCampania } from '@marketing/models/interfaces/campania-remarket
   styleUrls: ['./detalle-campania.component.scss'],
 })
 export class DetalleCampaniaComponent implements OnInit, OnChanges {
-  @Input() id: number | null = null;
+  @Input() idCampania: number | null = null;
+  @Input() identificadorLlamadaIA: string | null = null;
   @Output() close = new EventEmitter<void>();
 
-  detalleCampania: any = null;
+  detalleCampania: DetallesCampania;
   isLoading: boolean = false;
 
   mensajeContenido: string | null = null;
@@ -37,17 +38,17 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['id'] && changes['id'].currentValue) {
-      this.ObtenerDetallesCampaniaRemarketing(changes['id'].currentValue);
+    if (changes['idCampania'] && changes['idCampania'].currentValue) {
+      this.ObtenerDetallesCampaniaRemarketing(changes['idCampania'].currentValue);
     }
   }
 
-  ObtenerDetallesCampaniaRemarketing(id: number) {
+  ObtenerDetallesCampaniaRemarketing(idCampania: number) {
     this.isLoading = true;
     this.detalleCampania = null;
     this.integraService
       .getJsonResponse(
-        `${constApiMarketing.VerDetallesCampaniaRemarketing}/${id}`
+        `${constApiMarketing.VerDetallesCampaniaRemarketing}/${idCampania}`
       )
       .subscribe({
         next: (data: any) => {
@@ -64,17 +65,17 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
       });
   }
 
-  verMensaje(idAlumno: number) {
+  verUltimoMensaje(idAlumno: number) {
     this.mensajeLoading = true;
     this.mensajeContenido = null;
     this.mensajeModalOpen = true;
     this.integraService
       .getJsonResponse(
-        `${constApiMarketing.ObtenerMensajeGeneradoPorId}/${idAlumno}`
+        `${constApiMarketing.ObtenerMensajeGeneradoPorId}/${this.identificadorLlamadaIA}/${idAlumno}`
       )
       .subscribe({
         next: (data: any) => {
-          this.mensajeContenido = data.body?.contenido || 'Sin contenido';
+          this.mensajeContenido = data.body[0]?.contenido || 'Sin contenido';
           this.mensajeLoading = false;
         },
         error: (err) => {
@@ -89,52 +90,57 @@ export class DetalleCampaniaComponent implements OnInit, OnChanges {
     this.mensajeContenido = null;
   }
 
-  reenviarMensaje(idAlumno: number) {
-    this.reenviandoId = idAlumno;
-    this.integraService
-      .postJsonResponse(
-        `${constApiMarketing.ReenviarMensajeGenerado}`,
-        idAlumno
-      )
-      .subscribe({
-        next: () => {
-          this.reenviandoId = null;
-          this.alertaService.mensajeIcon(
-            '¡Reenviado!',
-            'El mensaje fue reenviado.',
-            'success'
-          );
-        },
-        error: (err) => {
-          this.reenviandoId = null;
-          this.alertaService.notificationError('Error al reenviar mensaje');
-        },
-      });
-  }
+  // reenviarMensaje(idAlumno: number) {
+  //   this.reenviandoId = idAlumno;
+  //   const request = {
+  //     identificadorLlamadaIA: this.identificadorLlamadaIA,
+  //     idAlumno
+  //   };
 
-  get porcentajeAperturas(): string {
-    if (!this.detalleCampania || !this.detalleCampania.programados) return '-';
+  //   this.integraService
+  //     .postJsonResponse(
+  //       `${constApiMarketing.ReenviarMensajeGenerado}`,
+  //       request
+  //     )
+  //     .subscribe({
+  //       next: () => {
+  //         this.reenviandoId = null;
+  //         this.alertaService.mensajeIcon(
+  //           '¡Reenviado!',
+  //           'El mensaje fue reenviado.',
+  //           'success'
+  //         );
+  //       },
+  //       error: (err) => {
+  //         this.reenviandoId = null;
+  //         this.alertaService.notificationError('Error al reenviar mensaje');
+  //       },
+  //     });
+  // }
+
+  get porcentajeAbiertos(): string {
+    if (!this.detalleCampania || !this.detalleCampania.totalMensajes) return '-';
     return (
       (
-        (this.detalleCampania.aperturas / this.detalleCampania.programados) *
+        (this.detalleCampania.abiertos / this.detalleCampania.totalMensajes) *
         100
       ).toFixed(1) + '%'
     );
   }
-  get porcentajeClicks(): string {
-    if (!this.detalleCampania || !this.detalleCampania.programados) return '-';
+  get porcentajeEnviados(): string {
+    if (!this.detalleCampania || !this.detalleCampania.totalMensajes) return '-';
     return (
       (
-        (this.detalleCampania.clicks / this.detalleCampania.programados) *
+        (this.detalleCampania.enviados / this.detalleCampania.totalMensajes) *
         100
       ).toFixed(1) + '%'
     );
   }
   get porcentajeRebotados(): string {
-    if (!this.detalleCampania || !this.detalleCampania.programados) return '-';
+    if (!this.detalleCampania || !this.detalleCampania.totalMensajes) return '-';
     return (
       (
-        (this.detalleCampania.rebotados / this.detalleCampania.programados) *
+        (this.detalleCampania.rebotados / this.detalleCampania.totalMensajes) *
         100
       ).toFixed(1) + '%'
     );

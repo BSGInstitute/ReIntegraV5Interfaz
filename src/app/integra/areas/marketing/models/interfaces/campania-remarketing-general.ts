@@ -1,24 +1,27 @@
 export interface CampaniaRemarketingGeneral {
-  id: number;
+  idRemarketingCampaniaGeneral: number;
   nombre: string;
   fechaEnvioProgramada: Date;
   envioConfigurado: string;
   medioEnvio: string;
+  estadoEnvio: string;
   usuarioCreacion: string;
   fechaCreacion: Date;
+  identificadorLlamadaIA: string;
 }
 
 export interface DetallesCampania {
-  programados: number;
-  aperturas: number;
-  clicks: number;
+  totalMensajes: number;
+  enviados: number;
+  abiertos: number;
   rebotados: number;
-  alumnosContactados: {
+  estadoAlumnos: {
     idAlumno: number;
     estadoEnvio: string;
-    nombreAlumno: string;
-    apertura: boolean;
-    click: boolean;
+    abierto: boolean;
+    rebotado: boolean;
+    razonRechazo?: string;
+    fechaEnvio: Date;
   }[];
 }
 
@@ -26,7 +29,8 @@ export interface CombosConfiguracionCampaniaDTO {
   medioEnvio: ElementoConfiguracionCampania[];
   tipoMensaje: ElementoConfiguracionCampania[];
   logicaEnvio: ElementoConfiguracionCampania[];
-  argumento: ElementoConfiguracionCampania[];
+  categoriaArgumento: ElementoConfiguracionCampania[];
+  prioridadesUnicas: number[];
 }
 
 export interface ElementoConfiguracionCampania {
@@ -38,14 +42,6 @@ export interface SegmentoCreado {
   id: number;
   nombre: string;
   filtroEjecutado: boolean;
-}
-
-export interface ResultadoGeneracionTexto {
-  id: number;
-  idAlumno: number;
-  nombreAlumno: string;
-  pais: string;
-  contenidoGenerado: string;
 }
 
 export interface CampaniaRemarketingGeneralEditar {
@@ -60,5 +56,33 @@ export interface CampaniaRemarketingGeneralEditar {
   envioConfigurado: string;
   fechaEnvioProgramada: Date;
   mediosEnvio: number[];
-  argumentos: number[];
+  categoriaArgumento: number;
+  prioridades: number[];
+  identificadorLlamadaIA: string;
 }
+
+export interface EstadoEjecucionLlamadaIA {
+  id_llamada: string;
+  total: number;
+  pendientes: number;
+  finalizados: number;
+  en_proceso: number;
+  error: string[];
+  mensajesGenerados?: MensajeGeneradoIA[];
+}
+
+export interface MensajeGeneradoIA {
+  identificador_llamada: string;
+  fecha_generacion: Date | string;
+  id_alumno: number;
+  canal: string;
+  contenido: string;
+  argumentos?: RespuestaArgumentoIA[];
+}
+
+export interface RespuestaArgumentoIA {
+  numero_argumento: number;
+  nombre_argumento: string;
+  score_argumento: number;
+}
+
