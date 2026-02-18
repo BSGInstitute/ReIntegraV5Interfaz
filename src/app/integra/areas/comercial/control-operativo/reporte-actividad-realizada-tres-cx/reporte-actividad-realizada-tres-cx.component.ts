@@ -8,7 +8,7 @@ import {
 import { IntegraService } from '@shared/services/integra.service';
 import { IntegraReplicaService } from '@shared/services/integra-replica.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { constApiComercial, constApiGlobal } from '@environments/constApi';
 import { DomSanitizer } from '@angular/platform-browser';
 import {
@@ -71,6 +71,8 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
   }[] = [];
   fasesOportunidad: Array<IFaseOportunidad>;
   urlGrabacion: string = '';
+  mostrarAudio: boolean = true;
+  private audioYaRecargado: boolean = false;
   procesoEnvio: boolean= true;
   origenLlamada: string = '';
   estadosActividad = [
@@ -97,7 +99,8 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
     public sanitizer: DomSanitizer,
     private userService: UserService,
     private _alertaService: AlertaService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
   gridActividadRealizada = new KendoGrid();
   formReporteActividadRealizada: FormGroup = this.formBuilder.group({
@@ -445,11 +448,41 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
         break;
     }
     if (flagReproducir == true) {
+      this.audioYaRecargado = false;
+      this.mostrarAudio = true;
       this.modalService.open(this.modalReproducirAudio, {
         size: 'md',
         backdrop: 'static',
       });
     }
+  }
+  onAudioProgress(event: Event) {
+    if (this.audioYaRecargado) return;
+    const audio = event.target as HTMLAudioElement;
+    if (!audio || !audio.duration || !audio.buffered.length) return;
+    const bufferedEnd = audio.buffered.end(audio.buffered.length - 1);
+    // Recargar cuando el audio esté completamente bufferado
+    if (bufferedEnd >= audio.duration - 0.5) {
+      this.recargarAudio(audio);
+    }
+  }
+  private recargarAudio(audio: HTMLAudioElement) {
+    if (this.audioYaRecargado) return;
+    this.audioYaRecargado = true;
+    const tiempoActual = audio.currentTime;
+    this.mostrarAudio = false;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.mostrarAudio = true;
+      this.cdr.detectChanges();
+      // Restaurar posición de reproducción después de recrear
+      setTimeout(() => {
+        const nuevoAudio = document.querySelector('.modal-body audio') as HTMLAudioElement;
+        if (nuevoAudio) {
+          nuevoAudio.currentTime = tiempoActual;
+        }
+      }, 100);
+    }, 50);
   }
   tiempoLlamadas(dataItem: IReporteActividadRealizada) {
     let flagTiempo: boolean = false;
