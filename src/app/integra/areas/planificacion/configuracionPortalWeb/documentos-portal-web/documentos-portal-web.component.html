@@ -380,14 +380,14 @@
           </button>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-bordered align-middle">
+        <div style="overflow-x: auto;">
+          <table class="table table-bordered align-middle" style="min-width: 1200px;">
             <thead class="table-light">
               <tr>
                 <th style="width: 200px;">Modalidad</th>
                 <th style="width: 240px;">Subtítulo</th>
                 <th style="width: 240px;">Descripción</th>
-                <th>Información</th>
+                <th style="min-width: 500px;">Información</th>
                 <th style="width: 90px;">Eliminar</th>
               </tr>
             </thead>
@@ -411,18 +411,23 @@
 
                 <td>
                   <div *ngFor="let det of mod.informacion; let ii = index" class="d-flex align-items-center gap-2 mb-2">
-                    <div style="width: 130px;">
+                    <div style="min-width: 100px;">
                       {{ det.etiqueta }}
                     </div>
 
-                    <div class="flex-grow-1" *ngIf="det.tipo === 'HORA'">
+                    <div [class.flex-grow-1]="!esOnlineEnVivo(mod.idModalidad)" style="min-width: 200px;" *ngIf="det.tipo === 'HORA'">
                       <kendo-dropdownlist [data]="ListaPaises" textField="nombrePais" valueField="id"
-                        [valuePrimitive]="true" [(ngModel)]="det.valor">
+                        [valuePrimitive]="true" [(ngModel)]="det.valor"
+                        [kendoDropDownFilter]="filterSettings">
                       </kendo-dropdownlist>
                     </div>
 
-                    <div class="flex-grow-1" *ngIf="det.tipo === 'BENEFICIO'">
+                    <div [class.flex-grow-1]="!esOnlineEnVivo(mod.idModalidad)" style="min-width: 200px;" *ngIf="det.tipo === 'BENEFICIO'">
                       <kendo-textbox [(ngModel)]="det.valorTexto"></kendo-textbox>
+                    </div>
+
+                    <div class="flex-grow-1" style="min-width: 200px;" *ngIf="esOnlineEnVivo(mod.idModalidad)">
+                      <kendo-textbox [(ngModel)]="det.horario" placeholder="Texto adicional..."></kendo-textbox>
                     </div>
 
                     <button kendoButton themeColor="error" icon="trash" fillMode="flat" size="small" title="Eliminar"
@@ -680,16 +685,14 @@
       </button>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-bordered align-middle mb-0">
+    <div style="overflow-x: auto;">
+      <table class="table table-bordered align-middle mb-0" style="min-width: 1200px;">
         <thead>
           <tr>
-            <th style="width: 160px">Tipo de Nota</th>
-            <th style="width: 220px">Curso</th>
-            <th>Descripción</th>
-            <th style="width: 120px"></th>
-            <th style="width: 260px">Información</th>
-            <th style="width: 90px" class="text-center">Eliminar</th>
+            <th style="width: 180px;">Tipo de Nota</th>
+            <th style="width: 280px;">Descripción</th>
+            <th style="min-width: 500px;">Información</th>
+            <th style="width: 90px;" class="text-center">Eliminar</th>
           </tr>
         </thead>
 
@@ -715,47 +718,36 @@
                   </td>
 
                   <td *ngIf="di === 0" [attr.rowspan]="n.detalles.length">
-                    <kendo-dropdownlist
-                      [data]="programaGenerales"
-                      textField="nombre"
-                      valueField="id"
-                      [valuePrimitive]="true"
-                      [width]="100"
-                      [(ngModel)]="n.idPGeneral"
-                      [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
-                      [kendoDropDownFilter]="filterSettings"
-                    >
-                    </kendo-dropdownlist>
-                  </td>
-
-                  <td *ngIf="di === 0" [attr.rowspan]="n.detalles.length">
-                    <textarea
-                      class="form-control"
-                      rows="4"
-                      [(ngModel)]="n.descripcion"
-                    ></textarea>
+                    <kendo-textbox [(ngModel)]="n.descripcion"></kendo-textbox>
                   </td>
 
                   <td>
-                    {{ d.etiqueta }}
-                  </td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div style="min-width: 100px;">
+                        {{ d.etiqueta }}
+                      </div>
 
-                  <td>
-                    <ng-container *ngIf="d.tipo === 'HORA'; else tplExtra">
-                      <kendo-dropdownlist
-                        [data]="ListaPaises"
-                        textField="nombrePais"
-                        valueField="id"
-                        [valuePrimitive]="true"
-                        [(ngModel)]="d.idPais"
-                        [defaultItem]="{ id: null, nombrePais: 'Seleccione...' }"
-                      >
-                      </kendo-dropdownlist>
-                    </ng-container>
+                      <div style="min-width: 200px;" *ngIf="d.tipo === 'HORA'">
+                        <kendo-dropdownlist
+                          [data]="ListaPaises"
+                          textField="nombrePais"
+                          valueField="id"
+                          [valuePrimitive]="true"
+                          [(ngModel)]="d.idPais"
+                          [defaultItem]="{ id: null, nombrePais: 'Seleccione...' }"
+                          [kendoDropDownFilter]="filterSettings"
+                        >
+                        </kendo-dropdownlist>
+                      </div>
 
-                    <ng-template #tplExtra>
-                      <kendo-textbox [(ngModel)]="d.valorTexto"></kendo-textbox>
-                    </ng-template>
+                      <div class="flex-grow-1" style="min-width: 200px;" *ngIf="d.tipo === 'EXTRA'">
+                        <kendo-textbox [(ngModel)]="d.valorTexto"></kendo-textbox>
+                      </div>
+
+                      <div class="flex-grow-1" style="min-width: 200px;" *ngIf="d.tipo === 'HORA'">
+                        <kendo-textbox [(ngModel)]="d.horario" placeholder="Texto adicional..."></kendo-textbox>
+                      </div>
+                    </div>
                   </td>
 
                   <td class="text-center">
@@ -790,27 +782,9 @@
                 </td>
 
                 <td>
-                  <kendo-dropdownlist
-                    [data]="programaGenerales"
-                    textField="nombre"
-                    valueField="id"
-                    [valuePrimitive]="true"
-                    [(ngModel)]="n.idPGeneral"
-                    [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
-                    [kendoDropDownFilter]="filterSettings"
-                  >
-                  </kendo-dropdownlist>
+                  <kendo-textbox [(ngModel)]="n.descripcion"></kendo-textbox>
                 </td>
 
-                <td>
-                  <textarea
-                    class="form-control"
-                    rows="4"
-                    [(ngModel)]="n.descripcion"
-                  ></textarea>
-                </td>
-
-                <td></td>
                 <td></td>
 
                 <td class="text-center">
@@ -827,7 +801,7 @@
           </ng-container>
 
           <tr *ngIf="!listaNotas?.length">
-            <td colspan="6" class="text-center text-muted">Sin notas</td>
+            <td colspan="4" class="text-center text-muted">Sin notas</td>
           </tr>
         </tbody>
       </table>
