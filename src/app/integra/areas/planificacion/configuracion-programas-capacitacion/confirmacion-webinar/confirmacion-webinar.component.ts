@@ -9,7 +9,7 @@ import {
   VirtualizationSettings,
 } from '@progress/kendo-angular-dropdowns';
 import { KendoGrid } from '@shared/models/kendo-grid';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertaService } from '@shared/services/alerta.service';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { PageSizeItem } from '@progress/kendo-angular-treelist';
@@ -104,7 +104,7 @@ export class ConfirmacionWebinarComponent implements OnInit {
   };
   gridPrograma = new KendoGrid();
   sourcePGeneral: WebinarDetalleSesion[];
-  formComentario = new FormControl('');
+  formComentario = new FormControl('', Validators.required);
   nuevoRegistro: boolean = false;
   loaderModal: boolean = false;
   idPEspecificoSesionTemp: number;
@@ -291,6 +291,9 @@ export class ConfirmacionWebinarComponent implements OnInit {
   }
 
   cancelarWebinar() {
+    this.formComentario.markAsTouched();
+    if (this.formComentario.invalid) return;
+
     let dataEnviada: CancelarWebinar = {
       idPEspespecifico: null,
       comentarioCancelacion: this.formComentario.value,
@@ -309,6 +312,7 @@ export class ConfirmacionWebinarComponent implements OnInit {
             'El Webinar fue cancelado exitosamente!.',
             'success'
           );
+          this.limpiarCamposForm();
           this.obtener();
         },
         error: (error) => {
