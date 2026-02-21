@@ -53,6 +53,7 @@ interface InfoVM {
   tipo: InfoTipo;
   valor: number | null;
   valorTexto: string;
+  horario: string;
 }
 
 interface ModalidadVM {
@@ -94,12 +95,12 @@ interface NotaDetalleVM {
   tipo: NotaInfoTipo;
   valorTexto: string;
   idPais: number | null;
+  horario: string;
 }
 
 interface NotaVM {
   id?: number;
   idNotaTipo: number | null;
-  idPGeneral: number | null;
   descripcion: string;
   detalles: NotaDetalleVM[];
   _prevIdNotaTipo?: number | null;
@@ -372,6 +373,7 @@ export class DocumentosPortalWebComponent implements OnInit {
       tipo,
       valor: null,
       valorTexto: '',
+      horario: '',
     });
   }
 
@@ -403,11 +405,17 @@ export class DocumentosPortalWebComponent implements OnInit {
       tipo,
       valor: null,
       valorTexto: '',
+      horario: '',
     });
   }
 
   seleccionarModalidad(mi: number) {
     this.modalidadActivaIndex = mi;
+  }
+
+  esOnlineEnVivo(idModalidad: number | null): boolean {
+    const m = (this.listaModalidad ?? []).find(x => x.id === idModalidad);
+    return (m?.nombre ?? '').toLowerCase().includes('online en vivo');
   }
 
   eliminarInformacionHorario(mi: number, ii: number) {
@@ -1309,6 +1317,7 @@ export class DocumentosPortalWebComponent implements OnInit {
             tipo: d.tipo,
             idPais: d.tipo === 'HORA' ? d.valor : null,
             beneficio: d.tipo === 'BENEFICIO' ? d.valorTexto : null,
+            horario: d.horario ?? '',
           })),
         })),
         modalidadesEliminadas: this.modalidadesEliminadas,
@@ -1410,7 +1419,6 @@ export class DocumentosPortalWebComponent implements OnInit {
         const desc = (n.descripcion ?? '').trim();
         const tieneAlgo =
           (n.id ?? 0) > 0 ||
-          (n.idPGeneral !== null && n.idPGeneral !== undefined) ||
           desc.length > 0 ||
           (n.detalles ?? []).length > 0;
         return tieneAlgo;
@@ -1429,13 +1437,13 @@ export class DocumentosPortalWebComponent implements OnInit {
         notas: notasLimpias.map((n) => ({
           id: n.id ?? 0,
           idNotaTipo: n.idNotaTipo,
-          idPGeneral: n.idPGeneral,
           descripcion: n.descripcion,
           detalles: (n.detalles ?? []).map((d, i) => ({
             id: d.idDetalle ?? 0,
             orden: i + 1,
             informacionExtra: d.tipo === 'EXTRA' ? d.valorTexto : null,
             idPais: d.tipo === 'HORA' ? d.idPais : null,
+            horario: d.horario ?? '',
           })),
         })),
         notasEliminadas: this.notasEliminadas,
@@ -1535,12 +1543,15 @@ export class DocumentosPortalWebComponent implements OnInit {
               const idPais = (d.idPais ?? d.IdPais ?? null) as number | null;
               const beneficio = (d.beneficio ?? d.Beneficio ?? '') as string;
 
+              const horario = (d.horario ?? d.horario ?? '') as string;
+
               return {
                 idDetalle: idDetalle > 0 ? idDetalle : undefined,
                 etiqueta: `${baseEtiqueta} ${orden}`,
                 tipo,
                 valor: tipo === 'HORA' ? idPais : null,
                 valorTexto: tipo === 'BENEFICIO' ? (beneficio ?? '') : '',
+                horario: horario ?? '',
               };
             });
 
@@ -1700,6 +1711,7 @@ export class DocumentosPortalWebComponent implements OnInit {
         tipo,
         valorTexto: '',
         idPais: null,
+        horario: '',
       },
     ];
   }
@@ -1708,7 +1720,6 @@ export class DocumentosPortalWebComponent implements OnInit {
 
     const nueva: NotaVM = {
       idNotaTipo: tipoPorDefecto,
-      idPGeneral: null,
       descripcion: '',
       detalles: [],
       _prevIdNotaTipo: tipoPorDefecto,
@@ -1772,6 +1783,7 @@ export class DocumentosPortalWebComponent implements OnInit {
       tipo,
       valorTexto: '',
       idPais: null,
+      horario: '',
     });
   }
 
@@ -1971,13 +1983,13 @@ ObtenerDocumentoPWNotas(id: number) {
                 tipo,
                 valorTexto: d.informacionExtra ?? '',
                 idPais: isHora ? d.idPais : null,
+                horario: d.horario ?? d.horario ?? '',
               } as NotaDetalleVM;
             });
 
           return {
             id: n.id ?? 0,
             idNotaTipo: n.idNotaTipo ?? null,
-            idPGeneral: n.idPGeneral ?? null,
             descripcion: n.descripcion ?? '',
             detalles: detallesVM,
             _prevIdNotaTipo: n.idNotaTipo ?? null,
