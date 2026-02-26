@@ -523,6 +523,16 @@ export class SeguimientoOportunidadesTresCxComponent implements OnInit {
             flagModal = true;
             this.urlGrabacion = element.nombreGrabacion;
             break;
+        case 'Wavix Sin Grabacion':
+          this.alertaService.swalFireOptions({
+            icon: 'info',
+            text: 'No contiene grabación',
+          });
+          break;
+        case 'CelularCorporativo Migrado':
+          this.urlGrabacion = element.nombreGrabacion;
+          flagModal = true;
+          break;
         case 'Wolkbox':
           this.alertaService.swalFireOptions({
             icon: 'info',
