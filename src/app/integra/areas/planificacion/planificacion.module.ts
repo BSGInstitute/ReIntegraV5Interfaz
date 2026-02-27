@@ -135,6 +135,8 @@ import { PgProblemasClienteFormComponent } from './configuracion-programas-capac
 import { ModalContentPgeneralHistorialMontoPagoComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-historial-monto-pago/modal-content-pgeneral-historial-monto-pago.component';
 import { AprobacionDescuentoComponent } from './configuracionprogramascapacitacion/aprobacion-descuento/aprobacion-descuento.component';
 import { ModalConfiguracionTutorVirtualComponent } from './configuracion-portal-web/video-evaluaciones-estructura-programa/modal-configuracion-tutor-virtual/modal-configuracion-tutor-virtual.component';
+import { SubCriterioTareaComponent } from './maestros/sub-criterio-tarea/sub-criterio-tarea.component';
+import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea.component';
 
 
 @NgModule({
@@ -269,6 +271,8 @@ import { ModalConfiguracionTutorVirtualComponent } from './configuracion-portal-
     ModalContentPgeneralHistorialMontoPagoComponent,
     AprobacionDescuentoComponent,
     ModalConfiguracionTutorVirtualComponent,
+    SubCriterioTareaComponent,
+    CriterioTareaComponent,
 
 
   ],

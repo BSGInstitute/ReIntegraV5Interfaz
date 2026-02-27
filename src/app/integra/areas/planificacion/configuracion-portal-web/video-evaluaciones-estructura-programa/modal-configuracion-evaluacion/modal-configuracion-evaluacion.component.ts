@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { constApiPlanificacion } from '@environments/constApi';
 import { PageSizeItem } from '@progress/kendo-angular-grid';
 import { IComboBase1 } from '@shared/models/interfaces/iglobal';
@@ -13,6 +13,15 @@ import {
   ConfiguracionVideoPrincipal,
 } from '../video-evaluaciones-estructura-programa.component';
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+interface CriterioTareaItem {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  escala: number;
+  activo: boolean;
+}
+
+
 interface ConfiguracionEvaluacion {
   idPgeneral: number;
   idDocumentoSeccionPw: number;
@@ -34,6 +43,7 @@ export class ModalConfiguracionEvaluacionComponent implements OnInit {
   public configuracionVideoPrincipal: ConfiguracionVideoPrincipal;
   public configuracionVideo: ConfiguracionVideo[];
   public modalContext: NgbModalRef;
+  listaCriteriosTarea: CriterioTareaItem[] = [];
 
   formConfiguracioneEvaluacion: FormGroup = this._formBuilder.group({
     orden: [''],
@@ -47,6 +57,7 @@ export class ModalConfiguracionEvaluacionComponent implements OnInit {
     descripcionArchivo: [''],
     descripcionPregunta: [''],
     preguntas: [[]],
+    criterios: [[]],
     id: [0],
   });
 
@@ -78,6 +89,7 @@ export class ModalConfiguracionEvaluacionComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtenerConfiguracionEvaluacion();
+    this.obtenerCriteriosTarea();
   }
   ngOnDestroy() {
     this.gridConfiguracionSecuenciaEvaluacionDetalle.data = [];
@@ -88,6 +100,19 @@ export class ModalConfiguracionEvaluacionComponent implements OnInit {
     this.listaTipoEvaluacion = [];
     this.listaInstrucciones = [];
     this.listaPreguntas = [];
+    this.listaCriteriosTarea = [];
+  }
+  obtenerCriteriosTarea(): void {
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.CriterioTareaListar)
+      .subscribe({
+        next: (response: HttpResponse<CriterioTareaItem[]>) => {
+          this.listaCriteriosTarea = response.body ?? [];
+        },
+        error: () => {
+          this.listaCriteriosTarea = [];
+        },
+      });
   }
   obtenerConfiguracionEvaluacion(): void {
     if (this.configuracionVideo != null) {
@@ -165,6 +190,7 @@ export class ModalConfiguracionEvaluacionComponent implements OnInit {
             descripcionArchivo: dataSource.archivoCarpeta,
             descripcionPregunta: dataSource.descripcionPregunta,
             preguntas: [],
+            criterios: (dataSource.criterioTareas ?? []).map((c: any) => c.idCriterioTarea),
             id: dataSource.id,
           });
           this.esBtnNuevo = false;
@@ -185,6 +211,7 @@ export class ModalConfiguracionEvaluacionComponent implements OnInit {
       descripcionArchivo: '',
       descripcionPregunta: '',
       preguntas: [],
+      criterios: [],
       id: 0,
     });
     this.esBtnNuevo = true;
@@ -305,6 +332,9 @@ export class ModalConfiguracionEvaluacionComponent implements OnInit {
           idPregunta: x.id
         }
       }),
+      criterioTareas: (dataForm.criterios as number[]).map((id: number) => ({
+        idCriterioTarea: id,
+      })),
     };
   }
 }

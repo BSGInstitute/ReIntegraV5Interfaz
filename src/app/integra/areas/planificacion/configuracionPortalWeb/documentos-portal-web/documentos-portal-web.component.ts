@@ -951,13 +951,21 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (this.formDatosDocumento.valid) {
       let data = this.objetoEnviar();
       this.loaderModal = true;
+
+      const formData = new FormData();
+      formData.append('dto', JSON.stringify(data));
+
+      if (this.archivosTarea) formData.append('urlArchivoCalificacionExcelente', this.archivosTarea);
+      if (this.archivosPlantilla) formData.append('urlArchivoInstruccionTarea', this.archivosPlantilla);
+
       this.integraService
-        .postJsonResponse(
+        .postFormJsonResponse(
           constApiPlanificacion.DocumentoPwInsertarDocumento,
-          JSON.stringify(data)
+          formData
         )
         .subscribe({
           next: (response: HttpResponse<DocumentoPw>) => {
+            console.log('form data ', formData)
             this.loaderModal = false;
             Swal.fire(
               '¡Creado!',
@@ -979,10 +987,17 @@ export class DocumentosPortalWebComponent implements OnInit {
     if (this.formDatosDocumento.valid) {
       let data = this.objetoEnviar();
       this.loaderModal = true;
+
+      const formData = new FormData();
+      formData.append('dto', JSON.stringify(data));
+
+      if (this.archivosTarea) formData.append('urlArchivoCalificacionExcelente', this.archivosTarea);
+      if (this.archivosPlantilla) formData.append('urlArchivoInstruccionTarea', this.archivosPlantilla);
+
       this.integraService
-        .putJsonResponse(
+        .putFormDataResponse(
           constApiPlanificacion.DocumentoPwActualizarDocumento,
-          JSON.stringify(data)
+          formData
         )
         .subscribe({
           next: (response: HttpResponse<DocumentoPw>) => {
@@ -1001,6 +1016,35 @@ export class DocumentosPortalWebComponent implements OnInit {
           },
         });
     }
+  }
+
+  subirArchivosDocumentoPw(id: number, archivoTarea?: File, archivoPlantilla?: File): void {
+    const formData = new FormData();
+    formData.append('id', String(id));
+    if (archivoTarea) formData.append('urlArchivoCalificacionExcelente', archivoTarea);
+    if (archivoPlantilla) formData.append('urlArchivoInstruccionTarea', archivoPlantilla);
+
+    this.integraService
+      .postFormJsonResponse(
+        constApiPlanificacion.DocumentoPwSubirArchivoDocumentoPw,
+        formData
+      )
+      .subscribe({
+        next: () => {
+          this.loaderModal = false;
+          Swal.fire(
+            '¡Actualizado!',
+            'El documento ha sido modificado correctamente.',
+            'success'
+          );
+          this.generarReporte();
+          this.modalRef.close();
+        },
+        error: (e) => {
+          this.loaderModal = false;
+          this.alertaService.notificationWarning(`Error al subir archivo: ${e}`);
+        },
+      });
   }
 
   eliminarDocumento(dataItem: IDocumentosPortaWeb) {
@@ -1047,6 +1091,14 @@ export class DocumentosPortalWebComponent implements OnInit {
     this.plantillas = [];
     this.documentos = [];
 
+    this.introduccionPlantilla = '';
+    this.archivosPlantilla = null;
+    this.urlPlantillaExistente = '';
+
+    this.introduccionTarea = '';
+    this.archivosTarea = null;
+    this.urlTareaExistente = '';
+
     this.introduccionModalidad = '';
     this.listaModalidadHorarios = [];
     this.modalidadActivaIndex = null;
@@ -1074,6 +1126,8 @@ export class DocumentosPortalWebComponent implements OnInit {
         nombre: dataItem.nombre,
         idPlantilla: dataItem.idPlantillaPw,
       });
+      this.urlPlantillaExistente = dataItem.urlArchivoInstruccionTarea ?? '';
+      this.urlTareaExistente = dataItem.urlArchivoCalificacionExcelente ?? '';
       this.obtenerDocumentosSeccionEditar(dataItem);
       const introducciones = await this.obtenerIntroduccion(dataItem.id);
       this.ObtenerDocumentoPWModalidad(dataItem.id);
@@ -1627,6 +1681,65 @@ export class DocumentosPortalWebComponent implements OnInit {
       });
   }
 
+
+  introduccionPlantilla = '';
+  archivosPlantilla: File | null = null;
+  urlPlantillaExistente = '';
+
+  introduccionTarea = '';
+  archivosTarea: File | null = null;
+  urlTareaExistente = '';
+
+  private readonly MAX_FILE_SIZE_MB = 20;
+
+  private extensionValida(file: File): boolean {
+    return /\.(pdf|docx)$/i.test(file.name);
+  }
+
+  private tamanoValido(file: File): boolean {
+    return file.size <= this.MAX_FILE_SIZE_MB * 1024 * 1024;
+  }
+
+  private validarArchivo(file: File, input: HTMLInputElement): boolean {
+    if (!this.extensionValida(file)) {
+      this.alertaService.notificationWarning('Solo se permiten archivos .pdf o .docx');
+      input.value = '';
+      return false;
+    }
+    if (!this.tamanoValido(file)) {
+      this.alertaService.notificationWarning(`El archivo no debe superar los ${this.MAX_FILE_SIZE_MB} MB`);
+      input.value = '';
+      return false;
+    }
+    return true;
+  }
+
+  seleccionarArchivoPlantilla(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (file && !this.validarArchivo(file, input)) return;
+    this.archivosPlantilla = file;
+  }
+
+  removerArchivoPlantilla() {
+    this.archivosPlantilla = null;
+  }
+
+  seleccionarArchivoTarea(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (file && !this.validarArchivo(file, input)) return;
+    this.archivosTarea = file;
+  }
+
+  removerArchivoTarea() {
+    this.archivosTarea = null;
+  }
+
+  obtenerNombreArchivo(url: string): string {
+    if (!url) return '';
+    return url.split('/').pop() ?? url;
+  }
 
   listaModoFechaInicio: IComboBase1[] = [];
   obtenerModos() {

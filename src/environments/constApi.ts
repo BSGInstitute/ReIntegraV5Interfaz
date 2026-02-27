@@ -2948,6 +2948,23 @@ export const constApiGestionPersonal = {
 };
 
 export const constApiPlanificacion = {
+  //CRITERIO TAREA
+  CriterioTareaListar: '/CriterioTarea/ListarCriterio',
+  CriterioTareaObtenerPorId: '/CriterioTarea/ObtenerPorIdCriterio',
+  CriterioTareaInsertar: '/CriterioTarea/InsertarCriterio',
+  CriterioTareaActualizar: '/CriterioTarea/ActualizarCriterio',
+  CriterioTareaEliminar: '/CriterioTarea/EliminarCriterio',
+  CriterioTareaListarSubCriteriosPorCriterio: '/CriterioTarea/ListarSubCriteriosPorCriterio',
+  CriterioTareaAsignarSubCriterio: '/CriterioTarea/AsignarSubCriterio',
+  CriterioTareaDesasignarSubCriterio: '/CriterioTarea/DesasignarSubCriterio',
+
+  //SUB CRITERIO TAREA
+  CriterioSubTareaListar: '/SubCriterioTarea/ListarSubCriterio',
+  CriterioSubTareaObtenerPorId: '/SubCriterioTarea/ObtenerPorIdSubCriterio',
+  CriterioSubTareaInsertar: '/SubCriterioTarea/InsertarSubCriterio',
+  CriterioSubTareaActualizar: '/SubCriterioTarea/ActualizarSubCriterio',
+  CriterioSubTareaEliminar: '/SubCriterioTarea/EliminarSubCriterio',
+
   //AREA TRABAJO
   AreaTrabajoInsertar: '/AreaTrabajo/Insertar',
   AreaTrabajoActualizar: '/AreaTrabajo/Actualizar',
@@ -2979,9 +2996,10 @@ export const constApiPlanificacion = {
   DocumentoPwObtenerTodo: '/DocumentoPw/ObtenerTodo', // GET
   DocumentoSeccionPwObtenerDocumentoSeccionEditar:
     '/DocumentoSeccionPw/ObtenerDocumentoSeccionEditar', // GET
-  DocumentoPwInsertarDocumento: '/DocumentoPw/InsertarDocumento', //POST
+  DocumentoPwInsertarDocumento: '/DocumentoPw/InsertarDocumento', //POST multipart/form-data
   DocumentoPwActualizarDocumento: '/DocumentoPw/ActualizarDocumento', //PUT
   DocumentoPwEliminarDocumento: '/DocumentoPw/EliminarDocumento', //DELETE
+  DocumentoPwSubirArchivoDocumentoPw: '/DocumentoPw/SubirArchivoDocumentoPw', //POST multipart/form-data
   DocumentoPwObtenerIntroduccionVersionDocumento:
     '/DocumentoPw/ObtenerIntroduccionVersionDocumento', // GET
 

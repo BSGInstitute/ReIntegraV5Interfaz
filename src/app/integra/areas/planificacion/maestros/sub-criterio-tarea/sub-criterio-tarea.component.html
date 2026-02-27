@@ -1,0 +1,270 @@
+<div class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h2 class="text-white mb-2">(M)SubCriterio de Tarea</h2>
+        </div>
+        <div class="card-body p-4" id="grillaAgendaTab">
+          <div class="col-12">
+            <kendo-grid
+              #kgridCriterioTarea
+              [kendoGridBinding]="gridCriterioTarea.data"
+              [loading]="gridCriterioTarea.loading"
+              [resizable]="true"
+              filterable="menu"
+              [sortable]="true"
+              [pageSize]="10"
+              [pageable]="{ pageSizes: [5, 10, 20] }"
+            >
+              <ng-template kendoGridToolbarTemplate>
+                <kendo-grid-spacer></kendo-grid-spacer>
+                <button
+                  kendoButton
+                  icon="plus"
+                  themeColor="primary"
+                  (click)="abrirModal(modalCriterioTarea, true)"
+                >
+                  Nuevo
+                </button>
+              </ng-template>
+
+              <kendo-grid-column
+                field="nombre"
+                title="Nombre"
+                [width]="150"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="descripcion"
+                title="Descripción"
+                [width]="250"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template
+                  kendoGridFilterMenuTemplate
+                  let-filter
+                  let-column="column"
+                  let-filterService="filterService"
+                >
+                  <kendo-grid-string-filter-menu
+                    [column]="column"
+                    [filter]="filter"
+                    [filterService]="filterService"
+                    [extra]="false"
+                    operator="contains"
+                  >
+                    <kendo-filter-contains-operator
+                      text="Contiene"
+                    ></kendo-filter-contains-operator>
+                  </kendo-grid-string-filter-menu>
+                </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-column
+                field="escala"
+                title="Escala"
+                [width]="80"
+                [headerClass]="'header-grid-integra'"
+              ></kendo-grid-column>
+
+              <kendo-grid-column
+                field="activo"
+                title="Activo"
+                [width]="80"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  {{ dataItem.activo ? 'Activo' : 'Inactivo' }}
+                </ng-template>
+              </kendo-grid-column>
+
+              <kendo-grid-command-column
+                title="Opciones"
+                [width]="100"
+                [headerClass]="'header-grid-integra'"
+              >
+                <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                  <div class="w-100 d-flex justify-content-center">
+                    <button
+                      kendoButton
+                      themeColor="warning"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Editar"
+                      (click)="abrirModal(modalCriterioTarea, false, dataItem)"
+                    >
+                      <span class="k-icon k-i-pencil k-icon-20"></span>
+                    </button>
+                    <button
+                      kendoButton
+                      themeColor="error"
+                      fillMode="solid"
+                      rounded="large"
+                      size="large"
+                      class="p-2 me-1 ms-1"
+                      container="body"
+                      placement="top"
+                      ngbTooltip="Eliminar"
+                      (click)="eliminar(dataItem.id)"
+                    >
+                      <span class="k-icon k-i-x k-icon-20"></span>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+
+              <ng-template kendoPagerTemplate>
+                <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+                <kendo-pager-numeric-buttons
+                  [buttonCount]="10"
+                ></kendo-pager-numeric-buttons>
+                <kendo-pager-next-buttons></kendo-pager-next-buttons>
+                <kendo-pager-input></kendo-pager-input>
+                <kendo-pager-info></kendo-pager-info>
+                <kendo-pager-page-sizes
+                  [pageSizes]="pageSizes"
+                ></kendo-pager-page-sizes>
+                <div class="w-100 text-end">
+                  <button
+                    kendoButton
+                    icon="reload"
+                    fillMode="flat"
+                    themeColor="secondary"
+                    (click)="obtener()"
+                  ></button>
+                </div>
+              </ng-template>
+            </kendo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ----------------------- Modal Crear / Actualizar ---------------------- -->
+<ng-template #modalCriterioTarea let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
+      {{ isNew ? 'Nuevo Criterio de Tarea' : 'Editar Criterio de Tarea' }}
+    </h1>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss()"
+    ></button>
+  </div>
+
+  <div class="modal-body p-3">
+    <form [formGroup]="formCriterioTarea">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="nombre" class="d-flex align-items-start">
+              <span><b>Nombre</b><strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-textbox
+              #nombre
+              formControlName="nombre"
+              placeholder="<Ingrese nombre>"
+            ></kendo-textbox>
+            <kendo-formerror>El campo Nombre es obligatorio</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="descripcion" class="d-flex align-items-start">
+              <span
+                ><b>Descripción</b
+                ><strong class="text-danger">*</strong>:</span
+              >
+            </label>
+            <kendo-textarea
+              #descripcion
+              formControlName="descripcion"
+              placeholder="<Ingrese descripción>"
+              [rows]="3"
+            ></kendo-textarea>
+            <kendo-formerror>El campo Descripción es obligatorio</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 k-form-horizontal mb-3">
+          <kendo-formfield orientation="horizontal">
+            <label [for]="escala" class="d-flex align-items-start">
+              <span><b>Escala</b><strong class="text-danger">*</strong>:</span>
+            </label>
+            <kendo-numerictextbox
+              #escala
+              formControlName="escala"
+              [min]="1"
+              [decimals]="0"
+              [format]="'n0'"
+              placeholder="<Ingrese escala>"
+            ></kendo-numerictextbox>
+            <kendo-formerror>El campo Escala es obligatorio (valor entre 1 y 10)</kendo-formerror>
+          </kendo-formfield>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      *ngIf="isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="guardar()"
+    >
+      Guardar
+    </button>
+    <button
+      *ngIf="!isNew"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="enProcesoSolicitud"
+      (click)="actualizar()"
+    >
+      Actualizar
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="modal.close('Close click')"
+      [disabled]="enProcesoSolicitud"
+    >
+      Cancelar
+    </button>
+  </div>
+  <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>

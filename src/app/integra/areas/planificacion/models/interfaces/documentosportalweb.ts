@@ -6,6 +6,8 @@ export interface IDocumentosPortaWeb {
     idPlantillaPw: number;
     estadoFlujo: number;
     asignado?: boolean;
+    urlArchivoInstruccionTarea?: string;
+    urlArchivoCalificacionExcelente?: string;
 }
 export interface SeccionPlantillaPw {
     id: number;

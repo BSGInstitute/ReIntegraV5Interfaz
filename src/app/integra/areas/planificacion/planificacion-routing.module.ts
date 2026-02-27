@@ -81,6 +81,8 @@ import { BsgCelularesComponent } from './maestros/bsgcelulares/bsgcelulares.comp
 import { ProblemaClienteConfiguracionComponent } from './configuracion-programas-capacitacion/problema-cliente-configuracion/problema-cliente-configuracion.component';
 import { CostoCreditosComponent } from './maestros/costo-creditos/costo-creditos.component';
 import { AprobacionDescuentoComponent } from './configuracionprogramascapacitacion/aprobacion-descuento/aprobacion-descuento.component';
+import { SubCriterioTareaComponent } from './maestros/sub-criterio-tarea/sub-criterio-tarea.component';
+import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea.component';
 
 const routes: Routes = [
   {
@@ -287,7 +289,9 @@ const routes: Routes = [
       { path: 'ReporteEncuestaFinalSincronico', component: ReporteEncuestaFinalSincronicoComponent, },
       { path: 'ReporteEncuestaDocente', component: ReporteEncuestaDocenteComponent, },
       { path: 'GrabacionesClasesOnline', component: ConfigurarGrabacionesOnlineComponent },
-      { path: 'ProblemaClienteConfiguracion', component: ProblemaClienteConfiguracionComponent }
+      { path: 'ProblemaClienteConfiguracion', component: ProblemaClienteConfiguracionComponent },
+      { path: 'SubCriteriosTareas', component: SubCriterioTareaComponent },
+      { path: 'CriteriosTareas', component: CriterioTareaComponent },
     ],
   },
 ];
