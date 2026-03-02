@@ -993,6 +993,8 @@ export class DocumentosPortalWebComponent implements OnInit {
 
       if (this.archivosTarea) formData.append('urlArchivoCalificacionExcelente', this.archivosTarea);
       if (this.archivosPlantilla) formData.append('urlArchivoInstruccionTarea', this.archivosPlantilla);
+      if (this.limpiarUrlTarea) formData.append('limpiarUrlCalificacionExcelente', 'true');
+      if (this.limpiarUrlPlantilla) formData.append('limpiarUrlInstruccionTarea', 'true');
 
       this.integraService
         .putFormDataResponse(
@@ -1094,10 +1096,14 @@ export class DocumentosPortalWebComponent implements OnInit {
     this.introduccionPlantilla = '';
     this.archivosPlantilla = null;
     this.urlPlantillaExistente = '';
+    this.mostrarArchivoPlantilla = false;
+    this.limpiarUrlPlantilla = false;
 
     this.introduccionTarea = '';
     this.archivosTarea = null;
     this.urlTareaExistente = '';
+    this.mostrarArchivoTarea = false;
+    this.limpiarUrlTarea = false;
 
     this.introduccionModalidad = '';
     this.listaModalidadHorarios = [];
@@ -1127,7 +1133,9 @@ export class DocumentosPortalWebComponent implements OnInit {
         idPlantilla: dataItem.idPlantillaPw,
       });
       this.urlPlantillaExistente = dataItem.urlArchivoInstruccionTarea ?? '';
+      this.mostrarArchivoPlantilla = !!this.urlPlantillaExistente;
       this.urlTareaExistente = dataItem.urlArchivoCalificacionExcelente ?? '';
+      this.mostrarArchivoTarea = !!this.urlTareaExistente;
       this.obtenerDocumentosSeccionEditar(dataItem);
       const introducciones = await this.obtenerIntroduccion(dataItem.id);
       this.ObtenerDocumentoPWModalidad(dataItem.id);
@@ -1176,6 +1184,8 @@ export class DocumentosPortalWebComponent implements OnInit {
       nombre: dataFrom.nombre,
       idPlantillaPw: dataFrom.idPlantilla,
       estadoFlujo: 1,
+      urlArchivoInstruccionTarea: this.limpiarUrlPlantilla ? '' : (this.urlPlantillaExistente ?? ''),
+      urlArchivoCalificacionExcelente: this.limpiarUrlTarea ? '' : (this.urlTareaExistente ?? ''),
     };
 
     let introduccionBasica: VersionDocumentoBeneficio = {
@@ -1685,10 +1695,14 @@ export class DocumentosPortalWebComponent implements OnInit {
   introduccionPlantilla = '';
   archivosPlantilla: File | null = null;
   urlPlantillaExistente = '';
+  mostrarArchivoPlantilla = false;
+  limpiarUrlPlantilla = false;
 
   introduccionTarea = '';
   archivosTarea: File | null = null;
   urlTareaExistente = '';
+  mostrarArchivoTarea = false;
+  limpiarUrlTarea = false;
 
   private readonly MAX_FILE_SIZE_MB = 20;
 
@@ -1725,6 +1739,12 @@ export class DocumentosPortalWebComponent implements OnInit {
     this.archivosPlantilla = null;
   }
 
+  quitarArchivoPlantillaExistente() {
+    this.urlPlantillaExistente = '';
+    this.mostrarArchivoPlantilla = false;
+    this.limpiarUrlPlantilla = true;
+  }
+
   seleccionarArchivoTarea(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
@@ -1734,6 +1754,12 @@ export class DocumentosPortalWebComponent implements OnInit {
 
   removerArchivoTarea() {
     this.archivosTarea = null;
+  }
+
+  quitarArchivoTareaExistente() {
+    this.urlTareaExistente = '';
+    this.mostrarArchivoTarea = false;
+    this.limpiarUrlTarea = true;
   }
 
   obtenerNombreArchivo(url: string): string {
