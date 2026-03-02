@@ -881,6 +881,10 @@ export class FichaAlumnoAgendaComponent implements OnInit {
             text: 'No contiene grabación',
           });
           break;
+      case 'CelularCorporativo Migrado':
+          this.urlGrabacion = dataItem.nombreGrabacion;
+          flagReproducir = true;
+          break;
       case 'Wolkbox':
         this.alertaService.swalFireOptions({
           icon: 'info',
