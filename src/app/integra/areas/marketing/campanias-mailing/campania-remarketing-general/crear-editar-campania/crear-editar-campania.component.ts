@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, startWith, map } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -57,15 +57,6 @@ export class CrearEditarCampaniaComponent implements OnInit {
 
   // Canvas Plantilla
   mostrarCanvasPlantilla = false;
-  isLoadingCanvas = false;
-  isSavingCanvas = false;
-  canvasExistente = false;
-  canvasId: number | null = null;
-  canvasContenidoSuperior = '';
-  canvasContenidoInferior = '';
-
-  @ViewChild('contenidoSuperiorEditor') contenidoSuperiorEditor: ElementRef;
-  @ViewChild('contenidoInferiorEditor') contenidoInferiorEditor: ElementRef;
 
   displaySegmentoFn(segmento?: SegmentoCreado): string {
     return segmento ? segmento.nombre : '';
@@ -541,153 +532,13 @@ export class CrearEditarCampaniaComponent implements OnInit {
 
   abrirCanvasPlantilla() {
     this.mostrarCanvasPlantilla = true;
-    this.canvasContenidoSuperior = '';
-    this.canvasContenidoInferior = '';
-    this.canvasExistente = false;
-    this.canvasId = null;
-    this.obtenerCanvas();
   }
 
   cerrarCanvasPlantilla() {
     this.mostrarCanvasPlantilla = false;
   }
 
-  obtenerCanvas() {
-    if (!this.data.id) return;
-    this.isLoadingCanvas = true;
-    this.integraService
-      .getJsonResponse(
-        `${constApiMarketing.ObtenerCampaniaCanvas}/${this.data.id}`
-      )
-      .subscribe({
-        next: (data: any) => {
-          if (data.body) {
-            const canvas = data.body;
-            this.canvasId = canvas.id;
-            this.canvasContenidoSuperior = canvas.contenidoSuperior || '';
-            this.canvasContenidoInferior = canvas.contenidoInferior || '';
-            this.canvasExistente = true;
-          }
-          this.isLoadingCanvas = false;
-          this.cargarContenidoEditores();
-        },
-        error: (err) => {
-          console.error('Error fetching canvas:', err);
-          this.isLoadingCanvas = false;
-          this.cargarContenidoEditores();
-        },
-      });
-  }
-
-  private cargarContenidoEditores() {
-    setTimeout(() => {
-      if (this.contenidoSuperiorEditor?.nativeElement) {
-        this.contenidoSuperiorEditor.nativeElement.innerHTML = this.canvasContenidoSuperior;
-      }
-      if (this.contenidoInferiorEditor?.nativeElement) {
-        this.contenidoInferiorEditor.nativeElement.innerHTML = this.canvasContenidoInferior;
-      }
-    });
-  }
-
-  onContenidoSuperiorChange(event: Event) {
-    this.canvasContenidoSuperior = (event.target as HTMLElement).innerHTML;
-  }
-
-  onContenidoInferiorChange(event: Event) {
-    this.canvasContenidoInferior = (event.target as HTMLElement).innerHTML;
-  }
-
-  aplicarFormato(comando: string) {
-    document.execCommand(comando, false, null);
-  }
-
-  guardarCanvas() {
-    const payload = {
-      id: this.canvasId,
-      idRemarketingCampaniaGeneral: this.data.id,
-      contenidoSuperior: this.canvasContenidoSuperior,
-      contenidoInferior: this.canvasContenidoInferior,
-    };
-
-    this.isSavingCanvas = true;
-    const endpoint = this.canvasExistente
-      ? constApiMarketing.ActualizarCampaniaCanvas
-      : constApiMarketing.InsertarCampaniaCanvas;
-
-    this.integraService
-      .postJsonResponse(`${endpoint}`, payload)
-      .subscribe({
-        next: (data: any) => {
-          if (data.body) {
-            this._alertaService.mensajeIcon(
-              '¡Éxito!',
-              this.canvasExistente
-                ? 'Plantilla actualizada correctamente.'
-                : 'Plantilla guardada correctamente.',
-              'success'
-            );
-            this.canvasExistente = true;
-          } else {
-            this._alertaService.mensajeIcon(
-              '¡Alerta!',
-              'No se pudo guardar la plantilla.',
-              'warning'
-            );
-          }
-          this.isSavingCanvas = false;
-        },
-        error: (err) => {
-          console.error('Error saving canvas:', err);
-          this._alertaService.mensajeIcon(
-            'Error',
-            'Hubo un error al guardar la plantilla.',
-            'error'
-          );
-          this.isSavingCanvas = false;
-        },
-      });
-  }
-
-  eliminarCanvas() {
-    if (!this.data.id) return;
-    this.isSavingCanvas = true;
-    this.integraService
-      .postJsonResponse(
-        `${constApiMarketing.EliminarCampaniaCanvas}`,
-        this.data.id
-      )
-      .subscribe({
-        next: (data: any) => {
-          if (data.body) {
-            this._alertaService.mensajeIcon(
-              '¡Éxito!',
-              'Plantilla eliminada correctamente.',
-              'success'
-            );
-            this.canvasContenidoSuperior = '';
-            this.canvasContenidoInferior = '';
-            this.canvasExistente = false;
-            this.canvasId = null;
-            this.cerrarCanvasPlantilla();
-          } else {
-            this._alertaService.mensajeIcon(
-              '¡Alerta!',
-              'No se pudo eliminar la plantilla.',
-              'warning'
-            );
-          }
-          this.isSavingCanvas = false;
-        },
-        error: (err) => {
-          console.error('Error deleting canvas:', err);
-          this._alertaService.mensajeIcon(
-            'Error',
-            'Hubo un error al eliminar la plantilla.',
-            'error'
-          );
-          this.isSavingCanvas = false;
-        },
-      });
+  onCanvasGuardado() {
+    // Hook para acciones post-guardado si es necesario
   }
 }

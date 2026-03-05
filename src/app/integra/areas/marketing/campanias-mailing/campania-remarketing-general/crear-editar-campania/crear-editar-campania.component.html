@@ -345,11 +345,12 @@
     class="modal-resultado-generacion-texto"
   >
     <div class="modal-overlay"></div>
-    <div class="modal-content" style="max-width: 800px">
+    <div class="modal-content" style="max-width: 900px">
       <div class="modal-body">
-        <div style="white-space: pre-line; font-size: 1.1em; padding: 12px 0">
-          {{ mensajeGeneradoSeleccionado }}
-        </div>
+        <div
+          style="font-size: 1.1em; padding: 12px 0"
+          [innerHTML]="mensajeGeneradoSeleccionado"
+        ></div>
       </div>
       <button class="btn btn-danger" (click)="cerrarModalMensajeGenerado()">
         Cerrar
@@ -358,105 +359,11 @@
   </div>
 </div>
 
-<!-- Modal Canvas Plantilla -->
-<div
+<!-- Canvas Plantilla -->
+<app-canvas-plantilla
   *ngIf="mostrarCanvasPlantilla"
-  class="modal-canvas-plantilla"
->
-  <div class="modal-overlay" (click)="cerrarCanvasPlantilla()"></div>
-  <div class="modal-content canvas-content">
-    <div class="modal-header">
-      <div class="titulo w-100 px-3 d-flex justify-content-between align-items-center">
-        Editar Plantilla de Campaña
-        <button mat-icon-button (click)="cerrarCanvasPlantilla()" aria-label="Cerrar">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-    </div>
-
-    <div class="modal-body canvas-body">
-      <div *ngIf="isLoadingCanvas" class="loader-container">
-        <mat-spinner diameter="50" class="mx-auto"></mat-spinner>
-      </div>
-
-      <div *ngIf="!isLoadingCanvas" class="canvas-editor">
-        <!-- Barra de herramientas básica -->
-        <div class="canvas-toolbar">
-          <button mat-icon-button matTooltip="Negrita" (click)="aplicarFormato('bold')">
-            <mat-icon>format_bold</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Cursiva" (click)="aplicarFormato('italic')">
-            <mat-icon>format_italic</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Subrayado" (click)="aplicarFormato('underline')">
-            <mat-icon>format_underlined</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Lista" (click)="aplicarFormato('insertUnorderedList')">
-            <mat-icon>format_list_bulleted</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Alinear izquierda" (click)="aplicarFormato('justifyLeft')">
-            <mat-icon>format_align_left</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Centrar" (click)="aplicarFormato('justifyCenter')">
-            <mat-icon>format_align_center</mat-icon>
-          </button>
-          <button mat-icon-button matTooltip="Alinear derecha" (click)="aplicarFormato('justifyRight')">
-            <mat-icon>format_align_right</mat-icon>
-          </button>
-        </div>
-
-        <!-- Contenedor unificado del mensaje -->
-        <div class="canvas-mensaje-container">
-          <!-- Contenido Superior -->
-          <div
-            class="canvas-editable canvas-editable-top"
-            contenteditable="true"
-            #contenidoSuperiorEditor
-            (input)="onContenidoSuperiorChange($event)"
-            data-placeholder="Escriba aquí el contenido que aparecerá antes del mensaje generado por IA..."
-          ></div>
-
-          <!-- Bloque IA (solo visual, no editable) -->
-          <div class="canvas-ia-block" contenteditable="false">
-            <mat-icon>smart_toy</mat-icon>
-            <span>Aquí el contenido generado por IA</span>
-            <small>(Este bloque será reemplazado por el mensaje personalizado de cada alumno)</small>
-          </div>
-
-          <!-- Contenido Inferior -->
-          <div
-            class="canvas-editable canvas-editable-bottom"
-            contenteditable="true"
-            #contenidoInferiorEditor
-            (input)="onContenidoInferiorChange($event)"
-            data-placeholder="Escriba aquí el contenido que aparecerá después del mensaje generado por IA..."
-          ></div>
-        </div>
-      </div>
-    </div>
-
-    <div *ngIf="!isLoadingCanvas" class="canvas-actions">
-      <button
-        matButton
-        class="btn btn-success px-4"
-        (click)="guardarCanvas()"
-        [disabled]="isSavingCanvas"
-      >
-        <span *ngIf="!isSavingCanvas">Guardar</span>
-        <span *ngIf="isSavingCanvas">Guardando...</span>
-      </button>
-      <button
-        *ngIf="canvasExistente"
-        matButton
-        class="btn btn-danger px-4"
-        (click)="eliminarCanvas()"
-        [disabled]="isSavingCanvas"
-      >
-        Eliminar plantilla
-      </button>
-      <button matButton class="btn btn-light px-4" (click)="cerrarCanvasPlantilla()">
-        Cancelar
-      </button>
-    </div>
-  </div>
-</div>
+  [idCampania]="data.id"
+  [visible]="mostrarCanvasPlantilla"
+  (cerrar)="cerrarCanvasPlantilla()"
+  (guardado)="onCanvasGuardado()"
+></app-canvas-plantilla>

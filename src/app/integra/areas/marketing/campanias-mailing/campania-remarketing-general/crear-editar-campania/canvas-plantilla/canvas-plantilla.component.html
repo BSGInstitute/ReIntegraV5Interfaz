@@ -1,0 +1,286 @@
+<div class="modal-canvas-plantilla" *ngIf="visible">
+  <div class="modal-overlay" (click)="cerrarModal()"></div>
+  <div class="canvas-content">
+    <!-- Header -->
+    <div class="canvas-header">
+      <span>Editar Plantilla de Campaña</span>
+      <button mat-icon-button (click)="cerrarModal()" aria-label="Cerrar">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoadingCanvas" class="loader-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <!-- Editor principal -->
+    <div *ngIf="!isLoadingCanvas" class="canvas-body">
+      <div class="canvas-panels">
+        <!-- Panel Izquierdo: Editor de Bloques -->
+        <div class="panel-editor">
+          <div class="panel-titulo">Editor de Bloques</div>
+
+          <!-- Barra de acciones -->
+          <div class="bloques-toolbar">
+            <button class="btn btn-sm btn-outline-primary" (click)="agregarBloque('imagen')">
+              <mat-icon>image</mat-icon> Imagen
+            </button>
+            <button class="btn btn-sm btn-outline-primary" (click)="agregarBloque('texto')">
+              <mat-icon>text_fields</mat-icon> Texto
+            </button>
+            <button class="btn btn-sm btn-outline-primary" (click)="agregarBloque('boton')">
+              <mat-icon>smart_button</mat-icon> Botón
+            </button>
+            <button class="btn btn-sm btn-outline-primary" (click)="agregarBloque('tres-columnas')">
+              <mat-icon>view_column</mat-icon> 3 Columnas
+            </button>
+            <button class="btn btn-sm btn-outline-primary" (click)="agregarBloque('redes-sociales')">
+              <mat-icon>share</mat-icon> Redes Sociales
+            </button>
+          </div>
+
+          <!-- Lista de bloques con drag & drop -->
+          <div
+            class="bloques-lista"
+            cdkDropList
+            (cdkDropListDropped)="drop($event)"
+          >
+            <div
+              *ngFor="let bloque of bloques; let i = index"
+              class="bloque-item"
+              cdkDrag
+            >
+              <!-- Handle de arrastre -->
+              <div class="bloque-drag-handle" cdkDragHandle>
+                <mat-icon>drag_indicator</mat-icon>
+              </div>
+
+              <div class="bloque-contenido">
+                <!-- === Bloque Imagen === -->
+                <ng-container *ngIf="bloque.tipo === 'imagen'">
+                  <div class="bloque-header">
+                    <mat-icon>image</mat-icon>
+                    <span>Imagen</span>
+                    <button mat-icon-button class="btn-eliminar" (click)="eliminarBloque(bloque.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="bloque-form">
+                    <mat-form-field appearance="fill" class="w-100">
+                      <mat-label>URL de la imagen</mat-label>
+                      <input matInput [(ngModel)]="bloque.urlImagen" placeholder="https://ejemplo.com/imagen.jpg" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" class="w-100">
+                      <mat-label>Texto alternativo</mat-label>
+                      <input matInput [(ngModel)]="bloque.altTexto" placeholder="Descripción de la imagen" />
+                    </mat-form-field>
+                    <div *ngIf="bloque.urlImagen" class="preview-imagen">
+                      <img [src]="bloque.urlImagen" [alt]="bloque.altTexto" />
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- === Bloque Texto === -->
+                <ng-container *ngIf="bloque.tipo === 'texto'">
+                  <div class="bloque-header">
+                    <mat-icon>text_fields</mat-icon>
+                    <span>Texto</span>
+                    <button mat-icon-button class="btn-eliminar" (click)="eliminarBloque(bloque.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="bloque-form">
+                    <ckeditor
+                      [editor]="Editor"
+                      [(ngModel)]="bloque.contenidoHtml"
+                      [config]="editorConfig"
+                    ></ckeditor>
+                  </div>
+                </ng-container>
+
+                <!-- === Bloque Contenido IA === -->
+                <ng-container *ngIf="bloque.tipo === 'contenido-ia'">
+                  <div class="bloque-header bloque-ia-header">
+                    <mat-icon>smart_toy</mat-icon>
+                    <span>Contenido generado por IA</span>
+                  </div>
+                  <div class="bloque-ia-body">
+                    <small>Este bloque será reemplazado por el mensaje personalizado de cada alumno</small>
+                  </div>
+                </ng-container>
+
+                <!-- === Bloque Botón === -->
+                <ng-container *ngIf="bloque.tipo === 'boton'">
+                  <div class="bloque-header">
+                    <mat-icon>smart_button</mat-icon>
+                    <span>Botón</span>
+                    <button mat-icon-button class="btn-eliminar" (click)="eliminarBloque(bloque.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="bloque-form">
+                    <mat-form-field appearance="fill" class="w-100">
+                      <mat-label>Texto del botón</mat-label>
+                      <input matInput [(ngModel)]="bloque.texto" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" class="w-100">
+                      <mat-label>Enlace (URL)</mat-label>
+                      <input matInput [(ngModel)]="bloque.enlace" placeholder="https://ejemplo.com" />
+                    </mat-form-field>
+                    <div class="d-flex gap-3 align-items-center">
+                      <div class="color-picker-group">
+                        <label>Fondo</label>
+                        <input type="color" [(ngModel)]="bloque.colorFondo" />
+                      </div>
+                      <div class="color-picker-group">
+                        <label>Texto</label>
+                        <input type="color" [(ngModel)]="bloque.colorTexto" />
+                      </div>
+                      <div class="preview-boton">
+                        <a
+                          [style.background-color]="bloque.colorFondo"
+                          [style.color]="bloque.colorTexto"
+                          class="btn-preview"
+                        >{{ bloque.texto || 'Botón' }}</a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- === Bloque Tres Columnas === -->
+                <ng-container *ngIf="bloque.tipo === 'tres-columnas'">
+                  <div class="bloque-header">
+                    <mat-icon>view_column</mat-icon>
+                    <span>Tres Columnas</span>
+                    <button mat-icon-button class="btn-eliminar" (click)="eliminarBloque(bloque.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="bloque-form">
+                    <div class="columnas-grid">
+                      <div *ngFor="let col of bloque.columnas; let j = index" class="columna-item">
+                        <div class="columna-titulo-label">Columna {{ j + 1 }}</div>
+                        <mat-form-field appearance="fill" class="w-100">
+                          <mat-label>Título</mat-label>
+                          <input matInput [(ngModel)]="col.titulo" />
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="w-100">
+                          <mat-label>URL de imagen</mat-label>
+                          <input matInput [(ngModel)]="col.urlImagen" placeholder="https://..." />
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="w-100">
+                          <mat-label>Descripción</mat-label>
+                          <textarea matInput [(ngModel)]="col.descripcion" rows="2"></textarea>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="w-100">
+                          <mat-label>URL (Leer más)</mat-label>
+                          <input matInput [(ngModel)]="col.enlace" placeholder="https://..." />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- === Bloque Redes Sociales === -->
+                <ng-container *ngIf="bloque.tipo === 'redes-sociales'">
+                  <div class="bloque-header">
+                    <mat-icon>share</mat-icon>
+                    <span>Redes Sociales</span>
+                    <button mat-icon-button class="btn-eliminar" (click)="eliminarBloque(bloque.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="bloque-form">
+                    <div *ngFor="let red of bloque.redes" class="red-social-row">
+                      <span class="red-nombre">{{ red.nombre }}</span>
+                      <mat-form-field appearance="fill" class="w-100">
+                        <mat-label>URL de {{ red.nombre }}</mat-label>
+                        <input matInput [(ngModel)]="red.url" placeholder="https://..." />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Vista Previa -->
+        <div class="panel-preview">
+          <div class="panel-titulo">Vista Previa</div>
+          <div class="preview-container">
+            <div class="preview-email">
+              <ng-container *ngFor="let bloque of bloques">
+                <!-- Preview Imagen -->
+                <div *ngIf="bloque.tipo === 'imagen' && bloque.urlImagen" class="preview-block" style="text-align:center;">
+                  <img [src]="bloque.urlImagen" [alt]="bloque.altTexto" style="max-width:100%;height:auto;" />
+                </div>
+
+                <!-- Preview Texto -->
+                <div *ngIf="bloque.tipo === 'texto'" class="preview-block" [innerHTML]="bloque.contenidoHtml"></div>
+
+                <!-- Preview IA -->
+                <div *ngIf="bloque.tipo === 'contenido-ia'" class="preview-block preview-ia">
+                  <mat-icon>smart_toy</mat-icon>
+                  <span>Contenido generado por IA</span>
+                  <small>(Mensaje personalizado del alumno)</small>
+                </div>
+
+                <!-- Preview Botón -->
+                <div *ngIf="bloque.tipo === 'boton'" class="preview-block" style="text-align:center;">
+                  <a
+                    [href]="bloque.enlace || '#'"
+                    [style.background-color]="bloque.colorFondo"
+                    [style.color]="bloque.colorTexto"
+                    class="btn-preview-email"
+                  >{{ bloque.texto || 'Botón' }}</a>
+                </div>
+
+                <!-- Preview Tres Columnas -->
+                <div *ngIf="bloque.tipo === 'tres-columnas'" class="preview-block preview-columnas">
+                  <div *ngFor="let col of bloque.columnas" class="preview-columna">
+                    <img *ngIf="col.urlImagen" [src]="col.urlImagen" style="max-width:100%;height:auto;margin-bottom:8px;" />
+                    <h4>{{ col.titulo }}</h4>
+                    <p>{{ col.descripcion }}</p>
+                    <a *ngIf="col.enlace" [href]="col.enlace" class="preview-leer-mas">Leer más</a>
+                  </div>
+                </div>
+
+                <!-- Preview Redes Sociales -->
+                <div *ngIf="bloque.tipo === 'redes-sociales'" class="preview-block preview-redes">
+                  <ng-container *ngFor="let red of bloque.redes">
+                    <a *ngIf="red.url" [href]="red.url" class="preview-red-link">{{ red.nombre }}</a>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div *ngIf="!isLoadingCanvas" class="canvas-actions">
+      <button
+        class="btn btn-success px-4"
+        (click)="guardar()"
+        [disabled]="isSavingCanvas"
+      >
+        <span *ngIf="!isSavingCanvas">Guardar</span>
+        <span *ngIf="isSavingCanvas">Guardando...</span>
+      </button>
+      <button
+        *ngIf="canvasExistente"
+        class="btn btn-danger px-4"
+        (click)="eliminarCanvas()"
+        [disabled]="isSavingCanvas"
+      >
+        Eliminar plantilla
+      </button>
+      <button class="btn btn-light px-4" (click)="cerrarModal()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
