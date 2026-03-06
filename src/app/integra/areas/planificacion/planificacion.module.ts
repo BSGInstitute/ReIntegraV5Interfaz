@@ -137,6 +137,7 @@ import { AprobacionDescuentoComponent } from './configuracionprogramascapacitaci
 import { ModalConfiguracionTutorVirtualComponent } from './configuracion-portal-web/video-evaluaciones-estructura-programa/modal-configuracion-tutor-virtual/modal-configuracion-tutor-virtual.component';
 import { SubCriterioTareaComponent } from './maestros/sub-criterio-tarea/sub-criterio-tarea.component';
 import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea.component';
+import { GestionAcademicaComponent } from './coordinacion-docentes/gestion-academica/gestion-academica.component';
 
 
 @NgModule({
@@ -273,6 +274,7 @@ import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea
     ModalConfiguracionTutorVirtualComponent,
     SubCriterioTareaComponent,
     CriterioTareaComponent,
+    GestionAcademicaComponent,
 
 
   ],
