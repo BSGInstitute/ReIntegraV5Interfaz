@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { constApiMarketing } from '@environments/constApi';
 import { AlertaService } from '@shared/services/alerta.service';
@@ -19,6 +20,7 @@ interface BloqueImagen extends BloqueBase {
   tipo: 'imagen';
   urlImagen: string;
   altTexto: string;
+  urlRedireccionamiento: string;
 }
 
 interface BloqueTexto extends BloqueBase {
@@ -36,12 +38,13 @@ interface BloqueBoton extends BloqueBase {
   enlace: string;
   colorFondo: string;
   colorTexto: string;
+  alineamiento: string;
 }
 
 interface BloqueTresColumnas extends BloqueBase {
   tipo: 'tres-columnas';
+  titulo: string;
   columnas: {
-    titulo: string;
     urlImagen: string;
     descripcion: string;
     enlace: string;
@@ -76,10 +79,41 @@ export class CanvasPlantillaComponent implements OnInit {
   canvasExistente = false;
   canvasId: number | null = null;
 
+  // Imágenes de storage
+  listaImagenes: any[] = [];
+  uploadStates: { [key: string]: { preview: string | null; file: File | null; uploading: boolean } } = {};
+
+  // Redes sociales
+  readonly redesColores: { [key: string]: string } = {
+    'Instagram': '#E4405F',
+    'Facebook': '#1877F2',
+    'Twitter/X': '#000000',
+    'LinkedIn': '#0A66C2',
+    'YouTube': '#FF0000',
+  };
+
+  private readonly redesIconoUrlMap: { [key: string]: string } = {
+    'Instagram': 'https://img.icons8.com/color/48/instagram-new.png',
+    'Facebook': 'https://img.icons8.com/color/48/facebook.png',
+    'Twitter/X': 'https://img.icons8.com/color/48/twitter--v1.png',
+    'LinkedIn': 'https://img.icons8.com/color/48/linkedin.png',
+    'YouTube': 'https://img.icons8.com/color/48/youtube-play.png',
+  };
+
+  private readonly FIRMA_HTML = '<div style="text-align:center;margin:24px 0 8px;">' +
+    '<img src="https://img.mailinblue.com/4995647/images/content_library/original/642b3c39df855a04962152cc.png" ' +
+    'alt="Firma" style="max-width:30%;height:auto;" /></div>';
+
+  private readonly FIRMA_IMG_ID = '642b3c39df855a04962152cc.png';
+
+  private conFirma(html: string): string {
+    return html.includes(this.FIRMA_IMG_ID) ? html : html + this.FIRMA_HTML;
+  }
+
   // CKEditor
   Editor = ClassicEditor;
   editorConfig = {
-  toolbar: {
+    toolbar: {
       items: [
         'undo', 'redo', '|', 'heading', '|', 'bold', 'italic', '|', 'link', 'blockQuote', 'insertTable', '|', 'bulletedList', 'numberedList', 'outdent', 'indent'
       ],
@@ -97,6 +131,7 @@ export class CanvasPlantillaComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtenerCanvas();
+    this.obtenerImagenes();
   }
 
   private generarId(): string {
@@ -114,21 +149,22 @@ export class CanvasPlantillaComponent implements OnInit {
 
     switch (tipo) {
       case 'imagen':
-        bloque = { id, tipo, orden, urlImagen: '', altTexto: '' };
+        bloque = { id, tipo, orden, urlImagen: '', altTexto: '', urlRedireccionamiento: '' };
         break;
       case 'texto':
         bloque = { id, tipo, orden, contenidoHtml: '' };
         break;
       case 'boton':
-        bloque = { id, tipo, orden, texto: 'Click aquí', enlace: '', colorFondo: '#3f51b5', colorTexto: '#ffffff' };
+        bloque = { id, tipo, orden, texto: 'Click aquí', enlace: '', colorFondo: '#3f51b5', colorTexto: '#ffffff', alineamiento: 'center' };
         break;
       case 'tres-columnas':
         bloque = {
           id, tipo, orden,
+          titulo: '',
           columnas: [
-            { titulo: '', urlImagen: '', descripcion: '', enlace: '' },
-            { titulo: '', urlImagen: '', descripcion: '', enlace: '' },
-            { titulo: '', urlImagen: '', descripcion: '', enlace: '' },
+            { urlImagen: '', descripcion: '', enlace: '' },
+            { urlImagen: '', descripcion: '', enlace: '' },
+            { urlImagen: '', descripcion: '', enlace: '' },
           ],
         };
         break;
@@ -166,33 +202,53 @@ export class CanvasPlantillaComponent implements OnInit {
 
   private bloqueAHtml(bloque: Bloque): string {
     switch (bloque.tipo) {
-      case 'imagen':
-        return bloque.urlImagen
-          ? `<div style="text-align:center;margin:16px 0;"><img src="${this.escaparHtml(bloque.urlImagen)}" alt="${this.escaparHtml(bloque.altTexto)}" style="max-width:100%;height:auto;" /></div>`
-          : '';
+      case 'imagen': {
+        if (!bloque.urlImagen) return '';
+        const imgTag = `<img src="${this.escaparHtml(bloque.urlImagen)}" alt="${this.escaparHtml(bloque.altTexto)}" style="max-width:100%;height:auto;" />`;
+        const imgContent = bloque.urlRedireccionamiento
+          ? `<a href="${this.escaparHtml(bloque.urlRedireccionamiento)}">${imgTag}</a>`
+          : imgTag;
+        return `<div style="text-align:center;margin:16px 0;">${imgContent}</div>`;
+      }
       case 'texto':
         return bloque.contenidoHtml ? `<div style="margin:16px 0;">${bloque.contenidoHtml}</div>` : '';
       case 'boton':
-        return `<div style="text-align:center;margin:16px 0;"><a href="${this.escaparHtml(bloque.enlace)}" style="display:inline-block;padding:12px 24px;background-color:${bloque.colorFondo};color:${bloque.colorTexto};text-decoration:none;border-radius:4px;font-weight:600;">${this.escaparHtml(bloque.texto)}</a></div>`;
-      case 'tres-columnas':
+        return `<div style="text-align:${bloque.alineamiento || 'center'};margin:16px 0;"><a href="${this.escaparHtml(bloque.enlace)}" style="display:inline-block;padding:12px 24px;background-color:${bloque.colorFondo};color:${bloque.colorTexto};text-decoration:none;border-radius:4px;font-weight:600;">${this.escaparHtml(bloque.texto)}</a></div>`;
+      case 'tres-columnas': {
+        const tituloHtml = bloque.titulo
+          ? `<h3 style="text-align:center;margin:0 0 12px 0;">${this.escaparHtml(bloque.titulo)}</h3>`
+          : '';
         const cols = bloque.columnas
           .map(
             (c) =>
               `<td style="width:33.33%;padding:8px;vertical-align:top;text-align:center;">` +
-              (c.urlImagen ? `<img src="${this.escaparHtml(c.urlImagen)}" style="max-width:100%;height:auto;margin-bottom:8px;" />` : '') +
-              `<h4 style="margin:4px 0;">${this.escaparHtml(c.titulo)}</h4>` +
-              `<p style="font-size:13px;color:#555;">${this.escaparHtml(c.descripcion)}</p>` +
+              (c.urlImagen
+                ? c.enlace
+                  ? `<a href="${this.escaparHtml(c.enlace)}"><img src="${this.escaparHtml(c.urlImagen)}" style="max-width:100%;height:auto;margin-bottom:8px;" /></a>`
+                  : `<img src="${this.escaparHtml(c.urlImagen)}" style="max-width:100%;height:auto;margin-bottom:8px;" />`
+                : '') +
+              (c.enlace
+                ? `<p style="font-size:13px;color:#555;"><a href="${this.escaparHtml(c.enlace)}" style="color:inherit;text-decoration:none;">${this.escaparHtml(c.descripcion)}</a></p>`
+                : `<p style="font-size:13px;color:#555;">${this.escaparHtml(c.descripcion)}</p>`) +
               (c.enlace ? `<a href="${this.escaparHtml(c.enlace)}" style="color:#3f51b5;font-weight:600;">Leer más</a>` : '') +
               `</td>`
           )
           .join('');
-        return `<table style="width:100%;border-collapse:collapse;margin:16px 0;"><tr>${cols}</tr></table>`;
-      case 'redes-sociales':
+        return `<div style="margin:16px 0;">${tituloHtml}<table style="width:100%;border-collapse:collapse;"><tr>${cols}</tr></table></div>`;
+      }
+      case 'redes-sociales': {
         const redesHtml = bloque.redes
           .filter((r) => r.url)
-          .map((r) => `<a href="${this.escaparHtml(r.url)}" style="display:inline-block;margin:0 8px;color:#3f51b5;text-decoration:none;font-weight:600;">${this.escaparHtml(r.nombre)}</a>`)
+          .map((r) => {
+            const iconUrl = this.redesIconoUrlMap[r.nombre];
+            const contenido = iconUrl
+              ? `<img src="${iconUrl}" alt="${this.escaparHtml(r.nombre)}" width="36" height="36" style="vertical-align:middle;border-radius:50%;" />`
+              : `<span style="font-weight:600;">${this.escaparHtml(r.nombre)}</span>`;
+            return `<a href="${this.escaparHtml(r.url)}" style="display:inline-block;margin:0 6px;text-decoration:none;">${contenido}</a>`;
+          })
           .join('');
         return redesHtml ? `<div style="text-align:center;margin:16px 0;">${redesHtml}</div>` : '';
+      }
       default:
         return '';
     }
@@ -216,16 +272,18 @@ export class CanvasPlantillaComponent implements OnInit {
 
     if (indiceIA === -1) {
       // Si no hay bloque IA (no debería pasar), todo va a superior
-      contenidoSuperior = this.bloques.map((b) => this.bloqueAHtml(b)).join('');
+      contenidoSuperior = this.conFirma(this.bloques.map((b) => this.bloqueAHtml(b)).join(''));
     } else {
       contenidoSuperior = this.bloques
         .slice(0, indiceIA)
         .map((b) => this.bloqueAHtml(b))
         .join('');
-      contenidoInferior = this.bloques
-        .slice(indiceIA + 1)
-        .map((b) => this.bloqueAHtml(b))
-        .join('');
+      contenidoInferior = this.conFirma(
+        this.bloques
+          .slice(indiceIA + 1)
+          .map((b) => this.bloqueAHtml(b))
+          .join('')
+      );
     }
 
     const configuracionBloques = JSON.stringify(this.bloques);
@@ -370,5 +428,64 @@ export class CanvasPlantillaComponent implements OnInit {
 
   cerrarModal(): void {
     this.cerrar.emit();
+  }
+
+  // === Gestión de imágenes de storage ===
+
+  obtenerImagenes(): void {
+    this.integraService.obtener(constApiMarketing.ObtenerImagenesPlantilla).subscribe({
+      next: (response: any) => {
+        this.listaImagenes = response.body || [];
+      },
+      error: () => {},
+    });
+  }
+
+  getUploadState(key: string) {
+    if (!this.uploadStates[key]) {
+      this.uploadStates[key] = { preview: null, file: null, uploading: false };
+    }
+    return this.uploadStates[key];
+  }
+
+  onFileSelectedBloque(event: any, key: string): void {
+    const file: File = event.target.files[0];
+    if (!file) return;
+    const state = this.getUploadState(key);
+    state.file = file;
+    const reader = new FileReader();
+    reader.onload = (e: any) => { state.preview = e.target.result; };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  }
+
+  getIconoFA(icono: string): IconProp {
+    return ['fab', icono.replace('fa-', '')] as IconProp;
+  }
+
+  getRedColor(nombre: string): string {
+    return this.redesColores[nombre] || '#555555';
+  }
+
+  subirImagenBloque(key: string): void {
+    const state = this.uploadStates[key];
+    if (!state?.file) return;
+    state.uploading = true;
+    const fdata = new FormData();
+    fdata.append('file', state.file);
+    this.integraService.postFormJson(constApiMarketing.InsertarImagen, fdata).subscribe({
+      next: () => {},
+      error: () => {
+        this._alertaService.mensajeIcon('Error', 'No se pudo subir la imagen.', 'error');
+        state.uploading = false;
+      },
+      complete: () => {
+        this._alertaService.mensajeIcon('¡Éxito!', 'Imagen subida correctamente. Selecciónela del listado.', 'success');
+        state.uploading = false;
+        state.preview = null;
+        state.file = null;
+        this.obtenerImagenes();
+      },
+    });
   }
 }

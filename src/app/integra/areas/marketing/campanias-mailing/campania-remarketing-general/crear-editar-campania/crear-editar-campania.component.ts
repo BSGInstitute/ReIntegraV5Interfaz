@@ -80,7 +80,7 @@ export class CrearEditarCampaniaComponent implements OnInit {
       tipoMensajeSeleccionado: new FormControl(null, Validators.required),
       logicaEnvioSeleccionada: new FormControl(null, Validators.required),
       categoriaArgumentoSeleccionada: new FormControl(null, Validators.required),
-      prioridadesSeleccionadas: new FormControl([], Validators.required),
+      prioridadesSeleccionadas: new FormControl([]),
       // Configurar remitente
       remitenteCorreo: new FormControl('', [
         Validators.required,
@@ -262,9 +262,7 @@ export class CrearEditarCampaniaComponent implements OnInit {
       medioEnvioSeleccionado != null &&
       this.tipoMensajeSeleccionado &&
       this.logicaEnvioSeleccionada &&
-      this.categoriaArgumentoSeleccionada &&
-      this.prioridadesSeleccionadas &&
-      this.prioridadesSeleccionadas.length > 0
+      this.categoriaArgumentoSeleccionada
     );
 
     if (!valid) {
@@ -388,9 +386,7 @@ export class CrearEditarCampaniaComponent implements OnInit {
       !form.value.mediosEnvioSeleccionados ||
       !form.value.tipoMensajeSeleccionado ||
       !form.value.logicaEnvioSeleccionada ||
-      !form.value.categoriaArgumentoSeleccionada ||
-      !form.value.prioridadesSeleccionadas ||
-      form.value.prioridadesSeleccionadas.length === 0
+      !form.value.categoriaArgumentoSeleccionada
     ) {
       this._alertaService.notificationError(
         'Debe completar todos los campos de la sección Campaña Remarketing.'

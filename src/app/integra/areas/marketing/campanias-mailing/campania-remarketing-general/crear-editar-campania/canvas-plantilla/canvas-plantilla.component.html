@@ -68,12 +68,39 @@
                   </div>
                   <div class="bloque-form">
                     <mat-form-field appearance="fill" class="w-100">
-                      <mat-label>URL de la imagen</mat-label>
-                      <input matInput [(ngModel)]="bloque.urlImagen" placeholder="https://ejemplo.com/imagen.jpg" />
+                      <mat-label>Imagen</mat-label>
+                      <mat-select [(ngModel)]="bloque.urlImagen">
+                        <mat-option [value]="''">-- Sin imagen --</mat-option>
+                        <mat-option *ngFor="let img of listaImagenes" [value]="img.ruta">
+                          {{ img.nombreArchivo }}
+                        </mat-option>
+                      </mat-select>
                     </mat-form-field>
+                    <div class="upload-nueva-imagen">
+                      <input #fileInputImg type="file" accept="image/*"
+                        (change)="onFileSelectedBloque($event, bloque.id)"
+                        style="display:none" />
+                      <button mat-stroked-button type="button" class="btn-select-img"
+                        (click)="fileInputImg.click()">
+                        <mat-icon>upload_file</mat-icon> Seleccionar del PC
+                      </button>
+                      <ng-container *ngIf="getUploadState(bloque.id).preview">
+                        <img [src]="getUploadState(bloque.id).preview" class="upload-preview-img" />
+                      </ng-container>
+                      <button mat-raised-button color="primary" type="button" class="btn-subir-img"
+                        [disabled]="!getUploadState(bloque.id).file || getUploadState(bloque.id).uploading"
+                        (click)="subirImagenBloque(bloque.id)">
+                        <span *ngIf="!getUploadState(bloque.id).uploading">Subir imagen</span>
+                        <span *ngIf="getUploadState(bloque.id).uploading">Subiendo...</span>
+                      </button>
+                    </div>
                     <mat-form-field appearance="fill" class="w-100">
                       <mat-label>Texto alternativo</mat-label>
                       <input matInput [(ngModel)]="bloque.altTexto" placeholder="Descripción de la imagen" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" class="w-100">
+                      <mat-label>URL de redireccionamiento</mat-label>
+                      <input matInput [(ngModel)]="bloque.urlRedireccionamiento" placeholder="https://ejemplo.com" />
                     </mat-form-field>
                     <div *ngIf="bloque.urlImagen" class="preview-imagen">
                       <img [src]="bloque.urlImagen" [alt]="bloque.altTexto" />
@@ -125,10 +152,10 @@
                       <input matInput [(ngModel)]="bloque.texto" />
                     </mat-form-field>
                     <mat-form-field appearance="fill" class="w-100">
-                      <mat-label>Enlace (URL)</mat-label>
+                      <mat-label>URL de redireccionamiento</mat-label>
                       <input matInput [(ngModel)]="bloque.enlace" placeholder="https://ejemplo.com" />
                     </mat-form-field>
-                    <div class="d-flex gap-3 align-items-center">
+                    <div class="d-flex gap-3 align-items-center flex-wrap">
                       <div class="color-picker-group">
                         <label>Fondo</label>
                         <input type="color" [(ngModel)]="bloque.colorFondo" />
@@ -136,6 +163,20 @@
                       <div class="color-picker-group">
                         <label>Texto</label>
                         <input type="color" [(ngModel)]="bloque.colorTexto" />
+                      </div>
+                      <div class="alineamiento-group">
+                        <label class="alineamiento-label">Alineamiento</label>
+                        <mat-button-toggle-group [(ngModel)]="bloque.alineamiento" aria-label="Alineamiento del botón">
+                          <mat-button-toggle value="left">
+                            <mat-icon>format_align_left</mat-icon>
+                          </mat-button-toggle>
+                          <mat-button-toggle value="center">
+                            <mat-icon>format_align_center</mat-icon>
+                          </mat-button-toggle>
+                          <mat-button-toggle value="right">
+                            <mat-icon>format_align_right</mat-icon>
+                          </mat-button-toggle>
+                        </mat-button-toggle-group>
                       </div>
                       <div class="preview-boton">
                         <a
@@ -158,23 +199,46 @@
                     </button>
                   </div>
                   <div class="bloque-form">
+                    <mat-form-field appearance="fill" class="w-100">
+                      <mat-label>Título del bloque</mat-label>
+                      <input matInput [(ngModel)]="bloque.titulo" placeholder="Título general del bloque" />
+                    </mat-form-field>
                     <div class="columnas-grid">
                       <div *ngFor="let col of bloque.columnas; let j = index" class="columna-item">
                         <div class="columna-titulo-label">Columna {{ j + 1 }}</div>
                         <mat-form-field appearance="fill" class="w-100">
-                          <mat-label>Título</mat-label>
-                          <input matInput [(ngModel)]="col.titulo" />
+                          <mat-label>Imagen</mat-label>
+                          <mat-select [(ngModel)]="col.urlImagen">
+                            <mat-option [value]="''">-- Sin imagen --</mat-option>
+                            <mat-option *ngFor="let img of listaImagenes" [value]="img.ruta">
+                              {{ img.nombreArchivo }}
+                            </mat-option>
+                          </mat-select>
                         </mat-form-field>
-                        <mat-form-field appearance="fill" class="w-100">
-                          <mat-label>URL de imagen</mat-label>
-                          <input matInput [(ngModel)]="col.urlImagen" placeholder="https://..." />
-                        </mat-form-field>
+                        <div class="upload-nueva-imagen">
+                          <input #fileInputCol type="file" accept="image/*"
+                            (change)="onFileSelectedBloque($event, bloque.id + '-col-' + j)"
+                            style="display:none" />
+                          <button mat-stroked-button type="button" class="btn-select-img"
+                            (click)="fileInputCol.click()">
+                            <mat-icon>upload_file</mat-icon> Seleccionar del PC
+                          </button>
+                          <ng-container *ngIf="getUploadState(bloque.id + '-col-' + j).preview">
+                            <img [src]="getUploadState(bloque.id + '-col-' + j).preview" class="upload-preview-img" />
+                          </ng-container>
+                          <button mat-raised-button color="primary" type="button" class="btn-subir-img"
+                            [disabled]="!getUploadState(bloque.id + '-col-' + j).file || getUploadState(bloque.id + '-col-' + j).uploading"
+                            (click)="subirImagenBloque(bloque.id + '-col-' + j)">
+                            <span *ngIf="!getUploadState(bloque.id + '-col-' + j).uploading">Subir imagen</span>
+                            <span *ngIf="getUploadState(bloque.id + '-col-' + j).uploading">Subiendo...</span>
+                          </button>
+                        </div>
                         <mat-form-field appearance="fill" class="w-100">
                           <mat-label>Descripción</mat-label>
                           <textarea matInput [(ngModel)]="col.descripcion" rows="2"></textarea>
                         </mat-form-field>
                         <mat-form-field appearance="fill" class="w-100">
-                          <mat-label>URL (Leer más)</mat-label>
+                          <mat-label>URL de redireccionamiento</mat-label>
                           <input matInput [(ngModel)]="col.enlace" placeholder="https://..." />
                         </mat-form-field>
                       </div>
@@ -193,9 +257,12 @@
                   </div>
                   <div class="bloque-form">
                     <div *ngFor="let red of bloque.redes" class="red-social-row">
+                      <div class="red-icono-wrap" [style.background-color]="getRedColor(red.nombre)">
+                        <fa-icon [icon]="getIconoFA(red.icono)" class="red-icono-fa"></fa-icon>
+                      </div>
                       <span class="red-nombre">{{ red.nombre }}</span>
                       <mat-form-field appearance="fill" class="w-100">
-                        <mat-label>URL de {{ red.nombre }}</mat-label>
+                        <mat-label>URL</mat-label>
                         <input matInput [(ngModel)]="red.url" placeholder="https://..." />
                       </mat-form-field>
                     </div>
@@ -214,11 +281,16 @@
               <ng-container *ngFor="let bloque of bloques">
                 <!-- Preview Imagen -->
                 <div *ngIf="bloque.tipo === 'imagen' && bloque.urlImagen" class="preview-block" style="text-align:center;">
-                  <img [src]="bloque.urlImagen" [alt]="bloque.altTexto" style="max-width:100%;height:auto;" />
+                  <a *ngIf="bloque.urlRedireccionamiento; else imgSola" [href]="bloque.urlRedireccionamiento" target="_blank">
+                    <img [src]="bloque.urlImagen" [alt]="bloque.altTexto" style="max-width:100%;height:auto;" />
+                  </a>
+                  <ng-template #imgSola>
+                    <img [src]="bloque.urlImagen" [alt]="bloque.altTexto" style="max-width:100%;height:auto;" />
+                  </ng-template>
                 </div>
 
                 <!-- Preview Texto -->
-                <div *ngIf="bloque.tipo === 'texto'" class="preview-block" [innerHTML]="bloque.contenidoHtml"></div>
+                <div *ngIf="bloque.tipo === 'texto'" class="preview-block" [innerHTML]="bloque.contenidoHtml | safeHtml"></div>
 
                 <!-- Preview IA -->
                 <div *ngIf="bloque.tipo === 'contenido-ia'" class="preview-block preview-ia">
@@ -228,7 +300,7 @@
                 </div>
 
                 <!-- Preview Botón -->
-                <div *ngIf="bloque.tipo === 'boton'" class="preview-block" style="text-align:center;">
+                <div *ngIf="bloque.tipo === 'boton'" class="preview-block" [style.text-align]="bloque.alineamiento || 'center'">
                   <a
                     [href]="bloque.enlace || '#'"
                     [style.background-color]="bloque.colorFondo"
@@ -239,21 +311,41 @@
 
                 <!-- Preview Tres Columnas -->
                 <div *ngIf="bloque.tipo === 'tres-columnas'" class="preview-block preview-columnas">
-                  <div *ngFor="let col of bloque.columnas" class="preview-columna">
-                    <img *ngIf="col.urlImagen" [src]="col.urlImagen" style="max-width:100%;height:auto;margin-bottom:8px;" />
-                    <h4>{{ col.titulo }}</h4>
-                    <p>{{ col.descripcion }}</p>
-                    <a *ngIf="col.enlace" [href]="col.enlace" class="preview-leer-mas">Leer más</a>
+                  <h4 *ngIf="bloque.titulo" class="preview-columnas-titulo">{{ bloque.titulo }}</h4>
+                  <div class="preview-columnas-grid">
+                    <div *ngFor="let col of bloque.columnas" class="preview-columna">
+                      <a *ngIf="col.urlImagen && col.enlace; else imgColSola" [href]="col.enlace" target="_blank">
+                        <img [src]="col.urlImagen" style="max-width:100%;height:auto;margin-bottom:8px;" />
+                      </a>
+                      <ng-template #imgColSola>
+                        <img *ngIf="col.urlImagen" [src]="col.urlImagen" style="max-width:100%;height:auto;margin-bottom:8px;" />
+                      </ng-template>
+                      <p>
+                        <a *ngIf="col.enlace; else descSola" [href]="col.enlace" target="_blank" class="preview-desc-link">{{ col.descripcion }}</a>
+                        <ng-template #descSola>{{ col.descripcion }}</ng-template>
+                      </p>
+                      <a *ngIf="col.enlace" [href]="col.enlace" class="preview-leer-mas">Leer más</a>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Preview Redes Sociales -->
                 <div *ngIf="bloque.tipo === 'redes-sociales'" class="preview-block preview-redes">
                   <ng-container *ngFor="let red of bloque.redes">
-                    <a *ngIf="red.url" [href]="red.url" class="preview-red-link">{{ red.nombre }}</a>
+                    <a *ngIf="red.url" [href]="red.url" target="_blank" class="preview-red-icono-link">
+                      <span class="preview-red-circulo" [style.background-color]="getRedColor(red.nombre)">
+                        <fa-icon [icon]="getIconoFA(red.icono)"></fa-icon>
+                      </span>
+                    </a>
                   </ng-container>
                 </div>
               </ng-container>
+
+              <!-- Firma estática -->
+              <div class="preview-block preview-firma">
+                <img src="https://img.mailinblue.com/4995647/images/content_library/original/642b3c39df855a04962152cc.png"
+                  alt="Firma" style="max-width:30%;height:auto;" />
+              </div>
             </div>
           </div>
         </div>
