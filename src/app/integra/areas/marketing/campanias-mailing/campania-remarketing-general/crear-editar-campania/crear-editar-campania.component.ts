@@ -79,7 +79,7 @@ export class CrearEditarCampaniaComponent implements OnInit {
       mediosEnvioSeleccionados: new FormControl(null, Validators.required),
       tipoMensajeSeleccionado: new FormControl(null, Validators.required),
       logicaEnvioSeleccionada: new FormControl(null, Validators.required),
-      categoriaArgumentoSeleccionada: new FormControl(null, Validators.required),
+      categoriaArgumentoSeleccionada: new FormControl(null),
       prioridadesSeleccionadas: new FormControl([]),
       // Configurar remitente
       remitenteCorreo: new FormControl('', [
@@ -261,8 +261,7 @@ export class CrearEditarCampaniaComponent implements OnInit {
       this.segmentoSeleccionado &&
       medioEnvioSeleccionado != null &&
       this.tipoMensajeSeleccionado &&
-      this.logicaEnvioSeleccionada &&
-      this.categoriaArgumentoSeleccionada
+      this.logicaEnvioSeleccionada
     );
 
     if (!valid) {
@@ -281,9 +280,11 @@ export class CrearEditarCampaniaComponent implements OnInit {
     const logicaEnvioCompleta = this.combosConfiguracionCampania.logicaEnvio.find(
       (l) => l.id === this.logicaEnvioSeleccionada
     );
-    const categoriaArgumentoCompleta = this.combosConfiguracionCampania.categoriaArgumento.find(
-      (c) => c.id === this.categoriaArgumentoSeleccionada
-    );
+    const categoriaArgumentoCompleta = this.categoriaArgumentoSeleccionada
+      ? this.combosConfiguracionCampania.categoriaArgumento.find(
+          (c) => c.id === this.categoriaArgumentoSeleccionada
+        ) ?? null
+      : null;
 
     const payload = {
       id: this.data.id || null,
@@ -385,8 +386,7 @@ export class CrearEditarCampaniaComponent implements OnInit {
       !form.value.segmentoSeleccionado ||
       !form.value.mediosEnvioSeleccionados ||
       !form.value.tipoMensajeSeleccionado ||
-      !form.value.logicaEnvioSeleccionada ||
-      !form.value.categoriaArgumentoSeleccionada
+      !form.value.logicaEnvioSeleccionada
     ) {
       this._alertaService.notificationError(
         'Debe completar todos los campos de la sección Campaña Remarketing.'
@@ -448,15 +448,15 @@ export class CrearEditarCampaniaComponent implements OnInit {
       .find(t => t.id === tipoMensajeId);
     const logicaEnvioCompleta = this.combosConfiguracionCampania.logicaEnvio
       .find(l => l.id === logicaEnvioId);
-    const categoriaArgumentoCompleta = this.combosConfiguracionCampania.categoriaArgumento
-      .find(c => c.id === categoriaArgumentoId);
+    const categoriaArgumentoCompleta = categoriaArgumentoId
+      ? this.combosConfiguracionCampania.categoriaArgumento.find(c => c.id === categoriaArgumentoId) ?? null
+      : null;
 
     // Seguridad extra
     if (
       !medioEnvioCompleto ||
       !tipoMensajeCompleto ||
-      !logicaEnvioCompleta ||
-      !categoriaArgumentoCompleta
+      !logicaEnvioCompleta
     ) {
       this._alertaService.notificationError(
         'Error al obtener la configuración seleccionada.'
