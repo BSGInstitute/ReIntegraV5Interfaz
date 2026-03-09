@@ -83,6 +83,9 @@ import { CostoCreditosComponent } from './maestros/costo-creditos/costo-creditos
 import { AprobacionDescuentoComponent } from './configuracionprogramascapacitacion/aprobacion-descuento/aprobacion-descuento.component';
 import { SubCriterioTareaComponent } from './maestros/sub-criterio-tarea/sub-criterio-tarea.component';
 import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea.component';
+import { GestionAcademicaComponent } from './coordinacion-docentes/gestion-academica/gestion-academica.component';
+import { ObservacionesPorEstadoComponent } from './maestros/observaciones-por-estado/observaciones-por-estado.component';
+import { EstadoCursoComponent } from './maestros/estado-curso/estado-curso.component';
 
 const routes: Routes = [
   {
@@ -292,6 +295,9 @@ const routes: Routes = [
       { path: 'ProblemaClienteConfiguracion', component: ProblemaClienteConfiguracionComponent },
       { path: 'SubCriteriosTareas', component: SubCriterioTareaComponent },
       { path: 'CriteriosTareas', component: CriterioTareaComponent },
+      { path: 'GestionCursos', component: GestionAcademicaComponent },
+      { path: 'MaestroEstadoCurso', component:EstadoCursoComponent},
+      { path: 'ObservacionesEstadoCurso', component: ObservacionesPorEstadoComponent },
     ],
   },
 ];

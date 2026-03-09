@@ -2753,6 +2753,20 @@ export const constApiGestionPersonal = {
   ActualizarTipoFormacion: '/TipoFormacion/Actualizar',
   EliminarTipoFormacion: '/TipoFormacion/Eliminar',
 
+
+   //Maestro Estado Curso
+  ObtenerEstadoCurso: '/PEspecificoSesionEstado/Obtener',
+  InsertarEstadoCurso: '/PEspecificoSesionEstado/Insertar',
+  ActualizarEstadoCurso: '/PEspecificoSesionEstado/Actualizar',
+  EliminarEstadoCurso: '/PEspecificoSesionEstado/Eliminar',
+
+  //Maestro Observaciones Por Estado
+  ObtenerObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Obtener',
+  InsertarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Insertar',
+  ActualizarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Actualizar',
+  EliminarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Eliminar',
+
+  
   //AreaFormacion
   AreaFormacionObtener: '/AreaFormacion/Obtener',
   AreaFormacionInsertar: '/AreaFormacion/Insertar',

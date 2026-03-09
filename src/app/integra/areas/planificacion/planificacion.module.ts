@@ -138,6 +138,8 @@ import { ModalConfiguracionTutorVirtualComponent } from './configuracion-portal-
 import { SubCriterioTareaComponent } from './maestros/sub-criterio-tarea/sub-criterio-tarea.component';
 import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea.component';
 import { GestionAcademicaComponent } from './coordinacion-docentes/gestion-academica/gestion-academica.component';
+import { EstadoCursoComponent } from './maestros/estado-curso/estado-curso.component';
+import { ObservacionesPorEstadoComponent } from './maestros/observaciones-por-estado/observaciones-por-estado.component';
 
 
 @NgModule({
@@ -275,6 +277,8 @@ import { GestionAcademicaComponent } from './coordinacion-docentes/gestion-acade
     SubCriterioTareaComponent,
     CriterioTareaComponent,
     GestionAcademicaComponent,
+    EstadoCursoComponent,
+    ObservacionesPorEstadoComponent,
 
 
   ],
