@@ -60,6 +60,7 @@ export class CategoriaComponent implements OnInit {
         TextValidator.noEndSpace,
       ],
     ],
+    descripcionCategoria: ['',[Validators.required]],
     idTipoReporte: [0],
     // idConjuntoAnuncio_Facebook: [''],
     nombreTipoReporte: [null, [Validators.required]],
@@ -220,6 +221,7 @@ export class CategoriaComponent implements OnInit {
       this.TipoReporteTemp = dataItem;
       this.formCategoria.patchValue(this.TipoReporteTemp);
       this.formCategoria.get('nombreCategoria').setValue(dataItem.nombreCategoria);
+      this.formCategoria.get('descripcionCategoria').setValue(dataItem.descripcion ?? '');
       this.formCategoria.get('nombreTipoReporte').setValue(dataItem.idTipoReporte);
       // this.cargarTipoInteraccion(dataItem.idFormularioProcedencia);
     }
@@ -250,6 +252,7 @@ export class CategoriaComponent implements OnInit {
     let tipoReporteData: any = {
       id: isNew ? 0 : dataItem.idCategoria,
       nombre: dataItem.nombreCategoria,
+      descripcion: dataItem.descripcionCategoria || null,
       IdSolicitudTipoReporte:dataItem.nombreTipoReporte,
       usuario: this.personal,
     };

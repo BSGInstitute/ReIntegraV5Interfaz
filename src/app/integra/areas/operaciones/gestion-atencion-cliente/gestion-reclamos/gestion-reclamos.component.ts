@@ -64,7 +64,8 @@ export class GestionReclamosComponent implements OnInit {
   selectedOrigen:any;
   selectedSolicitud:any;
   defaultItem:any= {nombre: "Seleccionar ", id: null,};
-  detalleSolicitud:any
+  detalleSolicitud:any;
+  tituloSubCategoria: string = '';
   loader: boolean = false;
   idSolicitudEdit:any;
   loaderGrid: boolean = false;
@@ -561,11 +562,13 @@ export class GestionReclamosComponent implements OnInit {
   }
 
   SolicitudBySubCategoria(value: number[]) {
+    console.log('subcategorias', this.dataSolicitudFiltro)
     this.selectedSubCategoria=value;
     if (value === null) {
       this.isDisabledSolicitud = true;
       this.dataSolicitudFiltro = [];
       this.formCategoriaNew.get("solicitud").setValue("");
+      this.tituloSubCategoria = '';
     } else {
       this.isDisabledSolicitud = false;
       this.dataSolicitudFiltro = this.dataSubCategoria.filter(
@@ -577,6 +580,8 @@ export class GestionReclamosComponent implements OnInit {
     } else {
         this.detalleSolicitud = '';
     }
+    this.tituloSubCategoria = this.dataSolicitudFiltro[0]?.titulo || '';
+    console.log("titulo sub categoria",this.dataSolicitudFiltro[0]?.titulo )
     this.formCategoriaNew.get("solicitud").setValue(this.detalleSolicitud);
     }
   }
@@ -587,6 +592,7 @@ export class GestionReclamosComponent implements OnInit {
       this.isDisabledSolicitud = true;
       this.dataSolicitudFiltro = [];
       this.formCategoriaNew.get("solicitud").setValue("");
+      this.tituloSubCategoria = '';
     } else {
       this.isDisabledSolicitud = false;
       this.dataSolicitudFiltro = this.dataSubCategoria.filter(
@@ -598,6 +604,7 @@ export class GestionReclamosComponent implements OnInit {
     } else {
         this.detalleSolicitud = '';
     }
+    this.tituloSubCategoria = this.dataSolicitudFiltro[0]?.titulo || '';
     this.formCategoria.get("solicitud").setValue(this.detalleSolicitud);
     }
   }
@@ -850,6 +857,7 @@ export class GestionReclamosComponent implements OnInit {
     this.formCategoriaNew.get("tipoReporte").setValue(null);
     this.formCategoriaNew.get("categoria").setValue(null);
     this.formCategoriaNew.get("subCategoria").setValue(null);
+    this.tituloSubCategoria = '';
     this.formCategoriaNew.get("solicitud").setValue("Seleccione un problema");
     this.formCategoriaNew.get("origenSolicitud").setValue(null);
     this.formCategoriaNew.get("programa").setValue(null);
@@ -868,6 +876,7 @@ export class GestionReclamosComponent implements OnInit {
     this.formCategoria.get("tipoReporte").setValue(null);
     this.formCategoria.get("categoria").setValue(null);
     this.formCategoria.get("subCategoria").setValue(null);
+    this.tituloSubCategoria = '';
     this.formCategoria.get("origenSolicitud").setValue(null);
     this.formCategoria.get("solicitud").setValue(0);
     this.formCategoria.get("programa").setValue(null);
