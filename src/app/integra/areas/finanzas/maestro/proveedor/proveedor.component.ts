@@ -122,6 +122,7 @@ export class ProveedorComponent implements OnInit {
         TextValidator.noStartSpace,
         TextValidator.noEndSpace,
       ]],
+      esDocente: [false],
     });
     formGroupCuentaBancaria: FormGroup = this.formBuilder.group({
       id: [0],
@@ -962,6 +963,7 @@ Modal(id:number,isNew:boolean,data?:any){
       contacto1: item.contacto1==null?"":item.contacto1,
       contacto2: item.contacto2==null?"":item.contacto2,
       alias: item.alias==null?"":item.alias,
+      esDocente: item.esDocente==null?false:item.esDocente,
       usuarioModificacion: this.userService.userName,
       idImpuesto: item.idImpuesto,
       idRetencion: item.idRetencion,

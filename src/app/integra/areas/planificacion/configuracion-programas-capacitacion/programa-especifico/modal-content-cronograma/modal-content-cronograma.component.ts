@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { constApiPlanificacion } from '@environments/constApi';
+import { constApiPlanificacion, constApiGestionPersonal } from '@environments/constApi';
 import {
   NgbActiveModal,
   NgbModal,
@@ -44,6 +44,8 @@ import { ModalContentRegistroFurComponent } from '../modal-content-registro-fur/
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { forkJoin } from 'rxjs';
 import { cloneData } from '@shared/functions/clone-data';
+import { EstadoCurso } from '@integra/models/estado-curso';
+import { ObservacionPorEstado, ObservacionDetalle } from '@integra/models/observacion-por-estado';
 const idTemplate = '#modalCronograma';
 interface FormCronograma {
   fechaHoraInicio: Date;
@@ -52,6 +54,8 @@ interface FormCronograma {
   grupoSesion: number;
   idModalidadCurso: number;
   mostrarPortalWeb: boolean;
+  idEstadoCurso: number;
+  idObservacion: number;
 }
 interface FormInsertarSesion {
   tipo: string;
@@ -135,6 +139,9 @@ export class ModalContentCronogramaComponent implements OnInit {
     operator: 'contains',
   };
   sourcePespecificos: IComboBase1[] = [];
+  listaEstadoCurso: EstadoCurso[] = [];
+  listaObservacionPorEstado: ObservacionPorEstado[] = [];
+  observacionesFiltradas: ObservacionDetalle[] = [];
   get showOpcionPespecifico() {
     if (this.formInsertarSesion.get('tipo').value == 'Programa Especifico') {
       return true;
@@ -188,6 +195,67 @@ export class ModalContentCronogramaComponent implements OnInit {
         this.obtenerFurProgramaEspecifico();
       }
     });
+
+    this.obtenerEstadosCurso();
+    this.obtenerObservacionesPorEstado();
+  }
+
+  obtenerEstadosCurso() {
+    this._integraService
+      .getJsonResponse(constApiGestionPersonal.ObtenerEstadoCurso)
+      .subscribe({
+        next: (resp: HttpResponse<EstadoCurso[]>) => {
+          this.listaEstadoCurso = resp.body;
+        },
+        error: (error) => {
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  obtenerObservacionesPorEstado() {
+    this._integraService
+      .getJsonResponse(constApiGestionPersonal.ObtenerObservacionPorEstado)
+      .subscribe({
+        next: (resp: HttpResponse<ObservacionPorEstado[]>) => {
+          this.listaObservacionPorEstado = resp.body;
+        },
+        error: (error) => {
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  filtrarObservacionesPorEstado(idEstadoCurso: number): ObservacionDetalle[] {
+    if (idEstadoCurso == null) {
+      return [];
+    }
+    const observacionEstado = this.listaObservacionPorEstado.find(
+      (obs) => obs.idPEspecificoSesionEstado === idEstadoCurso
+    );
+    if (observacionEstado && observacionEstado.observaciones) {
+      return observacionEstado.observaciones;
+    }
+    return [];
+  }
+
+  obtenerNombreEstadoCurso(idEstadoCurso: number): string {
+    const estado = this.listaEstadoCurso.find((e) => e.id === idEstadoCurso);
+    return estado ? estado.nombre : '';
+  }
+
+  obtenerNombreObservacion(idObservacion: number): string {
+    for (const obs of this.listaObservacionPorEstado) {
+      if (obs.observaciones) {
+        const detalle = obs.observaciones.find((d) => d.id === idObservacion);
+        if (detalle) {
+          return detalle.nombre;
+        }
+      }
+    }
+    return '';
   }
   private configuracionInicial() {
     if (this.pEspecificoService.esIndividual) {
@@ -258,6 +326,8 @@ export class ModalContentCronogramaComponent implements OnInit {
       grupoSesion: null,
       idModalidadCurso: null,
       mostrarPortalWeb: null,
+      idEstadoCurso: null,
+      idObservacion: null,
     });
     this.gridCronograma.cellClickEvent$.subscribe({
       next: (resp) => {
@@ -289,6 +359,10 @@ export class ModalContentCronogramaComponent implements OnInit {
                 );
               }
             }
+            break;
+          case 'idObservacion':
+            const idEstado = dataItem.idEstadoCurso;
+            this.observacionesFiltradas = this.filtrarObservacionesPorEstado(idEstado);
             break;
           default:
             break;
@@ -445,6 +519,8 @@ export class ModalContentCronogramaComponent implements OnInit {
       idProveedor: dataItem.idProveedor,
       grupoSesion: dataItem.grupoSesion,
       mostrarPortalWeb: dataItem.mostrarPortalWeb,
+      idEstadoCurso: dataItem.idEstadoCurso,
+      idObservacion: dataItem.idObservacion,
     };
     if (dataItem.idProveedor != formValue.idProveedor) {
       jsonEnvio.idProveedor = formValue.idProveedor;
@@ -463,6 +539,16 @@ export class ModalContentCronogramaComponent implements OnInit {
     }
     if (dataItem.mostrarPortalWeb != formValue.mostrarPortalWeb) {
       jsonEnvio.mostrarPortalWeb = formValue.mostrarPortalWeb;
+    }
+    if (dataItem.idEstadoCurso != formValue.idEstadoCurso) {
+      jsonEnvio.idEstadoCurso = formValue.idEstadoCurso;
+      // Si cambia el estado, resetear la observación
+      if (formValue.idObservacion == null) {
+        jsonEnvio.idObservacion = null;
+      }
+    }
+    if (dataItem.idObservacion != formValue.idObservacion) {
+      jsonEnvio.idObservacion = formValue.idObservacion;
     }
     if (
       dataItem.tieneFur != null &&
