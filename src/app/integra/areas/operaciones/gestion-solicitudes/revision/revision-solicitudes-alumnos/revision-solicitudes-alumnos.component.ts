@@ -75,6 +75,14 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
       id: 4,
       nombre: 'Resuelto'
     },
+    {
+      id: 9,
+      nombre: 'RCV por Revisor'
+    },
+       {
+      id: 10,
+      nombre: 'RC'
+    },
   ];
 
   areaMapping: { [key: string]: string } = {
@@ -177,7 +185,7 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
 
   EstadosSolicitud: any[] = [
     { id: 1, nombre: "Por Revisar" },
-    // { id: 2, nombre: "Obsevado po el R" },
+    { id: 10, nombre: "RC" },
     // { id: 4, nombre: "Resuelto por el R" },
   ];
 
