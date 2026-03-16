@@ -292,6 +292,8 @@ export interface CronogramaGrupo {
   idPeriodoLectivo?: number;
   idEstadoCurso?: number;
   idObservacion?: number;
+  idPEspecificoSesionEstado?: number;
+  idPEspecificoSesionEstadoObservacionDetalle?: number;
 }
 
 export interface ProgramaEspecificoFUR {

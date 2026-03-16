@@ -257,6 +257,157 @@ export class ModalContentCronogramaComponent implements OnInit {
     }
     return '';
   }
+
+  onEstadoCursoChange(nuevoEstado: number, dataItem: CronogramaGrupo, formGroup: any) {
+    // Filtrar observaciones según el nuevo estado
+    this.observacionesFiltradas = this.filtrarObservacionesPorEstado(nuevoEstado);
+    formGroup.get('idObservacion').setValue(null);
+
+    // Si el estado no cambió, no hacer nada
+    if (dataItem.idEstadoCurso === nuevoEstado) {
+      return;
+    }
+
+    // Llamar al endpoint para actualizar
+    this.gridCronograma.loading = true;
+    const dto = {
+      Id: dataItem.id,
+      IdPEspecificoSesionEstado: nuevoEstado
+    };
+    this._integraService
+      .putJsonResponse(
+        constApiPlanificacion.PEspecificoSesionActualizarEstadoCurso,
+        JSON.stringify(dto)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          this.gridCronograma.loading = false;
+          this._alertaService.toastOptions(
+            'Actualizado correctamente',
+            'success',
+            'top-right',
+            idTemplate
+          );
+          // Actualizar el dataItem después de éxito
+          dataItem.idEstadoCurso = nuevoEstado;
+          dataItem.idPEspecificoSesionEstado = nuevoEstado;
+          dataItem.idObservacion = null;
+          dataItem.idPEspecificoSesionEstadoObservacionDetalle = null;
+        },
+        error: (error) => {
+          this.gridCronograma.loading = false;
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+          // Revertir el valor en el formulario si falla
+          formGroup.get('idEstadoCurso').setValue(dataItem.idEstadoCurso);
+        },
+      });
+  }
+
+  onObservacionChange(nuevaObservacion: number, dataItem: CronogramaGrupo, formGroup: any) {
+    // Si la observación no cambió, no hacer nada
+    if (dataItem.idObservacion === nuevaObservacion) {
+      return;
+    }
+
+    // Llamar al endpoint para actualizar
+    this.gridCronograma.loading = true;
+    const dto = {
+      Id: dataItem.id,
+      IdPEspecificoSesionEstadoObservacionDetalle: nuevaObservacion
+    };
+    this._integraService
+      .putJsonResponse(
+        constApiPlanificacion.PEspecificoSesionActualizarEstadoObservacion,
+        JSON.stringify(dto)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          this.gridCronograma.loading = false;
+          this._alertaService.toastOptions(
+            'Actualizado correctamente',
+            'success',
+            'top-right',
+            idTemplate
+          );
+          // Actualizar el dataItem después de éxito
+          dataItem.idObservacion = nuevaObservacion;
+          dataItem.idPEspecificoSesionEstadoObservacionDetalle = nuevaObservacion;
+        },
+        error: (error) => {
+          this.gridCronograma.loading = false;
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+          // Revertir el valor en el formulario si falla
+          formGroup.get('idObservacion').setValue(dataItem.idObservacion);
+        },
+      });
+  }
+
+  actualizarEstadoCurso(idSesion: number, idEstadoCurso: number, dataItem: CronogramaGrupo, formValue: FormCronograma) {
+    const dto = {
+      Id: idSesion,
+      IdPEspecificoSesionEstado: idEstadoCurso
+    };
+    this._integraService
+      .putJsonResponse(
+        constApiPlanificacion.PEspecificoSesionActualizarEstadoCurso,
+        JSON.stringify(dto)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          this.gridCronograma.loading = false;
+          this._alertaService.toastOptions(
+            'Actualizado correctamente',
+            'success',
+            'top-right',
+            idTemplate
+          );
+          dataItem.idEstadoCurso = formValue.idEstadoCurso;
+          dataItem.idPEspecificoSesionEstado = formValue.idEstadoCurso;
+          // Si cambia el estado, resetear la observación en el dataItem
+          if (formValue.idObservacion == null) {
+            dataItem.idObservacion = null;
+            dataItem.idPEspecificoSesionEstadoObservacionDetalle = null;
+          }
+        },
+        error: (error) => {
+          this.gridCronograma.loading = false;
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  actualizarEstadoObservacion(idSesion: number, idObservacion: number, dataItem: CronogramaGrupo, formValue: FormCronograma) {
+    const dto = {
+      Id: idSesion,
+      IdPEspecificoSesionEstadoObservacionDetalle: idObservacion
+    };
+    this._integraService
+      .putJsonResponse(
+        constApiPlanificacion.PEspecificoSesionActualizarEstadoObservacion,
+        JSON.stringify(dto)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          this.gridCronograma.loading = false;
+          this._alertaService.toastOptions(
+            'Actualizado correctamente',
+            'success',
+            'top-right',
+            idTemplate
+          );
+          dataItem.idObservacion = formValue.idObservacion;
+          dataItem.idPEspecificoSesionEstadoObservacionDetalle = formValue.idObservacion;
+        },
+        error: (error) => {
+          this.gridCronograma.loading = false;
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
   private configuracionInicial() {
     if (this.pEspecificoService.esIndividual) {
       this.pEspecificoService.verificarEsPespecificoIndividual(
@@ -509,6 +660,38 @@ export class ModalContentCronogramaComponent implements OnInit {
     dataItem: CronogramaGrupo,
     formValue: FormCronograma
   ) {
+    // Detectar si solo cambió el estado del curso
+    const soloEstadoCurso = dataItem.idEstadoCurso != formValue.idEstadoCurso &&
+      dataItem.idProveedor == formValue.idProveedor &&
+      dataItem.idAmbiente == formValue.idAmbiente &&
+      dataItem.grupoSesion == formValue.grupoSesion &&
+      dataItem.fechaHoraInicio == formValue.fechaHoraInicio &&
+      dataItem.idModalidadCurso == formValue.idModalidadCurso &&
+      dataItem.mostrarPortalWeb == formValue.mostrarPortalWeb &&
+      dataItem.idObservacion == formValue.idObservacion;
+
+    // Detectar si solo cambió la observación
+    const soloObservacion = dataItem.idObservacion != formValue.idObservacion &&
+      dataItem.idProveedor == formValue.idProveedor &&
+      dataItem.idAmbiente == formValue.idAmbiente &&
+      dataItem.grupoSesion == formValue.grupoSesion &&
+      dataItem.fechaHoraInicio == formValue.fechaHoraInicio &&
+      dataItem.idModalidadCurso == formValue.idModalidadCurso &&
+      dataItem.mostrarPortalWeb == formValue.mostrarPortalWeb &&
+      dataItem.idEstadoCurso == formValue.idEstadoCurso;
+
+    // Si solo cambió el estado del curso, usar endpoint específico
+    if (soloEstadoCurso) {
+      this.actualizarEstadoCurso(dataItem.id, formValue.idEstadoCurso, dataItem, formValue);
+      return;
+    }
+
+    // Si solo cambió la observación, usar endpoint específico
+    if (soloObservacion) {
+      this.actualizarEstadoObservacion(dataItem.id, formValue.idObservacion, dataItem, formValue);
+      return;
+    }
+
     let jsonEnvio: InformacionCronogramaSesiones = {
       id: dataItem.id,
       fechaHoraInicio: datePipeTransform(dataItem.fechaHoraInicio),
@@ -1371,6 +1554,9 @@ export class ModalContentCronogramaComponent implements OnInit {
         x.fechaHoraFin = new Date(x.fechaHoraInicio);
         x.fechaHoraFin.setMinutes(x.fechaHoraFin.getMinutes() + (x.duracion * 60));
       }
+      // Mapear campos de estado y observación desde el backend
+      x.idEstadoCurso = x.idPEspecificoSesionEstado;
+      x.idObservacion = x.idPEspecificoSesionEstadoObservacionDetalle;
       // x.ciudad = this.pEspecificoService.obtenerNombreCiudad(x.idCiudad);
       // x.proveedor = this.pEspecificoService.obtenerNombreCombo(
       //   x.idProveedor,

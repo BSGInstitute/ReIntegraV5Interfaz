@@ -4091,6 +4091,11 @@ export const constApiPlanificacion = {
   DocumentoPwObtenerDocumentoPWDuracion: '/DocumentoPw/ObtenerDocumentoPWDuracion',
   DocumentoPwObtenerDocumentoPWFechaInicio: '/DocumentoPw/ObtenerDocumentoPWFechaInicio',
   DocumentoPwObtenerDocumentoPWNotas: '/DocumentoPw/ObtenerDocumentoPWNotas',
+
+
+  PEspecificoSesionActualizarEstadoCurso: '/PEspecificoSesionEstado/ActualizarEstadoCurso',
+  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion'
+
 };
 
 export const constApiFinanzas = {
