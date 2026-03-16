@@ -203,7 +203,7 @@
           </ng-template>
         </kendo-grid-column>
         <kendo-grid-column field="idObservacion" title="Observación" class="text-center" [width]="150"
-          headerClass="justify-content-center">
+          headerClass="justify-content-center" [hidden]="observacionesFiltradas.length === 0">
           <ng-template kendoGridCellTemplate let-dataItem>
             {{
             dataItem.idObservacion != null
@@ -244,13 +244,20 @@
         <kendo-grid-column field="esSesionInicio" title="Sesion Inicio" class="text-center" [width]="70"
           headerClass="justify-content-center">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <div class="text-center" *ngIf="!dataItem.esSesionInicio">
-              <button themeColor="base" kendoButton icon="notification"
-                (click)="establecerSesionInicial(dataItem)"></button>
-            </div>
-            <div class="text-center" *ngIf="dataItem.esSesionInicio">
-              <button themeColor="success" kendoButton icon="notification"></button>
-            </div>
+            <ng-container *ngIf="esCanceladaEstadoCurso(dataItem.idEstadoCurso); else sesionNoCancelada">
+              <div class="text-center">
+                <button themeColor="error" kendoButton icon="cancel" [disabled]="true"></button>
+              </div>
+            </ng-container>
+            <ng-template #sesionNoCancelada>
+              <div class="text-center" *ngIf="!dataItem.esSesionInicio">
+                <button themeColor="base" kendoButton icon="notification"
+                  (click)="establecerSesionInicial(dataItem)"></button>
+              </div>
+              <div class="text-center" *ngIf="dataItem.esSesionInicio">
+                <button themeColor="success" kendoButton icon="notification"></button>
+              </div>
+            </ng-template>
           </ng-template>
         </kendo-grid-column>
         <kendo-grid-command-column title="Eliminar" [width]="70" headerClass="justify-content-center">

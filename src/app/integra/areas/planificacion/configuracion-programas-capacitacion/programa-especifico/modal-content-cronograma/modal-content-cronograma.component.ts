@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, TemplateRef, ViewEncapsulation } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -134,6 +134,7 @@ export class ModalContentCronogramaComponent implements OnInit {
   enProcesoInsertarSesion: boolean = false;
   esProgramaInstitutoTemp: boolean = false;
   modalRefInsertarSesion: NgbModalRef;
+  @ViewChild('modalInsertarSesion') modalInsertarSesionRef: TemplateRef<any>;
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
     operator: 'contains',
@@ -142,6 +143,7 @@ export class ModalContentCronogramaComponent implements OnInit {
   listaEstadoCurso: EstadoCurso[] = [];
   listaObservacionPorEstado: ObservacionPorEstado[] = [];
   observacionesFiltradas: ObservacionDetalle[] = [];
+  
   get showOpcionPespecifico() {
     if (this.formInsertarSesion.get('tipo').value == 'Programa Especifico') {
       return true;
@@ -246,6 +248,11 @@ export class ModalContentCronogramaComponent implements OnInit {
     return estado ? estado.nombre : '';
   }
 
+  esCanceladaEstadoCurso(idEstadoCurso: number): boolean {
+    const estado = this.listaEstadoCurso.find((e) => e.id === idEstadoCurso);
+    return estado?.nombre?.toLowerCase().includes('cancel') ?? false;
+  }
+
   obtenerNombreObservacion(idObservacion: number): string {
     for (const obs of this.listaObservacionPorEstado) {
       if (obs.observaciones) {
@@ -293,6 +300,11 @@ export class ModalContentCronogramaComponent implements OnInit {
           dataItem.idPEspecificoSesionEstado = nuevoEstado;
           dataItem.idObservacion = null;
           dataItem.idPEspecificoSesionEstadoObservacionDetalle = null;
+          // Si el estado es "Por-Reprogramar", abrir modal Nueva Sesion con datos precargados
+          const estadoSeleccionado = this.listaEstadoCurso.find(e => e.id === nuevoEstado);
+          if (estadoSeleccionado && estadoSeleccionado.nombre === 'Por-Reprogramar') {
+            this.abrirModalInsertarSesion(this.modalInsertarSesionRef, dataItem);
+          }
         },
         error: (error) => {
           this.gridCronograma.loading = false;
@@ -1394,7 +1406,7 @@ export class ModalContentCronogramaComponent implements OnInit {
         },
       });
   }
-  abrirModalInsertarSesion(context: any) {
+  abrirModalInsertarSesion(context: any, dataItem?: CronogramaGrupo) {
     this.enProcesoInsertarSesion = false;
     this.formInsertarSesion.reset();
     if (this.pEspecificoService.esCursoIndividual == true) {
@@ -1402,6 +1414,15 @@ export class ModalContentCronogramaComponent implements OnInit {
       this.formInsertarSesion.get('tipo').setValue('Programa Especifico');
     } else {
       this.showOpcionesInsertarSesion = true;
+    }
+    if (dataItem) {
+      this.showOpcionesInsertarSesion = false;
+      this.formInsertarSesion.get('tipo').setValue('Programa Especifico');
+      this.formInsertarSesion.get('fecha').setValue(dataItem.fechaHoraInicio);
+      this.formInsertarSesion.get('duracion').setValue(dataItem.duracion);
+      if (!this.pEspecificoService.esCursoIndividual) {
+        this.formInsertarSesion.get('idPespecifico').setValue(dataItem.pEspecificoHijoId);
+      }
     }
     this.modalRefInsertarSesion = this._modalService.open(context, {
       backdrop: 'static',
