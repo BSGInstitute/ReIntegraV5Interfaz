@@ -130,7 +130,7 @@ export class SeguimientoOportunidadesTresCxComponent implements OnInit {
   };
   validationAudio = {
     allowedExtensions: ['WAV', 'MP3'],
-    maxFileSize: 20048000,
+    maxFileSize: 500480000,
   };
   documentoIdentidad = {
     url: '',
