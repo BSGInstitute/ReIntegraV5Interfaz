@@ -1,0 +1,1 @@
+Revisa el src\app\integra\areas\planificacion\configuracion-portal-web\configurar-grabaciones-online\configurar-grabaciones-online necesito que cuando se aprete el boton abrirConfiguracionGeneral , el modal ocupe un tamaño mas ancho para que no se vea reducido y haya un scroll sino todos los campos se vean completamente 

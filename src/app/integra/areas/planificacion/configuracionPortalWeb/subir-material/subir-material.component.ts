@@ -245,6 +245,16 @@ export class SubirMaterialComponent implements OnInit {
     }
   }
 
+  copiarUrl(url?: string) {
+    if (url != null) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.alertaService.notificationSuccess('URL copiada al portapapeles');
+      });
+    } else {
+      Swal.fire('¡Sin URL!', 'No se encontró una URL para copiar.', 'info');
+    }
+  }
+
   cargarSubAreas(idsArea: number[]) {
     console.log("idsArea", idsArea)
     if (idsArea.length > 0) {
