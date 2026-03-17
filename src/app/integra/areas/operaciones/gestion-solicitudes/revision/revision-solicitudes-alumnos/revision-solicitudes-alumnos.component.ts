@@ -116,6 +116,7 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
   modalRefTCOrigen:any;
   nombreArchivoSolicitado:any;
   nombreArchivoSolucion:any;
+  descripcionSubCategoria: string = '';
   inputArchivoSolicitudAlumno:any;
   inputArchivoSolucionAlumno:any;
   inputDetalle:string="";
@@ -593,6 +594,7 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
       this.formCategoria.get("tipoReporte").setValue(e.tipo);
       this.formCategoria.get("categoria").setValue(e.nombreSolicitudCategoria);
       this.formCategoria.get("subCategoria").setValue(e.nombreSubCategoria);
+      this.descripcionSubCategoria = e.tituloSubCategoria || '';
       this.formCategoria.get("origenSolicitud").setValue(e.controlSolicitudOrigen);
       this.formCategoria.get("solicitud").setValue(e.nombreSolicitud);
       if (e.areaSolicitante in this.areaMapping) {
@@ -616,6 +618,10 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
       this.formCategoria.get("comentario").setValue(e.comentarioSolucion);
       this.formCategoria.get("archivoSolucion").setValue(e.nombreArchivoSolucion);
       this.formCategoria.get("estadoSolicitud").setValue(e.estadoSolicitud);
+      const estadoEncontrado = this.estadosRevision.find(
+        (estado: any) => estado.nombre === e.estadoSolicitud
+      );
+      this.idNuevoEstado = estadoEncontrado ? estadoEncontrado.id : undefined;
       this.modalRefTCOrigen = this.modalService.open(this.modalDetalleSolicitud,{size:'lg'});
       this.nombreArchivoSolicitado=e.nombreArchivoSolicitante;
       this.nombreArchivoSolucion=e.nombreArchivoSolucion;
