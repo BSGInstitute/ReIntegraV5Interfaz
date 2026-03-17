@@ -70,7 +70,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private _modalService: NgbModal,
     private _integraService: IntegraService,
-    private _alertaService: AlertaService
+    private _alertaService: AlertaService,
   ) {}
   @Input() pgeneralService: PgeneralService;
   gridCriterioEvaluacion: KendoGrid<EsquemaAsociado> =
@@ -203,34 +203,34 @@ export class PgCriterioEvaluacionComponent implements OnInit {
           // Aonline
           this.criteriosEvaluacionMW[0].flag =
             resp.findIndex(
-              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_ASINCRONICA
+              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_ASINCRONICA,
             ) != -1;
           // Online
           this.criteriosEvaluacionMW[1].flag =
             resp.findIndex(
-              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_SINCRONICA
+              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_SINCRONICA,
             ) != -1;
           // Presencial
           this.criteriosEvaluacionMW[2].flag =
             resp.findIndex(
-              (x) => x.idModalidadCurso == ModalidadCurso.PRESENCIAL
+              (x) => x.idModalidadCurso == ModalidadCurso.PRESENCIAL,
             ) != -1;
         } else if (tipoPrograma == TipoPrograma.PADRE) {
           this.flagCMPadre = true;
           // Aonline
           this.criteriosEvaluacionP[0].flag =
             resp.findIndex(
-              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_ASINCRONICA
+              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_ASINCRONICA,
             ) != -1;
           // Online
           this.criteriosEvaluacionP[1].flag =
             resp.findIndex(
-              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_SINCRONICA
+              (x) => x.idModalidadCurso == ModalidadCurso.ONLINE_SINCRONICA,
             ) != -1;
           // Presencial
           this.criteriosEvaluacionP[2].flag =
             resp.findIndex(
-              (x) => x.idModalidadCurso == ModalidadCurso.PRESENCIAL
+              (x) => x.idModalidadCurso == ModalidadCurso.PRESENCIAL,
             ) != -1;
         }
       });
@@ -258,32 +258,32 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     let sub2$ = this.pgeneralService.pgCriteriosEvaluacionOnline$.subscribe(
       (resp) => {
         this.criteriosEvaluacionMW[1].grid.data = resp;
-      }
+      },
     );
     let sub3$ = this.pgeneralService.pgCriteriosEvaluacionAonline$.subscribe(
       (resp) => {
         this.criteriosEvaluacionMW[0].grid.data = resp;
-      }
+      },
     );
     let sub4$ = this.pgeneralService.pgCriteriosEvaluacionPresencial$.subscribe(
       (resp) => {
         this.criteriosEvaluacionMW[2].grid.data = resp;
-      }
+      },
     );
     let sub5$ = this.pgeneralService.ppadreCEvaluacionOnline$.subscribe(
       (resp) => {
         this.criteriosEvaluacionP[1].grid.data = resp;
-      }
+      },
     );
     let sub6$ = this.pgeneralService.ppPadreCEvaluacionAonline$.subscribe(
       (resp) => {
         this.criteriosEvaluacionP[0].grid.data = resp;
-      }
+      },
     );
     let sub7$ = this.pgeneralService.ppadreCEvaluacionPresencial$.subscribe(
       (resp) => {
         this.criteriosEvaluacionP[2].grid.data = resp;
-      }
+      },
     );
     this._subscriptions$.add(sub1$);
     this._subscriptions$.add(sub2$);
@@ -316,7 +316,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
             resp.formGroup.get('idCriterioEvaluacion').value
           ) {
             resp.dataItem.idCriterioEvaluacion = resp.formGroup.get(
-              'idCriterioEvaluacion'
+              'idCriterioEvaluacion',
             ).value;
             flagActualizar = true;
           }
@@ -371,32 +371,28 @@ export class PgCriterioEvaluacionComponent implements OnInit {
         considerarNota: [undefined],
         porcentaje: undefined,
       });
-      x.grid.cellClickEvent$.subscribe((resp) => {});
+      // Solo suscripción para porcentaje
       x.grid.cellCloseEvent$.subscribe((resp) => {
-        if (resp.columnField == 'considerarNota') {
-          resp.dataItem.considerarNota =
-            resp.formGroup.get('considerarNota').value ?? false;
-        }
         if (resp.columnField == 'porcentaje') {
           resp.dataItem.porcentaje =
             resp.formGroup.get('porcentaje').value ?? 0;
-        }
-        let total = 0;
-        x.grid.data.forEach((s) => {
-          total += s.porcentaje;
-        });
-        if (total > 100) {
-          this._alertaService
-            .swalFireOptions({
-              icon: 'info',
-              title: '¡Revisa tus datos, no puedes pasar del 100!',
-            })
-            .then(() => {});
-        } else {
-          if (resp.dataItem.esCurso == 0) {
-            this.actualizarInsertarPGCEvaluacion(resp.dataItem, x.grid);
+          let total = 0;
+          x.grid.data.forEach((s) => {
+            total += s.porcentaje;
+          });
+          if (total > 100) {
+            this._alertaService
+              .swalFireOptions({
+                icon: 'info',
+                title: '¡Revisa tus datos, no puedes pasar del 100!',
+              })
+              .then(() => {});
           } else {
-            this.actualizarInsertarPGCEvaluacionHijo(resp.dataItem, x.grid);
+            if (resp.dataItem.esCurso == 0) {
+              this.actualizarInsertarPGCEvaluacion(resp.dataItem, x.grid);
+            } else {
+              this.actualizarInsertarPGCEvaluacionHijo(resp.dataItem, x.grid);
+            }
           }
         }
       });
@@ -404,7 +400,6 @@ export class PgCriterioEvaluacionComponent implements OnInit {
         this._alertaService
           .swalFireOptions({
             title: `¿Está seguro de eliminar el criterio ${resp.dataItem.nombre}?`,
-            // text: '¡No podrás revertir esto!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#4C5FC0',
@@ -422,9 +417,25 @@ export class PgCriterioEvaluacionComponent implements OnInit {
       });
     });
   }
+
+  // Maneja el cambio del switch de considerarNota
+  onConsiderarNotaSwitchChange(dataItem: any, value: boolean, grid: any) {
+    // Validación: solo permitir si esCurso == 1
+    if (dataItem.esCurso !== 1) {
+      return;
+    }
+    // Si el valor no cambió, no hacer nada
+    if (dataItem.considerarNota === value) {
+      return;
+    }
+    // Validación: si hay reglas adicionales, agrégalas aquí
+    dataItem.considerarNota = value;
+    this.actualizarInsertarPGCEvaluacionHijo(dataItem, grid);
+  }
+
   abrirModalEsquemaEvaluacion(
     modalAsociarEsquemaEvaluacion: any,
-    dataItem?: EsquemaAsociado
+    dataItem?: EsquemaAsociado,
   ) {
     this.isNewEsquemaEvaluacion = dataItem == undefined;
     this.gridCriterioEvaluacion.loading = true;
@@ -435,7 +446,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
 
       this._integraService
         .getJsonResponse(
-          `${constApiPlanificacion.EsquemaEvaluacionObtenerDetalleEsquemaAsignado}/${dataItem.id}`
+          `${constApiPlanificacion.EsquemaEvaluacionObtenerDetalleEsquemaAsignado}/${dataItem.id}`,
         )
         .subscribe({
           next: (resp: HttpResponse<DetalleEsquemaAsignado[]>) => {
@@ -470,7 +481,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
                 size: 'lg',
                 backdrop: 'static',
                 keyboard: false,
-              }
+              },
             );
           },
           error: (error) => {
@@ -493,7 +504,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
           size: 'lg',
           backdrop: 'static',
           keyboard: false,
-        }
+        },
       );
     }
   }
@@ -511,7 +522,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     if (event != undefined && event > 0) {
       this._integraService
         .getJsonResponse(
-          `${constApiPlanificacion.EsquemaEvaluacionObtenerDetalleEsquema}/${event}`
+          `${constApiPlanificacion.EsquemaEvaluacionObtenerDetalleEsquema}/${event}`,
         )
         .subscribe({
           next: (resp: HttpResponse<EsquemaEvaluacionDetalleCompuesto[]>) => {
@@ -563,12 +574,12 @@ export class PgCriterioEvaluacionComponent implements OnInit {
         datosFormulario.validoDesde != undefined
           ? datePipeTransform(datosFormulario.validoDesde)
           : undefined,
-      esquemaPredeterminado: datosFormulario.esEsquemaPredeterminado ?? false ,
+      esquemaPredeterminado: datosFormulario.esEsquemaPredeterminado ?? false,
       listadoDetalleAsignacion: [],
     };
     if (this.detalleEsquemaAsignado.length > 0) {
       this.listadoDetalleAsignacion = this.detalleEsquemaAsignado.map(
-        (x) => [] as EsquemaEvaluacionPgeneralDetalleCompuesto[]
+        (x) => [] as EsquemaEvaluacionPgeneralDetalleCompuesto[],
       );
       this.pgeneralService.obtenerDetalleEsquemaAsignado$.next();
       let detalleFinal: EsquemaEvaluacionPgeneralDetalleCompuesto[] = [];
@@ -585,7 +596,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     this._integraService
       .postJsonResponse(
         constApiPlanificacion.EsquemaEvaluacionRegistrarAsignacion,
-        JSON.stringify(registro)
+        JSON.stringify(registro),
       )
       .subscribe({
         next: (resp) => {
@@ -618,7 +629,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     this._integraService
       .putJsonResponse(
         constApiPlanificacion.EsquemaEvaluacionActualizarAsignacion,
-        JSON.stringify(registro)
+        JSON.stringify(registro),
       )
       .subscribe({
         next: (resp) => {
@@ -647,7 +658,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
   }
   getEsquemaEvaluacionDetalle(
     event: EsquemaEvaluacionPgeneralDetalleCompuesto[],
-    index: number
+    index: number,
   ) {
     this.listadoDetalleAsignacion[index] = event;
   }
@@ -655,14 +666,14 @@ export class PgCriterioEvaluacionComponent implements OnInit {
 
   abrirModalCriterio(
     modalCriterioEvaluacion: any,
-    item: GridCriterioEvaluacion
+    item: GridCriterioEvaluacion,
   ) {
     item.grid.loading = true;
     this.idModalidadCriterioTemp = item.idModalidad;
     let tipoPrograma = this.pgeneralService.dataItemPgeneral.idTipoPrograma;
     this._integraService
       .getJsonResponse(
-        `${constApiPlanificacion.CriterioEvaluacionObtenerPGCriteriosEvaluacion}/${tipoPrograma}/${item.idModalidad}`
+        `${constApiPlanificacion.CriterioEvaluacionObtenerPGCriteriosEvaluacion}/${tipoPrograma}/${item.idModalidad}`,
       )
       .subscribe({
         next: (resp: HttpResponse<IComboBase1[]>) => {
@@ -677,7 +688,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
                 backdrop: 'static',
                 keyboard: false,
                 centered: true,
-              }
+              },
             );
           } else {
             this._alertaService.swalFireOptions({
@@ -699,14 +710,14 @@ export class PgCriterioEvaluacionComponent implements OnInit {
   }
   abrirModalCriterioHijo(
     modalCriterioEvaluacion: any,
-    item: GridCriterioEvaluacionHijo
+    item: GridCriterioEvaluacionHijo,
   ) {
     item.grid.loading = true;
     let tipoPrograma = this.pgeneralService.dataItemPgeneral.idTipoPrograma;
     this.idModalidadCriterioTemp = item.idModalidad;
     this._integraService
       .getJsonResponse(
-        `${constApiPlanificacion.CriterioEvaluacionObtenerPGCriteriosEvaluacion}/${tipoPrograma}/${item.idModalidad}`
+        `${constApiPlanificacion.CriterioEvaluacionObtenerPGCriteriosEvaluacion}/${tipoPrograma}/${item.idModalidad}`,
       )
       .subscribe({
         next: (resp: HttpResponse<IComboBase1[]>) => {
@@ -721,7 +732,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
                 backdrop: 'static',
                 keyboard: false,
                 centered: true,
-              }
+              },
             );
           } else {
             this._alertaService.swalFireOptions({
@@ -755,12 +766,12 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     let grid: KendoGrid;
     if (tipoPrograma == TipoPrograma.PADRE) {
       let item = this.criteriosEvaluacionP.find(
-        (x) => x.idModalidad == this.idModalidadCriterioTemp
+        (x) => x.idModalidad == this.idModalidadCriterioTemp,
       );
       grid = item.grid;
     } else {
       let item = this.criteriosEvaluacionMW.find(
-        (x) => x.idModalidad == this.idModalidadCriterioTemp
+        (x) => x.idModalidad == this.idModalidadCriterioTemp,
       );
       grid = item.grid;
     }
@@ -768,13 +779,13 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     this._integraService
       .postJsonResponse(
         constApiPlanificacion.ProgramaGeneralActualizarInsertarPGCEvaluacion,
-        JSON.stringify(nuevoItem)
+        JSON.stringify(nuevoItem),
       )
       .subscribe({
         next: (resp: HttpResponse<PGeneralCriterioEvaluacion>) => {
           if (tipoPrograma == TipoPrograma.PADRE) {
             let item = this.criteriosEvaluacionP.find(
-              (x) => x.idModalidad == this.idModalidadCriterioTemp
+              (x) => x.idModalidad == this.idModalidadCriterioTemp,
             );
             item.grid.loading = false;
             let obj: PGeneralCursoCriterioHijo = {
@@ -791,7 +802,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
             item.grid.data = [obj, ...item.grid.data];
           } else {
             let item = this.criteriosEvaluacionMW.find(
-              (x) => x.idModalidad == this.idModalidadCriterioTemp
+              (x) => x.idModalidad == this.idModalidadCriterioTemp,
             );
             item.grid.loading = false;
             let obj: PGeneralCriterioEvaluacion = {
@@ -827,7 +838,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
   }
   getCriterioEvaluacion(idCriterioEvaluacion: number) {
     let item = this.pgeneralService.comboCriterioEvaluacion.find(
-      (x) => x.id == idCriterioEvaluacion
+      (x) => x.id == idCriterioEvaluacion,
     );
     if (item) {
       return item.nombre;
@@ -844,7 +855,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
   }
   private actualizarInsertarPGCEvaluacionHijo(
     dataItem: PGeneralCursoCriterioHijo,
-    grid: KendoGrid
+    grid: KendoGrid,
   ) {
     let item: PgeneralCriterioEvaluacionHijo = {
       id: dataItem.id ?? 0,
@@ -858,7 +869,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     this._integraService
       .postJsonResponse(
         constApiPlanificacion.ProgramaGeneralActualizarInsertarPGCEvaluacionHijo,
-        JSON.stringify(item)
+        JSON.stringify(item),
       )
       .subscribe({
         next: (resp) => {
@@ -883,7 +894,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
   }
   private actualizarInsertarPGCEvaluacion(
     dataItem: PGeneralCriterioEvaluacion | PGeneralCursoCriterioHijo,
-    grid: KendoGrid
+    grid: KendoGrid,
   ) {
     let item: PGeneralCriterioEvaluacion = {
       id: dataItem.id,
@@ -897,7 +908,7 @@ export class PgCriterioEvaluacionComponent implements OnInit {
     this._integraService
       .postJsonResponse(
         constApiPlanificacion.ProgramaGeneralActualizarInsertarPGCEvaluacion,
-        JSON.stringify(item)
+        JSON.stringify(item),
       )
       .subscribe({
         next: (resp: HttpResponse<PGeneralCriterioEvaluacion>) => {

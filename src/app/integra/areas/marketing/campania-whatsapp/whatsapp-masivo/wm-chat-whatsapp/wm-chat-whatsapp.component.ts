@@ -187,6 +187,8 @@ export class WmChatWhatsAppComponent implements OnInit {
   datosChat: ChatWhatsAppMarketingPorCelular = null;
   alumnosPorCelular: ListaAlumnosPorCelular[] = [];
   mensajesWhats: any = [];
+  redSocialOrigen: string = '';
+  origenIdentificado: string = '';
 
   newMessage: string;
 
@@ -247,9 +249,11 @@ export class WmChatWhatsAppComponent implements OnInit {
         this.datosChat = this.data.chatPorCelular[0];
         this.idPersonal = 4659;
         this.rangoProbabilidad = this.data.chatPorCelular[0].rango;
+        this.idPais = this.data.chatPorCelular[0].idPaisEmpresa;
       }
       this.alumnosPorCelular = this.datosChat.listaAlumnosPorCelular;
       this.mensajesWhats = this.datosChat.mensajePorCelular;
+      this.detectarRedSocialOrigen();
       this.loader = false;
     }
     this.obtenerCombos();
@@ -303,7 +307,6 @@ export class WmChatWhatsAppComponent implements OnInit {
             datosExtraidos.nombre != null
           ) {
             this.formAlumno.get('nombre1').setValue(datosExtraidos.nombre);
-            console.log('in nombre1');
           }
 
           if (
@@ -437,7 +440,7 @@ export class WmChatWhatsAppComponent implements OnInit {
           this.idPais = this.datosChat.idPaisEmpresa;
           this.idAlumnoEnvio = this.datosChat.idAlumnoUM;
           this.rangoProbabilidad = this.datosChat.rango;
-
+          this.detectarRedSocialOrigen();
           setTimeout(() => {
             this.containerRef.nativeElement.scrollTop =
               this.containerRef.nativeElement.scrollHeight;
@@ -451,6 +454,78 @@ export class WmChatWhatsAppComponent implements OnInit {
           this.loader = false;
         },
       });
+  }
+
+  detectarRedSocialOrigen(): void {
+    const frasesClave = 'Hola BSG Institute, vi su anuncio en';
+    const redesSociales = ['linkedln', 'linkedin', 'google', 'mailing', 'facebook', 'instagram'];
+    const mapeoRedSocial: { [key: string]: string } = { google: 'adwords' };
+
+    for (let i = this.mensajesWhats.length - 1; i >= 0; i--) {
+      const mensaje: string = this.mensajesWhats[i]?.mensaje ?? '';
+      if (mensaje.includes(frasesClave)) {
+        const mensajeLower = mensaje.toLowerCase();
+        const redEncontrada = redesSociales.find((red) => mensajeLower.includes(red));
+        if (redEncontrada) {
+          this.redSocialOrigen = mapeoRedSocial[redEncontrada] ?? redEncontrada;
+        }
+        break;
+      }
+    }
+    if (!this.redSocialOrigen) return;
+
+    const paisPorCodigo: { [key: number]: string } = {
+      56: 'CHI', 51: 'PER', 52: 'MEX', 503: 'SAL', 57: 'COL',
+      591: 'BOL', 593: 'ECU', 598: 'URU', 505: 'NIC', 507: 'PAN',
+      504: 'HON', 506: 'COS', 58: 'VEN', 54: 'ARG', 595: 'PAR',
+      53: 'CUB', 34: 'ESP', 502: 'GUA',
+    };
+
+    const origenesPorRed: { [key: string]: string[] } = {
+      adwords: [
+        'LANCHIADSB1', 'LANPERADSB1', 'LANMEXADSB1', 'LANSALADSB1', 'LANCOLADSB1',
+        'LANBOLADSB1', 'LANECUADSB1', 'LANURUADSB1', 'LANNICADSB1', 'LANPANADSB1',
+        'LANHONADSB1', 'LANCOSADSB1', 'LANVENADSB1', 'LANARGADSB1', 'LANPARADSB1',
+        'LANCUBADSB1', 'LANREPADSB1', 'LANINTADSB1', 'LANESPADSB1',
+      ],
+      facebook: [
+        'LANPERFBK1', 'LANHONFBK1', 'LANMEXFBK1', 'LANPANFBK1', 'LANPARFBK1',
+        'LANURUFBK1', 'LANVENFBK1', 'LANARGFBK1', 'LANBOLFBK1', 'LANCHIFBK1',
+        'LANCOLFBK1', 'LANCOSFBK1', 'LANECUFBK1', 'LANSALFBK1', 'LANGUAFBK1',
+        'LANPERFBK2', 'LANHONFBK2', 'LANMEXFBK2', 'LANPANFBK2', 'LANPARFBK2',
+        'LANURUFBK2', 'LANVENFBK2', 'LANARGFBK2', 'LANBOLFBK2', 'LANCHIFBK2',
+        'LANCOLFBK2', 'LANCOSFBK2', 'LANECUFBK2', 'LANSALFBK2-Duplicado1',
+        'LANSALFBK2', 'LANGUAFBK2', 'LANPERVFBK1', 'LANBOLFBK1-2', 'LANSALFBK1-2',
+        'LANECUFBK1-2', 'LANPARFBK1-2', 'LANCOLFBK1-2', 'LANGUAFBK1-2',
+        'LANPERFBK1-2', 'LANCUBFBK1', 'LANINTFBK1',
+      ],
+      linkedin: [
+        'LANPERLKD1', 'LANBOLLKD1', 'LANCOLLKD1', 'LANPERMLKD1', 'LANMEXLKD1',
+        'LANVENLKD', 'LANREPLKD1', 'LANCHILKD1', 'LANVENLKD1',
+      ],
+      linkedln: [
+        'LANPERLKD1', 'LANBOLLKD1', 'LANCOLLKD1', 'LANPERMLKD1', 'LANMEXLKD1',
+        'LANVENLKD', 'LANREPLKD1', 'LANCHILKD1', 'LANVENLKD1',
+      ],
+      mailing: [
+        'LANECUMLG3', 'LANPERMLG3', 'LANSALMLG3', 'LANBOLMLG3', 'LANGUAMLG3',
+        'LANARGMLG3', 'LANCOLMLG3', 'LANPERBMLG3', 'LANMEXMLG3', 'LANCOLMLG3-2',
+        'LANREPMLG3', 'LANCHIMLG3', 'LANCOSMLG3', 'LANNICMLG3', 'LANECUMLG3-2',
+        'LANBOLMLG3-2', 'LANPERMLG3-2', 'LANPARMLG3', 'LANPANMLG3', 'LANPERMLG3-3',
+        'LANCOLMLG3-3', 'LANECUMLG3-3', 'LANHONMLG3-3', 'LANHONMLG3', 'LANPERMLGRF3',
+        'LANCOLMLGRF3', 'LANVENMLG3', 'LANCUBMLG3', 'LANURUMLG3', 'LANINTMLG3',
+      ],
+    };
+
+    try {
+      const codigoPais = paisPorCodigo[this.idPais] ?? 'PER';
+      const origenes = origenesPorRed[this.redSocialOrigen] ?? [];
+      const buscarPorPais = (pais: string) => origenes.find((o) => o.substring(3, 6) === pais);
+      this.origenIdentificado = buscarPorPais(codigoPais) ?? buscarPorPais('PER') ?? '';
+    } catch {
+      const origenesFallback = origenesPorRed[this.redSocialOrigen] ?? [];
+      this.origenIdentificado = origenesFallback.find((o) => o.substring(3, 6) === 'PER') ?? '';
+    }
   }
 
   obtenerCombos() {
@@ -975,7 +1050,7 @@ export class WmChatWhatsAppComponent implements OnInit {
     this.ObtenerComboOrigen();
     this.formOportunidad.reset();
     this.formOportunidad.get('idPersonalAsignado')?.setValue(125);
-    this.formOportunidad.get('idOrigen')?.setValue(954);
+    // idOrigen se setea en ObtenerComboOrigen() una vez que llega la respuesta
 
     this.modalRef = this.modalService.open(this.modalOportunidad, {
       backdrop: 'static',
@@ -1089,8 +1164,6 @@ export class WmChatWhatsAppComponent implements OnInit {
         idOrigen: dataForm.idOrigen,
       };
       this.idAsesorActual = 125;
-
-      console.log('envio', envio);
 
       this.integraService
         .postJsonResponse(constApiMarketing.CrearOportunidadWhatsapp, envio)
@@ -1953,14 +2026,26 @@ export class WmChatWhatsAppComponent implements OnInit {
   }
 
   ObtenerComboOrigen() {
+    const FALLBACK_ID_ORIGEN = 954;
     this.integraService
       .obtener(constApiMarketing.OrigenObtenerCombo)
       .subscribe({
         next: (response: HttpResponse<Array<IComboBase1>>) => {
           this.comboOrigen = response.body;
+          const origenEncontrado = this.origenIdentificado
+            ? this.comboOrigen.find((o) => o.nombre === this.origenIdentificado)
+            : null;
+          const idOrigen = origenEncontrado?.id ?? FALLBACK_ID_ORIGEN;
+          this.formOportunidad.get('idOrigen')?.setValue(idOrigen);
+          if (origenEncontrado) {
+            this.formOportunidad.get('idOrigen')?.disable();
+          } else {
+            this.formOportunidad.get('idOrigen')?.enable();
+          }
         },
         error: (error) => {
           console.error('Error al obtener el combo de Origen:', error);
+          this.formOportunidad.get('idOrigen')?.setValue(FALLBACK_ID_ORIGEN);
         },
       });
   }
