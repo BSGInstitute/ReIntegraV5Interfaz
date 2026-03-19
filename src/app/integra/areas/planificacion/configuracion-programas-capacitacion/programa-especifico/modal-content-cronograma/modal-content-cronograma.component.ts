@@ -62,6 +62,7 @@ interface FormInsertarSesion {
   idPespecifico: number;
   fecha: Date;
   duracion: number;
+  grupo?:number;
 }
 
 @Component({
@@ -115,6 +116,7 @@ export class ModalContentCronogramaComponent implements OnInit {
     idPespecifico: [null],
     fecha: [null, Validators.required],
     duracion: [null, Validators.required],
+    grupo: [null],
   });
   formControlGrupo = new FormControl();
   formControlCiclo = new FormControl();
@@ -153,6 +155,7 @@ export class ModalContentCronogramaComponent implements OnInit {
   }
   gridCruceCronograma: KendoGrid = new KendoGrid();
   showOpcionesInsertarSesion: boolean = false;
+  sesionPorReprogramar: CronogramaGrupo = null;
 
   mySelection: number[] = [];
 
@@ -252,6 +255,14 @@ export class ModalContentCronogramaComponent implements OnInit {
     const estado = this.listaEstadoCurso.find((e) => e.id === idEstadoCurso);
     return estado?.nombre?.toLowerCase().includes('cancel') ?? false;
   }
+  esPorReprogramarEstadoCurso(idEstadoCurso: number): boolean {
+    const estado = this.listaEstadoCurso.find((e) => e.id === idEstadoCurso);
+    return estado?.nombre?.toLowerCase().includes('reprogramar') ?? false;
+  }
+  esEjecutadaEstadoCurso(idEstadoCurso: number): boolean {
+    const estado = this.listaEstadoCurso.find((e) => e.id === idEstadoCurso);
+    return estado?.nombre?.toLowerCase().includes('ejecuta') ?? false;
+  }
 
   obtenerNombreObservacion(idObservacion: number): string {
     for (const obs of this.listaObservacionPorEstado) {
@@ -275,7 +286,13 @@ export class ModalContentCronogramaComponent implements OnInit {
       return;
     }
 
-    // Llamar al endpoint para actualizar
+    // Guardar estado anterior para revertir si falla
+    const estadoAnterior = dataItem.idEstadoCurso;
+
+    // Pre-actualizar dataItem para que cellClose no dispare guardarCambiosCronograma en paralelo
+    dataItem.idEstadoCurso = nuevoEstado;
+    dataItem.idPEspecificoSesionEstado = nuevoEstado;
+
     this.gridCronograma.loading = true;
     const dto = {
       Id: dataItem.id,
@@ -295,9 +312,6 @@ export class ModalContentCronogramaComponent implements OnInit {
             'top-right',
             idTemplate
           );
-          // Actualizar el dataItem después de éxito
-          dataItem.idEstadoCurso = nuevoEstado;
-          dataItem.idPEspecificoSesionEstado = nuevoEstado;
           dataItem.idObservacion = null;
           dataItem.idPEspecificoSesionEstadoObservacionDetalle = null;
           // Si el estado es "Por-Reprogramar", abrir modal Nueva Sesion con datos precargados
@@ -308,10 +322,12 @@ export class ModalContentCronogramaComponent implements OnInit {
         },
         error: (error) => {
           this.gridCronograma.loading = false;
+          // Revertir dataItem y formulario si falla
+          dataItem.idEstadoCurso = estadoAnterior;
+          dataItem.idPEspecificoSesionEstado = estadoAnterior;
+          formGroup.get('idEstadoCurso').setValue(estadoAnterior);
           let mensaje = this._alertaService.getMessageErrorService(error);
           this._alertaService.notificationWarning(mensaje);
-          // Revertir el valor en el formulario si falla
-          formGroup.get('idEstadoCurso').setValue(dataItem.idEstadoCurso);
         },
       });
   }
@@ -458,29 +474,30 @@ export class ModalContentCronogramaComponent implements OnInit {
   private configurarGridCronograma() {
     this.gridCronograma.rowCallback = (context: RowClassArgs) => {
       let dataItem = context.dataItem as CronogramaGrupo;
+      const esReprogramada = dataItem.reprogramacion === true;
+      let colorClass: any = {};
       if (dataItem.color == 'color0') {
-        return { color0: true };
+        colorClass = { color0: true };
       } else if (dataItem.color == 'color1') {
-        return { color1: true };
+        colorClass = { color1: true };
       } else if (dataItem.color == 'color2') {
-        return { color2: true };
+        colorClass = { color2: true };
       } else if (dataItem.color == 'color3') {
-        return { color3: true };
+        colorClass = { color3: true };
       } else if (dataItem.color == 'color4') {
-        return { color4: true };
+        colorClass = { color4: true };
       } else if (dataItem.color == 'color5') {
-        return { color5: true };
+        colorClass = { color5: true };
       } else if (dataItem.color == 'color6') {
-        return { color6: true };
+        colorClass = { color6: true };
       } else if (dataItem.color == 'color7') {
-        return { color7: true };
+        colorClass = { color7: true };
       } else if (dataItem.color == 'color8') {
-        return { color8: true };
-      } else if (dataItem.color == 'color9') {
-        return { color9: true };
+        colorClass = { color8: true };
       } else {
-        return { color9: true };
+        colorClass = { color9: true };
       }
+      return { ...colorClass, 'fila-reprogramada': esReprogramada };
     };
     this.gridCronograma.formGroup = this._formBuilder.group({
       fechaHoraInicio: null,
@@ -1408,6 +1425,7 @@ export class ModalContentCronogramaComponent implements OnInit {
   }
   abrirModalInsertarSesion(context: any, dataItem?: CronogramaGrupo) {
     this.enProcesoInsertarSesion = false;
+    this.sesionPorReprogramar = null;
     this.formInsertarSesion.reset();
     if (this.pEspecificoService.esCursoIndividual == true) {
       this.showOpcionesInsertarSesion = false;
@@ -1416,10 +1434,12 @@ export class ModalContentCronogramaComponent implements OnInit {
       this.showOpcionesInsertarSesion = true;
     }
     if (dataItem) {
+      this.sesionPorReprogramar = dataItem;
       this.showOpcionesInsertarSesion = false;
       this.formInsertarSesion.get('tipo').setValue('Programa Especifico');
       this.formInsertarSesion.get('fecha').setValue(dataItem.fechaHoraInicio);
       this.formInsertarSesion.get('duracion').setValue(dataItem.duracion);
+      this.formInsertarSesion.get('grupo').setValue(dataItem.grupoSesion ?? 0);
       if (!this.pEspecificoService.esCursoIndividual) {
         this.formInsertarSesion.get('idPespecifico').setValue(dataItem.pEspecificoHijoId);
       }
@@ -1641,6 +1661,9 @@ export class ModalContentCronogramaComponent implements OnInit {
   insertarSesionEnCurso(idPespecifico: number) {
     let datosForm = this.formInsertarSesion.getRawValue() as FormInsertarSesion;
     let ctrlGrupo = this.formControlGrupo.value;
+    const grupoNuevaSesion = (datosForm.grupo != null)
+      ? datosForm.grupo
+      : ((ctrlGrupo != null) ? ctrlGrupo : 0);
     let jsonEnvio: InformacionPespecificoSesion = {
       id: 0,
       idPespecifico: idPespecifico,
@@ -1648,7 +1671,8 @@ export class ModalContentCronogramaComponent implements OnInit {
       duracion: datosForm.duracion,
       comentario: '',
       sesionAutoGenerada: false,
-      grupo: (ctrlGrupo != null) ? ctrlGrupo : 0,
+      grupo: grupoNuevaSesion,
+      ...(this.sesionPorReprogramar ? { idPEspecificoSesionEstado: 7 } : {}),
     };
     this.enProcesoInsertarSesion = true;
     this._integraService
@@ -1667,9 +1691,14 @@ export class ModalContentCronogramaComponent implements OnInit {
             );
           }
           this.enProcesoInsertarSesion = false;
-          this.recargarCronogramaPespecifico();
           this.modalRefInsertarSesion.close();
           this.obtenerNumeroGrupos();
+          if (this.sesionPorReprogramar) {
+            this.actualizarGrupoSesionOriginal(this.sesionPorReprogramar);
+            this.sesionPorReprogramar = null;
+          } else {
+            this.recargarCronogramaPespecifico();
+          }
         },
         error: (error) => {
           this.enProcesoInsertarSesion = false;
@@ -1677,6 +1706,44 @@ export class ModalContentCronogramaComponent implements OnInit {
           this._alertaService.notificationWarning(mensaje);
         },
       });
+  }
+  actualizarGrupoSesionOriginal(sesion: CronogramaGrupo) {
+    const jsonGrupo: InformacionCronogramaSesiones = {
+      id: sesion.id,
+      fechaHoraInicio: datePipeTransform(sesion.fechaHoraInicio),
+      aplicarCambios: false,
+      idExpositor: sesion.idExpositor,
+      idModalidadCurso: sesion.idModalidadCurso,
+      idAmbiente: sesion.idAmbiente,
+      idProveedor: sesion.idProveedor,
+      grupoSesion: sesion.grupoSesion,
+      mostrarPortalWeb: sesion.mostrarPortalWeb,
+      idObservacion: sesion.idObservacion,
+    };
+    const jsonEstado = {
+      Id: sesion.id,
+      IdPEspecificoSesionEstado: 2, // 2 = Cancelada
+    };
+    const actualizarDatos$ = this._integraService.putJsonResponse(
+      constApiPlanificacion.PEspecificoSesionActualizarDatosCronogramaSesiones,
+      JSON.stringify(jsonGrupo)
+    );
+    const actualizarEstado$ = this._integraService.putJsonResponse(
+      constApiPlanificacion.PEspecificoSesionActualizarEstadoCurso,
+      JSON.stringify(jsonEstado)
+    );
+    forkJoin([actualizarDatos$, actualizarEstado$]).subscribe({
+      next: () => {
+        sesion.idEstadoCurso = 2; // 2 = Cancelada
+        sesion.idPEspecificoSesionEstado = 2; // 2 = Cancelada
+        this.recargarCronogramaPespecifico();
+      },
+      error: (error) => {
+        let mensaje = this._alertaService.getMessageErrorService(error);
+        this._alertaService.notificationWarning(mensaje);
+        this.recargarCronogramaPespecifico();
+      },
+    });
   }
   insertarSesionEspecial() {
     let datosForm = this.formInsertarSesion.getRawValue() as FormInsertarSesion;

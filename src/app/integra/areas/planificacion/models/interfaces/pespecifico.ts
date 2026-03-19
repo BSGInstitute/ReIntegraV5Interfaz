@@ -294,6 +294,7 @@ export interface CronogramaGrupo {
   idObservacion?: number;
   idPEspecificoSesionEstado?: number;
   idPEspecificoSesionEstadoObservacionDetalle?: number;
+  reprogramacion:boolean;
 }
 
 export interface ProgramaEspecificoFUR {
@@ -516,6 +517,7 @@ export interface InformacionPespecificoSesion {
   idAmbiente?: number;
   predeterminado?: boolean;
   grupo: number;
+  idPEspecificoSesionEstado?: number;
 }
 export interface FiltroSesionEspecial {
   pEspecificoPadreId: number;

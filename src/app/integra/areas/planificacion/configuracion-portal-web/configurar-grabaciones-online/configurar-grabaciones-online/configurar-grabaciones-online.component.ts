@@ -24,6 +24,7 @@ import {
 import { IComboBase1 } from '@shared/models/interfaces/iglobal';
 import { IntegraService } from '@shared/services/integra.service';
 import { UserService } from '@shared/services/user.service';
+import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -346,8 +347,12 @@ export class ConfigurarGrabacionesOnlineComponent implements OnInit {
                 ? new Date(item.fechaInicio)
                 : null;
               item.fechaFin = item.fechaFin ? new Date(item.fechaFin) : null;
-              item.habilitado =
-                item.habilitado == 'true' ? 'Habilitado' : 'Deshabilitado';
+              if (item.idPEspecificoSesionEstado === 3) {
+                item.habilitado = 'Por Reprogramar';
+              } else {
+                item.habilitado =
+                  item.habilitado == 'true' ? 'Habilitado' : 'Deshabilitado';
+              }
             });
           }
         },
@@ -570,9 +575,56 @@ export class ConfigurarGrabacionesOnlineComponent implements OnInit {
       })
       .subscribe({
         next: (resp: any) => {
-          this.gridSesiones.loading = false;
-          this.isGuardarDisabled = false;
-          Swal.fire('Éxito!', 'Se guardó correctamente', 'success');
+          const sesionsPorReprogramar = this.gridSesiones.filter(
+            (item: any) => item.habilitado === 'Por Reprogramar'
+          );
+          if (sesionsPorReprogramar.length > 0) {
+            const idPEspecifico = sesionsPorReprogramar[0].idPEspecifico;
+            const llamadas = sesionsPorReprogramar.map((item: any) =>
+              this.integraService.putJsonResponse(
+                constApiPlanificacion.PEspecificoSesionActualizarEstadoCurso,
+                JSON.stringify({ Id: item.idPEspecificoSesion, IdPEspecificoSesionEstado: 3 })
+              )
+            );
+            forkJoin(llamadas).subscribe({
+              next: () => {
+                const filtroCronograma = {
+                  listaPEspecificos: [idPEspecifico],
+                  pEspecificoId: idPEspecifico,
+                  cursoIndividual: false,
+                  nroGrupo: 1,
+                };
+                this.integraService
+                  .postJsonResponse(
+                    constApiPlanificacion.PEspecificoObtenerCronogramaPEspecifico,
+                    JSON.stringify(filtroCronograma)
+                  )
+                  .subscribe({
+                    next: () => {
+                      this.recargarConfiguracionGeneral(idPEspecifico);
+                      this.gridSesiones.loading = false;
+                      this.isGuardarDisabled = false;
+                      Swal.fire('Éxito!', 'Se guardó correctamente', 'success');
+                    },
+                    error: () => {
+                      this.recargarConfiguracionGeneral(idPEspecifico);
+                      this.gridSesiones.loading = false;
+                      this.isGuardarDisabled = false;
+                      Swal.fire('Éxito!', 'Se guardó correctamente', 'success');
+                    },
+                  });
+              },
+              error: () => {
+                this.gridSesiones.loading = false;
+                this.isGuardarDisabled = false;
+                Swal.fire('Error!', 'Se guardaron las sesiones pero ocurrió un problema al actualizar el estado.', 'warning');
+              },
+            });
+          } else {
+            this.gridSesiones.loading = false;
+            this.isGuardarDisabled = false;
+            Swal.fire('Éxito!', 'Se guardó correctamente', 'success');
+          }
         },
         error: (err) => {
           this.gridSesiones.loading = false;
@@ -672,6 +724,7 @@ export class ConfigurarGrabacionesOnlineComponent implements OnInit {
   }
 
   ngAfterViewChecked(): void {
+    if (this.editingRowIndex === null || this.editingField === null) return;
     let inputElement: HTMLInputElement | null = null;
     if (
       this.editingField === 'fechaInicio' ||
@@ -695,6 +748,10 @@ export class ConfigurarGrabacionesOnlineComponent implements OnInit {
 
   onHabilitadoChange(value: string, rowIndex: number): void {
     this.gridSesiones[rowIndex].habilitado = value;
+    this.stopEditing();
+  }
+
+  onHabilitadoBlur(dataItem: any): void {
     this.stopEditing();
   }
 
