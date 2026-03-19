@@ -3551,7 +3551,9 @@ export const constApiPlanificacion = {
   ModalidadCursoObtener: '/ModalidadCurso/Obtener',
   ProveedorObtenerNombreProveedorParaHonorario:
     '/Proveedor/ObtenerNombreProveedorParaHonorario',
-
+  ProveedorObtenerDocentesActivos: '/Proveedor/ObtenerDocentesActivos',
+  ProveedorObtenerActivoPEspecifico: '/Proveedor/ObtenerActivoPEspecifico',
+  PEspecificoObtener: '/PEspecifico/Obtener',
   //CriteriosEvaluacionProgramasEspecificos
   CriteriosEvaluacionProgramasEspecificosObtenerReporte:
     '/CriteriosEvaluacionProgramasEspecificos/ObtenerProgramasEspecificoEsquemasFiltrosPadre',
