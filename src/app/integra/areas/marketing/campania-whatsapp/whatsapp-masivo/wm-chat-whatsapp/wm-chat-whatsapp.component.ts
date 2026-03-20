@@ -458,7 +458,7 @@ export class WmChatWhatsAppComponent implements OnInit {
 
   detectarRedSocialOrigen(): void {
     const frasesClave = 'Hola BSG Institute, vi su anuncio en';
-    const redesSociales = ['linkedln', 'linkedin', 'google', 'gmail', 'facebook', 'instagram'];
+    const redesSociales = ['linkedln', 'linkedin', 'google', 'gmail', 'mailing', 'facebook', 'instagram'];
     const mapeoRedSocial: { [key: string]: string } = { google: 'adwords', gmail: 'mailing' };
 
     for (let i = this.mensajesWhats.length - 1; i >= 0; i--) {
