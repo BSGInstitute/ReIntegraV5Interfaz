@@ -111,6 +111,7 @@ export interface ConfiguracionVideoTutorVirtual {
   fechaProcesamiento?: Date;
   tieneVideo: boolean;
   tutorVirtualActivo: boolean;
+  idVideoProcesamiento: string;
 }
 @Component({
   selector: 'app-video-evaluaciones-estructura-programa',
