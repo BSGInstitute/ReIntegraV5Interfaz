@@ -3553,7 +3553,11 @@ export const constApiPlanificacion = {
     '/Proveedor/ObtenerNombreProveedorParaHonorario',
   ProveedorObtenerDocentesActivos: '/Proveedor/ObtenerDocentesActivos',
   ProveedorObtenerActivoPEspecifico: '/Proveedor/ObtenerActivoPEspecifico',
+  ProveedorPEspecificoObtenerPorIdProveedor: '/Proveedor/ObtenerProveedorPEspecificoPorIdProveedor',
+  ProveedorPEspecificoInsertar: '/Proveedor/InsertarProveedorPEspecifico',
+  ProveedorPEspecificoEliminar: '/Proveedor/EliminarProveedorPEspecifico',
   PEspecificoObtener: '/PEspecifico/Obtener',
+  PEspecificoObtenerCatalogo: '/PEspecifico/ObtenerCatalogo',
   //CriteriosEvaluacionProgramasEspecificos
   CriteriosEvaluacionProgramasEspecificosObtenerReporte:
     '/CriteriosEvaluacionProgramasEspecificos/ObtenerProgramasEspecificoEsquemasFiltrosPadre',

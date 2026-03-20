@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header bg-color-material pb-0">
-          <h2 class="text-white mb-2">Gestion Academica</h2>
+          <h2 class="text-white mb-2">Gestión Académica</h2>
         </div>
         <div class="card-body p-4" id="grillaAgendaTab">
           <div class="col-12">
@@ -31,11 +31,10 @@
 
               <kendo-grid-column
                 field="fechaAsignacion"
-                title="FechaAsignacion"
-                [width]="130"
+                title="Fecha Asignación"
+                [width]="150"
                 [headerClass]="'header-grid-integra'"
-              >
-              </kendo-grid-column>
+              ></kendo-grid-column>
 
               <kendo-grid-column
                 field="nombre"
@@ -55,16 +54,14 @@
                     [extra]="false"
                     operator="contains"
                   >
-                    <kendo-filter-contains-operator
-                      text="Contiene"
-                    ></kendo-filter-contains-operator>
+                    <kendo-filter-contains-operator text="Contiene"></kendo-filter-contains-operator>
                   </kendo-grid-string-filter-menu>
                 </ng-template>
               </kendo-grid-column>
 
               <kendo-grid-command-column
                 title="Acciones"
-                [width]="80"
+                [width]="90"
                 [headerClass]="'header-grid-integra'"
               >
                 <ng-template kendoGridCellTemplate let-dataItem="dataItem">
@@ -75,7 +72,7 @@
                       fillMode="solid"
                       rounded="large"
                       size="small"
-                      class="p-2 me-1 ms-1"
+                      class="p-2"
                       container="body"
                       placement="top"
                       ngbTooltip="Editar"
@@ -89,15 +86,11 @@
 
               <ng-template kendoPagerTemplate>
                 <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
-                <kendo-pager-numeric-buttons
-                  [buttonCount]="10"
-                ></kendo-pager-numeric-buttons>
+                <kendo-pager-numeric-buttons [buttonCount]="10"></kendo-pager-numeric-buttons>
                 <kendo-pager-next-buttons></kendo-pager-next-buttons>
                 <kendo-pager-input></kendo-pager-input>
                 <kendo-pager-info></kendo-pager-info>
-                <kendo-pager-page-sizes
-                  [pageSizes]="pageSizes"
-                ></kendo-pager-page-sizes>
+                <kendo-pager-page-sizes [pageSizes]="pageSizes"></kendo-pager-page-sizes>
                 <div class="w-100 text-end">
                   <button
                     kendoButton
@@ -116,74 +109,132 @@
   </div>
 </div>
 
-<!-- -----------------------Modal Crear Nuevo/Actualizar ---------------------- -->
+<!-- ═══════════════════════════ MODAL ═══════════════════════════ -->
 <ng-template #modalGestionAcademica let-modal>
-  <div class="modal-header bg-primary-header-modal">
-    <h1 class="modal-title m-0 p-0" id="modal-basic-title">
-      Registro de Gestion Academica
-    </h1>
+
+  <!-- Header con X para cerrar -->
+  <div class="modal-header bg-primary-header-modal d-flex align-items-center justify-content-between">
+    <h5 class="modal-title m-0">Registro de Gestión Académica</h5>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Cerrar"
+      [disabled]="enProcesoSolicitud"
+      (click)="modal.close()"
+    ></button>
   </div>
 
-  <div class="modal-body p-3">
+  <div class="modal-body p-4">
     <form [formGroup]="formGestionAcademica">
-      <div class="row">
-        <!-- Docente -->
-        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
-          <kendo-formfield orientation="horizontal">
-            <label class="d-flex align-items-start">
-              <span><b>Docente</b><strong class="text-danger">*</strong>:</span>
-            </label>
-            <kendo-dropdownlist
-              [data]="listaDocentes"
-              textField="nombre"
-              valueField="id"
-              formControlName="idDocente"
-              [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
-            ></kendo-dropdownlist>
-            <kendo-formerror>El campo Docente es obligatorio</kendo-formerror>
-          </kendo-formfield>
-        </div>
 
-        <!-- Cursos -->
-        <div class="col-sm-12 col-md-12 k-form-horizontal mb-3">
-          <kendo-formfield orientation="horizontal">
-            <label class="d-flex align-items-start">
-              <span><b>Cursos</b> :</span>
-            </label>
-            <div class="d-flex align-items-center gap-2">
-              <kendo-dropdownlist
-                [data]="listaCursos"
-                textField="nombre"
-                valueField="id"
-                formControlName="idCurso"
-                [defaultItem]="{ id: null, nombre: 'Seleccione...' }"
-                style="flex: 1"
-              ></kendo-dropdownlist>
-              <button
-                kendoButton
-                themeColor="primary"
-                type="button"
-                (click)="agregarCurso()"
-              >
-                Guardar
-              </button>
-            </div>
-          </kendo-formfield>
+      <!-- ── Docente ── -->
+      <div class="row align-items-center mb-3">
+        <div class="col-3 text-end">
+          <label class="fw-semibold mb-0">
+            Docente <strong class="text-danger">*</strong>
+          </label>
+        </div>
+        <div class="col-9">
+          <kendo-dropdownlist
+            class="w-100"
+            [data]="listaDocentes"
+            textField="nombre"
+            valueField="id"
+            [valuePrimitive]="true"
+            formControlName="idDocente"
+            [defaultItem]="{ id: null, nombre: 'Seleccione un docente...' }"
+            (valueChange)="onDocenteChange($event)"
+          ></kendo-dropdownlist>
+          <small
+            class="text-danger"
+            *ngIf="
+              formGestionAcademica.get('idDocente').invalid &&
+              formGestionAcademica.get('idDocente').touched
+            "
+          >
+            El campo Docente es obligatorio.
+          </small>
+          <small class="text-muted d-block mt-1" *ngIf="docenteBloqueado">
+            <span class="k-icon k-i-lock"></span> Docente bloqueado mientras tenga cursos asignados.
+          </small>
         </div>
       </div>
+
+      <!-- ── Buscador de Cursos ── -->
+      <div class="row align-items-center mb-1">
+        <div class="col-3 text-end">
+          <label class="fw-semibold mb-0">Buscar Curso</label>
+        </div>
+        <div class="col-9">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Escriba mínimo 3 letras para buscar..."
+            [value]="textoBusquedaCurso"
+            (input)="filtrarCursos($event)"
+            autocomplete="off"
+          />
+
+          <!-- Aviso mínimo -->
+          <small
+            class="text-muted"
+            *ngIf="textoBusquedaCurso.length > 0 && textoBusquedaCurso.length < 3"
+          >
+            Ingrese al menos 3 letras para buscar.
+          </small>
+
+          <!-- Lista de resultados: + solo en cada ítem -->
+          <div
+            *ngIf="listaCursosFiltrada.length > 0"
+            class="border rounded shadow-sm bg-white mt-1"
+            style="max-height: 200px; overflow-y: auto; z-index: 1050; position: relative;"
+          >
+            <ul class="list-group list-group-flush mb-0">
+              <li
+                *ngFor="let curso of listaCursosFiltrada"
+                class="list-group-item list-group-item-action px-3 py-2 d-flex align-items-center justify-content-between"
+                style="font-size: 13px;"
+              >
+                <span>
+                  <span *ngIf="curso.codigo" class="badge bg-secondary me-2">{{ curso.codigo }}</span>
+                  {{ curso.nombre }}
+                </span>
+                <button
+                  class="btn btn-sm btn-outline-primary ms-2 flex-shrink-0"
+                  type="button"
+                  title="Agregar"
+                  (click)="seleccionarCurso(curso)"
+                >
+                  <span class="k-icon k-i-plus"></span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
     </form>
 
-    <!-- Sub-grid Cursos Asignados -->
-    <div class="row mt-3">
+    <!-- ── Grilla Cursos Asignados ── -->
+    <div class="row mt-4">
       <div class="col-12">
-        <kendo-grid
-          [data]="cursosAsignados"
-          [resizable]="true"
-        >
+        <kendo-grid [data]="cursosAsignados" [resizable]="true">
           <kendo-grid-column
-            field="nombre"
-            title="Cursos Asignados"
-            [headerClass]="'header-grid-integra text-center'"
+            field="nombreCurso"
+            title="Nombre"
+            [headerClass]="'header-grid-integra'"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="nombreDocente"
+            title="Docente"
+            [width]="180"
+            [headerClass]="'header-grid-integra'"
+          ></kendo-grid-column>
+          <kendo-grid-column
+            field="fechaAsignacion"
+            title="Fecha Asignación"
+            [width]="150"
+            [headerClass]="'header-grid-integra'"
           ></kendo-grid-column>
           <kendo-grid-command-column
             title="Acciones"
@@ -199,9 +250,12 @@
                   rounded="large"
                   size="small"
                   class="p-1"
-                  (click)="eliminarCursoAsignado(dataItem.id)"
+                  container="body"
+                  placement="top"
+                  ngbTooltip="Eliminar"
+                  (click)="eliminarCursoAsignado(dataItem)"
                 >
-                  <span class="k-icon k-i-x k-icon-16"></span>
+                  <span class="k-icon k-i-delete"></span>
                 </button>
               </div>
             </ng-template>
@@ -211,9 +265,9 @@
     </div>
   </div>
 
+  <!-- Footer -->
   <div class="modal-footer">
     <button
-      *ngIf="isNew"
       type="button"
       class="btn btn-primary"
       [disabled]="enProcesoSolicitud"
@@ -222,22 +276,14 @@
       Guardar
     </button>
     <button
-      *ngIf="!isNew"
       type="button"
-      class="btn btn-primary"
+      class="btn btn-secondary"
       [disabled]="enProcesoSolicitud"
-      (click)="actualizar()"
+      (click)="modal.close()"
     >
-      Actualizar
-    </button>
-    <button
-      type="button"
-      class="btn btn-danger"
-      (click)="modal.close('Close click')"
-      [disabled]="enProcesoSolicitud"
-    >
-      Cancelar
+      Cerrar
     </button>
   </div>
+
   <loading [loading]="enProcesoSolicitud"></loading>
 </ng-template>

@@ -15,9 +15,19 @@ interface GestionAcademicaGrid {
   fechaAsignacion: string;
 }
 
-interface FormGestionAcademica {
-  idDocente: number;
-  idCurso: number;
+interface PEspecificoCatalogo {
+  id: number;
+  nombre: string;
+  codigo: string | null;
+}
+
+interface ProveedorPEspecificoGrid {
+  id: number;           // id del registro en T_ProveedorPEspecifico
+  idProveedor: number;
+  nombreDocente: string;
+  idPespecifico: number;
+  nombreCurso: string;
+  fechaAsignacion: string;
 }
 
 @Component({
@@ -33,15 +43,8 @@ export class GestionAcademicaComponent implements OnInit {
     private _modalService: NgbModal,
   ) {}
 
+  // ── Grilla principal ─────────────────────────────────────────────────────
   gridGestionAcademica: KendoGrid = new KendoGrid();
-  enProcesoSolicitud: boolean = false;
-  modalRef: NgbModalRef = null;
-  dataItemTemp: GestionAcademicaGrid;
-  isNew: boolean = false;
-
-  listaDocentes: IComboBase1[] = [];
-  listaCursos: IComboBase1[] = [];
-  cursosAsignados: IComboBase1[] = [];
 
   pageSizes: (number | PageSizeItem)[] = [
     { text: '5', value: 5 },
@@ -50,73 +53,215 @@ export class GestionAcademicaComponent implements OnInit {
     { text: 'All', value: 'all' },
   ];
 
+  // ── Modal ────────────────────────────────────────────────────────────────
+  modalRef: NgbModalRef = null;
+  enProcesoSolicitud: boolean = false;
+  isNew: boolean = false;
+
+  // ── Docentes ─────────────────────────────────────────────────────────────
+  listaDocentes: IComboBase1[] = [];
+  docenteBloqueado: boolean = false;
+  // Almacena el id numérico del docente seleccionado de forma confiable
+  // (kendo-dropdownlist puede guardar el objeto completo en el form)
+  idProveedorActual: number = null;
+  nombreDocenteActual: string = '';
+
   formGestionAcademica: FormGroup = this._formBuilder.group({
     idDocente: [null, Validators.required],
-    idCurso: [null],
   });
+
+  // ── Catálogo PEspecifico (carga única en memoria) ─────────────────────────
+  private _catalogoPEspecifico: PEspecificoCatalogo[] = [];
+  private _catalogoCargado: boolean = false;
+
+  textoBusquedaCurso: string = '';
+  listaCursosFiltrada: PEspecificoCatalogo[] = [];
+
+  // ── Grilla cursos asignados en el modal ───────────────────────────────────
+  cursosAsignados: ProveedorPEspecificoGrid[] = [];
+  // Ids de registros ya guardados que se eliminarán al presionar Guardar
+  private _idsAEliminar: number[] = [];
 
   ngOnInit(): void {
     this.obtener();
   }
 
+  // ── Grilla principal ──────────────────────────────────────────────────────
   obtener() {
     this.gridGestionAcademica.loading = true;
     this._integraService
       .getJsonResponse(constApiPlanificacion.ProveedorObtenerActivoPEspecifico)
       .subscribe({
         next: (resp: HttpResponse<GestionAcademicaGrid[]>) => {
-          this.gridGestionAcademica.data = resp.body;
+          this.gridGestionAcademica.data = resp.body ?? [];
           this.gridGestionAcademica.loading = false;
         },
         error: (error) => {
           this.gridGestionAcademica.loading = false;
-          const mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
+          this._alertaService.notificationWarning(
+            this._alertaService.getMessageErrorService(error),
+          );
         },
       });
   }
 
+  // ── Docentes ──────────────────────────────────────────────────────────────
   obtenerDocentes() {
     this._integraService
       .getJsonResponse(constApiPlanificacion.ProveedorObtenerDocentesActivos)
       .subscribe({
         next: (resp: HttpResponse<IComboBase1[]>) => {
-          this.listaDocentes = resp.body;
+          this.listaDocentes = resp.body ?? [];
         },
         error: (error) => {
-          const mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
+          this._alertaService.notificationWarning(
+            this._alertaService.getMessageErrorService(error),
+          );
         },
       });
   }
 
-  obtenerCursos() {
+  // ── Catálogo PEspecifico ──────────────────────────────────────────────────
+  cargarCatalogoPEspecifico() {
+    if (this._catalogoCargado) return;
     this._integraService
-      .getJsonResponse(constApiPlanificacion.PEspecificoObtener)
+      .getJsonResponse(constApiPlanificacion.PEspecificoObtenerCatalogo)
       .subscribe({
-        next: (resp: HttpResponse<IComboBase1[]>) => {
-          this.listaCursos = resp.body;
+        next: (resp: HttpResponse<PEspecificoCatalogo[]>) => {
+          this._catalogoPEspecifico = resp.body ?? [];
+          this._catalogoCargado = true;
         },
         error: (error) => {
-          const mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
+          this._alertaService.notificationWarning(
+            this._alertaService.getMessageErrorService(error),
+          );
         },
       });
   }
 
+  // ── Filtrado local ────────────────────────────────────────────────────────
+  filtrarCursos(evento: Event) {
+    const texto = (evento.target as HTMLInputElement).value;
+    this.textoBusquedaCurso = texto;
+    if (!texto || texto.trim().length < 3) {
+      this.listaCursosFiltrada = [];
+      return;
+    }
+    const termino = texto.trim().toLowerCase();
+    const idsYaAsignados = new Set(this.cursosAsignados.map((c) => c.idPespecifico));
+    this.listaCursosFiltrada = this._catalogoPEspecifico
+      .filter(
+        (c) =>
+          !idsYaAsignados.has(c.id) &&
+          (c.nombre.toLowerCase().includes(termino) ||
+            (c.codigo && c.codigo.toLowerCase().includes(termino))),
+      )
+      .slice(0, 1000);
+  }
+
+  // ── Seleccionar curso de la lista ─────────────────────────────────────────
+  seleccionarCurso(curso: PEspecificoCatalogo) {
+    // Bloquear docente al agregar el primer curso
+    if (!this.docenteBloqueado) {
+      this.docenteBloqueado = true;
+      this.formGestionAcademica.get('idDocente').disable();
+    }
+
+    this.cursosAsignados = [
+      ...this.cursosAsignados,
+      {
+        id: 0, // 0 = pendiente de guardar
+        idProveedor: this.idProveedorActual,
+        nombreDocente: this.nombreDocenteActual,
+        idPespecifico: curso.id,
+        nombreCurso: curso.nombre,
+        fechaAsignacion: new Date().toISOString(),
+      },
+    ];
+
+    this.textoBusquedaCurso = '';
+    this.listaCursosFiltrada = [];
+  }
+
+  // ── Eliminar de la grilla (solo visual; el DELETE real ocurre en guardar()) ──
+  eliminarCursoAsignado(item: ProveedorPEspecificoGrid) {
+    if (item.id > 0) {
+      // Marcar para eliminar en el backend al guardar
+      this._idsAEliminar.push(item.id);
+    }
+    // En ambos casos quitar visualmente de la grilla
+    this.cursosAsignados = this.cursosAsignados.filter((c) => c !== item);
+  }
+
+  // ── Cargar cursos ya asignados al seleccionar docente ─────────────────────
+  // value puede ser el objeto completo {id, nombre, ...} o solo el número,
+  // dependiendo del modo en que Kendo tenga configurado el dropdown
+  onDocenteChange(value: any) {
+    // Extraer siempre el id numérico de forma segura
+    const idProveedor: number =
+      value !== null && typeof value === 'object' ? value.id : value;
+
+    if (!idProveedor) {
+      this.idProveedorActual = null;
+      this.nombreDocenteActual = '';
+      this.cursosAsignados = [];
+      this.docenteBloqueado = false;
+      return;
+    }
+
+    // Guardar id y nombre de forma confiable
+    this.idProveedorActual = idProveedor;
+    const docente =
+      value !== null && typeof value === 'object'
+        ? value
+        : this.listaDocentes.find((d) => d.id === idProveedor);
+    this.nombreDocenteActual = docente?.nombre ?? '';
+
+    this._integraService
+      .getJsonResponse(
+        `${constApiPlanificacion.ProveedorPEspecificoObtenerPorIdProveedor}/${idProveedor}`,
+      )
+      .subscribe({
+        next: (resp: HttpResponse<ProveedorPEspecificoGrid[]>) => {
+          const asignados = resp.body ?? [];
+          this.cursosAsignados = asignados;
+          if (asignados.length > 0) {
+            this.docenteBloqueado = true;
+            this.formGestionAcademica.get('idDocente').disable();
+          }
+        },
+        error: (error) => {
+          this._alertaService.notificationWarning(
+            this._alertaService.getMessageErrorService(error),
+          );
+        },
+      });
+  }
+
+  // ── Abrir modal ───────────────────────────────────────────────────────────
   abrirModal(context: any, isNew: boolean, dataItem?: GestionAcademicaGrid) {
     this.isNew = isNew;
     this.formGestionAcademica.reset();
+    this.formGestionAcademica.get('idDocente').enable();
     this.enProcesoSolicitud = false;
     this.cursosAsignados = [];
-    if (!isNew) {
-      this.dataItemTemp = dataItem;
+    this.listaCursosFiltrada = [];
+    this.textoBusquedaCurso = '';
+    this.docenteBloqueado = false;
+    this.idProveedorActual = null;
+    this.nombreDocenteActual = '';
+    this._idsAEliminar = [];
+
+    if (!isNew && dataItem) {
+      this.idProveedorActual = dataItem.id;
+      this.nombreDocenteActual = dataItem.nombre;
       this.formGestionAcademica.get('idDocente').setValue(dataItem.id);
-    } else {
-      this.dataItemTemp = null;
+      this.onDocenteChange(dataItem.id);
     }
+
     this.obtenerDocentes();
-    this.obtenerCursos();
+    this.cargarCatalogoPEspecifico();
+
     this.modalRef = this._modalService.open(context, {
       size: 'lg',
       backdrop: 'static',
@@ -124,48 +269,60 @@ export class GestionAcademicaComponent implements OnInit {
     });
   }
 
-  agregarCurso() {
-    const idCurso = this.formGestionAcademica.get('idCurso').value;
-    if (idCurso) {
-      const curso = this.listaCursos.find((c) => c.id === idCurso);
-      if (curso && !this.cursosAsignados.find((c) => c.id === curso.id)) {
-        this.cursosAsignados = [...this.cursosAsignados, curso];
-        this.formGestionAcademica.get('idCurso').setValue(null);
-      }
-    }
-  }
-
-  eliminarCursoAsignado(id: number) {
-    this.cursosAsignados = this.cursosAsignados.filter((c) => c.id !== id);
-  }
-
-  get GestionAcademicaForm(): FormGestionAcademica {
-    return this.formGestionAcademica.getRawValue() as FormGestionAcademica;
-  }
-
+  // ── Guardar: primero elimina los marcados, luego inserta los pendientes ────
   guardar() {
-    if (this.formGestionAcademica.get('idDocente').valid) {
-      // TODO: llamar endpoint para guardar
-      this.enProcesoSolicitud = false;
-      this.modalRef.close();
-      this.obtener();
-      this._alertaService.mensajeExitoso();
-    } else {
+    if (!this.idProveedorActual) {
       this.formGestionAcademica.markAllAsTouched();
-      this._alertaService.mensajeIcon('Complete por favor los campos obligatorios!');
+      this._alertaService.mensajeIcon('Seleccione un docente antes de guardar.');
+      return;
     }
-  }
 
-  actualizar() {
-    if (this.formGestionAcademica.get('idDocente').valid) {
-      // TODO: llamar endpoint para actualizar
-      this.enProcesoSolicitud = false;
+    const pendientesInsertar = this.cursosAsignados.filter((c) => c.id === 0);
+    const pendientesEliminar = [...this._idsAEliminar];
+
+    if (pendientesInsertar.length === 0 && pendientesEliminar.length === 0) {
       this.modalRef.close();
-      this.obtener();
-      this._alertaService.mensajeExitoso();
-    } else {
-      this.formGestionAcademica.markAllAsTouched();
-      this._alertaService.mensajeIcon('Complete por favor los campos obligatorios!');
+      return;
     }
+
+    this.enProcesoSolicitud = true;
+    const total = pendientesEliminar.length + pendientesInsertar.length;
+    let completados = 0;
+
+    const onCompleto = () => {
+      completados++;
+      if (completados === total) {
+        this.enProcesoSolicitud = false;
+        this._idsAEliminar = [];
+        this.modalRef.close();
+        this.obtener();
+        this._alertaService.mensajeExitoso();
+      }
+    };
+
+    const onError = (error: any) => {
+      this.enProcesoSolicitud = false;
+      this._alertaService.notificationWarning(
+        this._alertaService.getMessageErrorService(error),
+      );
+    };
+
+    // Eliminar registros marcados
+    pendientesEliminar.forEach((id) => {
+      this._integraService
+        .deleteJsonResponse(`${constApiPlanificacion.ProveedorPEspecificoEliminar}/${id}`)
+        .subscribe({ next: onCompleto, error: onError });
+    });
+
+    // Insertar registros nuevos
+    pendientesInsertar.forEach((item) => {
+      this._integraService
+        .postJsonResponse(constApiPlanificacion.ProveedorPEspecificoInsertar, {
+          id: 0,
+          idProveedor: this.idProveedorActual,
+          idPespecifico: item.idPespecifico,
+        })
+        .subscribe({ next: onCompleto, error: onError });
+    });
   }
 }
