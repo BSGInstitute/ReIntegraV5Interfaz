@@ -71,6 +71,7 @@ import { CreacionOportunidadMasivaComponent } from './gestion-oportunidades/crea
 import { MessengerFacebookChatComponent } from './campania-facebook/messenger-facebook-chat/messenger-facebook-chat.component';
 import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
 import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
+import { SeleccionEsquemasComponent } from './configuraciones/seleccion-esquemas/seleccion-esquemas.component';
 const routes: Routes = [
   {
     path: '',
@@ -323,6 +324,7 @@ const routes: Routes = [
       {path:'MessengerFacebookChat',component:MessengerFacebookChatComponent},
       {path:'CampaniaRemarketingGeneral',component:CampaniaRemarketingGeneralComponent},
       {path:'CategoriaArgumentos', component: CategoriaArgumentosComponent},
+      {path:'seleccionEsquemas', component: SeleccionEsquemasComponent},
     ],
   },
 ];

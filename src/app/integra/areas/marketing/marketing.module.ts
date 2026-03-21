@@ -189,6 +189,7 @@ import { ProbabilidadComponent } from './configuraciones/filtro-segmento/actuali
 import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/embudo/embudo.component';
 import { CanvasPlantillaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/canvas-plantilla/canvas-plantilla.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { SeleccionEsquemasComponent } from './configuraciones/seleccion-esquemas/seleccion-esquemas.component';
 
 
 @NgModule({
@@ -377,7 +378,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MayorProbInscripcionComponent,
     ProbabilidadComponent,
     EmbudoComponent,
-    CanvasPlantillaComponent
+    CanvasPlantillaComponent,
+    SeleccionEsquemasComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
