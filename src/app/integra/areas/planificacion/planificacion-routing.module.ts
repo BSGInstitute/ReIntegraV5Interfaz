@@ -26,6 +26,7 @@ import { TipoDocumentosComponent } from './maestros/tipo-documentos/tipo-documen
 import { TipoMaterialComponent } from './maestros/tipo-material/tipo-material.component';
 import { ProgramaEspecificoComponent } from './configuracion-programas-capacitacion/programa-especifico/programa-especifico.component';
 import { TipoDescuentoProgramaComponent } from './configuracionprogramascapacitacion/tipo-descuento-programa/tipo-descuento-programa.component';
+import { ModuloDescuentosComponent } from './configuracionprogramascapacitacion/modulo-descuentos/modulo-descuentos.component';
 import { CategoriasMoodleComponent } from './maestros/categorias-moodle/categorias-moodle.component';
 import { VersionProgramaComponent } from './maestros/version-programa/version-programa.component';
 import { CursoMoodleComponent } from './maestros/curso-moodle/curso-moodle.component';
@@ -131,6 +132,7 @@ const routes: Routes = [
 
       //CONFIGURACION PROGRAMAS CAPACITACION
       { path: 'TipoDescuento', component: TipoDescuentoProgramaComponent },
+      { path: 'ModuloDescuentos', component: ModuloDescuentosComponent },
       { path: 'AprobacionDescuento', component: AprobacionDescuentoComponent },
 
       //CONFIGURACION DOCENTE

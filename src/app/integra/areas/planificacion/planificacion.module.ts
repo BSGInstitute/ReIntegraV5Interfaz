@@ -29,6 +29,7 @@ import { TipoMaterialComponent } from './maestros/tipo-material/tipo-material.co
 import { ProgramaEspecificoComponent } from './configuracion-programas-capacitacion/programa-especifico/programa-especifico.component';
 import { CriteriosProgramasEspecificosComponent } from './configuracion-portal-web/criterios-programas-especificos/criterios-programas-especificos.component';
 import { TipoDescuentoProgramaComponent } from './configuracionprogramascapacitacion/tipo-descuento-programa/tipo-descuento-programa.component';
+import { ModuloDescuentosComponent } from './configuracionprogramascapacitacion/modulo-descuentos/modulo-descuentos.component';
 import { CategoriasMoodleComponent } from './maestros/categorias-moodle/categorias-moodle.component';
 import { MaterialEstadoComponent } from './maestros/material-estado/material-estado.component';
 import { CursoMoodleComponent } from './maestros/curso-moodle/curso-moodle.component';
@@ -163,6 +164,7 @@ import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea
     EscalaCalificacionComponent,
     TipoDocumentosComponent,
     TipoDescuentoProgramaComponent,
+    ModuloDescuentosComponent,
     AsociarFeedbackProgramasComponent,
     AsociarTagsProgramasComponent,
     TipoMaterialComponent,

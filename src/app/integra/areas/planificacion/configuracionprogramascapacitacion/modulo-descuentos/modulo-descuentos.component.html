@@ -1,0 +1,283 @@
+<div class="card descuentos-card">
+  <div class="card-header descuentos-header">
+    <div class="header-content">
+      <h2 class="header-title">Lista de Tipo Descuento</h2>
+      <button
+        mat-raised-button
+        class="btn-nuevo"
+        (click)="abrirModalInsertar()"
+      >
+        Nuevo
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body p-0">
+    <!-- Filter -->
+    <div class="filter-container">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar por codigo, descripcion..." #input>
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="descuentos-table">
+
+        <!-- Codigo Column -->
+        <ng-container matColumnDef="codigo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Codigo</th>
+          <td mat-cell *matCellDef="let element">{{ element.codigo }}</td>
+        </ng-container>
+
+        <!-- Descripcion Column -->
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Descripcion</th>
+          <td mat-cell *matCellDef="let element">{{ element.descripcion }}</td>
+        </ng-container>
+
+        <!-- Formula Column -->
+        <ng-container matColumnDef="nombreFormula">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Formula</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.nombreFormula || getFormulaName(element.formula) }}
+          </td>
+        </ng-container>
+
+        <!-- Estado Column -->
+        <ng-container matColumnDef="activo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+          <td mat-cell *matCellDef="let element">
+            <span
+              class="status-badge"
+              [ngClass]="element.activo ? 'status-activo' : 'status-inactivo'"
+            >
+              {{ element.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Aplica A Column -->
+        <ng-container matColumnDef="aplicaProgramaCompleto">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Aplica A</th>
+          <td mat-cell *matCellDef="let element">
+            {{ getAplicaAText(element.aplicaProgramaCompleto) }}
+          </td>
+        </ng-container>
+
+        <!-- Nivel Aprobacion Column -->
+        <ng-container matColumnDef="nombreNivelAprobacion">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nivel Aprobacion</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.nombreNivelAprobacion || getNivelName(element.idTipoDescuentoNivelAprobacion) }}
+          </td>
+        </ng-container>
+
+        <!-- Acciones Column -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+          <td mat-cell *matCellDef="let element" class="acciones-cell">
+            <button
+              mat-icon-button
+              color="primary"
+              matTooltip="Editar"
+              (click)="abrirModalActualizar(element)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              matTooltip="Eliminar"
+              (click)="eliminar(element)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- No data row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
+            No se encontraron registros
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+      aria-label="Seleccionar pagina"
+    ></mat-paginator>
+  </div>
+</div>
+
+<!-- Modal Edicion -->
+<ng-template #modalDescuentoEditar let-modal>
+  <div class="modal-header modal-header-custom">
+    <h3 class="modal-title m-0 p-0" id="modal-basic-title">
+      Datos del Tipo Descuento
+    </h3>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="limpiarCamposForm()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formAreaEditar">
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Codigo</mat-label>
+            <input matInput formControlName="codigo" required>
+            <mat-error *ngIf="formAreaEditar.get('codigo')?.hasError('required')">
+              {{ getErrorMessageEditar('codigo') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Descripcion</mat-label>
+            <input matInput formControlName="descripcion" required>
+            <mat-error *ngIf="formAreaEditar.get('descripcion')?.hasError('required')">
+              {{ getErrorMessageEditar('descripcion') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Formula</mat-label>
+            <mat-select formControlName="formula" (selectionChange)="onFormulaChange($event.value)">
+              <mat-option *ngFor="let item of dataFormulaTipoDescuento" [value]="item.id">
+                {{ item.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6 d-flex align-items-center">
+          <mat-slide-toggle formControlName="activo" color="primary">
+            Estado: {{ formAreaEditar.get('activo')?.value ? 'Activo' : 'Inactivo' }}
+          </mat-slide-toggle>
+        </div>
+      </div>
+
+      <div
+        *ngIf="isFieldVisible('porcentajeGeneral')"
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Porcentaje General</mat-label>
+            <input matInput type="number" formControlName="porcentajeGeneral" min="0">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div
+        *ngIf="isFieldVisible('porcentajeMatricula')"
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Porcentaje Matricula</mat-label>
+            <input matInput type="number" formControlName="porcentajeMatricula" min="0">
+          </mat-form-field>
+        </div>
+        <div *ngIf="isFieldVisible('fraccionesMatricula')" class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fracciones Matricula</mat-label>
+            <input matInput type="number" formControlName="fraccionesMatricula" min="0">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div
+        *ngIf="isFieldVisible('porcentajeCuotas')"
+        class="row mb-3"
+      >
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Porcentaje Cuota</mat-label>
+            <input matInput type="number" formControlName="porcentajeCuotas" min="0">
+          </mat-form-field>
+        </div>
+        <div *ngIf="isFieldVisible('cuotasAdicionales')" class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Cuotas Adicionales</mat-label>
+            <input matInput type="number" formControlName="cuotasAdicionales" min="0">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Aplica A</mat-label>
+            <mat-select formControlName="aplicaProgramaCompleto">
+              <mat-option *ngFor="let item of aplicaAOptions" [value]="item.id">
+                {{ item.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nivel Aprobacion</mat-label>
+            <mat-select formControlName="idNivelTipoDescuento">
+              <mat-option *ngFor="let item of dataNivelTipoDescuento" [value]="item.id">
+                {{ item.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+
+    <div class="row my-2">
+      <div class="text-end modal-footer-buttons">
+        <button
+          class="btn btn-danger mx-1"
+          (click)="limpiarCamposForm()"
+        >
+          <span class="px-1">Cancelar</span>
+        </button>
+        <ng-container *ngIf="isNew">
+          <button
+            class="btn btn-primary mx-1"
+            [disabled]="formAreaEditar.invalid"
+            (click)="insertar()"
+          >
+            <span class="px-1">Guardar</span>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!isNew">
+          <button
+            class="btn btn-primary mx-1"
+            [disabled]="formAreaEditar.invalid"
+            (click)="actualizar()"
+          >
+            <span class="px-1">Guardar</span>
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loaderModal" class="modal-loader-overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+</ng-template>
+<!-- Modal Edicion -->
