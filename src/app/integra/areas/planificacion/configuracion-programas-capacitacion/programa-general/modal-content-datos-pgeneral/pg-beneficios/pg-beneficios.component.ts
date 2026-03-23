@@ -79,6 +79,9 @@ export class PgBeneficiosComponent implements OnInit {
       }
     });
     this.pgeneralService.getDatosModalPgeneral$.subscribe(() => {
+      if (this.gridCriterioBeneficiosPgeneral.statusCelda) {
+        this.gridCriterioBeneficiosPgeneral.closeCell();
+      }
       this.pgeneralService.dataConfiguracionBeneficio$.next(
         this.gridCriterioBeneficiosPgeneral.data
       );
@@ -191,7 +194,7 @@ export class PgBeneficiosComponent implements OnInit {
         case 'datosAdicional':
           resp.dataItem.datosAdicional = datosForm.datosAdicional;
           break;
-        case 'deudaPendiente':
+        case 'datosAdicionales':
           resp.dataItem.datosAdicionales = datosForm.datosAdicionales;
           break;
         default:

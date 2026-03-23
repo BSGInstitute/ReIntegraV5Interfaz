@@ -182,6 +182,7 @@ export class GestionSolicitudesAlumnosComponent implements OnInit {
   
   tipoBusquedaSelect: any;
   datoAlumno: string = "";
+  descripcionSubCategoria: string = '';
   dataEstados: any;
 
   ngOnInit(): void {
@@ -612,6 +613,7 @@ export class GestionSolicitudesAlumnosComponent implements OnInit {
       this.formCategoria.get("tipoReporte").setValue(e.tipo);
       this.formCategoria.get("categoria").setValue(e.nombreSolicitudCategoria);
       this.formCategoria.get("subCategoria").setValue(e.nombreSubCategoria);
+      this.descripcionSubCategoria = e.tituloSubCategoria || '';
       this.formCategoria.get("origenSolicitud").setValue(e.controlSolicitudOrigen);
       this.formCategoria.get("solicitud").setValue(e.nombreSolicitud);
       if (e.areaSolicitante in this.areaMapping) {
@@ -711,6 +713,7 @@ export class GestionSolicitudesAlumnosComponent implements OnInit {
   }
 
   limpiarDatos(){
+    this.descripcionSubCategoria = '';
     this.inputDetalle=""
     this.idNuevoEstado=[]
     this.inputArchivoSolucionAlumno=[]

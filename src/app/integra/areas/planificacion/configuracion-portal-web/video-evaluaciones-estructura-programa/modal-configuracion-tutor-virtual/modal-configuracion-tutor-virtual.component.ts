@@ -55,6 +55,12 @@ export class ModalConfiguracionTutorVirtualComponent
           videoIdBrightcove: item.videoIdBrightcove || '',
           estadoProcesamiento: item.estadoProcesamiento,
           fechaProcesamiento: item.fechaProcesamiento || null,
+          idVideoProcesamiento:
+            item.reproduccionVideo === 2
+              ? (item.videoIdVimeo || '')
+              : item.reproduccionVideo === 1
+              ? (item.videoIdBrightcove || '')
+              : '',
         }),
       );
       this.gridConfiguracionSecuenciaVideo.loading = false;
@@ -96,8 +102,8 @@ export class ModalConfiguracionTutorVirtualComponent
   toggleSeleccion(dataItem: ConfiguracionVideoTutorVirtual): void {
     console.log('Data Item:', dataItem);
     if (
-      !dataItem.videoIdBrightcove ||
-      dataItem.videoIdBrightcove === 'Sin Video'
+      !dataItem.idVideoProcesamiento ||
+      dataItem.idVideoProcesamiento === 'Sin Video'
     ) {
       this._alertaService.notificationWarning(
         'Este registro no tiene ID Video válido',
@@ -106,14 +112,14 @@ export class ModalConfiguracionTutorVirtualComponent
     }
 
     const index = this.videosSeleccionados.findIndex(
-      (video) => video.video_id === dataItem.videoIdBrightcove,
+      (video) => video.video_id === dataItem.idVideoProcesamiento,
     );
 
     if (index > -1) {
       this.videosSeleccionados.splice(index, 1);
     } else {
       this.videosSeleccionados.push({
-        video_id: dataItem.videoIdBrightcove,
+        video_id: dataItem.idVideoProcesamiento,
         plataforma: dataItem.reproduccionVideo,
       });
     }
@@ -125,12 +131,12 @@ export class ModalConfiguracionTutorVirtualComponent
   seleccionarTodos(event: any): void {
     const checked = event.target.checked;
 
-    // Filtrar solo los videos que tienen videoIdBrightcove válido y NO están "En Proceso"
+    // Filtrar solo los videos que tienen idVideoProcesamiento válido y NO están "En Proceso"
     const videosValidos = this.gridConfiguracionSecuenciaVideo.data.filter(
       (item) =>
-        item.videoIdBrightcove &&
-        item.videoIdBrightcove !== 'Sin Video' &&
-        item.videoIdBrightcove.trim() !== '' &&
+        item.idVideoProcesamiento &&
+        item.idVideoProcesamiento !== 'Sin Video' &&
+        item.idVideoProcesamiento.trim() !== '' &&
         item.estadoProcesamiento !== 'En Proceso'
     );
 
@@ -154,7 +160,7 @@ export class ModalConfiguracionTutorVirtualComponent
     if (checked && videosValidos.length > 0) {
       // Seleccionar todos los videos válidos con el formato correcto
       this.videosSeleccionados = videosValidos.map((item) => ({
-        video_id: item.videoIdBrightcove,
+        video_id: item.idVideoProcesamiento,
         plataforma: item.reproduccionVideo,
       }));
     } else {
@@ -168,9 +174,9 @@ export class ModalConfiguracionTutorVirtualComponent
   verificarTodosSeleccionados(): void {
     const videosValidos = this.gridConfiguracionSecuenciaVideo.data.filter(
       (item) =>
-        item.videoIdBrightcove &&
-        item.videoIdBrightcove !== 'Sin Video' &&
-        item.videoIdBrightcove.trim() !== '',
+        item.idVideoProcesamiento &&
+        item.idVideoProcesamiento !== 'Sin Video' &&
+        item.idVideoProcesamiento.trim() !== '',
     ).length;
 
     this.todosSeleccionados =
@@ -207,8 +213,8 @@ export class ModalConfiguracionTutorVirtualComponent
 
   procesarIndividual(dataItem: ConfiguracionVideoTutorVirtual): void {
     if (
-      !dataItem.videoIdBrightcove ||
-      dataItem.videoIdBrightcove === 'Sin Video'
+      !dataItem.idVideoProcesamiento ||
+      dataItem.idVideoProcesamiento === 'Sin Video'
     ) {
       this._alertaService.notificationWarning(
         'El video no tiene ID Video válido',
@@ -218,7 +224,7 @@ export class ModalConfiguracionTutorVirtualComponent
 
     const videos = [
       {
-        video_id: dataItem.videoIdBrightcove,
+        video_id: dataItem.idVideoProcesamiento,
         plataforma: dataItem.reproduccionVideo,
       },
     ];

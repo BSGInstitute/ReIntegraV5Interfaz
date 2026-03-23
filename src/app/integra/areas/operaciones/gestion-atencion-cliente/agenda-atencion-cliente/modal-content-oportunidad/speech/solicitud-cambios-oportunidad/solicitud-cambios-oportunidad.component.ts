@@ -364,7 +364,8 @@ export class SolicitudCambiosOportunidadComponent implements OnInit {
 
   RechazarSolicitudOperaciones() {
       this.LoaderModalDetalleAprobacion=true
-
+      console.log('ROW ACTUAL', this.rowActual)
+      console.log('AGENDA SERVICE', this.agendaService.idPersonal)
       console.log('RechazarSolicitudOperaciones')
       var objeto:any = {};
 
@@ -379,7 +380,7 @@ export class SolicitudCambiosOportunidadComponent implements OnInit {
           objeto.Aprobado = true;
           objeto.IdPersonalAprobacion = this.rowActual.idPersonal_Asignado;
       }
-
+      console.log('SOlicitud', objeto)
       var IdSolicitud = this.inputIdSolictudOperaciones;
 
       let observacion = (this.formModalRechazarSolicitudCambio.get("observacion").value)
