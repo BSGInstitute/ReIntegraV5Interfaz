@@ -444,6 +444,19 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
         text: 'La ciudad seleccionada no tiene CodigoBS o DenominacionBS',
       });
     }
+    let urlDocumentoCronograma: string;
+    let urlDocumentoCronogramaGrupos: string;
+    const idCiudad = datosForm.ciudad.codigoBS;
+    if (idCiudad == SANTA_CRUZ) {
+      urlDocumentoCronograma = datosForm.urlDocumentoCronogramaB;
+      urlDocumentoCronogramaGrupos = datosForm.urlDocumentoCronogramaGruposB;
+    } else if (idCiudad == CDMEXICO) {
+      urlDocumentoCronograma = datosForm.urlDocumentoCronogramaM;
+      urlDocumentoCronogramaGrupos = datosForm.urlDocumentoCronogramaGruposM;
+    } else {
+      urlDocumentoCronograma = datosForm.urlDocumentoCronograma;
+      urlDocumentoCronogramaGrupos = datosForm.urlDocumentoCronogramaGrupos;
+    }
     let pespecifico: Pespecifico = {
       id: isNew ? 0 : this.dataItemPespecificoTemp.id,
       nombre: datosForm.nombrePespecifico,
@@ -464,7 +477,8 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
       idCursoMoodle: null, //TODO: No se usa
       idCursoMoodlePrueba: null, //TODO: No se usa
       cursoIndividual: datosForm.esCursoIndividual ?? false,
-      urlDocumentoCronograma: datosForm.urlDocumentoCronograma,
+      urlDocumentoCronograma: urlDocumentoCronograma,
+      urlDocumentoCronogramaGrupos: urlDocumentoCronogramaGrupos,
       idCiclo: null,
       idPeriodoLectivo: null,
       resumenClaseActivo: datosForm.resumenClaseActivo,

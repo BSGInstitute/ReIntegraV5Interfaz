@@ -2473,6 +2473,24 @@ export const constApiMarketing = {
     
   RemarketingEmbudoNivelEsquema: '/RemarketingEmbudoHistorico/ObtenerNivelEsquemaEmbudoRemarketing',
 
+  // ── Selección de Esquemas BOT IA ──────────────────────────────────────────
+  // Actividades
+  SeleccionEsquemasActividadesObtenerListado:      '/ChatbotActividadBotIA/ObtenerListado',
+  SeleccionEsquemasActividadesInsertar:            '/ChatbotActividadBotIA/Insertar',
+  SeleccionEsquemasActividadesActualizar:          '/ChatbotActividadBotIA/Actualizar',
+  SeleccionEsquemasActividadesEliminar:            '/ChatbotActividadBotIA/Eliminar',
+  SeleccionEsquemasActividadesNumerosObtenerLista: '/ChatbotActividadBotIA/ObtenerListadoNumero',
+  // Esquemas
+  SeleccionEsquemasObtenerListado: '/EsquemaRespuestas/ObtenerListadoEsquemas',
+  SeleccionEsquemasInsertar:       '/EsquemaRespuestas/InsertarEsquema',
+  SeleccionEsquemasActualizar:     '/EsquemaRespuestas/ActualizarEsquema',
+  SeleccionEsquemasEliminar:       '/EsquemaRespuestas/EliminarEsquema',
+  // Catálogos
+  SeleccionEsquemasMensajeExactoObtenerLista: '/EsquemaRespuestas/ObtenerListadoMensajeExacto',
+  SeleccionEsquemasMensajeExactoInsertar:     '/MensajeExacto/Insertar',
+  SeleccionEsquemasFaseMaximaObtenerLista:    '/EsquemaRespuestas/ObtenerListadoFase',
+  SeleccionEsquemasPerfilObtenerLista:        '/EsquemaRespuestas/ObtenerListadoPerfil',
+
 };
 
 export const constApiGestionPersonal = {

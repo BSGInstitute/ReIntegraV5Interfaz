@@ -1950,12 +1950,19 @@ export class ModalContentCronogramaComponent implements OnInit {
     if (allowedKeys.includes(key)) {
       return;
     }
+    const input = e.target;
+    const currentValue = input.value || '';
+    const selectionStart = input.selectionStart || 0;
+    const selectionEnd = input.selectionEnd || 0;
+
+    if (key === '.') {
+      if (currentValue.includes('.')) {
+        e.preventDefault();
+      }
+      return;
+    }
 
     if (/^[0-9]$/.test(key)) {
-      const input = e.target;
-      const currentValue = input.value || '';
-      const selectionStart = input.selectionStart || 0;
-      const selectionEnd = input.selectionEnd || 0;
 
       const newValueStr =
         currentValue.substring(0, selectionStart) +

@@ -80,6 +80,7 @@ idPersonalExcluido = [
   formCategoria: FormGroup = this.formBuilder.group({
     idProblema: [0],
     nombreProblema: ['',[Validators.required]],
+    titulo: ['',[Validators.required]],
     idCategoria: [0],
     nombreCategoria: ['',[ Validators.required]],
     idTipoReporte: [0],
@@ -358,6 +359,7 @@ idPersonalExcluido = [
       this.formCategoria.get('nombreTipoReporte').setValue(dataItem.idTipoReporte);
       this.formCategoria.get('nombreCategoria').setValue(dataItem.idCategoria);
       this.formCategoria.get('nombreProblema').setValue(dataItem.nombreProblema);
+      this.formCategoria.get('titulo').setValue(dataItem.titulo);
       this.formCategoria.get('descripcionSolucion').setValue(dataItem.descripcionSolucion);
       // this.formCategoria.get('prioridad').setValue(dataItem.prioridad);
       this.formCategoria.get('nombreAreaRevision').setValue(dataItem.idAreaRevision);
@@ -393,6 +395,7 @@ idPersonalExcluido = [
     let tipoReporteData: any = {
       id: isNew ? 0 : dataItem.idProblema,
       descripcion: dataItem.nombreProblema,
+      titulo: dataItem.titulo,
       descripcionSolucion:dataItem.descripcionSolucion,
       prioridad: dataItem.prioridad,
       idSolicitudCategoria:dataItem.nombreCategoria,

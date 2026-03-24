@@ -298,6 +298,8 @@ export class ConfigurarGrabacionesOnlineComponent implements OnInit {
     this.modalRefSesiones = this.modalService.open(modalSesion, {
       size: 'xl',
       backdrop: 'static',
+      scrollable: true,
+      windowClass: 'modal-configuracion-general',
     });
   }
 

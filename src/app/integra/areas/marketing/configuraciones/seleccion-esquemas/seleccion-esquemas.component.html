@@ -1,0 +1,542 @@
+<!-- =============================================
+     MODAL — Actividades BOT IA
+============================================= -->
+<ng-template #modalActividadBotIA let-modal>
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0">{{ isNewActividad ? 'Nueva actividad BOT IA' : 'Modificar actividad BOT IA' }}</h3>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body px-4 py-3">
+
+    <!-- Nombre -->
+    <div class="d-flex align-items-center mb-3 gap-3">
+      <label class="form-label mb-0 fw-semibold text-nowrap" style="min-width:80px">
+        Nombre: <span class="text-danger">*</span>
+      </label>
+      <kendo-textbox [(ngModel)]="actividadActual.nombre" placeholder="Ejem. Masivo Whatsapp Perú"
+                     [clearButton]="true" size="medium" class="flex-grow-1"></kendo-textbox>
+    </div>
+
+    <!-- Módulo -->
+    <div class="d-flex align-items-center mb-3 gap-3">
+      <label class="form-label mb-0 fw-semibold text-nowrap" style="min-width:80px">
+        Módulo: <span class="text-danger">*</span>
+      </label>
+      <kendo-dropdownlist
+        [data]="moduloOpciones"
+        [(ngModel)]="actividadActual.modulo"
+        [valuePrimitive]="true"
+        placeholder="Seleccionar módulo..."
+        size="medium"
+        class="flex-grow-1">
+      </kendo-dropdownlist>
+    </div>
+
+    <!-- Número (solo Whatsapp) -->
+    <div *ngIf="actividadActual.modulo === 'Whatsapp'" class="d-flex align-items-start mb-3 gap-3">
+      <label class="form-label mb-0 fw-semibold text-nowrap pt-1" style="min-width:80px">
+        Número: <span class="text-danger">*</span>
+      </label>
+      <div class="flex-grow-1">
+        <kendo-multiselect
+          [data]="listaNumeros"
+          [(ngModel)]="actividadActual.numeros"
+          [allowCustom]="true"
+          placeholder="Seleccionar o escribir número..."
+          size="medium">
+        </kendo-multiselect>
+        <small class="text-muted" style="font-size:11px">
+          Si escribe un número nuevo, se registrará en el sistema al guardar.
+        </small>
+      </div>
+    </div>
+
+    <!-- Próximamente (Messenger) -->
+    <div *ngIf="actividadActual.modulo === 'Messenger'" class="mb-3 p-3 rounded text-center"
+         style="background-color:#f8f9fa; border:1px dashed #adb5bd;">
+      <span class="k-icon k-i-clock" style="font-size:20px; color:#6c757d;"></span>
+      <p class="mb-0 mt-1 text-muted fw-semibold">Próximamente</p>
+    </div>
+
+    <!-- Esquema -->
+    <div class="d-flex align-items-center mb-3 gap-3">
+      <label class="form-label mb-0 fw-semibold text-nowrap" style="min-width:80px">
+        Esquema: <span class="text-danger">*</span>
+      </label>
+      <kendo-dropdownlist
+        [data]="listaConfiguracionBotIA"
+        [(ngModel)]="actividadActual.idChatbotEsquema"
+        textField="nombre"
+        valueField="id"
+        [valuePrimitive]="true"
+        placeholder="Seleccionar esquema..."
+        size="medium"
+        class="flex-grow-1">
+      </kendo-dropdownlist>
+    </div>
+
+    <!-- Estado -->
+    <div class="d-flex align-items-center mb-1 gap-3">
+      <label class="form-label mb-0 fw-semibold text-nowrap" style="min-width:80px">Estado:</label>
+      <kendo-switch [(ngModel)]="actividadActual.estado" [onLabel]="''" [offLabel]="''"></kendo-switch>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton themeColor="success" (click)="guardarActividad()">{{ isNewActividad ? 'Guardar' : 'Actualizar' }}</button>
+      <button kendoButton themeColor="error" (click)="modal.dismiss()">Cancelar</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- =============================================
+     SUB-MODAL — Lectura de mensajes
+============================================= -->
+<ng-template #modalLecturaMensaje let-modal>
+  <div class="modal-body p-0">
+
+    <div class="seccion-header d-flex justify-content-between align-items-center">
+      <span class="seccion-titulo">Lectura de mensajes</span>
+      <div class="d-flex gap-2 align-items-center">
+        <button kendoButton themeColor="success" size="small" (click)="guardarLecturaMensaje()">
+          {{ isNewLectura ? 'Guardar' : 'Actualizar' }}
+        </button>
+        <button kendoButton themeColor="error" fillMode="flat" size="small" (click)="modal.dismiss()">
+          <span class="k-icon k-i-close" style="color:#fff"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="p-3">
+
+      <!-- Clasificación tipo mensaje -->
+      <div class="lectura-row mb-3">
+        <label class="lectura-label">Clasificación - tipo mensaje <span class="text-danger">*</span></label>
+        <div class="lectura-value">
+          <kendo-textbox
+            [(ngModel)]="lecturaMensajeActual.clasificacion"
+            placeholder="Ej. Interesado"
+            size="small">
+          </kendo-textbox>
+        </div>
+      </div>
+
+      <!-- Mensaje recibido -->
+      <label class="fw-semibold d-block mb-2" style="font-size:13px">Mensaje recibido</label>
+
+      <!-- Mensaje exacto — MultiSelect con allowCustom -->
+      <div class="lectura-row mb-3">
+        <label class="lectura-label ps-3">Mensaje exacto:</label>
+        <div class="lectura-value">
+          <kendo-multiselect
+            [data]="listaMensajesExactos"
+            [(ngModel)]="lecturaMensajeActual.mensajesExactos"
+            [allowCustom]="true"
+            placeholder="Seleccionar o escribir nuevo mensaje..."
+            size="small">
+          </kendo-multiselect>
+          <small class="text-muted" style="font-size:11px">
+            Si escribe un mensaje nuevo, se guardará en el sistema al presionar "Guardar" principal.
+          </small>
+        </div>
+      </div>
+
+      <!-- Prompt de lectura -->
+      <div class="lectura-row align-items-start">
+        <label class="lectura-label ps-3">
+          Prompt de lectura:<br>
+          <span class="text-muted" style="font-size:11px">(mensajes variables)</span>
+        </label>
+        <div class="lectura-value">
+          <textarea
+            class="form-control form-control-sm"
+            rows="4"
+            [(ngModel)]="lecturaMensajeActual.promptLectura"
+            placeholder="Describe el prompt...">
+          </textarea>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ng-template>
+
+<!-- =============================================
+     SUB-MODAL — Interpretar información del contacto
+============================================= -->
+<ng-template #modalInterpretarInformacion let-modal>
+  <div class="modal-header" style="background-color:#5c8a6e; color:#fff;">
+    <h3 class="modal-title m-0 p-0">
+      {{ isNewInterpretarInformacion ? 'Agregar nueva interpretación de información' : 'Editar interpretación de información' }}
+    </h3>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body px-4 py-3">
+
+    <!-- Nombre -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+      <kendo-textbox [(ngModel)]="interpretarInformacionActual.nombre" placeholder="Ej. Lectura de perfil"
+                     [clearButton]="true" size="medium" class="w-100"></kendo-textbox>
+    </div>
+
+    <!-- Clasificación tipo mensaje — MultiSelect desde lecturas configuradas -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold">
+        Clasificación - tipo mensaje <span class="text-danger">*</span>
+      </label>
+      <kendo-multiselect
+        [data]="clasificacionesDisponibles"
+        [(ngModel)]="interpretarInformacionActual.clasificaciones"
+        placeholder="Seleccionar clasificaciones de lectura..."
+        size="medium">
+      </kendo-multiselect>
+      <small class="text-muted" style="font-size:11px">
+        Solo se muestran las clasificaciones configuradas en "Lectura de mensajes".
+      </small>
+    </div>
+
+    <!-- Sección subcategorías -->
+    <div class="seccion-header-verde d-flex justify-content-between align-items-center mb-3">
+      <span class="seccion-titulo">subcategorias por datos capturables</span>
+      <button class="btn-nuevo-naranja" (click)="agregarSubcategoria()">Nuevo +</button>
+    </div>
+
+    <div *ngFor="let sub of interpretarInformacionActual.subcategorias; let si = index" class="subcategoria-block mb-3">
+
+      <!-- Nombre subcategoría -->
+      <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
+        <div class="d-flex align-items-center gap-2 flex-grow-1">
+          <label class="mb-0 text-nowrap fw-semibold" style="font-size:13px">subcategoría</label>
+          <kendo-textbox [(ngModel)]="sub.nombre" placeholder="Nombre subcategoría" size="small" style="flex:1">
+          </kendo-textbox>
+        </div>
+        <button kendoButton themeColor="error" fillMode="flat" size="small" (click)="eliminarSubcategoria(si)">
+          <span class="k-icon k-i-close"></span>
+        </button>
+      </div>
+
+      <!-- Dos columnas: Fase máxima | Perfil -->
+      <div class="row g-3 ms-1">
+
+        <!-- Fase máxima -->
+        <div class="col-6">
+          <label class="form-label fw-semibold" style="font-size:13px">
+            Fase máxima
+            <span *ngIf="sub.fasMaximaValores.length === 0 && sub.perfilValores.length === 0"
+                  class="text-danger ms-1" style="font-size:11px">*mín. 1 fase o perfil</span>
+          </label>
+          <kendo-multiselect
+            [data]="listaFaseMaxima"
+            [(ngModel)]="sub.fasMaximaValores"
+            textField="nombre"
+            valueField="nombre"
+            [valuePrimitive]="true"
+            placeholder="Seleccionar fases..."
+            size="small">
+          </kendo-multiselect>
+        </div>
+
+        <!-- Perfil -->
+        <div class="col-6">
+          <label class="form-label fw-semibold" style="font-size:13px">Perfil</label>
+          <kendo-multiselect
+            [data]="listaPerfil"
+            [(ngModel)]="sub.perfilValores"
+            textField="nombre"
+            valueField="nombre"
+            [valuePrimitive]="true"
+            placeholder="Seleccionar perfiles..."
+            size="small">
+          </kendo-multiselect>
+        </div>
+
+      </div>
+    </div>
+
+    <div *ngIf="interpretarInformacionActual.subcategorias.length === 0" class="text-muted small mb-2 ps-1">
+      Sin subcategorías. Presione "Nuevo +" para agregar.
+    </div>
+
+  </div>
+  <div class="modal-footer justify-content-center">
+    <button kendoButton themeColor="success" (click)="guardarInterpretarInformacion()">Guardar</button>
+  </div>
+</ng-template>
+
+<!-- =============================================
+     MODAL PRINCIPAL — Configuración BOT IA
+============================================= -->
+<ng-template #modalConfiguracionBotIA let-modal>
+  <app-loader *ngIf="loaderModalConfiguracion"></app-loader>
+
+  <div class="modal-header bg-primary-header-modal">
+    <h3 class="modal-title m-0 p-0">{{ isNewConfiguracion ? 'Nuevo esquema' : 'Modificar esquema' }}</h3>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body px-4 py-3">
+
+    <!-- Nombre esquema -->
+    <div class="d-flex align-items-center mb-3 gap-3">
+      <label class="form-label mb-0 text-nowrap fw-semibold" style="min-width:130px">
+        Nombre esquema: <span class="text-danger">*</span>
+      </label>
+      <kendo-textbox [(ngModel)]="configuracionActual.nombre" placeholder="Ejem. Respuesta 1 paso"
+                     [clearButton]="true" size="medium" class="flex-grow-1"></kendo-textbox>
+    </div>
+
+    <!-- ── Lectura de mensajes ── -->
+    <div class="seccion-header d-flex justify-content-between align-items-center mb-2">
+      <span class="seccion-titulo">Lectura de mensajes</span>
+      <button kendoButton themeColor="success" size="small" (click)="abrirModalLecturaMensaje(true)">Nuevo</button>
+    </div>
+
+    <table class="table table-sm table-bordered mb-3" *ngIf="configuracionActual.lecturasMensajes.length > 0">
+      <thead>
+        <tr>
+          <th style="width:30%">Clasificación</th>
+          <th style="width:45%">Mensajes exactos</th>
+          <th style="width:25%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let lectura of configuracionActual.lecturasMensajes; let i = index">
+          <td class="align-middle">{{ lectura.clasificacion }}</td>
+          <td class="align-middle">
+            <span *ngFor="let msg of lectura.mensajesExactos" class="chip chip-sm me-1">{{ msg }}</span>
+            <span *ngIf="lectura.mensajesExactos.length === 0" class="text-muted" style="font-size:12px">—</span>
+          </td>
+          <td class="text-center align-middle">
+            <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="small"
+                    class="p-1 me-1" ngbTooltip="Editar" container="body"
+                    (click)="abrirModalLecturaMensaje(false, i)">
+              <span class="k-icon k-i-edit"></span>
+            </button>
+            <button kendoButton themeColor="error" fillMode="solid" rounded="large" size="small"
+                    class="p-1" ngbTooltip="Eliminar" container="body"
+                    (click)="eliminarLecturaMensaje(i)">
+              <span class="k-icon k-i-trash"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="configuracionActual.lecturasMensajes.length === 0" class="texto-vacio mb-3">
+      Sin lecturas configuradas. Presione "Nuevo" para agregar.
+    </div>
+
+    <!-- ── Interpretar información del contacto ── -->
+    <div class="seccion-header d-flex justify-content-between align-items-center mb-2 mt-3">
+      <span class="seccion-titulo">Interpretar información del contacto</span>
+      <button kendoButton themeColor="success" size="small"
+              [disabled]="clasificacionesDisponibles.length === 0"
+              [title]="clasificacionesDisponibles.length === 0 ? 'Primero configure lecturas de mensajes' : ''"
+              (click)="abrirModalInterpretarInformacion(true)">Nuevo</button>
+    </div>
+    <small *ngIf="clasificacionesDisponibles.length === 0" class="text-warning d-block mb-2" style="font-size:12px">
+      Agregue al menos una lectura de mensajes para habilitar esta sección.
+    </small>
+
+    <table class="table table-sm table-bordered mb-3" *ngIf="configuracionActual.interpretarInformacion.length > 0">
+      <thead>
+        <tr>
+          <th style="width:35%">Nombre</th>
+          <th style="width:30%">Clasificaciones</th>
+          <th class="text-center" style="width:10%">Subcategorias</th>
+          <th style="width:25%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of configuracionActual.interpretarInformacion; let i = index">
+          <td class="align-middle">{{ item.nombre }}</td>
+          <td class="align-middle">
+            <span *ngFor="let cl of item.clasificaciones" class="chip chip-sm me-1">{{ cl }}</span>
+          </td>
+          <td class="text-center align-middle">{{ item.subcategorias.length }}</td>
+          <td class="text-center align-middle">
+            <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="small"
+                    class="p-1 me-1" ngbTooltip="Editar" container="body"
+                    (click)="abrirModalInterpretarInformacion(false, i)">
+              <span class="k-icon k-i-edit"></span>
+            </button>
+            <button kendoButton themeColor="error" fillMode="solid" rounded="large" size="small"
+                    class="p-1" ngbTooltip="Eliminar" container="body"
+                    (click)="eliminarInterpretarInformacion(i)">
+              <span class="k-icon k-i-trash"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="configuracionActual.interpretarInformacion.length === 0" class="texto-vacio mb-3">
+      Sin registros. Presione "Nuevo" para agregar.
+    </div>
+
+    <!-- ── Esquema de respuestas ── -->
+    <div class="seccion-header mb-2 mt-3">
+      <span class="seccion-titulo">Esquema de respuestas</span>
+    </div>
+    <table class="table table-sm table-bordered mb-3" *ngIf="configuracionActual.esquemasRespuesta.length > 0">
+      <thead>
+        <tr>
+          <th style="width:25%">Clasificación</th>
+          <th style="width:30%">Subcategoría</th>
+          <th>Parámetros de respuesta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let esquema of configuracionActual.esquemasRespuesta">
+          <td class="align-middle">
+            <span *ngIf="esquema.mostrarClasificacion">{{ esquema.clasificacion }}</span>
+          </td>
+          <td class="align-middle">{{ esquema.subcategoria }}</td>
+          <td>
+            <kendo-textbox [(ngModel)]="esquema.parametrosRespuesta" size="small"
+                           placeholder="Parámetros de respuesta..."></kendo-textbox>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="configuracionActual.esquemasRespuesta.length === 0" class="texto-vacio mb-3">
+      Se generan automáticamente al configurar lecturas e información del contacto.
+    </div>
+
+    <!-- ── Restricciones ── -->
+    <div class="seccion-header mb-2 mt-3">
+      <span class="seccion-titulo">Restricciones</span>
+    </div>
+    <kendo-textbox [(ngModel)]="configuracionActual.restricciones" size="medium"
+                   placeholder="Ingrese restricciones..." class="w-100 mb-2"></kendo-textbox>
+
+  </div>
+
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0">
+      <button kendoButton themeColor="success" (click)="guardarConfiguracion()">Guardar</button>
+      <button kendoButton themeColor="error" (click)="modal.dismiss()">Cancelar</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- =============================================
+     CONTENIDO PRINCIPAL
+============================================= -->
+<div class="">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-color-material pb-0">
+          <h3 class="text-white mb-2">Selección Esquemas</h3>
+        </div>
+        <div class="card-body p-4">
+          <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+
+            <mat-tab label="Actividades BOT IA">
+              <ng-container *ngIf="selectedTabIndex === 0">
+                <div class="mt-3">
+                  <kendo-grid [kendoGridBinding]="listaActividadesBotIA" [pageSize]="10"
+                              [sortable]="true" [filterable]="true"
+                              [pageable]="{ buttonCount:5, info:true, type:'numeric', pageSizes:true, previousNext:true, position:'bottom' }">
+                    <ng-template kendoGridToolbarTemplate>
+                      <button kendoButton icon="reload" fillMode="flat" themeColor="secondary"
+                              (click)="gridEventsActividades('reload', null, null, null)"></button>
+                      <kendo-grid-spacer></kendo-grid-spacer>
+                      <button kendoButton themeColor="primary" icon="plus"
+                              (click)="gridEventsActividades('add', true, null, null)">Agregar</button>
+                    </ng-template>
+                    <kendo-grid-column field="id"             title="ID"       [width]="70"></kendo-grid-column>
+                    <kendo-grid-column field="nombre"         title="Nombre"   [filterable]="true"></kendo-grid-column>
+                    <kendo-grid-column field="numeros" title="Número(s)" [filterable]="false" [width]="180">
+                      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        <span *ngFor="let n of dataItem.numeros" class="badge bg-secondary me-1">{{ n }}</span>
+                        <span *ngIf="!dataItem.numeros || dataItem.numeros.length === 0" class="text-muted">—</span>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column field="nombreEsquema"  title="Esquema"  [filterable]="true"></kendo-grid-column>
+                    <kendo-grid-column field="modulo"         title="Módulo"   [filterable]="true"></kendo-grid-column>
+                    <kendo-grid-column field="estado" title="Estado" [width]="100" [filterable]="false">
+                      <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                        <span class="badge" [ngClass]="dataItem.estado ? 'bg-success' : 'bg-secondary'">
+                          {{ dataItem.estado ? 'Activo' : 'Inactivo' }}
+                        </span>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-command-column title="" [width]="120">
+                      <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <div class="w-100 d-flex justify-content-center">
+                          <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="large"
+                                  class="p-2 me-1 ms-1" container="body" ngbTooltip="Editar"
+                                  (click)="gridEventsActividades('edit', false, dataItem, rowIndex)">
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button kendoButton themeColor="error" fillMode="solid" rounded="large" size="large"
+                                  class="p-2 me-1 ms-1" container="body" ngbTooltip="Eliminar"
+                                  (click)="gridEventsActividades('remove', null, dataItem, rowIndex)">
+                            <span class="k-icon k-i-close k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-command-column>
+                  </kendo-grid>
+                </div>
+              </ng-container>
+            </mat-tab>
+
+            <mat-tab label="Métricas">
+              <ng-container *ngIf="selectedTabIndex === 1">
+                <div class="mt-3 d-flex justify-content-center align-items-center" style="min-height:200px">
+                  <div class="text-center text-muted">
+                    <span class="k-icon k-i-chart-bar-clustered" style="font-size:48px"></span>
+                    <p class="mt-2">Métricas en construcción</p>
+                  </div>
+                </div>
+              </ng-container>
+            </mat-tab>
+
+            <mat-tab label="Configuración BOT IA">
+              <ng-container *ngIf="selectedTabIndex === 2">
+                <div class="mt-3">
+                  <kendo-grid [kendoGridBinding]="listaConfiguracionBotIA" [pageSize]="10"
+                              [sortable]="true" [filterable]="true"
+                              [pageable]="{ buttonCount:5, info:true, type:'numeric', pageSizes:true, previousNext:true, position:'bottom' }">
+                    <ng-template kendoGridToolbarTemplate>
+                      <button kendoButton icon="reload" fillMode="flat" themeColor="secondary"
+                              (click)="gridEventsConfiguracion('reload', null, null, null)"></button>
+                      <kendo-grid-spacer></kendo-grid-spacer>
+                      <button kendoButton themeColor="primary" icon="plus"
+                              (click)="gridEventsConfiguracion('add', true, null, null)">Agregar</button>
+                    </ng-template>
+                    <kendo-grid-column field="id"                   title="ID"              [width]="70"></kendo-grid-column>
+                    <kendo-grid-column field="nombre"        title="Nombre Esquema"  [filterable]="true"></kendo-grid-column>
+                    <kendo-grid-column field="restricciones"        title="Restricciones"   [filterable]="true"></kendo-grid-column>
+                    <kendo-grid-column field="totalLecturas"        title="Lecturas"        [width]="100" [filterable]="false"></kendo-grid-column>
+                    <kendo-grid-column field="totalInterpretaciones" title="Interpretaciones" [width]="130" [filterable]="false"></kendo-grid-column>
+                    <kendo-grid-command-column title="" [width]="150">
+                      <ng-template kendoGridCellTemplate let-dataItem="dataItem" let-rowIndex="rowIndex">
+                        <div class="w-100 d-flex justify-content-center">
+                          <button kendoButton themeColor="warning" fillMode="solid" rounded="large" size="large"
+                                  class="p-2 me-1 ms-1" container="body" ngbTooltip="Editar"
+                                  (click)="gridEventsConfiguracion('edit', false, dataItem, rowIndex)">
+                            <span class="k-icon k-i-edit k-icon-20"></span>
+                          </button>
+                          <button kendoButton themeColor="error" fillMode="solid" rounded="large" size="large"
+                                  class="p-2 me-1 ms-1" container="body" ngbTooltip="Eliminar"
+                                  (click)="gridEventsConfiguracion('remove', null, dataItem, rowIndex)">
+                            <span class="k-icon k-i-close k-icon-20"></span>
+                          </button>
+                        </div>
+                      </ng-template>
+                    </kendo-grid-command-column>
+                  </kendo-grid>
+                </div>
+              </ng-container>
+            </mat-tab>
+
+          </mat-tab-group>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -187,6 +187,9 @@ import { UltimaOportunidadComponent } from './configuraciones/filtro-segmento/ac
 import { MayorProbInscripcionComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/mayor-prob-inscripcion/mayor-prob-inscripcion.component';
 import { ProbabilidadComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/probabilidad/probabilidad.component';
 import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-filtro-segmento/embudo/embudo.component';
+import { CanvasPlantillaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/canvas-plantilla/canvas-plantilla.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { SeleccionEsquemasComponent } from './configuraciones/seleccion-esquemas/seleccion-esquemas.component';
 
 
 @NgModule({
@@ -374,7 +377,9 @@ import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-fi
     UltimaOportunidadComponent,
     MayorProbInscripcionComponent,
     ProbabilidadComponent,
-    EmbudoComponent
+    EmbudoComponent,
+    CanvasPlantillaComponent,
+    SeleccionEsquemasComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
@@ -386,6 +391,7 @@ import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-fi
     FontAwesomeModule,
     NgbModule,
     AngularMaterialModule,
+    DragDropModule,
     // MatDatepickerModule
     //ClipboardModule,
   ],

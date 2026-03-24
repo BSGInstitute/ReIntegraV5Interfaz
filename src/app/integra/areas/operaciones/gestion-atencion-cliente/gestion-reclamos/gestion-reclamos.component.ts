@@ -64,7 +64,8 @@ export class GestionReclamosComponent implements OnInit {
   selectedOrigen:any;
   selectedSolicitud:any;
   defaultItem:any= {nombre: "Seleccionar ", id: null,};
-  detalleSolicitud:any
+  detalleSolicitud:any;
+  tituloSubCategoria: string = '';
   loader: boolean = false;
   idSolicitudEdit:any;
   loaderGrid: boolean = false;
@@ -514,8 +515,13 @@ export class GestionReclamosComponent implements OnInit {
     this.isDisabledSolicitud=true
     this.dataSubCategoriaFiltro = [];
     this.dataSolicitudFiltro=[]
+    this.formCategoriaNew.get("categoria").setValue(null);
+    this.formCategoria.get("categoria").setValue(null);
+    this.formCategoriaNew.get("subCategoria").setValue(null);
+    this.formCategoria.get("subCategoria").setValue(null);
     this.formCategoriaNew.get("solicitud").setValue("Seleccione un Problema");
     this.formCategoria.get("solicitud").setValue("Seleccione un Problema");
+    this.tituloSubCategoria = '';
     this.idSolicitud=0
   }
 
@@ -561,11 +567,13 @@ export class GestionReclamosComponent implements OnInit {
   }
 
   SolicitudBySubCategoria(value: number[]) {
+    console.log('subcategorias', this.dataSolicitudFiltro)
     this.selectedSubCategoria=value;
     if (value === null) {
       this.isDisabledSolicitud = true;
       this.dataSolicitudFiltro = [];
       this.formCategoriaNew.get("solicitud").setValue("");
+      this.tituloSubCategoria = '';
     } else {
       this.isDisabledSolicitud = false;
       this.dataSolicitudFiltro = this.dataSubCategoria.filter(
@@ -577,6 +585,8 @@ export class GestionReclamosComponent implements OnInit {
     } else {
         this.detalleSolicitud = '';
     }
+    this.tituloSubCategoria = this.dataSolicitudFiltro[0]?.nombre || '';
+    console.log("titulo sub categoria",this.dataSolicitudFiltro[0]?.nombre )
     this.formCategoriaNew.get("solicitud").setValue(this.detalleSolicitud);
     }
   }
@@ -586,7 +596,8 @@ export class GestionReclamosComponent implements OnInit {
     if (value === null) {
       this.isDisabledSolicitud = true;
       this.dataSolicitudFiltro = [];
-      this.formCategoriaNew.get("solicitud").setValue("");
+      this.formCategoria.get("solicitud").setValue("");
+      this.tituloSubCategoria = '';
     } else {
       this.isDisabledSolicitud = false;
       this.dataSolicitudFiltro = this.dataSubCategoria.filter(
@@ -598,6 +609,7 @@ export class GestionReclamosComponent implements OnInit {
     } else {
         this.detalleSolicitud = '';
     }
+    this.tituloSubCategoria = this.dataSolicitudFiltro[0]?.nombre || '';
     this.formCategoria.get("solicitud").setValue(this.detalleSolicitud);
     }
   }
@@ -850,6 +862,7 @@ export class GestionReclamosComponent implements OnInit {
     this.formCategoriaNew.get("tipoReporte").setValue(null);
     this.formCategoriaNew.get("categoria").setValue(null);
     this.formCategoriaNew.get("subCategoria").setValue(null);
+    this.tituloSubCategoria = '';
     this.formCategoriaNew.get("solicitud").setValue("Seleccione un problema");
     this.formCategoriaNew.get("origenSolicitud").setValue(null);
     this.formCategoriaNew.get("programa").setValue(null);
@@ -868,6 +881,7 @@ export class GestionReclamosComponent implements OnInit {
     this.formCategoria.get("tipoReporte").setValue(null);
     this.formCategoria.get("categoria").setValue(null);
     this.formCategoria.get("subCategoria").setValue(null);
+    this.tituloSubCategoria = '';
     this.formCategoria.get("origenSolicitud").setValue(null);
     this.formCategoria.get("solicitud").setValue(0);
     this.formCategoria.get("programa").setValue(null);
@@ -883,12 +897,11 @@ export class GestionReclamosComponent implements OnInit {
     this.formCategoria.get("Id").setValue(e.id);
     this.categoriaByTipoReporte(e.idTipoReporte);
     this.subCategoriaByCategoria(e.idSolicitudCategoria);
-    this.SolicitudBySubCategoria(e.idSubCategoria);
+    this.SolicitudBySubCategoria2(e.idSubCategoria);
     this.formCategoria.get("tipoReporte").setValue(e.idTipoReporte);
     this.formCategoria.get("categoria").setValue(e.idSolicitudCategoria);
     this.formCategoria.get("subCategoria").setValue(e.idSubCategoria);
     this.formCategoria.get("origenSolicitud").setValue(e.idControlSolicitudOrigen);
-    this.formCategoria.get("solicitud").setValue(e.nombreSolicitud);
     this.formCategoria.get("programa").setValue(e.pGeneral);
     this.formCategoria.get("curso").setValue(e.idPEspecifico);
     this.formCategoria.get("detalleSolicitud").setValue(e.detalleSolicitud);
