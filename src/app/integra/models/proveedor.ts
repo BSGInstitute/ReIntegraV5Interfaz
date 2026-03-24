@@ -44,6 +44,7 @@ export interface ProveedorEnvio{
     contacto1: string,
     contacto2: string,
     alias: string,
+    esDocente: boolean,
     usuarioModificacion: string,
     idImpuesto: number,
     idRetencion: number,

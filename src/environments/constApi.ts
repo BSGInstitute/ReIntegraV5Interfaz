@@ -2771,6 +2771,20 @@ export const constApiGestionPersonal = {
   ActualizarTipoFormacion: '/TipoFormacion/Actualizar',
   EliminarTipoFormacion: '/TipoFormacion/Eliminar',
 
+
+   //Maestro Estado Curso
+  ObtenerEstadoCurso: '/PEspecificoSesionEstado/Obtener',
+  InsertarEstadoCurso: '/PEspecificoSesionEstado/Insertar',
+  ActualizarEstadoCurso: '/PEspecificoSesionEstado/Actualizar',
+  EliminarEstadoCurso: '/PEspecificoSesionEstado/Eliminar',
+
+  //Maestro Observaciones Por Estado
+  ObtenerObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Obtener',
+  InsertarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Insertar',
+  ActualizarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Actualizar',
+  EliminarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Eliminar',
+
+  
   //AreaFormacion
   AreaFormacionObtener: '/AreaFormacion/Obtener',
   AreaFormacionInsertar: '/AreaFormacion/Insertar',
@@ -3555,7 +3569,13 @@ export const constApiPlanificacion = {
   ModalidadCursoObtener: '/ModalidadCurso/Obtener',
   ProveedorObtenerNombreProveedorParaHonorario:
     '/Proveedor/ObtenerNombreProveedorParaHonorario',
-
+  ProveedorObtenerDocentesActivos: '/Proveedor/ObtenerDocentesActivos',
+  ProveedorObtenerActivoPEspecifico: '/Proveedor/ObtenerActivoPEspecifico',
+  ProveedorPEspecificoObtenerPorIdProveedor: '/Proveedor/ObtenerProveedorPEspecificoPorIdProveedor',
+  ProveedorPEspecificoInsertar: '/Proveedor/InsertarProveedorPEspecifico',
+  ProveedorPEspecificoEliminar: '/Proveedor/EliminarProveedorPEspecifico',
+  PEspecificoObtener: '/PEspecifico/Obtener',
+  PEspecificoObtenerCatalogo: '/PEspecifico/ObtenerCatalogo',
   //CriteriosEvaluacionProgramasEspecificos
   CriteriosEvaluacionProgramasEspecificosObtenerReporte:
     '/CriteriosEvaluacionProgramasEspecificos/ObtenerProgramasEspecificoEsquemasFiltrosPadre',
@@ -4095,6 +4115,11 @@ export const constApiPlanificacion = {
   DocumentoPwObtenerDocumentoPWDuracion: '/DocumentoPw/ObtenerDocumentoPWDuracion',
   DocumentoPwObtenerDocumentoPWFechaInicio: '/DocumentoPw/ObtenerDocumentoPWFechaInicio',
   DocumentoPwObtenerDocumentoPWNotas: '/DocumentoPw/ObtenerDocumentoPWNotas',
+
+
+  PEspecificoSesionActualizarEstadoCurso: '/PEspecificoSesionEstado/ActualizarEstadoCurso',
+  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion'
+
 };
 
 export const constApiFinanzas = {

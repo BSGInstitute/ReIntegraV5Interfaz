@@ -182,8 +182,71 @@
             </kendo-dropdownlist>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="grupoSesion" title="Grupo Sesion" class="text-center" [width]="60" editor="numeric"
+        <kendo-grid-column field="grupoSesion" title="Grupo Sesion" class="text-center" [width]="80" editor="numeric"
           headerClass="justify-content-center">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container *ngIf="dataItem.reprogramacion; else grupoNoReprogramado">
+              <span style="font-weight: bold;">R-{{ dataItem.grupoSesion }}</span>
+            </ng-container>
+            <ng-template #grupoNoReprogramado>
+              <ng-container *ngIf="dataItem.grupoSesion === 0 && dataItem.idEstadoCurso === 3; else grupoNormal">
+                <span style="color: green; font-weight: bold;">R-0</span>
+              </ng-container>
+              <ng-template #grupoNormal>
+                <span [style.color]="(dataItem.grupoSesion != null && dataItem.grupoSesion != 0) ? 'green' : ''">
+                  {{ dataItem.grupoSesion }}
+                </span>
+              </ng-template>
+            </ng-template>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="idEstadoCurso" title="Estado del Curso" class="text-center" [width]="150"
+          headerClass="justify-content-center">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span [style.color]="dataItem.idEstadoCurso === 3 ? 'green' : ''">
+              {{
+              dataItem.idEstadoCurso != null
+              ? obtenerNombreEstadoCurso(dataItem.idEstadoCurso)
+              : "Seleccione Estado"
+              }}
+            </span>
+            <button *ngIf="esPorReprogramarEstadoCurso(dataItem.idEstadoCurso)"
+              kendoButton icon="warning" fillMode="flat" size="small" themeColor="warning" [disabled]="true"
+              style="pointer-events: none; min-width: unset; padding: 0 2px;">
+            </button>
+            <button *ngIf="esEjecutadaEstadoCurso(dataItem.idEstadoCurso)"
+              kendoButton icon="check" fillMode="flat" size="small" themeColor="success" [disabled]="true"
+              style="pointer-events: none; min-width: unset; padding: 0 2px;">
+            </button>
+            <button *ngIf="esCanceladaEstadoCurso(dataItem.idEstadoCurso)"
+              kendoButton icon="cancel" fillMode="flat" size="small" themeColor="error" [disabled]="true"
+              style="pointer-events: none; min-width: unset; padding: 0 2px;">
+            </button>
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup" let-dataItem="dataItem">
+            <kendo-dropdownlist [formControl]="formGroup.get('idEstadoCurso')" class="d-flex" size="medium"
+              [data]="listaEstadoCurso" textField="nombre" valueField="id" [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              (valueChange)="onEstadoCursoChange($event, dataItem, formGroup)">
+            </kendo-dropdownlist>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="idObservacion" title="Observación" class="text-center" [width]="150"
+          headerClass="justify-content-center">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{
+            dataItem.idObservacion != null
+            ? obtenerNombreObservacion(dataItem.idObservacion)
+            : "Seleccione Observación"
+            }}
+          </ng-template>
+          <ng-template kendoGridEditTemplate let-formGroup="formGroup" let-dataItem="dataItem">
+            <kendo-dropdownlist [formControl]="formGroup.get('idObservacion')" class="d-flex" size="medium"
+              [data]="observacionesFiltradas" textField="nombre" valueField="id" [valuePrimitive]="true"
+              [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
+              (valueChange)="onObservacionChange($event, dataItem, formGroup)">
+            </kendo-dropdownlist>
+          </ng-template>
         </kendo-grid-column>
         <kendo-grid-column field="idModalidadCurso" title="Modalidad" class="text-center" [width]="100"
           headerClass="justify-content-center">
@@ -210,13 +273,20 @@
         <kendo-grid-column field="esSesionInicio" title="Sesion Inicio" class="text-center" [width]="70"
           headerClass="justify-content-center">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <div class="text-center" *ngIf="!dataItem.esSesionInicio">
-              <button themeColor="base" kendoButton icon="notification"
-                (click)="establecerSesionInicial(dataItem)"></button>
-            </div>
-            <div class="text-center" *ngIf="dataItem.esSesionInicio">
-              <button themeColor="success" kendoButton icon="notification"></button>
-            </div>
+            <ng-container *ngIf="esCanceladaEstadoCurso(dataItem.idEstadoCurso); else sesionNoCancelada">
+              <div class="text-center">
+                <button themeColor="error" kendoButton icon="cancel" [disabled]="true"></button>
+              </div>
+            </ng-container>
+            <ng-template #sesionNoCancelada>
+              <div class="text-center" *ngIf="!dataItem.esSesionInicio">
+                <button themeColor="base" kendoButton icon="notification"
+                  (click)="establecerSesionInicial(dataItem)"></button>
+              </div>
+              <div class="text-center" *ngIf="dataItem.esSesionInicio">
+                <button themeColor="success" kendoButton icon="notification"></button>
+              </div>
+            </ng-template>
           </ng-template>
         </kendo-grid-column>
         <kendo-grid-command-column title="Eliminar" [width]="70" headerClass="justify-content-center">

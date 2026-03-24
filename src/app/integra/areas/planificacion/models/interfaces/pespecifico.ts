@@ -290,6 +290,11 @@ export interface CronogramaGrupo {
   color?: string;
   idCiclo?: number;
   idPeriodoLectivo?: number;
+  idEstadoCurso?: number;
+  idObservacion?: number;
+  idPEspecificoSesionEstado?: number;
+  idPEspecificoSesionEstadoObservacionDetalle?: number;
+  reprogramacion:boolean;
 }
 
 export interface ProgramaEspecificoFUR {
@@ -338,6 +343,8 @@ export interface InformacionCronogramaSesiones {
   grupoSesion?: number;
   aplicarCambios: boolean;
   mostrarPortalWeb?: boolean;
+  idEstadoCurso?: number;
+  idObservacion?: number;
 }
 
 export interface PEspecificoPadreFrecuencia {
@@ -510,6 +517,7 @@ export interface InformacionPespecificoSesion {
   idAmbiente?: number;
   predeterminado?: boolean;
   grupo: number;
+  idPEspecificoSesionEstado?: number;
 }
 export interface FiltroSesionEspecial {
   pEspecificoPadreId: number;
