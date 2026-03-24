@@ -151,7 +151,6 @@ import { RegistroMarcadorFechaComponent } from './asistencia-personal/registro-m
     ModalContratoComponent,
     CompensacionPuestoComponent,
     EvaluacionesComponent,
-    ReporteEvaluacionPostulanteComponent,
     PuestoTrabajoComponent,
     FichaDatosPersonalComponent,
     AprobacionPerfilesComponent,
