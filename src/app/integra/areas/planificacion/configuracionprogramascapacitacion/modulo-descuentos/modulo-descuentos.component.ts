@@ -279,7 +279,7 @@ export class ModuloDescuentosComponent implements OnInit, OnDestroy {
         idTipoDescuentoNivelAprobacion: dataCompleta.idNivelTipoDescuento,
         activo: dataCompleta.activo ?? true,
         aplicaProgramaCompleto: dataCompleta.aplicaProgramaCompleto === 1,
-        TipoDescuentoAsesorCoordinadorPw: [],
+        TipoDescuentoAsesorCoordinadorPw: [] as number[],
       };
       this.loaderModal = true;
       this.integraService
@@ -324,7 +324,7 @@ export class ModuloDescuentosComponent implements OnInit, OnDestroy {
         idTipoDescuentoNivelAprobacion: dataCompleta.idNivelTipoDescuento,
         activo: dataCompleta.activo ?? true,
         aplicaProgramaCompleto: dataCompleta.aplicaProgramaCompleto === 1,
-        TipoDescuentoAsesorCoordinadorPw: [],
+        TipoDescuentoAsesorCoordinadorPw: [] as number[],
       };
       this.loaderModal = true;
       this.integraService
