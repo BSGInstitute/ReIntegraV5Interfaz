@@ -1166,10 +1166,12 @@ Modal(id:number,isNew:boolean,data?:any){
             next: (response: HttpResponse<any>) => {
               this.loaderModalProveedor = false;
 
-              this.itemsProveedor=[];
+              // Actualizar nombres en los combos sin perder la selección
               this.itemsProveedorCombo[indexCombo].nombre=nuevoProveedor;
               this.ListaProveedorCombo[index].nombre=nuevoProveedor;
-              this.proveedorBuscar.reset();
+
+              // Refrescar la grilla manteniendo el filtro actual
+              this.ObtenerDatosGrillaProveedor(proveedor.id);
             },
             error: (error) => {
               this.loaderModalProveedor = false;
@@ -1181,7 +1183,7 @@ Modal(id:number,isNew:boolean,data?:any){
               this.loaderModalProveedor = false;
               this.modalService.dismissAll(this.modalProveedor);
               this.mostrarMensajeExitoso();
-  
+
             },
         }); 
     
