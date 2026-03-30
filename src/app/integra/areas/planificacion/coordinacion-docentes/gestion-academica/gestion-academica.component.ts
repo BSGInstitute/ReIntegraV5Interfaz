@@ -8,11 +8,19 @@ import { IComboBase1 } from '@shared/models/interfaces/iglobal';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import { Expositor } from '@planificacion/models/interfaces/expositor';
 
 interface GestionAcademicaGrid {
   id: number;
   nombre: string;
   fechaAsignacion: string;
+}
+
+// Extiende IComboBase1 con los datos de contacto que devuelve el endpoint ObtenerDocentesActivos
+interface DocenteActivo extends IComboBase1 {
+  email?: string;
+  celular1?: string;
+  nroDocIdentidad?: string;
 }
 
 interface PEspecificoCatalogo {
@@ -59,7 +67,7 @@ export class GestionAcademicaComponent implements OnInit {
   isNew: boolean = false;
 
   // ── Docentes ─────────────────────────────────────────────────────────────
-  listaDocentes: IComboBase1[] = [];
+  listaDocentes: DocenteActivo[] = [];
   docenteBloqueado: boolean = false;
   // Almacena el id numérico del docente seleccionado de forma confiable
   // (kendo-dropdownlist puede guardar el objeto completo en el form)
@@ -81,6 +89,13 @@ export class GestionAcademicaComponent implements OnInit {
   cursosAsignados: ProveedorPEspecificoGrid[] = [];
   // Ids de registros ya guardados que se eliminarán al presionar Guardar
   private _idsAEliminar: number[] = [];
+
+  // ── Búsqueda en módulo Docentes (Expositor) ───────────────────────────────
+  buscandoDocente: boolean = false;
+  expositorSeleccionado: Expositor | null = null;
+  expositorResultados: Expositor[] = [];
+  modalDocenteRef: NgbModalRef = null;
+  modalSeleccionRef: NgbModalRef = null;
 
   ngOnInit(): void {
     this.obtener();
@@ -323,6 +338,69 @@ export class GestionAcademicaComponent implements OnInit {
           idPespecifico: item.idPespecifico,
         })
         .subscribe({ next: onCompleto, error: onError });
+    });
+  }
+
+  // ── Buscar Expositor vinculado al Proveedor seleccionado ──────────────────
+  buscarEnExpositores(modalDocente: any, modalSeleccion: any) {
+    if (!this.idProveedorActual) {
+      this._alertaService.mensajeIcon('Seleccione un docente primero.');
+      return;
+    }
+
+    const docente = this.listaDocentes.find((d) => d.id === this.idProveedorActual);
+    if (!docente) return;
+
+    const body = {
+      email: docente.email || null,
+      celular: docente.celular1 || null,
+      nroDocumento: docente.nroDocIdentidad || null,
+    };
+
+    this.buscandoDocente = true;
+    this._integraService
+      .postJsonResponse(constApiPlanificacion.ExpositorBuscarPorContacto, body)
+      .subscribe({
+        next: (resp: HttpResponse<Expositor[]>) => {
+          this.buscandoDocente = false;
+          const resultados = resp.body ?? [];
+
+          if (resultados.length === 0) {
+            this._alertaService.mensajeIcon('No hay registro asociado en el módulo de Docentes.');
+          } else if (resultados.length === 1) {
+            this.expositorSeleccionado = resultados[0];
+            this.modalDocenteRef = this._modalService.open(modalDocente, {
+              size: 'lg',
+              backdrop: 'static',
+              keyboard: false,
+            });
+          } else {
+            this.expositorResultados = resultados;
+            this.modalSeleccionRef = this._modalService.open(modalSeleccion, {
+              size: 'md',
+              backdrop: 'static',
+              keyboard: false,
+            });
+          }
+        },
+        error: (error) => {
+          this.buscandoDocente = false;
+          this._alertaService.notificationWarning(
+            this._alertaService.getMessageErrorService(error),
+          );
+        },
+      });
+  }
+
+  abrirDocenteDesdeSeleccion(expositor: Expositor, modalDocente: any) {
+    this.expositorSeleccionado = expositor;
+    if (this.modalSeleccionRef) {
+      this.modalSeleccionRef.close();
+    }
+    this.modalDocenteRef = this._modalService.open(modalDocente, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
     });
   }
 }

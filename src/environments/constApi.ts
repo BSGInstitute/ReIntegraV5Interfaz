@@ -3843,6 +3843,7 @@ export const constApiPlanificacion = {
   ExpositorRegistrarArchivoFotoExpositor:
     '/Expositor/RegistrarArchivoFotoExpositor',
   ExpositorObtenerCombo: '/Expositor/ObtenerCombo', //GET
+  ExpositorBuscarPorContacto: '/Expositor/BuscarPorContacto', //POST
   MontoPagoObtenerCombosModuloAsync: '/MontoPago/ObtenerCombosModuloAsync',
 
   //Correccion Enpoints CriteriosEvaluacionProgramasEspecificos

@@ -135,16 +135,29 @@
           </label>
         </div>
         <div class="col-9">
-          <kendo-dropdownlist
-            class="w-100"
-            [data]="listaDocentes"
-            textField="nombre"
-            valueField="id"
-            [valuePrimitive]="true"
-            formControlName="idDocente"
-            [defaultItem]="{ id: null, nombre: 'Seleccione un docente...' }"
-            (valueChange)="onDocenteChange($event)"
-          ></kendo-dropdownlist>
+          <div class="d-flex align-items-center gap-2">
+            <kendo-dropdownlist
+              class="flex-grow-1"
+              [data]="listaDocentes"
+              textField="nombre"
+              valueField="id"
+              [valuePrimitive]="true"
+              formControlName="idDocente"
+              [defaultItem]="{ id: null, nombre: 'Seleccione un docente...' }"
+              (valueChange)="onDocenteChange($event)"
+            ></kendo-dropdownlist>
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm"
+              style="flex-shrink:0; width:34px; height:34px; padding:0;"
+              title="Buscar en módulo Docentes"
+              [disabled]="!idProveedorActual || buscandoDocente"
+              (click)="buscarEnExpositores(modalVistaDocente, modalSeleccionDocente)"
+            >
+              <span *ngIf="!buscandoDocente" class="k-icon k-i-search"></span>
+              <span *ngIf="buscandoDocente" class="k-icon k-i-loading"></span>
+            </button>
+          </div>
           <small
             class="text-danger"
             *ngIf="
@@ -286,4 +299,106 @@
   </div>
 
   <loading [loading]="enProcesoSolicitud"></loading>
+</ng-template>
+
+<!-- ═══════════════ MODAL VISTA DOCENTE (solo lectura) ════════════════ -->
+<ng-template #modalVistaDocente let-modal>
+  <div class="modal-header bg-primary-header-modal d-flex align-items-center justify-content-between">
+    <h5 class="modal-title m-0">Datos del Docente (solo lectura)</h5>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body p-4" *ngIf="expositorSeleccionado">
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Nro. Documento:</div>
+      <div class="col-7">{{ expositorSeleccionado.nroDocumento || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Nombre:</div>
+      <div class="col-7">
+        {{ expositorSeleccionado.primerNombre }} {{ expositorSeleccionado.segundoNombre }}
+        {{ expositorSeleccionado.apellidoPaterno }} {{ expositorSeleccionado.apellidoMaterno }}
+      </div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Celular 1:</div>
+      <div class="col-7">{{ expositorSeleccionado.telfCelular1 || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Celular 2:</div>
+      <div class="col-7">{{ expositorSeleccionado.telfCelular2 || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Celular 3:</div>
+      <div class="col-7">{{ expositorSeleccionado.telfCelular3 || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Email 1:</div>
+      <div class="col-7">{{ expositorSeleccionado.email1 || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Email 2:</div>
+      <div class="col-7">{{ expositorSeleccionado.email2 || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Email 3:</div>
+      <div class="col-7">{{ expositorSeleccionado.email3 || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Domicilio:</div>
+      <div class="col-7">{{ expositorSeleccionado.domicilio || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Lugar de Trabajo:</div>
+      <div class="col-7">{{ expositorSeleccionado.lugarTrabajo || '—' }}</div>
+    </div>
+    <hr />
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Asistente:</div>
+      <div class="col-7">{{ expositorSeleccionado.asistenteNombre || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Tel. Asistente:</div>
+      <div class="col-7">{{ expositorSeleccionado.asistenteTelefono || '—' }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-5 fw-semibold text-end">Cel. Asistente:</div>
+      <div class="col-7">{{ expositorSeleccionado.asistenteCelular || '—' }}</div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Cerrar</button>
+  </div>
+</ng-template>
+
+<!-- ═══════════════ MODAL SELECCIÓN (2+ resultados) ══════════════════ -->
+<ng-template #modalSeleccionDocente let-modal>
+  <div class="modal-header bg-primary-header-modal d-flex align-items-center justify-content-between">
+    <h5 class="modal-title m-0">Registros encontrados — seleccione uno</h5>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body p-3">
+    <p class="text-muted mb-3">Se encontraron {{ expositorResultados.length }} registros asociados al docente seleccionado. ¿Cuál desea visualizar?</p>
+    <ul class="list-group">
+      <li
+        *ngFor="let exp of expositorResultados"
+        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        style="cursor: pointer;"
+        (click)="abrirDocenteDesdeSeleccion(exp, modalVistaDocente)"
+      >
+        <div>
+          <strong>{{ exp.primerNombre }} {{ exp.apellidoPaterno }} {{ exp.apellidoMaterno }}</strong>
+          <br />
+          <small class="text-muted">
+            DNI: {{ exp.nroDocumento || '—' }} &nbsp;|&nbsp;
+            Email: {{ exp.email1 || '—' }} &nbsp;|&nbsp;
+            Cel: {{ exp.telfCelular1 || '—' }}
+          </small>
+        </div>
+        <span class="k-icon k-i-arrow-chevron-right text-primary"></span>
+      </li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Cerrar</button>
+  </div>
 </ng-template>
