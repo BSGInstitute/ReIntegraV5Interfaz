@@ -149,6 +149,24 @@ export class ProveedorComponent implements OnInit {
       total:'',
     })
 
+    // Formulario para conversión de tipo contribuyente
+    formGroupConversion: FormGroup = this.formBuilder.group({
+      id: [0],
+      idTipoContribuyente: ['', Validators.required],
+      idDocumentoIdentidad: ['', Validators.required],
+      nroDocumento: ['', [Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      razonSocial: ['', [TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      apePaterno: ['', [TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      apeMaterno: ['', [TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      nombre1: ['', [TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      nombre2: ['', [TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      direccion: ['', [TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      email: ['', [Validators.email, Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      telefono: ['', [TextValidator.noStartSpace, TextValidator.noEndSpace]],
+      idPais: [''],
+      idCiudad: [''],
+    })
+
   ///-----------Variables:------------------
   nombreServicio:string='';
   nuevo:boolean=false;
@@ -202,12 +220,27 @@ export class ProveedorComponent implements OnInit {
   itemSubCriteriosid4:any[]=[];
   itemSubCriteriosid5:any[]=[];
 
+  // Variables para conversión de tipo contribuyente
+  loaderModalConversion: boolean = false;
+  modalRefSeleccionTipo: any;
+  modalRefConversion: any;
+  opcionesCambioTipo: any[] = [];
+  tipoContribuyenteActual: string = '';
+  tipoContribuyenteActualId: number = 0;
+  nuevoTipoContribuyenteNombre: string = '';
+  nuevoTipoContribuyenteId: number = 0;
+  conversionANatural: boolean = false;
+  conversionANoDomiciliada: boolean = false;
+  itemsDocIdentidadConversion: any[] = [];
+  proveedorOriginal: any = null;
 
   gridProveedor = new GridProveedor();
   gridProveedorCuenta = new GridProveedorCuentaBancaria();
   @ViewChild('modalProveedor') modalProveedor: any;
   @ViewChild('modalCuentaBancariaProveedor') modalCuentaBancariaProveedor: any;
   @ViewChild('modalCalificacion') modalCalificacion: any;
+  @ViewChild('modalSeleccionTipo') modalSeleccionTipo: any;
+  @ViewChild('modalConversion') modalConversion: any;
   
 
 
@@ -1254,6 +1287,301 @@ Modal(id:number,isNew:boolean,data?:any){
         this.openModalBancaria(e.dataItem)
         break;
     }
+  }
+
+  //------------------------- Conversión Tipo Contribuyente ----------------------------------------------------------------
+
+  /**
+   * Verifica si el proveedor actual puede cambiar de tipo de contribuyente
+   * Solo se permite:
+   * - Persona Natural (1) -> Persona Jurídica (2)
+   * - Persona Jurídica (2) -> Persona Natural (1)
+   * - Persona No Domiciliada (3) -> Persona Natural (1)
+   */
+  puedeConvertirTipo(): boolean {
+    const idTipo = this.formGroupProveedor.get('idTipoContribuyente')?.value;
+    return idTipo === 1 || idTipo === 2 || idTipo === 3;
+  }
+
+  /**
+   * Abre el modal para seleccionar el nuevo tipo de contribuyente
+   */
+  abrirModalCambioTipo(): void {
+    const idTipo = this.formGroupProveedor.get('idTipoContribuyente')?.value;
+    this.tipoContribuyenteActualId = idTipo;
+    this.tipoContribuyenteActual = this.formGroupProveedor.get('tipoContribuyente')?.value;
+
+    // Guardar datos originales del proveedor
+    this.proveedorOriginal = this.formGroupProveedor.getRawValue();
+
+    // Definir opciones disponibles según el tipo actual
+    this.opcionesCambioTipo = [];
+
+    switch (idTipo) {
+      case 1: // Persona Natural -> puede ir a Jurídica o No Domiciliada
+        this.opcionesCambioTipo = [
+          { id: 2, nombre: 'Persona Jurídica' },
+          { id: 3, nombre: 'Persona No Domiciliada' }
+        ];
+        break;
+      case 2: // Persona Jurídica -> puede ir a Natural o No Domiciliada
+        this.opcionesCambioTipo = [
+          { id: 1, nombre: 'Persona Natural' },
+          { id: 3, nombre: 'Persona No Domiciliada' }
+        ];
+        break;
+      case 3: // Persona No Domiciliada -> puede ir a Natural
+        this.opcionesCambioTipo = [
+          { id: 1, nombre: 'Persona Natural' }
+        ];
+        break;
+    }
+
+    this.modalRefSeleccionTipo = this.modalService.open(this.modalSeleccionTipo, { centered: true });
+  }
+
+  /**
+   * Procesa la selección del nuevo tipo y abre el modal de conversión
+   */
+  seleccionarNuevoTipo(opcion: any, modal: any): void {
+    modal.close();
+
+    this.nuevoTipoContribuyenteId = opcion.id;
+    this.nuevoTipoContribuyenteNombre = opcion.nombre;
+    this.conversionANatural = (opcion.id === 1);
+    this.conversionANoDomiciliada = (opcion.id === 3);
+
+    // Preparar documentos de identidad según el nuevo tipo
+    this.prepararDocumentosConversion(opcion.id);
+
+    // Preparar el formulario de conversión con los datos existentes
+    this.prepararFormConversion();
+
+    // Abrir modal de conversión
+    this.modalRefConversion = this.modalService.open(this.modalConversion, { size: 'lg' });
+  }
+
+  /**
+   * Prepara los tipos de documento disponibles para el nuevo tipo de contribuyente
+   */
+  prepararDocumentosConversion(idTipo: number): void {
+    this.itemsDocIdentidadConversion = [];
+    switch (idTipo) {
+      case 1: // Persona Natural
+        this.ListaDocIdentidad.forEach(e => {
+          if (e.id === 1 || e.id === 6)
+            this.itemsDocIdentidadConversion.push(e);
+        });
+        break;
+      case 2: // Persona Jurídica
+        this.ListaDocIdentidad.forEach(e => {
+          if (e.id === 6)
+            this.itemsDocIdentidadConversion.push(e);
+        });
+        break;
+      case 3: // Persona No Domiciliada
+        this.ListaDocIdentidad.forEach(e => {
+          if (e.id === 0 || e.id === 4 || e.id === 7)
+            this.itemsDocIdentidadConversion.push(e);
+        });
+        break;
+    }
+  }
+
+  /**
+   * Prepara el formulario de conversión con los datos actuales del proveedor
+   */
+  prepararFormConversion(): void {
+    this.formGroupConversion.reset();
+
+    const datos = this.proveedorOriginal;
+
+    // Copiar campos comunes
+    this.formGroupConversion.patchValue({
+      id: datos.id,
+      idTipoContribuyente: this.nuevoTipoContribuyenteId,
+      nroDocumento: datos.nroDocumento,
+      direccion: datos.direccion,
+      email: datos.email,
+      telefono: datos.telefono,
+      idPais: datos.idPais,
+      idCiudad: datos.idCiudad,
+    });
+
+    // Si convierte a Natural, intentar llenar campos de nombre
+    if (this.conversionANatural) {
+      // Si viene de Jurídica o No Domiciliada, la razón social podría usarse como referencia
+      // Los campos de nombre quedan vacíos para que el usuario los complete
+      this.formGroupConversion.patchValue({
+        apePaterno: '',
+        apeMaterno: '',
+        nombre1: '',
+        nombre2: '',
+      });
+
+      // Agregar validadores requeridos para persona natural
+      this.formGroupConversion.get('apePaterno')?.setValidators([Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]);
+      this.formGroupConversion.get('apeMaterno')?.setValidators([Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]);
+      this.formGroupConversion.get('nombre1')?.setValidators([Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]);
+      this.formGroupConversion.get('razonSocial')?.clearValidators();
+    } else if (this.conversionANoDomiciliada) {
+      // Si convierte a No Domiciliada, intentar llenar razón social con nombres o razón social existente
+      let razonSocial = '';
+      if (datos.razonSocial && datos.razonSocial !== '-') {
+        razonSocial = datos.razonSocial;
+      } else if (datos.apePaterno && datos.apePaterno !== '-') {
+        razonSocial = `${datos.apePaterno} ${datos.apeMaterno || ''} ${datos.nombre1 || ''} ${datos.nombre2 || ''}`.trim();
+      }
+      this.formGroupConversion.patchValue({
+        razonSocial: razonSocial,
+      });
+
+      // Agregar validador requerido para razón social
+      this.formGroupConversion.get('razonSocial')?.setValidators([Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]);
+      this.formGroupConversion.get('apePaterno')?.clearValidators();
+      this.formGroupConversion.get('apeMaterno')?.clearValidators();
+      this.formGroupConversion.get('nombre1')?.clearValidators();
+    } else {
+      // Si convierte a Jurídica, intentar llenar razón social con nombres
+      let razonSocial = '';
+      if (datos.apePaterno && datos.apePaterno !== '-') {
+        razonSocial = `${datos.apePaterno} ${datos.apeMaterno || ''} ${datos.nombre1 || ''} ${datos.nombre2 || ''}`.trim();
+      }
+      this.formGroupConversion.patchValue({
+        razonSocial: razonSocial,
+      });
+
+      // Agregar validador requerido para razón social
+      this.formGroupConversion.get('razonSocial')?.setValidators([Validators.required, TextValidator.noStartSpace, TextValidator.noEndSpace]);
+      this.formGroupConversion.get('apePaterno')?.clearValidators();
+      this.formGroupConversion.get('apeMaterno')?.clearValidators();
+      this.formGroupConversion.get('nombre1')?.clearValidators();
+    }
+
+    // Actualizar validadores
+    this.formGroupConversion.get('apePaterno')?.updateValueAndValidity();
+    this.formGroupConversion.get('apeMaterno')?.updateValueAndValidity();
+    this.formGroupConversion.get('nombre1')?.updateValueAndValidity();
+    this.formGroupConversion.get('razonSocial')?.updateValueAndValidity();
+  }
+
+  /**
+   * Valida el formulario de conversión
+   */
+  validFormConversion(): boolean {
+    if (this.formGroupConversion.invalid) {
+      this.formGroupConversion.markAllAsTouched();
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Ejecuta la conversión del tipo de contribuyente
+   */
+  ejecutarConversion(modal: any): void {
+    if (!this.validFormConversion()) {
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Está seguro de cambiar el tipo de contribuyente?',
+      text: `El proveedor pasará de "${this.tipoContribuyenteActual}" a "${this.nuevoTipoContribuyenteNombre}"`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#4C5FC0',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, convertir',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.procesarConversion(modal);
+      }
+    });
+  }
+
+  /**
+   * Procesa la conversión y actualiza el proveedor
+   */
+  procesarConversion(modal: any): void {
+    this.loaderModalConversion = true;
+
+    const formConversion = this.formGroupConversion.getRawValue();
+
+    // Preparar datos para envío
+    let proveedor: ProveedorEnvio = {
+      id: formConversion.id,
+      idTipoContribuyente: this.nuevoTipoContribuyenteId,
+      idDocumentoIdentidad: formConversion.idDocumentoIdentidad,
+      nroDocumento: formConversion.nroDocumento,
+      razonSocial: this.conversionANatural ? '' : formConversion.razonSocial,
+      apePaterno: this.conversionANatural ? formConversion.apePaterno : '',
+      apeMaterno: this.conversionANatural ? formConversion.apeMaterno : '',
+      nombre1: this.conversionANatural ? formConversion.nombre1 : '',
+      nombre2: this.conversionANatural ? (formConversion.nombre2 || '') : '',
+      descripcion: this.proveedorOriginal.descripcion || '',
+      direccion: formConversion.direccion || '',
+      idCiudad: this.proveedorOriginal.idCiudad,
+      telefono: formConversion.telefono || '',
+      email: formConversion.email,
+      celular1: this.proveedorOriginal.celular1 || '',
+      celular2: this.proveedorOriginal.celular2 || '',
+      contacto1: this.proveedorOriginal.contacto1 || '',
+      contacto2: this.proveedorOriginal.contacto2 || '',
+      alias: this.proveedorOriginal.alias || '',
+      esDocente: this.proveedorOriginal.esDocente || false,
+      usuarioModificacion: this.userService.userName,
+      idImpuesto: this.proveedorOriginal.idImpuesto,
+      idRetencion: this.proveedorOriginal.idRetencion,
+      idDetraccion: this.proveedorOriginal.idDetraccion,
+      idPersonalAsignado: this.proveedorOriginal.idPersonalAsignado,
+      idPrestacionRegistro: this.proveedorOriginal.idPrestacionRegistro,
+      listaProveedorTipoServicio: []
+    };
+
+    // Asignar usuarioModificacion a cada cuenta bancaria
+    if (this.itemsCuenta.length > 0) {
+      this.itemsCuenta.forEach(cuenta => {
+        cuenta.idProveedor = proveedor.id;
+        cuenta.usuarioModificacion = this.userService.userName;
+      });
+    }
+
+    let dataEnvio = {
+      listaCuentaBanco: this.itemsCuenta,
+      proveedor: proveedor
+    };
+
+    this.integraService
+      .actualizar(constApi.ProveedorEditar, dataEnvio)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.loaderModalConversion = false;
+
+          // Cerrar modales
+          modal.close();
+          this.modalRefProveedor.close();
+
+          // Refrescar la grilla
+          this.ObtenerDatosGrillaProveedor(proveedor.id);
+
+          // Actualizar combo de proveedores
+          const nuevoNombre = this.nombreProveedor(proveedor);
+          const indexCombo = this.itemsProveedorCombo.findIndex((e) => e.id === proveedor.id);
+          const indexLista = this.ListaProveedorCombo.findIndex((e) => e.id === proveedor.id);
+
+          if (indexCombo >= 0) this.itemsProveedorCombo[indexCombo].nombre = nuevoNombre;
+          if (indexLista >= 0) this.ListaProveedorCombo[indexLista].nombre = nuevoNombre;
+        },
+        error: (error) => {
+          this.loaderModalConversion = false;
+          this.mostrarMensajeError(error);
+        },
+        complete: () => {
+          this.loaderModalConversion = false;
+          this.mostrarMensajeExitoso();
+        },
+      });
   }
 }
 
