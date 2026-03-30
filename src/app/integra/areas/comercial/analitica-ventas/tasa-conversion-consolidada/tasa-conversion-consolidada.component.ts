@@ -471,7 +471,7 @@ export class TasaConversionConsolidadaComponent implements OnInit {
     const idPersonal = this.userService.userData.idPersonal;
     let asesores: number[] = [];
     let filtroPersonal = [
-      213, 4435, 4081, 74, 4648,4964
+      213, 4435, 4081, 74, 4648,4964, 6634, 6589
     ];
 
     if (this.dataFormFiltro.asesores.length == 0) {
