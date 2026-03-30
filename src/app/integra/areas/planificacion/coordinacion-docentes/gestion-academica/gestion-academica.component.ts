@@ -8,7 +8,8 @@ import { IComboBase1 } from '@shared/models/interfaces/iglobal';
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
-import { Expositor } from '@planificacion/models/interfaces/expositor';
+import { CombosModulo, Ciudades, TipoDocumento, Expositor } from '@planificacion/models/interfaces/expositor';
+import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 
 interface GestionAcademicaGrid {
   id: number;
@@ -90,6 +91,14 @@ export class GestionAcademicaComponent implements OnInit {
   // Ids de registros ya guardados que se eliminarán al presionar Guardar
   private _idsAEliminar: number[] = [];
 
+  // ── Combos para modal vista docente ──────────────────────────────────────
+  comboTipoDocumento: TipoDocumento[] = [];
+  comboPaises: IComboBase1[] = [];
+  comboCiudadesAll: Ciudades[] = [];
+  comboCoordinadores: IComboBase1[] = [];
+  comboExpositores: IComboBase1[] = [];
+  filterSettings: DropDownFilterSettings = { caseSensitive: false, operator: 'contains' };
+
   // ── Búsqueda en módulo Docentes (Expositor) ───────────────────────────────
   buscandoDocente: boolean = false;
   expositorSeleccionado: Expositor | null = null;
@@ -99,6 +108,7 @@ export class GestionAcademicaComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtener();
+    this._obtenerCombosModulo();
   }
 
   // ── Grilla principal ──────────────────────────────────────────────────────
@@ -134,6 +144,32 @@ export class GestionAcademicaComponent implements OnInit {
           );
         },
       });
+  }
+
+  // ── Combos para modal vista docente ──────────────────────────────────────
+  private _obtenerCombosModulo() {
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.ExpositorObtenerCombosModulo)
+      .subscribe({
+        next: (resp: HttpResponse<CombosModulo>) => {
+          this.comboTipoDocumento = resp.body.tipoDocumentos;
+          this.comboCoordinadores = resp.body.coordinadores;
+          this.comboPaises = resp.body.paises;
+          this.comboCiudadesAll = resp.body.ciudades;
+          this.comboExpositores = resp.body.expositores;
+        },
+        error: (error) => {
+          this._alertaService.notificationWarning(
+            this._alertaService.getMessageErrorService(error),
+          );
+        },
+      });
+  }
+
+  parseDate(dateStr: string): Date | null {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
   }
 
   // ── Catálogo PEspecifico ──────────────────────────────────────────────────
@@ -370,7 +406,7 @@ export class GestionAcademicaComponent implements OnInit {
           } else if (resultados.length === 1) {
             this.expositorSeleccionado = resultados[0];
             this.modalDocenteRef = this._modalService.open(modalDocente, {
-              size: 'lg',
+              size: 'xl',
               backdrop: 'static',
               keyboard: false,
             });
@@ -398,7 +434,7 @@ export class GestionAcademicaComponent implements OnInit {
       this.modalSeleccionRef.close();
     }
     this.modalDocenteRef = this._modalService.open(modalDocente, {
-      size: 'lg',
+      size: 'xl',
       backdrop: 'static',
       keyboard: false,
     });
