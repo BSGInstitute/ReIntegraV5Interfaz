@@ -118,6 +118,7 @@ export class ProveedorComponent implements OnInit {
       idRetencion:'',
       idDetraccion:'',
       idPrestacionRegistro:'',
+      plazoPago:[null],
       alias:['',[
         TextValidator.noStartSpace,
         TextValidator.noEndSpace,
@@ -259,6 +260,8 @@ export class ProveedorComponent implements OnInit {
     this.ObtenerComboEntidadFinanciera()
     this.ObtenerProveedorObtenerTipoContribuyente()
     this.ObtenerProveedorRUC()
+    this.ObtenerComboTipoImpuesto()
+  
 
    
   }
@@ -1003,6 +1006,7 @@ Modal(id:number,isNew:boolean,data?:any){
       idDetraccion: item.idDetraccion,
       idPersonalAsignado: item.idPersonalAsignado,
       idPrestacionRegistro: item.idPrestacionRegistro,
+      plazoPago: item.plazoPago==null?0:item.plazoPago,
       listaProveedorTipoServicio: []
     }
     return dataEnvio
@@ -1536,6 +1540,7 @@ Modal(id:number,isNew:boolean,data?:any){
       idDetraccion: this.proveedorOriginal.idDetraccion,
       idPersonalAsignado: this.proveedorOriginal.idPersonalAsignado,
       idPrestacionRegistro: this.proveedorOriginal.idPrestacionRegistro,
+      plazoPago: this.proveedorOriginal.plazoPago || 0,
       listaProveedorTipoServicio: []
     };
 

@@ -51,6 +51,7 @@ export interface ProveedorEnvio{
     idDetraccion: number,
     idPersonalAsignado: number,
     idPrestacionRegistro: number,
+    plazoPago: number,
     listaProveedorTipoServicio: []
 }
 
