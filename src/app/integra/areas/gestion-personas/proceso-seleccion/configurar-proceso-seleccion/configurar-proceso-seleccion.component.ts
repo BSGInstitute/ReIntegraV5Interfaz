@@ -361,7 +361,6 @@ export class ConfigurarProcesoSeleccionComponent implements OnInit {
       this.obtenerEvaluaciones(dataItem.id);
       this.ObtenerExamenesNoAsociados(dataItem.id);
       this.ObtenerExamenesAsociados(dataItem.id);
-      this.ObtenerEtapaProcesoSeleccion(dataItem.id);
       // this.asignarValoresToForm(dataItem);
     } else {
       this.dataItemTemp = null;
@@ -512,15 +511,15 @@ export class ConfigurarProcesoSeleccionComponent implements OnInit {
     this.gridEtapaProcesoSeleccion.getUpdateEvent$().subscribe({
       next: (resp) => {
         let valorForm = resp.formGroup.getRawValue() as {
-          nombre: number;
-          nroOrden: string;
+          nombre: string;
+          nroOrden: number;
         };
         const index = this.gridEtapaProcesoSeleccion.data.findIndex(
           (detalles) => detalles.id === resp.dataItem.id
         );
         if (index !== -1) {
           this.gridEtapaProcesoSeleccion.data[index].nombre = valorForm.nombre;
-          this.gridEtapaProcesoSeleccion.data[index].orden = valorForm.nroOrden;
+          this.gridEtapaProcesoSeleccion.data[index].nroOrden = valorForm.nroOrden;
         }
       },
     });
@@ -602,7 +601,7 @@ export class ConfigurarProcesoSeleccionComponent implements OnInit {
   ) {
     if (id != null) {
       this.EtapaProcesoLista = this.EtapaProcesoLista.filter(
-        (x) => (x.id = id)
+        (x) => x.id === id
       );
     } else {
       this.EtapaProcesoLista = [];
