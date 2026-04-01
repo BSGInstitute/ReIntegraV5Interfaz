@@ -517,7 +517,20 @@ export interface InformacionPespecificoSesion {
   idAmbiente?: number;
   predeterminado?: boolean;
   grupo: number;
+  grupoSesion?: number;
   idPEspecificoSesionEstado?: number;
+  reprogramacion?: boolean;
+}
+export interface ReprogramarSesion {
+  idPespecifico: number;
+  fechaHoraInicio: Date | string;
+  duracion: number;
+  idExpositor?: number;
+  idAmbiente?: number;
+  comentario: string;
+  grupo: number;
+  grupoSesion: number;
+  idModalidadCurso?: number;
 }
 export interface FiltroSesionEspecial {
   pEspecificoPadreId: number;

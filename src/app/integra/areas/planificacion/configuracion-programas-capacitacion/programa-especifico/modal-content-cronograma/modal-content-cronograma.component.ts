@@ -31,6 +31,7 @@ import {
   CruceSesionPEspecifico,
   InformacionPespecificoSesion,
   FiltroSesionEspecial,
+  ReprogramarSesion,
 } from '@planificacion/models/interfaces/pespecifico';
 import { PespecificoService } from '@planificacion/services/pespecifico.service';
 import { GridComponent, RowClassArgs } from '@progress/kendo-angular-grid';
@@ -315,8 +316,7 @@ export class ModalContentCronogramaComponent implements OnInit {
           dataItem.idObservacion = null;
           dataItem.idPEspecificoSesionEstadoObservacionDetalle = null;
           // Si el estado es "Por-Reprogramar", abrir modal Nueva Sesion con datos precargados
-          const estadoSeleccionado = this.listaEstadoCurso.find(e => e.id === nuevoEstado);
-          if (estadoSeleccionado && estadoSeleccionado.nombre === 'Por-Reprogramar') {
+          if (this.esPorReprogramarEstadoCurso(nuevoEstado)) {
             this.abrirModalInsertarSesion(this.modalInsertarSesionRef, dataItem);
           }
         },
@@ -1439,7 +1439,7 @@ export class ModalContentCronogramaComponent implements OnInit {
       this.formInsertarSesion.get('tipo').setValue('Programa Especifico');
       this.formInsertarSesion.get('fecha').setValue(dataItem.fechaHoraInicio);
       this.formInsertarSesion.get('duracion').setValue(dataItem.duracion);
-      this.formInsertarSesion.get('grupo').setValue(dataItem.grupoSesion ?? 0);
+      // No pre-cargar el grupo, se usará el grupo actual del cronograma (formControlGrupo)
       if (!this.pEspecificoService.esCursoIndividual) {
         this.formInsertarSesion.get('idPespecifico').setValue(dataItem.pEspecificoHijoId);
       }
@@ -1661,53 +1661,92 @@ export class ModalContentCronogramaComponent implements OnInit {
   insertarSesionEnCurso(idPespecifico: number) {
     let datosForm = this.formInsertarSesion.getRawValue() as FormInsertarSesion;
     let ctrlGrupo = this.formControlGrupo.value;
-    const grupoNuevaSesion = (datosForm.grupo != null)
-      ? datosForm.grupo
-      : ((ctrlGrupo != null) ? ctrlGrupo : 0);
-    let jsonEnvio: InformacionPespecificoSesion = {
-      id: 0,
-      idPespecifico: idPespecifico,
-      fechaHoraInicio: datePipeTransform(datosForm.fecha),
-      duracion: datosForm.duracion,
-      comentario: '',
-      sesionAutoGenerada: false,
-      grupo: grupoNuevaSesion,
-      ...(this.sesionPorReprogramar ? { idPEspecificoSesionEstado: 7 } : {}),
-    };
+    const grupoNuevaSesion = (ctrlGrupo != null) ? ctrlGrupo : 1;
+
     this.enProcesoInsertarSesion = true;
-    this._integraService
-      .postJsonResponse(
-        constApiPlanificacion.PEspecificoActualizarDuracionInsertarSesion,
-        JSON.stringify(jsonEnvio)
-      )
-      .subscribe({
-        next: (resp: HttpResponse<boolean>) => {
-          if (resp.body == true) {
+
+    // Usar endpoint específico para reprogramación si es una sesión reprogramada
+    if (this.sesionPorReprogramar) {
+      const jsonReprogramar: ReprogramarSesion = {
+        idPespecifico: idPespecifico,
+        fechaHoraInicio: datePipeTransform(datosForm.fecha),
+        duracion: datosForm.duracion,
+        idExpositor: this.sesionPorReprogramar.idProveedor,
+        idAmbiente: this.sesionPorReprogramar.idAmbiente,
+        comentario: '',
+        grupo: grupoNuevaSesion,
+        grupoSesion: this.sesionPorReprogramar.grupoSesion ?? 0,
+        idModalidadCurso: this.sesionPorReprogramar.idModalidadCurso,
+      };
+
+      this._integraService
+        .postJsonResponse(
+          constApiPlanificacion.PEspecificoInsertarSesionReprogramada,
+          JSON.stringify(jsonReprogramar)
+        )
+        .subscribe({
+          next: (resp: HttpResponse<boolean>) => {
             this._alertaService.toastOptions(
-              'Se registro correctamente',
+              'Sesión reprogramada correctamente',
               'success',
               'top-right',
               idTemplate
             );
-          }
-          this.enProcesoInsertarSesion = false;
-          this.modalRefInsertarSesion.close();
-          this.obtenerNumeroGrupos();
-          if (this.sesionPorReprogramar) {
-            this.actualizarGrupoSesionOriginal(this.sesionPorReprogramar);
+            this.enProcesoInsertarSesion = false;
+            this.modalRefInsertarSesion.close();
+            const grupoActual = this.formControlGrupo.value;
+            this.obtenerNumeroGrupos();
+            this.actualizarGrupoSesionOriginal(this.sesionPorReprogramar, grupoActual);
             this.sesionPorReprogramar = null;
-          } else {
+          },
+          error: (error) => {
+            this.enProcesoInsertarSesion = false;
+            let mensaje = this._alertaService.getMessageErrorService(error);
+            this._alertaService.notificationWarning(mensaje);
+          },
+        });
+    } else {
+      // Inserción normal de sesión
+      const jsonEnvio: InformacionPespecificoSesion = {
+        id: 0,
+        idPespecifico: idPespecifico,
+        fechaHoraInicio: datePipeTransform(datosForm.fecha),
+        duracion: datosForm.duracion,
+        comentario: '',
+        sesionAutoGenerada: false,
+        grupo: grupoNuevaSesion,
+        grupoSesion: null,
+      };
+
+      this._integraService
+        .postJsonResponse(
+          constApiPlanificacion.PEspecificoActualizarDuracionInsertarSesion,
+          JSON.stringify(jsonEnvio)
+        )
+        .subscribe({
+          next: (resp: HttpResponse<boolean>) => {
+            if (resp.body == true) {
+              this._alertaService.toastOptions(
+                'Se registro correctamente',
+                'success',
+                'top-right',
+                idTemplate
+              );
+            }
+            this.enProcesoInsertarSesion = false;
+            this.modalRefInsertarSesion.close();
+            this.obtenerNumeroGrupos();
             this.recargarCronogramaPespecifico();
-          }
-        },
-        error: (error) => {
-          this.enProcesoInsertarSesion = false;
-          let mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
-        },
-      });
+          },
+          error: (error) => {
+            this.enProcesoInsertarSesion = false;
+            let mensaje = this._alertaService.getMessageErrorService(error);
+            this._alertaService.notificationWarning(mensaje);
+          },
+        });
+    }
   }
-  actualizarGrupoSesionOriginal(sesion: CronogramaGrupo) {
+  actualizarGrupoSesionOriginal(sesion: CronogramaGrupo, grupoARecargar?: number) {
     const jsonGrupo: InformacionCronogramaSesiones = {
       id: sesion.id,
       fechaHoraInicio: datePipeTransform(sesion.fechaHoraInicio),
@@ -1736,12 +1775,21 @@ export class ModalContentCronogramaComponent implements OnInit {
       next: () => {
         sesion.idEstadoCurso = 2; // 2 = Cancelada
         sesion.idPEspecificoSesionEstado = 2; // 2 = Cancelada
-        this.recargarCronogramaPespecifico();
+        // Restaurar el valor del dropdown al grupo original para mantener consistencia en la UI
+        if (grupoARecargar != null) {
+          this.formControlGrupo.setValue(grupoARecargar);
+        }
+        // Usar el grupo específico si se proporciona, para mantener la vista del grupo correcto
+        this.recargarCronogramaPespecifico(null, grupoARecargar);
       },
       error: (error) => {
         let mensaje = this._alertaService.getMessageErrorService(error);
         this._alertaService.notificationWarning(mensaje);
-        this.recargarCronogramaPespecifico();
+        // Restaurar el valor del dropdown al grupo original para mantener consistencia en la UI
+        if (grupoARecargar != null) {
+          this.formControlGrupo.setValue(grupoARecargar);
+        }
+        this.recargarCronogramaPespecifico(null, grupoARecargar);
       },
     });
   }

@@ -3144,6 +3144,8 @@ export const constApiPlanificacion = {
 
   PEspecificoActualizarDuracionInsertarSesion:
     '/PEspecifico/ActualizarDuracionInsertarSesion',
+  PEspecificoInsertarSesionReprogramada:
+    '/PEspecifico/InsertarSesionReprogramada',
   PEspecificoInsertarEventoEspecial: '/PEspecifico/InsertarEventoEspecial',
   PEspecificoGenerarReporteAmbienteExcel:
     '/PEspecifico/GenerarReporteAmbienteExcel', //POST
