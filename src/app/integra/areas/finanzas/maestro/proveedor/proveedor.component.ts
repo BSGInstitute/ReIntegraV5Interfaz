@@ -1334,9 +1334,10 @@ Modal(id:number,isNew:boolean,data?:any){
           { id: 3, nombre: 'Persona No Domiciliada' }
         ];
         break;
-      case 3: // Persona No Domiciliada -> puede ir a Natural
+      case 3: // Persona No Domiciliada -> puede ir a Natural o Jurídica
         this.opcionesCambioTipo = [
-          { id: 1, nombre: 'Persona Natural' }
+          { id: 1, nombre: 'Persona Natural' },
+          { id: 2, nombre: 'Persona Jurídica' }
         ];
         break;
     }
@@ -1446,9 +1447,11 @@ Modal(id:number,isNew:boolean,data?:any){
       this.formGroupConversion.get('apeMaterno')?.clearValidators();
       this.formGroupConversion.get('nombre1')?.clearValidators();
     } else {
-      // Si convierte a Jurídica, intentar llenar razón social con nombres
+      // Si convierte a Jurídica, intentar llenar razón social con razón social existente o nombres
       let razonSocial = '';
-      if (datos.apePaterno && datos.apePaterno !== '-') {
+      if (datos.razonSocial && datos.razonSocial !== '-') {
+        razonSocial = datos.razonSocial;
+      } else if (datos.apePaterno && datos.apePaterno !== '-') {
         razonSocial = `${datos.apePaterno} ${datos.apeMaterno || ''} ${datos.nombre1 || ''} ${datos.nombre2 || ''}`.trim();
       }
       this.formGroupConversion.patchValue({
