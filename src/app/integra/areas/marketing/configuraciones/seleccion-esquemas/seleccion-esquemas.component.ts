@@ -19,8 +19,14 @@ export interface ActividadBotIA {
   numeros: string[];
   idChatbotEsquema: number;
   nombreEsquema: string;
-  modulo: string;
+  idMedioComunicacion: number;
+  nombreMedioComunicacion: string;
   estado: boolean;
+}
+
+export interface MedioComunicacionItem {
+  idMedioComunicacion: number;
+  nombreMedioComunicacion: string;
 }
 
 // DTOs tal como llegan del backend (campos con nombre específico)
@@ -115,7 +121,7 @@ export class SeleccionEsquemasComponent implements OnInit {
   listaNumeros: string[] = [];
   listaFaseMaxima: CatalogoItem[] = [];
   listaPerfil: CatalogoItem[] = [];
-  readonly moduloOpciones = ['Whatsapp', 'Messenger'];
+  listaMediosComunicacion: MedioComunicacionItem[] = [];
 
   // ─── Tab 1: Actividades BOT IA ───────────────────────
   listaActividadesBotIA: ActividadBotIA[] = [];
@@ -158,6 +164,7 @@ export class SeleccionEsquemasComponent implements OnInit {
     this.cargarListaNumeros();
     this.cargarListaFaseMaxima();
     this.cargarListaPerfil();
+    this.cargarListaMediosComunicacion();
   }
 
   // ─── Clasificaciones disponibles (computed) ──────────
@@ -215,6 +222,17 @@ export class SeleccionEsquemasComponent implements OnInit {
       });
   }
 
+  cargarListaMediosComunicacion(): void {
+    this.integraService
+      .getJsonResponse(constApiMarketing.SeleccionEsquemasActividadesMedioComunicacionObtenerLista)
+      .subscribe({
+        next: (resp: HttpResponse<MedioComunicacionItem[]>) => {
+          this.listaMediosComunicacion = resp.body ?? [];
+        },
+        error: () => { this.listaMediosComunicacion = []; }
+      });
+  }
+
   // =============================================
   // TAB 1 — Actividades BOT IA
   // =============================================
@@ -226,13 +244,14 @@ export class SeleccionEsquemasComponent implements OnInit {
       .subscribe({
         next: (resp: HttpResponse<any[]>) => {
           this.listaActividadesBotIA = (resp.body ?? []).map(x => ({
-            id:               x.idChatbotActividadBotIA,
-            nombre:           x.nombreChatbotActividadBotIA,
-            numeros:          x.numeros ?? [],
-            idChatbotEsquema: x.idChatbotEsquema,
-            nombreEsquema:    x.nombreChatbotEsquema,
-            modulo:           x.modulo,
-            estado:           x.estado,
+            id:                     x.idChatbotActividad,
+            nombre:                 x.nombreChatbotActividad,
+            numeros:                x.numeros ?? [],
+            idChatbotEsquema:       x.idChatbotEsquema,
+            nombreEsquema:          x.nombreChatbotEsquema,
+            idMedioComunicacion:    x.idMedioComunicacion,
+            nombreMedioComunicacion: x.nombreMedioComunicacion,
+            estado:                 x.estado,
           } as ActividadBotIA));
           this.loaderGridActividades = false;
         },
@@ -266,11 +285,11 @@ export class SeleccionEsquemasComponent implements OnInit {
       this.alertaService.notificationWarning('Ingrese el nombre de la actividad');
       return;
     }
-    if (!this.actividadActual.modulo) {
-      this.alertaService.notificationWarning('Seleccione un módulo');
+    if (!this.actividadActual.idMedioComunicacion) {
+      this.alertaService.notificationWarning('Seleccione un medio de comunicación');
       return;
     }
-    if (this.actividadActual.modulo === 'Whatsapp' && (!this.actividadActual.numeros || this.actividadActual.numeros.length === 0)) {
+    if (this.actividadActual.idMedioComunicacion === 1 && (!this.actividadActual.numeros || this.actividadActual.numeros.length === 0)) {
       this.alertaService.notificationWarning('Ingrese al menos un número');
       return;
     }
@@ -280,11 +299,11 @@ export class SeleccionEsquemasComponent implements OnInit {
     }
 
     const payload = {
-      nombre:            this.actividadActual.nombre.trim(),
-      numeros:           this.actividadActual.modulo === 'Whatsapp' ? this.actividadActual.numeros : [],
-      idChatbotEsquema:  this.actividadActual.idChatbotEsquema,
-      modulo:            this.actividadActual.modulo,
-      estado:            this.actividadActual.estado,
+      nombre:              this.actividadActual.nombre.trim(),
+      numeros:             this.actividadActual.idMedioComunicacion === 1 ? this.actividadActual.numeros : [],
+      idChatbotEsquema:    this.actividadActual.idChatbotEsquema,
+      idMedioComunicacion: this.actividadActual.idMedioComunicacion,
+      estado:              this.actividadActual.estado,
       ...(this.isNewActividad ? {} : { id: this.actividadActual.id }),
     };
 
@@ -772,7 +791,7 @@ export class SeleccionEsquemasComponent implements OnInit {
   }
 
   private nuevaActividad(): ActividadBotIA {
-    return { id: 0, nombre: '', numeros: [], idChatbotEsquema: null, nombreEsquema: '', modulo: '', estado: true };
+    return { id: 0, nombre: '', numeros: [], idChatbotEsquema: null, nombreEsquema: '', idMedioComunicacion: null, nombreMedioComunicacion: '', estado: true };
   }
 
   private nuevaConfiguracion(): EsquemaConfiguracion {

@@ -2480,6 +2480,7 @@ export const constApiMarketing = {
   SeleccionEsquemasActividadesActualizar:          '/ChatbotActividadBotIA/Actualizar',
   SeleccionEsquemasActividadesEliminar:            '/ChatbotActividadBotIA/Eliminar',
   SeleccionEsquemasActividadesNumerosObtenerLista: '/ChatbotActividadBotIA/ObtenerListadoNumero',
+  SeleccionEsquemasActividadesMedioComunicacionObtenerLista: '/ChatbotActividadBotIA/ObtenerListadoMedioComunicacion',
   // Esquemas
   SeleccionEsquemasObtenerListado: '/EsquemaRespuestas/ObtenerListadoEsquemas',
   SeleccionEsquemasInsertar:       '/EsquemaRespuestas/InsertarEsquema',
@@ -2770,7 +2771,7 @@ export const constApiGestionPersonal = {
   InsertarTipoFormacion: '/TipoFormacion/Insertar',
   ActualizarTipoFormacion: '/TipoFormacion/Actualizar',
   EliminarTipoFormacion: '/TipoFormacion/Eliminar',
-
+  
 
    //Maestro Estado Curso
   ObtenerEstadoCurso: '/PEspecificoSesionEstado/Obtener',
@@ -2784,7 +2785,7 @@ export const constApiGestionPersonal = {
   ActualizarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Actualizar',
   EliminarObservacionPorEstado: '/PEspecificoSesionEstadoObservacion/Eliminar',
 
-  
+
   //AreaFormacion
   AreaFormacionObtener: '/AreaFormacion/Obtener',
   AreaFormacionInsertar: '/AreaFormacion/Insertar',
@@ -4118,8 +4119,8 @@ export const constApiPlanificacion = {
   DocumentoPwObtenerDocumentoPWDuracion: '/DocumentoPw/ObtenerDocumentoPWDuracion',
   DocumentoPwObtenerDocumentoPWFechaInicio: '/DocumentoPw/ObtenerDocumentoPWFechaInicio',
   DocumentoPwObtenerDocumentoPWNotas: '/DocumentoPw/ObtenerDocumentoPWNotas',
-
-
+  
+  
   PEspecificoSesionActualizarEstadoCurso: '/PEspecificoSesionEstado/ActualizarEstadoCurso',
   PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion'
 
