@@ -52,6 +52,7 @@ interface IFormFiltro {
 })
 export class ReporteActividadRealizadaTresCxComponent implements OnInit {
   @ViewChild('modalReproducirAudio') modalReproducirAudio: any;
+  @ViewChild('modalSubirLlamada') modalSubirLlamada: any;
   @ViewChild('grid3cx') grid3cx: GridComponent;
 
   asesorFiltro: Array<IAsesor>;
@@ -75,6 +76,10 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
   private audioYaRecargado: boolean = false;
   procesoEnvio: boolean= true;
   origenLlamada: string = '';
+  dataItemLlamadaSeleccionada!: IReporteActividadRealizada;
+  archivoLlamadaSeleccionado: any = null;
+  tiempoLlamadaSeleccionada: number = 0;
+  pesoLlamadaSeleccionada: number = 0;
   estadosActividad = [
     { nombre: 'Ejecutado', id: 1 },
     { nombre: 'Reprogramación Automática', id: 2 },
@@ -83,6 +88,10 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
     { nombre: 'Contesta y corta', id: 431 },
     { nombre: 'Contesta, esta ocupado y no puede atender en este momento', id: 162 },
   ];
+  validationAudio = {
+    allowedExtensions: ['WAV', 'MP3'],
+    maxFileSize: 500480000,
+  };
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
     operator: 'contains',
@@ -484,6 +493,80 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
       }, 100);
     }, 50);
   }
+  abrirModalSubirLlamada(dataItem: IReporteActividadRealizada) {
+    this.dataItemLlamadaSeleccionada = dataItem;
+    this.archivoLlamadaSeleccionado = null;
+    this.tiempoLlamadaSeleccionada = 0;
+    this.pesoLlamadaSeleccionada = 0;
+    this.modalService.open(this.modalSubirLlamada, {
+      size: 'md',
+      backdrop: 'static',
+    });
+  }
+
+  selectAudio(e: any) {
+    const file = e.files[0];
+    const nombre = file.name;
+    const peso = Math.round(file.size);
+    const extension = file.extension;
+    let tiempo = 0;
+    if (nombre && (extension === '.wav' || extension === '.mp3')) {
+      tiempo = Math.round(peso / (192 * 1000));
+    }
+    this.archivoLlamadaSeleccionado = e;
+    this.tiempoLlamadaSeleccionada = tiempo;
+    this.pesoLlamadaSeleccionada = peso;
+  }
+
+  confirmarSubirLlamada(modal: any) {
+    if (!this.archivoLlamadaSeleccionado) {
+      this._alertaService.swalFireOptions({
+        icon: 'error',
+        text: 'Selecciona un audio',
+      });
+      return;
+    }
+
+    this.procesoEnvio = true;
+    const archivoPrincipal = this.archivoLlamadaSeleccionado.files[0].rawFile;
+    const nombreArchivo = this.archivoLlamadaSeleccionado.files[0].name;
+
+    const dataEnviada = new FormData();
+    dataEnviada.append('File', archivoPrincipal);
+    dataEnviada.append('IdActividadDetalle', this.dataItemLlamadaSeleccionada.idActividad.toString());
+    dataEnviada.append('IdOportunidad', this.dataItemLlamadaSeleccionada.idOportunidad.toString());
+    dataEnviada.append('GrabacionContrato', 'false');
+    
+
+    //dataEnviada.append('IdPersonalAsignado', datosFormulario.idPersonalAsignado); -- se obtiene en backend
+    //dataEnviada.append('Anexo3CX', datosFormulario.anexo3cx); -- se obtiene en backend
+
+    dataEnviada.append('IdLlamada', '0');
+    dataEnviada.append('NombreArchivo', nombreArchivo);
+    dataEnviada.append('DuracionContesto', this.tiempoLlamadaSeleccionada.toString());
+    dataEnviada.append('NroBytes', this.pesoLlamadaSeleccionada.toString());
+    
+
+    this.integraService
+      .insertarFormDataAudio('/MaterialVersion/InsertarGrabacionesReporteLlamadasPorDia', dataEnviada)
+      .subscribe({
+        next: () => {
+          this.procesoEnvio = false;
+          this.dataItemLlamadaSeleccionada.tiempoLlamada = this.tiempoLlamadaSeleccionada;
+          this.dataItemLlamadaSeleccionada.pesoLlamada = this.pesoLlamadaSeleccionada;
+          modal.close();
+          this._alertaService.swalFireOptions({
+            icon: 'success',
+            text: 'La grabación ha sido subida correctamente.',
+          });
+        },
+        error: (e: any) => {
+          this.procesoEnvio = false;
+          this.alertarService.notificationWarning(`Surgió un error: ${e.error?.title ?? 'Error desconocido'}`);
+        },
+      });
+  }
+
   tiempoLlamadas(dataItem: IReporteActividadRealizada) {
     let flagTiempo: boolean = false;
     let mostrarRefrigerio = false;

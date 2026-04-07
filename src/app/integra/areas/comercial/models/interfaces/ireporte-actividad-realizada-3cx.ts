@@ -48,6 +48,8 @@ export interface IReporteActividadRealizada {
   heightRow: number;
   tipoRefrigerio: number;
   mostrarRefrigerio: boolean;
+  tiempoLlamada?: number;
+  pesoLlamada?: number;
 }
 export interface TiempoLlamada {
   tt: string;
