@@ -506,16 +506,23 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
 
   selectAudio(e: any) {
     const file = e.files[0];
-    const nombre = file.name;
     const peso = Math.round(file.size);
     const extension = file.extension;
-    let tiempo = 0;
-    if (nombre && (extension === '.wav' || extension === '.mp3')) {
-      tiempo = Math.round(peso / (192 * 1000));
-    }
+
     this.archivoLlamadaSeleccionado = e;
-    this.tiempoLlamadaSeleccionada = tiempo;
+    this.tiempoLlamadaSeleccionada = 0;
     this.pesoLlamadaSeleccionada = peso;
+
+    if (file.rawFile && (extension === '.wav' || extension === '.mp3')) {
+      const audio = new Audio();
+      const objectUrl = URL.createObjectURL(file.rawFile);
+      audio.addEventListener('loadedmetadata', () => {
+        this.tiempoLlamadaSeleccionada = Math.round(audio.duration);
+        this.cdr.detectChanges();
+        URL.revokeObjectURL(objectUrl);
+      });
+      audio.src = objectUrl;
+    }
   }
 
   confirmarSubirLlamada(modal: any) {
