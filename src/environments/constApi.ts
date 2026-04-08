@@ -2571,9 +2571,8 @@ export const constApiGestionPersonal = {
   ObtenerHistorialPostulanteExperiencia:
     '/Postulante/ObtenerHistorialPostulanteExperiencia',
   CompararProcesosSeleccion: '/Postulante/CompararProcesosSeleccion',
-  ActualizarProcesoPostulanteSinNota:
-    '/Postulante/ActualizarProcesoPostulanteSinNota',
-  ActualizarProcesoPostulante: '/Postulante/ActualizarProcesoPostulante',
+  CambiarProcesoSeleccionPostulanteAlterno:
+    '/Postulante/CambiarProcesoSeleccionPostulanteAlterno',
   ObtenerUltimoMensajeRecibidosChat:
     '/PostulanteWhatsApp/WhatsAppUltimoMensajeRecibidosChat',
   GenerarPlantillaGPWhatsapp: '/PostulanteWhatsApp/GenerarPlantillaGPWhatsapp',

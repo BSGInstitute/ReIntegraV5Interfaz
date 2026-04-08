@@ -269,32 +269,21 @@ export class ModalContentaGregarProcesoComponent implements OnInit {
       this._alertaService.mensajeWarning('Completa los campos requeridos');
     } else {
       const data = this.formNuevoProceso.getRawValue();
-      let idsExamen: string[] = [''];
-      if (this.mySelection.length === 0) {
-        idsExamen = [];
-      } else {
-        idsExamen = this.mySelection.map((num) => num.toString());
+      let idsEtapas: number[] = [];
+      if (this.mySelection.length > 0) {
+        idsEtapas = this.mySelection;
       }
       const usuario = this._userService.userData.userName;
       const IdPersonal = this._userService.userData.idPersonal;
       const JsonData = {
         ...data,
-        IdsExamenAsignado: idsExamen,
+        IdsProcesoSeleccionEtapa: idsEtapas,
         Usuario: usuario,
         IdPersonal: IdPersonal,
       };
 
-      const procesoAnterior = this.ProcesoAnteriorFormControl.value;
-
-      if (procesoAnterior) {
-        console.log(constApiGestionPersonal.ActualizarProcesoPostulante);
-        const url = constApiGestionPersonal.ActualizarProcesoPostulante;
-        this.datosPostulanteService.cambiarProceso(JsonData, url);
-      } else {
-        console.log(constApiGestionPersonal.ActualizarProcesoPostulanteSinNota);
-        const url = constApiGestionPersonal.ActualizarProcesoPostulanteSinNota;
-        this.datosPostulanteService.cambiarProceso(JsonData, url);
-      }
+      const url = constApiGestionPersonal.CambiarProcesoSeleccionPostulanteAlterno;
+      this.datosPostulanteService.cambiarProceso(JsonData, url);
       this.habilitarBTN();
 
       console.log(JsonData);
