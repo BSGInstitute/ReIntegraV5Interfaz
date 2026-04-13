@@ -9,6 +9,8 @@ export const constApiComercial = {
 
   ReporteActividadesRealizadasTresCxGenerarReporte:
     '/ReporteActividadesRealizadasTresCx/GenerarReporte',
+  ReporteActividadesRealizadasTresCxGenerarReporteChatAsistenteVirtual:
+    '/ReporteActividadesRealizadasTresCx/GenerarReporteChatAsistenteVirtual',
   ReporteContactabilidadTresCxGenerarReportev2:
     '/ReporteContactabilidadTresCx/GenerarReportev2',
   ReporteContactabilidadTresCxGenerarReportev2Alterno:
