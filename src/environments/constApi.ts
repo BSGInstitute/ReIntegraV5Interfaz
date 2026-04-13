@@ -3991,6 +3991,8 @@ export const constApiPlanificacion = {
     '/GrabacionesClasesOnline/ModificarDisponibilidadProgramaDefecto',
   ObtenerDetalleResumenGrabacionSesion:
     '/GrabacionesClasesOnline/ObtenerDetalleResumenGrabacionSesion',
+  CalcularFechaFinalSesion:
+    '/GrabacionesClasesOnline/CalcularFechaFinalSesion',
 
   ObtenerResumenGrabacionOnline:
     '/ResumenGrabacionOnline/ObtenerResumenGrabacionOnline',
