@@ -81,6 +81,7 @@ import { PresentacionProgramaComponent } from './gestion-comercial/agenda/modal-
 import { FasesEvaluacionComponent } from './configuracion/fases-evaluacion/fases-evaluacion.component';
 import { AsesorMarcadorComponent } from './gestion-comercial/asesor-marcador/asesor-marcador.component';
 import { ReporteTiemposMuertosMarcadorComponent } from './control-operativo/reporte-tiempos-muertos-marcador/reporte-tiempos-muertos-marcador.component';
+import { ReporteChatAsistenteVirtualComponent } from './control-operativo/reporte-chat-asistente-virtual/reporte-chat-asistente-virtual.component';
 
 
 
@@ -157,6 +158,7 @@ import { ReporteTiemposMuertosMarcadorComponent } from './control-operativo/repo
     FasesEvaluacionComponent,
     AsesorMarcadorComponent,
     ReporteTiemposMuertosMarcadorComponent,
+    ReporteChatAsistenteVirtualComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

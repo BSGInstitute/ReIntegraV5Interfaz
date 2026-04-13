@@ -31,6 +31,7 @@ import { ReporteLlamadaEntranteComponent } from './control-operativo/reporte-lla
 import { FasesEvaluacionComponent } from './configuracion/fases-evaluacion/fases-evaluacion.component';
 import { AsesorMarcadorComponent } from './gestion-comercial/asesor-marcador/asesor-marcador.component';
 import { ReporteTiemposMuertosMarcadorComponent } from './control-operativo/reporte-tiempos-muertos-marcador/reporte-tiempos-muertos-marcador.component';
+import { ReporteChatAsistenteVirtualComponent } from './control-operativo/reporte-chat-asistente-virtual/reporte-chat-asistente-virtual.component';
 
 const routes: Routes = [
   { 
@@ -70,6 +71,7 @@ const routes: Routes = [
       { path: 'FasesEvaluacion', component: FasesEvaluacionComponent },
       { path: 'AsesorMarcador', component: AsesorMarcadorComponent },
       { path: 'ReporteTiemposMuertosMarcador', component: ReporteTiemposMuertosMarcadorComponent },
+      { path: 'ReporteChatAsistenteVirtual', component: ReporteChatAsistenteVirtualComponent },
       { path: '**', redirectTo: '' },
     ],
   },

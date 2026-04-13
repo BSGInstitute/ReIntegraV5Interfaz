@@ -1,0 +1,206 @@
+<div class="card border-primary mb-3">
+  <div class="card-header bg-color-material pb-0">
+    <h2 class="mb-2 text-white text-center">
+      (R) Reporte Chat Asistente Virtual
+    </h2>
+  </div>
+  <div class="card-body p-4">
+    <form
+      [formGroup]="formFiltro"
+      class="k-form k-form-horizontal"
+      orientation="horizontal"
+    >
+      <div class="row">
+        <div class="col-sm-12 col-md">
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label class="k-label pt-0 d-flex align-items-start text-start">
+                  Asesores
+                </label>
+                <kendo-multiselect
+                  #asesores
+                  formControlName="asesores"
+                  [data]="dataAsesoresFiltro"
+                  placeholder="<Todos>"
+                  [kendoDropDownFilter]="filterSettings"
+                  textField="nombres"
+                  [valuePrimitive]="true"
+                  [virtual]="true"
+                  valueField="id"
+                >
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label class="k-label pt-0 d-flex align-items-start text-start">
+                  Estado del<br />
+                  Personal
+                </label>
+                <kendo-dropdownlist
+                  [data]="estadoAsesores"
+                  [defaultItem]="{ id: null, nombre: 'Todo el personal' }"
+                  (valueChange)="filterEstadosAsesores($event)"
+                  textField="nombre"
+                  [valuePrimitive]="true"
+                  valueField="id"
+                  formControlName="estadoPersonal"
+                >
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md">
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="fechaInicio"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Fecha Inicio
+                </label>
+                <kendo-datepicker
+                  #fechaInicio
+                  formControlName="fechaInicio"
+                  [incompleteDateValidation]="true"
+                  format="yyyy-MM-dd"
+                  [max]="fechaActual"
+                ></kendo-datepicker>
+                <kendo-formerror>Fecha Inicio no valido</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <kendo-formfield orientation="horizontal">
+                <label
+                  [for]="fechaFin"
+                  class="k-label pt-0 d-flex align-items-start text-start"
+                >
+                  Fecha Fin
+                </label>
+                <kendo-datepicker
+                  #fechaFin
+                  formControlName="fechaFin"
+                  format="yyyy-MM-dd"
+                  [incompleteDateValidation]="true"
+                  [min]="fechaInicio.value"
+                ></kendo-datepicker>
+                <kendo-formerror>Fecha Fin no valido</kendo-formerror>
+              </kendo-formfield>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-md-1">
+        <button
+          kendoButton
+          class="send-button"
+          icon="search"
+          style="height: 35px"
+          themeColor="success"
+          [disabled]="buttonDisable"
+          (click)="generarReporte()"
+        >
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<kendo-grid
+  [data]="gridChatAsistente.data"
+  [loading]="gridChatAsistente.loading"
+  [pageable]="true"
+  [pageSize]="20"
+  [sortable]="true"
+  [filterable]="'menu'"
+  [resizable]="true"
+>
+  <kendo-grid-column
+    field="idHiloChat"
+    title="ID Hilo"
+    [width]="100"
+    filter="numeric"
+  ></kendo-grid-column>
+  <kendo-grid-column
+    field="personal"
+    title="Personal"
+    [width]="250"
+    filter="text"
+  ></kendo-grid-column>
+  <kendo-grid-column
+    field="fechaChat"
+    title="Fecha Chat"
+    [width]="180"
+    filter="date"
+  >
+    <ng-template kendoGridCellTemplate let-dataItem>
+      {{ dataItem.fechaChat | date : 'yyyy-MM-dd HH:mm:ss' }}
+    </ng-template>
+  </kendo-grid-column>
+  <kendo-grid-column title="Acciones" [width]="120">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <button
+        kendoButton
+        themeColor="info"
+        icon="comment"
+        (click)="abrirChat(dataItem, modalChat)"
+      >
+        Ver Chat
+      </button>
+    </ng-template>
+  </kendo-grid-column>
+</kendo-grid>
+
+<ng-template #modalChat let-modal>
+  <div class="modal-header bg-color-material">
+    <h5 class="modal-title text-white">
+      Chat - {{ personalSeleccionado }}
+    </h5>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      (click)="cerrarModal()"
+    ></button>
+  </div>
+  <div class="modal-body chat-container">
+    <div
+      *ngFor="let msg of mensajesSeleccionados"
+      class="chat-message"
+      [ngClass]="{
+        'chat-left': msg.usuario === 'Asistente',
+        'chat-right': msg.usuario !== 'Asistente'
+      }"
+    >
+      <div class="chat-bubble">
+        <div class="chat-usuario">
+          <strong>{{ msg.usuario }}</strong>
+        </div>
+        <div class="chat-texto">{{ msg.mensaje }}</div>
+        <div class="chat-fecha">
+          {{ msg.fechaMensaje | date : 'yyyy-MM-dd HH:mm:ss' }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      kendoButton
+      themeColor="base"
+      (click)="cerrarModal()"
+    >
+      Cerrar
+    </button>
+  </div>
+</ng-template>
