@@ -3578,6 +3578,7 @@ export const constApiPlanificacion = {
   ProveedorPEspecificoObtenerPorIdProveedor: '/Proveedor/ObtenerProveedorPEspecificoPorIdProveedor',
   ProveedorPEspecificoInsertar: '/Proveedor/InsertarProveedorPEspecifico',
   ProveedorPEspecificoEliminar: '/Proveedor/EliminarProveedorPEspecifico',
+  ProveedorObtenerProveedoresPorPEspecifico: '/Proveedor/ObtenerProveedoresPorPEspecifico', // GET {idPEspecifico}?filtroNombre=
   PEspecificoObtener: '/PEspecifico/Obtener',
   PEspecificoObtenerCatalogo: '/PEspecifico/ObtenerCatalogo',
   //CriteriosEvaluacionProgramasEspecificos

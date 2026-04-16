@@ -66,6 +66,10 @@ interface FormInsertarSesion {
   grupo?:number;
 }
 
+interface IProveedorConPEspecificos extends IComboBase1 {
+  idPEspecificos: number[];
+}
+
 @Component({
   selector: 'app-modal-content-cronograma',
   templateUrl: './modal-content-cronograma.component.html',
@@ -143,6 +147,7 @@ export class ModalContentCronogramaComponent implements OnInit {
     operator: 'contains',
   };
   sourcePespecificos: IComboBase1[] = [];
+  sourceProveedoresCurso: IProveedorConPEspecificos[] = [];
   listaEstadoCurso: EstadoCurso[] = [];
   listaObservacionPorEstado: ObservacionPorEstado[] = [];
   observacionesFiltradas: ObservacionDetalle[] = [];
@@ -455,6 +460,7 @@ export class ModalContentCronogramaComponent implements OnInit {
       }
     }
     this.obtenerNumeroGrupos();
+    this.cargarProveedoresPorPEspecifico();
     this.cargarCronogramaPespecifico(this.cronogramaGrupo, false);
     this.cargarConfiguracionWebinar(this.configuracionWebinar);
     this.gridFurCronograma.data = this.programaEspecificoFUR;
@@ -467,10 +473,72 @@ export class ModalContentCronogramaComponent implements OnInit {
     }
     this.btnWebinarModificarCronograma = false;
     this.obtenerNumeroGrupos();
+    this.cargarProveedoresPorPEspecifico();
     this.cargarCronogramaPespecifico(this.cronogramaGrupo, false);
     this.cargarConfiguracionWebinar(this.configuracionWebinar);
     this.gridFurCronograma.data = this.programaEspecificoFUR;
   }
+  /**
+   * Carga los proveedores asociados al PEspecifico actual.
+   * Por defecto muestra solo el proveedor asignado al programa.
+   */
+  private cargarProveedoresPorPEspecifico(filtroNombre?: string) {
+    this.pEspecificoService
+      .obtenerProveedoresPorPEspecifico$(this.dataItemPespecificoTemp.id, filtroNombre)
+      .subscribe({
+        next: (resp: HttpResponse<IComboBase1[]>) => {
+          if (resp.body && resp.body.length > 0) {
+            // Agrupar proveedores por idProveedor y mantener todos sus IdPEspecifico
+            const proveedoresAgrupados = new Map<number, IProveedorConPEspecificos>();
+            resp.body.forEach((p: any) => {
+              if (proveedoresAgrupados.has(p.idProveedor)) {
+                // Si ya existe, agregar el idPEspecifico al array
+                const proveedor = proveedoresAgrupados.get(p.idProveedor);
+                if (p.idPEspecifico && !proveedor.idPEspecificos.includes(p.idPEspecifico)) {
+                  proveedor.idPEspecificos.push(p.idPEspecifico);
+                }
+              } else {
+                // Si no existe, crear nuevo registro con array de idPEspecificos
+                proveedoresAgrupados.set(p.idProveedor, {
+                  id: p.idProveedor,
+                  nombre: p.nombre,
+                  idPEspecificos: p.idPEspecifico ? [p.idPEspecifico] : []
+                });
+              }
+            });
+            this.sourceProveedoresCurso = Array.from(proveedoresAgrupados.values());
+          } else {
+            // Si no hay proveedores asociados, usar los proveedores generales como fallback
+            this.sourceProveedoresCurso = (this.combosModulo.proveedorCurso || []).map(p => ({
+              ...p,
+              idPEspecificos: []
+            }));
+          }
+        },
+        error: (error) => {
+          console.error('Error al cargar proveedores por PEspecifico:', error);
+          // En caso de error, usar los proveedores generales como fallback
+          this.sourceProveedoresCurso = (this.combosModulo.proveedorCurso || []).map(p => ({
+            ...p,
+            idPEspecificos: []
+          }));
+        },
+      });
+  }
+
+  /**
+   * Maneja el evento de filtro del dropdown de proveedores.
+   * Cuando el usuario escribe, busca proveedores que coincidan con el texto.
+   */
+  onProveedorFilterChange(filtro: string) {
+    if (filtro && filtro.length >= 2) {
+      this.cargarProveedoresPorPEspecifico(filtro);
+    } else if (!filtro || filtro.length === 0) {
+      // Si se borra el filtro, recargar solo los proveedores asignados
+      this.cargarProveedoresPorPEspecifico();
+    }
+  }
+
   private configurarGridCronograma() {
     this.gridCronograma.rowCallback = (context: RowClassArgs) => {
       let dataItem = context.dataItem as CronogramaGrupo;
@@ -1629,6 +1697,25 @@ export class ModalContentCronogramaComponent implements OnInit {
   }
   obtenerNombreCiudad(idCiudad: number) {
     return this.pEspecificoService.obtenerNombreCiudad(idCiudad);
+  }
+  /**
+   * Obtiene el nombre del proveedor.
+   * Busca primero en sourceProveedoresCurso, luego en combosModulo.proveedorCurso.
+   */
+  obtenerNombreProveedor(idProveedor: number): string {
+    if (idProveedor == null) return null;
+
+    // Buscar en los proveedores del PEspecifico actual
+    const proveedorPEspecifico = this.sourceProveedoresCurso.find(p => p.id === idProveedor);
+    if (proveedorPEspecifico) return proveedorPEspecifico.nombre;
+
+    // Si no se encuentra, buscar en los proveedores generales
+    if (this.combosModulo?.proveedorCurso) {
+      const proveedorGeneral = this.combosModulo.proveedorCurso.find(p => p.id === idProveedor);
+      if (proveedorGeneral) return proveedorGeneral.nombre;
+    }
+
+    return null;
   }
   guardarNuevaSesion() {
     let datosForm = this.formInsertarSesion.getRawValue() as FormInsertarSesion;
