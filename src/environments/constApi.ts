@@ -4126,7 +4126,20 @@ export const constApiPlanificacion = {
   
   
   PEspecificoSesionActualizarEstadoCurso: '/PEspecificoSesionEstado/ActualizarEstadoCurso',
-  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion'
+  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion',
+
+  // ReporteDashboard - Dashboard de Programas de Capacitacion
+  ReporteDashboardObtenerResumen: '/ReporteDashboard/ObtenerResumen',
+  ReporteDashboardObtenerResumenPorEstado: '/ReporteDashboard/ObtenerResumenPorEstado',
+  ReporteDashboardObtenerResumenPorModalidad: '/ReporteDashboard/ObtenerResumenPorModalidad',
+  ReporteDashboardObtenerProgramasPorEstado: '/ReporteDashboard/ObtenerProgramasPorEstado',
+  ReporteDashboardObtenerDetalleCursos: '/ReporteDashboard/ObtenerDetalleCursos',
+  ReporteDashboardObtenerDocentesAsignados: '/ReporteDashboard/ObtenerDocentesAsignados',
+  ReporteDashboardObtenerGraficoPorMes: '/ReporteDashboard/ObtenerGraficoPorMes',
+  ReporteDashboardObtenerFiltros: '/ReporteDashboard/ObtenerFiltros',
+  ReporteDashboardObtenerDatosCompletos: '/ReporteDashboard/ObtenerDatosCompletos',
+  ReporteDashboardObtenerResumenSemanal: '/ReporteDashboard/ObtenerResumenSemanal',
+  ReporteDashboardObtenerSesionesCalendario: '/ReporteDashboard/ObtenerSesionesCalendario'
 
 };
 
