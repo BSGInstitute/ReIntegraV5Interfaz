@@ -32,6 +32,7 @@ import { FasesEvaluacionComponent } from './configuracion/fases-evaluacion/fases
 import { AsesorMarcadorComponent } from './gestion-comercial/asesor-marcador/asesor-marcador.component';
 import { ReporteTiemposMuertosMarcadorComponent } from './control-operativo/reporte-tiempos-muertos-marcador/reporte-tiempos-muertos-marcador.component';
 import { ReporteChatAsistenteVirtualComponent } from './control-operativo/reporte-chat-asistente-virtual/reporte-chat-asistente-virtual.component';
+import { AgendaV6Component } from './agenda-v6/agenda-v6.component';
 
 const routes: Routes = [
   { 
@@ -43,6 +44,7 @@ const routes: Routes = [
       { path: 'Agenda3cx', component: Agenda3cxComponent },
       { path: 'AgendaWhatsApp', component: AgendaWhatsappCorreosComponent },
       { path: 'AgendaRingover', component: AgendaRingoverComponent },
+      { path: 'AgendaV6', component: AgendaV6Component },
       { path: 'CreacionOportunidad', component: CreacionOportunidadComponent },
       { path: 'RedChats', component: RedChatComponent },
       //Configuraciones
