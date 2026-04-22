@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { constApiPlanificacion, constApiGestionPersonal } from '@environments/constApi';
+import { constApiPlanificacion, constApiGestionPersonal, constApiComercial } from '@environments/constApi';
 import {
   NgbActiveModal,
   NgbModal,
@@ -96,6 +96,54 @@ export class ModalContentCronogramaComponent implements OnInit {
 
   configurarWebinarOriginal: ConfigurarWebinar[] = [];
   aplicarConfigurarWebinar: boolean = false;
+  formControlAnoCosto = new FormControl(null);
+  formControlProgramaWebinar = new FormControl(null);
+  anosDisponibles: { id: string; nombre: string }[] = [];
+  programasWebinarFiltrados: IComboBase1[] = [];
+
+  loadingProgramasRelacionados: boolean = false;
+  programasRelacionadosCC: IComboBase1[] = [];
+
+  private construirValorBusquedaCC(): string {
+    const nombre = this.dataItemPespecificoTemp?.nombre ?? '';
+    const ano = this.formControlAnoCosto.value as string;
+    const sinWebinar = nombre
+      .replace(/^webinar\s*[-–—]?\s*/i, '')
+      .replace(/^grupo\s*\d+\s*[-–—]?\s*/i, '')
+      .trim();
+    const yearMatch = sinWebinar.match(/\d{4}/);
+    const base = yearMatch
+      ? sinWebinar.substring(0, sinWebinar.indexOf(yearMatch[0])).trim()
+      : sinWebinar.trim();
+    return ano ? `${base} ${ano}` : base;
+  }
+
+  cargarProgramasRelacionadosPorCC(): void {
+    this.loadingProgramasRelacionados = true;
+    this.programasRelacionadosCC = [];
+    setTimeout(() => {
+      const valor = this.construirValorBusquedaCC();
+      if (!valor) {
+        this.loadingProgramasRelacionados = false;
+        return;
+      }
+      const valorLower = valor.toLowerCase();
+      const todos = this.combosModulo?.programaEspecificoWebinar ?? [];
+      this.programasRelacionadosCC = todos
+        .filter(p => {
+          const nombreLower = p.nombre?.toLowerCase() ?? '';
+          return nombreLower.includes(valorLower) && !nombreLower.includes('webinar');
+        })
+        .map(p => ({ id: p.id, nombre: p.nombre }));
+      this.loadingProgramasRelacionados = false;
+    }, 400);
+  }
+
+  get nombreProgramaWebinarSeleccionado(): string {
+    const id = this.formControlProgramaWebinar.value;
+    if (!id) return '';
+    return this.combosModulo?.programaEspecificoWebinar?.find(p => p.id === id)?.nombre ?? '';
+  }
   sourceOperadorWebinar = [
     { nombre: 'Igual', id: 2 },
     { nombre: 'Menor Igual', id: 3 },
@@ -196,6 +244,17 @@ export class ModalContentCronogramaComponent implements OnInit {
   initSubscribeObservables() {
     this.pEspecificoService.combosModulo$.subscribe((resp) => {
       this.combosModulo = resp;
+      const years = new Set<string>();
+      resp?.programaEspecificoWebinar?.forEach(p => {
+        const match = p.nombre?.match(/\d{4}/);
+        if (match) years.add(match[0]);
+      });
+      this.anosDisponibles = Array.from(years).sort().map(y => ({ id: y, nombre: y }));
+      this.programasWebinarFiltrados = (resp?.programaEspecificoWebinar ?? []).map(p => ({ id: p.id, nombre: p.nombre }));
+    });
+    this.formControlAnoCosto.valueChanges.subscribe(() => {
+      this.programasCheckboxSeleccionados = new Set();
+      this.cargarProgramasRelacionadosPorCC();
     });
     console.log("Combo Modulo", this.combosModulo);
     this.sourceCiclo = this.combosModulo.ciclo;
@@ -643,6 +702,11 @@ export class ModalContentCronogramaComponent implements OnInit {
     });
     this.gridConfiguracionWebinar.addEvent$.subscribe((resp) => {
       this.indexTemp = resp.rowIndex;
+      if (this.formControlProgramaWebinar.value) {
+        this.gridConfiguracionWebinar.formGroup.patchValue({
+          idPespecifico: this.formControlProgramaWebinar.value,
+        });
+      }
     });
     this.gridConfiguracionWebinar.saveEvent$.subscribe({
       next: (resp) => {
@@ -670,6 +734,50 @@ export class ModalContentCronogramaComponent implements OnInit {
     });
   }
   disableGuardarCambios: boolean = true;
+  programasCheckboxSeleccionados = new Set<number>();
+
+  toggleProgramaCheckbox(id: number): void {
+    if (this.programasCheckboxSeleccionados.has(id)) {
+      this.programasCheckboxSeleccionados.delete(id);
+    } else {
+      this.programasCheckboxSeleccionados.add(id);
+    }
+    this.programasCheckboxSeleccionados = new Set(this.programasCheckboxSeleccionados);
+  }
+
+  agregarProgramasSeleccionadosAlGrid(): void {
+    const existentes = new Set(
+      (this.gridConfiguracionWebinar.data as ConfigurarWebinar[]).map(x => x.idPespecifico)
+    );
+    let agregados = 0;
+    this.programasCheckboxSeleccionados.forEach(idPespecifico => {
+      if (idPespecifico && !existentes.has(idPespecifico)) {
+        const nuevaFila: ConfigurarWebinar = {
+          id: 0,
+          idPespecifico,
+          idPespecificoPadre: this.dataItemPespecificoTemp.id,
+          modalidad: '',
+          codigo: '',
+          idOperadorComparacionAvance: 10,
+          valorAvance: null,
+          valorAvanceOpc: null,
+          idOperadorComparacionPromedio: null,
+          valorPromedio: null,
+          valorPromedioOpc: null,
+        };
+        (this.gridConfiguracionWebinar.data as ConfigurarWebinar[]).push(nuevaFila);
+        agregados++;
+      }
+    });
+    if (agregados > 0) {
+      this.gridConfiguracionWebinar.data = [...(this.gridConfiguracionWebinar.data as ConfigurarWebinar[])];
+      this.disableGuardarCambios = false;
+      this.programasCheckboxSeleccionados = new Set();
+    } else {
+      this._alertaService.notificationWarning('Los programas seleccionados ya están registrados en la tabla');
+    }
+  }
+
   configurarGridDefinirFrecuencia() {
     this.gridDefinirFrecuencia.formGroup = this._formBuilder.group({
       idDiaSemana: [null, Validators.required],
@@ -933,8 +1041,8 @@ export class ModalContentCronogramaComponent implements OnInit {
       idOperadorComparacionAvance: datosForm.idOperadorComparacionAvance,
       valorAvance: datosForm.valorAvance,
       valorAvanceOpc: datosForm.valorAvanceOpc,
-      idOperadorComparacionPromedio: datosForm.idOperadorComparacionPromedio,
-      valorPromedio: datosForm.valorPromedio,
+      idOperadorComparacionPromedio: datosForm.idOperadorComparacionPromedio ?? 1,
+      valorPromedio: datosForm.valorPromedio ?? 0,
       valorPromedioOpc: datosForm.valorPromedioOpc,
       idPespecificoPadre: this.dataItemPespecificoTemp.id,
     };
