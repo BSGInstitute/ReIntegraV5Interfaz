@@ -4139,7 +4139,18 @@ export const constApiPlanificacion = {
   ReporteDashboardObtenerFiltros: '/ReporteDashboard/ObtenerFiltros',
   ReporteDashboardObtenerDatosCompletos: '/ReporteDashboard/ObtenerDatosCompletos',
   ReporteDashboardObtenerResumenSemanal: '/ReporteDashboard/ObtenerResumenSemanal',
-  ReporteDashboardObtenerSesionesCalendario: '/ReporteDashboard/ObtenerSesionesCalendario'
+  ReporteDashboardObtenerSesionesCalendario: '/ReporteDashboard/ObtenerSesionesCalendario',
+  // Estados de Sesion
+  ReporteDashboardObtenerResumenPorEstadoSesion: '/ReporteDashboard/ObtenerResumenPorEstadoSesion',
+  ReporteDashboardObtenerSesionesPorEstado: '/ReporteDashboard/ObtenerSesionesPorEstado',
+  ReporteDashboardObtenerEvolucionEstadoSesion: '/ReporteDashboard/ObtenerEvolucionEstadoSesion',
+  ReporteDashboardObtenerKPIsEstadoSesion: '/ReporteDashboard/ObtenerKPIsEstadoSesion',
+
+  // Nuevas funciones ampliadas
+  ReporteDashboardObtenerCambiosEstado: '/ReporteDashboard/ObtenerCambiosEstado',
+  ReporteDashboardObtenerEstadosPorDia: '/ReporteDashboard/ObtenerEstadosPorDia',
+  ReporteDashboardObtenerDetalleCursosV3: '/ReporteDashboard/ObtenerDetalleCursosV3',
+  ReporteDashboardObtenerSeguimientoClases: '/ReporteDashboard/ObtenerSeguimientoClases'
 
 };
 

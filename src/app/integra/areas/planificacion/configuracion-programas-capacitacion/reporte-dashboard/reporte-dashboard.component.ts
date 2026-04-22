@@ -18,7 +18,15 @@ import {
   IReporteDashboardCompleto,
   IReporteDashboardFiltroRequest,
   IReporteDashboardProgramaEspecificoItem,
-  IChartSeriesItem
+  IChartSeriesItem,
+  IReporteDashboardEstadoSesion,
+  IReporteDashboardSesionDetalle,
+  IReporteDashboardKPIsEstadoSesion,
+  IReporteDashboardCambioEstado,
+  IReporteDashboardEstadoPorDia,
+  IReporteDashboardCursoV3,
+  IReporteDashboardSeguimientoClase,
+  IReporteDashboardSeguimientoFiltroRequest
 } from '@planificacion/models/interfaces/reporte-dashboard';
 import { AlertaService } from '@shared/services/alerta.service';
 import { ExcelExportComponent } from '@progress/kendo-angular-excel-export';
@@ -116,6 +124,84 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     'Reprogramadas': '#17a2b8'
   };
 
+  // Estados de Sesion
+  loadingEstadosSesion: boolean = false;
+  datosEstadoSesion: IChartSeriesItem[] = [];
+  kpisEstadoSesion: IReporteDashboardKPIsEstadoSesion = {
+    totalSesiones: 0,
+    sesionesEjecutadas: 0,
+    sesionesCanceladas: 0,
+    sesionesPorReprogramar: 0,
+    sesionesAdicionales: 0,
+    sesionesPorEjecutar: 0,
+    sesionesNoAplica: 0,
+    sesionesRecuperadas: 0,
+    porcentajeEjecutadas: 0,
+    porcentajeCanceladas: 0
+  };
+  sesionesDetalle: IReporteDashboardSesionDetalle[] = [];
+  loadingSesionesDetalle: boolean = false;
+  estadoSesionSeleccionado: number | null = null;
+
+  // Colores para estados de sesion
+  coloresEstadoSesion: { [key: string]: string } = {
+    'Ejecutada': '#28a745',
+    'Cancelada': '#dc3545',
+    'Por-Reprogramar': '#ffc107',
+    'Adicional': '#17a2b8',
+    'Por Ejecutar': '#007bff',
+    'No Aplica': '#6c757d',
+    'Recuperada': '#6f42c1'
+  };
+
+  // ── CAMBIOS DE ESTADO (log) ──────────────────────────────────────────────
+  loadingCambiosEstado: boolean = false;
+  datosCambiosEstado: IReporteDashboardCambioEstado[] = [];
+  categoriasCambiosEstado: string[] = [];
+  seriesCambiosEstado: { name: string; data: number[]; color: string }[] = [];
+  ultimasSemanasCambios: number = 8;
+
+  // ── ESTADOS POR DIA (programas hijo) ─────────────────────────────────────
+  loadingEstadosPorDia: boolean = false;
+  datosEstadosPorDia: IReporteDashboardEstadoPorDia[] = [];
+  categoriasEstadosPorDia: string[] = [];
+  seriesEstadosPorDia: { name: string; data: number[]; color?: string }[] = [];
+  agrupacionEstadosPorDia: 'DIA' | 'SEMANA' = 'DIA';
+  formFiltroEstadosPorDia: FormGroup;
+
+  // ── DETALLE CURSOS V3 (Inhouse/Presencial/Online) ────────────────────────
+  loadingCursosV3: boolean = false;
+  cursosV3: IReporteDashboardCursoV3[] = [];
+  stateCursosV3: State = { skip: 0, take: 10, sort: [{ field: 'fecha', dir: 'desc' }] };
+  get gridDataCursosV3(): any { return process(this.cursosV3, this.stateCursosV3); }
+  formFiltroCursosV3: FormGroup;
+  readonly MODALIDADES_CLASIFICADAS = ['Inhouse', 'Presencial', 'Online'];
+
+  // ── SEGUIMIENTO DE CLASES ────────────────────────────────────────────────
+  loadingSeguimiento: boolean = false;
+  datosSeguimiento: IReporteDashboardSeguimientoClase[] = [];
+  categoriasSeguimiento: string[] = [];
+  seriesSeguimiento: { name: string; data: number[]; color: string }[] = [];
+  formFiltroSeguimiento: FormGroup;
+
+  readonly coloresSeguimiento: { [key: string]: string } = {
+    'Programadas': '#007bff',
+    'Ejecutadas':  '#28a745',
+    'Canceladas':  '#dc3545',
+    'Reprogramadas': '#ffc107'
+  };
+
+  // Estado de grilla de sesiones
+  stateSesiones: State = {
+    skip: 0,
+    take: 10,
+    sort: [{ field: 'fecha', dir: 'desc' }]
+  };
+
+  get gridDataSesiones(): any {
+    return process(this.sesionesDetalle, this.stateSesiones);
+  }
+
   // Configuracion de grillas
   pageSize: number = 10;
   pageSizeDocentes: number = 5;
@@ -178,11 +264,40 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       idsProgramaEspecificoPadre: [[]],
       centrosCostoPadre: [[]]
     });
+
+    this.formFiltroEstadosPorDia = this._formBuilder.group({
+      idsPEspecificoHijo: [null],
+      estados: [null],
+      fechaInicio: [null],
+      fechaFin: [null],
+      ultimasSemanas: [4]
+    });
+
+    this.formFiltroCursosV3 = this._formBuilder.group({
+      anio: [new Date().getFullYear()],
+      modalidadClasificada: [null],
+      semanaInicio: [null],
+      semanaFin: [null],
+      idProgramaPadre: [null]
+    });
+
+    this.formFiltroSeguimiento = this._formBuilder.group({
+      estadoCurso: [null],
+      fechaInicio: [null],
+      fechaFin: [null],
+      semanaInicio: [null],
+      semanaFin: [null],
+      anio: [null]
+    });
   }
 
   ngOnInit(): void {
     this.cargarFiltros();
     this.cargarDatosDashboard();
+    this.cargarCambiosEstado();
+    this.cargarEstadosPorDia();
+    this.cargarCursosV3();
+    this.cargarSeguimientoClases();
   }
 
   ngOnDestroy(): void {
@@ -308,6 +423,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         this.cargarProgramas();
         this.cargarDocentes();
         this.cargarResumenSemanal();
+        this.cargarEstadosSesion();
       },
       error: (error) => {
         this.loading = false;
@@ -365,6 +481,114 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this._reporteDashboardService.handleError(error);
         }
       });
+  }
+
+  /**
+   * Carga los datos de estados de sesion
+   */
+  cargarEstadosSesion(): void {
+    this.loadingEstadosSesion = true;
+    const anio = this.formFiltro.get('anio')?.value;
+    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+
+    forkJoin({
+      resumen: this._reporteDashboardService.obtenerResumenPorEstadoSesion$(anio, idProgramaEspecificoPadre, centroCostoPadre),
+      kpis: this._reporteDashboardService.obtenerKPIsEstadoSesion$(anio, idProgramaEspecificoPadre, centroCostoPadre)
+    })
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (responses) => {
+        // Grafico de estados de sesion
+        if (responses.resumen.body && responses.resumen.body.length > 0) {
+          this.datosEstadoSesion = responses.resumen.body.map(item => ({
+            category: item.estadoSesion || 'Sin Estado',
+            value: item.cantidadSesiones,
+            color: this.coloresEstadoSesion[item.estadoSesion || ''] || '#6c757d'
+          }));
+        } else {
+          this.datosEstadoSesion = [];
+        }
+
+        // KPIs de estados de sesion
+        if (responses.kpis.body) {
+          this.kpisEstadoSesion = responses.kpis.body;
+        }
+
+        this.loadingEstadosSesion = false;
+      },
+      error: (error) => {
+        this.loadingEstadosSesion = false;
+        this._reporteDashboardService.handleError(error);
+      }
+    });
+  }
+
+  /**
+   * Carga el detalle de sesiones filtradas por estado
+   */
+  cargarSesionesDetalle(idEstadoSesion?: number): void {
+    this.loadingSesionesDetalle = true;
+    this.estadoSesionSeleccionado = idEstadoSesion || null;
+    const anio = this.formFiltro.get('anio')?.value;
+    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+
+    this._reporteDashboardService.obtenerSesionesPorEstado$(anio, idEstadoSesion, idProgramaEspecificoPadre, centroCostoPadre)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: HttpResponse<IReporteDashboardSesionDetalle[]>) => {
+          this.sesionesDetalle = response.body || [];
+          this.loadingSesionesDetalle = false;
+        },
+        error: (error) => {
+          this.loadingSesionesDetalle = false;
+          this._reporteDashboardService.handleError(error);
+        }
+      });
+  }
+
+  /**
+   * Maneja el click en un segmento del grafico de estados de sesion
+   */
+  onEstadoSesionClick(event: any): void {
+    if (event?.dataItem?.category) {
+      // Buscar el idEstadoSesion basado en el nombre
+      const estadoNombres: { [key: string]: number } = {
+        'Ejecutada': 1,
+        'Cancelada': 2,
+        'Por-Reprogramar': 3,
+        'Adicional': 4,
+        'Por Ejecutar': 5,
+        'No Aplica': 6,
+        'Recuperada': 7
+      };
+      const idEstado = estadoNombres[event.dataItem.category];
+      if (idEstado) {
+        this.cargarSesionesDetalle(idEstado);
+      }
+    }
+  }
+
+  /**
+   * Maneja cambio de estado en grilla de sesiones
+   */
+  onStateChangeSesiones(state: State): void {
+    this.stateSesiones = state;
+  }
+
+  /**
+   * Obtiene la clase CSS para el badge de estado de sesion
+   */
+  getEstadoSesionBadgeClass(estado: string): string {
+    const clases: { [key: string]: string } = {
+      'Ejecutada': 'bg-success',
+      'Cancelada': 'bg-danger',
+      'Por-Reprogramar': 'bg-warning text-dark',
+      'Adicional': 'bg-info',
+      'Por Ejecutar': 'bg-primary',
+      'No Aplica': 'bg-secondary',
+      'Recuperada': 'bg-purple'
+    };
+    return clases[estado] || 'bg-secondary';
   }
 
   /**
@@ -784,5 +1008,226 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this._reporteDashboardService.handleError(error);
         }
       });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CAMBIOS DE ESTADO (log)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  cargarCambiosEstado(): void {
+    this.loadingCambiosEstado = true;
+    this._reporteDashboardService.obtenerCambiosEstado$(this.ultimasSemanasCambios)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: HttpResponse<IReporteDashboardCambioEstado[]>) => {
+          this.datosCambiosEstado = response.body || [];
+          this.procesarDatosCambiosEstado(this.datosCambiosEstado);
+          this.loadingCambiosEstado = false;
+        },
+        error: (error) => {
+          this.loadingCambiosEstado = false;
+          this._reporteDashboardService.handleError(error);
+        }
+      });
+  }
+
+  procesarDatosCambiosEstado(datos: IReporteDashboardCambioEstado[]): void {
+    this.categoriasCambiosEstado = datos.map(d =>
+      d.esSemanaActual ? `S${d.numeroSemana} (actual)` : `S${d.numeroSemana}`
+    );
+    this.seriesCambiosEstado = [
+      { name: 'Lanzamiento → Ejecución', data: datos.map(d => d.lanzamientoAEjecucion), color: '#28a745' },
+      { name: 'Ejecución → Concluido',   data: datos.map(d => d.ejecucionAConcluido),   color: '#007bff' },
+      { name: '→ Cancelado',             data: datos.map(d => d.aCancelado),             color: '#dc3545' }
+    ];
+  }
+
+  cambiarUltimasSemanasCambios(semanas: number): void {
+    this.ultimasSemanasCambios = semanas;
+    this.cargarCambiosEstado();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ESTADOS POR DIA (programas hijo)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  cargarEstadosPorDia(): void {
+    this.loadingEstadosPorDia = true;
+    const { idsPEspecificoHijo, estados, fechaInicio, fechaFin, ultimasSemanas } = this.formFiltroEstadosPorDia.value;
+    const fechaInicioStr = fechaInicio ? new Date(fechaInicio).toISOString().split('T')[0] : undefined;
+    const fechaFinStr = fechaFin ? new Date(fechaFin).toISOString().split('T')[0] : undefined;
+
+    this._reporteDashboardService.obtenerEstadosPorDia$(
+      idsPEspecificoHijo || undefined,
+      estados ? estados.join(',') : undefined,
+      this.agrupacionEstadosPorDia,
+      fechaInicioStr,
+      fechaFinStr,
+      ultimasSemanas || undefined
+    )
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response: HttpResponse<IReporteDashboardEstadoPorDia[]>) => {
+        this.datosEstadosPorDia = response.body || [];
+        this.procesarDatosEstadosPorDia(this.datosEstadosPorDia);
+        this.loadingEstadosPorDia = false;
+      },
+      error: (error) => {
+        this.loadingEstadosPorDia = false;
+        this._reporteDashboardService.handleError(error);
+      }
+    });
+  }
+
+  procesarDatosEstadosPorDia(datos: IReporteDashboardEstadoPorDia[]): void {
+    // Usar string crudo para evitar desplazamiento UTC en new Date()
+    const toKey = (d: IReporteDashboardEstadoPorDia): string =>
+      this.agrupacionEstadosPorDia === 'SEMANA'
+        ? `S${d.numeroSemana}`
+        : d.fecha ? String(d.fecha).substring(0, 10) : '';
+
+    const categoriasSet = [...new Set(datos.map(d => toKey(d)))].filter(Boolean);
+    this.categoriasEstadosPorDia = categoriasSet;
+
+    const estadosUnicos = [...new Set(datos.map(d => d.estado))].filter(Boolean);
+    this.seriesEstadosPorDia = estadosUnicos.map(estado => ({
+      name: estado,
+      data: categoriasSet.map(cat => {
+        const item = datos.find(d => toKey(d) === cat && d.estado === estado);
+        return item ? item.cantidadSesiones : 0;
+      }),
+      color: this.coloresEstado[estado] || undefined
+    }));
+  }
+
+  cambiarAgrupacionEstadosPorDia(agrupacion: 'DIA' | 'SEMANA'): void {
+    this.agrupacionEstadosPorDia = agrupacion;
+    this.cargarEstadosPorDia();
+  }
+
+  aplicarFiltroEstadosPorDia(): void {
+    this.cargarEstadosPorDia();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DETALLE CURSOS V3 (Inhouse / Presencial / Online)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  cargarCursosV3(): void {
+    this.loadingCursosV3 = true;
+    const { anio, modalidadClasificada, semanaInicio, semanaFin, idProgramaPadre } = this.formFiltroCursosV3.value;
+
+    this._reporteDashboardService.obtenerDetalleCursosV3$(
+      undefined, undefined, undefined,
+      idProgramaPadre || undefined,
+      anio || undefined,
+      undefined,
+      modalidadClasificada || undefined,
+      semanaInicio || undefined,
+      semanaFin || undefined
+    )
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response: HttpResponse<IReporteDashboardCursoV3[]>) => {
+        this.cursosV3 = response.body || [];
+        this.loadingCursosV3 = false;
+      },
+      error: (error) => {
+        this.loadingCursosV3 = false;
+        this._reporteDashboardService.handleError(error);
+      }
+    });
+  }
+
+  aplicarFiltroCursosV3(): void {
+    this.cargarCursosV3();
+  }
+
+  onStateChangeCursosV3(state: State): void {
+    this.stateCursosV3 = state;
+  }
+
+  getModalidadClasificadaBadgeClass(modalidad: string): string {
+    const clases: { [key: string]: string } = {
+      'Inhouse': 'bg-warning text-dark',
+      'Presencial': 'bg-success',
+      'Online': 'bg-info'
+    };
+    return clases[modalidad] || 'bg-secondary';
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SEGUIMIENTO DE CLASES (Lunes-Sabado)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  cargarSeguimientoClases(): void {
+    this.loadingSeguimiento = true;
+    const { estadoCurso, fechaInicio, fechaFin, semanaInicio, semanaFin, anio } = this.formFiltroSeguimiento.value;
+
+    const filtro: IReporteDashboardSeguimientoFiltroRequest = {
+      estadoCurso: estadoCurso || undefined,
+      fechaInicio: fechaInicio || undefined,
+      fechaFin: fechaFin || undefined,
+      semanaInicio: semanaInicio || undefined,
+      semanaFin: semanaFin || undefined,
+      anio: anio || undefined
+    };
+
+    this._reporteDashboardService.obtenerSeguimientoClases$(filtro)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: HttpResponse<IReporteDashboardSeguimientoClase[]>) => {
+          this.datosSeguimiento = response.body || [];
+          this.procesarDatosSeguimiento(this.datosSeguimiento);
+          this.loadingSeguimiento = false;
+        },
+        error: (error) => {
+          this.loadingSeguimiento = false;
+          this._reporteDashboardService.handleError(error);
+        }
+      });
+  }
+
+  procesarDatosSeguimiento(datos: IReporteDashboardSeguimientoClase[]): void {
+    // Agrupar por nroDiaSemana (independiente del idioma del servidor SQL)
+    const agrupado = new Map<number, IReporteDashboardSeguimientoClase>();
+    datos.forEach(d => {
+      const nro = d.nroDiaSemana;
+      if (!agrupado.has(nro)) {
+        agrupado.set(nro, { ...d });
+      } else {
+        const ex = agrupado.get(nro)!;
+        ex.programadas  += d.programadas;
+        ex.ejecutadas   += d.ejecutadas;
+        ex.canceladas   += d.canceladas;
+        ex.reprogramadas += d.reprogramadas;
+        ex.totalSesiones += d.totalSesiones;
+      }
+    });
+
+    // Ordenar por numero de dia (2=Lunes ... 7=Sabado en SQL Server)
+    const diasOrdenados = [...agrupado.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1]);
+
+    this.categoriasSeguimiento = diasOrdenados.map(d => d.diaSemana);
+
+    this.seriesSeguimiento = [
+      { name: 'Programadas',   data: diasOrdenados.map(d => d.programadas),   color: this.coloresSeguimiento['Programadas'] },
+      { name: 'Ejecutadas',    data: diasOrdenados.map(d => d.ejecutadas),    color: this.coloresSeguimiento['Ejecutadas'] },
+      { name: 'Canceladas',    data: diasOrdenados.map(d => d.canceladas),    color: this.coloresSeguimiento['Canceladas'] },
+      { name: 'Reprogramadas', data: diasOrdenados.map(d => d.reprogramadas), color: this.coloresSeguimiento['Reprogramadas'] }
+    ];
+  }
+
+  aplicarFiltroSeguimiento(): void {
+    this.cargarSeguimientoClases();
+  }
+
+  limpiarFiltroSeguimiento(): void {
+    this.formFiltroSeguimiento.reset();
+    this.cargarSeguimientoClases();
+  }
+
+  totalSeguimiento(campo: keyof IReporteDashboardSeguimientoClase): number {
+    return this.datosSeguimiento.reduce((acc, d) => acc + (Number(d[campo]) || 0), 0);
   }
 }

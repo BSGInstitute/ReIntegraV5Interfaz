@@ -16,7 +16,16 @@ import {
   IReporteDashboardCompleto,
   IReporteDashboardSemanal,
   IReporteDashboardCalendario,
-  IReporteDashboardFiltroRequest
+  IReporteDashboardFiltroRequest,
+  IReporteDashboardEstadoSesion,
+  IReporteDashboardSesionDetalle,
+  IReporteDashboardEvolucionEstadoSesion,
+  IReporteDashboardKPIsEstadoSesion,
+  IReporteDashboardCambioEstado,
+  IReporteDashboardEstadoPorDia,
+  IReporteDashboardCursoV3,
+  IReporteDashboardSeguimientoClase,
+  IReporteDashboardSeguimientoFiltroRequest
 } from '@planificacion/models/interfaces/reporte-dashboard';
 
 /**
@@ -193,5 +202,106 @@ export class ReporteDashboardService {
   handleError(error: any): void {
     const mensaje = this._alertaService.getMessageErrorService(error);
     this._alertaService.notificationWarning(mensaje);
+  }
+
+  // ============================================
+  // Metodos para Estados de Sesion
+  // ============================================
+
+  /**
+   * Obtiene resumen de sesiones agrupadas por estado de sesion
+   */
+  obtenerResumenPorEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardEstadoSesion[]>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerResumenPorEstadoSesion}${params}`
+    );
+  }
+
+  /**
+   * Obtiene detalle de sesiones filtradas por estado
+   */
+  obtenerSesionesPorEstado$(anio?: number, idEstadoSesion?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardSesionDetalle[]>> {
+    const params = this.buildQueryParams({ anio, idEstadoSesion, idProgramaEspecificoPadre, centroCostoPadre });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerSesionesPorEstado}${params}`
+    );
+  }
+
+  /**
+   * Obtiene evolucion mensual de estados de sesion
+   */
+  obtenerEvolucionEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardEvolucionEstadoSesion[]>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerEvolucionEstadoSesion}${params}`
+    );
+  }
+
+  /**
+   * Obtiene KPIs de estados de sesion
+   */
+  obtenerKPIsEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardKPIsEstadoSesion>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerKPIsEstadoSesion}${params}`
+    );
+  }
+
+  /**
+   * Obtiene cambios de estado basados en log (Lanzamiento->Ejecucion, Ejecucion->Concluido, *->Cancelado)
+   */
+  obtenerCambiosEstado$(ultimasSemanas?: number): Observable<HttpResponse<IReporteDashboardCambioEstado[]>> {
+    const params = this.buildQueryParams({ ultimasSemanas });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerCambiosEstado}${params}`
+    );
+  }
+
+  /**
+   * Obtiene estados de programas hijo agrupados por dia o semana
+   */
+  obtenerEstadosPorDia$(
+    idsPEspecificoHijo?: string,
+    estados?: string,
+    agrupacion?: string,
+    fechaInicio?: string,
+    fechaFin?: string,
+    ultimasSemanas?: number
+  ): Observable<HttpResponse<IReporteDashboardEstadoPorDia[]>> {
+    const params = this.buildQueryParams({ idsPEspecificoHijo, estados, agrupacion, fechaInicio, fechaFin, ultimasSemanas });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerEstadosPorDia}${params}`
+    );
+  }
+
+  /**
+   * Obtiene detalle de cursos V3 con modalidad clasificada (Inhouse/Presencial/Online)
+   */
+  obtenerDetalleCursosV3$(
+    fecha?: string,
+    fechaInicio?: string,
+    fechaFin?: string,
+    idProgramaPadre?: number,
+    anio?: number,
+    centroCostoPadre?: string,
+    modalidadClasificada?: string,
+    semanaInicio?: number,
+    semanaFin?: number
+  ): Observable<HttpResponse<IReporteDashboardCursoV3[]>> {
+    const params = this.buildQueryParams({ fecha, fechaInicio, fechaFin, idProgramaPadre, anio, centroCostoPadre, modalidadClasificada, semanaInicio, semanaFin });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerDetalleCursosV3}${params}`
+    );
+  }
+
+  /**
+   * Obtiene seguimiento de clases por dia de semana con filtro propio
+   */
+  obtenerSeguimientoClases$(filtro: IReporteDashboardSeguimientoFiltroRequest): Observable<HttpResponse<IReporteDashboardSeguimientoClase[]>> {
+    return this._integraService.postJsonResponse(
+      constApiPlanificacion.ReporteDashboardObtenerSeguimientoClases,
+      JSON.stringify(filtro)
+    );
   }
 }

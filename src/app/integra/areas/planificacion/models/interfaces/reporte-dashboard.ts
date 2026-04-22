@@ -174,3 +174,127 @@ export interface IChartSeriesData {
   name: string;
   data: number[];
 }
+
+// ============================================
+// Interfaces para Estados de Sesion
+// Estados: Ejecutada, Cancelada, Por-Reprogramar, Adicional, Por Ejecutar, No Aplica, Recuperada
+// ============================================
+
+// Resumen de sesiones por estado (para grafico pie/donut)
+export interface IReporteDashboardEstadoSesion {
+  idEstadoSesion: number;
+  estadoSesion: string;
+  cantidadSesiones: number;
+  porcentaje: number;
+}
+
+// Detalle de sesiones filtradas por estado
+export interface IReporteDashboardSesionDetalle {
+  idProgramaEspecifico: number;
+  programaEspecifico: string;
+  estadoPrograma: string;
+  centroCosto: string;
+  idSesion: number;
+  fecha: Date | string;
+  diaSemana: string;
+  horario: string;
+  duracion: number;
+  idEstadoSesion: number;
+  estadoSesion: string;
+  docente: string;
+  sede: string;
+  aula: string;
+  modalidad: string;
+  numeroSesion: number;
+}
+
+// Evolucion mensual de estados de sesion (para grafico de lineas)
+export interface IReporteDashboardEvolucionEstadoSesion {
+  mes: number;
+  nombreMes: string;
+  idEstadoSesion: number;
+  estadoSesion: string;
+  cantidadSesiones: number;
+}
+
+// KPIs de estados de sesion
+export interface IReporteDashboardKPIsEstadoSesion {
+  totalSesiones: number;
+  sesionesEjecutadas: number;
+  sesionesCanceladas: number;
+  sesionesPorReprogramar: number;
+  sesionesAdicionales: number;
+  sesionesPorEjecutar: number;
+  sesionesNoAplica: number;
+  sesionesRecuperadas: number;
+  porcentajeEjecutadas: number;
+  porcentajeCanceladas: number;
+}
+
+// ============================================
+// Nuevas interfaces para funciones ampliadas
+// ============================================
+
+// Cambios de estado de programas basados en log (agrupados por semana)
+export interface IReporteDashboardCambioEstado {
+  anio: number;
+  numeroSemana: number;
+  fechaInicioSemana: Date | string;
+  fechaFinSemana: Date | string;
+  lanzamientoAEjecucion: number;
+  ejecucionAConcluido: number;
+  aCancelado: number;
+  esSemanaActual: number;
+}
+
+// Estado de programas hijo agrupado por dia o semana
+export interface IReporteDashboardEstadoPorDia {
+  anio?: number;
+  numeroSemana?: number;
+  fechaReferencia?: Date | string;
+  fecha?: Date | string;
+  diaSemana?: string;
+  estado: string;
+  cantidadProgramas: number;
+  cantidadSesiones: number;
+}
+
+// Detalle de cursos V3 con modalidad clasificada
+export interface IReporteDashboardCursoV3 {
+  centroCostoPadre: string;
+  programaEspecificoPadre: string;
+  centroCostoHijo: string;
+  curso: string;
+  estadoSesion: string;
+  nroSesion: string;
+  fecha: Date | string;
+  diaSemana: string;
+  horario: string;
+  docente: string;
+  sede: string;
+  aula: string;
+  coordinador: string;
+  modalidadClasificada: string;
+}
+
+// Seguimiento de clases por dia de semana (Lunes-Sabado)
+export interface IReporteDashboardSeguimientoClase {
+  nroDiaSemana: number;
+  diaSemana: string;
+  fecha: Date | string;
+  programadas: number;
+  ejecutadas: number;
+  canceladas: number;
+  reprogramadas: number;
+  totalSesiones: number;
+}
+
+// Request para el seguimiento de clases (filtro propio)
+export interface IReporteDashboardSeguimientoFiltroRequest {
+  fechaInicio?: Date | string;
+  fechaFin?: Date | string;
+  estadoCurso?: string;
+  anio?: number;
+  semanaInicio?: number;
+  semanaFin?: number;
+}
