@@ -128,6 +128,7 @@ export interface PEspecificoPadreIndividual {
   idProgramaGeneral: number;
   ciudad: string;
   estadoPId: number;
+  idEstadoCupos: number;
   tipoId: number;
   origenPrograma?: number;
   idCiudad: number;
@@ -168,6 +169,7 @@ export interface InformacionPespecificoHijo {
   idPeriodoLectivo?: number;
   idCiclo?: number;
   idEstadoPEspecifico?: number;
+  idEstadoCupos?: number;
   idModalidadCurso?: number;
   idCursoMoodle?: number;
   idCursoMoodlePrueba?: number;
@@ -455,6 +457,7 @@ export interface Pespecifico {
   idPeriodoLectivo?: number;
   resumenClaseActivo?: boolean;
   tutorVirtualActivo?: boolean;
+  idEstadoCupos?: number;
 }
 export interface GenerarPDFEnvio {
   idPespecifico: number;
