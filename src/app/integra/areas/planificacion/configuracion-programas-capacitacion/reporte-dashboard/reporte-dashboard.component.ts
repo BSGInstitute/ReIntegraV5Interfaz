@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 import { Subject, forkJoin } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 
 import { ReporteDashboardService } from '@planificacion/services/reporte-dashboard.service';
 import {
@@ -26,7 +26,15 @@ import {
   IReporteDashboardEstadoPorDia,
   IReporteDashboardCursoV3,
   IReporteDashboardSeguimientoClase,
-  IReporteDashboardSeguimientoFiltroRequest
+  IReporteDashboardSeguimientoFiltroRequest,
+  IReporteDashboardDocenteFiltro,
+  IReporteDashboardPEspecificoFiltro,
+  IReporteDashboardSeguimientoDocente,
+  IReporteDashboardSeguimientoDocentePrograma,
+  IReporteDashboardSeguimientoDocenteSesion,
+  IReporteDashboardSeguimientoDocenteKPIs,
+  IReporteDashboardNotasAlumnos,
+  IReporteDashboardNotaAlumnoDetalle
 } from '@planificacion/models/interfaces/reporte-dashboard';
 import { AlertaService } from '@shared/services/alerta.service';
 import { ExcelExportComponent } from '@progress/kendo-angular-excel-export';
@@ -226,7 +234,10 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     sort: [{ field: 'totalSesiones', dir: 'desc' }]
   };
 
-  // Tab activo
+  // Tab principal (dashboard1 / dashboard2)
+  activeMainTab: 'dashboard1' | 'dashboard2' = 'dashboard1';
+
+  // Tab activo (grillas dentro de dashboard1)
   activeTab: string = 'programas';
 
   // Agrupacion temporal para graficas (semana, mes, anio)
@@ -236,6 +247,46 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     { value: 'mes', label: 'Por Mes' },
     { value: 'anio', label: 'Por Año' }
   ];
+
+  // ── DASHBOARD 2: Seguimiento por Docente ─────────────────────────────────
+  loadingD2: boolean = false;
+  // Filtros
+  formFiltroD2: FormGroup;
+  docentesFiltro: IReporteDashboardDocenteFiltro[] = [];
+  docentesFiltroFiltered: IReporteDashboardDocenteFiltro[] = [];
+  pEspecificoFiltro: IReporteDashboardPEspecificoFiltro[] = [];
+  pEspecificoFiltroFiltered: IReporteDashboardPEspecificoFiltro[] = [];
+  loadingDocentesFiltro: boolean = false;
+  loadingPEspecificoFiltro: boolean = false;
+  // Datos resultado
+  seguimientoDocenteKPIs: IReporteDashboardSeguimientoDocenteKPIs = {
+    docente: '', totalProgramas: 0, totalSesiones: 0,
+    sesionesEjecutadas: 0, sesionesCanceladas: 0,
+    sesionesReprogramadas: 0, sesionesProgramadas: 0,
+    porcentajeEjecutadas: 0
+  };
+  seguimientoDocenteProgramas: IReporteDashboardSeguimientoDocentePrograma[] = [];
+  seguimientoDocenteSesiones: IReporteDashboardSeguimientoDocenteSesion[] = [];
+  // Grilla sesiones Dashboard 2
+  stateD2Sesiones: State = { skip: 0, take: 15, sort: [{ field: 'fecha', dir: 'desc' }] };
+  get gridDataD2Sesiones(): any { return process(this.seguimientoDocenteSesiones, this.stateD2Sesiones); }
+  stateD2Programas: State = { skip: 0, take: 10, sort: [{ field: 'totalSesiones', dir: 'desc' }] };
+  get gridDataD2Programas(): any { return process(this.seguimientoDocenteProgramas, this.stateD2Programas); }
+  // Grafico por programa
+  seriesD2Programas: { name: string; data: number[]; color: string }[] = [];
+  categoriasD2Programas: string[] = [];
+  readonly coloresD2: { [key: string]: string } = {
+    'Ejecutadas': '#28a745',
+    'Canceladas': '#dc3545',
+    'Reprogramadas': '#ffc107',
+    'Programadas': '#007bff'
+  };
+  // Notas de alumnos
+  notasAlumnos: IReporteDashboardNotasAlumnos | null = null;
+  loadingNotas: boolean = false;
+  notasDetalleData: IReporteDashboardNotaAlumnoDetalle[] = [];
+  stateNotas: State = { skip: 0, take: 15 };
+  get gridDataNotas(): any { return process(this.notasDetalleData, this.stateNotas); }
 
   // Getters para datos procesados de grillas
   get gridDataProgramas(): any {
@@ -288,6 +339,14 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       semanaInicio: [null],
       semanaFin: [null],
       anio: [null]
+    });
+
+    this.formFiltroD2 = this._formBuilder.group({
+      idDocente: [null],
+      idPEspecifico: [null],
+      anio: [new Date().getFullYear()],
+      fechaInicio: [null],
+      fechaFin: [null]
     });
   }
 
@@ -1229,5 +1288,172 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   totalSeguimiento(campo: keyof IReporteDashboardSeguimientoClase): number {
     return this.datosSeguimiento.reduce((acc, d) => acc + (Number(d[campo]) || 0), 0);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DASHBOARD 2: Seguimiento por Docente
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  onMainTabChange(tab: 'dashboard1' | 'dashboard2'): void {
+    this.activeMainTab = tab;
+    if (tab === 'dashboard2' && this.docentesFiltro.length === 0) {
+      this.cargarDocentesFiltro();
+    }
+  }
+
+  cargarDocentesFiltro(busqueda?: string): void {
+    this.loadingDocentesFiltro = true;
+    this._reporteDashboardService.obtenerDocentesFiltro$(busqueda)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: HttpResponse<IReporteDashboardDocenteFiltro[]>) => {
+          this.docentesFiltro = response.body || [];
+          this.docentesFiltroFiltered = this.docentesFiltro.slice(0, 50);
+          this.loadingDocentesFiltro = false;
+        },
+        error: () => { this.loadingDocentesFiltro = false; }
+      });
+  }
+
+  onFilterDocentes(filter: string): void {
+    if (!filter || filter.length < 2) {
+      this.docentesFiltroFiltered = this.docentesFiltro.slice(0, 50);
+    } else {
+      const fl = filter.toLowerCase();
+      this.docentesFiltroFiltered = this.docentesFiltro
+        .filter(d => d.nombre?.toLowerCase().includes(fl) || d.razonSocial?.toLowerCase().includes(fl))
+        .slice(0, 100);
+    }
+  }
+
+  onDocenteFilterChange(filter: string): void {
+    if (filter && filter.length >= 2) {
+      this.cargarDocentesFiltro(filter);
+    } else if (!filter) {
+      this.cargarDocentesFiltro();
+    }
+  }
+
+  cargarPEspecificoFiltro(busqueda?: string): void {
+    if (!busqueda || busqueda.length < 2) {
+      this.pEspecificoFiltroFiltered = this.pEspecificoFiltro.slice(0, 50);
+      return;
+    }
+    this.loadingPEspecificoFiltro = true;
+    this._reporteDashboardService.obtenerPEspecificoFiltro$(busqueda)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: HttpResponse<IReporteDashboardPEspecificoFiltro[]>) => {
+          this.pEspecificoFiltro = response.body || [];
+          this.pEspecificoFiltroFiltered = this.pEspecificoFiltro;
+          this.loadingPEspecificoFiltro = false;
+        },
+        error: () => { this.loadingPEspecificoFiltro = false; }
+      });
+  }
+
+  private readonly _kpisVacio: IReporteDashboardSeguimientoDocenteKPIs = {
+    docente: '', totalProgramas: 0, totalSesiones: 0,
+    sesionesEjecutadas: 0, sesionesCanceladas: 0,
+    sesionesReprogramadas: 0, sesionesProgramadas: 0,
+    porcentajeEjecutadas: 0
+  };
+
+  buscarSeguimientoDocente(): void {
+    const { idDocente, idPEspecifico, anio, fechaInicio, fechaFin } = this.formFiltroD2.value;
+    const fi = fechaInicio ? new Date(fechaInicio).toISOString().split('T')[0] : undefined;
+    const ff = fechaFin ? new Date(fechaFin).toISOString().split('T')[0] : undefined;
+    this.loadingD2 = true;
+
+    this._reporteDashboardService.obtenerSeguimientoDocente$(
+      idDocente  || undefined,
+      idPEspecifico || undefined,
+      anio       || undefined,
+      fi, ff
+    )
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => { this.loadingD2 = false; })
+    )
+    .subscribe({
+      next: (response: HttpResponse<IReporteDashboardSeguimientoDocente>) => {
+        const data = response.body;
+        if (data) {
+          // kPIs puede llegar null si el SP no devuelve filas en RS1
+          this.seguimientoDocenteKPIs = data.kPIs ?? { ...this._kpisVacio };
+          this.seguimientoDocenteProgramas = data.programas || [];
+          this.seguimientoDocenteSesiones  = data.sesiones  || [];
+          this.procesarGraficoD2();
+        }
+      },
+      error: () => {
+        this.seguimientoDocenteKPIs = { ...this._kpisVacio };
+      }
+    });
+
+    // Siempre cargar notas — el SP acepta @IdPEspecifico = NULL
+    this.cargarNotasAlumnos(idPEspecifico || undefined);
+  }
+
+  cargarNotasAlumnos(idPEspecifico?: number): void {
+    this.loadingNotas = true;
+    this.notasAlumnos = null;
+    this.notasDetalleData = [];
+    this._reporteDashboardService.obtenerNotasAlumnosPorPrograma$(idPEspecifico)
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => { this.loadingNotas = false; })
+    )
+    .subscribe({
+      next: (response: HttpResponse<IReporteDashboardNotasAlumnos>) => {
+        const data = response.body;
+        if (data) {
+          this.notasAlumnos     = data;
+          this.notasDetalleData = data.detalle || [];
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  onStateChangeNotas(state: State): void {
+    this.stateNotas = state;
+  }
+
+  limpiarFiltroD2(): void {
+    this.formFiltroD2.patchValue({ idDocente: null, idPEspecifico: null, fechaInicio: null, fechaFin: null });
+    this.seguimientoDocenteKPIs    = { ...this._kpisVacio };
+    this.seguimientoDocenteProgramas = [];
+    this.seguimientoDocenteSesiones  = [];
+    this.notasAlumnos     = null;
+    this.notasDetalleData = [];
+    this.buscarSeguimientoDocente();
+  }
+
+  private procesarGraficoD2(): void {
+    const top10 = this.seguimientoDocenteProgramas.slice(0, 10);
+    this.categoriasD2Programas = top10.map(p => p.programa?.length > 25 ? p.programa.substring(0, 25) + '...' : p.programa);
+    this.seriesD2Programas = [
+      { name: 'Ejecutadas',    data: top10.map(p => p.sesionesEjecutadas),    color: this.coloresD2['Ejecutadas'] },
+      { name: 'Canceladas',    data: top10.map(p => p.sesionesCanceladas),    color: this.coloresD2['Canceladas'] },
+      { name: 'Reprogramadas', data: top10.map(p => p.sesionesReprogramadas), color: this.coloresD2['Reprogramadas'] },
+      { name: 'Programadas',   data: top10.map(p => p.sesionesProgramadas),   color: this.coloresD2['Programadas'] }
+    ];
+  }
+
+  onStateChangeD2Sesiones(state: State): void {
+    this.stateD2Sesiones = state;
+  }
+
+  onStateChangeD2Programas(state: State): void {
+    this.stateD2Programas = state;
+  }
+
+  getEstadoSesionColor(idEstado: number): string {
+    const mapa: { [k: number]: string } = {
+      1: 'bg-success', 2: 'bg-danger', 3: 'bg-warning text-dark',
+      5: 'bg-primary', 4: 'bg-info', 6: 'bg-secondary'
+    };
+    return mapa[idEstado] || 'bg-secondary';
   }
 }

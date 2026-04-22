@@ -4,12 +4,29 @@
     <div class="card-header bg-color-material">
       <div class="d-flex justify-content-between align-items-center">
         <h2 class="mb-0 text-white">Dashboard - Programas de Capacitacion</h2>
-        <button kendoButton themeColor="light" icon="download" (click)="exportarExcel()">
+        <button kendoButton themeColor="light" icon="download" (click)="exportarExcel()" *ngIf="activeMainTab === 'dashboard1'">
           Exportar
         </button>
       </div>
     </div>
   </div>
+
+  <!-- Tabs principales -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeMainTab === 'dashboard1'" (click)="onMainTabChange('dashboard1')" style="cursor:pointer">
+        <i class="k-icon k-i-chart-column-clustered me-1"></i> Dashboard 1
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeMainTab === 'dashboard2'" (click)="onMainTabChange('dashboard2')" style="cursor:pointer">
+        <i class="k-icon k-i-user me-1"></i> Dashboard 2 - Seguimiento Docente
+      </a>
+    </li>
+  </ul>
+
+  <!-- ═══════ DASHBOARD 1 ═══════ -->
+  <ng-container *ngIf="activeMainTab === 'dashboard1'">
 
   <!-- Filtros -->
   <div class="card mb-3">
@@ -1301,4 +1318,327 @@
     <kendo-excelexport-column field="primeraClase" title="Primera Clase" [width]="130"></kendo-excelexport-column>
     <kendo-excelexport-column field="ultimaClase" title="Ultima Clase" [width]="130"></kendo-excelexport-column>
   </kendo-excelexport>
+
+  </ng-container>
+  <!-- ═══════ FIN DASHBOARD 1 ═══════ -->
+
+  <!-- ═══════ DASHBOARD 2: Seguimiento por Docente ═══════ -->
+  <ng-container *ngIf="activeMainTab === 'dashboard2'">
+
+    <!-- Filtros Dashboard 2 -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="k-icon k-i-filter me-1"></i> Filtros de Seguimiento</h5>
+      </div>
+      <div class="card-body py-2">
+        <form [formGroup]="formFiltroD2">
+          <div class="row align-items-end g-2">
+
+            <!-- Filtro Docente -->
+            <div class="col-md-4">
+              <kendo-formfield>
+                <kendo-label text="Docente"></kendo-label>
+                <kendo-combobox
+                  formControlName="idDocente"
+                  [data]="docentesFiltroFiltered"
+                  textField="nombre"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  [loading]="loadingDocentesFiltro"
+                  (filterChange)="onDocenteFilterChange($event)"
+                  placeholder="Buscar docente..."
+                  [clearButton]="true"
+                >
+                </kendo-combobox>
+              </kendo-formfield>
+            </div>
+
+            <!-- Filtro PEspecifico -->
+            <div class="col-md-4">
+              <kendo-formfield>
+                <kendo-label text="Programa Especifico (padre o hijo)"></kendo-label>
+                <kendo-combobox
+                  formControlName="idPEspecifico"
+                  [data]="pEspecificoFiltroFiltered"
+                  textField="nombre"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  [loading]="loadingPEspecificoFiltro"
+                  (filterChange)="cargarPEspecificoFiltro($event)"
+                  placeholder="Escribe para buscar programa..."
+                  [clearButton]="true"
+                >
+                  <ng-template kendoComboBoxItemTemplate let-dataItem>
+                    <span class="d-flex justify-content-between align-items-center">
+                      <span>{{ dataItem.nombre }}</span>
+                      <span class="badge bg-secondary ms-2 small">{{ dataItem.tipo }}</span>
+                    </span>
+                  </ng-template>
+                </kendo-combobox>
+              </kendo-formfield>
+            </div>
+
+            <!-- Filtro Año -->
+            <div class="col-md-1">
+              <kendo-formfield>
+                <kendo-label text="Año"></kendo-label>
+                <kendo-numerictextbox
+                  formControlName="anio"
+                  [min]="2020"
+                  [max]="2030"
+                  [decimals]="0"
+                  format="####"
+                  placeholder="Año"
+                ></kendo-numerictextbox>
+              </kendo-formfield>
+            </div>
+
+            <!-- Fecha inicio -->
+            <div class="col-md-1">
+              <kendo-formfield>
+                <kendo-label text="Desde"></kendo-label>
+                <kendo-datepicker formControlName="fechaInicio" placeholder="dd/mm/yyyy"></kendo-datepicker>
+              </kendo-formfield>
+            </div>
+
+            <!-- Fecha fin -->
+            <div class="col-md-1">
+              <kendo-formfield>
+                <kendo-label text="Hasta"></kendo-label>
+                <kendo-datepicker formControlName="fechaFin" placeholder="dd/mm/yyyy"></kendo-datepicker>
+              </kendo-formfield>
+            </div>
+
+            <!-- Botones -->
+            <div class="col-md-1 d-flex gap-1">
+              <button kendoButton themeColor="primary" icon="search" (click)="buscarSeguimientoDocente()" [disabled]="loadingD2">
+                Buscar
+              </button>
+              <button kendoButton themeColor="base" icon="reset" (click)="limpiarFiltroD2()" [disabled]="loadingD2">
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Loading Dashboard 2 -->
+    <div *ngIf="loadingD2" class="text-center py-5">
+      <kendo-loader type="infinite-spinner" size="large"></kendo-loader>
+      <p class="mt-2 text-muted">Cargando seguimiento del docente...</p>
+    </div>
+
+    <ng-container *ngIf="!loadingD2">
+
+
+      <!-- Grafico por programa -->
+      <div class="card mb-4" *ngIf="seguimientoDocenteProgramas.length > 0">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="k-icon k-i-chart-column-clustered me-1"></i> Sesiones por Programa (Top 10)</h5>
+        </div>
+        <div class="card-body">
+          <kendo-chart [style.height.px]="350">
+            <kendo-chart-tooltip [shared]="true">
+              <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
+                <div class="chart-tooltip">
+                  <strong>{{ category }}</strong>
+                  <div *ngFor="let point of points">
+                    <span [style.color]="point.series.color">●</span>
+                    {{ point.series.name }}: <strong>{{ point.value }}</strong>
+                  </div>
+                </div>
+              </ng-template>
+            </kendo-chart-tooltip>
+            <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+            <kendo-chart-category-axis>
+              <kendo-chart-category-axis-item [categories]="categoriasD2Programas" [labels]="{ rotation: -30 }">
+              </kendo-chart-category-axis-item>
+            </kendo-chart-category-axis>
+            <kendo-chart-series>
+              <kendo-chart-series-item
+                *ngFor="let serie of seriesD2Programas"
+                type="column"
+                [name]="serie.name"
+                [data]="serie.data"
+                [color]="serie.color"
+                [labels]="{ visible: false }"
+              >
+              </kendo-chart-series-item>
+            </kendo-chart-series>
+          </kendo-chart>
+        </div>
+      </div>
+
+      <!-- Grilla de Programas -->
+      <div class="card mb-4" *ngIf="seguimientoDocenteProgramas.length > 0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="k-icon k-i-grid me-1"></i> Resumen por Programa</h5>
+          <span class="badge bg-primary">{{ seguimientoDocenteProgramas.length }} programas</span>
+        </div>
+        <div class="card-body p-0">
+          <kendo-grid
+            [data]="gridDataD2Programas"
+            [pageSize]="stateD2Programas.take"
+            [skip]="stateD2Programas.skip"
+            [sort]="stateD2Programas.sort"
+            [pageable]="true"
+            [sortable]="true"
+            [resizable]="true"
+            (dataStateChange)="onStateChangeD2Programas($event)"
+            class="k-grid-sm"
+          >
+            <kendo-grid-column field="programa" title="Programa" [width]="250"></kendo-grid-column>
+            <kendo-grid-column field="centroCosto" title="Centro Costo" [width]="130"></kendo-grid-column>
+            <kendo-grid-column field="estadoPrograma" title="Estado" [width]="100">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span class="badge" [class]="getEstadoBadgeClass(dataItem.estadoPrograma)">{{ dataItem.estadoPrograma }}</span>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="totalSesiones" title="Total" [width]="75"></kendo-grid-column>
+            <kendo-grid-column field="sesionesEjecutadas" title="Ejec." [width]="75">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span class="text-success fw-bold">{{ dataItem.sesionesEjecutadas }}</span>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="sesionesCanceladas" title="Cancel." [width]="75">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span class="text-danger fw-bold">{{ dataItem.sesionesCanceladas }}</span>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="sesionesReprogramadas" title="Reprg." [width]="75">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span class="text-warning fw-bold">{{ dataItem.sesionesReprogramadas }}</span>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="porcentajeEjecutadas" title="% Ejec." [width]="85">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span [class.text-success]="dataItem.porcentajeEjecutadas >= 80"
+                      [class.text-warning]="dataItem.porcentajeEjecutadas >= 50 && dataItem.porcentajeEjecutadas < 80"
+                      [class.text-danger]="dataItem.porcentajeEjecutadas < 50">
+                  {{ dataItem.porcentajeEjecutadas }}%
+                </span>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="fechaInicio" title="Inicio" [width]="100">
+              <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fechaInicio) }}</ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="fechaFin" title="Fin" [width]="100">
+              <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fechaFin) }}</ng-template>
+            </kendo-grid-column>
+          </kendo-grid>
+        </div>
+      </div>
+
+      <!-- Grilla de Sesiones -->
+      <div class="card mb-4" *ngIf="seguimientoDocenteSesiones.length > 0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="k-icon k-i-calendar me-1"></i> Detalle de Sesiones</h5>
+          <span class="badge bg-secondary">{{ seguimientoDocenteSesiones.length }} sesiones</span>
+        </div>
+        <div class="card-body p-0">
+          <kendo-grid
+            [data]="gridDataD2Sesiones"
+            [pageSize]="stateD2Sesiones.take"
+            [skip]="stateD2Sesiones.skip"
+            [sort]="stateD2Sesiones.sort"
+            [pageable]="true"
+            [sortable]="true"
+            [resizable]="true"
+            (dataStateChange)="onStateChangeD2Sesiones($event)"
+            class="k-grid-sm"
+          >
+            <kendo-grid-column field="fecha" title="Fecha" [width]="100">
+              <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fecha) }}</ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="diaSemana" title="Día" [width]="90"></kendo-grid-column>
+            <kendo-grid-column field="horaInicio" title="Hora" [width]="75"></kendo-grid-column>
+            <kendo-grid-column field="programa" title="Programa" [width]="220"></kendo-grid-column>
+            <kendo-grid-column field="centroCosto" title="CC" [width]="110"></kendo-grid-column>
+            <kendo-grid-column field="estadoSesion" title="Estado" [width]="120">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span class="badge" [class]="getEstadoSesionColor(dataItem.idPEspecificoSesionEstado)">
+                  {{ dataItem.estadoSesion }}
+                </span>
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="docente" title="Docente" [width]="180"></kendo-grid-column>
+            <kendo-grid-column field="sede" title="Sede" [width]="130"></kendo-grid-column>
+            <kendo-grid-column field="aula" title="Aula" [width]="100"></kendo-grid-column>
+            <kendo-grid-column field="nroSesion" title="Nro" [width]="60"></kendo-grid-column>
+          </kendo-grid>
+        </div>
+      </div>
+
+      <!-- ══ Notas de Alumnos por Programa ══ -->
+      <div class="card mb-4">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <span><i class="k-icon k-i-table me-1"></i> Notas de Alumnos por Criterio</span>
+          <span class="badge bg-info" *ngIf="notasDetalleData.length > 0">{{ notasDetalleData.length }} registros</span>
+        </div>
+        <div class="card-body">
+
+          <!-- Estado inicial: aún no se ha buscado -->
+          <div *ngIf="notasAlumnos === null && !loadingNotas"
+               class="text-center text-muted py-4">
+            <i class="k-icon k-i-information" style="font-size:2rem"></i>
+            <p class="mt-2 mb-0">Presiona <strong>Buscar</strong> para cargar las notas. Puedes filtrar por docente y/o programa específico.</p>
+          </div>
+
+          <!-- Spinner notas -->
+          <div *ngIf="loadingNotas" class="text-center py-4">
+            <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+            <p class="mt-2 text-muted">Cargando notas...</p>
+          </div>
+
+          <ng-container *ngIf="!loadingNotas && (notasDetalleData.length > 0 || notasAlumnos !== null)">
+
+            <!-- Sin datos luego de buscar -->
+            <div *ngIf="notasAlumnos !== null && notasDetalleData.length === 0"
+                 class="alert alert-warning d-flex align-items-center gap-2 mb-3">
+              <i class="k-icon k-i-warning"></i>
+              No se encontraron notas para el programa seleccionado.
+            </div>
+
+            <!-- Grilla detalle: alumno × criterio × nota -->
+            <kendo-grid *ngIf="notasDetalleData.length > 0"
+              [data]="gridDataNotas"
+              [pageSize]="stateNotas.take"
+              [skip]="stateNotas.skip"
+              [pageable]="{ pageSizes: [15, 30, 50] }"
+              [filterable]="'row'"
+              [sortable]="true"
+              (dataStateChange)="onStateChangeNotas($event)"
+              style="max-height: 450px">
+              <kendo-grid-column field="nombreAlumno"       title="Alumno"                  [width]="220"></kendo-grid-column>
+              <kendo-grid-column field="programaEspecifico" title="Programa"                [width]="200"></kendo-grid-column>
+              <kendo-grid-column field="criterioEvaluacion" title="Criterio de Evaluación"  [width]="200"></kendo-grid-column>
+              <kendo-grid-column field="nota"               title="Nota"                    [width]="90">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <span [ngClass]="dataItem.nota === '--' ? 'text-muted' : 'fw-semibold text-success'">
+                    {{ dataItem.nota }}
+                  </span>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Estado vacío — solo si no hay NINGÚN dato aún -->
+      <div *ngIf="seguimientoDocenteProgramas.length === 0 && seguimientoDocenteSesiones.length === 0 && notasAlumnos === null && !loadingNotas"
+           class="text-center py-5 text-muted">
+        <i class="k-icon k-i-search" style="font-size: 3rem;"></i>
+        <p class="mt-2">Selecciona un docente y/o programa y presiona <strong>Buscar</strong> para ver el seguimiento.</p>
+      </div>
+
+    </ng-container>
+    <!-- fin ng-container !loadingD2 -->
+
+  </ng-container>
+  <!-- ═══════ FIN DASHBOARD 2 ═══════ -->
+
 </div>

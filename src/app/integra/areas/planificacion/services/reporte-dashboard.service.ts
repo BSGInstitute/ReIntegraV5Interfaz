@@ -25,7 +25,11 @@ import {
   IReporteDashboardEstadoPorDia,
   IReporteDashboardCursoV3,
   IReporteDashboardSeguimientoClase,
-  IReporteDashboardSeguimientoFiltroRequest
+  IReporteDashboardSeguimientoFiltroRequest,
+  IReporteDashboardDocenteFiltro,
+  IReporteDashboardPEspecificoFiltro,
+  IReporteDashboardSeguimientoDocente,
+  IReporteDashboardNotasAlumnos
 } from '@planificacion/models/interfaces/reporte-dashboard';
 
 /**
@@ -302,6 +306,50 @@ export class ReporteDashboardService {
     return this._integraService.postJsonResponse(
       constApiPlanificacion.ReporteDashboardObtenerSeguimientoClases,
       JSON.stringify(filtro)
+    );
+  }
+
+  // ============================================
+  // Dashboard 2: Seguimiento por Docente
+  // ============================================
+
+  /**
+   * Obtiene lista de docentes para filtro desplegable con busqueda
+   */
+  obtenerDocentesFiltro$(busqueda?: string): Observable<HttpResponse<IReporteDashboardDocenteFiltro[]>> {
+    const params = this.buildQueryParams({ busqueda });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerDocentesFiltro}${params}`
+    );
+  }
+
+  /**
+   * Obtiene lista de programas especificos para filtro con busqueda
+   */
+  obtenerPEspecificoFiltro$(busqueda?: string): Observable<HttpResponse<IReporteDashboardPEspecificoFiltro[]>> {
+    const params = this.buildQueryParams({ busqueda });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerPEspecificoFiltro}${params}`
+    );
+  }
+
+  /**
+   * Obtiene seguimiento completo de un docente (KPIs + programas + sesiones)
+   */
+  obtenerSeguimientoDocente$(idDocente?: number, idPEspecifico?: number, anio?: number, fechaInicio?: string, fechaFin?: string): Observable<HttpResponse<IReporteDashboardSeguimientoDocente>> {
+    const params = this.buildQueryParams({ idDocente, idPEspecifico, anio, fechaInicio, fechaFin });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerSeguimientoDocente}${params}`
+    );
+  }
+
+  /**
+   * Obtiene notas de alumnos por programa: RS1 resumen por criterio (grafico), RS2 detalle alumno x criterio
+   */
+  obtenerNotasAlumnosPorPrograma$(idPEspecifico?: number): Observable<HttpResponse<IReporteDashboardNotasAlumnos>> {
+    const params = this.buildQueryParams({ idPEspecifico });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerNotasAlumnosPorPrograma}${params}`
     );
   }
 }

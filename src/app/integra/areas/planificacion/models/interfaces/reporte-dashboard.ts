@@ -298,3 +298,117 @@ export interface IReporteDashboardSeguimientoFiltroRequest {
   semanaInicio?: number;
   semanaFin?: number;
 }
+
+// ============================================
+// Dashboard 2: Seguimiento por Docente
+// ============================================
+
+// Item de docente para el filtro desplegable con búsqueda
+export interface IReporteDashboardDocenteFiltro {
+  id: number;
+  nombre: string;
+  razonSocial: string;
+}
+
+// Item de PEspecifico para el filtro de búsqueda (padre o hijo)
+export interface IReporteDashboardPEspecificoFiltro {
+  id: number;
+  nombre: string;
+  estado: string;
+  tipo: string;
+}
+
+// KPIs generales del seguimiento de docente (RS1)
+export interface IReporteDashboardSeguimientoDocenteKPIs {
+  idDocente?: number;
+  docente: string;
+  totalProgramas: number;
+  totalSesiones: number;
+  sesionesEjecutadas: number;
+  sesionesCanceladas: number;
+  sesionesReprogramadas: number;
+  sesionesProgramadas: number;
+  porcentajeEjecutadas: number;
+}
+
+// Resumen por programa del seguimiento de docente (RS2)
+export interface IReporteDashboardSeguimientoDocentePrograma {
+  idPEspecifico: number;
+  programaGeneral: string;
+  programa: string;
+  centroCosto: string;
+  estadoPrograma: string;
+  totalSesiones: number;
+  sesionesEjecutadas: number;
+  sesionesCanceladas: number;
+  sesionesReprogramadas: number;
+  sesionesProgramadas: number;
+  fechaInicio: Date | string;
+  fechaFin: Date | string;
+  porcentajeEjecutadas: number;
+}
+
+// Detalle de sesiones del seguimiento de docente (RS3)
+export interface IReporteDashboardSeguimientoDocenteSesion {
+  idSesion: number;
+  idPEspecifico: number;
+  programaGeneral: string;
+  programa: string;
+  centroCosto: string;
+  estadoPrograma: string;
+  fecha: Date | string;
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
+  estadoSesion: string;
+  idPEspecificoSesionEstado: number;
+  nroSesion: number;
+  docente: string;
+  sede: string;
+  aula: string;
+}
+
+// Contenedor compuesto con los 3 result sets
+export interface IReporteDashboardSeguimientoDocente {
+  kPIs: IReporteDashboardSeguimientoDocenteKPIs;
+  programas: IReporteDashboardSeguimientoDocentePrograma[];
+  sesiones: IReporteDashboardSeguimientoDocenteSesion[];
+}
+
+// Request para el filtro del seguimiento de docente
+export interface IReporteDashboardSeguimientoDocenteFiltroRequest {
+  idDocente?: number;
+  idPEspecifico?: number;
+  anio?: number;
+  fechaInicio?: Date | string;
+  fechaFin?: Date | string;
+}
+
+// ============================================
+// Dashboard 2: Notas de alumnos por programa
+// ============================================
+
+// Resumen por criterio de evaluacion (RS1 - para grafico)
+export interface IReporteDashboardNotaCriterioResumen {
+  idCriterioEvaluacion: number;
+  criterioEvaluacion: string;
+  conNota: number;
+  sinNota: number;
+  total: number;
+}
+
+// Detalle de nota de un alumno por criterio (RS2 - para grilla)
+export interface IReporteDashboardNotaAlumnoDetalle {
+  idMatriculaCabecera: number;
+  nombreAlumno: string;
+  idCriterioEvaluacion: number;
+  criterioEvaluacion: string;
+  nota: string;
+  programaEspecifico: string;
+}
+
+// Contenedor con los 2 result sets del SP23
+export interface IReporteDashboardNotasAlumnos {
+  resumen: IReporteDashboardNotaCriterioResumen[];
+  detalle: IReporteDashboardNotaAlumnoDetalle[];
+}

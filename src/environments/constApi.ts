@@ -4150,7 +4150,13 @@ export const constApiPlanificacion = {
   ReporteDashboardObtenerCambiosEstado: '/ReporteDashboard/ObtenerCambiosEstado',
   ReporteDashboardObtenerEstadosPorDia: '/ReporteDashboard/ObtenerEstadosPorDia',
   ReporteDashboardObtenerDetalleCursosV3: '/ReporteDashboard/ObtenerDetalleCursosV3',
-  ReporteDashboardObtenerSeguimientoClases: '/ReporteDashboard/ObtenerSeguimientoClases'
+  ReporteDashboardObtenerSeguimientoClases: '/ReporteDashboard/ObtenerSeguimientoClases',
+
+  // Dashboard 2: Seguimiento por Docente
+  ReporteDashboardObtenerDocentesFiltro: '/ReporteDashboard/ObtenerDocentesFiltro',
+  ReporteDashboardObtenerPEspecificoFiltro: '/ReporteDashboard/ObtenerPEspecificoFiltro',
+  ReporteDashboardObtenerSeguimientoDocente: '/ReporteDashboard/ObtenerSeguimientoDocente',
+  ReporteDashboardObtenerNotasAlumnosPorPrograma: '/ReporteDashboard/ObtenerNotasAlumnosPorPrograma'
 
 };
 
