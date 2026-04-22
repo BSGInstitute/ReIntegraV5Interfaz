@@ -6,6 +6,7 @@ import {
   constApiPlanificacion,
 } from '@environments/constApi';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { IComboBase1 } from '@shared/models/interfaces/iglobal';
 import {
   Ambiente,
   CombosModulo,
@@ -35,6 +36,7 @@ interface FormSupPgeneral {
   idPeriodoLectivo: number;
   idCiclo: number;
   idEstadoPEspecifico: number;
+  idEstadoCupos: number;
   idModalidadCurso: number;
   idProveedor: number;
   idAmbiente: number;
@@ -80,6 +82,10 @@ export class ModalContentSubPespecificoComponent implements OnInit {
   };
   idsPespecificoSeleccionado: number[] = [];
   esProgramaInstitutoTemp: boolean = false;
+  estadosCupos: IComboBase1[] = [
+    { id: 1, nombre: 'Con Cupos' },
+    { id: 2, nombre: 'Sin Cupos' },
+  ];
 
   ngOnInit(): void {
     this.dataItemPespecificoTemp =
@@ -125,6 +131,7 @@ export class ModalContentSubPespecificoComponent implements OnInit {
       idPeriodoLectivo: null,
       idCiclo: null,
       idEstadoPEspecifico: null,
+      idEstadoCupos: null,
       idModalidadCurso: null,
       idProveedor: null,
       idAmbiente: null,
@@ -542,6 +549,7 @@ export class ModalContentSubPespecificoComponent implements OnInit {
       idCentroCosto: null,
       idProveedor: null,
       idEstadoPEspecifico: null,
+      idEstadoCupos: null,
       idModalidadCurso: null,
       idCursoMoodle: null,
       idCursoMoodlePrueba: null,

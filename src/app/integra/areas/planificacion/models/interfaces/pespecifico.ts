@@ -192,6 +192,7 @@ export interface DocenteAmbientePespecifico {
   idPeriodoLectivo?: number;
   idCiclo?: number;
   idEstadoPEspecifico?: number;
+  idEstadoCupos?: number;
   idModalidadCurso?: number;
   idCursoMoodle?: number;
   idCursoMoodlePrueba?: number;
