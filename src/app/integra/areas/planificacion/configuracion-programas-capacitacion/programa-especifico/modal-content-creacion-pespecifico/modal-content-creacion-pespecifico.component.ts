@@ -50,6 +50,7 @@ interface FormPespecifico {
   urlDocumentoCronogramaGruposI: string;
   resumenClaseActivo: boolean;
   tutorVirtualActivo: boolean;
+  idEstadoCupos: number;
 }
 interface FormGeneracionAutomatica {
   idProgramaGeneral: number;
@@ -118,7 +119,12 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
     urlDocumentoCronogramaGruposI: [''],
     resumenClaseActivo: [false],
     tutorVirtualActivo: [false],
+    idEstadoCupos: [null],
   });
+  estadosCupos: IComboBase1[] = [
+    { id: 1, nombre: 'Con Cupos' },
+    { id: 2, nombre: 'Sin Cupos' },
+  ];
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
     operator: 'contains',
@@ -483,6 +489,7 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
       idPeriodoLectivo: null,
       resumenClaseActivo: datosForm.resumenClaseActivo,
       tutorVirtualActivo: datosForm.tutorVirtualActivo,
+      idEstadoCupos: datosForm.idEstadoCupos,
     };
     return pespecifico;
   }
@@ -619,6 +626,7 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
     }
     this.formPespecifico.get('resumenClaseActivo').setValue(dataItem.resumenClaseActivo);
     this.formPespecifico.get('tutorVirtualActivo').setValue(dataItem.tutorVirtualActivo);
+    this.formPespecifico.get('idEstadoCupos').setValue(dataItem.idEstadoCupos);
 
   }
   pEspecificosAdicional : IComboBase1[] = [];
