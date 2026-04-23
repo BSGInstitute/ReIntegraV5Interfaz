@@ -749,33 +749,52 @@ export class ModalContentCronogramaComponent implements OnInit {
     const existentes = new Set(
       (this.gridConfiguracionWebinar.data as ConfigurarWebinar[]).map(x => x.idPespecifico)
     );
-    let agregados = 0;
+    const nuevosItems: ConfigurarWebinar[] = [];
     this.programasCheckboxSeleccionados.forEach(idPespecifico => {
       if (idPespecifico && !existentes.has(idPespecifico)) {
-        const nuevaFila: ConfigurarWebinar = {
+        nuevosItems.push({
           id: 0,
           idPespecifico,
           idPespecificoPadre: this.dataItemPespecificoTemp.id,
           modalidad: '',
           codigo: '',
           idOperadorComparacionAvance: 10,
-          valorAvance: null,
-          valorAvanceOpc: null,
-          idOperadorComparacionPromedio: null,
-          valorPromedio: null,
-          valorPromedioOpc: null,
-        };
-        (this.gridConfiguracionWebinar.data as ConfigurarWebinar[]).push(nuevaFila);
-        agregados++;
+          valorAvance: 0,
+          valorAvanceOpc: 0,
+          idOperadorComparacionPromedio: 1,
+          valorPromedio: 0,
+          valorPromedioOpc: 0,
+        });
       }
     });
-    if (agregados > 0) {
-      this.gridConfiguracionWebinar.data = [...(this.gridConfiguracionWebinar.data as ConfigurarWebinar[])];
-      this.disableGuardarCambios = false;
-      this.programasCheckboxSeleccionados = new Set();
-    } else {
+    if (nuevosItems.length === 0) {
       this._alertaService.notificationWarning('Los programas seleccionados ya están registrados en la tabla');
+      return;
     }
+    this.gridConfiguracionWebinar.loading = true;
+    const requests$ = nuevosItems.map(item =>
+      this._integraService.postJsonResponse(
+        constApiPlanificacion.ConfigurarWebinarInsertarConfiguracionWebinar,
+        JSON.stringify(item)
+      )
+    );
+    forkJoin(requests$).subscribe({
+      next: () => {
+        this._alertaService.toastOptions(
+          'Se registraron correctamente',
+          'success',
+          'top-right',
+          idTemplate
+        );
+        this.programasCheckboxSeleccionados = new Set();
+        this.obtenerConfiguracionWebinar();
+      },
+      error: (error) => {
+        this.gridConfiguracionWebinar.loading = false;
+        const mensaje = this._alertaService.getMessageErrorService(error);
+        this._alertaService.notificationWarning(mensaje);
+      },
+    });
   }
 
   configurarGridDefinirFrecuencia() {
@@ -1655,7 +1674,7 @@ export class ModalContentCronogramaComponent implements OnInit {
       } else {
         return true;
       }
-    });
+    }).map(x => ({ ...x, idOperadorComparacionPromedio: 1, valorPromedio: 0 }));
     let idsDeletes = this.configurarWebinarOriginal
       .filter((x) => !data.map((y) => y.id).includes(x.id))
       .map((s) => s.id);
