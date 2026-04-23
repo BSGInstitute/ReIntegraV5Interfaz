@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 import { Subject, forkJoin } from 'rxjs';
@@ -18,6 +18,7 @@ import {
   IReporteDashboardCompleto,
   IReporteDashboardFiltroRequest,
   IReporteDashboardProgramaEspecificoItem,
+  IReporteDashboardCentroCostoItem,
   IChartSeriesItem,
   IReporteDashboardEstadoSesion,
   IReporteDashboardSesionDetalle,
@@ -33,8 +34,6 @@ import {
   IReporteDashboardSeguimientoDocentePrograma,
   IReporteDashboardSeguimientoDocenteSesion,
   IReporteDashboardSeguimientoDocenteKPIs,
-  IReporteDashboardNotasAlumnos,
-  IReporteDashboardNotaAlumnoDetalle
 } from '@planificacion/models/interfaces/reporte-dashboard';
 import { AlertaService } from '@shared/services/alerta.service';
 import { ExcelExportComponent } from '@progress/kendo-angular-excel-export';
@@ -75,7 +74,6 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     programasFinalizados: 0,
     totalDocentes: 0,
     docentesActivos: 0,
-    totalCoordinadores: 0,
     totalSesiones: 0
   };
 
@@ -112,7 +110,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   // Datos filtrados para los MultiSelect
   filteredProgramasEspecificos: IReporteDashboardProgramaEspecificoItem[] = [];
-  filteredCentrosCosto: string[] = [];
+  filteredCentrosCosto: IReporteDashboardCentroCostoItem[] = [];
 
   // Colores para graficos
   coloresEstado: { [key: string]: string } = {
@@ -235,7 +233,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   };
 
   // Tab principal (dashboard1 / dashboard2)
-  activeMainTab: 'dashboard1' | 'dashboard2' = 'dashboard1';
+  activeMainTab: 'dashboard1' | 'dashboard2' | 'dashboard3' = 'dashboard1';
 
   // Tab activo (grillas dentro de dashboard1)
   activeTab: string = 'programas';
@@ -281,13 +279,6 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     'Reprogramadas': '#ffc107',
     'Programadas': '#007bff'
   };
-  // Notas de alumnos
-  notasAlumnos: IReporteDashboardNotasAlumnos | null = null;
-  loadingNotas: boolean = false;
-  notasDetalleData: IReporteDashboardNotaAlumnoDetalle[] = [];
-  stateNotas: State = { skip: 0, take: 15 };
-  get gridDataNotas(): any { return process(this.notasDetalleData, this.stateNotas); }
-
   // Getters para datos procesados de grillas
   get gridDataProgramas(): any {
     return process(this.programas, this.stateProgramas);
@@ -377,13 +368,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
             // Inicializar datos filtrados para los MultiSelect
             this.filteredProgramasEspecificos = this.filtros.programasEspecificos.slice(0, 50);
             this.filteredCentrosCosto = this.filtros.centrosCosto.slice(0, 50);
-
-            const anioActual = new Date().getFullYear();
-            if (this.filtros.anios.includes(anioActual)) {
-              this.formFiltro.get('anio')?.setValue(anioActual);
-            } else if (this.filtros.anios.length > 0) {
-              this.formFiltro.get('anio')?.setValue(this.filtros.anios[0]);
-            }
+            // No se auto-asigna anio: null = todos los anios en la carga inicial
           }
         },
         error: (error) => {
@@ -415,7 +400,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     } else {
       const filterLower = filter.toLowerCase();
       this.filteredCentrosCosto = this.filtros.centrosCosto
-        .filter(c => c.toLowerCase().includes(filterLower))
+        .filter(c => (c.nombre ?? '').toLowerCase().includes(filterLower))
         .slice(0, 100);
     }
   }
@@ -423,13 +408,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   /**
    * Obtiene los filtros actuales del formulario
    */
-  private getSelectedFilters(): { idProgramaEspecificoPadre?: number; centroCostoPadre?: string } {
+  private getSelectedFilters(): { idProgramaEspecificoPadre?: number; idCentroCostoPadre?: number } {
     const idsProgramas = this.formFiltro.get('idsProgramaEspecificoPadre')?.value as number[] || [];
-    const centrosCosto = this.formFiltro.get('centrosCostoPadre')?.value as string[] || [];
+    const centrosCosto = this.formFiltro.get('centrosCostoPadre')?.value as number[] || [];
 
     return {
       idProgramaEspecificoPadre: idsProgramas.length > 0 ? idsProgramas[0] : undefined,
-      centroCostoPadre: centrosCosto.length > 0 ? centrosCosto[0] : undefined
+      idCentroCostoPadre: centrosCosto.length > 0 ? centrosCosto[0] : undefined
     };
   }
 
@@ -439,13 +424,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarDatosDashboard(): void {
     this.loading = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
     forkJoin({
-      resumen: this._reporteDashboardService.obtenerResumen$(anio, idProgramaEspecificoPadre, centroCostoPadre),
-      estados: this._reporteDashboardService.obtenerResumenPorEstado$(anio, idProgramaEspecificoPadre, centroCostoPadre),
-      modalidades: this._reporteDashboardService.obtenerResumenPorModalidad$(anio, undefined, idProgramaEspecificoPadre, centroCostoPadre),
-      graficoPorMes: this._reporteDashboardService.obtenerGraficoPorMes$(anio, idProgramaEspecificoPadre, centroCostoPadre)
+      resumen: this._reporteDashboardService.obtenerResumen$(anio, idProgramaEspecificoPadre, idCentroCostoPadre),
+      estados: this._reporteDashboardService.obtenerResumenPorEstado$(anio, idProgramaEspecificoPadre, idCentroCostoPadre),
+      modalidades: this._reporteDashboardService.obtenerResumenPorModalidad$(anio, undefined, idProgramaEspecificoPadre, idCentroCostoPadre),
+      graficoPorMes: this._reporteDashboardService.obtenerGraficoPorMes$(anio, idProgramaEspecificoPadre, idCentroCostoPadre)
     })
     .pipe(takeUntil(this.destroy$))
     .subscribe({
@@ -519,9 +504,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarResumenSemanal(): void {
     this.loadingSemanal = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerResumenSemanal$(anio, undefined, undefined, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerResumenSemanal$(anio, undefined, undefined, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardSemanal[]>) => {
@@ -548,11 +533,11 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarEstadosSesion(): void {
     this.loadingEstadosSesion = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
     forkJoin({
-      resumen: this._reporteDashboardService.obtenerResumenPorEstadoSesion$(anio, idProgramaEspecificoPadre, centroCostoPadre),
-      kpis: this._reporteDashboardService.obtenerKPIsEstadoSesion$(anio, idProgramaEspecificoPadre, centroCostoPadre)
+      resumen: this._reporteDashboardService.obtenerResumenPorEstadoSesion$(anio, idProgramaEspecificoPadre, idCentroCostoPadre),
+      kpis: this._reporteDashboardService.obtenerKPIsEstadoSesion$(anio, idProgramaEspecificoPadre, idCentroCostoPadre)
     })
     .pipe(takeUntil(this.destroy$))
     .subscribe({
@@ -589,9 +574,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.loadingSesionesDetalle = true;
     this.estadoSesionSeleccionado = idEstadoSesion || null;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerSesionesPorEstado$(anio, idEstadoSesion, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerSesionesPorEstado$(anio, idEstadoSesion, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardSesionDetalle[]>) => {
@@ -801,9 +786,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarProgramas(): void {
     this.loadingProgramas = true;
     const { anio, estado, modalidad } = this.formFiltro.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerProgramasPorEstado$(estado, anio, undefined, undefined, modalidad, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerProgramasPorEstado$(estado, anio, undefined, undefined, modalidad, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardPrograma[]>) => {
@@ -823,9 +808,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarCursos(): void {
     this.loadingCursos = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerDetalleCursos$(undefined, undefined, undefined, idProgramaEspecificoPadre, anio, centroCostoPadre)
+    this._reporteDashboardService.obtenerDetalleCursos$(undefined, undefined, undefined, idProgramaEspecificoPadre, anio, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardCurso[]>) => {
@@ -845,9 +830,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarDocentes(): void {
     this.loadingDocentes = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerDocentesAsignados$(anio, undefined, undefined, false, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerDocentesAsignados$(anio, undefined, undefined, false, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardDocente[]>) => {
@@ -873,10 +858,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    */
   limpiarFiltros(): void {
     this.formFiltro.reset();
-    const anioActual = new Date().getFullYear();
-    if (this.filtros.anios.includes(anioActual)) {
-      this.formFiltro.get('anio')?.setValue(anioActual);
-    }
+    // anio queda en null = todos los anios
     this.cargarDatosDashboard();
   }
 
@@ -1043,13 +1025,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    * Carga los datos completos para exportacion a Excel
    */
   cargarDatosCompletos(): void {
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
     const filtro: IReporteDashboardFiltroRequest = {
       anio: this.formFiltro.get('anio')?.value,
       estado: this.formFiltro.get('estado')?.value,
       modalidad: this.formFiltro.get('modalidad')?.value,
       idProgramaEspecificoPadre,
-      centroCostoPadre
+      idCentroCostoPadre
     };
 
     this._reporteDashboardService.obtenerDatosCompletos$(filtro)
@@ -1294,7 +1276,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   // DASHBOARD 2: Seguimiento por Docente
   // ═══════════════════════════════════════════════════════════════════════════
 
-  onMainTabChange(tab: 'dashboard1' | 'dashboard2'): void {
+  onMainTabChange(tab: 'dashboard1' | 'dashboard2' | 'dashboard3'): void {
     this.activeMainTab = tab;
     if (tab === 'dashboard2' && this.docentesFiltro.length === 0) {
       this.cargarDocentesFiltro();
@@ -1391,33 +1373,6 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Siempre cargar notas — el SP acepta @IdPEspecifico = NULL
-    this.cargarNotasAlumnos(idPEspecifico || undefined);
-  }
-
-  cargarNotasAlumnos(idPEspecifico?: number): void {
-    this.loadingNotas = true;
-    this.notasAlumnos = null;
-    this.notasDetalleData = [];
-    this._reporteDashboardService.obtenerNotasAlumnosPorPrograma$(idPEspecifico)
-    .pipe(
-      takeUntil(this.destroy$),
-      finalize(() => { this.loadingNotas = false; })
-    )
-    .subscribe({
-      next: (response: HttpResponse<IReporteDashboardNotasAlumnos>) => {
-        const data = response.body;
-        if (data) {
-          this.notasAlumnos     = data;
-          this.notasDetalleData = data.detalle || [];
-        }
-      },
-      error: () => {}
-    });
-  }
-
-  onStateChangeNotas(state: State): void {
-    this.stateNotas = state;
   }
 
   limpiarFiltroD2(): void {
@@ -1425,8 +1380,6 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.seguimientoDocenteKPIs    = { ...this._kpisVacio };
     this.seguimientoDocenteProgramas = [];
     this.seguimientoDocenteSesiones  = [];
-    this.notasAlumnos     = null;
-    this.notasDetalleData = [];
     this.buscarSeguimientoDocente();
   }
 

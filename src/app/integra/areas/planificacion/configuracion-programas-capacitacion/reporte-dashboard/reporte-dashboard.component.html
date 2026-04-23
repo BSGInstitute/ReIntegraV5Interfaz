@@ -23,6 +23,11 @@
         <i class="k-icon k-i-user me-1"></i> Dashboard 2 - Seguimiento Docente
       </a>
     </li>
+     <li class="nav-item">
+      <a class="nav-link" [class.active]="activeMainTab === 'dashboard3'" (click)="onMainTabChange('dashboard3')" style="cursor:pointer">
+        <i class="k-icon k-i-user me-1"></i> Dashboard 3 - Furs
+      </a>
+    </li>
   </ul>
 
   <!-- ═══════ DASHBOARD 1 ═══════ -->
@@ -41,7 +46,7 @@
                 [data]="filtros.anios"
                 [valuePrimitive]="true"
                 [defaultItem]="null"
-                placeholder="Todos"
+                placeholder="-- Seleccione --"
               ></kendo-dropdownlist>
             </kendo-formfield>
           </div>
@@ -53,7 +58,7 @@
                 [data]="filtros.estados"
                 [valuePrimitive]="true"
                 [defaultItem]="null"
-                placeholder="Todos"
+                placeholder="-- Seleccione --"
               ></kendo-dropdownlist>
             </kendo-formfield>
           </div>
@@ -65,13 +70,13 @@
                 [data]="filtros.modalidades"
                 [valuePrimitive]="true"
                 [defaultItem]="null"
-                placeholder="Todas"
+                placeholder="-- Seleccione --"
               ></kendo-dropdownlist>
             </kendo-formfield>
           </div>
           <div class="col-md-3">
             <kendo-formfield>
-              <kendo-label text="Programa Especifico"></kendo-label>
+              <kendo-label text="Programa Especifico Padre"></kendo-label>
               <kendo-multiselect
                 formControlName="idsProgramaEspecificoPadre"
                 [data]="filteredProgramasEspecificos"
@@ -98,6 +103,8 @@
               <kendo-multiselect
                 formControlName="centrosCostoPadre"
                 [data]="filteredCentrosCosto"
+                textField="nombre"
+                valueField="id"
                 [valuePrimitive]="true"
                 [filterable]="true"
                 (filterChange)="onFilterCentrosCosto($event)"
@@ -207,14 +214,6 @@
           <div class="card-body text-center py-2">
             <h5 class="mb-0 text-success">{{ resumen.docentesActivos }}</h5>
             <small class="text-muted">Docentes Activos</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2 col-sm-4 mb-2">
-        <div class="card h-100">
-          <div class="card-body text-center py-2">
-            <h5 class="mb-0 text-info">{{ resumen.totalCoordinadores }}</h5>
-            <small class="text-muted">Coordinadores</small>
           </div>
         </div>
       </div>
@@ -1572,64 +1571,8 @@
         </div>
       </div>
 
-      <!-- ══ Notas de Alumnos por Programa ══ -->
-      <div class="card mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <span><i class="k-icon k-i-table me-1"></i> Notas de Alumnos por Criterio</span>
-          <span class="badge bg-info" *ngIf="notasDetalleData.length > 0">{{ notasDetalleData.length }} registros</span>
-        </div>
-        <div class="card-body">
-
-          <!-- Estado inicial: aún no se ha buscado -->
-          <div *ngIf="notasAlumnos === null && !loadingNotas"
-               class="text-center text-muted py-4">
-            <i class="k-icon k-i-information" style="font-size:2rem"></i>
-            <p class="mt-2 mb-0">Presiona <strong>Buscar</strong> para cargar las notas. Puedes filtrar por docente y/o programa específico.</p>
-          </div>
-
-          <!-- Spinner notas -->
-          <div *ngIf="loadingNotas" class="text-center py-4">
-            <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
-            <p class="mt-2 text-muted">Cargando notas...</p>
-          </div>
-
-          <ng-container *ngIf="!loadingNotas && (notasDetalleData.length > 0 || notasAlumnos !== null)">
-
-            <!-- Sin datos luego de buscar -->
-            <div *ngIf="notasAlumnos !== null && notasDetalleData.length === 0"
-                 class="alert alert-warning d-flex align-items-center gap-2 mb-3">
-              <i class="k-icon k-i-warning"></i>
-              No se encontraron notas para el programa seleccionado.
-            </div>
-
-            <!-- Grilla detalle: alumno × criterio × nota -->
-            <kendo-grid *ngIf="notasDetalleData.length > 0"
-              [data]="gridDataNotas"
-              [pageSize]="stateNotas.take"
-              [skip]="stateNotas.skip"
-              [pageable]="{ pageSizes: [15, 30, 50] }"
-              [filterable]="'row'"
-              [sortable]="true"
-              (dataStateChange)="onStateChangeNotas($event)"
-              style="max-height: 450px">
-              <kendo-grid-column field="nombreAlumno"       title="Alumno"                  [width]="220"></kendo-grid-column>
-              <kendo-grid-column field="programaEspecifico" title="Programa"                [width]="200"></kendo-grid-column>
-              <kendo-grid-column field="criterioEvaluacion" title="Criterio de Evaluación"  [width]="200"></kendo-grid-column>
-              <kendo-grid-column field="nota"               title="Nota"                    [width]="90">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <span [ngClass]="dataItem.nota === '--' ? 'text-muted' : 'fw-semibold text-success'">
-                    {{ dataItem.nota }}
-                  </span>
-                </ng-template>
-              </kendo-grid-column>
-            </kendo-grid>
-
-          </ng-container>
-        </div>
-      </div>
-
       <!-- Estado vacío — solo si no hay NINGÚN dato aún -->
-      <div *ngIf="seguimientoDocenteProgramas.length === 0 && seguimientoDocenteSesiones.length === 0 && notasAlumnos === null && !loadingNotas"
+      <div *ngIf="seguimientoDocenteProgramas.length === 0 && seguimientoDocenteSesiones.length === 0"
            class="text-center py-5 text-muted">
         <i class="k-icon k-i-search" style="font-size: 3rem;"></i>
         <p class="mt-2">Selecciona un docente y/o programa y presiona <strong>Buscar</strong> para ver el seguimiento.</p>
@@ -1641,4 +1584,9 @@
   </ng-container>
   <!-- ═══════ FIN DASHBOARD 2 ═══════ -->
 
+<!-- ═══════ DASHBOARD 3: Furs ═══════ -->
+   <ng-container *ngIf="activeMainTab === 'dashboard3'">
+
+   </ng-container>
+   <!-- ═══════ FIN DASHBOARD 3 ═══════ -->
 </div>

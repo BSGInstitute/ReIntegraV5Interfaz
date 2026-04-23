@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Interfaces para el Dashboard de Programas de Capacitacion
  * Autor: Marco Villanueva Torres
  * Fecha: 2025-04-17
@@ -13,7 +13,6 @@ export interface IReporteDashboardResumen {
   programasFinalizados: number;
   totalDocentes: number;
   docentesActivos: number;
-  totalCoordinadores: number;
   totalSesiones: number;
 }
 
@@ -90,11 +89,16 @@ export interface IReporteDashboardFiltros {
   areas: string[];
   ciudades: string[];
   programasEspecificos: IReporteDashboardProgramaEspecificoItem[];
-  centrosCosto: string[];
+  centrosCosto: IReporteDashboardCentroCostoItem[];
 }
 
 // Item para combo de programas especificos
 export interface IReporteDashboardProgramaEspecificoItem {
+  id: number;
+  nombre: string;
+}
+// Item para combo de centros de costo
+export interface IReporteDashboardCentroCostoItem {
   id: number;
   nombre: string;
 }
@@ -149,9 +153,8 @@ export interface IReporteDashboardFiltroRequest {
   fechaFin?: Date | string;
   area?: string;
   ciudad?: string;
-  programaPadre?: string;
   idProgramaEspecificoPadre?: number;
-  centroCostoPadre?: string;
+  idCentroCostoPadre?: number;
 }
 
 // Datos de sesiones para vista de calendario
@@ -194,7 +197,7 @@ export interface IReporteDashboardSesionDetalle {
   programaEspecifico: string;
   estadoPrograma: string;
   centroCosto: string;
-  idSesion: number;
+  idPEspecificoSesion: number;
   fecha: Date | string;
   diaSemana: string;
   horario: string;
@@ -350,7 +353,7 @@ export interface IReporteDashboardSeguimientoDocentePrograma {
 
 // Detalle de sesiones del seguimiento de docente (RS3)
 export interface IReporteDashboardSeguimientoDocenteSesion {
-  idSesion: number;
+  idPEspecificoSesion: number;
   idPEspecifico: number;
   programaGeneral: string;
   programa: string;
@@ -384,31 +387,3 @@ export interface IReporteDashboardSeguimientoDocenteFiltroRequest {
   fechaFin?: Date | string;
 }
 
-// ============================================
-// Dashboard 2: Notas de alumnos por programa
-// ============================================
-
-// Resumen por criterio de evaluacion (RS1 - para grafico)
-export interface IReporteDashboardNotaCriterioResumen {
-  idCriterioEvaluacion: number;
-  criterioEvaluacion: string;
-  conNota: number;
-  sinNota: number;
-  total: number;
-}
-
-// Detalle de nota de un alumno por criterio (RS2 - para grilla)
-export interface IReporteDashboardNotaAlumnoDetalle {
-  idMatriculaCabecera: number;
-  nombreAlumno: string;
-  idCriterioEvaluacion: number;
-  criterioEvaluacion: string;
-  nota: string;
-  programaEspecifico: string;
-}
-
-// Contenedor con los 2 result sets del SP23
-export interface IReporteDashboardNotasAlumnos {
-  resumen: IReporteDashboardNotaCriterioResumen[];
-  detalle: IReporteDashboardNotaAlumnoDetalle[];
-}

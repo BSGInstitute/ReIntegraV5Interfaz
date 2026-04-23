@@ -10,7 +10,7 @@ import { AlertaService } from '@shared/services/alerta.service';
 // Mocks
 const mockReporteDashboardService = {
   obtenerFiltros$: () => of({ body: { anios: [2025], estados: [], modalidades: [], areas: [], ciudades: [] } }),
-  obtenerResumen$: () => of({ body: { totalProgramasPadre: 0, totalProgramasHijo: 0, programasLanzamiento: 0, programasEjecucion: 0, programasFinalizados: 0, totalDocentes: 0, totalCoordinadores: 0, totalSesiones: 0 } }),
+  obtenerResumen$: () => of({ body: { totalProgramasPadre: 0, totalProgramasHijo: 0, programasLanzamiento: 0, programasEjecucion: 0, programasFinalizados: 0, totalDocentes: 0, totalSesiones: 0 } }),
   obtenerResumenPorEstado$: () => of({ body: [] }),
   obtenerResumenPorModalidad$: () => of({ body: [] }),
   obtenerGraficoPorMes$: () => of({ body: [] }),
