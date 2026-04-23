@@ -1321,7 +1321,21 @@ export const constApiOperaciones = {
     '/AgendaInformacionActividad/AgregarPEspecificoSesionEncuestaAlumno',
   AgregarComentarioEncuesta:
     '/AgendaInformacionActividad/AgregarComentarioEncuesta',
-};
+
+    //Calificacion Chat-Bot
+ObtenerHilosChatConAlumnos: "/ChatDetalleIntegra/ObtenerHilosChatConAlumnos",
+ObtenerHilosChatPorSegmento: "/ChatDetalleIntegra/ObtenerHilosChatPorSegmento",
+ObtenerChatBotPorAlumno: "/ChatDetalleIntegra/ObtenerChatBotPorAlumno",
+ObtenerChatBotPorPortalSegmento: "/ChatDetalleIntegra/ObtenerChatBotPorPortalSegmento",
+InsertarRespuestaEvaluacionCompleta: "/ChatDetalleIntegra/InsertarRespuestaEvaluacionCompleta",
+ObtenerTiposEntradaActivos: "/ChatDetalleIntegra/ObtenerTiposEntradaActivos",
+ObtenerVersionesFormularioActivas: "/ChatDetalleIntegra/ObtenerVersionesFormularioActivas",
+ObtenerPreguntasConRespuestas: "/ChatDetalleIntegra/ObtenerPreguntasConRespuestas",
+ObtenerRespuestasPorVersionFormulario: "/ChatDetalleIntegra/ObtenerRespuestasPorVersionFormulario",
+ObtenerRespuestasPorPregunta: "/ChatDetalleIntegra/ObtenerRespuestasPorPregunta",
+ObtenerPreguntasPorVersionFormulario: "/ChatDetalleIntegra/ObtenerPreguntasPorVersionFormulario",
+ObtenerRespuestasUsuarioPorFormularioAplicado: "/ChatDetalleIntegra/ObtenerRespuestasUsuarioPorFormularioAplicado",
+  };
 
 export const constApiMarketing = {
   ///Prueba

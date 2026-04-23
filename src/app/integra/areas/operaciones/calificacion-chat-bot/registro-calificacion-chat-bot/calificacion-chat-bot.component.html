@@ -1,20 +1,28 @@
 <div class="calificacion-chat-bot-container">
+  <!-- 1. Lista de Alumnos/No Alumnos -->
   <app-lista-alumno
     *ngIf="currentView === viewStates.STUDENTS"
     (selectStudent)="onStudentSelected($any($event))"
   ></app-lista-alumno>
 
+  <!-- 2. Lista de Hilos (agrupados por ID Hilo) -->
   <app-chats-list
-    *ngIf="currentView === viewStates.CHATS && selectedStudent"
-    [student]="selectedStudent"
-    (selectChat)="onChatSelected($any($event))"
-    (backToStudents)="onBackToStudents()"
+    #chatsList
+    *ngIf="currentView === viewStates.CHATS && tipoOrigen"
+    [alumno]="selectedAlumno!"
+    [noAlumno]="selectedNoAlumno!"
+    [tipoOrigen]="tipoOrigen"
+    (selectChat)="onChatSelected($event)"
+    (backToList)="onBackToStudents()"
   ></app-chats-list>
 
-  <app-evaluation-form
-    *ngIf="currentView === viewStates.EVALUATION && selectedChat"
-    [chat]="selectedChat"
-    (backToChats)="onBackToChats()"
-    (evaluationSubmitted)="onEvaluationSubmitted()"
-  ></app-evaluation-form>
+  <!-- 3. Vista de Mensajes con Formulario (Layout 2 Columnas) -->
+  <app-chat-messages
+    *ngIf="currentView === viewStates.CHAT_MESSAGES && idHiloSeleccionado"
+    [idHilo]="idHiloSeleccionado"
+    [nombreAlumno]="selectedAlumno?.nombreAlumno"
+    [codigoMatricula]="selectedAlumno?.codigoMatricula"
+    (backToHilos)="onBackToChats()"
+    (evaluacionGuardada)="onEvaluacionGuardada()"
+  ></app-chat-messages>
 </div>

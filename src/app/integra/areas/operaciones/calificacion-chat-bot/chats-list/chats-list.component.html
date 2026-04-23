@@ -1,37 +1,76 @@
 <div class="chats-container">
+  <!-- Header con botón de regreso -->
   <div class="header">
     <button mat-icon-button (click)="onBack()" class="back-button">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <div class="header-content">
-      <h2>Chats de {{ student.name }}</h2>
-      <p class="subtitle">Total de hilos: {{ chats.length }}</p>
+      <h2>{{ getTitulo() }}</h2>
+      <p class="subtitle">Total de chats: {{ hilosAgrupados.length }}</p>
     </div>
   </div>
 
-  <div class="table-section">
-    <table mat-table [dataSource]="chats" class="chats-table">
-      <!-- Content Column -->
-      <ng-container matColumnDef="content">
-        <th mat-header-cell *matHeaderCellDef>Contenido del Chat</th>
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Cargando chats...</p>
+  </div>
+
+  <!-- Tabla de chats -->
+  <div *ngIf="!isLoading" class="table-section">
+    <table mat-table [dataSource]="hilosAgrupados" class="chats-table">
+      <!-- ID Chat Column -->
+      <ng-container matColumnDef="idHilo">
+        <th mat-header-cell *matHeaderCellDef>ID Chat</th>
         <td mat-cell *matCellDef="let element">
-          <div class="chat-preview">{{ element.content | slice: 0: 100 }}...</div>
+          <strong class="hilo-id">#{{ element.idHilo }}</strong>
         </td>
       </ng-container>
 
-      <!-- Created At Column -->
-      <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef>Fecha</th>
-        <td mat-cell *matCellDef="let element">{{ formatDate(element.createdAt) }}</td>
+      <!-- Fecha Creación Column -->
+      <ng-container matColumnDef="fechaCreacion">
+        <th mat-header-cell *matHeaderCellDef>Fecha Creación</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="date-text">{{ element.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+        </td>
       </ng-container>
 
-      <!-- Is Rated Column -->
-      <ng-container matColumnDef="isRated">
+      <!-- Total Mensajes Column -->
+      <ng-container matColumnDef="totalMensajes">
+        <th mat-header-cell *matHeaderCellDef>Total Mensajes</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="badge-count">{{ element.totalMensajes }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Primer Mensaje Column -->
+      <ng-container matColumnDef="primerMensaje">
+        <th mat-header-cell *matHeaderCellDef>Vista Previa</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="message-preview">
+            <mat-icon class="preview-icon">chat_bubble</mat-icon>
+            <span class="preview-text">{{ getPrimerMensajePreview(element.primerMensaje) }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Estado Column -->
+      <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef>Estado</th>
         <td mat-cell *matCellDef="let element">
-          <span class="status-badge" [ngClass]="getRatingStatusColor(element.isRated)">
-            {{ getRatingStatus(element.isRated) }}
-          </span>
+          <div class="estado-container">
+            <mat-chip *ngIf="element.esCalificado" class="estado-chip calificado">
+              <mat-icon class="chip-icon">check_circle</mat-icon>
+              Calificado
+            </mat-chip>
+            <mat-chip *ngIf="!element.esCalificado" class="estado-chip pendiente">
+              <mat-icon class="chip-icon">pending</mat-icon>
+              Pendiente
+            </mat-chip>
+            <span *ngIf="element.esCalificado && element.fechaCalificacion" class="fecha-calificacion">
+              {{ element.fechaCalificacion | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
         </td>
       </ng-container>
 
@@ -39,15 +78,23 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-raised-button color="primary" (click)="onSelectChat(element)">
-            Calificar
+          <button mat-raised-button 
+                  [color]="element.esCalificado ? 'accent' : 'primary'" 
+                  (click)="onSelectHilo(element)">
+            <mat-icon>{{ element.esCalificado ? 'visibility' : 'rate_review' }}</mat-icon>
+            {{ element.esCalificado ? 'Ver Evaluación' : 'Calificar' }}
           </button>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hilo-row"></tr>
     </table>
+
+    <!-- Sin datos -->
+    <div *ngIf="hilosAgrupados.length === 0" class="no-data">
+      <mat-icon>inbox</mat-icon>
+      <p>No se encontraron chats</p>
+    </div>
   </div>
 </div>
-

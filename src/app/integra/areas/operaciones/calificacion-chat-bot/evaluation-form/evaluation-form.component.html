@@ -1,151 +1,438 @@
 <div class="evaluation-container">
-  <div class="header">
-    <button mat-icon-button (click)="onBack()" class="back-button">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h2>Calificar Chat</h2>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando formulario...</p>
   </div>
 
-  <div class="content-grid">
-    <!-- Chat Content Section -->
-    <mat-card class="chat-section">
-      <mat-card-header>
-        <mat-card-title>Contenido del Chat</mat-card-title>
-      </mat-card-header>
+  <!-- Formulario Dinámico -->
+  <div *ngIf="!isLoading" class="form-content">
+    <!-- Indicador de Formulario Ya Calificado -->
+    <div *ngIf="esFormularioYaCalificado" class="calificado-banner">
+      <mat-icon>check_circle</mat-icon>
+      <div class="calificado-info">
+        <strong>Este chat ya ha sido calificado</strong>
+        <span class="calificado-fecha" *ngIf="fechaCalificacion">
+          Fecha: {{ fechaCalificacion | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+      <mat-chip class="readonly-chip">Solo Lectura</mat-chip>
+    </div>
+
+    <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()">
+      <mat-card class="evaluation-card" [class.readonly-mode]="esFormularioYaCalificado">
       <mat-card-content>
-        <div class="chat-content">
-          {{ chat.content }}
+          <!-- Información del Chat -->
+          <div class="hilo-info">
+            <mat-icon>chat</mat-icon>
+            <span>{{ esFormularioYaCalificado ? 'Chat Calificado' : 'Evaluando Chat' }} #{{ idHilo }}</span>
         </div>
-        <div class="chat-meta">
-          <p><strong>Alumno:</strong> {{ chat.studentName }}</p>
-          <p><strong>Fecha:</strong> {{ chat.createdAt | date: 'medium' }}</p>
-        </div>
-      </mat-card-content>
-    </mat-card>
 
-    <!-- Evaluation Form Section -->
-    <mat-card class="form-section">
-      <mat-card-header>
-        <mat-card-title>Formulario de Evaluación</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()">
-          <!-- Overall Rating -->
-          <div class="form-group">
-            <label>Calificación General</label>
-            <div class="rating-slider">
-              <mat-slider
-                formControlName="rating"
-                min="1"
-                max="5"
-                step="1"
-                class="slider"
-              >
-              </mat-slider>
-              <div class="rating-display">
-                <span class="rating-value">{{ evaluationForm.get('rating')?.value }}</span>
-                <span class="rating-label">{{ getRatingLabel(evaluationForm.get('rating')?.value) }}</span>
+          <mat-divider class="section-divider"></mat-divider>
+
+          <!-- Preguntas Dinámicas -->
+          <div class="preguntas-container">
+            <!-- Primeras 4 preguntas -->
+            <div *ngFor="let pregunta of preguntas.slice(0, 4); let i = index" class="pregunta-item">
+              <div class="pregunta-header">
+                <span class="pregunta-numero">{{ i + 1 }}.</span>
+                <h3 class="pregunta-titulo">
+                  {{ pregunta.nombre }}
+                  <span class="required-indicator" *ngIf="pregunta.esRequerido">*</span>
+                </h3>
+                <mat-chip class="tipo-chip">{{ tipoEntradaLabels[pregunta.tipoEntrada] }}</mat-chip>
+                <mat-chip class="required-chip" *ngIf="!pregunta.esRequerido">Opcional</mat-chip>
+          </div>
+
+              <!-- Selección Simple (Radio Buttons) -->
+              <mat-radio-group
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.SELECCION_SIMPLE"
+                [formControlName]="'pregunta_' + pregunta.id"
+                class="respuesta-control">
+                <mat-radio-button
+                  *ngFor="let respuesta of pregunta.respuestas"
+                  [value]="respuesta.id"
+                  class="radio-option">
+                  {{ respuesta.respuesta }}
+                </mat-radio-button>
+              </mat-radio-group>
+
+              <!-- Selección Múltiple (Checkboxes) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.SELECCION_MULTIPLE" class="respuesta-control">
+                <mat-checkbox
+                  *ngFor="let respuesta of pregunta.respuestas"
+                  [checked]="isCheckboxChecked(pregunta.id, respuesta.id)"
+                  [disabled]="esFormularioYaCalificado"
+                  (change)="onCheckboxChange(pregunta.id, respuesta.id, $event.checked)"
+                  class="checkbox-option">
+                  {{ respuesta.respuesta }}
+                </mat-checkbox>
               </div>
+
+              <!-- Texto Libre (Textarea) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.TEXTO_LIBRE"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Tu respuesta</mat-label>
+                <textarea
+                  matInput
+                  [formControlName]="'pregunta_' + pregunta.id"
+                  rows="4"
+                  placeholder="Escribe tu respuesta aquí..."></textarea>
+                <mat-hint>Mínimo 10 caracteres</mat-hint>
+              </mat-form-field>
+
+              <!-- Rating (Estrellas con Slider) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.RATING" class="respuesta-control rating-control">
+                <div class="rating-stars">
+                  <button
+                    *ngFor="let star of getRatingOptions()"
+                    type="button"
+                    mat-icon-button
+                    [disabled]="esFormularioYaCalificado"
+                    (click)="!esFormularioYaCalificado && getControl(pregunta.id).setValue(star)"
+                    [class.selected]="getControl(pregunta.id).value >= star">
+                    <mat-icon>{{ getControl(pregunta.id).value >= star ? 'star' : 'star_border' }}</mat-icon>
+                  </button>
+                </div>
+                <div class="rating-label" *ngIf="getControl(pregunta.id).value">
+                  {{ getRatingLabel(getControl(pregunta.id).value) }}
+                </div>
+              </div>
+
+              <!-- Sí/No (Radio Buttons) -->
+              <mat-radio-group
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.SI_NO"
+                [formControlName]="'pregunta_' + pregunta.id"
+                class="respuesta-control si-no-group">
+                <mat-radio-button [value]="1" class="si-no-option">Sí</mat-radio-button>
+                <mat-radio-button [value]="0" class="si-no-option">No</mat-radio-button>
+              </mat-radio-group>
+
+              <!-- Escala (Slider Numérico) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.ESCALA" class="respuesta-control escala-control">
+                <mat-slider
+                  [formControlName]="'pregunta_' + pregunta.id"
+                  [min]="1"
+                  [max]="10"
+                  [step]="1"
+                  [showTickMarks]="true"
+                  [discrete]="true"
+                  class="escala-slider">
+                  <input matSliderThumb>
+                </mat-slider>
+                <div class="escala-value">
+                  Valor: <strong>{{ getControl(pregunta.id).value || 0 }}</strong> / 10
+                </div>
+              </div>
+
+              <!-- Lista Desplegable (Select) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.LISTA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Selecciona una opción</mat-label>
+                <mat-select [formControlName]="'pregunta_' + pregunta.id">
+                  <mat-option *ngFor="let respuesta of pregunta.respuestas" [value]="respuesta.id">
+                    {{ respuesta.respuesta }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- Fecha (Date Picker) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.FECHA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Selecciona una fecha</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  [formControlName]="'pregunta_' + pregunta.id">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+
+              <!-- Hora (Time Input) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.HORA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Selecciona una hora</mat-label>
+                <input
+                  matInput
+                  type="time"
+                  [formControlName]="'pregunta_' + pregunta.id">
+              </mat-form-field>
+
+              <!-- Archivo (File Upload) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.ARCHIVO" class="respuesta-control file-control">
+                <button
+                  type="button"
+                  mat-stroked-button
+                  (click)="fileInput.click()">
+                  <mat-icon>attach_file</mat-icon>
+                  Seleccionar Archivo
+                </button>
+                <input
+                  #fileInput
+                  type="file"
+                  hidden
+                  (change)="onFileSelected($event, pregunta.id)">
+                <span class="file-name" *ngIf="getControl(pregunta.id).value">
+                  {{ getControl(pregunta.id).value }}
+                </span>
+              </div>
+
+              <!-- Mensaje de error -->
+              <mat-error *ngIf="pregunta.esRequerido && getControl(pregunta.id).touched && getControl(pregunta.id).invalid" class="error-message">
+                <mat-icon>error</mat-icon>
+                Esta pregunta es requerida
+              </mat-error>
+            </div>
+
+            <!-- Preguntas desde la 5 en adelante -->
+            <div *ngFor="let pregunta of preguntas.slice(4); let i = index" class="pregunta-item">
+              <div class="pregunta-header">
+                <span class="pregunta-numero">{{ i + 5 }}.</span>
+                <h3 class="pregunta-titulo">
+                  {{ pregunta.nombre }}
+                  <span class="required-indicator" *ngIf="pregunta.esRequerido">*</span>
+                </h3>
+                <mat-chip class="tipo-chip">{{ tipoEntradaLabels[pregunta.tipoEntrada] }}</mat-chip>
+                <mat-chip class="required-chip" *ngIf="!pregunta.esRequerido">Opcional</mat-chip>
+          </div>
+
+              <!-- COMBO ESPECIAL: Tipo de Solicitud (ID 11) -->
+              <mat-form-field
+                *ngIf="pregunta.id === ID_PREGUNTA_TIPO_SOLICITUD"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Seleccione Tipo de Solicitud</mat-label>
+                <mat-select
+                  [(value)]="selectedTipoReporte"
+                  (selectionChange)="categoriaByTipoReporte($event.value)"
+                  [disabled]="esFormularioYaCalificado">
+                  <mat-option [value]="null">Seleccione</mat-option>
+                  <mat-option *ngFor="let tipo of dataTipoReporte" [value]="tipo.id">
+                    <div class="option-multiline">{{ tipo.nombre }}</div>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- COMBO ESPECIAL: Categoría de Solicitud (ID 12) -->
+              <mat-form-field
+                *ngIf="pregunta.id === ID_PREGUNTA_CATEGORIA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Seleccione Categoría</mat-label>
+                <mat-select
+                  [(value)]="selectedCategoria"
+                  (selectionChange)="subCategoriaByCategoria($event.value)"
+                  [disabled]="isDisabledCategoria || esFormularioYaCalificado">
+                  <mat-option [value]="null">Seleccione</mat-option>
+                  <mat-option *ngFor="let cat of dataCategoriaFiltro" [value]="cat.id">
+                    <div class="option-multiline">{{ cat.nombre }}</div>
+                  </mat-option>
+                  <mat-option *ngIf="dataCategoriaFiltro.length === 0" disabled>
+                    No existen registros configurados
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- COMBO ESPECIAL: Detalle del Problema (ID 13) -->
+              <mat-form-field
+                *ngIf="pregunta.id === ID_PREGUNTA_PROBLEMA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Seleccione Problema</mat-label>
+                <mat-select
+                  [(value)]="selectedSubCategoria"
+                  (selectionChange)="solicitudBySubCategoria($event.value)"
+                  [disabled]="isDisabledSubCategoria || esFormularioYaCalificado">
+                  <mat-option [value]="null">Seleccione</mat-option>
+                  <mat-option *ngFor="let sub of dataSubCategoriaFiltro" [value]="sub.id">
+                    <div class="option-multiline">{{ sub.nombre }}</div>
+                  </mat-option>
+                  <mat-option *ngIf="dataSubCategoriaFiltro.length === 0" disabled>
+                    No existen registros configurados
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- Selección Simple (Radio Buttons) - SOLO para preguntas que NO son 11, 12, 13 -->
+              <mat-radio-group
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.SELECCION_SIMPLE && 
+                       pregunta.id !== ID_PREGUNTA_TIPO_SOLICITUD && 
+                       pregunta.id !== ID_PREGUNTA_CATEGORIA && 
+                       pregunta.id !== ID_PREGUNTA_PROBLEMA"
+                [formControlName]="'pregunta_' + pregunta.id"
+                class="respuesta-control">
+                <mat-radio-button
+                  *ngFor="let respuesta of pregunta.respuestas"
+                  [value]="respuesta.id"
+                  class="radio-option">
+                  {{ respuesta.respuesta }}
+                </mat-radio-button>
+              </mat-radio-group>
+
+              <!-- Selección Múltiple (Checkboxes) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.SELECCION_MULTIPLE" class="respuesta-control">
+                <mat-checkbox
+                  *ngFor="let respuesta of pregunta.respuestas"
+                  [checked]="isCheckboxChecked(pregunta.id, respuesta.id)"
+                  [disabled]="esFormularioYaCalificado"
+                  (change)="onCheckboxChange(pregunta.id, respuesta.id, $event.checked)"
+                  class="checkbox-option">
+                  {{ respuesta.respuesta }}
+                </mat-checkbox>
+              </div>
+
+              <!-- Texto Libre (Textarea) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.TEXTO_LIBRE"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Tu respuesta</mat-label>
+                <textarea
+                  matInput
+                  [formControlName]="'pregunta_' + pregunta.id"
+                  rows="4"
+                  placeholder="Escribe tu respuesta aquí..."></textarea>
+                <mat-hint>Mínimo 10 caracteres</mat-hint>
+              </mat-form-field>
+
+              <!-- Rating (Estrellas con Slider) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.RATING" class="respuesta-control rating-control">
+                <div class="rating-stars">
+                  <button
+                    *ngFor="let star of getRatingOptions()"
+                    type="button"
+                    mat-icon-button
+                    [disabled]="esFormularioYaCalificado"
+                    (click)="!esFormularioYaCalificado && getControl(pregunta.id).setValue(star)"
+                    [class.selected]="getControl(pregunta.id).value >= star">
+                    <mat-icon>{{ getControl(pregunta.id).value >= star ? 'star' : 'star_border' }}</mat-icon>
+                  </button>
+                </div>
+                <div class="rating-label" *ngIf="getControl(pregunta.id).value">
+                  {{ getRatingLabel(getControl(pregunta.id).value) }}
+                </div>
+              </div>
+
+              <!-- Sí/No (Radio Buttons) -->
+              <mat-radio-group
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.SI_NO"
+                [formControlName]="'pregunta_' + pregunta.id"
+                class="respuesta-control si-no-group">
+                <mat-radio-button [value]="1" class="si-no-option">Sí</mat-radio-button>
+                <mat-radio-button [value]="0" class="si-no-option">No</mat-radio-button>
+              </mat-radio-group>
+
+              <!-- Escala (Slider Numérico) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.ESCALA" class="respuesta-control escala-control">
+                <mat-slider
+                  [formControlName]="'pregunta_' + pregunta.id"
+                  [min]="1"
+                  [max]="10"
+                  [step]="1"
+                  [showTickMarks]="true"
+                  [discrete]="true"
+                  class="escala-slider">
+                  <input matSliderThumb>
+                </mat-slider>
+                <div class="escala-value">
+                  Valor: <strong>{{ getControl(pregunta.id).value || 0 }}</strong> / 10
+                </div>
+              </div>
+
+              <!-- Lista Desplegable (Select) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.LISTA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Selecciona una opción</mat-label>
+                <mat-select [formControlName]="'pregunta_' + pregunta.id">
+                  <mat-option *ngFor="let respuesta of pregunta.respuestas" [value]="respuesta.id">
+                    {{ respuesta.respuesta }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- Fecha (Date Picker) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.FECHA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Selecciona una fecha</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  [formControlName]="'pregunta_' + pregunta.id">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+
+              <!-- Hora (Time Input) -->
+              <mat-form-field
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.HORA"
+                appearance="outline"
+                class="full-width respuesta-control">
+                <mat-label>Selecciona una hora</mat-label>
+                <input
+                  matInput
+                  type="time"
+                  [formControlName]="'pregunta_' + pregunta.id">
+              </mat-form-field>
+
+              <!-- Archivo (File Upload) -->
+              <div *ngIf="pregunta.tipoEntrada === TipoEntrada.ARCHIVO" class="respuesta-control file-control">
+                <button
+                  type="button"
+                  mat-stroked-button
+                  (click)="fileInput.click()">
+                  <mat-icon>attach_file</mat-icon>
+                  Seleccionar Archivo
+                </button>
+                <input
+                  #fileInput
+                  type="file"
+                  hidden
+                  (change)="onFileSelected($event, pregunta.id)">
+                <span class="file-name" *ngIf="getControl(pregunta.id).value">
+                  {{ getControl(pregunta.id).value }}
+                </span>
+              </div>
+
+              <!-- Mensaje de error -->
+              <mat-error *ngIf="pregunta.esRequerido && getControl(pregunta.id).touched && getControl(pregunta.id).invalid" class="error-message">
+                <mat-icon>error</mat-icon>
+                Esta pregunta es requerida
+              </mat-error>
             </div>
           </div>
 
-          <mat-divider></mat-divider>
-
-          <!-- Criteria Section -->
-          <div class="criteria-section">
-            <h3>Criterios de Evaluación</h3>
-
-            <!-- Clarity -->
-            <div class="criteria-item">
-              <label>Claridad</label>
-              <div class="criteria-slider">
-                <mat-slider
-                  formControlName="clarity"
-                  min="1"
-                  max="5"
-                  step="1"
-                >
-                </mat-slider>
-                <span class="criteria-value">{{ getCriteriaLabel(evaluationForm.get('clarity')?.value) }}</span>
-              </div>
-            </div>
-
-            <!-- Relevance -->
-            <div class="criteria-item">
-              <label>Relevancia</label>
-              <div class="criteria-slider">
-                <mat-slider
-                  formControlName="relevance"
-                  min="1"
-                  max="5"
-                  step="1"
-                >
-                </mat-slider>
-                <span class="criteria-value">{{ getCriteriaLabel(evaluationForm.get('relevance')?.value) }}</span>
-              </div>
-            </div>
-
-            <!-- Completeness -->
-            <div class="criteria-item">
-              <label>Completitud</label>
-              <div class="criteria-slider">
-                <mat-slider
-                  formControlName="completeness"
-                  min="1"
-                  max="5"
-                  step="1"
-                >
-                </mat-slider>
-                <span class="criteria-value">{{ getCriteriaLabel(evaluationForm.get('completeness')?.value) }}</span>
-              </div>
-            </div>
-
-            <!-- Accuracy -->
-            <div class="criteria-item">
-              <label>Precisión</label>
-              <div class="criteria-slider">
-                <mat-slider
-                  formControlName="accuracy"
-                  min="1"
-                  max="5"
-                  step="1"
-                >
-                </mat-slider>
-                <span class="criteria-value">{{ getCriteriaLabel(evaluationForm.get('accuracy')?.value) }}</span>
-              </div>
-            </div>
-          </div>
-
-          <mat-divider></mat-divider>
-
-          <!-- Comments -->
-          <div class="form-group">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Comentarios</mat-label>
-              <textarea
-                matInput
-                formControlName="comments"
-                rows="4"
-                placeholder="Ingresa tus comentarios sobre este chat..."
-              ></textarea>
-            </mat-form-field>
-          </div>
+          <mat-divider class="section-divider"></mat-divider>
 
           <!-- Actions -->
-          <div class="actions">
-            <button mat-stroked-button type="button" (click)="onBack()">Cancelar</button>
+          <div class="form-actions">
+            <button mat-stroked-button type="button" (click)="onBack()" [disabled]="isSubmitting">
+              <mat-icon>{{ esFormularioYaCalificado ? 'arrow_back' : 'cancel' }}</mat-icon>
+              {{ esFormularioYaCalificado ? 'Volver' : 'Cancelar' }}
+            </button>
             <button
+              *ngIf="!esFormularioYaCalificado"
               mat-raised-button
               color="primary"
               type="submit"
-              [disabled]="evaluationForm.invalid || isSubmitting"
-            >
-              {{ isSubmitting ? 'Enviando...' : 'Enviar Calificación' }}
+              [disabled]="evaluationForm.invalid || isSubmitting">
+              <mat-icon>{{ isSubmitting ? 'hourglass_empty' : 'send' }}</mat-icon>
+              {{ isSubmitting ? 'Enviando...' : 'Enviar Evaluación' }}
             </button>
           </div>
-        </form>
       </mat-card-content>
     </mat-card>
+    </form>
   </div>
 </div>
-

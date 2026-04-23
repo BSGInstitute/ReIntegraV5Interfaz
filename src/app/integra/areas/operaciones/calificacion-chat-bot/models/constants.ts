@@ -47,3 +47,55 @@ export const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   minute: '2-digit'
 };
 
+export enum AreaDerivacionCodigo {
+  ATENCION_CLIENTE = 1,
+  COMERCIAL = 2
+}
+
+export const AREA_DERIVACION_LABELS: Record<number, string> = {
+  [AreaDerivacionCodigo.ATENCION_CLIENTE]: 'Atención al Cliente',
+  [AreaDerivacionCodigo.COMERCIAL]: 'Comercial'
+};
+
+export const AREA_DERIVACION_NO_DEFINIDO = 'No Definido';
+
+// Estados de vista
+export enum ViewStateExtended {
+  STUDENTS = 'students',              // Nivel 1: Lista de alumnos/segmentos
+  CHATS = 'chats',                    // Nivel 2: Lista de hilos
+  CHAT_MESSAGES = 'chat_messages'     // Nivel 3: Mensajes + Formulario (layout 2 columnas)
+}
+
+// Tipo de origen de los hilos
+export enum TipoOrigen {
+  ALUMNO = 'alumno',
+  SEGMENTO = 'segmento'
+}
+
+// Tipos de entrada para preguntas de evaluación
+export enum TipoEntrada {
+  SELECCION_SIMPLE = 'SeleccionSimple',
+  SELECCION_MULTIPLE = 'SeleccionMultiple',
+  TEXTO_LIBRE = 'TextoLibre',
+  RATING = 'Rating',
+  SI_NO = 'SiNo',
+  ESCALA = 'Escala',
+  LISTA = 'Lista',
+  FECHA = 'Fecha',
+  HORA = 'Hora',
+  ARCHIVO = 'Archivo'
+}
+
+export const TIPO_ENTRADA_LABELS: Record<string, string> = {
+  [TipoEntrada.SELECCION_SIMPLE]: 'Selección única de opciones',
+  [TipoEntrada.SELECCION_MULTIPLE]: 'Selección múltiple de opciones',
+  [TipoEntrada.TEXTO_LIBRE]: 'Respuesta de texto libre',
+  [TipoEntrada.RATING]: 'Escala de valoración',
+  [TipoEntrada.SI_NO]: 'Respuesta Sí/No',
+  [TipoEntrada.ESCALA]: 'Escala numérica',
+  [TipoEntrada.LISTA]: 'Lista desplegable',
+  [TipoEntrada.FECHA]: 'Selección de fecha',
+  [TipoEntrada.HORA]: 'Selección de hora',
+  [TipoEntrada.ARCHIVO]: 'Subida de archivo'
+};
+
