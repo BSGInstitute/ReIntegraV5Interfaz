@@ -1,0 +1,469 @@
+/**
+ * Estilos del componente ResenaGlassdoorComponent.
+ * Prefijo "glassdoor-" para aislar el scope; el componente usa encapsulación por defecto.
+ *
+ * KPI cards + CRUD manual de reseñas + modal de configuración única.
+ *
+ * Secciones:
+ *   1. Paleta de colores y variables
+ *   2. Animaciones (keyframes)
+ *   3. Contenedor / cabecera / toggle de secciones
+ *   4. Sección de indicadores (KPI cards)
+ *   5. Sección de gestión (filtros, toolbar, grilla Kendo)
+ *   6. Botones y acciones
+ *   7. Celdas de la grilla (etiquetas, estrellas, ojo, acciones)
+ *   8. Modal SweetAlert2 (::ng-deep scoped al popup del módulo)
+ *   9. Responsive (media queries)
+ *
+ * Autor: Max Mantilla | 21/04/2026
+ */
+$glassdoor:    #094D82;
+$glassdoor-dk: #063862;
+$azul:    #3a7ca5;
+$verde:   #17b76a;
+$verde-dk:#139057;
+$naranja: #e8923a;
+$rojo:    #C71585;
+$borde:   #dee2e6;
+$fondo:   #f8f9fa;
+$texto:   #343a40;
+$gris:    #6c757d;
+
+@keyframes glassdoorFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ═══ Contenedor principal y cabecera ═══
+.glassdoor-contenedor {
+  border: 1px solid $borde; border-radius: 6px; overflow: hidden; background: #fff;
+  &__cabecera {
+    background-color: $glassdoor; color: #fff;
+    font-size: clamp(12px, 1.3vw, 15px); font-weight: 600;
+    padding: clamp(6px, .7vw, 9px) clamp(12px, 1.4vw, 18px); letter-spacing: .2px;
+  }
+}
+
+// ═══ Toggle de sección ═══
+.glassdoor-toggle-seccion {
+  display: flex; align-items: center; gap: 6px;
+  padding: clamp(6px, .7vw, 8px) clamp(12px, 1.4vw, 18px);
+  font-size: clamp(11px, 1.1vw, 13px); font-weight: 600; color: $glassdoor-dk;
+  cursor: pointer; user-select: none; transition: background .15s;
+  &:hover { background: rgba(0,0,0,.02); }
+  &__icono {
+    font-size: 20px !important; height: 20px !important; width: 20px !important;
+    transition: transform .3s ease;
+    &--abierto { transform: rotate(180deg); }
+  }
+}
+
+// ═══ Colapsable ═══
+.glassdoor-colapsable {
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height .4s ease, opacity .3s ease, padding .3s ease;
+  &--abierto { opacity: 1; max-height: 600px; }
+  &--filtros.glassdoor-colapsable--abierto { max-height: 420px; }
+}
+
+// ═══ Indicadores de métricas (KPI cards) ═══
+.glassdoor-seccion-metricas {
+  background: linear-gradient(180deg, #f3f6fa 0%, #f8fafb 100%);
+  border-bottom: 1px solid $borde;
+  .glassdoor-colapsable--abierto { padding: 0 clamp(12px, 1.4vw, 18px) clamp(12px, 1.4vw, 18px); }
+}
+
+.glassdoor-grilla-indicadores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(8px, 1vw, 12px);
+}
+
+.glassdoor-tarjeta-indicador {
+  display: flex; align-items: center; gap: clamp(10px, 1.2vw, 14px);
+  background: #fff; border: 1px solid $borde; border-radius: 6px;
+  padding: clamp(12px, 1.2vw, 16px);
+  animation: glassdoorFadeUp .4s ease-out backwards;
+  animation-delay: calc(var(--i, 0) * .07s);
+  transition: transform .2s, box-shadow .2s;
+  &:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+
+  &__icono {
+    font-size: 20px !important; height: 36px !important; width: 36px !important;
+    line-height: 20px !important;
+    flex-shrink: 0; border-radius: 8px; box-sizing: border-box;
+    display: inline-flex !important; align-items: center; justify-content: center;
+    &--total       { color: $glassdoor; background: rgba($glassdoor, .1); }
+    &--visibles    { color: $verde-dk; background: rgba($verde, .1); }
+    &--paises      { color: $glassdoor; background: rgba($glassdoor, .08); }
+  }
+
+  &__cuerpo { display: flex; flex-direction: column; min-width: 0; }
+  &__numero {
+    font-size: clamp(20px, 2.2vw, 28px); font-weight: 800; color: $texto; line-height: 1;
+  }
+  &__etiqueta {
+    font-size: clamp(9px, .9vw, 11px); font-weight: 600; color: $gris;
+    text-transform: uppercase; letter-spacing: .3px; margin-top: 2px;
+  }
+}
+
+// ═══ Sección de gestión ═══
+.glassdoor-seccion-gestion {
+  padding: clamp(12px, 1.4vw, 18px);
+  &__contenido { margin-top: clamp(10px, 1.2vw, 14px); }
+}
+
+// ═══ Panel de filtros de búsqueda ═══
+.glassdoor-tarjeta-filtros {
+  border: 1px solid $borde; border-radius: 6px; overflow: hidden; background: #fff;
+  &__cabecera {
+    display: flex; align-items: center; gap: 6px;
+    padding: clamp(6px, .7vw, 8px) clamp(12px, 1.4vw, 16px);
+    font-size: clamp(11px, 1.1vw, 13px); font-weight: 600; color: $glassdoor-dk;
+    background: $fondo; cursor: pointer; user-select: none; transition: background .15s;
+    &:hover { background: darken($fondo, 2%); }
+  }
+}
+
+.glassdoor-filtros {
+  display: flex; gap: 0; border-top: 1px solid $borde;
+  &__columna {
+    display: flex; flex-direction: column; gap: clamp(8px, 1vw, 10px);
+    padding: clamp(10px, 1.2vw, 14px) clamp(12px, 1.4vw, 16px);
+    &--izquierda { flex: 0 0 260px; border-right: 1px solid $borde; }
+    &--derecha   { flex: 1 1 auto; border-right: 1px solid $borde; }
+    &--acciones {
+      flex: 0 0 auto; justify-content: center; align-items: stretch;
+      .glassdoor-boton { width: 100%; justify-content: center; }
+    }
+  }
+  &__fila-doble { display: flex; gap: clamp(8px, 1vw, 14px); flex-wrap: wrap; }
+  &__campo { display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; }
+  &__etiqueta { font-size: clamp(9px, .9vw, 10.5px); font-weight: 600; color: $gris; text-transform: uppercase; letter-spacing: .3px; margin: 0; }
+}
+
+.glassdoor-atajos-fecha { display: flex; gap: 5px; margin-top: 6px; }
+.glassdoor-atajo-fecha {
+  font-size: clamp(10px, .95vw, 11px); font-weight: 500; color: $glassdoor-dk; background: #fff;
+  border: 1px solid rgba($glassdoor, .28); border-radius: 3px; padding: 2px 9px;
+  cursor: pointer; line-height: 1.6; transition: background .13s, border-color .13s;
+  &:hover { background: rgba($glassdoor, .06); border-color: $glassdoor; }
+}
+
+.glassdoor-rango-fechas {
+  width: 100%;
+  ::ng-deep {
+    .mat-form-field-wrapper { padding-bottom: 0 !important; }
+    .mat-form-field-infix   { padding: 5px 0 !important; border-top: .5em solid transparent; }
+    .mat-form-field-label   { font-size: 12px; }
+    input.mat-input-element, input.mat-date-range-input-inner { font-size: 12px !important; }
+  }
+}
+
+.glassdoor-multiselect.k-multiselect {
+  .k-multiselect-wrap {
+    border: 1px solid #ced4da !important; border-radius: 4px !important;
+    background: #fff !important; box-shadow: none !important; padding: 2px 6px !important;
+    min-height: 34px; transition: border-color .15s;
+    &:hover { border-color: $azul !important; }
+    &:focus-within { border-color: $glassdoor !important; box-shadow: 0 0 0 2px rgba($glassdoor, .1) !important; }
+  }
+  .k-button.k-chip {
+    background: rgba($glassdoor, .08) !important;
+    border: 1px solid rgba($glassdoor, .25) !important;
+    color: $glassdoor !important; border-radius: 3px !important;
+    font-size: 11px !important; padding: 1px 5px !important; height: auto !important;
+  }
+  input.k-input  { font-size: 12px !important; color: $texto !important; }
+  .k-placeholder { color: #adb5bd !important; font-size: 12px !important; }
+}
+
+// Toggle de visibilidad / tipo empleado
+.glassdoor-toggle-visibilidad { display: flex; border: 1px solid $borde; border-radius: 4px; overflow: hidden; height: 34px; }
+.glassdoor-toggle-visibilidad__boton {
+  flex: 1 1 auto; display: flex; align-items: center; justify-content: center; gap: 3px;
+  font-size: clamp(10px, 1vw, 11.5px); font-weight: 500; color: $gris; background: #fff;
+  border: none; border-right: 1px solid $borde; padding: 0 clamp(6px, .8vw, 10px);
+  cursor: pointer; white-space: nowrap; transition: background .12s, color .12s;
+  mat-icon { font-size: 13px !important; height: 13px !important; width: 13px !important; }
+  &:last-child { border-right: none; }
+  &:hover:not(.active) { background: $fondo; }
+  &.active { background: $glassdoor; color: #fff; }
+  &--visible.active { background: $verde !important; }
+  &--oculto.active  { background: $naranja !important; }
+}
+
+// ═══ Barra de acciones (toolbar) - Botones ═══
+.glassdoor-boton {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px;
+  font-size: clamp(11px, 1.1vw, 12.5px); font-weight: 600; border-radius: 4px;
+  padding: 0 clamp(10px, 1.1vw, 14px); white-space: nowrap; transition: filter .12s;
+  cursor: pointer;
+  mat-icon { font-size: 15px; height: 15px; width: 15px; }
+  &[disabled] { opacity: .55; cursor: not-allowed; filter: none !important; }
+  &--buscar  { background-color: $glassdoor !important; color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--mostrar { background-color: $verde !important;    color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--ocultar { background-color: $naranja !important;  color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--limpiar-alt { background: #fff !important; color: $gris !important; border: 1px solid $borde !important; &:hover { color: $rojo !important; border-color: $rojo !important; } }
+  &--recargar-alt { background: #fff !important; color: $glassdoor !important; border: 1px solid rgba($glassdoor, .3) !important; &:hover { border-color: $glassdoor !important; } }
+  &--nuevo { background-color: $glassdoor !important; color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--eliminar { background-color: #ef4444 !important; color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--configuracion {
+    background: #fff !important; color: $glassdoor-dk !important;
+    border: 1px solid rgba($glassdoor-dk, .3) !important;
+    &:hover { background: rgba($glassdoor, .06) !important; border-color: $glassdoor-dk !important; }
+  }
+}
+.glassdoor-boton--recargar { color: $gris; cursor: pointer; &:hover { color: $azul; } }
+.glassdoor-spinner { display: inline-flex; ::ng-deep circle { stroke: #fff !important; } }
+
+// ═══ Toolbar ═══
+.glassdoor-barra-acciones {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: clamp(10px, 1.2vw, 14px) 0 clamp(6px, .8vw, 10px);
+  &__espaciador { flex: 1; }
+}
+.glassdoor-contador-seleccion {
+  display: flex; align-items: center; gap: 4px;
+  font-size: clamp(11px, 1.05vw, 12px); font-weight: 600; color: $verde-dk;
+  mat-icon { font-size: 14px; height: 14px; width: 14px; color: $verde; }
+}
+
+// ═══ Grilla principal (Kendo Grid) ═══
+.glassdoor-grilla {
+  width: 100%;
+  ::ng-deep .k-grid-content { max-height: 55vh; overflow-y: auto; }
+}
+::ng-deep {
+  .glassdoor-grilla .k-header {
+    background: #f1f3f5 !important; color: $glassdoor !important;
+    font-size: clamp(9.5px, .95vw, 11px) !important; font-weight: 700 !important;
+    letter-spacing: .15px; text-transform: uppercase; border-bottom: 2px solid $borde !important;
+    padding: 6px 6px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .glassdoor-grilla td {
+    font-size: clamp(11px, 1.05vw, 12.5px) !important; color: $texto !important;
+    vertical-align: top !important; padding: 7px 6px !important;
+    border-bottom: 1px solid #eaecef !important;
+
+    // Visible y Acciones centrados verticalmente
+    &:nth-last-child(1),
+    &:nth-last-child(2) {
+      vertical-align: middle !important;
+      text-align: center;
+    }
+  }
+  .glassdoor-grilla tr {
+    transition: background .1s;
+  }
+  .glassdoor-grilla tr:hover td { background: #f0f5fb !important; }
+  .glassdoor-grilla .k-alt { background: #fff !important; }
+  .glassdoor-grilla .k-pager-wrap { background: #f1f3f5 !important; border-top: 1px solid $borde !important; padding: 0 !important; }
+}
+
+// ═══ Celdas ═══
+.glassdoor-checkbox { width: 14px; height: 14px; cursor: pointer; accent-color: $glassdoor; vertical-align: middle; }
+
+.glassdoor-autor-resena__nombre {
+  font-size: clamp(10px, 1vw, 11.5px); font-weight: 500; color: $texto;
+}
+
+.glassdoor-estrellas {
+  color: #FFB800;
+  font-size: 14px;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.glassdoor-titulo-resena {
+  font-size: clamp(11px, 1.05vw, 12.5px); font-weight: 700; color: $texto;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; text-overflow: ellipsis; line-height: 1.4;
+}
+
+.glassdoor-etiqueta-tipo {
+  display: inline-block; font-size: 10.5px; font-weight: 600;
+  padding: 2px 8px; border-radius: 10px; white-space: nowrap;
+  &--actual   { background: rgba(23,183,106,.1); color: #139057; }
+  &--anterior { background: rgba(108,117,125,.1); color: #6c757d; }
+}
+
+.glassdoor-etiqueta-pais {
+  display: inline-block; font-size: clamp(10px, 1vw, 11px); font-weight: 500;
+  color: $gris; background: rgba(0,0,0,.04); border-radius: 3px; padding: 2px 7px; white-space: nowrap;
+}
+
+.glassdoor-texto-contenido {
+  font-size: clamp(11px, 1.05vw, 12px); color: #3c4043;
+  line-height: 1.45; margin: 0; word-break: break-word; cursor: help;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+.glassdoor-icono-visible {
+  font-size: 16px !important; height: 16px !important; width: 16px !important; display: block;
+  &--activo    { color: $verde; }
+  &--inactivo  { color: #ccc; }
+}
+.glassdoor-sin-resultados {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 2rem 1rem; color: $gris; gap: 6px;
+  > mat-icon { font-size: 28px; height: 28px; width: 28px; color: #d0d5da; }
+  p { font-size: 12.5px; margin: 0; }
+  &__acciones {
+    display: flex; gap: 6px; margin-top: 6px;
+    .glassdoor-boton { height: 30px; font-size: 11.5px; font-weight: 500; padding: 0 12px; border-radius: 15px;
+      mat-icon { font-size: 14px !important; height: 14px !important; width: 14px !important; }
+    }
+  }
+}
+
+// Visible centrado
+.glassdoor-celda-visible {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 32px;
+}
+// Acciones centradas
+.glassdoor-celda-acciones {
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  min-height: 32px;
+}
+.glassdoor-boton-icono {
+  width: 28px !important; height: 28px !important; line-height: 28px !important;
+  padding: 0 !important; cursor: pointer;
+  display: inline-flex !important; align-items: center; justify-content: center;
+  transition: color .15s, transform .15s;
+  mat-icon {
+    font-size: 16px !important; height: 16px !important; width: 16px !important;
+    line-height: 16px !important; display: flex; align-items: center; justify-content: center;
+  }
+  &:hover { transform: scale(1.15); }
+  &--editar   { color: $glassdoor; &:hover { color: $glassdoor-dk; } }
+  &--eliminar { color: #ccc; &:hover { color: #ef4444; } }
+}
+::ng-deep .glassdoor-boton-icono .mat-mdc-button-ripple,
+::ng-deep .glassdoor-boton-icono .mat-ripple {
+  border-radius: 50%;
+  top: 0 !important; left: 0 !important;
+  width: 100% !important; height: 100% !important;
+}
+
+// Tooltip con textos extensos (para Ventaja/Desventaja)
+::ng-deep .glassdoor-tooltip-extenso {
+  max-width: 420px !important;
+  white-space: pre-wrap !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+
+// ═══ Modal de formulario (SweetAlert2) ═══
+::ng-deep {
+  .glassdoor-modal {
+    border-radius: 10px !important;
+    font-family: inherit;
+    padding: 0 !important;
+    overflow: hidden;
+
+    .swal2-title {
+      background: $glassdoor !important;
+      color: #fff !important;
+      margin: 0 !important;
+      padding: 14px 60px 14px 20px !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      text-align: left !important;
+      border-radius: 10px 10px 0 0 !important;
+      position: relative;
+    }
+    .swal2-close {
+      color: #fff !important;
+      font-size: 26px !important;
+      width: 32px !important; height: 32px !important;
+      line-height: 32px !important;
+      opacity: .85;
+      position: absolute !important;
+      right: 14px !important;
+      top: 10px !important;
+      border-radius: 4px !important;
+      &:hover { opacity: 1; color: #fff !important; background: rgba(255,255,255,.12) !important; }
+      &:focus { box-shadow: none !important; }
+    }
+    .swal2-html-container { margin: 20px 20px 10px !important; }
+    .swal2-actions { padding: 0 20px 20px !important; margin: 10px 0 0 !important; }
+    .swal2-validation-message { margin: 0 20px 10px !important; }
+  }
+  .glassdoor-modal__cuerpo {
+    text-align: left !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .glassdoor-formulario {
+    display: flex; flex-direction: column; gap: 14px; text-align: left;
+  }
+  .glassdoor-formulario__fila {
+    display: flex; gap: 14px;
+  }
+  .glassdoor-formulario__fila > .glassdoor-formulario__campo { flex: 1; }
+  .glassdoor-formulario__campo--expandir { flex: 2 !important; }
+  .glassdoor-formulario__campo--fecha    { flex: 0 0 170px !important; }
+
+  .glassdoor-formulario__campo {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .glassdoor-formulario__etiqueta {
+    font-size: 11px; font-weight: 600; color: #555;
+    text-transform: uppercase; letter-spacing: .3px;
+  }
+  .glassdoor-formulario__input,
+  .glassdoor-formulario__select {
+    width: 100%; height: 38px; padding: 0 12px;
+    border: 1px solid #d0d5dd; border-radius: 6px;
+    font-size: 13.5px; color: #333; background: #fff;
+    outline: none; transition: border-color .15s, box-shadow .15s;
+    box-sizing: border-box;
+    &:focus {
+      border-color: #0CAA41;
+      box-shadow: 0 0 0 3px rgba(12,170,65,.12);
+    }
+    &::placeholder { color: #adb5bd; }
+    &:disabled {
+      background: #f5f5f5; color: #999; cursor: not-allowed;
+    }
+  }
+  .glassdoor-formulario__select {
+    appearance: auto; cursor: pointer;
+  }
+  .glassdoor-formulario__textarea {
+    width: 100%; min-height: 60px; padding: 10px 12px;
+    border: 1px solid #d0d5dd; border-radius: 6px;
+    font-size: 13.5px; color: #333; background: #fff;
+    resize: vertical; outline: none;
+    font-family: inherit; line-height: 1.5;
+    box-sizing: border-box;
+    transition: border-color .15s, box-shadow .15s;
+    &:focus {
+      border-color: #0CAA41;
+      box-shadow: 0 0 0 3px rgba(12,170,65,.12);
+    }
+    &::placeholder { color: #adb5bd; }
+    &--resena { min-height: 110px; }
+  }
+}
+
+// ═══ Responsive ═══
+@media (max-width: 960px) {
+  .glassdoor-grilla-indicadores { grid-template-columns: repeat(2, 1fr); }
+  .glassdoor-filtros { flex-direction: column; }
+  .glassdoor-filtros__columna--izquierda, .glassdoor-filtros__columna--derecha { flex: 0 0 auto; border-right: none; border-bottom: 1px solid $borde; }
+  .glassdoor-filtros__columna--acciones { flex-direction: row; .glassdoor-boton { width: auto; } }
+  .glassdoor-colapsable--filtros.glassdoor-colapsable--abierto { max-height: 900px; }
+}
+@media (max-width: 640px) {
+  .glassdoor-grilla-indicadores { grid-template-columns: 1fr; }
+  .glassdoor-barra-acciones { flex-wrap: wrap; }
+  .glassdoor-boton--mostrar span, .glassdoor-boton--ocultar span { display: none; }
+  .glassdoor-boton--mostrar, .glassdoor-boton--ocultar { padding: 0 10px; min-width: 36px; }
+  .glassdoor-filtros__fila-doble { flex-direction: column; }
+}
