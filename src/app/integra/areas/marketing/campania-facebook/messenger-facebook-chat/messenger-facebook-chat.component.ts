@@ -8,6 +8,7 @@ import {
   ResumenMessengerFacebookChat,
 } from '@marketing/models/interfaces/messenger-facebook-chat';
 import { AlertaService } from '@shared/services/alerta.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-messenger-facebook-chat',
@@ -26,7 +27,7 @@ export class MessengerFacebookChatComponent implements OnInit {
   // Variables para filtro de fechas y tipo
   fechaInicio: Date;
   fechaFin: Date;
-  tipo: string = 'saliente';
+  tipo: string = 'entrante';
   @ViewChild('dialogFiltroCalendario')
   dialogFiltroCalendario!: TemplateRef<any>;
   dialogRef: any;
@@ -88,17 +89,17 @@ export class MessengerFacebookChatComponent implements OnInit {
       });
   }
 
-  abrirModalChat(data: string, origenBusqueda?: boolean) {
+  abrirModalChat(data: string | ResumenMessengerFacebookChat, origenBusqueda?: boolean) {
     if (origenBusqueda) {
-      console.log('Abriendo chat desde grilla con ID:', data);
+      const identificador = data as string;
       this.integraService
         .postJsonResponse(`${constApiMarketing.ObtenerHistorialChatPorPSID}`, {
-          identificadorAmbitoPagina: data,
+          identificadorAmbitoPagina: identificador,
         })
         .subscribe({
           next: (response: any) => {
             if (response.body && response.body.length > 0) {
-              this.IdentificadorAmbitoPagina = data;
+              this.IdentificadorAmbitoPagina = identificador;
               this.showModalChat = true;
             } else {
               this._alertaService.notificationError(
@@ -119,9 +120,17 @@ export class MessengerFacebookChatComponent implements OnInit {
           },
         });
     } else {
-      console.log('Abriendo chat desde busqueda por ID:', data);
-      this.IdentificadorAmbitoPagina = data;
+      const item = data as ResumenMessengerFacebookChat;
+      this.IdentificadorAmbitoPagina = item.identificadorAmbitoPagina;
       this.showModalChat = true;
+      if (item.requiereDerivacion) {
+        Swal.fire({
+          position: 'center',
+          html: `${item.mensajeParaAsesor}`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
     }
   }
 
@@ -182,7 +191,15 @@ export class MessengerFacebookChatComponent implements OnInit {
   aplicarFiltroCalendario() {
     if (this.puedeAplicarFiltro()) {
       this.fechaInicio = this.dialogFechaInicio!;
-      this.fechaFin = this.dialogFechaFin!;
+      const finDia = this.dialogFechaFin!;
+      this.fechaFin = new Date(
+        finDia.getFullYear(),
+        finDia.getMonth(),
+        finDia.getDate(),
+        23,
+        59,
+        59
+      );
       this.cerrarDialogFiltroCalendario();
       this.ObtenerGrillaMessengerFacebookChat();
     }

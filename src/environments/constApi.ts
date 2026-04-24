@@ -2437,6 +2437,10 @@ export const constApiMarketing = {
     '/MessengerFacebookChat/EnviarMensajeTexto',
   ObtenerDatosGeneralesAlumnosPorPSID:
     '/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID',
+  CapturarRegistrosMessengerIA:
+    '/MessengerFacebookChat/CapturarRegistrosMessengerIA',
+  DesactivarInteraccionAutomaticaMessenger:
+    '/MessengerFacebookChat/DesactivarInteraccionAutomaticaMessenger',
 
     // CAMPAÑA REMARKETING GENERAL
   ObtenerListadoRemarketingGeneral: '/CampaniaRemarketingGeneral/ObtenerListadoCampania',
