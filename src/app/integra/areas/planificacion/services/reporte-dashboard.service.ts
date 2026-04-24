@@ -30,7 +30,8 @@ import {
   IReporteDashboardPEspecificoFiltro,
   IReporteDashboardSeguimientoDocente,
   INotasPorPEspecificoD2,
-  IReporteDashboardPEspecificoPorDocente
+  IReporteDashboardPEspecificoPorDocente,
+  IFurDashboard3
 } from '@planificacion/models/interfaces/reporte-dashboard';
 
 /**
@@ -361,6 +362,17 @@ export class ReporteDashboardService {
     const params = this.buildQueryParams({ idPEspecifico, grupo });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerNotasPorPEspecifico}${params}`
+    );
+  }
+
+  // ── Dashboard 3: FURs ─────────────────────────────────────────────────────
+
+  /**
+   * Obtiene FURs del area 19, tipo PO, estados 3 y 5 para Dashboard 3
+   */
+  obtenerFursDashboard3$(): Observable<HttpResponse<IFurDashboard3[]>> {
+    return this._integraService.getJsonResponse(
+      constApiPlanificacion.ReporteDashboardObtenerFursDashboard3
     );
   }
 

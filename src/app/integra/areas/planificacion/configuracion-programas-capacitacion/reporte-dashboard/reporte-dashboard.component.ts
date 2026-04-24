@@ -38,6 +38,7 @@ import {
   INotaAlumnoD2,
   INotaEvaluacionD2,
   IReporteDashboardPEspecificoPorDocente,
+  IFurDashboard3,
 } from '@planificacion/models/interfaces/reporte-dashboard';
 import { AlertaService } from '@shared/services/alerta.service';
 import { ExcelExportComponent } from '@progress/kendo-angular-excel-export';
@@ -285,15 +286,51 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     'Reprogramadas': '#ffc107',
     'Programadas': '#007bff'
   };
+  // ── Dashboard 3: FURs ─────────────────────────────────────────────────────
+  loadingD3: boolean = false;
+  fursDashboard3: IFurDashboard3[] = [];
+  stateD3: State = { skip: 0, take: 20, sort: [], filter: { logic: 'and', filters: [] } };
+  get gridDataD3(): any { return process(this.fursDashboard3, this.stateD3); }
+
   // ── Notas de alumnos por PEspecifico ──────────────────────────────────────
   loadingNotas: boolean = false;
+  filtrarSinNotas: boolean = false;
   evaluacionesD2: INotaEvaluacionD2[] = [];
   alumnosNotas: INotaAlumnoD2[] = [];
   stateNotas: State = { skip: 0, take: 15, sort: [{ field: 'alumno', dir: 'asc' }] };
-  get gridDataNotas(): any { return process(this.alumnosNotas, this.stateNotas); }
+  get gridDataNotas(): any {
+    const datos = this.filtrarSinNotas
+      ? this.alumnosNotas.filter(a => this.esSinNota(a))
+      : this.alumnosNotas;
+    return process(datos, this.stateNotas);
+  }
 
   obtenerNota(alumno: INotaAlumnoD2, idEvaluacion: number): number {
-    return alumno.notas.find(n => n.idEvaluacion === idEvaluacion)?.nota ?? 0;
+    return (alumno.notas ?? []).find(n => n.idEvaluacion === idEvaluacion)?.nota ?? 0;
+  }
+
+  rowClassNotas = (context: any): string => {
+    return this.esSinNota(context.dataItem) ? 'fila-sin-notas' : '';
+  };
+
+  private esSinNota(a: INotaAlumnoD2): boolean {
+    return (a.notas ?? []).every(n => n.nota === 0) && (a.promedioFinal ?? 0) === 0;
+  }
+
+  get totalSinNota(): number {
+    return (this.alumnosNotas ?? []).filter(a => this.esSinNota(a)).length;
+  }
+
+  get totalConNota(): number {
+    return (this.alumnosNotas ?? []).length - this.totalSinNota;
+  }
+
+  get donutCalificacion(): { category: string; value: number; color: string }[] {
+    if (!(this.alumnosNotas ?? []).length) return [];
+    return [
+      { category: 'Calificados', value: this.totalConNota, color: '#28a745' },
+      { category: 'Sin nota',    value: this.totalSinNota,  color: '#dc3545' }
+    ];
   }
 
   // Getters para datos procesados de grillas
@@ -1298,6 +1335,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     if (tab === 'dashboard2' && this.docentesFiltro.length === 0) {
       this.cargarDocentesFiltro();
     }
+    if (tab === 'dashboard3' && this.fursDashboard3.length === 0) {
+      this.cargarFursDashboard3();
+    }
   }
 
   cargarDocentesFiltro(busqueda?: string): void {
@@ -1483,6 +1523,29 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   onStateChangeD2Programas(state: State): void {
     this.stateD2Programas = state;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DASHBOARD 3: FURs
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  cargarFursDashboard3(): void {
+    this.loadingD3 = true;
+    this._reporteDashboardService.obtenerFursDashboard3$()
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => { this.loadingD3 = false; })
+      )
+      .subscribe({
+        next: (response: HttpResponse<IFurDashboard3[]>) => {
+          this.fursDashboard3 = response.body || [];
+        },
+        error: () => { this.fursDashboard3 = []; }
+      });
+  }
+
+  onStateChangeD3(state: State): void {
+    this.stateD3 = state;
   }
 
   getEstadoSesionColor(idEstado: number): string {

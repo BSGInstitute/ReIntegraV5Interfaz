@@ -426,3 +426,43 @@ export interface INotasPorPEspecificoD2 {
   esOnline: boolean;
 }
 
+// ── Dashboard 3: FURs ─────────────────────────────────────────────────────────
+export interface IFurDashboard3 {
+  id: number;
+  codigo: string;
+  idCentroCosto?: number;
+  centroCosto: string;
+  programa: string;
+  idCiudad: number;
+  idFurTipoPedido: number;
+  numeroSemana?: number;
+  idProveedor?: number;
+  razonSocial: string;
+  idProducto?: number;
+  producto: string;
+  idProductoPresentacion?: number;
+  productoPresentacion: string;
+  idMoneda_Proveedor?: number;
+  fechaLimite: Date | string;
+  descripcion: string;
+  numeroCuenta: string;
+  cuenta: string;
+  cantidad: number;
+  idFaseAprobacion1: number;
+  faseAprobacion1: string;
+  precioUnitarioMonedaOrigen: number;
+  precioUnitarioDolares: number;
+  precioTotalMonedaOrigen: number;
+  precioTotalDolares: number;
+  usuarioCreacion: string;
+  usuarioModificacion: string;
+  fechaModificacion: Date | string;
+  fechaCreacion: Date | string;
+  observaciones: string;
+  idMonedaPagoReal?: number;
+  idPersonalAreaTrabajo?: number;
+  idCondicionTipoPago?: number;
+  monedaPagoReal: string;
+  idEmpresa?: number;
+}
+
