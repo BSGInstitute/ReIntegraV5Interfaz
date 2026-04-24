@@ -465,7 +465,8 @@ export class ProgramaEspecificoComponent implements OnInit {
               modalRef.componentInstance.datosFormGeneracionAutomatica =
                 datosForm;
               modalRef.componentInstance.centroCostoGenerado = resp.body;
-            
+              modalRef.componentInstance.limiteGruposAlcanzado = resp.body.haAlcanzadoLimiteGrupos;
+
             }
           },
           error: (error) => {

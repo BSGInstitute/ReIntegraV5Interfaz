@@ -1,0 +1,725 @@
+/**
+ * Estilos del componente ResenaFacebookComponent.
+ * Prefijo "facebook-" para aislar el scope; el componente usa encapsulación por defecto.
+ *
+ * Cards con donut SVG de recomendación + modal administración de cuentas.
+ *
+ * Secciones:
+ *   1. Paleta de colores y variables
+ *   2. Animaciones (keyframes)
+ *   3. Contenedor / cabecera / toggle de secciones
+ *   4. Sección de indicadores (KPI cards)
+ *   5. Sección de gestión (filtros, toolbar, grilla Kendo)
+ *   6. Botones y acciones
+ *   7. Celdas de la grilla (etiquetas, estrellas, ojo, acciones)
+ *   8. Modal SweetAlert2 (::ng-deep scoped al popup del módulo)
+ *   9. Responsive (media queries)
+ *
+ * Autor: Max Mantilla | 21/04/2026
+ */
+$azul:    #3a7ca5;
+$azul-dk: #094D82;
+$indigo:  #3f51b5;
+$verde:   #17b76a;
+$verde-dk:#139057;
+$naranja: #e8923a;
+$rojo:    #C71585;
+$borde:   #dee2e6;
+$fondo:   #f8f9fa;
+$texto:   #343a40;
+$gris:    #6c757d;
+
+@keyframes facebookFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes facebookDonutFill { from { stroke-dasharray: 0 100; } }
+
+
+// ═══ Contenedor principal y cabecera ═══
+.facebook-contenedor {
+  border: 1px solid $borde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+
+  &__cabecera {
+    background-color: $azul-dk;
+    color: #fff;
+    font-size: clamp(12px, 1.3vw, 15px);
+    font-weight: 600;
+    padding: clamp(6px, .7vw, 9px) clamp(12px, 1.4vw, 18px);
+    letter-spacing: .2px;
+  }
+}
+
+
+// ═══ Toggle de seccion (reusable) ═══
+.facebook-toggle-seccion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(6px, .7vw, 8px) clamp(12px, 1.4vw, 18px);
+  font-size: clamp(11px, 1.1vw, 13px);
+  font-weight: 600;
+  color: $azul-dk;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+
+  &:hover { background: rgba(0,0,0,.02); }
+
+  &__icono {
+    font-size: 20px !important; height: 20px !important; width: 20px !important;
+    transition: transform .3s ease;
+    &--abierto { transform: rotate(180deg); }
+  }
+}
+
+
+// ═══ Colapsable (reusable) ═══
+.facebook-colapsable {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .4s ease, opacity .3s ease, padding .3s ease;
+
+  &--abierto {
+    opacity: 1;
+    max-height: 600px;
+  }
+
+  // Variante filtros — tiene borde
+  &--filtros.facebook-colapsable--abierto {
+    max-height: 300px;
+  }
+}
+
+
+// ═══ Indicadores de métricas (KPI cards) ═══
+.facebook-seccion-metricas {
+  background: linear-gradient(180deg, #f3f6fa 0%, #f8fafb 100%);
+  border-bottom: 1px solid $borde;
+
+  .facebook-colapsable--abierto {
+    padding: 0 clamp(12px, 1.4vw, 18px) clamp(12px, 1.4vw, 18px);
+  }
+}
+
+// Donuts
+.facebook-donut {
+  flex-shrink: 0;
+  &--lg { width: clamp(60px, 7vw, 84px); height: clamp(60px, 7vw, 84px); }
+  &--sm { width: clamp(44px, 5vw, 56px); height: clamp(44px, 5vw, 56px); }
+  &__fill { animation: facebookDonutFill .9s ease-out; }
+  &__txt {
+    font-size: 7.5px; font-weight: 800; font-family: inherit;
+    text-anchor: middle; dominant-baseline: central;
+    &--dk { fill: $azul-dk; }
+  }
+}
+
+// Cards — grid fijo 3 columnas
+.facebook-grilla-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(8px, 1vw, 10px);
+}
+
+.facebook-tarjeta-metrica {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 12px);
+  background: #fff;
+  border: 1px solid $borde;
+  border-radius: 6px;
+  padding: clamp(10px, 1vw, 14px);
+  animation: facebookFadeUp .4s ease-out backwards;
+  animation-delay: calc(var(--i, 0) * .07s);
+  transition: transform .2s, box-shadow .2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,.07);
+  }
+
+  // Variante destacada — Promedio General
+  &--promedio {
+    background: linear-gradient(135deg, #edf2f8 0%, #f7fafd 100%);
+    border-color: rgba($azul-dk, .18);
+    animation-delay: 0s;
+  }
+
+  &__info { flex: 1; min-width: 0; }
+
+  &__nombre {
+    font-size: clamp(10px, 1.05vw, 12px);
+    font-weight: 700;
+    color: $azul-dk;
+    line-height: 1.3;
+    white-space: normal;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 4px;
+
+    &--titulo {
+      font-size: clamp(12px, 1.3vw, 15px);
+      margin-bottom: 6px;
+    }
+  }
+
+  &__kpis {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  &__kpi-n {
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 800;
+    color: $azul-dk;
+    line-height: 1;
+  }
+
+  &__kpi-l {
+    font-size: clamp(8px, .85vw, 10px);
+    font-weight: 500;
+    color: $gris;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    margin-right: 4px;
+  }
+
+  &__kpi-sep {
+    width: 1px;
+    height: 18px;
+    background: rgba($azul-dk, .2);
+    margin: 0 4px;
+    align-self: center;
+  }
+
+  &__detalle {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    span {
+      display: flex; align-items: center; gap: 3px;
+      font-size: clamp(9px, .9vw, 10.5px);
+      color: $gris;
+
+      mat-icon {
+        font-size: clamp(10px, 1vw, 12px) !important;
+        height: clamp(10px, 1vw, 12px) !important;
+        width: clamp(10px, 1vw, 12px) !important;
+      }
+    }
+  }
+}
+
+
+// ═══ Sección de gestión (filtros + grilla) ═══
+.facebook-seccion-gestion {
+  padding: clamp(12px, 1.4vw, 18px);
+
+  &__contenido {
+    margin-top: clamp(10px, 1.2vw, 14px);
+  }
+}
+
+// ═══ Panel de filtros de búsqueda ═══
+.facebook-tarjeta-filtros {
+  border: 1px solid $borde;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+
+  &__cabecera {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: clamp(6px, .7vw, 8px) clamp(12px, 1.4vw, 16px);
+    font-size: clamp(11px, 1.1vw, 13px);
+    font-weight: 600;
+    color: $azul-dk;
+    background: $fondo;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+    &:hover { background: darken($fondo, 2%); }
+  }
+}
+
+// Filtros — 2 columnas
+.facebook-filtros {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid $borde;
+
+  &__columna {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 1vw, 10px);
+    padding: clamp(10px, 1.2vw, 14px) clamp(12px, 1.4vw, 16px);
+
+    &--izquierda {
+      flex: 0 0 260px;
+      border-right: 1px solid $borde;
+      justify-content: flex-start;
+    }
+
+    &--derecha {
+      flex: 1 1 auto;
+      border-right: 1px solid $borde;
+    }
+
+    &--acciones {
+      flex: 0 0 auto;
+      justify-content: center;
+      align-items: stretch;
+
+      .facebook-boton { width: 100%; justify-content: center; }
+    }
+  }
+
+  &__campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__botones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: clamp(6px, .7vw, 8px);
+  }
+
+  &__etiqueta {
+    font-size: clamp(9px, .9vw, 10.5px);
+    font-weight: 600; color: $gris;
+    text-transform: uppercase; letter-spacing: .3px; margin: 0;
+  }
+}
+
+.facebook-atajos-fecha { display: flex; gap: 5px; margin-top: 6px; }
+
+.facebook-atajo-fecha {
+  font-size: clamp(10px, .95vw, 11px);
+  font-weight: 500; color: $azul-dk; background: #fff;
+  border: 1px solid rgba(9,77,130,.28); border-radius: 3px;
+  padding: 2px 9px; cursor: pointer; line-height: 1.6;
+  transition: background .13s, border-color .13s;
+  &:hover { background: rgba(9,77,130,.06); border-color: $azul-dk; }
+}
+
+.facebook-rango-fechas {
+  width: 100%;
+  ::ng-deep {
+    .mat-form-field-wrapper { padding-bottom: 0 !important; }
+    .mat-form-field-infix   { padding: 5px 0 !important; border-top: .5em solid transparent; }
+    .mat-form-field-label   { font-size: 12px; }
+    input.mat-input-element,
+    input.mat-date-range-input-inner { font-size: 12px !important; }
+  }
+}
+
+.facebook-multiselect.k-multiselect {
+  .k-multiselect-wrap {
+    border: 1px solid #ced4da !important; border-radius: 4px !important;
+    background: #fff !important; box-shadow: none !important;
+    padding: 2px 6px !important; min-height: 34px;
+    transition: border-color .15s;
+    &:hover        { border-color: $azul !important; }
+    &:focus-within { border-color: $azul-dk !important; box-shadow: 0 0 0 2px rgba(9,77,130,.1) !important; }
+  }
+  .k-button.k-chip {
+    background: rgba(58,124,165,.1) !important;
+    border: 1px solid rgba(58,124,165,.3) !important;
+    color: $azul-dk !important; border-radius: 3px !important;
+    font-size: 11px !important; padding: 1px 5px !important; height: auto !important;
+  }
+  input.k-input  { font-size: 12px !important; color: $texto !important; }
+  .k-placeholder { color: #adb5bd !important; font-size: 12px !important; }
+}
+
+.facebook-toggle-visibilidad {
+  display: flex; border: 1px solid $borde; border-radius: 4px;
+  overflow: hidden; height: 34px;
+}
+
+.facebook-toggle-visibilidad__boton {
+  flex: 1 1 auto; display: flex; align-items: center; justify-content: center;
+  gap: 3px; font-size: clamp(10px, 1vw, 11.5px); font-weight: 500;
+  color: $gris; background: #fff; border: none;
+  border-right: 1px solid $borde;
+  padding: 0 clamp(6px, .8vw, 10px);
+  cursor: pointer; white-space: nowrap;
+  transition: background .12s, color .12s;
+  mat-icon { font-size: 13px !important; height: 13px !important; width: 13px !important; }
+  &:last-child     { border-right: none; }
+  &:hover:not(.active) { background: $fondo; }
+  &.active         { background: $azul-dk; color: #fff; }
+  &--visible.active { background: $verde !important; }
+  &--oculto.active  { background: $naranja !important; }
+}
+
+
+// ═══ Barra de acciones (toolbar) ═══
+.facebook-boton {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; font-size: clamp(11px, 1.1vw, 12.5px);
+  font-weight: 600; border-radius: 4px;
+  padding: 0 clamp(10px, 1.1vw, 14px);
+  white-space: nowrap; transition: filter .12s;
+  mat-icon { font-size: 15px; height: 15px; width: 15px; }
+  &[disabled] { opacity: .55; cursor: not-allowed; filter: none !important; }
+
+  &--buscar       { background-color: $indigo !important;  color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--mostrar      { background-color: $verde !important;   color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--ocultar      { background-color: $naranja !important; color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.1); } }
+  &--sincronizar  { background-color: $azul-dk !important; color: #fff !important; &:hover:not([disabled]) { filter: brightness(1.12); } }
+  &--configuracion {
+    background: #fff !important;
+    color: $azul-dk !important;
+    border: 1px solid rgba($azul-dk, .3) !important;
+    &:hover { background: rgba($azul-dk, .06) !important; border-color: $azul-dk !important; }
+  }
+  &--limpiar-alt {
+    background: #fff !important;
+    color: $gris !important;
+    border: 1px solid $borde !important;
+    &:hover { color: $rojo !important; border-color: $rojo !important; }
+  }
+  &--recargar-alt {
+    background: #fff !important;
+    color: $azul-dk !important;
+    border: 1px solid rgba($azul-dk, .3) !important;
+    &:hover { border-color: $azul-dk !important; }
+  }
+}
+
+.facebook-boton--recargar { color: $gris; &:hover { color: $azul; } }
+.facebook-spinner { display: inline-flex; ::ng-deep circle { stroke: #fff !important; } }
+
+
+// ═══ Toolbar de acciones masivas ═══
+.facebook-barra-acciones {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: clamp(10px, 1.2vw, 14px) 0 clamp(6px, .8vw, 10px);
+  &__espaciador { flex: 1; }
+}
+
+.facebook-contador-seleccion {
+  display: flex; align-items: center; gap: 4px;
+  font-size: clamp(11px, 1.05vw, 12px); font-weight: 600; color: $verde-dk;
+  mat-icon { font-size: 14px; height: 14px; width: 14px; color: $verde; }
+}
+
+
+// ═══ Grilla principal (Kendo Grid) ═══
+.facebook-grilla {
+  width: 100%;
+
+  ::ng-deep .k-grid-content {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+}
+
+::ng-deep {
+  .facebook-grilla .k-header {
+    background: #f1f3f5 !important; color: $azul-dk !important;
+    font-size: clamp(9.5px, .95vw, 11px) !important;
+    font-weight: 700 !important; letter-spacing: .15px; text-transform: uppercase;
+    border-bottom: 2px solid $borde !important;
+  }
+  .facebook-grilla td {
+    font-size: clamp(11px, 1.05vw, 12.5px) !important;
+    color: $texto !important; vertical-align: top !important; padding: 7px 8px !important;
+    border-bottom: 1px solid #eaecef !important;
+  }
+  .facebook-grilla tr:hover td {
+    background: #f0f5fb !important;
+  }
+  .facebook-grilla .k-alt { background: #fff !important; }
+  .facebook-grilla .k-pager-wrap {
+    background: #f1f3f5 !important;
+    border-top: 1px solid $borde !important;
+    padding: 0 !important;
+  }
+}
+
+// ─── Celdas ──────────────────────────────────────────
+.facebook-checkbox { width: 14px; height: 14px; cursor: pointer; accent-color: $indigo; vertical-align: middle; }
+
+.facebook-etiqueta-pagina {
+  display: inline-block; font-size: clamp(10px, 1vw, 11px); font-weight: 600;
+  color: $azul-dk; background: rgba(9,77,130,.07); border-radius: 3px;
+  padding: 2px 7px; white-space: nowrap;
+}
+
+.facebook-etiqueta-historia {
+  font-size: clamp(10px, 1vw, 11.5px);
+  font-weight: 500;
+  color: $texto;
+  word-break: break-all;
+  line-height: 1.3;
+}
+
+.facebook-recomienda {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: clamp(10px, 1vw, 11px); font-weight: 600; border-radius: 10px; padding: 2px 8px;
+  mat-icon { font-size: 12px !important; height: 12px !important; width: 12px !important; }
+  &--si { background: rgba(23,183,106,.1);  color: $verde-dk; }
+  &--no { background: rgba(199,21,133,.09); color: $rojo; }
+}
+
+.facebook-texto-contenido {
+  font-size: clamp(11px, 1.05vw, 12px); color: #3c4043;
+  line-height: 1.55; margin: 0; white-space: pre-wrap; word-break: break-word;
+}
+
+.facebook-icono-visible {
+  font-size: 18px !important; height: 18px !important; width: 18px !important; display: block;
+  &--activo    { color: $verde; }
+  &--inactivo  { color: #adb5bd; }
+}
+
+.facebook-sin-resultados {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 2rem 1rem; color: $gris; gap: 6px;
+
+  > mat-icon { font-size: 28px; height: 28px; width: 28px; color: #d0d5da; }
+  p          { font-size: 12.5px; margin: 0; }
+
+  &__acciones {
+    display: flex; gap: 6px; margin-top: 6px;
+
+    .facebook-boton {
+      height: 30px;
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 0 12px;
+      border-radius: 15px;
+      mat-icon { font-size: 14px !important; height: 14px !important; width: 14px !important; }
+    }
+  }
+}
+
+
+// ═══ Responsive ═══
+@media (max-width: 1100px) {
+  .facebook-grilla-tarjetas { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 960px) {
+  .facebook-filtros {
+    flex-direction: column;
+  }
+  .facebook-filtros__columna--izquierda,
+  .facebook-filtros__columna--derecha {
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 1px solid $borde;
+  }
+  .facebook-filtros__columna--acciones {
+    flex-direction: row;
+    .facebook-boton { width: auto; }
+  }
+  .facebook-colapsable--filtros.facebook-colapsable--abierto { max-height: 750px; }
+}
+
+@media (max-width: 640px) {
+  .facebook-grilla-tarjetas { grid-template-columns: 1fr; }
+
+  .facebook-barra-acciones { flex-wrap: wrap; }
+  .facebook-boton--mostrar span, .facebook-boton--ocultar span,
+  .facebook-boton--sincronizar span { display: none; }
+  .facebook-boton--mostrar, .facebook-boton--ocultar,
+  .facebook-boton--sincronizar { padding: 0 10px; min-width: 36px; }
+
+  .facebook-paginador__spacer { display: none; }
+}
+
+// ═══ Modal administración de cuentas — SweetAlert2 ═══
+// Usa ::ng-deep porque SweetAlert2 inyecta su HTML fuera del scope del componente.
+::ng-deep .facebook-modal {
+  border-radius: 10px !important;
+  padding: 0 !important;
+  overflow: hidden;
+
+  // Reset del header/grid interno de SweetAlert2 para evitar gaps entre título y cuerpo
+  .swal2-header { padding: 0 !important; margin: 0 !important; }
+
+  .swal2-title {
+    margin: 0 !important;
+    padding: 14px 50px 14px 20px !important;
+    background: $azul-dk !important; color: #fff !important;
+    border-radius: 10px 10px 0 0 !important;
+    font-size: 17px !important; text-align: left !important;
+    width: 100% !important; box-sizing: border-box !important;
+    line-height: 1.3 !important;
+  }
+
+  .swal2-close {
+    position: absolute !important;
+    right: 10px !important; top: 10px !important;
+    width: 30px !important; height: 30px !important;
+    margin: 0 !important; padding: 0 !important;
+    color: #fff !important; font-size: 20px !important;
+    line-height: 1 !important;
+    border-radius: 4px !important; box-shadow: none !important;
+    &:hover { color: #fff !important; background: rgba(255,255,255,.18) !important; }
+    &:focus { box-shadow: none !important; outline: none !important; }
+  }
+
+  .swal2-html-container { margin: 0 !important; padding: 18px !important; }
+
+  &__cuerpo { padding: 18px !important; }
+
+  // Espaciado para que los botones de acción no queden pegados al borde inferior
+  .swal2-actions { margin: 0 !important; padding: 0 18px 22px !important; }
+}
+
+// ── Resumen informativo arriba de la tabla de cuentas ──
+::ng-deep .facebook-cuentas-resumen {
+  background: linear-gradient(135deg, rgba($azul-dk, .06) 0%, rgba($azul-dk, .02) 100%);
+  border: 1px solid rgba($azul-dk, .15); border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+
+  &__nota {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 11.5px; color: $texto; line-height: 1.4;
+    .material-icons { font-size: 16px !important; color: $azul-dk; flex-shrink: 0; margin-top: 1px; }
+    b { color: $azul-dk; }
+  }
+
+  &__metricas {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+
+  &__metrica {
+    display: flex; flex-direction: column; gap: 2px;
+    background: #fff; border-radius: 6px; padding: 8px 10px;
+    border: 1px solid rgba($azul-dk, .1);
+  }
+
+  &__valor {
+    font-size: 18px; font-weight: 700; color: $azul-dk; line-height: 1.1;
+  }
+
+  &__etiqueta {
+    font-size: 10px; font-weight: 600; color: $gris;
+    text-transform: uppercase; letter-spacing: .3px;
+  }
+}
+
+// ── Tabla de cuentas dentro del modal ──
+::ng-deep .facebook-cuentas-barra {
+  display: flex; justify-content: flex-end; margin-bottom: 10px;
+}
+::ng-deep .facebook-cuentas-boton--agregar {
+  background: $azul-dk; color: #fff; border: none;
+  padding: 8px 14px; border-radius: 4px; cursor: pointer;
+  font-size: 12.5px; font-weight: 600;
+  &:hover { filter: brightness(1.1); }
+}
+
+::ng-deep .facebook-cuentas-tabla-wrap {
+  overflow-x: auto;
+  border: 1px solid $borde; border-radius: 6px;
+  background: #fff;
+}
+::ng-deep .facebook-cuentas-tabla {
+  width: 100%; border-collapse: collapse; font-size: 12.5px;
+  th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid $borde; }
+  tbody tr:last-child td { border-bottom: none; }
+  th { background: $fondo; font-weight: 600; color: $texto; font-size: 11.5px; text-transform: uppercase; letter-spacing: .3px; }
+  tbody tr:hover { background: rgba($azul-dk, .04); }
+  &__id { font-family: monospace; font-size: 11.5px; color: $gris; background: rgba(0,0,0,.04); padding: 2px 6px; border-radius: 3px; }
+  &__num { text-align: right; font-weight: 600; color: $texto; }
+  &__centro { text-align: center; vertical-align: middle; }
+  &__acciones {
+    text-align: center; vertical-align: middle; white-space: nowrap;
+    > * { vertical-align: middle; }
+  }
+  &__vacio { text-align: center; padding: 24px !important; color: $gris; font-style: italic; }
+}
+::ng-deep .facebook-cuentas-icono {
+  background: transparent; border: none; cursor: pointer;
+  width: 28px; height: 28px; padding: 0; margin: 0 2px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 4px; transition: background .12s, color .12s;
+  .material-icons { font-size: 17px !important; line-height: 1 !important; }
+  &--editar   { color: $azul-dk;  &:hover { background: rgba($azul-dk, .1); } }
+  &--eliminar { color: #ccc;      &:hover { background: rgba(#ef4444, .1); color: #ef4444; } }
+}
+
+// Ojo indicador de visibilidad en la tabla de cuentas (solo lectura, sin click)
+::ng-deep .facebook-cuentas-ojo {
+  font-size: 18px !important;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; vertical-align: middle;
+  &--activo   { color: $verde; }
+  &--inactivo { color: #ccc; }
+}
+
+// Toggle switch visual
+::ng-deep .facebook-cuentas-toggle {
+  position: relative; display: inline-block; width: 38px; height: 20px;
+  input { opacity: 0; width: 0; height: 0; }
+  &__slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background-color: #ccc; border-radius: 20px;
+    transition: background .2s;
+    &::before {
+      position: absolute; content: ''; height: 14px; width: 14px;
+      left: 3px; top: 3px; background-color: #fff; border-radius: 50%;
+      transition: transform .2s;
+    }
+  }
+  input:checked + &__slider { background-color: $verde; }
+  input:checked + &__slider::before { transform: translateX(18px); }
+  // Fallback por si :checked + no se aplica dentro del DOM aislado de SweetAlert2
+  &--activo .facebook-cuentas-toggle__slider { background-color: $verde !important; }
+  &--activo .facebook-cuentas-toggle__slider::before { transform: translateX(18px) !important; }
+  &--inline { vertical-align: middle; margin-top: 8px; }
+}
+
+// ── Formulario dentro del modal ──
+::ng-deep .facebook-formulario {
+  display: flex; flex-direction: column; gap: 14px;
+  &__fila { display: flex; gap: 14px; flex-wrap: wrap; }
+  &__campo {
+    display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px;
+    &--expandir { flex: 2; min-width: 220px; }
+  }
+  &__etiqueta { font-size: 11px; font-weight: 700; color: $texto; text-transform: uppercase; letter-spacing: .4px; }
+  &__input, &__textarea {
+    width: 100%; padding: 9px 11px; box-sizing: border-box;
+    border: 1px solid #d0d5dd; border-radius: 6px;
+    font-size: 13px; color: #333; background: #fff;
+    font-family: inherit; outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    &:focus { border-color: $azul-dk; box-shadow: 0 0 0 3px rgba($azul-dk, .12); }
+    &::placeholder { color: #adb5bd; }
+  }
+  &__textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
+
+  // Token: input enmascarado permanente. Se bloquea copy/cut por JS para evitar exfiltración.
+  &__input--token { font-family: monospace; letter-spacing: .5px; }
+  &__ayuda {
+    font-size: 11px; color: $gris; font-style: italic;
+    display: inline-flex; align-items: center; gap: 4px; margin-top: 2px;
+    &::before { content: '🔒'; font-style: normal; font-size: 11px; }
+  }
+
+  // Celda del toggle alineada con los inputs
+  &__campo--toggle { justify-content: flex-start; }
+}

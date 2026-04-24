@@ -89,6 +89,7 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
   @Input() centroCostoGenerado: CentroCostoGenerado;
   @Input() ciudadSeleccionada: LocacionTroncal;
   @Input() datosFormGeneracionAutomatica: FormGeneracionAutomatica;
+  @Input() limiteGruposAlcanzado: boolean = false;
   loadingCreacionPespecifico: boolean = false;
   centroCostoTemp: CentroCosto;
   dataItemPespecificoTemp: PEspecificoPadreIndividual;
@@ -198,9 +199,15 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
         ...this.combosModulo.centroCosto,
       ];
       this.centroCostoFiltrado = [itemCentroCosto];
+      const esWebinar = this.centroCostoGenerado.nombreProgramaGeneral
+        ?.toLowerCase()
+        .includes('webinar');
+      const nombrePespecifico = esWebinar
+        ? this.centroCostoGenerado.nombreProgramaEspecificoNumerico
+        : this.centroCostoGenerado.nombreProgramaEspecifico;
       this.formPespecifico
         .get('nombrePespecifico')
-        .setValue(this.centroCostoGenerado.nombreProgramaEspecifico);
+        .setValue(nombrePespecifico);
       this.formPespecifico
         .get('codigo')
         .setValue(this.centroCostoGenerado.codigo);

@@ -37,6 +37,7 @@ interface PespecificoWebinar {
   nombre: string;
   modalidad: string;
   codigo: string;
+  idProgramaGeneral?: number;
 }
 export interface Proveedor {
   id: number;
@@ -375,8 +376,12 @@ export interface CentroCostoGenerado {
   centroCosto: CentroCosto;
   codigo: string;
   nombreProgramaEspecifico: string;
+  nombreProgramaEspecificoNumerico: string;
   nombreProgramaGeneral: string;
   codigoBanco: string;
+  gruposAsignados: number;
+  gruposCreados: number;
+  haAlcanzadoLimiteGrupos: boolean;
 }
 
 export interface CentroCosto {

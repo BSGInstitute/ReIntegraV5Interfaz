@@ -1,0 +1,304 @@
+<div class="google-contenedor">
+
+  <div class="google-contenedor__cabecera">Reviews Google · Gestión de Reseñas BSG</div>
+
+  <div class="google-seccion-metricas">
+    <div class="google-toggle-seccion" (click)="metricasVisibles = !metricasVisibles">
+      <mat-icon class="google-toggle-seccion__icono"
+                [class.google-toggle-seccion__icono--abierto]="metricasVisibles">expand_more</mat-icon>
+      <span>Indicadores de reseñas</span>
+    </div>
+
+    <div class="google-colapsable" [class.google-colapsable--abierto]="metricasVisibles">
+      <div class="google-layout-metricas">
+
+        <!-- Izquierda: Promedio General -->
+        <div class="google-tarjeta-metrica google-tarjeta-metrica--promedio">
+          <div class="google-rating-grande">
+            <span class="google-rating-grande__numero" [style.color]="colorRating(promedioRating)">{{ formatearRating(promedioRating) }}</span>
+            <span class="google-rating-grande__estrellas" [style.color]="colorRating(promedioRating)">{{ estrellas(promedioRating) }}</span>
+          </div>
+          <div class="google-tarjeta-metrica__info">
+            <div class="google-tarjeta-metrica__nombre google-tarjeta-metrica__nombre--titulo">Promedio General</div>
+            <div class="google-tarjeta-metrica__kpis">
+              <span class="google-tarjeta-metrica__kpi-n">{{ totalResenas | number }}</span>
+              <span class="google-tarjeta-metrica__kpi-l">reseñas</span>
+              <span class="google-tarjeta-metrica__kpi-sep"></span>
+              <span class="google-tarjeta-metrica__kpi-n">{{ sedesConResenas.length }}</span>
+              <span class="google-tarjeta-metrica__kpi-l">sedes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derecha: Grid 2x2 de sedes -->
+        <div class="google-grilla-sedes">
+          <div class="google-tarjeta-metrica"
+               *ngFor="let sede of sedesConResenas; let i = index"
+               [style.--i]="i">
+            <div class="google-rating-pequeno">
+              <span class="google-rating-pequeno__numero" [style.color]="colorRating(sede.promedioValoracion)">{{ formatearRating(sede.promedioValoracion) }}</span>
+              <span class="google-rating-pequeno__estrellas" [style.color]="colorRating(sede.promedioValoracion)">{{ estrellas(sede.promedioValoracion) }}</span>
+            </div>
+            <div class="google-tarjeta-metrica__info">
+              <div class="google-tarjeta-metrica__nombre">{{ sede.nombreSede }}</div>
+              <div class="google-tarjeta-metrica__detalle">
+                <span><mat-icon>rate_review</mat-icon>{{ sede.totalResenas | number }} reseñas</span>
+                <span><mat-icon>visibility</mat-icon>{{ sede.totalMostrar | number }} visibles</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="google-seccion-gestion">
+
+    <!-- Filtros colapsable -->
+    <div class="google-tarjeta-filtros">
+      <div class="google-tarjeta-filtros__cabecera" (click)="filtrosAbiertos = !filtrosAbiertos">
+        <mat-icon class="google-toggle-seccion__icono"
+                  [class.google-toggle-seccion__icono--abierto]="filtrosAbiertos">expand_more</mat-icon>
+        <span>Filtros de búsqueda</span>
+      </div>
+
+      <div class="google-colapsable google-colapsable--filtros"
+           [class.google-colapsable--abierto]="filtrosAbiertos">
+        <div class="google-filtros">
+
+          <!-- Col izquierda: fechas -->
+          <div class="google-filtros__columna google-filtros__columna--izquierda">
+            <label class="google-filtros__etiqueta">Rango de fechas</label>
+            <mat-form-field appearance="outline" class="google-rango-fechas">
+              <mat-label>Desde → Hasta</mat-label>
+              <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate [(ngModel)]="fechaDesde"
+                       name="fechaDesde" placeholder="Inicio">
+                <input matEndDate [(ngModel)]="fechaHasta"
+                       name="fechaHasta" placeholder="Fin">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+            <div class="google-atajos-fecha">
+              <button class="google-atajo-fecha" (click)="seleccionarEsteMes()">Este mes</button>
+              <button class="google-atajo-fecha" (click)="seleccionarEsteAnio()">Este año</button>
+              <button class="google-atajo-fecha" (click)="seleccionarAnioAnterior()">Año anterior</button>
+            </div>
+          </div>
+
+          <!-- Col centro: rating + visibilidad + sede -->
+          <div class="google-filtros__columna google-filtros__columna--derecha">
+            <div class="google-filtros__fila-doble">
+              <div class="google-filtros__campo">
+                <label class="google-filtros__etiqueta">Rating mínimo</label>
+                <div class="google-toggle-rating">
+                  <button *ngFor="let op of opcionesRating"
+                          class="google-toggle-rating__boton"
+                          [class.active]="filtroRating === op.valor"
+                          (click)="filtroRating = op.valor">{{ op.label }}</button>
+                </div>
+              </div>
+              <div class="google-filtros__campo">
+                <label class="google-filtros__etiqueta">Visibilidad</label>
+                <div class="google-toggle-visibilidad">
+                  <button class="google-toggle-visibilidad__boton"
+                          [class.active]="filtroVisibilidad === null"
+                          (click)="filtroVisibilidad = null">Todos</button>
+                  <button class="google-toggle-visibilidad__boton google-toggle-visibilidad__boton--visible"
+                          [class.active]="filtroVisibilidad === true"
+                          (click)="filtroVisibilidad = true">
+                    <mat-icon>visibility</mat-icon>Visibles
+                  </button>
+                  <button class="google-toggle-visibilidad__boton google-toggle-visibilidad__boton--oculto"
+                          [class.active]="filtroVisibilidad === false"
+                          (click)="filtroVisibilidad = false">
+                    <mat-icon>visibility_off</mat-icon>Ocultos
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="google-filtros__campo">
+              <label class="google-filtros__etiqueta">Sede Google</label>
+              <kendo-multiselect
+                [data]="sedesCombo"
+                textField="nombreSede"
+                valueField="idGooglePlacesConfiguracion"
+                [valuePrimitive]="true"
+                [(ngModel)]="filtro.idsSede"
+                placeholder="— Todas las sedes —"
+                class="google-multiselect"
+              ></kendo-multiselect>
+            </div>
+          </div>
+
+          <!-- Col derecha: acciones -->
+          <div class="google-filtros__columna google-filtros__columna--acciones">
+            <button mat-raised-button class="google-boton google-boton--buscar"
+                    (click)="buscar()" [disabled]="cargandoGrilla">
+              <mat-icon>search</mat-icon> Buscar
+            </button>
+            <button mat-stroked-button class="google-boton google-boton--limpiar-alt"
+                    (click)="limpiarFiltros()">
+              <mat-icon>filter_alt_off</mat-icon> Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="google-seccion-gestion__contenido">
+    <div class="google-barra-acciones">
+      <button mat-stroked-button class="google-boton google-boton--configuracion"
+              (click)="abrirConfiguraciones()"
+              matTooltip="Administrar sedes de Google">
+        <mat-icon>settings</mat-icon> <span>Configuración</span>
+      </button>
+      <span class="google-contador-seleccion" *ngIf="seleccionados.size > 0">
+        <mat-icon>check_circle_outline</mat-icon>
+        {{ seleccionados.size }} seleccionado(s)
+      </span>
+      <span class="google-barra-acciones__espaciador"></span>
+      <button mat-icon-button class="google-boton--recargar"
+              (click)="buscar()" [disabled]="cargandoGrilla" matTooltip="Recargar">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-raised-button class="google-boton google-boton--mostrar"
+              (click)="marcarComoVisibles()"
+              [disabled]="seleccionados.size === 0 || procesandoMostrar || cargandoGrilla"
+              matTooltip="Marcar como visible">
+        <mat-spinner *ngIf="procesandoMostrar" [diameter]="13" class="google-spinner"></mat-spinner>
+        <mat-icon *ngIf="!procesandoMostrar">visibility</mat-icon>
+        <span>{{ procesandoMostrar ? 'Mostrando…' : 'Mostrar' + (seleccionados.size ? ' (' + seleccionados.size + ')' : '') }}</span>
+      </button>
+      <button mat-raised-button class="google-boton google-boton--ocultar"
+              (click)="marcarComoOcultas()"
+              [disabled]="seleccionados.size === 0 || procesandoOcultar || cargandoGrilla"
+              matTooltip="Ocultar del sitio web">
+        <mat-spinner *ngIf="procesandoOcultar" [diameter]="13" class="google-spinner"></mat-spinner>
+        <mat-icon *ngIf="!procesandoOcultar">visibility_off</mat-icon>
+        <span>{{ procesandoOcultar ? 'Ocultando…' : 'Ocultar' + (seleccionados.size ? ' (' + seleccionados.size + ')' : '') }}</span>
+      </button>
+      <button mat-raised-button class="google-boton google-boton--sincronizar"
+              (click)="sincronizarDesdeGoogle()"
+              [disabled]="procesandoSincronizacion || cargandoGrilla"
+              matTooltip="Sincronizar desde Google Places">
+        <mat-spinner *ngIf="procesandoSincronizacion" [diameter]="13" class="google-spinner"></mat-spinner>
+        <mat-icon *ngIf="!procesandoSincronizacion">sync</mat-icon>
+        <span>{{ procesandoSincronizacion ? 'Sincronizando…' : 'Sincronizar' }}</span>
+      </button>
+    </div>
+
+    <!-- Grilla -->
+    <kendo-grid #grid
+      [kendoGridBinding]="resenas"
+      [loading]="cargandoGrilla"
+      [sortable]="true"
+      [filterable]="true"
+      [reorderable]="true"
+      [resizable]="true"
+      [pageable]="pagerConfig"
+      [pageSize]="20"
+      [scrollable]="'scrollable'"
+      class="google-grilla">
+
+      <!-- Checkbox -->
+      <kendo-grid-column title="" [width]="42" [sortable]="false" [filterable]="false">
+        <ng-template kendoGridHeaderTemplate>
+          <input type="checkbox" class="google-checkbox"
+                 [checked]="todosSeleccionados" [indeterminate]="haySeleccionParcial"
+                 (change)="alternarSeleccionTodos($any($event.target).checked)" />
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-resena>
+          <input type="checkbox" class="google-checkbox"
+                 [checked]="estaSeleccionada(resena.idGoogleResena)"
+                 (change)="alternarSeleccionResena(resena.idGoogleResena, $any($event.target).checked)" />
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Sede -->
+      <kendo-grid-column field="nombreSede" title="Sede" [width]="170">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell [column]="column" [filter]="filter" operator="contains">
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-resena>
+          <span class="google-etiqueta-sede">{{ resena.nombreSede }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Autor -->
+      <kendo-grid-column field="nombreAutor" title="Autor" [width]="150">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell [column]="column" [filter]="filter" operator="contains">
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-resena>
+          <div class="google-autor-resena">
+            <img *ngIf="resena.fotoAutor" [src]="resena.fotoAutor" class="google-autor-resena__foto" alt="" loading="lazy" referrerpolicy="no-referrer">
+            <mat-icon *ngIf="!resena.fotoAutor" class="google-autor-resena__icono">account_circle</mat-icon>
+            <span class="google-autor-resena__nombre">{{ resena.nombreAutor || 'Anónimo' }}</span>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Rating -->
+      <kendo-grid-column field="valoracion" title="Rating" [width]="110" filter="numeric">
+        <ng-template kendoGridCellTemplate let-resena>
+          <span class="google-estrellas" [style.color]="colorRating(resena.valoracion)">
+            {{ estrellas(resena.valoracion) }}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Reseña -->
+      <kendo-grid-column field="textoResena" title="Reseña" [minResizableWidth]="250">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell [column]="column" [filter]="filter" operator="contains">
+          </kendo-grid-string-filter-cell>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-resena>
+          <p class="google-texto-contenido">{{ resena.textoResena }}</p>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Fecha -->
+      <kendo-grid-column field="fechaResena" title="Fecha" [width]="110" filter="date">
+        <ng-template kendoGridCellTemplate let-resena>
+          {{ resena.fechaResena | date:'dd/MM/yyyy' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Visible -->
+      <kendo-grid-column field="mostrar" title="Visible" [width]="82" filter="boolean">
+        <ng-template kendoGridCellTemplate let-resena>
+          <mat-icon class="google-icono-visible"
+                    [ngClass]="resena.mostrar ? 'google-icono-visible--activo' : 'google-icono-visible--inactivo'"
+                    [matTooltip]="resena.mostrar ? 'Visible' : 'Oculto'">
+            {{ resena.mostrar ? 'visibility' : 'visibility_off' }}
+          </mat-icon>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Sin resultados -->
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="google-sin-resultados">
+          <mat-icon>rate_review</mat-icon>
+          <p>No se encontraron reseñas para los filtros aplicados.</p>
+          <div class="google-sin-resultados__acciones">
+            <button mat-stroked-button class="google-boton google-boton--limpiar-alt" (click)="limpiarFiltros()">
+              <mat-icon>filter_alt_off</mat-icon> Quitar filtros
+            </button>
+            <button mat-stroked-button class="google-boton google-boton--recargar-alt" (click)="buscar()">
+              <mat-icon>refresh</mat-icon> Recargar
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </kendo-grid>
+
+    </div>
+  </div>
+</div>
