@@ -372,4 +372,21 @@ export class PespecificoService {
       `${constApiPlanificacion.PEspecificoObtenerNumeroGrupos}/${this.dataItemPespecificoTemp.id}/${this.esIndividual}`
     );
   }
+
+  /**
+   * Obtiene los proveedores asociados a un PEspecifico para el combo del cronograma.
+   * @param idPEspecifico Id del programa específico
+   * @param filtroNombre Filtro opcional por nombre del proveedor
+   * @returns Observable con la lista de proveedores
+   */
+  obtenerProveedoresPorPEspecifico$(
+    idPEspecifico: number,
+    filtroNombre?: string
+  ): Observable<HttpResponse<IComboBase1[]>> {
+    let url = `${constApiPlanificacion.ProveedorObtenerProveedoresPorPEspecifico}/${idPEspecifico}`;
+    if (filtroNombre && filtroNombre.trim() !== '') {
+      url += `?filtroNombre=${encodeURIComponent(filtroNombre)}`;
+    }
+    return this._integraService.getJsonResponse(url);
+  }
 }

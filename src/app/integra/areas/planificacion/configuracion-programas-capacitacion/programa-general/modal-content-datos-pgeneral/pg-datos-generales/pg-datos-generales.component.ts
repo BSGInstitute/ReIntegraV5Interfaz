@@ -79,6 +79,7 @@ export class PgDatosGeneralesComponent implements OnInit {
   });
   esModulo: boolean = false;
   showRequierePago: boolean = false;
+  esWebinar: boolean = false;
   gridDatosAdicionales: KendoGrid<PgeneralVersionPrograma> = new KendoGrid();
   asignarDocente: boolean = false;
   //!Important: grids no usados
@@ -265,7 +266,10 @@ export class PgDatosGeneralesComponent implements OnInit {
   private cargarVersionesPgeneral(
     pgeneralVersionPrograma: PgeneralVersionPrograma[]
   ) {
-    this.gridDatosAdicionales.data = pgeneralVersionPrograma.slice();
+    this.gridDatosAdicionales.data = pgeneralVersionPrograma.map((x) => ({
+      ...x,
+      gruposAsignados: x.gruposAsignados ?? 0,
+    }));
     let idsVersionPrograma = pgeneralVersionPrograma.map(
       (x) => x.idVersionPrograma
     );
@@ -319,6 +323,7 @@ export class PgDatosGeneralesComponent implements OnInit {
       creditoDisponibleTutorVirtual: [null, [Validators.min(0)]],
       cantidadWebinarAsignado: [null, [Validators.max(999), Validators.min(0)]],
       cantidadMesAccesoAdicionalWebinar: [null, [Validators.max(99), Validators.min(0)]],
+      gruposAsignados: [null, [Validators.max(999), Validators.min(0)]],
     });
     this.gridDatosAdicionales.cellClickEvent$.subscribe((resp) => { });
     this.gridDatosAdicionales.cellCloseEvent$.subscribe((resp) => {
@@ -357,6 +362,7 @@ export class PgDatosGeneralesComponent implements OnInit {
       this.formConfiguracionBase.get('otorgarCertificadoModular').setValue(false);
       this.formConfiguracionBase.get('requierePagoCertificado').setValue(false);
     }
+    this.esWebinar = event == 3 || event == 4;
   }
   onValueChangeModalidad(event: number[], grid: GridComponent) {
     if (grid != null) {
@@ -385,7 +391,8 @@ export class PgDatosGeneralesComponent implements OnInit {
             duracion: 0,
             creditoDisponibleTutorVirtual: 0,
             cantidadWebinarAsignado: 0,
-            cantidadMesAccesoAdicionalWebinar: 0
+            cantidadMesAccesoAdicionalWebinar: 0,
+            gruposAsignados: 0
           };
           return item;
         });
@@ -410,11 +417,11 @@ export class PgDatosGeneralesComponent implements OnInit {
       if (version.cantidadMesAccesoAdicionalWebinar == null) {
         version.cantidadMesAccesoAdicionalWebinar = 0;
       }
-      if (version.cantidadMesAccesoAdicionalWebinar == null) {
-        version.cantidadMesAccesoAdicionalWebinar = 0;
-      }
       if (version.creditoDisponibleTutorVirtual == null) {
         version.creditoDisponibleTutorVirtual = 0;
+      }
+      if (version.gruposAsignados == null) {
+        version.gruposAsignados = 0;
       }
       if (
         version.cantidadWebinarAsignado > 999 ||
@@ -442,6 +449,16 @@ export class PgDatosGeneralesComponent implements OnInit {
       ) {
         this._alertaService.notificationWarning(
           'El campo "N° Créditos Asignados Tutor Virtual" debe ser un número entero mayor o igual a 0.'
+        );
+        return;
+      }
+      if (
+        version.gruposAsignados > 999 ||
+        version.gruposAsignados < 0 ||
+        !Number.isInteger(version.gruposAsignados)
+      ) {
+        this._alertaService.notificationWarning(
+          'El campo "N° Grupos Asignados" debe ser un número entero entre 0 y 999.'
         );
         return;
       }

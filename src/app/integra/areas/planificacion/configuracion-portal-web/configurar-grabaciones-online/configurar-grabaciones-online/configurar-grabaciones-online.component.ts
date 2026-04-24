@@ -802,4 +802,38 @@ export class ConfigurarGrabacionesOnlineComponent implements OnInit {
   cerrarModalDetalleResumen() {
     this.modalRefDetalleResumen.close();
   }
+
+  calcularFechaFinalSesion(): void {
+    if (!this.gridSesiones || this.gridSesiones.length === 0) {
+      Swal.fire('Advertencia', 'No hay sesiones disponibles', 'warning');
+      return;
+    }
+
+    const idPEspecifico = this.gridSesiones[0]?.idPEspecifico;
+    if (!idPEspecifico) {
+      Swal.fire('Advertencia', 'No se encontró el ID del programa específico', 'warning');
+      return;
+    }
+
+    const filtro: IFiltroObtenerSesiones = {
+      idPEspecifico: idPEspecifico,
+    };
+
+    this.integraService
+      .postJsonResponse(constApiPlanificacion.CalcularFechaFinalSesion, filtro)
+      .subscribe({
+        next: (resp: HttpResponse<any>) => {
+          if (resp.body && resp.body.fechaHoraInicio) {
+            const fechaFinal = new Date(resp.body.fechaHoraInicio);
+            this.gridSesiones[0].fechaFin = fechaFinal;
+            Swal.fire('Éxito', 'Se actualizó la fecha "Disponible hasta" de la primera sesión', 'success');
+          } else {
+            Swal.fire('Advertencia', 'No hay una sesión asociada en la configuración', 'warning');
+          }
+        },
+        error: (err) => {
+          Swal.fire('Error', 'Ocurrió un problema al calcular la fecha final de sesión', 'error');
+        },
+      });
+  }
 }

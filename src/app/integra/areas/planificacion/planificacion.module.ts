@@ -141,6 +141,7 @@ import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea
 import { GestionAcademicaComponent } from './coordinacion-docentes/gestion-academica/gestion-academica.component';
 import { EstadoCursoComponent } from './maestros/estado-curso/estado-curso.component';
 import { ObservacionesPorEstadoComponent } from './maestros/observaciones-por-estado/observaciones-por-estado.component';
+import { ReporteDashboardComponent } from './configuracion-programas-capacitacion/reporte-dashboard/reporte-dashboard.component';
 
 
 @NgModule({
@@ -281,6 +282,7 @@ import { ObservacionesPorEstadoComponent } from './maestros/observaciones-por-es
     GestionAcademicaComponent,
     EstadoCursoComponent,
     ObservacionesPorEstadoComponent,
+    ReporteDashboardComponent,
 
 
   ],

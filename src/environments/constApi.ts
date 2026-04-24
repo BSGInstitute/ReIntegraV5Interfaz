@@ -9,6 +9,8 @@ export const constApiComercial = {
 
   ReporteActividadesRealizadasTresCxGenerarReporte:
     '/ReporteActividadesRealizadasTresCx/GenerarReporte',
+  ReporteActividadesRealizadasTresCxGenerarReporteChatAsistenteVirtual:
+    '/ReporteActividadesRealizadasTresCx/GenerarReporteChatAsistenteVirtual',
   ReporteContactabilidadTresCxGenerarReportev2:
     '/ReporteContactabilidadTresCx/GenerarReportev2',
   ReporteContactabilidadTresCxGenerarReportev2Alterno:
@@ -3670,6 +3672,7 @@ export const constApiPlanificacion = {
   ProveedorPEspecificoObtenerPorIdProveedor: '/Proveedor/ObtenerProveedorPEspecificoPorIdProveedor',
   ProveedorPEspecificoInsertar: '/Proveedor/InsertarProveedorPEspecifico',
   ProveedorPEspecificoEliminar: '/Proveedor/EliminarProveedorPEspecifico',
+  ProveedorObtenerProveedoresPorPEspecifico: '/Proveedor/ObtenerProveedoresPorPEspecifico', // GET {idPEspecifico}?filtroNombre=
   PEspecificoObtener: '/PEspecifico/Obtener',
   PEspecificoObtenerCatalogo: '/PEspecifico/ObtenerCatalogo',
   //CriteriosEvaluacionProgramasEspecificos
@@ -4085,6 +4088,8 @@ export const constApiPlanificacion = {
     '/GrabacionesClasesOnline/ModificarDisponibilidadProgramaDefecto',
   ObtenerDetalleResumenGrabacionSesion:
     '/GrabacionesClasesOnline/ObtenerDetalleResumenGrabacionSesion',
+  CalcularFechaFinalSesion:
+    '/GrabacionesClasesOnline/CalcularFechaFinalSesion',
 
   ObtenerResumenGrabacionOnline:
     '/ResumenGrabacionOnline/ObtenerResumenGrabacionOnline',
@@ -4215,7 +4220,37 @@ export const constApiPlanificacion = {
 
 
   PEspecificoSesionActualizarEstadoCurso: '/PEspecificoSesionEstado/ActualizarEstadoCurso',
-  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion'
+  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion',
+
+  // ReporteDashboard - Dashboard de Programas de Capacitacion
+  ReporteDashboardObtenerResumen: '/ReporteDashboard/ObtenerResumen',
+  ReporteDashboardObtenerResumenPorEstado: '/ReporteDashboard/ObtenerResumenPorEstado',
+  ReporteDashboardObtenerResumenPorModalidad: '/ReporteDashboard/ObtenerResumenPorModalidad',
+  ReporteDashboardObtenerProgramasPorEstado: '/ReporteDashboard/ObtenerProgramasPorEstado',
+  ReporteDashboardObtenerDetalleCursos: '/ReporteDashboard/ObtenerDetalleCursos',
+  ReporteDashboardObtenerDocentesAsignados: '/ReporteDashboard/ObtenerDocentesAsignados',
+  ReporteDashboardObtenerGraficoPorMes: '/ReporteDashboard/ObtenerGraficoPorMes',
+  ReporteDashboardObtenerFiltros: '/ReporteDashboard/ObtenerFiltros',
+  ReporteDashboardObtenerDatosCompletos: '/ReporteDashboard/ObtenerDatosCompletos',
+  ReporteDashboardObtenerResumenSemanal: '/ReporteDashboard/ObtenerResumenSemanal',
+  ReporteDashboardObtenerSesionesCalendario: '/ReporteDashboard/ObtenerSesionesCalendario',
+  // Estados de Sesion
+  ReporteDashboardObtenerResumenPorEstadoSesion: '/ReporteDashboard/ObtenerResumenPorEstadoSesion',
+  ReporteDashboardObtenerSesionesPorEstado: '/ReporteDashboard/ObtenerSesionesPorEstado',
+  ReporteDashboardObtenerEvolucionEstadoSesion: '/ReporteDashboard/ObtenerEvolucionEstadoSesion',
+  ReporteDashboardObtenerKPIsEstadoSesion: '/ReporteDashboard/ObtenerKPIsEstadoSesion',
+
+  // Nuevas funciones ampliadas
+  ReporteDashboardObtenerCambiosEstado: '/ReporteDashboard/ObtenerCambiosEstado',
+  ReporteDashboardObtenerEstadosPorDia: '/ReporteDashboard/ObtenerEstadosPorDia',
+  ReporteDashboardObtenerDetalleCursosV3: '/ReporteDashboard/ObtenerDetalleCursosV3',
+  ReporteDashboardObtenerSeguimientoClases: '/ReporteDashboard/ObtenerSeguimientoClases',
+
+  // Dashboard 2: Seguimiento por Docente
+  ReporteDashboardObtenerDocentesFiltro: '/ReporteDashboard/ObtenerDocentesFiltro',
+  ReporteDashboardObtenerPEspecificoFiltro: '/ReporteDashboard/ObtenerPEspecificoFiltro',
+  ReporteDashboardObtenerSeguimientoDocente: '/ReporteDashboard/ObtenerSeguimientoDocente',
+  ReporteDashboardObtenerNotasAlumnosPorPrograma: '/ReporteDashboard/ObtenerNotasAlumnosPorPrograma'
 
 };
 
