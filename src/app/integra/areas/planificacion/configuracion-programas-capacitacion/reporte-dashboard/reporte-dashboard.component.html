@@ -1346,6 +1346,7 @@
                   [filterable]="true"
                   [loading]="loadingDocentesFiltro"
                   (filterChange)="onDocenteFilterChange($event)"
+                  (valueChange)="onDocenteValueChange($event)"
                   placeholder="Buscar docente..."
                   [clearButton]="true"
                 >
@@ -1353,11 +1354,29 @@
               </kendo-formfield>
             </div>
 
-            <!-- Filtro PEspecifico -->
+            <!-- Filtro PEspecifico — muestra programas del docente si está seleccionado -->
             <div class="col-md-4">
               <kendo-formfield>
-                <kendo-label text="Programa Especifico (padre o hijo)"></kendo-label>
+                <kendo-label text="Programa Especifico"></kendo-label>
+
+                <!-- Con docente: dropdown con programas del docente -->
                 <kendo-combobox
+                  *ngIf="formFiltroD2.value.idDocente"
+                  formControlName="idPEspecifico"
+                  [data]="pEspecificoPorDocenteFiltro"
+                  textField="nombre"
+                  valueField="id"
+                  [valuePrimitive]="true"
+                  [loading]="loadingPEspecificoPorDocente"
+                  [filterable]="false"
+                  placeholder="Selecciona un programa..."
+                  [clearButton]="true"
+                >
+                </kendo-combobox>
+
+                <!-- Sin docente: búsqueda por texto libre -->
+                <kendo-combobox
+                  *ngIf="!formFiltroD2.value.idDocente"
                   formControlName="idPEspecifico"
                   [data]="pEspecificoFiltroFiltered"
                   textField="nombre"
@@ -1376,37 +1395,7 @@
                     </span>
                   </ng-template>
                 </kendo-combobox>
-              </kendo-formfield>
-            </div>
 
-            <!-- Filtro Año -->
-            <div class="col-md-1">
-              <kendo-formfield>
-                <kendo-label text="Año"></kendo-label>
-                <kendo-numerictextbox
-                  formControlName="anio"
-                  [min]="2020"
-                  [max]="2030"
-                  [decimals]="0"
-                  format="####"
-                  placeholder="Año"
-                ></kendo-numerictextbox>
-              </kendo-formfield>
-            </div>
-
-            <!-- Fecha inicio -->
-            <div class="col-md-1">
-              <kendo-formfield>
-                <kendo-label text="Desde"></kendo-label>
-                <kendo-datepicker formControlName="fechaInicio" placeholder="dd/mm/yyyy"></kendo-datepicker>
-              </kendo-formfield>
-            </div>
-
-            <!-- Fecha fin -->
-            <div class="col-md-1">
-              <kendo-formfield>
-                <kendo-label text="Hasta"></kendo-label>
-                <kendo-datepicker formControlName="fechaFin" placeholder="dd/mm/yyyy"></kendo-datepicker>
               </kendo-formfield>
             </div>
 
@@ -1568,6 +1557,55 @@
             <kendo-grid-column field="aula" title="Aula" [width]="100"></kendo-grid-column>
             <kendo-grid-column field="nroSesion" title="Nro" [width]="60"></kendo-grid-column>
           </kendo-grid>
+        </div>
+      </div>
+
+      <!-- ── Notas de alumnos por Programa Específico ── -->
+      <div *ngIf="formFiltroD2.value.idPEspecifico" class="row mt-3">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header d-flex align-items-center justify-content-between py-2">
+              <h6 class="mb-0 fw-bold">
+                <i class="k-icon k-i-table-align-middle-left me-1"></i>
+                Notas de Alumnos
+              </h6>
+              <span *ngIf="loadingNotas" class="spinner-border spinner-border-sm text-primary" role="status"></span>
+            </div>
+            <div class="card-body p-0">
+              <kendo-grid
+                [data]="gridDataNotas"
+                [pageable]="true"
+                [pageSize]="stateNotas.take"
+                [skip]="stateNotas.skip"
+                [sortable]="true"
+                [sort]="stateNotas.sort"
+                (dataStateChange)="stateNotas = $event"
+                [resizable]="true"
+                [loading]="loadingNotas"
+                style="max-height: 450px;">
+
+                <kendo-grid-column field="codigoMatricula" title="Código" [width]="110" [locked]="false"></kendo-grid-column>
+                <kendo-grid-column field="alumno" title="Nombre y Apellido" [width]="220"></kendo-grid-column>
+
+                <!-- Columnas dinámicas por criterio de evaluacion -->
+                <kendo-grid-column
+                  *ngFor="let evl of evaluacionesD2"
+                  [title]="evl.nombre + ' (' + evl.porcentaje + '%)'"
+                  [width]="150">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    {{ obtenerNota(dataItem, evl.id) | number:'1.2-2' }}
+                  </ng-template>
+                </kendo-grid-column>
+
+                <kendo-grid-column field="promedioFinal" title="Promedio Final" [width]="130">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <strong>{{ dataItem.promedioFinal | number:'1.2-2' }}</strong>
+                  </ng-template>
+                </kendo-grid-column>
+
+              </kendo-grid>
+            </div>
+          </div>
         </div>
       </div>
 

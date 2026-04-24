@@ -34,6 +34,10 @@ import {
   IReporteDashboardSeguimientoDocentePrograma,
   IReporteDashboardSeguimientoDocenteSesion,
   IReporteDashboardSeguimientoDocenteKPIs,
+  INotasPorPEspecificoD2,
+  INotaAlumnoD2,
+  INotaEvaluacionD2,
+  IReporteDashboardPEspecificoPorDocente,
 } from '@planificacion/models/interfaces/reporte-dashboard';
 import { AlertaService } from '@shared/services/alerta.service';
 import { ExcelExportComponent } from '@progress/kendo-angular-excel-export';
@@ -254,8 +258,10 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   docentesFiltroFiltered: IReporteDashboardDocenteFiltro[] = [];
   pEspecificoFiltro: IReporteDashboardPEspecificoFiltro[] = [];
   pEspecificoFiltroFiltered: IReporteDashboardPEspecificoFiltro[] = [];
+  pEspecificoPorDocenteFiltro: IReporteDashboardPEspecificoPorDocente[] = [];
   loadingDocentesFiltro: boolean = false;
   loadingPEspecificoFiltro: boolean = false;
+  loadingPEspecificoPorDocente: boolean = false;
   // Datos resultado
   seguimientoDocenteKPIs: IReporteDashboardSeguimientoDocenteKPIs = {
     docente: '', totalProgramas: 0, totalSesiones: 0,
@@ -279,6 +285,17 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     'Reprogramadas': '#ffc107',
     'Programadas': '#007bff'
   };
+  // ── Notas de alumnos por PEspecifico ──────────────────────────────────────
+  loadingNotas: boolean = false;
+  evaluacionesD2: INotaEvaluacionD2[] = [];
+  alumnosNotas: INotaAlumnoD2[] = [];
+  stateNotas: State = { skip: 0, take: 15, sort: [{ field: 'alumno', dir: 'asc' }] };
+  get gridDataNotas(): any { return process(this.alumnosNotas, this.stateNotas); }
+
+  obtenerNota(alumno: INotaAlumnoD2, idEvaluacion: number): number {
+    return alumno.notas.find(n => n.idEvaluacion === idEvaluacion)?.nota ?? 0;
+  }
+
   // Getters para datos procesados de grillas
   get gridDataProgramas(): any {
     return process(this.programas, this.stateProgramas);
@@ -1317,6 +1334,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   }
 
   cargarPEspecificoFiltro(busqueda?: string): void {
+    // Si hay docente seleccionado, no usar el buscador por texto
+    if (this.formFiltroD2.value.idDocente) return;
+
     if (!busqueda || busqueda.length < 2) {
       this.pEspecificoFiltroFiltered = this.pEspecificoFiltro.slice(0, 50);
       return;
@@ -1331,6 +1351,36 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.loadingPEspecificoFiltro = false;
         },
         error: () => { this.loadingPEspecificoFiltro = false; }
+      });
+  }
+
+  onDocenteValueChange(idDocente: number | null): void {
+    // Limpiar seleccion de PEspecifico cuando cambia el docente
+    this.formFiltroD2.patchValue({ idPEspecifico: null });
+    this.evaluacionesD2 = [];
+    this.alumnosNotas = [];
+
+    if (idDocente) {
+      this.cargarPEspecificoPorDocente(idDocente);
+    } else {
+      // Sin docente: volver al modo de búsqueda por texto
+      this.pEspecificoPorDocenteFiltro = [];
+      this.pEspecificoFiltroFiltered = this.pEspecificoFiltro.slice(0, 50);
+    }
+  }
+
+  cargarPEspecificoPorDocente(idProveedor: number): void {
+    this.loadingPEspecificoPorDocente = true;
+    this._reporteDashboardService.obtenerPEspecificoPorDocente$(idProveedor)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => { this.loadingPEspecificoPorDocente = false; })
+      )
+      .subscribe({
+        next: (response: HttpResponse<IReporteDashboardPEspecificoPorDocente[]>) => {
+          this.pEspecificoPorDocenteFiltro = response.body || [];
+        },
+        error: () => { this.pEspecificoPorDocenteFiltro = []; }
       });
   }
 
@@ -1373,6 +1423,35 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
+    // Cargar notas si hay un PEspecifico seleccionado
+    if (idPEspecifico) {
+      this.cargarNotasPorPEspecifico(idPEspecifico);
+    } else {
+      this.evaluacionesD2 = [];
+      this.alumnosNotas = [];
+    }
+  }
+
+  cargarNotasPorPEspecifico(idPEspecifico: number): void {
+    this.loadingNotas = true;
+    this._reporteDashboardService.obtenerNotasPorPEspecifico$(idPEspecifico)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => { this.loadingNotas = false; })
+      )
+      .subscribe({
+        next: (response: HttpResponse<INotasPorPEspecificoD2>) => {
+          const data = response.body;
+          if (data) {
+            this.evaluacionesD2 = data.evaluaciones || [];
+            this.alumnosNotas   = data.alumnos || [];
+          }
+        },
+        error: () => {
+          this.evaluacionesD2 = [];
+          this.alumnosNotas   = [];
+        }
+      });
   }
 
   limpiarFiltroD2(): void {
@@ -1380,6 +1459,10 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.seguimientoDocenteKPIs    = { ...this._kpisVacio };
     this.seguimientoDocenteProgramas = [];
     this.seguimientoDocenteSesiones  = [];
+    this.evaluacionesD2 = [];
+    this.alumnosNotas   = [];
+    this.pEspecificoPorDocenteFiltro = [];
+    this.pEspecificoFiltroFiltered = this.pEspecificoFiltro.slice(0, 50);
     this.buscarSeguimientoDocente();
   }
 

@@ -28,7 +28,9 @@ import {
   IReporteDashboardSeguimientoFiltroRequest,
   IReporteDashboardDocenteFiltro,
   IReporteDashboardPEspecificoFiltro,
-  IReporteDashboardSeguimientoDocente
+  IReporteDashboardSeguimientoDocente,
+  INotasPorPEspecificoD2,
+  IReporteDashboardPEspecificoPorDocente
 } from '@planificacion/models/interfaces/reporte-dashboard';
 
 /**
@@ -333,12 +335,32 @@ export class ReporteDashboardService {
   }
 
   /**
+   * Obtiene programas especificos donde el docente tiene sesiones asignadas
+   */
+  obtenerPEspecificoPorDocente$(idProveedor: number): Observable<HttpResponse<IReporteDashboardPEspecificoPorDocente[]>> {
+    const params = this.buildQueryParams({ idProveedor });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerPEspecificoPorDocente}${params}`
+    );
+  }
+
+  /**
    * Obtiene seguimiento completo de un docente (KPIs + programas + sesiones)
    */
   obtenerSeguimientoDocente$(idDocente?: number, idPEspecifico?: number, anio?: number, fechaInicio?: string, fechaFin?: string): Observable<HttpResponse<IReporteDashboardSeguimientoDocente>> {
     const params = this.buildQueryParams({ idDocente, idPEspecifico, anio, fechaInicio, fechaFin });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerSeguimientoDocente}${params}`
+    );
+  }
+
+  /**
+   * Obtiene notas de alumnos calculadas por PEspecifico (Tareas, Asistencia, Promedio Final)
+   */
+  obtenerNotasPorPEspecifico$(idPEspecifico: number, grupo: number = 1): Observable<HttpResponse<INotasPorPEspecificoD2>> {
+    const params = this.buildQueryParams({ idPEspecifico, grupo });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerNotasPorPEspecifico}${params}`
     );
   }
 

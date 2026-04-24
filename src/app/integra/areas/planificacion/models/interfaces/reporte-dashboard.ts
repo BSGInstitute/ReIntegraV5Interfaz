@@ -387,3 +387,42 @@ export interface IReporteDashboardSeguimientoDocenteFiltroRequest {
   fechaFin?: Date | string;
 }
 
+// PEspecifico filtrado por docente (IdProveedor)
+export interface IReporteDashboardPEspecificoPorDocente {
+  id: number;
+  nombre: string;
+}
+
+// ── Notas por PEspecifico (Dashboard 2) ─────────────────────────────────────
+
+// Encabezado de columna dinamica (un criterio de evaluacion)
+export interface INotaEvaluacionD2 {
+  id: number;
+  nombre: string;
+  porcentaje: number;
+}
+
+// Nota de un alumno para un criterio especifico
+export interface INotaCriterioValorD2 {
+  idEvaluacion: number;
+  nombreCriterio: string;
+  porcentaje: number;
+  nota: number;
+}
+
+// Fila de alumno con sus notas y promedio final
+export interface INotaAlumnoD2 {
+  idMatriculaCabecera: number;
+  codigoMatricula: string;
+  alumno: string;
+  notas: INotaCriterioValorD2[];
+  promedioFinal: number;
+}
+
+// Respuesta completa del endpoint
+export interface INotasPorPEspecificoD2 {
+  evaluaciones: INotaEvaluacionD2[];
+  alumnos: INotaAlumnoD2[];
+  esOnline: boolean;
+}
+

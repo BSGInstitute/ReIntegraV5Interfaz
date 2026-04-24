@@ -4155,7 +4155,9 @@ export const constApiPlanificacion = {
   // Dashboard 2: Seguimiento por Docente
   ReporteDashboardObtenerDocentesFiltro: '/ReporteDashboard/ObtenerDocentesFiltro',
   ReporteDashboardObtenerPEspecificoFiltro: '/ReporteDashboard/ObtenerPEspecificoFiltro',
-  ReporteDashboardObtenerSeguimientoDocente: '/ReporteDashboard/ObtenerSeguimientoDocente'
+  ReporteDashboardObtenerPEspecificoPorDocente: '/ReporteDashboard/ObtenerPEspecificoPorDocente',
+  ReporteDashboardObtenerSeguimientoDocente: '/ReporteDashboard/ObtenerSeguimientoDocente',
+  ReporteDashboardObtenerNotasPorPEspecifico: '/ReporteDashboard/ObtenerNotasPorPEspecifico'
 
 };
 
