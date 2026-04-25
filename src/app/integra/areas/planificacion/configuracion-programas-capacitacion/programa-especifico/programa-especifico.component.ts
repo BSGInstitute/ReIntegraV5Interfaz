@@ -587,7 +587,7 @@ export class ProgramaEspecificoComponent implements OnInit {
       this.loadingCcAutocomplete = true;
       this._integraService
         .postJsonResponse(
-          `${constApiComercial.CentroCostoObtenerAutocompleteV2}`,
+          `${constApiComercial.CentroCostoObtenerAutocompleteV3}`,
           JSON.stringify({ valor: event })
         )
         .subscribe({
