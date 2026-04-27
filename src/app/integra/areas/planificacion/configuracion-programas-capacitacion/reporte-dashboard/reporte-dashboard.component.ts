@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+﻿import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 import { Subject, forkJoin } from 'rxjs';
@@ -52,7 +52,8 @@ import { process, State } from '@progress/kendo-data-query';
 @Component({
   selector: 'app-reporte-dashboard',
   templateUrl: './reporte-dashboard.component.html',
-  styleUrls: ['./reporte-dashboard.component.scss']
+  styleUrls: ['./reporte-dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
@@ -117,13 +118,25 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   filteredProgramasEspecificos: IReporteDashboardProgramaEspecificoItem[] = [];
   filteredCentrosCosto: IReporteDashboardCentroCostoItem[] = [];
 
-  // Colores para graficos
+  // Paleta de colores distintos para estados sin mapeo explícito
+  private readonly _paletaEstados: string[] = [
+    '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+    '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6366f1',
+    '#14b8a6', '#a855f7', '#fb923c', '#22c55e', '#e11d48'
+  ];
+
+  // Colores para graficos — incluye variantes con/sin tilde
   coloresEstado: { [key: string]: string } = {
-    'Lanzamiento': '#28a745',
-    'Ejecucion': '#007bff',
-    'Finalizado': '#6c757d',
-    'Cancelado': '#dc3545',
-    'Pendiente': '#ffc107'
+    'Lanzamiento':  '#10b981',
+    'Ejecucion':    '#3b82f6',
+    'Ejecución':    '#3b82f6',
+    'En Ejecucion': '#3b82f6',
+    'En Ejecución': '#3b82f6',
+    'Finalizado':   '#8b5cf6',
+    'Concluido':    '#8b5cf6',
+    'Cancelado':    '#ef4444',
+    'Pendiente':    '#f59e0b',
+    'Sin Estado':   '#94a3b8',
   };
 
   coloresModalidad: string[] = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1'];
@@ -237,8 +250,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     sort: [{ field: 'totalSesiones', dir: 'desc' }]
   };
 
-  // Tab principal (dashboard1 / dashboard2)
+  // Tab principal (dashboard1 / dashboard2 / dashboard3)
   activeMainTab: 'dashboard1' | 'dashboard2' | 'dashboard3' = 'dashboard1';
+
+  // Flags de inicialización: una vez cargado el tab, el DOM se mantiene vivo
+  // y solo se oculta/muestra con [hidden] para evitar destruir/recrear charts
+  dashboard2Initialized = false;
+  dashboard3Initialized = false;
 
   // Tab activo (grillas dentro de dashboard1)
   activeTab: string = 'programas';
@@ -349,7 +367,8 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private _reporteDashboardService: ReporteDashboardService,
     private _alertaService: AlertaService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
     this.formFiltro = this._formBuilder.group({
       anio: [null],
@@ -424,9 +443,11 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
             this.filteredCentrosCosto = this.filtros.centrosCosto.slice(0, 50);
             // No se auto-asigna anio: null = todos los anios en la carga inicial
           }
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -494,12 +515,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.resumen = responses.resumen.body;
         }
 
-        // Grafico de estados (pie chart)
+        // Grafico de estados (donut chart)
         if (responses.estados.body) {
-          this.datosEstado = responses.estados.body.map(item => ({
+          this.datosEstado = responses.estados.body.map((item, i) => ({
             category: item.estado || 'Sin Estado',
             value: item.cantidadProgramas,
-            color: this.coloresEstado[item.estado || ''] || '#6c757d'
+            color: this.coloresEstado[item.estado || '']
+                   ?? this._paletaEstados[i % this._paletaEstados.length]
           }));
         }
 
@@ -522,10 +544,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         this.cargarDocentes();
         this.cargarResumenSemanal();
         this.cargarEstadosSesion();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loading = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -539,7 +563,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
     const estadosUnicos = [...new Set(datos.map(d => d.estadoPadre || 'Sin Estado'))];
 
-    this.seriesPorMes = estadosUnicos.map(estado => {
+    this.seriesPorMes = estadosUnicos.map((estado, i) => {
       const dataEstado = mesesUnicos.map(mes => {
         const item = datos.find(d => d.mes === mes && (d.estadoPadre || 'Sin Estado') === estado);
         return item ? item.cantidadProgramas : 0;
@@ -547,7 +571,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       return {
         name: estado,
         data: dataEstado,
-        color: this.coloresEstado[estado] || '#6c757d'
+        color: this.coloresEstado[estado] ?? this._paletaEstados[i % this._paletaEstados.length]
       };
     });
   }
@@ -573,10 +597,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
             this.categoriasSemanas = [];
           }
           this.loadingSemanal = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingSemanal = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -613,10 +639,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         }
 
         this.loadingEstadosSesion = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loadingEstadosSesion = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -636,10 +664,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         next: (response: HttpResponse<IReporteDashboardSesionDetalle[]>) => {
           this.sesionesDetalle = response.body || [];
           this.loadingSesionesDetalle = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingSesionesDetalle = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -848,10 +878,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         next: (response: HttpResponse<IReporteDashboardPrograma[]>) => {
           this.programas = response.body || [];
           this.loadingProgramas = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingProgramas = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -870,10 +902,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         next: (response: HttpResponse<IReporteDashboardCurso[]>) => {
           this.cursos = response.body || [];
           this.loadingCursos = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingCursos = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -892,10 +926,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         next: (response: HttpResponse<IReporteDashboardDocente[]>) => {
           this.docentes = response.body || [];
           this.loadingDocentes = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingDocentes = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1033,6 +1069,11 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     return `${e.category}\n${percent}%`;
   };
 
+  public labelOnlyPercent = (e: any): string => {
+    if (e.percentage < 0.05) return '';
+    return `${(e.percentage * 100).toFixed(0)}%`;
+  };
+
   /**
    * Tooltip para graficos
    */
@@ -1098,9 +1139,11 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           } else if (this.datosCompletos.length === 0) {
             this._alertaService.notificationInfo('No hay datos para exportar');
           }
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1118,10 +1161,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.datosCambiosEstado = response.body || [];
           this.procesarDatosCambiosEstado(this.datosCambiosEstado);
           this.loadingCambiosEstado = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingCambiosEstado = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1166,10 +1211,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         this.datosEstadosPorDia = response.body || [];
         this.procesarDatosEstadosPorDia(this.datosEstadosPorDia);
         this.loadingEstadosPorDia = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loadingEstadosPorDia = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -1185,13 +1232,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.categoriasEstadosPorDia = categoriasSet;
 
     const estadosUnicos = [...new Set(datos.map(d => d.estado))].filter(Boolean);
-    this.seriesEstadosPorDia = estadosUnicos.map(estado => ({
+    this.seriesEstadosPorDia = estadosUnicos.map((estado, i) => ({
       name: estado,
       data: categoriasSet.map(cat => {
         const item = datos.find(d => toKey(d) === cat && d.estado === estado);
         return item ? item.cantidadSesiones : 0;
       }),
-      color: this.coloresEstado[estado] || undefined
+      color: this.coloresEstado[estado] ?? this._paletaEstados[i % this._paletaEstados.length]
     }));
   }
 
@@ -1226,10 +1273,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       next: (response: HttpResponse<IReporteDashboardCursoV3[]>) => {
         this.cursosV3 = response.body || [];
         this.loadingCursosV3 = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loadingCursosV3 = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -1275,10 +1324,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.datosSeguimiento = response.body || [];
           this.procesarDatosSeguimiento(this.datosSeguimiento);
           this.loadingSeguimiento = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingSeguimiento = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1332,11 +1383,19 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   onMainTabChange(tab: 'dashboard1' | 'dashboard2' | 'dashboard3'): void {
     this.activeMainTab = tab;
-    if (tab === 'dashboard2' && this.docentesFiltro.length === 0) {
-      this.cargarDocentesFiltro();
+
+    if (tab === 'dashboard2') {
+      this.dashboard2Initialized = true;
+      if (this.docentesFiltro.length === 0) {
+        this.cargarDocentesFiltro();
+      }
     }
-    if (tab === 'dashboard3' && this.fursDashboard3.length === 0) {
-      this.cargarFursDashboard3();
+
+    if (tab === 'dashboard3') {
+      this.dashboard3Initialized = true;
+      if (this.fursDashboard3.length === 0) {
+        this.cargarFursDashboard3();
+      }
     }
   }
 
@@ -1349,8 +1408,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.docentesFiltro = response.body || [];
           this.docentesFiltroFiltered = this.docentesFiltro.slice(0, 50);
           this.loadingDocentesFiltro = false;
+          this.cdr.markForCheck();
         },
-        error: () => { this.loadingDocentesFiltro = false; }
+        error: () => { this.loadingDocentesFiltro = false; this.cdr.markForCheck(); }
       });
   }
 
@@ -1389,8 +1449,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.pEspecificoFiltro = response.body || [];
           this.pEspecificoFiltroFiltered = this.pEspecificoFiltro;
           this.loadingPEspecificoFiltro = false;
+          this.cdr.markForCheck();
         },
-        error: () => { this.loadingPEspecificoFiltro = false; }
+        error: () => { this.loadingPEspecificoFiltro = false; this.cdr.markForCheck(); }
       });
   }
 
@@ -1414,7 +1475,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this._reporteDashboardService.obtenerPEspecificoPorDocente$(idProveedor)
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => { this.loadingPEspecificoPorDocente = false; })
+        finalize(() => { this.loadingPEspecificoPorDocente = false; this.cdr.markForCheck(); })
       )
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardPEspecificoPorDocente[]>) => {
@@ -1445,7 +1506,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     )
     .pipe(
       takeUntil(this.destroy$),
-      finalize(() => { this.loadingD2 = false; })
+      finalize(() => { this.loadingD2 = false; this.cdr.markForCheck(); })
     )
     .subscribe({
       next: (response: HttpResponse<IReporteDashboardSeguimientoDocente>) => {
@@ -1477,7 +1538,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this._reporteDashboardService.obtenerNotasPorPEspecifico$(idPEspecifico)
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => { this.loadingNotas = false; })
+        finalize(() => { this.loadingNotas = false; this.cdr.markForCheck(); })
       )
       .subscribe({
         next: (response: HttpResponse<INotasPorPEspecificoD2>) => {
@@ -1534,7 +1595,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this._reporteDashboardService.obtenerFursDashboard3$()
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => { this.loadingD3 = false; })
+        finalize(() => { this.loadingD3 = false; this.cdr.markForCheck(); })
       )
       .subscribe({
         next: (response: HttpResponse<IFurDashboard3[]>) => {

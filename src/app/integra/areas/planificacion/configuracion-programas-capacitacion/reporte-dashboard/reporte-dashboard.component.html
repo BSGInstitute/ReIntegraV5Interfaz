@@ -1,1054 +1,1053 @@
-<div class="dashboard-container">
-  <!-- Header -->
-  <div class="card border-primary mb-3">
-    <div class="card-header bg-color-material">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2 class="mb-0 text-white">Dashboard - Programas de Capacitacion</h2>
-        <button kendoButton themeColor="light" icon="download" (click)="exportarExcel()" *ngIf="activeMainTab === 'dashboard1'">
-          Exportar
-        </button>
-      </div>
+<div class="dashboard-wrapper">
+
+  <!-- ══ Header ══════════════════════════════════════════════════════ -->
+  <div class="db-header mb-3">
+    <div>
+      <h2 class="db-header__title">
+        <i class="k-icon k-i-chart-column-clustered"></i>
+        Dashboard — Programas de Capacitación
+      </h2>
+      <div class="db-header__subtitle">Monitor de gestión académica y operativa · BSG Institute</div>
+    </div>
+    <div class="db-header__actions">
+      <button kendoButton themeColor="light" icon="download"
+        (click)="exportarExcel()" *ngIf="activeMainTab === 'dashboard1'">
+        Exportar Excel
+      </button>
     </div>
   </div>
 
-  <!-- Tabs principales -->
-  <ul class="nav nav-tabs mb-3">
-    <li class="nav-item">
-      <a class="nav-link" [class.active]="activeMainTab === 'dashboard1'" (click)="onMainTabChange('dashboard1')" style="cursor:pointer">
-        <i class="k-icon k-i-chart-column-clustered me-1"></i> Dashboard 1
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" [class.active]="activeMainTab === 'dashboard2'" (click)="onMainTabChange('dashboard2')" style="cursor:pointer">
-        <i class="k-icon k-i-user me-1"></i> Dashboard 2 - Seguimiento Docente
-      </a>
-    </li>
-     <li class="nav-item">
-      <a class="nav-link" [class.active]="activeMainTab === 'dashboard3'" (click)="onMainTabChange('dashboard3')" style="cursor:pointer">
-        <i class="k-icon k-i-user me-1"></i> Dashboard 3 - Furs
-      </a>
-    </li>
-  </ul>
-
-  <!-- ═══════ DASHBOARD 1 ═══════ -->
-  <ng-container *ngIf="activeMainTab === 'dashboard1'">
-
-  <!-- Filtros -->
-  <div class="card mb-3">
-    <div class="card-body py-2">
-      <form [formGroup]="formFiltro">
-        <div class="row align-items-end mb-2">
-          <div class="col-md-2">
-            <kendo-formfield>
-              <kendo-label text="Anio"></kendo-label>
-              <kendo-dropdownlist
-                formControlName="anio"
-                [data]="filtros.anios"
-                [valuePrimitive]="true"
-                [defaultItem]="null"
-                placeholder="-- Seleccione --"
-              ></kendo-dropdownlist>
-            </kendo-formfield>
-          </div>
-          <div class="col-md-2">
-            <kendo-formfield>
-              <kendo-label text="Estado"></kendo-label>
-              <kendo-dropdownlist
-                formControlName="estado"
-                [data]="filtros.estados"
-                [valuePrimitive]="true"
-                [defaultItem]="null"
-                placeholder="-- Seleccione --"
-              ></kendo-dropdownlist>
-            </kendo-formfield>
-          </div>
-          <div class="col-md-2">
-            <kendo-formfield>
-              <kendo-label text="Modalidad"></kendo-label>
-              <kendo-dropdownlist
-                formControlName="modalidad"
-                [data]="filtros.modalidades"
-                [valuePrimitive]="true"
-                [defaultItem]="null"
-                placeholder="-- Seleccione --"
-              ></kendo-dropdownlist>
-            </kendo-formfield>
-          </div>
-          <div class="col-md-3">
-            <kendo-formfield>
-              <kendo-label text="Programa Especifico Padre"></kendo-label>
-              <kendo-multiselect
-                formControlName="idsProgramaEspecificoPadre"
-                [data]="filteredProgramasEspecificos"
-                textField="nombre"
-                valueField="id"
-                [valuePrimitive]="true"
-                [filterable]="true"
-                (filterChange)="onFilterProgramas($event)"
-                placeholder="Buscar y seleccionar programas..."
-                [autoClose]="false"
-                [clearButton]="true"
-              >
-                <ng-template kendoMultiSelectHeaderTemplate>
-                  <span class="p-2 text-muted small">
-                    {{ filtros.programasEspecificos.length }} programas disponibles
-                  </span>
-                </ng-template>
-              </kendo-multiselect>
-            </kendo-formfield>
-          </div>
-          <div class="col-md-3">
-            <kendo-formfield>
-              <kendo-label text="Centro de Costo"></kendo-label>
-              <kendo-multiselect
-                formControlName="centrosCostoPadre"
-                [data]="filteredCentrosCosto"
-                textField="nombre"
-                valueField="id"
-                [valuePrimitive]="true"
-                [filterable]="true"
-                (filterChange)="onFilterCentrosCosto($event)"
-                placeholder="Buscar y seleccionar centros..."
-                [autoClose]="false"
-                [clearButton]="true"
-              >
-                <ng-template kendoMultiSelectHeaderTemplate>
-                  <span class="p-2 text-muted small">
-                    {{ filtros.centrosCosto.length }} centros disponibles
-                  </span>
-                </ng-template>
-              </kendo-multiselect>
-            </kendo-formfield>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12 d-flex justify-content-end gap-2">
-            <button kendoButton themeColor="primary" icon="search" (click)="aplicarFiltros()" [disabled]="loading">
-              Buscar
-            </button>
-            <button kendoButton themeColor="base" icon="reset" (click)="limpiarFiltros()" [disabled]="loading">
-              Limpiar
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+  <!-- ══ Tabs Principales ══════════════════════════════════════════════ -->
+  <div class="db-main-nav mb-3">
+    <button class="db-main-nav__item" [class.active]="activeMainTab === 'dashboard1'"
+      (click)="onMainTabChange('dashboard1')">
+      <i class="k-icon k-i-chart-column-clustered"></i> Dashboard General
+    </button>
+    <button class="db-main-nav__item" [class.active]="activeMainTab === 'dashboard2'"
+      (click)="onMainTabChange('dashboard2')">
+      <i class="k-icon k-i-user"></i> Seguimiento Docente
+    </button>
+    <button class="db-main-nav__item" [class.active]="activeMainTab === 'dashboard3'"
+      (click)="onMainTabChange('dashboard3')">
+      <i class="k-icon k-i-file-txt"></i> FURs
+    </button>
   </div>
 
-  <!-- Loading -->
-  <div *ngIf="loading" class="text-center py-5">
-    <kendo-loader type="infinite-spinner" size="large"></kendo-loader>
-    <p class="mt-2 text-muted">Cargando datos del dashboard...</p>
-  </div>
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- DASHBOARD 1 — siempre en DOM, solo se oculta con [hidden]        -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div [hidden]="activeMainTab !== 'dashboard1'">
 
-  <!-- Contenido del Dashboard -->
-  <ng-container *ngIf="!loading">
-    <!-- KPIs Cards -->
-    <div class="row mb-4">
-      <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card kpi-card bg-primary text-white h-100">
-          <div class="card-body text-center">
-            <i class="k-icon k-i-folder-open kpi-icon"></i>
-            <h3 class="kpi-value">{{ resumen.totalProgramasPadre }}</h3>
-            <p class="kpi-label mb-0">Programas Padre</p>
-          </div>
-        </div>
+    <!-- Filtros -->
+    <div class="filter-card mb-3">
+      <div class="filter-card__header">
+        <div class="filter-icon"><i class="k-icon k-i-filter"></i></div>
+        <h6>Filtros de búsqueda</h6>
       </div>
-      <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card kpi-card bg-success text-white h-100">
-          <div class="card-body text-center">
-            <i class="k-icon k-i-play kpi-icon"></i>
-            <h3 class="kpi-value">{{ resumen.programasEjecucion }}</h3>
-            <p class="kpi-label mb-0">En Ejecucion</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card kpi-card bg-info text-white h-100">
-          <div class="card-body text-center">
-            <i class="k-icon k-i-user kpi-icon"></i>
-            <h3 class="kpi-value">{{ resumen.totalDocentes }}</h3>
-            <p class="kpi-label mb-0">Docentes</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card kpi-card bg-warning text-dark h-100">
-          <div class="card-body text-center">
-            <i class="k-icon k-i-calendar kpi-icon"></i>
-            <h3 class="kpi-value">{{ resumen.totalSesiones }}</h3>
-            <p class="kpi-label mb-0">Total Sesiones</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- KPIs Secundarios -->
-    <div class="row mb-4">
-      <div class="col-lg col-md-4 col-sm-4 mb-2">
-        <div class="card h-100">
-          <div class="card-body text-center py-2">
-            <h5 class="mb-0 text-primary">{{ resumen.totalProgramasHijo }}</h5>
-            <small class="text-muted">Programas Hijo</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-4 col-sm-4 mb-2">
-        <div class="card h-100">
-          <div class="card-body text-center py-2">
-            <h5 class="mb-0 text-success">{{ resumen.programasLanzamiento }}</h5>
-            <small class="text-muted">En Lanzamiento</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-4 col-sm-4 mb-2">
-        <div class="card h-100">
-          <div class="card-body text-center py-2">
-            <h5 class="mb-0 text-secondary">{{ resumen.programasFinalizados }}</h5>
-            <small class="text-muted">Finalizados</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-4 col-sm-4 mb-2">
-        <div class="card h-100">
-          <div class="card-body text-center py-2">
-            <h5 class="mb-0 text-success">{{ resumen.docentesActivos }}</h5>
-            <small class="text-muted">Docentes Activos</small>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Graficos Fila 1 -->
-    <div class="row mb-4">
-      <!-- Grafico de Estados (Pie) -->
-      <div class="col-md-4 mb-3">
-        <div class="card chart-card h-100">
-          <div class="card-header">
-            <h5 class="mb-0">Distribucion por Estado</h5>
-          </div>
-          <div class="card-body">
-            <kendo-chart *ngIf="datosEstado.length > 0" [style.height.px]="300">
-              <kendo-chart-tooltip [shared]="false">
-                <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category">
-                  <div class="chart-tooltip">
-                    <strong>{{ category }}</strong><br/>
-                    Programas: {{ value }}
-                  </div>
-                </ng-template>
-              </kendo-chart-tooltip>
-              <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
-              <kendo-chart-series>
-                <kendo-chart-series-item
-                  type="pie"
-                  [data]="datosEstado"
-                  field="value"
-                  categoryField="category"
-                  colorField="color"
-                  [labels]="{ visible: true, content: labelContentPercent }"
-                >
-                </kendo-chart-series-item>
-              </kendo-chart-series>
-            </kendo-chart>
-            <div *ngIf="datosEstado.length === 0" class="empty-state">
-              <i class="k-icon k-i-chart-pie"></i>
-              <p>No hay datos disponibles</p>
+      <div class="filter-card__body">
+        <form [formGroup]="formFiltro">
+          <div class="row align-items-end g-2 mb-2">
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Año"></kendo-label>
+                <kendo-dropdownlist formControlName="anio" [data]="filtros.anios"
+                  [valuePrimitive]="true" [defaultItem]="null" placeholder="-- Todos --">
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Estado"></kendo-label>
+                <kendo-dropdownlist formControlName="estado" [data]="filtros.estados"
+                  [valuePrimitive]="true" [defaultItem]="null" placeholder="-- Todos --">
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Modalidad"></kendo-label>
+                <kendo-dropdownlist formControlName="modalidad" [data]="filtros.modalidades"
+                  [valuePrimitive]="true" [defaultItem]="null" placeholder="-- Todas --">
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Programa Específico Padre"></kendo-label>
+                <kendo-multiselect formControlName="idsProgramaEspecificoPadre"
+                  [data]="filteredProgramasEspecificos" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [filterable]="true" (filterChange)="onFilterProgramas($event)"
+                  placeholder="Buscar programas..." [autoClose]="false" [clearButton]="true">
+                  <ng-template kendoMultiSelectHeaderTemplate>
+                    <span class="p-2 text-muted small">{{ filtros.programasEspecificos.length }} disponibles</span>
+                  </ng-template>
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Centro de Costo"></kendo-label>
+                <kendo-multiselect formControlName="centrosCostoPadre"
+                  [data]="filteredCentrosCosto" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [filterable]="true" (filterChange)="onFilterCentrosCosto($event)"
+                  placeholder="Buscar centros..." [autoClose]="false" [clearButton]="true">
+                  <ng-template kendoMultiSelectHeaderTemplate>
+                    <span class="p-2 text-muted small">{{ filtros.centrosCosto.length }} disponibles</span>
+                  </ng-template>
+                </kendo-multiselect>
+              </kendo-formfield>
             </div>
           </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button kendoButton themeColor="primary" icon="search"
+              (click)="aplicarFiltros()" [disabled]="loading">Buscar</button>
+            <button kendoButton themeColor="base" icon="reset"
+              (click)="limpiarFiltros()" [disabled]="loading">Limpiar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Loading principal -->
+    <div *ngIf="loading" class="loading-state">
+      <kendo-loader type="infinite-spinner" size="large"></kendo-loader>
+      <p>Cargando datos del dashboard...</p>
+    </div>
+
+    <!-- ══ Contenido Dashboard 1 ══════════════════════════════════════ -->
+    <ng-container *ngIf="!loading">
+
+      <!-- ── KPIs Principales ──────────────────────────────────────── -->
+      <div class="kpi-grid mb-3">
+
+        <div class="kpi-card kpi-card--blue">
+          <div class="kpi-card__icon-wrap">
+            <i class="k-icon k-i-folder-open"></i>
+          </div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ resumen.totalProgramasPadre }}</div>
+            <div class="kpi-card__label">Programas Padre</div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-card--green">
+          <div class="kpi-card__icon-wrap">
+            <i class="k-icon k-i-play"></i>
+          </div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ resumen.programasEjecucion }}</div>
+            <div class="kpi-card__label">En Ejecución</div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-card--cyan">
+          <div class="kpi-card__icon-wrap">
+            <i class="k-icon k-i-user"></i>
+          </div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ resumen.totalDocentes }}</div>
+            <div class="kpi-card__label">Docentes</div>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-card--orange">
+          <div class="kpi-card__icon-wrap">
+            <i class="k-icon k-i-calendar"></i>
+          </div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ resumen.totalSesiones }}</div>
+            <div class="kpi-card__label">Total Sesiones</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── KPIs Secundarios ──────────────────────────────────────── -->
+      <div class="kpi-mini-grid mb-4">
+        <div class="kpi-mini kpi-mini--blue">
+          <div class="kpi-mini__value">{{ resumen.totalProgramasHijo }}</div>
+          <div class="kpi-mini__label">Programas Hijo</div>
+        </div>
+        <div class="kpi-mini kpi-mini--orange">
+          <div class="kpi-mini__value">{{ resumen.programasLanzamiento }}</div>
+          <div class="kpi-mini__label">En Lanzamiento</div>
+        </div>
+        <div class="kpi-mini kpi-mini--slate">
+          <div class="kpi-mini__value">{{ resumen.programasFinalizados }}</div>
+          <div class="kpi-mini__label">Finalizados</div>
+        </div>
+        <div class="kpi-mini kpi-mini--green">
+          <div class="kpi-mini__value">{{ resumen.docentesActivos }}</div>
+          <div class="kpi-mini__label">Docentes Activos</div>
         </div>
       </div>
 
-      <!-- Grafico de Modalidades (Bar) -->
-      <div class="col-md-4 mb-3">
-        <div class="card chart-card h-100">
-          <div class="card-header">
-            <h5 class="mb-0">Distribucion por Modalidad</h5>
-          </div>
-          <div class="card-body">
-            <kendo-chart *ngIf="datosModalidad.length > 0" [style.height.px]="300">
-              <kendo-chart-tooltip [shared]="false">
-                <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category">
-                  <div class="chart-tooltip">
-                    <strong>{{ category }}</strong><br/>
-                    Programas: {{ value }}
-                  </div>
-                </ng-template>
-              </kendo-chart-tooltip>
-              <kendo-chart-category-axis>
-                <kendo-chart-category-axis-item [labels]="{ rotation: -45 }">
-                </kendo-chart-category-axis-item>
-              </kendo-chart-category-axis>
-              <kendo-chart-series>
-                <kendo-chart-series-item
-                  type="column"
-                  [data]="datosModalidad"
-                  field="value"
-                  categoryField="category"
-                  colorField="color"
-                  [labels]="{ visible: true, format: '{0}' }"
-                >
-                </kendo-chart-series-item>
-              </kendo-chart-series>
-            </kendo-chart>
-            <div *ngIf="datosModalidad.length === 0" class="empty-state">
-              <i class="k-icon k-i-chart-column-clustered"></i>
-              <p>No hay datos disponibles</p>
+      <!-- ── Gráficos Fila 1 ───────────────────────────────────────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-chart-pie"></i></div>
+        <span class="section-divider__title">Distribución General</span>
+        <div class="section-divider__line"></div>
+      </div>
+
+      <div class="row mb-4">
+
+        <!-- Estado (Donut) -->
+        <div class="col-md-4 mb-3">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h5><i class="k-icon k-i-chart-donut"></i> Por Estado</h5>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Grafico Evolucion Mensual (Line) -->
-      <div class="col-md-4 mb-3">
-        <div class="card chart-card h-100">
-          <div class="card-header">
-            <h5 class="mb-0">Evolucion Mensual</h5>
-          </div>
-          <div class="card-body">
-            <kendo-chart *ngIf="seriesPorMes.length > 0" [style.height.px]="300">
-              <kendo-chart-tooltip [shared]="true">
-                <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
-                  <div class="chart-tooltip">
-                    <strong>{{ category }}</strong>
-                    <div *ngFor="let point of points">
-                      {{ point.series.name }}: {{ point.value }}
+            <div class="chart-card__body">
+              <kendo-chart *ngIf="datosEstado.length > 0" [style.height.px]="320">
+                <kendo-chart-area [background]="'transparent'" [margin]="{ top: 15, bottom: 5, left: 15, right: 15 }">
+                </kendo-chart-area>
+                <kendo-chart-tooltip [shared]="false">
+                  <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category" let-percentage="percentage">
+                    <div class="chart-tooltip">
+                      <strong>{{ category }}</strong>
+                      Programas: {{ value }} &nbsp;·&nbsp; {{ (percentage * 100).toFixed(1) }}%
                     </div>
-                  </div>
-                </ng-template>
-              </kendo-chart-tooltip>
-              <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
-              <kendo-chart-category-axis>
-                <kendo-chart-category-axis-item [categories]="categoriasMeses">
-                </kendo-chart-category-axis-item>
-              </kendo-chart-category-axis>
-              <kendo-chart-value-axis>
-                <kendo-chart-value-axis-item [min]="0">
-                </kendo-chart-value-axis-item>
-              </kendo-chart-value-axis>
-              <kendo-chart-series>
-                <kendo-chart-series-item
-                  *ngFor="let serie of seriesPorMes"
-                  type="line"
-                  [name]="serie.name"
-                  [data]="serie.data"
-                  [markers]="{ visible: true, size: 8 }"
-                  [style]="'smooth'"
-                >
-                </kendo-chart-series-item>
-              </kendo-chart-series>
-            </kendo-chart>
-            <div *ngIf="seriesPorMes.length === 0" class="empty-state">
-              <i class="k-icon k-i-chart-line"></i>
-              <p>No hay datos disponibles</p>
+                  </ng-template>
+                </kendo-chart-tooltip>
+                <kendo-chart-legend position="bottom" orientation="horizontal"
+                  [labels]="{ font: '12px Inter, sans-serif' }">
+                </kendo-chart-legend>
+                <kendo-chart-series>
+                  <kendo-chart-series-item type="donut" [data]="datosEstado" field="value"
+                    categoryField="category" colorField="color" [holeSize]="55"
+                    [labels]="{ visible: true, content: labelOnlyPercent, color: '#ffffff',
+                                font: 'bold 12px Inter, sans-serif', background: 'transparent',
+                                position: 'center' }">
+                  </kendo-chart-series-item>
+                </kendo-chart-series>
+              </kendo-chart>
+              <div *ngIf="datosEstado.length === 0" class="empty-state">
+                <div class="empty-icon"><i class="k-icon k-i-chart-donut"></i></div>
+                <p>No hay datos disponibles</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <!-- SECCION: Cambios de Estado (basado en log)                        -->
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card chart-card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-              <i class="k-icon k-i-track-changes me-2"></i>
-              Transiciones de Estado por Semana
-            </h5>
-            <div class="d-flex align-items-center gap-2">
-              <small class="text-muted">Ultimas semanas:</small>
-              <div class="btn-group btn-group-sm" role="group">
-                <button type="button" class="btn"
-                  [class.btn-primary]="ultimasSemanasCambios === 4"
-                  [class.btn-outline-primary]="ultimasSemanasCambios !== 4"
-                  (click)="cambiarUltimasSemanasCambios(4)">4</button>
-                <button type="button" class="btn"
-                  [class.btn-primary]="ultimasSemanasCambios === 8"
-                  [class.btn-outline-primary]="ultimasSemanasCambios !== 8"
-                  (click)="cambiarUltimasSemanasCambios(8)">8</button>
-                <button type="button" class="btn"
-                  [class.btn-primary]="ultimasSemanasCambios === 12"
-                  [class.btn-outline-primary]="ultimasSemanasCambios !== 12"
-                  (click)="cambiarUltimasSemanasCambios(12)">12</button>
+        <!-- Modalidad (Columnas) -->
+        <div class="col-md-4 mb-3">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h5><i class="k-icon k-i-chart-column-clustered"></i> Por Modalidad</h5>
+            </div>
+            <div class="chart-card__body">
+              <kendo-chart *ngIf="datosModalidad.length > 0" [style.height.px]="320">
+                <kendo-chart-area [background]="'transparent'" [margin]="{ top: 30, bottom: 5, left: 5, right: 5 }">
+                </kendo-chart-area>
+                <kendo-chart-tooltip [shared]="false">
+                  <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category">
+                    <div class="chart-tooltip"><strong>{{ category }}</strong>Programas: {{ value }}</div>
+                  </ng-template>
+                </kendo-chart-tooltip>
+                <kendo-chart-category-axis>
+                  <kendo-chart-category-axis-item
+                    [labels]="{ rotation: -30, font: '11px Inter, sans-serif', color: '#64748b' }"
+                    [majorGridLines]="{ visible: false }">
+                  </kendo-chart-category-axis-item>
+                </kendo-chart-category-axis>
+                <kendo-chart-value-axis>
+                  <kendo-chart-value-axis-item [min]="0"
+                    [labels]="{ font: '11px Inter, sans-serif', color: '#64748b' }"
+                    [majorGridLines]="{ color: '#e2e8f0', dashType: 'dot' }">
+                  </kendo-chart-value-axis-item>
+                </kendo-chart-value-axis>
+                <kendo-chart-series>
+                  <kendo-chart-series-item type="column" [data]="datosModalidad" field="value"
+                    categoryField="category" colorField="color" [gap]="0.5"
+                    [labels]="{ visible: true, format: '{0}', font: 'bold 11px Inter, sans-serif',
+                                color: '#1e293b', background: 'transparent', position: 'outsideEnd' }">
+                  </kendo-chart-series-item>
+                </kendo-chart-series>
+              </kendo-chart>
+              <div *ngIf="datosModalidad.length === 0" class="empty-state">
+                <div class="empty-icon"><i class="k-icon k-i-chart-column-clustered"></i></div>
+                <p>No hay datos disponibles</p>
               </div>
-              <button kendoButton themeColor="base" icon="reload" (click)="cargarCambiosEstado()" class="btn-sm"
-                [disabled]="loadingCambiosEstado">
-              </button>
             </div>
           </div>
-          <div class="card-body">
-            <div *ngIf="loadingCambiosEstado" class="text-center py-4">
-              <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+        </div>
+
+        <!-- Evolución Mensual (Líneas) -->
+        <div class="col-md-4 mb-3">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h5><i class="k-icon k-i-chart-line"></i> Evolución Mensual</h5>
             </div>
-            <ng-container *ngIf="!loadingCambiosEstado">
-              <kendo-chart *ngIf="datosCambiosEstado.length > 0" [style.height.px]="320">
+            <div class="chart-card__body">
+              <kendo-chart *ngIf="seriesPorMes.length > 0" [style.height.px]="320">
+                <kendo-chart-area [background]="'transparent'" [margin]="{ top: 10, bottom: 5, left: 5, right: 5 }">
+                </kendo-chart-area>
                 <kendo-chart-tooltip [shared]="true">
                   <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
                     <div class="chart-tooltip">
                       <strong>{{ category }}</strong>
-                      <div *ngFor="let point of points">
-                        <span [style.color]="point.series.color">●</span>
-                        {{ point.series.name }}: <strong>{{ point.value }}</strong>
-                      </div>
+                      <div *ngFor="let point of points">{{ point.series.name }}: {{ point.value }}</div>
                     </div>
                   </ng-template>
                 </kendo-chart-tooltip>
-                <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+                <kendo-chart-legend position="bottom" orientation="horizontal"
+                  [labels]="{ font: '11px Inter, sans-serif' }">
+                </kendo-chart-legend>
                 <kendo-chart-category-axis>
-                  <kendo-chart-category-axis-item [categories]="categoriasCambiosEstado"
-                    [labels]="{ rotation: -30 }">
+                  <kendo-chart-category-axis-item [categories]="categoriasMeses"
+                    [labels]="{ font: '11px Inter, sans-serif', color: '#64748b' }"
+                    [majorGridLines]="{ visible: false }">
                   </kendo-chart-category-axis-item>
                 </kendo-chart-category-axis>
                 <kendo-chart-value-axis>
-                  <kendo-chart-value-axis-item [min]="0" [title]="{ text: 'Cantidad de Cambios' }">
+                  <kendo-chart-value-axis-item [min]="0"
+                    [labels]="{ font: '11px Inter, sans-serif', color: '#64748b' }"
+                    [majorGridLines]="{ color: '#e2e8f0', dashType: 'dot' }">
                   </kendo-chart-value-axis-item>
                 </kendo-chart-value-axis>
                 <kendo-chart-series>
-                  <kendo-chart-series-item
-                    *ngFor="let serie of seriesCambiosEstado"
-                    type="column"
-                    [name]="serie.name"
-                    [data]="serie.data"
-                    [color]="serie.color"
-                    [labels]="{ visible: true, format: '{0}' }"
-                  ></kendo-chart-series-item>
+                  <kendo-chart-series-item *ngFor="let serie of seriesPorMes" type="line"
+                    [name]="serie.name" [data]="serie.data" [color]="serie.color"
+                    [markers]="{ visible: true, size: 7, border: { width: 2, color: '#fff' } }"
+                    [style]="'smooth'" [width]="2.5">
+                  </kendo-chart-series-item>
                 </kendo-chart-series>
               </kendo-chart>
-              <div *ngIf="datosCambiosEstado.length === 0" class="empty-state">
-                <i class="k-icon k-i-track-changes"></i>
-                <p>No hay cambios de estado registrados en el periodo seleccionado</p>
+              <div *ngIf="seriesPorMes.length === 0" class="empty-state">
+                <div class="empty-icon"><i class="k-icon k-i-chart-line"></i></div>
+                <p>No hay datos disponibles</p>
               </div>
-            </ng-container>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Grafico Resumen Semanal -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card chart-card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Resumen de Sesiones</h5>
-            <div class="d-flex align-items-center gap-2">
-              <div class="btn-group btn-group-sm agrupacion-btns" role="group">
-                <button
-                  *ngFor="let opcion of opcionesAgrupacion"
-                  type="button"
-                  class="btn"
-                  [class.btn-primary]="agrupacionTemporal === opcion.value"
-                  [class.btn-outline-primary]="agrupacionTemporal !== opcion.value"
-                  (click)="cambiarAgrupacionTemporal(opcion.value)"
-                >
-                  {{ opcion.label }}
-                </button>
-              </div>
-              <span class="badge bg-secondary ms-2">{{ datosSemanal.length }} semanas</span>
-            </div>
-          </div>
-          <div class="card-body">
-            <kendo-chart *ngIf="seriesSemanal.length > 0" [style.height.px]="350">
-              <kendo-chart-tooltip [shared]="true">
-                <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
-                  <div class="chart-tooltip">
-                    <strong>{{ category }}</strong>
-                    <div *ngFor="let point of points">
-                      <span [style.color]="point.series.color">●</span>
-                      {{ point.series.name }}: {{ point.value }}
-                    </div>
-                  </div>
-                </ng-template>
-              </kendo-chart-tooltip>
-              <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
-              <kendo-chart-category-axis>
-                <kendo-chart-category-axis-item
-                  [categories]="categoriasSemanas"
-                  [labels]="{ rotation: -45 }"
-                  [title]="{ text: 'Semanas' }"
-                >
-                </kendo-chart-category-axis-item>
-              </kendo-chart-category-axis>
-              <kendo-chart-value-axis>
-                <kendo-chart-value-axis-item [min]="0" [title]="{ text: 'Cantidad de Sesiones' }">
-                </kendo-chart-value-axis-item>
-              </kendo-chart-value-axis>
-              <kendo-chart-series>
-                <kendo-chart-series-item
-                  *ngFor="let serie of seriesSemanal"
-                  type="line"
-                  [name]="serie.name"
-                  [data]="serie.data"
-                  [color]="serie.color"
-                  [markers]="{ visible: true, size: 6 }"
-                  [style]="'smooth'"
-                >
-                </kendo-chart-series-item>
-              </kendo-chart-series>
-            </kendo-chart>
-            <div *ngIf="seriesSemanal.length === 0" class="empty-state">
-              <i class="k-icon k-i-chart-area-clustered"></i>
-              <p>No hay datos de resumen semanal disponibles</p>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <!-- SECCION: Estados de Programas Hijo por Dia / Semana               -->
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card chart-card">
-          <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="mb-0">
-              <i class="k-icon k-i-chart-column-stacked me-2"></i>
-              Actividad de Programas por {{ agrupacionEstadosPorDia === 'DIA' ? 'Día' : 'Semana' }}
-            </h5>
-            <div class="btn-group btn-group-sm" role="group">
-              <button type="button" class="btn"
-                [class.btn-primary]="agrupacionEstadosPorDia === 'DIA'"
-                [class.btn-outline-primary]="agrupacionEstadosPorDia !== 'DIA'"
-                (click)="cambiarAgrupacionEstadosPorDia('DIA')">Por Día</button>
-              <button type="button" class="btn"
-                [class.btn-primary]="agrupacionEstadosPorDia === 'SEMANA'"
-                [class.btn-outline-primary]="agrupacionEstadosPorDia !== 'SEMANA'"
-                (click)="cambiarAgrupacionEstadosPorDia('SEMANA')">Por Semana</button>
+      </div>
+
+      <!-- ── Transiciones de Estado ────────────────────────────────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-track-changes"></i></div>
+        <span class="section-divider__title">Transiciones de Estado</span>
+        <div class="section-divider__line"></div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h5><i class="k-icon k-i-track-changes"></i> Transiciones de Estado por Semana</h5>
+              <div class="chart-card__controls">
+                <small class="text-muted me-1">Últimas:</small>
+                <div class="toggle-group">
+                  <button class="toggle-btn" [class.active]="ultimasSemanasCambios === 4"
+                    (click)="cambiarUltimasSemanasCambios(4)">4 sem</button>
+                  <button class="toggle-btn" [class.active]="ultimasSemanasCambios === 8"
+                    (click)="cambiarUltimasSemanasCambios(8)">8 sem</button>
+                  <button class="toggle-btn" [class.active]="ultimasSemanasCambios === 12"
+                    (click)="cambiarUltimasSemanasCambios(12)">12 sem</button>
+                </div>
+                <button kendoButton themeColor="base" icon="reload"
+                  (click)="cargarCambiosEstado()" [disabled]="loadingCambiosEstado"></button>
+              </div>
+            </div>
+            <div class="chart-card__body">
+              <div *ngIf="loadingCambiosEstado" class="loading-state">
+                <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+              </div>
+              <ng-container *ngIf="!loadingCambiosEstado">
+                <kendo-chart *ngIf="datosCambiosEstado.length > 0" [style.height.px]="320">
+                  <kendo-chart-tooltip [shared]="true">
+                    <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
+                      <div class="chart-tooltip">
+                        <strong>{{ category }}</strong>
+                        <div *ngFor="let point of points">
+                          <span [style.color]="point.series.color">●</span>
+                          {{ point.series.name }}: <strong>{{ point.value }}</strong>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </kendo-chart-tooltip>
+                  <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+                  <kendo-chart-category-axis>
+                    <kendo-chart-category-axis-item [categories]="categoriasCambiosEstado"
+                      [labels]="{ rotation: -30 }"></kendo-chart-category-axis-item>
+                  </kendo-chart-category-axis>
+                  <kendo-chart-value-axis>
+                    <kendo-chart-value-axis-item [min]="0"
+                      [title]="{ text: 'Cantidad de Cambios' }"></kendo-chart-value-axis-item>
+                  </kendo-chart-value-axis>
+                  <kendo-chart-series>
+                    <kendo-chart-series-item *ngFor="let serie of seriesCambiosEstado" type="column"
+                      [name]="serie.name" [data]="serie.data" [color]="serie.color"
+                      [labels]="{ visible: true, format: '{0}' }"></kendo-chart-series-item>
+                  </kendo-chart-series>
+                </kendo-chart>
+                <div *ngIf="datosCambiosEstado.length === 0" class="empty-state">
+                  <div class="empty-icon"><i class="k-icon k-i-track-changes"></i></div>
+                  <p>No hay cambios de estado en el período seleccionado</p>
+                </div>
+              </ng-container>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Filtro propio -->
-          <div class="card-body border-bottom py-2 bg-light">
-            <form [formGroup]="formFiltroEstadosPorDia">
-              <div class="row align-items-end g-2">
-                <div class="col-md-2">
-                  <kendo-formfield>
-                    <kendo-label text="Ultimas N semanas"></kendo-label>
-                    <kendo-numerictextbox formControlName="ultimasSemanas" [min]="1" [max]="52" [decimals]="0" [format]="'n0'">
-                    </kendo-numerictextbox>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-3">
-                  <kendo-formfield>
-                    <kendo-label text="Fecha inicio"></kendo-label>
-                    <kendo-datepicker formControlName="fechaInicio" [format]="'dd/MM/yyyy'">
-                    </kendo-datepicker>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-3">
-                  <kendo-formfield>
-                    <kendo-label text="Fecha fin"></kendo-label>
-                    <kendo-datepicker formControlName="fechaFin" [format]="'dd/MM/yyyy'">
-                    </kendo-datepicker>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-3">
-                  <kendo-formfield>
-                    <kendo-label text="Estado del programa"></kendo-label>
-                    <kendo-multiselect
-                      formControlName="estados"
-                      [data]="filtros.estados"
-                      [valuePrimitive]="true"
-                      placeholder="Todos los estados"
-                      [clearButton]="true">
-                    </kendo-multiselect>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
-                  <button kendoButton themeColor="primary" icon="search"
-                    (click)="aplicarFiltroEstadosPorDia()" [disabled]="loadingEstadosPorDia">
-                    Buscar
+      <!-- ── Resumen Semanal ────────────────────────────────────────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-chart-area-clustered"></i></div>
+        <span class="section-divider__title">Resumen de Sesiones</span>
+        <div class="section-divider__line"></div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h5><i class="k-icon k-i-chart-area-clustered"></i> Sesiones en el Tiempo</h5>
+              <div class="chart-card__controls">
+                <div class="toggle-group">
+                  <button *ngFor="let opcion of opcionesAgrupacion" class="toggle-btn"
+                    [class.active]="agrupacionTemporal === opcion.value"
+                    (click)="cambiarAgrupacionTemporal(opcion.value)">
+                    {{ opcion.label }}
                   </button>
                 </div>
+                <span class="badge bg-secondary ms-1">{{ datosSemanal.length }} semanas</span>
               </div>
-            </form>
-          </div>
-
-          <div class="card-body">
-            <div *ngIf="loadingEstadosPorDia" class="text-center py-4">
-              <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
             </div>
-            <ng-container *ngIf="!loadingEstadosPorDia">
-              <kendo-chart *ngIf="datosEstadosPorDia.length > 0" [style.height.px]="350">
+            <div class="chart-card__body">
+              <kendo-chart *ngIf="seriesSemanal.length > 0" [style.height.px]="350">
                 <kendo-chart-tooltip [shared]="true">
                   <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
                     <div class="chart-tooltip">
                       <strong>{{ category }}</strong>
                       <div *ngFor="let point of points">
                         <span [style.color]="point.series.color">●</span>
-                        {{ point.series.name }}: <strong>{{ point.value }}</strong> sesiones
+                        {{ point.series.name }}: {{ point.value }}
                       </div>
                     </div>
                   </ng-template>
                 </kendo-chart-tooltip>
                 <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
                 <kendo-chart-category-axis>
-                  <kendo-chart-category-axis-item [categories]="categoriasEstadosPorDia"
-                    [labels]="{ rotation: -30 }">
+                  <kendo-chart-category-axis-item [categories]="categoriasSemanas"
+                    [labels]="{ rotation: -45 }" [title]="{ text: 'Semanas' }">
                   </kendo-chart-category-axis-item>
                 </kendo-chart-category-axis>
                 <kendo-chart-value-axis>
-                  <kendo-chart-value-axis-item [min]="0" [title]="{ text: 'Sesiones' }">
-                  </kendo-chart-value-axis-item>
+                  <kendo-chart-value-axis-item [min]="0"
+                    [title]="{ text: 'Cantidad de Sesiones' }"></kendo-chart-value-axis-item>
                 </kendo-chart-value-axis>
                 <kendo-chart-series>
-                  <kendo-chart-series-item
-                    *ngFor="let serie of seriesEstadosPorDia"
-                    type="column"
-                    [name]="serie.name"
-                    [data]="serie.data"
-                    [color]="serie.color"
-                    [stack]="false"
-                  ></kendo-chart-series-item>
+                  <kendo-chart-series-item *ngFor="let serie of seriesSemanal" type="line"
+                    [name]="serie.name" [data]="serie.data" [color]="serie.color"
+                    [markers]="{ visible: true, size: 6 }" [style]="'smooth'">
+                  </kendo-chart-series-item>
                 </kendo-chart-series>
               </kendo-chart>
-              <div *ngIf="datosEstadosPorDia.length === 0" class="empty-state">
-                <i class="k-icon k-i-chart-column-clustered"></i>
-                <p>Sin datos. Ajusta los filtros y haz clic en Buscar.</p>
+              <div *ngIf="seriesSemanal.length === 0" class="empty-state">
+                <div class="empty-icon"><i class="k-icon k-i-chart-area-clustered"></i></div>
+                <p>No hay datos de resumen semanal</p>
               </div>
-            </ng-container>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================ -->
-    <!-- Seccion: Estados de Sesion -->
-    <!-- ============================================ -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header bg-light">
-            <h5 class="mb-0">
-              <i class="k-icon k-i-track-changes me-2"></i>
-              Estados de Sesiones del Cronograma
-            </h5>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- KPIs de Estados de Sesion -->
-    <div class="row mb-4">
-      <div class="col-lg col-md-3 col-sm-4 mb-2">
-        <div class="card h-100 border-success">
-          <div class="card-body text-center py-2">
-            <h4 class="mb-0 text-success">{{ kpisEstadoSesion.sesionesEjecutadas }}</h4>
-            <small class="text-muted">Ejecutadas</small>
-            <div class="small text-success">{{ kpisEstadoSesion.porcentajeEjecutadas }}%</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-3 col-sm-4 mb-2">
-        <div class="card h-100 border-primary">
-          <div class="card-body text-center py-2">
-            <h4 class="mb-0 text-primary">{{ kpisEstadoSesion.sesionesPorEjecutar }}</h4>
-            <small class="text-muted">Por Ejecutar</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-3 col-sm-4 mb-2">
-        <div class="card h-100 border-danger">
-          <div class="card-body text-center py-2">
-            <h4 class="mb-0 text-danger">{{ kpisEstadoSesion.sesionesCanceladas }}</h4>
-            <small class="text-muted">Canceladas</small>
-            <div class="small text-danger">{{ kpisEstadoSesion.porcentajeCanceladas }}%</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-3 col-sm-4 mb-2">
-        <div class="card h-100 border-warning">
-          <div class="card-body text-center py-2">
-            <h4 class="mb-0 text-warning">{{ kpisEstadoSesion.sesionesPorReprogramar }}</h4>
-            <small class="text-muted">Por Reprogramar</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-3 col-sm-4 mb-2">
-        <div class="card h-100 border-info">
-          <div class="card-body text-center py-2">
-            <h4 class="mb-0 text-info">{{ kpisEstadoSesion.sesionesAdicionales }}</h4>
-            <small class="text-muted">Adicionales</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-3 col-sm-4 mb-2">
-        <div class="card h-100" style="border-color: #6f42c1;">
-          <div class="card-body text-center py-2">
-            <h4 class="mb-0" style="color: #6f42c1;">{{ kpisEstadoSesion.sesionesRecuperadas }}</h4>
-            <small class="text-muted">Recuperadas</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg col-md-3 col-sm-4 mb-2">
-        <div class="card h-100 border-secondary">
-          <div class="card-body text-center py-2">
-            <h4 class="mb-0 text-secondary">{{ kpisEstadoSesion.sesionesNoAplica }}</h4>
-            <small class="text-muted">No Aplica</small>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Grafico y Grilla de Estados de Sesion -->
-    <div class="row mb-4">
-      <!-- Grafico de Estados de Sesion -->
-      <div class="col-md-5 mb-3">
-        <div class="card chart-card h-100">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Distribucion por Estado de Sesion</h5>
-            <span class="badge bg-secondary">{{ kpisEstadoSesion.totalSesiones }} sesiones</span>
-          </div>
-          <div class="card-body">
-            <div *ngIf="loadingEstadosSesion" class="text-center py-4">
-              <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
             </div>
-            <kendo-chart *ngIf="!loadingEstadosSesion && datosEstadoSesion.length > 0" [style.height.px]="350" (seriesClick)="onEstadoSesionClick($event)">
-              <kendo-chart-tooltip [shared]="false">
-                <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category" let-dataItem="dataItem">
-                  <div class="chart-tooltip">
-                    <strong>{{ category }}</strong><br/>
-                    Sesiones: {{ value }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Actividad por Día / Semana ────────────────────────────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-chart-column-stacked"></i></div>
+        <span class="section-divider__title">Actividad de Programas</span>
+        <div class="section-divider__line"></div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h5>
+                <i class="k-icon k-i-chart-column-stacked"></i>
+                Actividad por {{ agrupacionEstadosPorDia === 'DIA' ? 'Día' : 'Semana' }}
+              </h5>
+              <div class="chart-card__controls">
+                <div class="toggle-group">
+                  <button class="toggle-btn" [class.active]="agrupacionEstadosPorDia === 'DIA'"
+                    (click)="cambiarAgrupacionEstadosPorDia('DIA')">Por Día</button>
+                  <button class="toggle-btn" [class.active]="agrupacionEstadosPorDia === 'SEMANA'"
+                    (click)="cambiarAgrupacionEstadosPorDia('SEMANA')">Por Semana</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-card__filter-bar">
+              <form [formGroup]="formFiltroEstadosPorDia">
+                <div class="row align-items-end g-2">
+                  <div class="col-md-2">
+                    <kendo-formfield>
+                      <kendo-label text="Últimas N semanas"></kendo-label>
+                      <kendo-numerictextbox formControlName="ultimasSemanas"
+                        [min]="1" [max]="52" [decimals]="0" [format]="'n0'">
+                      </kendo-numerictextbox>
+                    </kendo-formfield>
                   </div>
-                </ng-template>
-              </kendo-chart-tooltip>
-              <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
-              <kendo-chart-series>
-                <kendo-chart-series-item
-                  type="donut"
-                  [data]="datosEstadoSesion"
-                  field="value"
-                  categoryField="category"
-                  colorField="color"
-                  [holeSize]="60"
-                  [labels]="{ visible: true, content: labelContentPercent, position: 'outsideEnd' }"
-                >
-                </kendo-chart-series-item>
-              </kendo-chart-series>
-            </kendo-chart>
-            <div *ngIf="!loadingEstadosSesion && datosEstadoSesion.length === 0" class="empty-state">
-              <i class="k-icon k-i-chart-donut"></i>
-              <p>No hay datos de estados de sesion</p>
+                  <div class="col-md-3">
+                    <kendo-formfield>
+                      <kendo-label text="Fecha inicio"></kendo-label>
+                      <kendo-datepicker formControlName="fechaInicio" [format]="'dd/MM/yyyy'">
+                      </kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-3">
+                    <kendo-formfield>
+                      <kendo-label text="Fecha fin"></kendo-label>
+                      <kendo-datepicker formControlName="fechaFin" [format]="'dd/MM/yyyy'">
+                      </kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-3">
+                    <kendo-formfield>
+                      <kendo-label text="Estado del programa"></kendo-label>
+                      <kendo-multiselect formControlName="estados" [data]="filtros.estados"
+                        [valuePrimitive]="true" placeholder="Todos los estados" [clearButton]="true">
+                      </kendo-multiselect>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-1 d-flex align-items-end">
+                    <button kendoButton themeColor="primary" icon="search"
+                      (click)="aplicarFiltroEstadosPorDia()" [disabled]="loadingEstadosPorDia">
+                      Buscar
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="chart-card__body">
+              <div *ngIf="loadingEstadosPorDia" class="loading-state">
+                <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+              </div>
+              <ng-container *ngIf="!loadingEstadosPorDia">
+                <kendo-chart *ngIf="datosEstadosPorDia.length > 0" [style.height.px]="350">
+                  <kendo-chart-tooltip [shared]="true">
+                    <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
+                      <div class="chart-tooltip">
+                        <strong>{{ category }}</strong>
+                        <div *ngFor="let point of points">
+                          <span [style.color]="point.series.color">●</span>
+                          {{ point.series.name }}: <strong>{{ point.value }}</strong> sesiones
+                        </div>
+                      </div>
+                    </ng-template>
+                  </kendo-chart-tooltip>
+                  <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+                  <kendo-chart-category-axis>
+                    <kendo-chart-category-axis-item [categories]="categoriasEstadosPorDia"
+                      [labels]="{ rotation: -30 }"></kendo-chart-category-axis-item>
+                  </kendo-chart-category-axis>
+                  <kendo-chart-value-axis>
+                    <kendo-chart-value-axis-item [min]="0"
+                      [title]="{ text: 'Sesiones' }"></kendo-chart-value-axis-item>
+                  </kendo-chart-value-axis>
+                  <kendo-chart-series>
+                    <kendo-chart-series-item *ngFor="let serie of seriesEstadosPorDia" type="column"
+                      [name]="serie.name" [data]="serie.data" [color]="serie.color"
+                      [stack]="false"></kendo-chart-series-item>
+                  </kendo-chart-series>
+                </kendo-chart>
+                <div *ngIf="datosEstadosPorDia.length === 0" class="empty-state">
+                  <div class="empty-icon"><i class="k-icon k-i-chart-column-clustered"></i></div>
+                  <p>Sin datos. Ajusta los filtros y haz clic en Buscar.</p>
+                </div>
+              </ng-container>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Grilla de Sesiones por Estado -->
-      <div class="col-md-7 mb-3">
-        <div class="card grid-card h-100">
-          <div class="card-header d-flex justify-content-between align-items-center py-2">
-            <div>
-              <h5 class="mb-0 d-inline">Detalle de Sesiones</h5>
-              <span *ngIf="estadoSesionSeleccionado" class="badge bg-info ms-2">
-                Filtrado por estado
-              </span>
+      <!-- ── Estados de Sesiones ───────────────────────────────────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-track-changes"></i></div>
+        <span class="section-divider__title">Estados de Sesiones del Cronograma</span>
+        <div class="section-divider__line"></div>
+      </div>
+
+      <!-- KPIs de Sesión -->
+      <div class="session-kpi-grid mb-3">
+        <div class="session-kpi session-kpi--green">
+          <div class="session-kpi__value">{{ kpisEstadoSesion.sesionesEjecutadas }}</div>
+          <div class="session-kpi__pct">{{ kpisEstadoSesion.porcentajeEjecutadas }}%</div>
+          <div class="session-kpi__label">Ejecutadas</div>
+        </div>
+        <div class="session-kpi session-kpi--blue">
+          <div class="session-kpi__value">{{ kpisEstadoSesion.sesionesPorEjecutar }}</div>
+          <div class="session-kpi__label">Por Ejecutar</div>
+        </div>
+        <div class="session-kpi session-kpi--red">
+          <div class="session-kpi__value">{{ kpisEstadoSesion.sesionesCanceladas }}</div>
+          <div class="session-kpi__pct">{{ kpisEstadoSesion.porcentajeCanceladas }}%</div>
+          <div class="session-kpi__label">Canceladas</div>
+        </div>
+        <div class="session-kpi session-kpi--orange">
+          <div class="session-kpi__value">{{ kpisEstadoSesion.sesionesPorReprogramar }}</div>
+          <div class="session-kpi__label">Por Reprogramar</div>
+        </div>
+        <div class="session-kpi session-kpi--cyan">
+          <div class="session-kpi__value">{{ kpisEstadoSesion.sesionesAdicionales }}</div>
+          <div class="session-kpi__label">Adicionales</div>
+        </div>
+        <div class="session-kpi session-kpi--purple">
+          <div class="session-kpi__value">{{ kpisEstadoSesion.sesionesRecuperadas }}</div>
+          <div class="session-kpi__label">Recuperadas</div>
+        </div>
+        <div class="session-kpi session-kpi--slate">
+          <div class="session-kpi__value">{{ kpisEstadoSesion.sesionesNoAplica }}</div>
+          <div class="session-kpi__label">No Aplica</div>
+        </div>
+      </div>
+
+      <!-- Donut + Grilla sesiones -->
+      <div class="row mb-4">
+
+        <div class="col-md-5 mb-3">
+          <div class="chart-card h-100">
+            <div class="chart-card__header">
+              <h5><i class="k-icon k-i-chart-donut"></i> Distribución por Estado</h5>
+              <span class="badge bg-secondary">{{ kpisEstadoSesion.totalSesiones }} sesiones</span>
             </div>
-            <div class="d-flex gap-2">
-              <button *ngIf="estadoSesionSeleccionado" kendoButton themeColor="base" icon="filter-clear" (click)="cargarSesionesDetalle()" class="btn-sm">
-                Ver Todos
-              </button>
-              <button kendoButton themeColor="base" icon="reload" (click)="cargarSesionesDetalle(estadoSesionSeleccionado || undefined)" class="btn-sm">
-                Actualizar
-              </button>
+            <div class="chart-card__body">
+              <div *ngIf="loadingEstadosSesion" class="loading-state">
+                <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+              </div>
+              <kendo-chart *ngIf="!loadingEstadosSesion && datosEstadoSesion.length > 0"
+                [style.height.px]="350" (seriesClick)="onEstadoSesionClick($event)">
+                <kendo-chart-area [background]="'transparent'" [margin]="{ top: 15, bottom: 5, left: 15, right: 15 }">
+                </kendo-chart-area>
+                <kendo-chart-tooltip [shared]="false">
+                  <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category" let-percentage="percentage">
+                    <div class="chart-tooltip">
+                      <strong>{{ category }}</strong>
+                      Sesiones: {{ value }} &nbsp;·&nbsp; {{ (percentage * 100).toFixed(1) }}%
+                    </div>
+                  </ng-template>
+                </kendo-chart-tooltip>
+                <kendo-chart-legend position="bottom" orientation="horizontal"
+                  [labels]="{ font: '12px Inter, sans-serif' }">
+                </kendo-chart-legend>
+                <kendo-chart-series>
+                  <kendo-chart-series-item type="donut" [data]="datosEstadoSesion" field="value"
+                    categoryField="category" colorField="color" [holeSize]="55"
+                    [labels]="{ visible: true, content: labelOnlyPercent, color: '#ffffff',
+                                font: 'bold 12px Inter, sans-serif', background: 'transparent',
+                                position: 'center' }">
+                  </kendo-chart-series-item>
+                </kendo-chart-series>
+              </kendo-chart>
+              <div *ngIf="!loadingEstadosSesion && datosEstadoSesion.length === 0" class="empty-state">
+                <div class="empty-icon"><i class="k-icon k-i-chart-donut"></i></div>
+                <p>No hay datos de estados de sesión</p>
+              </div>
             </div>
           </div>
-          <div class="card-body p-0">
-            <kendo-grid
-              [data]="gridDataSesiones"
-              [pageable]="{ pageSizes: [5, 10, 20] }"
-              [sortable]="{ mode: 'multiple' }"
-              [filterable]="'menu'"
-              [resizable]="true"
-              [loading]="loadingSesionesDetalle"
-              [skip]="stateSesiones.skip"
-              [pageSize]="stateSesiones.take"
-              [sort]="stateSesiones.sort"
-              (dataStateChange)="onStateChangeSesiones($event)"
-              class="grid-dashboard"
-              [style.height.px]="380"
-            >
-              <kendo-grid-column field="programaEspecifico" title="Programa" [width]="200">
-              </kendo-grid-column>
-              <kendo-grid-column field="estadoSesion" title="Estado" [width]="120">
+        </div>
+
+        <div class="col-md-7 mb-3">
+          <div class="db-card h-100">
+            <div class="db-card__header">
+              <h5 class="db-card__title">
+                <i class="k-icon k-i-grid"></i> Detalle de Sesiones
+                <span *ngIf="estadoSesionSeleccionado" class="badge bg-info ms-2 fw-normal">
+                  Filtrado por estado
+                </span>
+              </h5>
+              <div class="d-flex gap-2">
+                <button *ngIf="estadoSesionSeleccionado" kendoButton themeColor="base"
+                  icon="filter-clear" (click)="cargarSesionesDetalle()">Ver Todos</button>
+                <button kendoButton themeColor="base" icon="reload"
+                  (click)="cargarSesionesDetalle(estadoSesionSeleccionado || undefined)">Actualizar</button>
+              </div>
+            </div>
+            <div class="db-card__body--flush">
+              <kendo-grid [data]="gridDataSesiones" [pageable]="{ pageSizes: [5, 10, 20] }"
+                [sortable]="{ mode: 'multiple' }" [filterable]="'menu'" [resizable]="true"
+                [loading]="loadingSesionesDetalle" [skip]="stateSesiones.skip"
+                [pageSize]="stateSesiones.take" [sort]="stateSesiones.sort"
+                (dataStateChange)="onStateChangeSesiones($event)"
+                class="grid-dashboard" [style.height.px]="380">
+                <kendo-grid-column field="programaEspecifico" title="Programa" [width]="200"></kendo-grid-column>
+                <kendo-grid-column field="estadoSesion" title="Estado" [width]="120">
+                  <ng-template kendoGridCellTemplate let-dataItem>
+                    <span class="badge" [ngClass]="getEstadoSesionBadgeClass(dataItem.estadoSesion)">
+                      {{ dataItem.estadoSesion || '-' }}
+                    </span>
+                  </ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="fecha" title="Fecha" [width]="100">
+                  <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fecha) }}</ng-template>
+                </kendo-grid-column>
+                <kendo-grid-column field="horario" title="Horario" [width]="100"></kendo-grid-column>
+                <kendo-grid-column field="docente" title="Docente" [width]="180"></kendo-grid-column>
+                <kendo-grid-column field="modalidad" title="Modalidad" [width]="100"></kendo-grid-column>
+              </kendo-grid>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Seguimiento de Clases ──────────────────────────────────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-calendar"></i></div>
+        <span class="section-divider__title">Seguimiento de Clases por Día</span>
+        <div class="section-divider__line"></div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h5>
+                <i class="k-icon k-i-calendar"></i> Clases por Día de Semana
+                <small class="text-muted fw-normal ms-2" style="font-size:.75rem;">(Lunes – Sábado)</small>
+              </h5>
+            </div>
+
+            <div class="chart-card__filter-bar">
+              <form [formGroup]="formFiltroSeguimiento">
+                <div class="row align-items-end g-2">
+                  <div class="col-md-2">
+                    <kendo-formfield>
+                      <kendo-label text="Estado del curso"></kendo-label>
+                      <kendo-dropdownlist formControlName="estadoCurso" [data]="filtros.estados"
+                        [valuePrimitive]="true" [defaultItem]="null" placeholder="Todos">
+                      </kendo-dropdownlist>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-2">
+                    <kendo-formfield>
+                      <kendo-label text="Semana inicio"></kendo-label>
+                      <kendo-numerictextbox formControlName="semanaInicio"
+                        [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
+                      </kendo-numerictextbox>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-2">
+                    <kendo-formfield>
+                      <kendo-label text="Semana fin"></kendo-label>
+                      <kendo-numerictextbox formControlName="semanaFin"
+                        [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
+                      </kendo-numerictextbox>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-2">
+                    <kendo-formfield>
+                      <kendo-label text="Fecha inicio"></kendo-label>
+                      <kendo-datepicker formControlName="fechaInicio" [format]="'dd/MM/yyyy'">
+                      </kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-2">
+                    <kendo-formfield>
+                      <kendo-label text="Fecha fin"></kendo-label>
+                      <kendo-datepicker formControlName="fechaFin" [format]="'dd/MM/yyyy'">
+                      </kendo-datepicker>
+                    </kendo-formfield>
+                  </div>
+                  <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button kendoButton themeColor="primary" icon="search"
+                      (click)="aplicarFiltroSeguimiento()" [disabled]="loadingSeguimiento">
+                      Buscar
+                    </button>
+                    <button kendoButton themeColor="base" icon="reset"
+                      (click)="limpiarFiltroSeguimiento()">Limpiar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="chart-card__body">
+              <div *ngIf="loadingSeguimiento" class="loading-state">
+                <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+              </div>
+              <ng-container *ngIf="!loadingSeguimiento">
+                <div class="row" *ngIf="datosSeguimiento.length > 0">
+                  <div class="col-md-8 mb-3">
+                    <kendo-chart [style.height.px]="340">
+                      <kendo-chart-tooltip [shared]="true">
+                        <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
+                          <div class="chart-tooltip">
+                            <strong>{{ category }}</strong>
+                            <div *ngFor="let point of points">
+                              <span [style.color]="point.series.color">●</span>
+                              {{ point.series.name }}: <strong>{{ point.value }}</strong>
+                            </div>
+                          </div>
+                        </ng-template>
+                      </kendo-chart-tooltip>
+                      <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+                      <kendo-chart-category-axis>
+                        <kendo-chart-category-axis-item [categories]="categoriasSeguimiento"
+                          [title]="{ text: 'Día de la semana' }"></kendo-chart-category-axis-item>
+                      </kendo-chart-category-axis>
+                      <kendo-chart-value-axis>
+                        <kendo-chart-value-axis-item [min]="0"
+                          [title]="{ text: 'Cantidad de Sesiones' }"></kendo-chart-value-axis-item>
+                      </kendo-chart-value-axis>
+                      <kendo-chart-series>
+                        <kendo-chart-series-item *ngFor="let serie of seriesSeguimiento" type="column"
+                          [name]="serie.name" [data]="serie.data" [color]="serie.color"
+                          [labels]="{ visible: true, format: '{0}' }"></kendo-chart-series-item>
+                      </kendo-chart-series>
+                    </kendo-chart>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <table class="seguimiento-table">
+                      <thead>
+                        <tr>
+                          <th>Día</th>
+                          <th><span class="badge badge-ejecucion">Prog.</span></th>
+                          <th><span class="badge badge-lanzamiento">Ejec.</span></th>
+                          <th><span class="badge badge-cancelado">Canc.</span></th>
+                          <th><span class="badge badge-pendiente">Reprog.</span></th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of datosSeguimiento; let i = index"
+                          [class.row-empty]="item.totalSesiones === 0">
+                          <td>{{ categoriasSeguimiento[i] || item.diaSemana }}</td>
+                          <td><span class="badge badge-ejecucion">{{ item.programadas }}</span></td>
+                          <td><span class="badge badge-lanzamiento">{{ item.ejecutadas }}</span></td>
+                          <td><span class="badge badge-cancelado">{{ item.canceladas }}</span></td>
+                          <td><span class="badge badge-pendiente">{{ item.reprogramadas }}</span></td>
+                          <td>{{ item.totalSesiones }}</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td>TOTAL</td>
+                          <td>{{ totalSeguimiento('programadas') }}</td>
+                          <td>{{ totalSeguimiento('ejecutadas') }}</td>
+                          <td>{{ totalSeguimiento('canceladas') }}</td>
+                          <td>{{ totalSeguimiento('reprogramadas') }}</td>
+                          <td>{{ totalSeguimiento('totalSesiones') }}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+                <div *ngIf="datosSeguimiento.length === 0" class="empty-state">
+                  <div class="empty-icon"><i class="k-icon k-i-calendar"></i></div>
+                  <p>Sin datos para la semana actual. Ajusta el filtro y busca.</p>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tabs de Grillas (Programas / Cursos / Docentes) ───────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-grid"></i></div>
+        <span class="section-divider__title">Detalle de Registros</span>
+        <div class="section-divider__line"></div>
+      </div>
+
+      <div class="grid-card mb-4">
+        <div class="grid-card__header">
+          <div class="nav-tabs-inline">
+            <a class="tab-inline" [class.active]="activeTab === 'programas'"
+              (click)="onTabChange('programas')" href="javascript:void(0)">
+              <i class="k-icon k-i-folder-open"></i> Programas
+              <span class="badge badge-ejecucion ms-1">{{ programas.length }}</span>
+            </a>
+            <a class="tab-inline" [class.active]="activeTab === 'cursos'"
+              (click)="onTabChange('cursos')" href="javascript:void(0)">
+              <i class="k-icon k-i-calendar"></i> Cursos / Sesiones
+              <span class="badge badge-lanzamiento ms-1">{{ cursos.length }}</span>
+            </a>
+            <a class="tab-inline" [class.active]="activeTab === 'docentes'"
+              (click)="onTabChange('docentes')" href="javascript:void(0)">
+              <i class="k-icon k-i-user"></i> Docentes
+              <span class="badge badge-por-ejecutar ms-1">{{ docentes.length }}</span>
+            </a>
+          </div>
+          <div class="p-2">
+            <button kendoButton themeColor="base" icon="excel" (click)="exportarGrillaActual()">
+              Exportar {{ activeTab === 'programas' ? 'Programas' : activeTab === 'cursos' ? 'Cursos' : 'Docentes' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="db-card__body--flush">
+
+          <div [hidden]="activeTab !== 'programas'">
+            <kendo-grid [data]="gridDataProgramas" [pageable]="{ pageSizes: [5, 10, 20, 50] }"
+              [sortable]="{ mode: 'multiple' }" [filterable]="'menu'" [resizable]="true"
+              [loading]="loadingProgramas" [skip]="stateProgramas.skip"
+              [pageSize]="stateProgramas.take" [sort]="stateProgramas.sort"
+              (dataStateChange)="onStateChangeProgramas($event)" class="grid-dashboard">
+              <kendo-grid-column field="programaEspecificoPadre" title="Programa" [width]="300"></kendo-grid-column>
+              <kendo-grid-column field="estadoPadre" title="Estado" [width]="120">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <span class="badge" [ngClass]="getEstadoSesionBadgeClass(dataItem.estadoSesion)">
+                  <span class="badge" [ngClass]="getEstadoBadgeClass(dataItem.estadoPadre)">
+                    {{ dataItem.estadoPadre || '-' }}
+                  </span>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="modalidad" title="Modalidad" [width]="120"></kendo-grid-column>
+              <kendo-grid-column field="fechaInicio" title="Fecha Inicio" [width]="120">
+                <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fechaInicio) }}</ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="ciudad" title="Ciudad" [width]="120"></kendo-grid-column>
+              <kendo-grid-column field="areaCapacitacion" title="Área" [width]="150"></kendo-grid-column>
+              <kendo-grid-column field="subAreaCapacitacion" title="Sub Área" [width]="150"></kendo-grid-column>
+            </kendo-grid>
+          </div>
+
+          <div [hidden]="activeTab !== 'cursos'">
+            <kendo-grid [data]="gridDataCursos" [pageable]="{ pageSizes: [5, 10, 20, 50] }"
+              [sortable]="{ mode: 'multiple' }" [filterable]="'menu'" [resizable]="true"
+              [loading]="loadingCursos" [skip]="stateCursos.skip"
+              [pageSize]="stateCursos.take" [sort]="stateCursos.sort"
+              (dataStateChange)="onStateChangeCursos($event)" class="grid-dashboard">
+              <kendo-grid-column field="programaEspecificoPadre" title="Programa Padre" [width]="250"></kendo-grid-column>
+              <kendo-grid-column field="curso" title="Curso" [width]="200"></kendo-grid-column>
+              <kendo-grid-column field="estadoSesion" title="Estado" [width]="110">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <span class="badge" [ngClass]="getEstadoBadgeClass(dataItem.estadoSesion)">
                     {{ dataItem.estadoSesion || '-' }}
                   </span>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="fecha" title="Fecha" [width]="100">
+              <kendo-grid-column field="nroSesion" title="Nro" [width]="70"></kendo-grid-column>
+              <kendo-grid-column field="fecha" title="Fecha" [width]="110">
+                <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fecha) }}</ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="diaSemana" title="Día" [width]="90"></kendo-grid-column>
+              <kendo-grid-column field="horario" title="Horario" [width]="100"></kendo-grid-column>
+              <kendo-grid-column field="docente" title="Docente" [width]="200"></kendo-grid-column>
+              <kendo-grid-column field="sede" title="Sede" [width]="150"></kendo-grid-column>
+              <kendo-grid-column field="aula" title="Aula" [width]="100"></kendo-grid-column>
+            </kendo-grid>
+          </div>
+
+          <div [hidden]="activeTab !== 'docentes'">
+            <kendo-grid [data]="gridDataDocentes" [pageable]="{ pageSizes: [5, 10, 20, 50] }"
+              [sortable]="{ mode: 'multiple' }" [filterable]="'menu'" [resizable]="true"
+              [loading]="loadingDocentes" [skip]="stateDocentes.skip"
+              [pageSize]="stateDocentes.take" [sort]="stateDocentes.sort"
+              (dataStateChange)="onStateChangeDocentes($event)" class="grid-dashboard">
+              <kendo-grid-column field="docente" title="Docente" [width]="250"></kendo-grid-column>
+              <kendo-grid-column field="programasAsignados" title="Programas" [width]="100">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  {{ formatearFecha(dataItem.fecha) }}
+                  <span class="badge badge-ejecucion">{{ dataItem.programasAsignados }}</span>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="horario" title="Horario" [width]="100">
+              <kendo-grid-column field="cursosAsignados" title="Cursos" [width]="100">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <span class="badge badge-lanzamiento">{{ dataItem.cursosAsignados }}</span>
+                </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="docente" title="Docente" [width]="180">
+              <kendo-grid-column field="totalSesiones" title="Sesiones" [width]="100">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <span class="badge badge-por-ejecutar">{{ dataItem.totalSesiones }}</span>
+                </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="modalidad" title="Modalidad" [width]="100">
+              <kendo-grid-column field="primeraClase" title="Primera Clase" [width]="130">
+                <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.primeraClase) }}</ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="ultimaClase" title="Última Clase" [width]="130">
+                <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.ultimaClase) }}</ng-template>
               </kendo-grid-column>
             </kendo-grid>
           </div>
+
         </div>
       </div>
-    </div>
 
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <!-- SECCION: Seguimiento de Clases por Dia de Semana                  -->
-    <!-- ════════════════════════════════════════════════════════════════════ -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card chart-card">
-          <div class="card-header bg-light">
-            <h5 class="mb-0">
-              <i class="k-icon k-i-calendar me-2"></i>
-              Seguimiento de Clases por Día
-              <small class="text-muted fw-normal ms-2">(Lunes – Sábado)</small>
-            </h5>
+      <!-- ── Detalle Cursos V3 ──────────────────────────────────────── -->
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-calendar"></i></div>
+        <span class="section-divider__title">Detalle por Modalidad Clasificada</span>
+        <div class="section-divider__line"></div>
+        <span class="badge bg-secondary ms-2">{{ cursosV3.length }} registros</span>
+      </div>
+
+      <div class="grid-card mb-4">
+        <div class="grid-card__header" style="border-bottom: 1px solid var(--border);">
+          <div style="padding: .75rem 1.25rem; flex:1; display:flex; align-items:center; gap:.5rem;">
+            <i class="k-icon k-i-calendar" style="color:var(--clr-primary-mid)"></i>
+            <span style="font-weight:600; font-size:.9rem; color:var(--text-primary)">
+              Inhouse / Presencial / Online
+            </span>
           </div>
+        </div>
 
-          <!-- Filtro propio -->
-          <div class="card-body border-bottom py-2" style="background:#f8f9fa">
-            <form [formGroup]="formFiltroSeguimiento">
-              <div class="row align-items-end g-2">
-                <div class="col-md-2">
-                  <kendo-formfield>
-                    <kendo-label text="Estado del curso"></kendo-label>
-                    <kendo-dropdownlist
-                      formControlName="estadoCurso"
-                      [data]="filtros.estados"
-                      [valuePrimitive]="true"
-                      [defaultItem]="null"
-                      placeholder="Todos">
-                    </kendo-dropdownlist>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-2">
-                  <kendo-formfield>
-                    <kendo-label text="Semana inicio"></kendo-label>
-                    <kendo-numerictextbox formControlName="semanaInicio" [min]="1" [max]="53"
-                      [decimals]="0" [format]="'n0'" placeholder="N° semana">
-                    </kendo-numerictextbox>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-2">
-                  <kendo-formfield>
-                    <kendo-label text="Semana fin"></kendo-label>
-                    <kendo-numerictextbox formControlName="semanaFin" [min]="1" [max]="53"
-                      [decimals]="0" [format]="'n0'" placeholder="N° semana">
-                    </kendo-numerictextbox>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-2">
-                  <kendo-formfield>
-                    <kendo-label text="Fecha inicio"></kendo-label>
-                    <kendo-datepicker formControlName="fechaInicio" [format]="'dd/MM/yyyy'">
-                    </kendo-datepicker>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-2">
-                  <kendo-formfield>
-                    <kendo-label text="Fecha fin"></kendo-label>
-                    <kendo-datepicker formControlName="fechaFin" [format]="'dd/MM/yyyy'">
-                    </kendo-datepicker>
-                  </kendo-formfield>
-                </div>
-                <div class="col-md-2 d-flex align-items-end gap-2">
-                  <button kendoButton themeColor="primary" icon="search"
-                    (click)="aplicarFiltroSeguimiento()" [disabled]="loadingSeguimiento">
-                    Buscar
-                  </button>
-                  <button kendoButton themeColor="base" icon="reset"
-                    (click)="limpiarFiltroSeguimiento()">
-                    Limpiar
-                  </button>
-                </div>
+        <div class="chart-card__filter-bar">
+          <form [formGroup]="formFiltroCursosV3">
+            <div class="row align-items-end g-2">
+              <div class="col-md-2">
+                <kendo-formfield>
+                  <kendo-label text="Año"></kendo-label>
+                  <kendo-dropdownlist formControlName="anio" [data]="filtros.anios"
+                    [valuePrimitive]="true" [defaultItem]="null" placeholder="Todos">
+                  </kendo-dropdownlist>
+                </kendo-formfield>
               </div>
-            </form>
-          </div>
-
-          <div class="card-body">
-            <div *ngIf="loadingSeguimiento" class="text-center py-4">
-              <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+              <div class="col-md-3">
+                <kendo-formfield>
+                  <kendo-label text="Modalidad"></kendo-label>
+                  <kendo-dropdownlist formControlName="modalidadClasificada"
+                    [data]="MODALIDADES_CLASIFICADAS" [valuePrimitive]="true"
+                    [defaultItem]="null" placeholder="Todas (Inhouse / Presencial / Online)">
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-2">
+                <kendo-formfield>
+                  <kendo-label text="Semana inicio"></kendo-label>
+                  <kendo-numerictextbox formControlName="semanaInicio"
+                    [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
+                  </kendo-numerictextbox>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-2">
+                <kendo-formfield>
+                  <kendo-label text="Semana fin"></kendo-label>
+                  <kendo-numerictextbox formControlName="semanaFin"
+                    [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
+                  </kendo-numerictextbox>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-3 d-flex align-items-end gap-2">
+                <button kendoButton themeColor="primary" icon="search"
+                  (click)="aplicarFiltroCursosV3()" [disabled]="loadingCursosV3">Buscar</button>
+                <button kendoButton themeColor="base" icon="reset"
+                  (click)="formFiltroCursosV3.reset(); cargarCursosV3()">Limpiar</button>
+              </div>
             </div>
-            <ng-container *ngIf="!loadingSeguimiento">
-              <div class="row" *ngIf="datosSeguimiento.length > 0">
-                <!-- Grafico de barras agrupadas -->
-                <div class="col-md-8 mb-3">
-                  <kendo-chart [style.height.px]="340">
-                    <kendo-chart-tooltip [shared]="true">
-                      <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
-                        <div class="chart-tooltip">
-                          <strong>{{ category }}</strong>
-                          <div *ngFor="let point of points">
-                            <span [style.color]="point.series.color">●</span>
-                            {{ point.series.name }}: <strong>{{ point.value }}</strong>
-                          </div>
-                        </div>
-                      </ng-template>
-                    </kendo-chart-tooltip>
-                    <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
-                    <kendo-chart-category-axis>
-                      <kendo-chart-category-axis-item [categories]="categoriasSeguimiento"
-                        [title]="{ text: 'Día de la semana' }">
-                      </kendo-chart-category-axis-item>
-                    </kendo-chart-category-axis>
-                    <kendo-chart-value-axis>
-                      <kendo-chart-value-axis-item [min]="0" [title]="{ text: 'Cantidad de Sesiones' }">
-                      </kendo-chart-value-axis-item>
-                    </kendo-chart-value-axis>
-                    <kendo-chart-series>
-                      <kendo-chart-series-item
-                        *ngFor="let serie of seriesSeguimiento"
-                        type="column"
-                        [name]="serie.name"
-                        [data]="serie.data"
-                        [color]="serie.color"
-                        [labels]="{ visible: true, format: '{0}' }"
-                      ></kendo-chart-series-item>
-                    </kendo-chart-series>
-                  </kendo-chart>
-                </div>
-
-                <!-- Tabla resumen por dia -->
-                <div class="col-md-4 mb-3">
-                  <table class="table table-sm table-bordered table-hover text-center align-middle">
-                    <thead class="table-dark">
-                      <tr>
-                        <th class="text-start">Día</th>
-                        <th><span class="badge bg-primary">Prog.</span></th>
-                        <th><span class="badge bg-success">Ejec.</span></th>
-                        <th><span class="badge bg-danger">Canc.</span></th>
-                        <th><span class="badge bg-warning text-dark">Reprog.</span></th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let item of datosSeguimiento; let i = index" [class.table-warning]="item.totalSesiones === 0">
-                        <td class="text-start fw-semibold">{{ categoriasSeguimiento[i] || item.diaSemana }}</td>
-                        <td><span class="badge bg-primary">{{ item.programadas }}</span></td>
-                        <td><span class="badge bg-success">{{ item.ejecutadas }}</span></td>
-                        <td><span class="badge bg-danger">{{ item.canceladas }}</span></td>
-                        <td><span class="badge bg-warning text-dark">{{ item.reprogramadas }}</span></td>
-                        <td class="fw-bold">{{ item.totalSesiones }}</td>
-                      </tr>
-                    </tbody>
-                    <tfoot class="table-secondary fw-bold">
-                      <tr>
-                        <td class="text-start">TOTAL</td>
-                        <td>{{ totalSeguimiento('programadas') }}</td>
-                        <td>{{ totalSeguimiento('ejecutadas') }}</td>
-                        <td>{{ totalSeguimiento('canceladas') }}</td>
-                        <td>{{ totalSeguimiento('reprogramadas') }}</td>
-                        <td>{{ totalSeguimiento('totalSesiones') }}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
-              <div *ngIf="datosSeguimiento.length === 0" class="empty-state">
-                <i class="k-icon k-i-calendar"></i>
-                <p>Sin datos para la semana actual. Ajusta el filtro y busca.</p>
-              </div>
-            </ng-container>
-          </div>
+          </form>
         </div>
-      </div>
-    </div>
 
-    <!-- Tabs de Grillas -->
-    <div class="card grid-card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <ul class="nav nav-tabs card-header-tabs flex-grow-1">
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'programas'" (click)="onTabChange('programas')" href="javascript:void(0)">
-              <i class="k-icon k-i-folder-open me-1"></i>
-              Programas
-              <span class="badge bg-primary ms-2">{{ programas.length }}</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'cursos'" (click)="onTabChange('cursos')" href="javascript:void(0)">
-              <i class="k-icon k-i-calendar me-1"></i>
-              Cursos / Sesiones
-              <span class="badge bg-success ms-2">{{ cursos.length }}</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'docentes'" (click)="onTabChange('docentes')" href="javascript:void(0)">
-              <i class="k-icon k-i-user me-1"></i>
-              Docentes
-              <span class="badge bg-info ms-2">{{ docentes.length }}</span>
-            </a>
-          </li>
-        </ul>
-        <button kendoButton themeColor="base" icon="excel" (click)="exportarGrillaActual()" class="ms-2 btn-export-grid">
-          Exportar {{ activeTab === 'programas' ? 'Programas' : activeTab === 'cursos' ? 'Cursos' : 'Docentes' }}
-        </button>
-      </div>
-      <div class="card-body p-0">
-        <!-- Grilla de Programas -->
-        <div *ngIf="activeTab === 'programas'">
-          <kendo-grid
-            [data]="gridDataProgramas"
-            [pageable]="{ pageSizes: [5, 10, 20, 50] }"
-            [sortable]="{ mode: 'multiple' }"
-            [filterable]="'menu'"
-            [resizable]="true"
-            [loading]="loadingProgramas"
-            [skip]="stateProgramas.skip"
-            [pageSize]="stateProgramas.take"
-            [sort]="stateProgramas.sort"
-            (dataStateChange)="onStateChangeProgramas($event)"
-            class="grid-dashboard"
-          >
-            <kendo-grid-column field="programaEspecificoPadre" title="Programa" [width]="300">
-            </kendo-grid-column>
-            <kendo-grid-column field="estadoPadre" title="Estado" [width]="120" [filterable]="true">
+        <div class="db-card__body--flush">
+          <div *ngIf="loadingCursosV3" class="loading-state">
+            <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
+          </div>
+          <kendo-grid *ngIf="!loadingCursosV3" [data]="gridDataCursosV3"
+            [pageable]="{ pageSizes: [10, 20, 50] }" [sortable]="{ mode: 'multiple' }"
+            [filterable]="'menu'" [resizable]="true" [skip]="stateCursosV3.skip"
+            [pageSize]="stateCursosV3.take" [sort]="stateCursosV3.sort"
+            (dataStateChange)="onStateChangeCursosV3($event)" class="grid-dashboard">
+            <kendo-grid-column field="modalidadClasificada" title="Modalidad" [width]="110" [locked]="true">
               <ng-template kendoGridCellTemplate let-dataItem>
-                <span class="badge" [ngClass]="getEstadoBadgeClass(dataItem.estadoPadre)">
-                  {{ dataItem.estadoPadre || '-' }}
+                <span class="badge" [ngClass]="getModalidadClasificadaBadgeClass(dataItem.modalidadClasificada)">
+                  {{ dataItem.modalidadClasificada || '-' }}
                 </span>
               </ng-template>
             </kendo-grid-column>
-            <kendo-grid-column field="modalidad" title="Modalidad" [width]="120">
-            </kendo-grid-column>
-            <kendo-grid-column field="fechaInicio" title="Fecha Inicio" [width]="120">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ formatearFecha(dataItem.fechaInicio) }}
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="ciudad" title="Ciudad" [width]="120">
-            </kendo-grid-column>
-            <kendo-grid-column field="areaCapacitacion" title="Area" [width]="150">
-            </kendo-grid-column>
-            <kendo-grid-column field="subAreaCapacitacion" title="Sub Area" [width]="150">
-            </kendo-grid-column>
-          </kendo-grid>
-        </div>
-
-        <!-- Grilla de Cursos/Sesiones -->
-        <div *ngIf="activeTab === 'cursos'">
-          <kendo-grid
-            [data]="gridDataCursos"
-            [pageable]="{ pageSizes: [5, 10, 20, 50] }"
-            [sortable]="{ mode: 'multiple' }"
-            [filterable]="'menu'"
-            [resizable]="true"
-            [loading]="loadingCursos"
-            [skip]="stateCursos.skip"
-            [pageSize]="stateCursos.take"
-            [sort]="stateCursos.sort"
-            (dataStateChange)="onStateChangeCursos($event)"
-            class="grid-dashboard"
-          >
-            <kendo-grid-column field="programaEspecificoPadre" title="Programa Padre" [width]="250">
-            </kendo-grid-column>
-            <kendo-grid-column field="curso" title="Curso" [width]="200">
-            </kendo-grid-column>
+            <kendo-grid-column field="centroCostoPadre" title="C.C. Padre" [width]="180"></kendo-grid-column>
+            <kendo-grid-column field="programaEspecificoPadre" title="Programa Padre" [width]="220"></kendo-grid-column>
+            <kendo-grid-column field="centroCostoHijo" title="C.C. Hijo" [width]="160"></kendo-grid-column>
+            <kendo-grid-column field="curso" title="Curso" [width]="200"></kendo-grid-column>
             <kendo-grid-column field="estadoSesion" title="Estado" [width]="110">
               <ng-template kendoGridCellTemplate let-dataItem>
                 <span class="badge" [ngClass]="getEstadoBadgeClass(dataItem.estadoSesion)">
@@ -1056,338 +1055,121 @@
                 </span>
               </ng-template>
             </kendo-grid-column>
-            <kendo-grid-column field="nroSesion" title="Nro" [width]="70" class="text-center">
-            </kendo-grid-column>
+            <kendo-grid-column field="nroSesion" title="Nro" [width]="70"></kendo-grid-column>
             <kendo-grid-column field="fecha" title="Fecha" [width]="110">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ formatearFecha(dataItem.fecha) }}
-              </ng-template>
+              <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fecha) }}</ng-template>
             </kendo-grid-column>
-            <kendo-grid-column field="diaSemana" title="Dia" [width]="90">
-            </kendo-grid-column>
-            <kendo-grid-column field="horario" title="Horario" [width]="100">
-            </kendo-grid-column>
-            <kendo-grid-column field="docente" title="Docente" [width]="200">
-            </kendo-grid-column>
-            <kendo-grid-column field="sede" title="Sede" [width]="150">
-            </kendo-grid-column>
-            <kendo-grid-column field="aula" title="Aula" [width]="100">
-            </kendo-grid-column>
-          </kendo-grid>
-        </div>
-
-        <!-- Grilla de Docentes -->
-        <div *ngIf="activeTab === 'docentes'">
-          <kendo-grid
-            [data]="gridDataDocentes"
-            [pageable]="{ pageSizes: [5, 10, 20, 50] }"
-            [sortable]="{ mode: 'multiple' }"
-            [filterable]="'menu'"
-            [resizable]="true"
-            [loading]="loadingDocentes"
-            [skip]="stateDocentes.skip"
-            [pageSize]="stateDocentes.take"
-            [sort]="stateDocentes.sort"
-            (dataStateChange)="onStateChangeDocentes($event)"
-            class="grid-dashboard"
-          >
-            <kendo-grid-column field="docente" title="Docente" [width]="250">
-            </kendo-grid-column>
-            <kendo-grid-column field="programasAsignados" title="Programas" [width]="100" class="text-center">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <span class="badge bg-primary">{{ dataItem.programasAsignados }}</span>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="cursosAsignados" title="Cursos" [width]="100" class="text-center">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <span class="badge bg-success">{{ dataItem.cursosAsignados }}</span>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="totalSesiones" title="Sesiones" [width]="100" class="text-center">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <span class="badge bg-info">{{ dataItem.totalSesiones }}</span>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="primeraClase" title="Primera Clase" [width]="130">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ formatearFecha(dataItem.primeraClase) }}
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="ultimaClase" title="Ultima Clase" [width]="130">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                {{ formatearFecha(dataItem.ultimaClase) }}
-              </ng-template>
-            </kendo-grid-column>
+            <kendo-grid-column field="diaSemana" title="Día" [width]="90"></kendo-grid-column>
+            <kendo-grid-column field="horario" title="Horario" [width]="110"></kendo-grid-column>
+            <kendo-grid-column field="docente" title="Docente" [width]="200"></kendo-grid-column>
+            <kendo-grid-column field="sede" title="Sede" [width]="140"></kendo-grid-column>
+            <kendo-grid-column field="aula" title="Aula" [width]="90"></kendo-grid-column>
           </kendo-grid>
         </div>
       </div>
-    </div>
-  </ng-container>
 
-  <!-- ════════════════════════════════════════════════════════════════════ -->
-  <!-- SECCION: Detalle Cursos V3 (Inhouse / Presencial / Online)         -->
-  <!-- ════════════════════════════════════════════════════════════════════ -->
-  <ng-container *ngIf="!loading">
-    <div class="card grid-card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <h5 class="mb-0">
-          <i class="k-icon k-i-calendar me-2"></i>
-          Detalle de Cursos por Modalidad Clasificada
-          <small class="text-muted fw-normal ms-2">(Inhouse / Presencial / Online)</small>
-        </h5>
-        <span class="badge bg-secondary">{{ cursosV3.length }} registros</span>
+    </ng-container><!-- /!loading -->
+
+    <!-- Excel Exports -->
+    <kendo-excelexport #excelExport [data]="datosCompletos" [fileName]="getNombreArchivoExcel()">
+      <kendo-excelexport-column field="centroCostoPadre" title="Centro Costo Padre" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="programaEspecificoPadre" title="Programa Padre" [width]="250"></kendo-excelexport-column>
+      <kendo-excelexport-column field="estadoPadre" title="Estado Padre" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="centroCostoHijo" title="Centro Costo Hijo" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="programaEspecificoHijo" title="Programa Hijo" [width]="250"></kendo-excelexport-column>
+      <kendo-excelexport-column field="estadoHijo" title="Estado Hijo" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="modalidadHijo" title="Modalidad" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="anio" title="Año" [width]="60"></kendo-excelexport-column>
+      <kendo-excelexport-column field="semanaCalendario" title="Semana" [width]="80"></kendo-excelexport-column>
+      <kendo-excelexport-column field="fecha" title="Fecha" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="diaSemana" title="Día" [width]="80"></kendo-excelexport-column>
+      <kendo-excelexport-column field="horario" title="Horario" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="sede" title="Sede" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="aula" title="Aula" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="nroSesion" title="Nro Sesión" [width]="80"></kendo-excelexport-column>
+      <kendo-excelexport-column field="docente" title="Docente" [width]="200"></kendo-excelexport-column>
+      <kendo-excelexport-column field="coordinador" title="Coordinador" [width]="200"></kendo-excelexport-column>
+      <kendo-excelexport-column field="areaCapacitacion" title="Área" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="subAreaCapacitacion" title="Sub Área" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="ciudad" title="Ciudad" [width]="100"></kendo-excelexport-column>
+    </kendo-excelexport>
+
+    <kendo-excelexport #excelExportProgramas [data]="programas" [fileName]="getNombreArchivoExcel('Programas')">
+      <kendo-excelexport-column field="programaEspecificoPadre" title="Programa" [width]="300"></kendo-excelexport-column>
+      <kendo-excelexport-column field="estadoPadre" title="Estado" [width]="120"></kendo-excelexport-column>
+      <kendo-excelexport-column field="modalidad" title="Modalidad" [width]="120"></kendo-excelexport-column>
+      <kendo-excelexport-column field="fechaInicio" title="Fecha Inicio" [width]="120"></kendo-excelexport-column>
+      <kendo-excelexport-column field="ciudad" title="Ciudad" [width]="120"></kendo-excelexport-column>
+      <kendo-excelexport-column field="areaCapacitacion" title="Área" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="subAreaCapacitacion" title="Sub Área" [width]="150"></kendo-excelexport-column>
+    </kendo-excelexport>
+
+    <kendo-excelexport #excelExportCursos [data]="cursos" [fileName]="getNombreArchivoExcel('Cursos')">
+      <kendo-excelexport-column field="programaEspecificoPadre" title="Programa Padre" [width]="250"></kendo-excelexport-column>
+      <kendo-excelexport-column field="curso" title="Curso" [width]="200"></kendo-excelexport-column>
+      <kendo-excelexport-column field="estadoSesion" title="Estado Sesión" [width]="110"></kendo-excelexport-column>
+      <kendo-excelexport-column field="nroSesion" title="Nro Sesión" [width]="80"></kendo-excelexport-column>
+      <kendo-excelexport-column field="fecha" title="Fecha" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="diaSemana" title="Día" [width]="90"></kendo-excelexport-column>
+      <kendo-excelexport-column field="horario" title="Horario" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="docente" title="Docente" [width]="200"></kendo-excelexport-column>
+      <kendo-excelexport-column field="sede" title="Sede" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="aula" title="Aula" [width]="100"></kendo-excelexport-column>
+      <kendo-excelexport-column field="coordinador" title="Coordinador" [width]="200"></kendo-excelexport-column>
+    </kendo-excelexport>
+
+    <kendo-excelexport #excelExportDocentes [data]="docentes" [fileName]="getNombreArchivoExcel('Docentes')">
+      <kendo-excelexport-column field="docente" title="Docente" [width]="250"></kendo-excelexport-column>
+      <kendo-excelexport-column field="programasAsignados" title="Programas Asignados" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="cursosAsignados" title="Cursos Asignados" [width]="150"></kendo-excelexport-column>
+      <kendo-excelexport-column field="totalSesiones" title="Total Sesiones" [width]="120"></kendo-excelexport-column>
+      <kendo-excelexport-column field="primeraClase" title="Primera Clase" [width]="130"></kendo-excelexport-column>
+      <kendo-excelexport-column field="ultimaClase" title="Última Clase" [width]="130"></kendo-excelexport-column>
+    </kendo-excelexport>
+
+  </div>
+  <!-- ══ FIN DASHBOARD 1 ══════════════════════════════════════════════ -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- DASHBOARD 2 — lazy render: solo existe tras primera visita       -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div *ngIf="dashboard2Initialized" [hidden]="activeMainTab !== 'dashboard2'">
+
+    <!-- Filtros D2 -->
+    <div class="filter-card mb-3">
+      <div class="filter-card__header">
+        <div class="filter-icon"><i class="k-icon k-i-user"></i></div>
+        <h6>Filtros de Seguimiento Docente</h6>
       </div>
-
-      <!-- Filtro propio -->
-      <div class="card-body border-bottom py-2 bg-light">
-        <form [formGroup]="formFiltroCursosV3">
-          <div class="row align-items-end g-2">
-            <div class="col-md-2">
-              <kendo-formfield>
-                <kendo-label text="Año"></kendo-label>
-                <kendo-dropdownlist
-                  formControlName="anio"
-                  [data]="filtros.anios"
-                  [valuePrimitive]="true"
-                  [defaultItem]="null"
-                  placeholder="Todos">
-                </kendo-dropdownlist>
-              </kendo-formfield>
-            </div>
-            <div class="col-md-3">
-              <kendo-formfield>
-                <kendo-label text="Modalidad"></kendo-label>
-                <kendo-dropdownlist
-                  formControlName="modalidadClasificada"
-                  [data]="MODALIDADES_CLASIFICADAS"
-                  [valuePrimitive]="true"
-                  [defaultItem]="null"
-                  placeholder="Todas (Inhouse / Presencial / Online)">
-                </kendo-dropdownlist>
-              </kendo-formfield>
-            </div>
-            <div class="col-md-2">
-              <kendo-formfield>
-                <kendo-label text="Semana inicio"></kendo-label>
-                <kendo-numerictextbox formControlName="semanaInicio"
-                  [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
-                </kendo-numerictextbox>
-              </kendo-formfield>
-            </div>
-            <div class="col-md-2">
-              <kendo-formfield>
-                <kendo-label text="Semana fin"></kendo-label>
-                <kendo-numerictextbox formControlName="semanaFin"
-                  [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
-                </kendo-numerictextbox>
-              </kendo-formfield>
-            </div>
-            <div class="col-md-3 d-flex align-items-end gap-2">
-              <button kendoButton themeColor="primary" icon="search"
-                (click)="aplicarFiltroCursosV3()" [disabled]="loadingCursosV3">
-                Buscar
-              </button>
-              <button kendoButton themeColor="base" icon="reset"
-                (click)="formFiltroCursosV3.reset(); cargarCursosV3()">
-                Limpiar
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      <!-- Grilla -->
-      <div class="card-body p-0">
-        <div *ngIf="loadingCursosV3" class="text-center py-4">
-          <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
-        </div>
-        <kendo-grid
-          *ngIf="!loadingCursosV3"
-          [data]="gridDataCursosV3"
-          [pageable]="{ pageSizes: [10, 20, 50] }"
-          [sortable]="{ mode: 'multiple' }"
-          [filterable]="'menu'"
-          [resizable]="true"
-          [skip]="stateCursosV3.skip"
-          [pageSize]="stateCursosV3.take"
-          [sort]="stateCursosV3.sort"
-          (dataStateChange)="onStateChangeCursosV3($event)"
-          class="grid-dashboard"
-        >
-          <kendo-grid-column field="modalidadClasificada" title="Modalidad" [width]="110" [locked]="true">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              <span class="badge" [ngClass]="getModalidadClasificadaBadgeClass(dataItem.modalidadClasificada)">
-                {{ dataItem.modalidadClasificada || '-' }}
-              </span>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="centroCostoPadre" title="C.C. Padre" [width]="180">
-          </kendo-grid-column>
-          <kendo-grid-column field="programaEspecificoPadre" title="Programa Padre" [width]="220">
-          </kendo-grid-column>
-          <kendo-grid-column field="centroCostoHijo" title="C.C. Hijo" [width]="160">
-          </kendo-grid-column>
-          <kendo-grid-column field="curso" title="Curso" [width]="200">
-          </kendo-grid-column>
-          <kendo-grid-column field="estadoSesion" title="Estado" [width]="110">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              <span class="badge" [ngClass]="getEstadoBadgeClass(dataItem.estadoSesion)">
-                {{ dataItem.estadoSesion || '-' }}
-              </span>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="nroSesion" title="Nro" [width]="70" class="text-center">
-          </kendo-grid-column>
-          <kendo-grid-column field="fecha" title="Fecha" [width]="110">
-            <ng-template kendoGridCellTemplate let-dataItem>
-              {{ formatearFecha(dataItem.fecha) }}
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="diaSemana" title="Día" [width]="90">
-          </kendo-grid-column>
-          <kendo-grid-column field="horario" title="Horario" [width]="110">
-          </kendo-grid-column>
-          <kendo-grid-column field="docente" title="Docente" [width]="200">
-          </kendo-grid-column>
-          <kendo-grid-column field="sede" title="Sede" [width]="140">
-          </kendo-grid-column>
-          <kendo-grid-column field="aula" title="Aula" [width]="90">
-          </kendo-grid-column>
-        </kendo-grid>
-      </div>
-    </div>
-  </ng-container>
-
-  <!-- Excel Export Component - Datos Completos -->
-  <kendo-excelexport #excelExport [data]="datosCompletos" [fileName]="getNombreArchivoExcel()">
-    <kendo-excelexport-column field="centroCostoPadre" title="Centro Costo Padre" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="programaEspecificoPadre" title="Programa Padre" [width]="250"></kendo-excelexport-column>
-    <kendo-excelexport-column field="estadoPadre" title="Estado Padre" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="centroCostoHijo" title="Centro Costo Hijo" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="programaEspecificoHijo" title="Programa Hijo" [width]="250"></kendo-excelexport-column>
-    <kendo-excelexport-column field="estadoHijo" title="Estado Hijo" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="modalidadHijo" title="Modalidad" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="anio" title="Anio" [width]="60"></kendo-excelexport-column>
-    <kendo-excelexport-column field="semanaCalendario" title="Semana" [width]="80"></kendo-excelexport-column>
-    <kendo-excelexport-column field="fecha" title="Fecha" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="diaSemana" title="Dia" [width]="80"></kendo-excelexport-column>
-    <kendo-excelexport-column field="horario" title="Horario" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="sede" title="Sede" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="aula" title="Aula" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="nroSesion" title="Nro Sesion" [width]="80"></kendo-excelexport-column>
-    <kendo-excelexport-column field="docente" title="Docente" [width]="200"></kendo-excelexport-column>
-    <kendo-excelexport-column field="coordinador" title="Coordinador" [width]="200"></kendo-excelexport-column>
-    <kendo-excelexport-column field="areaCapacitacion" title="Area" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="subAreaCapacitacion" title="Sub Area" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="ciudad" title="Ciudad" [width]="100"></kendo-excelexport-column>
-  </kendo-excelexport>
-
-  <!-- Excel Export - Programas -->
-  <kendo-excelexport #excelExportProgramas [data]="programas" [fileName]="getNombreArchivoExcel('Programas')">
-    <kendo-excelexport-column field="programaEspecificoPadre" title="Programa" [width]="300"></kendo-excelexport-column>
-    <kendo-excelexport-column field="estadoPadre" title="Estado" [width]="120"></kendo-excelexport-column>
-    <kendo-excelexport-column field="modalidad" title="Modalidad" [width]="120"></kendo-excelexport-column>
-    <kendo-excelexport-column field="fechaInicio" title="Fecha Inicio" [width]="120"></kendo-excelexport-column>
-    <kendo-excelexport-column field="ciudad" title="Ciudad" [width]="120"></kendo-excelexport-column>
-    <kendo-excelexport-column field="areaCapacitacion" title="Area" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="subAreaCapacitacion" title="Sub Area" [width]="150"></kendo-excelexport-column>
-  </kendo-excelexport>
-
-  <!-- Excel Export - Cursos/Sesiones -->
-  <kendo-excelexport #excelExportCursos [data]="cursos" [fileName]="getNombreArchivoExcel('Cursos')">
-    <kendo-excelexport-column field="programaEspecificoPadre" title="Programa Padre" [width]="250"></kendo-excelexport-column>
-    <kendo-excelexport-column field="curso" title="Curso" [width]="200"></kendo-excelexport-column>
-    <kendo-excelexport-column field="estadoSesion" title="Estado Sesion" [width]="110"></kendo-excelexport-column>
-    <kendo-excelexport-column field="nroSesion" title="Nro Sesion" [width]="80"></kendo-excelexport-column>
-    <kendo-excelexport-column field="fecha" title="Fecha" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="diaSemana" title="Dia" [width]="90"></kendo-excelexport-column>
-    <kendo-excelexport-column field="horario" title="Horario" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="docente" title="Docente" [width]="200"></kendo-excelexport-column>
-    <kendo-excelexport-column field="sede" title="Sede" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="aula" title="Aula" [width]="100"></kendo-excelexport-column>
-    <kendo-excelexport-column field="coordinador" title="Coordinador" [width]="200"></kendo-excelexport-column>
-  </kendo-excelexport>
-
-  <!-- Excel Export - Docentes -->
-  <kendo-excelexport #excelExportDocentes [data]="docentes" [fileName]="getNombreArchivoExcel('Docentes')">
-    <kendo-excelexport-column field="docente" title="Docente" [width]="250"></kendo-excelexport-column>
-    <kendo-excelexport-column field="programasAsignados" title="Programas Asignados" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="cursosAsignados" title="Cursos Asignados" [width]="150"></kendo-excelexport-column>
-    <kendo-excelexport-column field="totalSesiones" title="Total Sesiones" [width]="120"></kendo-excelexport-column>
-    <kendo-excelexport-column field="primeraClase" title="Primera Clase" [width]="130"></kendo-excelexport-column>
-    <kendo-excelexport-column field="ultimaClase" title="Ultima Clase" [width]="130"></kendo-excelexport-column>
-  </kendo-excelexport>
-
-  </ng-container>
-  <!-- ═══════ FIN DASHBOARD 1 ═══════ -->
-
-  <!-- ═══════ DASHBOARD 2: Seguimiento por Docente ═══════ -->
-  <ng-container *ngIf="activeMainTab === 'dashboard2'">
-
-    <!-- Filtros Dashboard 2 -->
-    <div class="card mb-3">
-      <div class="card-header">
-        <h5 class="mb-0"><i class="k-icon k-i-filter me-1"></i> Filtros de Seguimiento</h5>
-      </div>
-      <div class="card-body py-2">
+      <div class="filter-card__body">
         <form [formGroup]="formFiltroD2">
           <div class="row align-items-end g-2">
-
-            <!-- Filtro Docente -->
             <div class="col-md-4">
               <kendo-formfield>
                 <kendo-label text="Docente"></kendo-label>
-                <kendo-combobox
-                  formControlName="idDocente"
-                  [data]="docentesFiltroFiltered"
-                  textField="nombre"
-                  valueField="id"
-                  [valuePrimitive]="true"
-                  [filterable]="true"
-                  [loading]="loadingDocentesFiltro"
+                <kendo-combobox formControlName="idDocente" [data]="docentesFiltroFiltered"
+                  textField="nombre" valueField="id" [valuePrimitive]="true"
+                  [filterable]="true" [loading]="loadingDocentesFiltro"
                   (filterChange)="onDocenteFilterChange($event)"
                   (valueChange)="onDocenteValueChange($event)"
-                  placeholder="Buscar docente..."
-                  [clearButton]="true"
-                >
+                  placeholder="Buscar docente..." [clearButton]="true">
                 </kendo-combobox>
               </kendo-formfield>
             </div>
-
-            <!-- Filtro PEspecifico — muestra programas del docente si está seleccionado -->
             <div class="col-md-4">
               <kendo-formfield>
-                <kendo-label text="Programa Especifico"></kendo-label>
-
-                <!-- Con docente: dropdown con programas del docente -->
-                <kendo-combobox
-                  *ngIf="formFiltroD2.value.idDocente"
-                  formControlName="idPEspecifico"
-                  [data]="pEspecificoPorDocenteFiltro"
-                  textField="nombre"
-                  valueField="id"
-                  [valuePrimitive]="true"
-                  [loading]="loadingPEspecificoPorDocente"
-                  [filterable]="false"
-                  placeholder="Selecciona un programa..."
-                  [clearButton]="true"
-                >
+                <kendo-label text="Programa Específico"></kendo-label>
+                <kendo-combobox *ngIf="formFiltroD2.value.idDocente" formControlName="idPEspecifico"
+                  [data]="pEspecificoPorDocenteFiltro" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [loading]="loadingPEspecificoPorDocente"
+                  [filterable]="false" placeholder="Selecciona un programa..." [clearButton]="true">
                 </kendo-combobox>
-
-                <!-- Sin docente: búsqueda por texto libre -->
-                <kendo-combobox
-                  *ngIf="!formFiltroD2.value.idDocente"
-                  formControlName="idPEspecifico"
-                  [data]="pEspecificoFiltroFiltered"
-                  textField="nombre"
-                  valueField="id"
-                  [valuePrimitive]="true"
-                  [filterable]="true"
-                  [loading]="loadingPEspecificoFiltro"
+                <kendo-combobox *ngIf="!formFiltroD2.value.idDocente" formControlName="idPEspecifico"
+                  [data]="pEspecificoFiltroFiltered" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [filterable]="true" [loading]="loadingPEspecificoFiltro"
                   (filterChange)="cargarPEspecificoFiltro($event)"
-                  placeholder="Escribe para buscar programa..."
-                  [clearButton]="true"
-                >
+                  placeholder="Escribe para buscar programa..." [clearButton]="true">
                   <ng-template kendoComboBoxItemTemplate let-dataItem>
                     <span class="d-flex justify-content-between align-items-center">
                       <span>{{ dataItem.nombre }}</span>
@@ -1395,39 +1177,32 @@
                     </span>
                   </ng-template>
                 </kendo-combobox>
-
               </kendo-formfield>
             </div>
-
-            <!-- Botones -->
-            <div class="col-md-1 d-flex gap-1">
-              <button kendoButton themeColor="primary" icon="search" (click)="buscarSeguimientoDocente()" [disabled]="loadingD2">
-                Buscar
-              </button>
-              <button kendoButton themeColor="base" icon="reset" (click)="limpiarFiltroD2()" [disabled]="loadingD2">
-              </button>
+            <div class="col-md-2 d-flex gap-2 align-items-end">
+              <button kendoButton themeColor="primary" icon="search"
+                (click)="buscarSeguimientoDocente()" [disabled]="loadingD2">Buscar</button>
+              <button kendoButton themeColor="base" icon="reset"
+                (click)="limpiarFiltroD2()" [disabled]="loadingD2"></button>
             </div>
-
           </div>
         </form>
       </div>
     </div>
 
-    <!-- Loading Dashboard 2 -->
-    <div *ngIf="loadingD2" class="text-center py-5">
+    <div *ngIf="loadingD2" class="loading-state" style="padding: 4rem 1rem;">
       <kendo-loader type="infinite-spinner" size="large"></kendo-loader>
-      <p class="mt-2 text-muted">Cargando seguimiento del docente...</p>
+      <p>Cargando seguimiento del docente...</p>
     </div>
 
     <ng-container *ngIf="!loadingD2">
 
-
-      <!-- Grafico por programa -->
-      <div class="card mb-4" *ngIf="seguimientoDocenteProgramas.length > 0">
-        <div class="card-header">
-          <h5 class="mb-0"><i class="k-icon k-i-chart-column-clustered me-1"></i> Sesiones por Programa (Top 10)</h5>
+      <!-- Gráfico Sesiones por Programa -->
+      <div class="chart-card mb-4" *ngIf="seguimientoDocenteProgramas.length > 0">
+        <div class="chart-card__header">
+          <h5><i class="k-icon k-i-chart-column-clustered"></i> Sesiones por Programa (Top 10)</h5>
         </div>
-        <div class="card-body">
+        <div class="chart-card__body">
           <kendo-chart [style.height.px]="350">
             <kendo-chart-tooltip [shared]="true">
               <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
@@ -1442,88 +1217,68 @@
             </kendo-chart-tooltip>
             <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
             <kendo-chart-category-axis>
-              <kendo-chart-category-axis-item [categories]="categoriasD2Programas" [labels]="{ rotation: -30 }">
-              </kendo-chart-category-axis-item>
+              <kendo-chart-category-axis-item [categories]="categoriasD2Programas"
+                [labels]="{ rotation: -30 }"></kendo-chart-category-axis-item>
             </kendo-chart-category-axis>
             <kendo-chart-series>
-              <kendo-chart-series-item
-                *ngFor="let serie of seriesD2Programas"
-                type="column"
-                [name]="serie.name"
-                [data]="serie.data"
-                [color]="serie.color"
-                [labels]="{ visible: false }"
-              >
-              </kendo-chart-series-item>
+              <kendo-chart-series-item *ngFor="let serie of seriesD2Programas" type="column"
+                [name]="serie.name" [data]="serie.data" [color]="serie.color"
+                [labels]="{ visible: false }"></kendo-chart-series-item>
             </kendo-chart-series>
           </kendo-chart>
         </div>
       </div>
 
-      <!-- Donut: Calificación de alumnos -->
-      <div class="card mb-4" *ngIf="alumnosNotas.length > 0">
-        <div class="card-header">
-          <h5 class="mb-0"><i class="k-icon k-i-chart-donut me-1"></i> Calificación de Alumnos</h5>
+      <!-- Donut Calificación de Alumnos -->
+      <div class="chart-card mb-4" *ngIf="alumnosNotas.length > 0">
+        <div class="chart-card__header">
+          <h5><i class="k-icon k-i-chart-donut"></i> Calificación de Alumnos</h5>
         </div>
-        <div class="card-body d-flex flex-column align-items-center">
+        <div class="chart-card__body d-flex flex-column align-items-center">
           <kendo-chart [style.height.px]="280" style="width:100%; max-width:380px;">
             <kendo-chart-tooltip [shared]="false">
               <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category">
                 <div class="chart-tooltip">
-                  <strong>{{ category }}</strong><br/>
-                  Alumnos: <strong>{{ value }}</strong>
+                  <strong>{{ category }}</strong>Alumnos: <strong>{{ value }}</strong>
                 </div>
               </ng-template>
             </kendo-chart-tooltip>
             <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
             <kendo-chart-series>
-              <kendo-chart-series-item
-                type="donut"
-                [data]="donutCalificacion"
-                field="value"
-                categoryField="category"
-                colorField="color"
-                [labels]="{ visible: true, content: labelContentPercent }"
-                [holeSize]="60">
+              <kendo-chart-series-item type="donut" [data]="donutCalificacion" field="value"
+                categoryField="category" colorField="color"
+                [labels]="{ visible: true, content: labelContentPercent }" [holeSize]="60">
               </kendo-chart-series-item>
             </kendo-chart-series>
           </kendo-chart>
-          <!-- Totales debajo del donut -->
-          <div class="d-flex gap-4 mt-2">
+          <div class="d-flex gap-4 mt-3">
             <div class="text-center">
-              <div class="fw-bold text-success" style="font-size:1.4rem;">{{ totalConNota }}</div>
+              <div class="kpi-mini__value" style="--kpi-color:#10b981; font-size:1.6rem;">{{ totalConNota }}</div>
               <small class="text-muted">Calificados</small>
             </div>
             <div class="text-center">
-              <div class="fw-bold text-danger" style="font-size:1.4rem;">{{ totalSinNota }}</div>
+              <div class="kpi-mini__value" style="--kpi-color:#ef4444; font-size:1.6rem;">{{ totalSinNota }}</div>
               <small class="text-muted">Sin nota</small>
             </div>
             <div class="text-center">
-              <div class="fw-bold text-secondary" style="font-size:1.4rem;">{{ alumnosNotas.length }}</div>
+              <div class="kpi-mini__value" style="--kpi-color:#64748b; font-size:1.6rem;">{{ alumnosNotas.length }}</div>
               <small class="text-muted">Total</small>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Grilla de Programas -->
-      <div class="card mb-4" *ngIf="seguimientoDocenteProgramas.length > 0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0"><i class="k-icon k-i-grid me-1"></i> Resumen por Programa</h5>
-          <span class="badge bg-primary">{{ seguimientoDocenteProgramas.length }} programas</span>
+      <!-- Grilla Resumen por Programa -->
+      <div class="db-card mb-4" *ngIf="seguimientoDocenteProgramas.length > 0">
+        <div class="db-card__header">
+          <h5 class="db-card__title"><i class="k-icon k-i-grid"></i> Resumen por Programa</h5>
+          <span class="badge badge-ejecucion">{{ seguimientoDocenteProgramas.length }} programas</span>
         </div>
-        <div class="card-body p-0">
-          <kendo-grid
-            [data]="gridDataD2Programas"
-            [pageSize]="stateD2Programas.take"
-            [skip]="stateD2Programas.skip"
-            [sort]="stateD2Programas.sort"
-            [pageable]="true"
-            [sortable]="true"
-            [resizable]="true"
-            (dataStateChange)="onStateChangeD2Programas($event)"
-            class="k-grid-sm"
-          >
+        <div class="db-card__body--flush">
+          <kendo-grid [data]="gridDataD2Programas" [pageSize]="stateD2Programas.take"
+            [skip]="stateD2Programas.skip" [sort]="stateD2Programas.sort"
+            [pageable]="true" [sortable]="true" [resizable]="true"
+            (dataStateChange)="onStateChangeD2Programas($event)" class="grid-dashboard">
             <kendo-grid-column field="programa" title="Programa" [width]="250"></kendo-grid-column>
             <kendo-grid-column field="centroCosto" title="Centro Costo" [width]="130"></kendo-grid-column>
             <kendo-grid-column field="estadoPrograma" title="Estado" [width]="100">
@@ -1566,24 +1321,17 @@
         </div>
       </div>
 
-      <!-- Grilla de Sesiones -->
-      <div class="card mb-4" *ngIf="seguimientoDocenteSesiones.length > 0">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0"><i class="k-icon k-i-calendar me-1"></i> Detalle de Sesiones</h5>
+      <!-- Grilla Detalle Sesiones -->
+      <div class="db-card mb-4" *ngIf="seguimientoDocenteSesiones.length > 0">
+        <div class="db-card__header">
+          <h5 class="db-card__title"><i class="k-icon k-i-calendar"></i> Detalle de Sesiones</h5>
           <span class="badge bg-secondary">{{ seguimientoDocenteSesiones.length }} sesiones</span>
         </div>
-        <div class="card-body p-0">
-          <kendo-grid
-            [data]="gridDataD2Sesiones"
-            [pageSize]="stateD2Sesiones.take"
-            [skip]="stateD2Sesiones.skip"
-            [sort]="stateD2Sesiones.sort"
-            [pageable]="true"
-            [sortable]="true"
-            [resizable]="true"
-            (dataStateChange)="onStateChangeD2Sesiones($event)"
-            class="k-grid-sm"
-          >
+        <div class="db-card__body--flush">
+          <kendo-grid [data]="gridDataD2Sesiones" [pageSize]="stateD2Sesiones.take"
+            [skip]="stateD2Sesiones.skip" [sort]="stateD2Sesiones.sort"
+            [pageable]="true" [sortable]="true" [resizable]="true"
+            (dataStateChange)="onStateChangeD2Sesiones($event)" class="grid-dashboard">
             <kendo-grid-column field="fecha" title="Fecha" [width]="100">
               <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fecha) }}</ng-template>
             </kendo-grid-column>
@@ -1606,129 +1354,109 @@
         </div>
       </div>
 
-      <!-- ── Notas de alumnos por Programa Específico ── -->
-      <div *ngIf="formFiltroD2.value.idPEspecifico" class="row mt-3">
-        <div class="col-12">
-          <div class="card shadow-sm">
-            <div class="card-header d-flex align-items-center justify-content-between py-2">
-              <h6 class="mb-0 fw-bold">
-                <i class="k-icon k-i-table-align-middle-left me-1"></i>
-                Notas de Alumnos
-              </h6>
-              <div class="d-flex align-items-center gap-2">
-                <span *ngIf="loadingNotas" class="spinner-border spinner-border-sm text-primary" role="status"></span>
-                <div class="form-check mb-0 ms-2">
-                  <input class="form-check-input" type="checkbox" id="chkSinNotas"
-                    [checked]="filtrarSinNotas" (change)="filtrarSinNotas = !filtrarSinNotas">
-                  <label class="form-check-label text-danger fw-semibold" for="chkSinNotas"
-                    style="cursor:pointer; font-size:0.85rem;">
-                    Solo sin notas
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div class="card-body p-0">
-              <kendo-grid
-                [data]="gridDataNotas"
-                [pageable]="true"
-                [pageSize]="stateNotas.take"
-                [skip]="stateNotas.skip"
-                [sortable]="true"
-                [sort]="stateNotas.sort"
-                (dataStateChange)="stateNotas = $event"
-                [resizable]="true"
-                [loading]="loadingNotas"
-                [rowClass]="rowClassNotas"
-                style="max-height: 450px;">
-
-                <kendo-grid-column field="codigoMatricula" title="Código" [width]="110" [locked]="false"></kendo-grid-column>
-                <kendo-grid-column field="alumno" title="Nombre y Apellido" [width]="220"></kendo-grid-column>
-
-                <!-- Columnas dinámicas por criterio de evaluacion -->
-                <kendo-grid-column
-                  *ngFor="let evl of evaluacionesD2"
-                  [title]="evl.nombre + ' (' + evl.porcentaje + '%)'"
-                  [width]="150">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    {{ obtenerNota(dataItem, evl.id) | number:'1.2-2' }}
-                  </ng-template>
-                </kendo-grid-column>
-
-                <kendo-grid-column field="promedioFinal" title="Promedio Final" [width]="130">
-                  <ng-template kendoGridCellTemplate let-dataItem>
-                    <strong>{{ dataItem.promedioFinal | number:'1.2-2' }}</strong>
-                  </ng-template>
-                </kendo-grid-column>
-
-              </kendo-grid>
+      <!-- Notas de Alumnos -->
+      <div *ngIf="formFiltroD2.value.idPEspecifico" class="db-card mb-4">
+        <div class="db-card__header">
+          <h5 class="db-card__title">
+            <i class="k-icon k-i-table-align-middle-left"></i> Notas de Alumnos
+          </h5>
+          <div class="d-flex align-items-center gap-2">
+            <span *ngIf="loadingNotas" class="spinner-border spinner-border-sm text-primary" role="status"></span>
+            <div class="form-check mb-0">
+              <input class="form-check-input" type="checkbox" id="chkSinNotas"
+                [checked]="filtrarSinNotas" (change)="filtrarSinNotas = !filtrarSinNotas">
+              <label class="form-check-label text-danger fw-semibold" for="chkSinNotas"
+                style="cursor:pointer; font-size:.85rem;">Solo sin notas</label>
             </div>
           </div>
         </div>
+        <div class="db-card__body--flush">
+          <kendo-grid [data]="gridDataNotas" [pageable]="true" [pageSize]="stateNotas.take"
+            [skip]="stateNotas.skip" [sortable]="true" [sort]="stateNotas.sort"
+            (dataStateChange)="stateNotas = $event" [resizable]="true"
+            [loading]="loadingNotas" [rowClass]="rowClassNotas" style="max-height: 450px;"
+            class="grid-dashboard">
+            <kendo-grid-column field="codigoMatricula" title="Código" [width]="110"></kendo-grid-column>
+            <kendo-grid-column field="alumno" title="Nombre y Apellido" [width]="220"></kendo-grid-column>
+            <kendo-grid-column *ngFor="let evl of evaluacionesD2"
+              [title]="evl.nombre + ' (' + evl.porcentaje + '%)'" [width]="150">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                {{ obtenerNota(dataItem, evl.id) | number:'1.2-2' }}
+              </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="promedioFinal" title="Promedio Final" [width]="130">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <strong>{{ dataItem.promedioFinal | number:'1.2-2' }}</strong>
+              </ng-template>
+            </kendo-grid-column>
+          </kendo-grid>
+        </div>
       </div>
 
-      <!-- Estado vacío — solo si no hay NINGÚN dato aún -->
+      <!-- Estado vacío D2 -->
       <div *ngIf="seguimientoDocenteProgramas.length === 0 && seguimientoDocenteSesiones.length === 0"
-           class="text-center py-5 text-muted">
-        <i class="k-icon k-i-search" style="font-size: 3rem;"></i>
-        <p class="mt-2">Selecciona un docente y/o programa y presiona <strong>Buscar</strong> para ver el seguimiento.</p>
+        class="empty-state" style="padding: 4rem 1rem;">
+        <div class="empty-icon" style="width:64px; height:64px; border-radius:50%; background:var(--clr-primary-soft); display:flex; align-items:center; justify-content:center; margin-bottom:1rem;">
+          <i class="k-icon k-i-search" style="font-size:2rem; color:var(--clr-primary-mid);"></i>
+        </div>
+        <p style="max-width:320px;">Selecciona un docente y/o programa y presiona <strong>Buscar</strong> para ver el seguimiento.</p>
       </div>
 
     </ng-container>
-    <!-- fin ng-container !loadingD2 -->
 
-  </ng-container>
-  <!-- ═══════ FIN DASHBOARD 2 ═══════ -->
+  </div>
+  <!-- ══ FIN DASHBOARD 2 ═══════════════════════════════════════════════ -->
 
-<!-- ═══════ DASHBOARD 3: Furs ═══════ -->
-  <ng-container *ngIf="activeMainTab === 'dashboard3'">
-    <div class="card shadow-sm mt-3">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span class="fw-bold">FURs</span>
-        <button class="btn btn-sm btn-outline-primary" (click)="cargarFursDashboard3()" [disabled]="loadingD3">
-          <i class="fa fa-refresh"></i> Actualizar
-        </button>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- DASHBOARD 3 — lazy render: solo existe tras primera visita       -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div *ngIf="dashboard3Initialized" [hidden]="activeMainTab !== 'dashboard3'">
+
+    <div class="db-card mt-2">
+      <div class="db-card__header">
+        <h5 class="db-card__title">
+          <i class="k-icon k-i-file-txt"></i> Registros FUR
+        </h5>
+        <button kendoButton themeColor="base" icon="reload"
+          (click)="cargarFursDashboard3()" [disabled]="loadingD3">Actualizar</button>
       </div>
-      <div class="card-body p-2">
-        <div *ngIf="loadingD3" class="text-center py-4">
-          <div class="spinner-border text-primary" role="status"></div>
+      <div class="db-card__body--flush">
+        <div *ngIf="loadingD3" class="loading-state">
+          <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
         </div>
-        <kendo-grid *ngIf="!loadingD3"
-          [data]="gridDataD3"
-          [pageable]="{ pageSizes: [10, 20, 50, 100] }"
-          [pageSize]="stateD3.take"
-          [skip]="stateD3.skip"
-          [filterable]="'menu'"
-          [sortable]="{ mode: 'multiple' }"
-          [resizable]="true"
-          [sort]="stateD3.sort"
+        <kendo-grid *ngIf="!loadingD3" [data]="gridDataD3"
+          [pageable]="{ pageSizes: [10, 20, 50, 100] }" [pageSize]="stateD3.take"
+          [skip]="stateD3.skip" [filterable]="'menu'" [sortable]="{ mode: 'multiple' }"
+          [resizable]="true" [sort]="stateD3.sort"
           (dataStateChange)="onStateChangeD3($event)"
-          style="max-height: 600px;">
-
-          <kendo-grid-column field="codigo" title="Código" [width]="110" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="centroCosto" title="Centro de Costo" [width]="200" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="programa" title="Programa" [width]="220" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="razonSocial" title="Proveedor" [width]="180" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="producto" title="Producto" [width]="180" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="descripcion" title="Descripción" [width]="220" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="cantidad" title="Cantidad" [width]="90" filter="numeric" [filterable]="true" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="precioUnitarioMonedaOrigen" title="P.Unit. M.O." [width]="110" filter="numeric" [filterable]="true" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="precioTotalMonedaOrigen" title="Total M.O." [width]="110" filter="numeric" [filterable]="true" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="precioTotalDolares" title="Total USD" [width]="100" filter="numeric" [filterable]="true" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="faseAprobacion1" title="Estado" [width]="160" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="monedaPagoReal" title="Moneda Pago" [width]="120" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="fechaLimite" title="Fecha Límite" [width]="120" filter="date" [filterable]="true">
+          style="max-height: 600px;" class="grid-dashboard">
+          <kendo-grid-column field="codigo" title="Código" [width]="110"></kendo-grid-column>
+          <kendo-grid-column field="centroCosto" title="Centro de Costo" [width]="200"></kendo-grid-column>
+          <kendo-grid-column field="programa" title="Programa" [width]="220"></kendo-grid-column>
+          <kendo-grid-column field="razonSocial" title="Proveedor" [width]="180"></kendo-grid-column>
+          <kendo-grid-column field="producto" title="Producto" [width]="180"></kendo-grid-column>
+          <kendo-grid-column field="descripcion" title="Descripción" [width]="220"></kendo-grid-column>
+          <kendo-grid-column field="cantidad" title="Cantidad" [width]="90" filter="numeric" format="{0:n2}"></kendo-grid-column>
+          <kendo-grid-column field="precioUnitarioMonedaOrigen" title="P.Unit. M.O." [width]="110" filter="numeric" format="{0:n2}"></kendo-grid-column>
+          <kendo-grid-column field="precioTotalMonedaOrigen" title="Total M.O." [width]="110" filter="numeric" format="{0:n2}"></kendo-grid-column>
+          <kendo-grid-column field="precioTotalDolares" title="Total USD" [width]="100" filter="numeric" format="{0:n2}"></kendo-grid-column>
+          <kendo-grid-column field="faseAprobacion1" title="Estado" [width]="160"></kendo-grid-column>
+          <kendo-grid-column field="monedaPagoReal" title="Moneda Pago" [width]="120"></kendo-grid-column>
+          <kendo-grid-column field="fechaLimite" title="Fecha Límite" [width]="120" filter="date">
             <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fechaLimite) }}</ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="numeroSemana" title="Semana" [width]="80" filter="numeric" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="observaciones" title="Observaciones" [width]="200" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="usuarioCreacion" title="Creado por" [width]="130" [filterable]="true"></kendo-grid-column>
-          <kendo-grid-column field="fechaCreacion" title="Fecha Creación" [width]="130" filter="date" [filterable]="true">
+          <kendo-grid-column field="numeroSemana" title="Semana" [width]="80" filter="numeric"></kendo-grid-column>
+          <kendo-grid-column field="observaciones" title="Observaciones" [width]="200"></kendo-grid-column>
+          <kendo-grid-column field="usuarioCreacion" title="Creado por" [width]="130"></kendo-grid-column>
+          <kendo-grid-column field="fechaCreacion" title="Fecha Creación" [width]="130" filter="date">
             <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fechaCreacion) }}</ng-template>
           </kendo-grid-column>
-
         </kendo-grid>
       </div>
     </div>
-  </ng-container>
-  <!-- ═══════ FIN DASHBOARD 3 ═══════ -->
+
+  </div>
+  <!-- ══ FIN DASHBOARD 3 ═══════════════════════════════════════════════ -->
+
 </div>
