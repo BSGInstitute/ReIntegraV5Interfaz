@@ -425,6 +425,7 @@ export const constApiComercial = {
   CentroCostoObtenerCombo: '/CentroCosto/ObtenerCombo',
   CentroCostoObtenerAutocomplete: '/CentroCosto/ObtenerAutocomplete',
   CentroCostoObtenerAutocompleteV2: '/CentroCosto/ObtenerAutocompleteV2',
+  CentroCostoObtenerAutocompleteV3: '/CentroCosto/ObtenerAutocompleteV3',
   CentroCostoObtenerAutocompleteCentroCosto:
     '/CentroCosto/ObtenerAutocompleteCentroCosto',
   CentroCostoObtenerRecientesAutocomplete:
