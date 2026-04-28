@@ -1,8 +1,9 @@
-﻿import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+﻿import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
+import { POPUP_CONTAINER } from '@progress/kendo-angular-popup';
 
 import { ReporteDashboardService } from '@planificacion/services/reporte-dashboard.service';
 import {
@@ -53,7 +54,11 @@ import { process, State } from '@progress/kendo-data-query';
   selector: 'app-reporte-dashboard',
   templateUrl: './reporte-dashboard.component.html',
   styleUrls: ['./reporte-dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{
+    provide: POPUP_CONTAINER,
+    useFactory: () => ({ nativeElement: document.body } as ElementRef)
+  }]
 })
 export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
@@ -117,6 +122,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   // Datos filtrados para los MultiSelect
   filteredProgramasEspecificos: IReporteDashboardProgramaEspecificoItem[] = [];
   filteredCentrosCosto: IReporteDashboardCentroCostoItem[] = [];
+  filteredProgramasV3: IReporteDashboardProgramaEspecificoItem[] = [];
 
   // Paleta de colores distintos para estados sin mapeo explícito
   private readonly _paletaEstados: string[] = [
@@ -201,6 +207,58 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   formFiltroCursosV3: FormGroup;
   readonly MODALIDADES_CLASIFICADAS = ['Inhouse', 'Presencial', 'Online'];
 
+  // Tabla V3 — filtro, orden y paginación client-side
+  filtroTablaV3: string = '';
+  filtroColV3: { [k: string]: string } = {};
+  ordenV3Campo: string = 'fecha';
+  ordenV3Dir: 'asc' | 'desc' = 'desc';
+  paginaV3: number = 1;
+  tamPaginaV3: number = 20;
+  expandedRowsV3 = new Set<number>();
+
+  get cursosV3Filtrados(): IReporteDashboardCursoV3[] {
+    let datos = this.cursosV3;
+    const txt = (this.filtroTablaV3 ?? '').toLowerCase().trim();
+    if (txt) {
+      const campos = ['modalidadClasificada', 'centroCostoPadre', 'programaEspecificoPadre',
+        'centroCostoHijo', 'curso', 'estadoSesion', 'docente', 'sede', 'diaSemana',
+        'horario', 'aula', 'observacion'];
+      datos = datos.filter(r => campos.some(k => String((r as any)[k] ?? '').toLowerCase().includes(txt)));
+    }
+    Object.entries(this.filtroColV3).forEach(([k, v]) => {
+      if (v?.trim()) {
+        const vl = v.toLowerCase().trim();
+        datos = datos.filter(r => String((r as any)[k] ?? '').toLowerCase().includes(vl));
+      }
+    });
+    const campo = this.ordenV3Campo;
+    const dir = this.ordenV3Dir;
+    return [...datos].sort((a: any, b: any) =>
+      dir === 'asc'
+        ? String(a[campo] ?? '').localeCompare(String(b[campo] ?? ''))
+        : String(b[campo] ?? '').localeCompare(String(a[campo] ?? ''))
+    );
+  }
+
+  get cursosV3Paginados(): IReporteDashboardCursoV3[] {
+    const inicio = (this.paginaV3 - 1) * this.tamPaginaV3;
+    return this.cursosV3Filtrados.slice(inicio, inicio + this.tamPaginaV3);
+  }
+
+  get totalPaginasV3(): number {
+    return Math.max(1, Math.ceil(this.cursosV3Filtrados.length / this.tamPaginaV3));
+  }
+
+  get paginasV3(): number[] {
+    const total = this.totalPaginasV3;
+    const curr = this.paginaV3;
+    const pages: number[] = [];
+    for (let i = Math.max(1, curr - 2); i <= Math.min(total, curr + 2); i++) { pages.push(i); }
+    return pages;
+  }
+
+  minV3(a: number, b: number): number { return Math.min(a, b); }
+
   // ── SEGUIMIENTO DE CLASES ────────────────────────────────────────────────
   loadingSeguimiento: boolean = false;
   datosSeguimiento: IReporteDashboardSeguimientoClase[] = [];
@@ -209,9 +267,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   formFiltroSeguimiento: FormGroup;
 
   readonly coloresSeguimiento: { [key: string]: string } = {
-    'Programadas': '#007bff',
-    'Ejecutadas':  '#28a745',
-    'Canceladas':  '#dc3545',
+    'Por Ejecutar': '#007bff',
+    'Ejecutadas':   '#28a745',
+    'Canceladas':   '#dc3545',
     'Reprogramadas': '#ffc107'
   };
 
@@ -309,6 +367,57 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   fursDashboard3: IFurDashboard3[] = [];
   stateD3: State = { skip: 0, take: 20, sort: [], filter: { logic: 'and', filters: [] } };
   get gridDataD3(): any { return process(this.fursDashboard3, this.stateD3); }
+
+  // Tabla FURs — filtro, orden y paginación client-side
+  filtroTablaD3: string = '';
+  filtroColD3: { [k: string]: string } = {};
+  ordenD3Campo: string = 'fechaCreacion';
+  ordenD3Dir: 'asc' | 'desc' = 'desc';
+  paginaD3: number = 1;
+  tamPaginaD3: number = 20;
+  expandedRowsD3 = new Set<number>();
+
+  get fursD3Filtrados(): IFurDashboard3[] {
+    let datos = this.fursDashboard3;
+    const txt = (this.filtroTablaD3 ?? '').toLowerCase().trim();
+    if (txt) {
+      const campos = ['codigo', 'centroCosto', 'programa', 'razonSocial', 'producto',
+        'descripcion', 'faseAprobacion1', 'monedaPagoReal', 'observaciones', 'usuarioCreacion'];
+      datos = datos.filter(r => campos.some(k => String((r as any)[k] ?? '').toLowerCase().includes(txt)));
+    }
+    Object.entries(this.filtroColD3).forEach(([k, v]) => {
+      if (v?.trim()) {
+        const vl = v.toLowerCase().trim();
+        datos = datos.filter(r => String((r as any)[k] ?? '').toLowerCase().includes(vl));
+      }
+    });
+    const campo = this.ordenD3Campo;
+    const dir = this.ordenD3Dir;
+    return [...datos].sort((a: any, b: any) =>
+      dir === 'asc'
+        ? String(a[campo] ?? '').localeCompare(String(b[campo] ?? ''))
+        : String(b[campo] ?? '').localeCompare(String(a[campo] ?? ''))
+    );
+  }
+
+  get fursD3Paginados(): IFurDashboard3[] {
+    const inicio = (this.paginaD3 - 1) * this.tamPaginaD3;
+    return this.fursD3Filtrados.slice(inicio, inicio + this.tamPaginaD3);
+  }
+
+  get totalPaginasD3(): number {
+    return Math.max(1, Math.ceil(this.fursD3Filtrados.length / this.tamPaginaD3));
+  }
+
+  get paginasD3(): number[] {
+    const total = this.totalPaginasD3;
+    const curr = this.paginaD3;
+    const pages: number[] = [];
+    for (let i = Math.max(1, curr - 2); i <= Math.min(total, curr + 2); i++) { pages.push(i); }
+    return pages;
+  }
+
+  minD3(a: number, b: number): number { return Math.min(a, b); }
 
   // ── Notas de alumnos por PEspecifico ──────────────────────────────────────
   loadingNotas: boolean = false;
@@ -441,6 +550,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
             // Inicializar datos filtrados para los MultiSelect
             this.filteredProgramasEspecificos = this.filtros.programasEspecificos.slice(0, 50);
             this.filteredCentrosCosto = this.filtros.centrosCosto.slice(0, 50);
+            this.filteredProgramasV3 = this.filtros.programasEspecificos.slice(0, 50);
             // No se auto-asigna anio: null = todos los anios en la carga inicial
           }
           this.cdr.markForCheck();
@@ -476,6 +586,17 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       const filterLower = filter.toLowerCase();
       this.filteredCentrosCosto = this.filtros.centrosCosto
         .filter(c => (c.nombre ?? '').toLowerCase().includes(filterLower))
+        .slice(0, 100);
+    }
+  }
+
+  onFilterProgramasV3(filter: string): void {
+    if (!filter || filter.length < 1) {
+      this.filteredProgramasV3 = this.filtros.programasEspecificos.slice(0, 50);
+    } else {
+      const fl = filter.toLowerCase();
+      this.filteredProgramasV3 = this.filtros.programasEspecificos
+        .filter(p => p.nombre?.toLowerCase().includes(fl))
         .slice(0, 100);
     }
   }
@@ -1172,13 +1293,14 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   }
 
   procesarDatosCambiosEstado(datos: IReporteDashboardCambioEstado[]): void {
-    this.categoriasCambiosEstado = datos.map(d =>
+    const datosOrdenados = [...datos].sort((a, b) => a.numeroSemana - b.numeroSemana);
+    this.categoriasCambiosEstado = datosOrdenados.map(d =>
       d.esSemanaActual ? `S${d.numeroSemana} (actual)` : `S${d.numeroSemana}`
     );
     this.seriesCambiosEstado = [
-      { name: 'Lanzamiento → Ejecución', data: datos.map(d => d.lanzamientoAEjecucion), color: '#28a745' },
-      { name: 'Ejecución → Concluido',   data: datos.map(d => d.ejecucionAConcluido),   color: '#007bff' },
-      { name: '→ Cancelado',             data: datos.map(d => d.aCancelado),             color: '#dc3545' }
+      { name: 'Lanzamiento → Ejecución', data: datosOrdenados.map(d => d.lanzamientoAEjecucion), color: '#28a745' },
+      { name: 'Ejecución → Concluido',   data: datosOrdenados.map(d => d.ejecucionAConcluido),   color: '#007bff' },
+      { name: '→ Cancelado',             data: datosOrdenados.map(d => d.aCancelado),             color: '#dc3545' }
     ];
   }
 
@@ -1287,8 +1409,70 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.cargarCursosV3();
   }
 
+  limpiarFiltroCursosV3(): void {
+    this.formFiltroCursosV3.reset({ anio: new Date().getFullYear() });
+    this.filteredProgramasV3 = this.filtros.programasEspecificos.slice(0, 50);
+    this.filtroTablaV3 = '';
+    this.filtroColV3 = {};
+    this.paginaV3 = 1;
+    this.cargarCursosV3();
+  }
+
   onStateChangeCursosV3(state: State): void {
     this.stateCursosV3 = state;
+    this.cdr.markForCheck();
+  }
+
+  ordenarTablaV3(campo: string): void {
+    if (this.ordenV3Campo === campo) {
+      this.ordenV3Dir = this.ordenV3Dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.ordenV3Campo = campo;
+      this.ordenV3Dir = 'asc';
+    }
+    this.paginaV3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroTablaV3(valor: string): void {
+    this.filtroTablaV3 = valor;
+    this.paginaV3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroColV3(campo: string, valor: string): void {
+    this.filtroColV3 = { ...this.filtroColV3, [campo]: valor };
+    this.paginaV3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  irPaginaV3(pagina: number): void {
+    this.paginaV3 = Math.min(Math.max(1, pagina), this.totalPaginasV3);
+    this.expandedRowsV3.clear();
+    this.cdr.markForCheck();
+  }
+
+  cambiarTamPaginaV3(tam: number): void {
+    this.tamPaginaV3 = tam;
+    this.paginaV3 = 1;
+    this.expandedRowsV3.clear();
+    this.cdr.markForCheck();
+  }
+
+  toggleExpandRowV3(idx: number): void {
+    if (this.expandedRowsV3.has(idx)) {
+      this.expandedRowsV3.delete(idx);
+    } else {
+      this.expandedRowsV3.add(idx);
+    }
+    this.cdr.markForCheck();
+  }
+
+  modalidadFilterChange(value: string | null, filterService: any): void {
+    filterService.filter({
+      filters: value ? [{ field: 'modalidadClasificada', operator: 'eq', value }] : [],
+      logic: 'and'
+    });
   }
 
   getModalidadClasificadaBadgeClass(modalidad: string): string {
@@ -1335,29 +1519,41 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   }
 
   procesarDatosSeguimiento(datos: IReporteDashboardSeguimientoClase[]): void {
-    // Agrupar por nroDiaSemana (independiente del idioma del servidor SQL)
-    const agrupado = new Map<number, IReporteDashboardSeguimientoClase>();
+    // Normalizar nombre de día (quita tildes, minúsculas) para comparar sin importar locale del servidor
+    const normalizar = (s: string) =>
+      (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+    // Agrupar por nombre de día normalizado
+    const agrupadoPorDia = new Map<string, IReporteDashboardSeguimientoClase>();
     datos.forEach(d => {
-      const nro = d.nroDiaSemana;
-      if (!agrupado.has(nro)) {
-        agrupado.set(nro, { ...d });
+      const key = normalizar(d.diaSemana ?? '');
+      if (!agrupadoPorDia.has(key)) {
+        agrupadoPorDia.set(key, { ...d });
       } else {
-        const ex = agrupado.get(nro)!;
-        ex.programadas  += d.programadas;
-        ex.ejecutadas   += d.ejecutadas;
-        ex.canceladas   += d.canceladas;
+        const ex = agrupadoPorDia.get(key)!;
+        ex.programadas   += d.programadas;
+        ex.ejecutadas    += d.ejecutadas;
+        ex.canceladas    += d.canceladas;
         ex.reprogramadas += d.reprogramadas;
         ex.totalSesiones += d.totalSesiones;
       }
     });
 
-    // Ordenar por numero de dia (2=Lunes ... 7=Sabado en SQL Server)
-    const diasOrdenados = [...agrupado.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1]);
+    // Orden fijo Lunes → Sábado; siempre muestra los 6 días aunque no tengan datos
+    const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
+    const diasOrdenados: IReporteDashboardSeguimientoClase[] = DIAS_SEMANA.map((nombre, idx) => {
+      const found = agrupadoPorDia.get(normalizar(nombre));
+      return found
+        ? { ...found, diaSemana: nombre }
+        : { nroDiaSemana: idx + 1, diaSemana: nombre, programadas: 0, ejecutadas: 0, canceladas: 0, reprogramadas: 0, totalSesiones: 0 } as IReporteDashboardSeguimientoClase;
+    });
+
+    this.datosSeguimiento = diasOrdenados;
     this.categoriasSeguimiento = diasOrdenados.map(d => d.diaSemana);
 
     this.seriesSeguimiento = [
-      { name: 'Programadas',   data: diasOrdenados.map(d => d.programadas),   color: this.coloresSeguimiento['Programadas'] },
+      { name: 'Por Ejecutar',   data: diasOrdenados.map(d => d.programadas),   color: this.coloresSeguimiento['Por Ejecutar'] },
       { name: 'Ejecutadas',    data: diasOrdenados.map(d => d.ejecutadas),    color: this.coloresSeguimiento['Ejecutadas'] },
       { name: 'Canceladas',    data: diasOrdenados.map(d => d.canceladas),    color: this.coloresSeguimiento['Canceladas'] },
       { name: 'Reprogramadas', data: diasOrdenados.map(d => d.reprogramadas), color: this.coloresSeguimiento['Reprogramadas'] }
@@ -1600,6 +1796,8 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response: HttpResponse<IFurDashboard3[]>) => {
           this.fursDashboard3 = response.body || [];
+          this.paginaD3 = 1;
+          this.expandedRowsD3.clear();
         },
         error: () => { this.fursDashboard3 = []; }
       });
@@ -1607,6 +1805,56 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   onStateChangeD3(state: State): void {
     this.stateD3 = state;
+  }
+
+  ordenarTablaD3(campo: string): void {
+    if (this.ordenD3Campo === campo) {
+      this.ordenD3Dir = this.ordenD3Dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.ordenD3Campo = campo;
+      this.ordenD3Dir = 'asc';
+    }
+    this.paginaD3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroTablaD3(valor: string): void {
+    this.filtroTablaD3 = valor;
+    this.paginaD3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroColD3(campo: string, valor: string): void {
+    this.filtroColD3 = { ...this.filtroColD3, [campo]: valor };
+    this.paginaD3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  irPaginaD3(pagina: number): void {
+    this.paginaD3 = Math.min(Math.max(1, pagina), this.totalPaginasD3);
+    this.expandedRowsD3.clear();
+    this.cdr.markForCheck();
+  }
+
+  cambiarTamPaginaD3(tam: number): void {
+    this.tamPaginaD3 = tam;
+    this.paginaD3 = 1;
+    this.expandedRowsD3.clear();
+    this.cdr.markForCheck();
+  }
+
+  toggleExpandRowD3(idx: number): void {
+    if (this.expandedRowsD3.has(idx)) {
+      this.expandedRowsD3.delete(idx);
+    } else {
+      this.expandedRowsD3.add(idx);
+    }
+    this.cdr.markForCheck();
+  }
+
+  formatearNumero(valor: number | null | undefined, decimales: number = 2): string {
+    if (valor === null || valor === undefined) return '-';
+    return valor.toLocaleString('es-PE', { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
   }
 
   getEstadoSesionColor(idEstado: number): string {

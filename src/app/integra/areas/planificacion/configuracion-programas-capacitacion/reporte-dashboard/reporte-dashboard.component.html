@@ -241,7 +241,7 @@
                 </kendo-chart-area>
                 <kendo-chart-tooltip [shared]="false">
                   <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category">
-                    <div class="chart-tooltip"><strong>{{ category }}</strong>Programas: {{ value }}</div>
+                    <div class="chart-tooltip"><strong>{{ category }}</strong>Cursos: {{ value }}</div>
                   </ng-template>
                 </kendo-chart-tooltip>
                 <kendo-chart-category-axis>
@@ -804,7 +804,7 @@
                       <thead>
                         <tr>
                           <th>Día</th>
-                          <th><span class="badge badge-ejecucion">Prog.</span></th>
+                          <th><span class="badge badge-ejecucion">P.Ejec.</span></th>
                           <th><span class="badge badge-lanzamiento">Ejec.</span></th>
                           <th><span class="badge badge-cancelado">Canc.</span></th>
                           <th><span class="badge badge-pendiente">Reprog.</span></th>
@@ -985,8 +985,8 @@
 
         <div class="chart-card__filter-bar">
           <form [formGroup]="formFiltroCursosV3">
-            <div class="row align-items-end g-2">
-              <div class="col-md-2">
+            <div class="row align-items-end g-2 mb-2">
+              <div class="col-md-1">
                 <kendo-formfield>
                   <kendo-label text="Año"></kendo-label>
                   <kendo-dropdownlist formControlName="anio" [data]="filtros.anios"
@@ -994,12 +994,22 @@
                   </kendo-dropdownlist>
                 </kendo-formfield>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <kendo-formfield>
                   <kendo-label text="Modalidad"></kendo-label>
                   <kendo-dropdownlist formControlName="modalidadClasificada"
                     [data]="MODALIDADES_CLASIFICADAS" [valuePrimitive]="true"
-                    [defaultItem]="null" placeholder="Todas (Inhouse / Presencial / Online)">
+                    [defaultItem]="null" placeholder="Todas">
+                  </kendo-dropdownlist>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-5">
+                <kendo-formfield>
+                  <kendo-label text="Programa Padre"></kendo-label>
+                  <kendo-dropdownlist formControlName="idProgramaPadre"
+                    [data]="filteredProgramasV3" textField="nombre" valueField="id"
+                    [valuePrimitive]="true" [filterable]="true" [defaultItem]="null"
+                    placeholder="Buscar programa..." (filterChange)="onFilterProgramasV3($event)">
                   </kendo-dropdownlist>
                 </kendo-formfield>
               </div>
@@ -1007,7 +1017,7 @@
                 <kendo-formfield>
                   <kendo-label text="Semana inicio"></kendo-label>
                   <kendo-numerictextbox formControlName="semanaInicio"
-                    [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
+                    [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="Nº semana">
                   </kendo-numerictextbox>
                 </kendo-formfield>
               </div>
@@ -1015,16 +1025,16 @@
                 <kendo-formfield>
                   <kendo-label text="Semana fin"></kendo-label>
                   <kendo-numerictextbox formControlName="semanaFin"
-                    [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="N° semana">
+                    [min]="1" [max]="53" [decimals]="0" [format]="'n0'" placeholder="Nº semana">
                   </kendo-numerictextbox>
                 </kendo-formfield>
               </div>
-              <div class="col-md-3 d-flex align-items-end gap-2">
-                <button kendoButton themeColor="primary" icon="search"
-                  (click)="aplicarFiltroCursosV3()" [disabled]="loadingCursosV3">Buscar</button>
-                <button kendoButton themeColor="base" icon="reset"
-                  (click)="formFiltroCursosV3.reset(); cargarCursosV3()">Limpiar</button>
-              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button kendoButton themeColor="primary" icon="search"
+                (click)="aplicarFiltroCursosV3()" [disabled]="loadingCursosV3">Buscar</button>
+              <button kendoButton themeColor="base" icon="reset"
+                (click)="limpiarFiltroCursosV3()">Limpiar</button>
             </div>
           </form>
         </div>
@@ -1033,39 +1043,176 @@
           <div *ngIf="loadingCursosV3" class="loading-state">
             <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
           </div>
-          <kendo-grid *ngIf="!loadingCursosV3" [data]="gridDataCursosV3"
-            [pageable]="{ pageSizes: [10, 20, 50] }" [sortable]="{ mode: 'multiple' }"
-            [filterable]="'menu'" [resizable]="true" [skip]="stateCursosV3.skip"
-            [pageSize]="stateCursosV3.take" [sort]="stateCursosV3.sort"
-            (dataStateChange)="onStateChangeCursosV3($event)" class="grid-dashboard">
-            <kendo-grid-column field="modalidadClasificada" title="Modalidad" [width]="110" [locked]="true">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <span class="badge" [ngClass]="getModalidadClasificadaBadgeClass(dataItem.modalidadClasificada)">
-                  {{ dataItem.modalidadClasificada || '-' }}
-                </span>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="centroCostoPadre" title="C.C. Padre" [width]="180"></kendo-grid-column>
-            <kendo-grid-column field="programaEspecificoPadre" title="Programa Padre" [width]="220"></kendo-grid-column>
-            <kendo-grid-column field="centroCostoHijo" title="C.C. Hijo" [width]="160"></kendo-grid-column>
-            <kendo-grid-column field="curso" title="Curso" [width]="200"></kendo-grid-column>
-            <kendo-grid-column field="estadoSesion" title="Estado" [width]="110">
-              <ng-template kendoGridCellTemplate let-dataItem>
-                <span class="badge" [ngClass]="getEstadoBadgeClass(dataItem.estadoSesion)">
-                  {{ dataItem.estadoSesion || '-' }}
-                </span>
-              </ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="nroSesion" title="Nro" [width]="70"></kendo-grid-column>
-            <kendo-grid-column field="fecha" title="Fecha" [width]="110">
-              <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fecha) }}</ng-template>
-            </kendo-grid-column>
-            <kendo-grid-column field="diaSemana" title="Día" [width]="90"></kendo-grid-column>
-            <kendo-grid-column field="horario" title="Horario" [width]="110"></kendo-grid-column>
-            <kendo-grid-column field="docente" title="Docente" [width]="200"></kendo-grid-column>
-            <kendo-grid-column field="sede" title="Sede" [width]="140"></kendo-grid-column>
-            <kendo-grid-column field="aula" title="Aula" [width]="90"></kendo-grid-column>
-          </kendo-grid>
+          <ng-container *ngIf="!loadingCursosV3">
+
+            <!-- Búsqueda rápida global -->
+            <div class="tv3-searchbar">
+              <div class="tv3-searchbar__field">
+                <i class="k-icon k-i-search"></i>
+                <input #buscaV3 type="text" class="tv3-searchinput"
+                  placeholder="Buscar en todos los campos..."
+                  [value]="filtroTablaV3"
+                  (input)="onFiltroTablaV3(buscaV3.value)">
+                <button *ngIf="filtroTablaV3" class="tv3-clear-btn"
+                  title="Limpiar búsqueda"
+                  (click)="onFiltroTablaV3(''); buscaV3.value = ''">
+                  <i class="k-icon k-i-x"></i>
+                </button>
+              </div>
+              <span class="tv3-searchbar__count">
+                <span class="badge bg-secondary">{{ cursosV3Filtrados.length }}</span>
+                de {{ cursosV3.length }} registros
+              </span>
+            </div>
+
+            <!-- Tabla estilo grilla -->
+            <div class="tv3-wrap">
+              <table class="tv3-table">
+                <thead>
+                  <!-- Encabezados con ordenamiento -->
+                  <tr class="tv3-titles">
+                    <th class="sortable" (click)="ordenarTablaV3('modalidadClasificada')">
+                      Modalidad
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='modalidadClasificada' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('centroCostoPadre')">
+                      C.C. Padre
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='centroCostoPadre' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('programaEspecificoPadre')">
+                      Programa Padre
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='programaEspecificoPadre' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('centroCostoHijo')">
+                      C.C. Hijo
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='centroCostoHijo' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('curso')">
+                      Curso
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='curso' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('estadoSesion')">
+                      Estado
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='estadoSesion' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable text-center" (click)="ordenarTablaV3('nroSesion')">
+                      Nro
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='nroSesion' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('fecha')">
+                      Fecha
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='fecha' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('diaSemana')">
+                      Día
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='diaSemana' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('horario')">
+                      Horario
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='horario' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('docente')">
+                      Docente
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='docente' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('sede')">
+                      Sede
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='sede' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('aula')">
+                      Aula
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='aula' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                    <th class="sortable" (click)="ordenarTablaV3('observacion')">
+                      Observación
+                      <i class="k-icon" [ngClass]="ordenV3Campo==='observacion' ? (ordenV3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                    </th>
+                  </tr>
+                  <!-- Fila de filtros por columna -->
+                  <tr class="tv3-filters">
+                    <th><input #fMod type="text" class="tv3-col-input" [value]="filtroColV3['modalidadClasificada']||''" placeholder="Filtrar..." (input)="onFiltroColV3('modalidadClasificada', fMod.value)"></th>
+                    <th><input #fCCP type="text" class="tv3-col-input" [value]="filtroColV3['centroCostoPadre']||''" placeholder="Filtrar..." (input)="onFiltroColV3('centroCostoPadre', fCCP.value)"></th>
+                    <th><input #fPP  type="text" class="tv3-col-input" [value]="filtroColV3['programaEspecificoPadre']||''" placeholder="Filtrar..." (input)="onFiltroColV3('programaEspecificoPadre', fPP.value)"></th>
+                    <th><input #fCCH type="text" class="tv3-col-input" [value]="filtroColV3['centroCostoHijo']||''" placeholder="Filtrar..." (input)="onFiltroColV3('centroCostoHijo', fCCH.value)"></th>
+                    <th><input #fCur type="text" class="tv3-col-input" [value]="filtroColV3['curso']||''" placeholder="Filtrar..." (input)="onFiltroColV3('curso', fCur.value)"></th>
+                    <th><input #fEst type="text" class="tv3-col-input" [value]="filtroColV3['estadoSesion']||''" placeholder="Filtrar..." (input)="onFiltroColV3('estadoSesion', fEst.value)"></th>
+                    <th></th>
+                    <th></th>
+                    <th><input #fDia type="text" class="tv3-col-input" [value]="filtroColV3['diaSemana']||''" placeholder="Filtrar..." (input)="onFiltroColV3('diaSemana', fDia.value)"></th>
+                    <th><input #fHor type="text" class="tv3-col-input" [value]="filtroColV3['horario']||''" placeholder="Filtrar..." (input)="onFiltroColV3('horario', fHor.value)"></th>
+                    <th><input #fDoc type="text" class="tv3-col-input" [value]="filtroColV3['docente']||''" placeholder="Filtrar..." (input)="onFiltroColV3('docente', fDoc.value)"></th>
+                    <th><input #fSed type="text" class="tv3-col-input" [value]="filtroColV3['sede']||''" placeholder="Filtrar..." (input)="onFiltroColV3('sede', fSed.value)"></th>
+                    <th><input #fAul type="text" class="tv3-col-input" [value]="filtroColV3['aula']||''" placeholder="Filtrar..." (input)="onFiltroColV3('aula', fAul.value)"></th>
+                    <th><input #fObs type="text" class="tv3-col-input" [value]="filtroColV3['observacion']||''" placeholder="Filtrar..." (input)="onFiltroColV3('observacion', fObs.value)"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of cursosV3Paginados; let i = index"
+                    [class.tv3-row--expanded]="expandedRowsV3.has(i)"
+                    (click)="toggleExpandRowV3(i)"
+                    [title]="expandedRowsV3.has(i) ? 'Clic para colapsar' : 'Clic para expandir'">
+                    <td [title]="item.modalidadClasificada || ''">
+                      <span class="badge" [ngClass]="getModalidadClasificadaBadgeClass(item.modalidadClasificada)">
+                        {{ item.modalidadClasificada || '-' }}
+                      </span>
+                    </td>
+                    <td [title]="item.centroCostoPadre || ''">{{ item.centroCostoPadre || '-' }}</td>
+                    <td class="tv3-wrap-cell" [title]="item.programaEspecificoPadre || ''">{{ item.programaEspecificoPadre || '-' }}</td>
+                    <td [title]="item.centroCostoHijo || ''">{{ item.centroCostoHijo || '-' }}</td>
+                    <td class="tv3-wrap-cell" [title]="item.curso || ''">{{ item.curso || '-' }}</td>
+                    <td [title]="item.estadoSesion || ''">
+                      <span class="badge" [ngClass]="getEstadoBadgeClass(item.estadoSesion)">
+                        {{ item.estadoSesion || '-' }}
+                      </span>
+                    </td>
+                    <td class="text-center">{{ item.nroSesion }}</td>
+                    <td [title]="formatearFecha(item.fecha)">{{ formatearFecha(item.fecha) }}</td>
+                    <td [title]="item.diaSemana || ''">{{ item.diaSemana || '-' }}</td>
+                    <td [title]="item.horario || ''">{{ item.horario || '-' }}</td>
+                    <td [title]="item.docente || ''">{{ item.docente || '-' }}</td>
+                    <td [title]="item.sede || ''">{{ item.sede || '-' }}</td>
+                    <td [title]="item.aula || ''">{{ item.aula || '-' }}</td>
+                    <td class="tv3-wrap-cell" [title]="item.observacion || ''">{{ item.observacion || '-' }}</td>
+                  </tr>
+                  <tr *ngIf="!cursosV3Paginados.length">
+                    <td colspan="14" class="tv3-empty">
+                      <i class="k-icon k-i-info-circle"></i> Sin registros para mostrar
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Paginación -->
+            <div class="tv3-pager">
+              <span class="tv3-pager__info">
+                Mostrando {{ (paginaV3-1)*tamPaginaV3+1 }}–{{ minV3(paginaV3*tamPaginaV3, cursosV3Filtrados.length) }}
+                de {{ cursosV3Filtrados.length }} registros
+              </span>
+              <div class="tv3-pager__nav">
+                <button class="tv3-page-btn" [disabled]="paginaV3===1" (click)="irPaginaV3(1)" title="Primera">
+                  <i class="k-icon k-i-arrow-seek-left"></i>
+                </button>
+                <button class="tv3-page-btn" [disabled]="paginaV3===1" (click)="irPaginaV3(paginaV3-1)" title="Anterior">
+                  <i class="k-icon k-i-arrow-chevron-left"></i>
+                </button>
+                <button *ngFor="let p of paginasV3" class="tv3-page-btn" [class.active]="p===paginaV3"
+                  (click)="irPaginaV3(p)">{{ p }}</button>
+                <button class="tv3-page-btn" [disabled]="paginaV3===totalPaginasV3" (click)="irPaginaV3(paginaV3+1)" title="Siguiente">
+                  <i class="k-icon k-i-arrow-chevron-right"></i>
+                </button>
+                <button class="tv3-page-btn" [disabled]="paginaV3===totalPaginasV3" (click)="irPaginaV3(totalPaginasV3)" title="Última">
+                  <i class="k-icon k-i-arrow-seek-right"></i>
+                </button>
+                <select class="tv3-pagesize" (change)="cambiarTamPaginaV3(+$any($event.target).value)">
+                  <option value="10" [selected]="tamPaginaV3===10">10 / pág</option>
+                  <option value="20" [selected]="tamPaginaV3===20">20 / pág</option>
+                  <option value="50" [selected]="tamPaginaV3===50">50 / pág</option>
+                </select>
+              </div>
+            </div>
+
+          </ng-container>
         </div>
       </div>
 
@@ -1426,34 +1573,187 @@
         <div *ngIf="loadingD3" class="loading-state">
           <kendo-loader type="infinite-spinner" size="medium"></kendo-loader>
         </div>
-        <kendo-grid *ngIf="!loadingD3" [data]="gridDataD3"
-          [pageable]="{ pageSizes: [10, 20, 50, 100] }" [pageSize]="stateD3.take"
-          [skip]="stateD3.skip" [filterable]="'menu'" [sortable]="{ mode: 'multiple' }"
-          [resizable]="true" [sort]="stateD3.sort"
-          (dataStateChange)="onStateChangeD3($event)"
-          style="max-height: 600px;" class="grid-dashboard">
-          <kendo-grid-column field="codigo" title="Código" [width]="110"></kendo-grid-column>
-          <kendo-grid-column field="centroCosto" title="Centro de Costo" [width]="200"></kendo-grid-column>
-          <kendo-grid-column field="programa" title="Programa" [width]="220"></kendo-grid-column>
-          <kendo-grid-column field="razonSocial" title="Proveedor" [width]="180"></kendo-grid-column>
-          <kendo-grid-column field="producto" title="Producto" [width]="180"></kendo-grid-column>
-          <kendo-grid-column field="descripcion" title="Descripción" [width]="220"></kendo-grid-column>
-          <kendo-grid-column field="cantidad" title="Cantidad" [width]="90" filter="numeric" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="precioUnitarioMonedaOrigen" title="P.Unit. M.O." [width]="110" filter="numeric" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="precioTotalMonedaOrigen" title="Total M.O." [width]="110" filter="numeric" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="precioTotalDolares" title="Total USD" [width]="100" filter="numeric" format="{0:n2}"></kendo-grid-column>
-          <kendo-grid-column field="faseAprobacion1" title="Estado" [width]="160"></kendo-grid-column>
-          <kendo-grid-column field="monedaPagoReal" title="Moneda Pago" [width]="120"></kendo-grid-column>
-          <kendo-grid-column field="fechaLimite" title="Fecha Límite" [width]="120" filter="date">
-            <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fechaLimite) }}</ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="numeroSemana" title="Semana" [width]="80" filter="numeric"></kendo-grid-column>
-          <kendo-grid-column field="observaciones" title="Observaciones" [width]="200"></kendo-grid-column>
-          <kendo-grid-column field="usuarioCreacion" title="Creado por" [width]="130"></kendo-grid-column>
-          <kendo-grid-column field="fechaCreacion" title="Fecha Creación" [width]="130" filter="date">
-            <ng-template kendoGridCellTemplate let-dataItem>{{ formatearFecha(dataItem.fechaCreacion) }}</ng-template>
-          </kendo-grid-column>
-        </kendo-grid>
+        <ng-container *ngIf="!loadingD3">
+
+          <!-- Búsqueda rápida global -->
+          <div class="tv3-searchbar">
+            <div class="tv3-searchbar__field">
+              <i class="k-icon k-i-search"></i>
+              <input #buscaD3 type="text" class="tv3-searchinput"
+                placeholder="Buscar en todos los campos..."
+                [value]="filtroTablaD3"
+                (input)="onFiltroTablaD3(buscaD3.value)">
+              <button *ngIf="filtroTablaD3" class="tv3-clear-btn"
+                title="Limpiar búsqueda"
+                (click)="onFiltroTablaD3(''); buscaD3.value = ''">
+                <i class="k-icon k-i-x"></i>
+              </button>
+            </div>
+            <span class="tv3-searchbar__count">
+              <span class="badge bg-secondary">{{ fursD3Filtrados.length }}</span>
+              de {{ fursDashboard3.length }} registros
+            </span>
+          </div>
+
+          <!-- Tabla FURs -->
+          <div class="tv3-wrap">
+            <table class="tv3-table fur-table">
+              <thead>
+                <!-- Encabezados con ordenamiento -->
+                <tr class="tv3-titles">
+                  <th class="sortable" style="width:120px" (click)="ordenarTablaD3('codigo')">
+                    Código
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='codigo' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:210px" (click)="ordenarTablaD3('centroCosto')">
+                    Centro de Costo
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='centroCosto' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:240px" (click)="ordenarTablaD3('programa')">
+                    Programa
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='programa' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:200px" (click)="ordenarTablaD3('razonSocial')">
+                    Proveedor
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='razonSocial' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:200px" (click)="ordenarTablaD3('producto')">
+                    Producto
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='producto' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:230px" (click)="ordenarTablaD3('descripcion')">
+                    Descripción
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='descripcion' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable text-end" style="width:110px" (click)="ordenarTablaD3('cantidad')">
+                    Cantidad
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='cantidad' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable text-end" style="width:140px" (click)="ordenarTablaD3('precioUnitarioMonedaOrigen')">
+                    P.Unit. M.O.
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='precioUnitarioMonedaOrigen' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable text-end" style="width:130px" (click)="ordenarTablaD3('precioTotalMonedaOrigen')">
+                    Total M.O.
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='precioTotalMonedaOrigen' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable text-end" style="width:120px" (click)="ordenarTablaD3('precioTotalDolares')">
+                    Total USD
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='precioTotalDolares' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:170px" (click)="ordenarTablaD3('faseAprobacion1')">
+                    Estado
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='faseAprobacion1' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:145px" (click)="ordenarTablaD3('monedaPagoReal')">
+                    Moneda Pago
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='monedaPagoReal' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:135px" (click)="ordenarTablaD3('fechaLimite')">
+                    Fecha Límite
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='fechaLimite' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable text-center" style="width:105px" (click)="ordenarTablaD3('numeroSemana')">
+                    Semana
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='numeroSemana' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:230px" (click)="ordenarTablaD3('observaciones')">
+                    Observaciones
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='observaciones' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:160px" (click)="ordenarTablaD3('usuarioCreacion')">
+                    Creado por
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='usuarioCreacion' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                  <th class="sortable" style="width:150px" (click)="ordenarTablaD3('fechaCreacion')">
+                    Fecha Creación
+                    <i class="k-icon" [ngClass]="ordenD3Campo==='fechaCreacion' ? (ordenD3Dir==='asc' ? 'k-i-sort-asc-sm' : 'k-i-sort-desc-sm') : 'k-i-sort-asc-sm tv3-sort-idle'"></i>
+                  </th>
+                </tr>
+                <!-- Fila de filtros por columna -->
+                <tr class="tv3-filters">
+                  <th><input #fd3Cod type="text" class="tv3-col-input" [value]="filtroColD3['codigo']||''" placeholder="Filtrar..." (input)="onFiltroColD3('codigo', fd3Cod.value)"></th>
+                  <th><input #fd3CC  type="text" class="tv3-col-input" [value]="filtroColD3['centroCosto']||''" placeholder="Filtrar..." (input)="onFiltroColD3('centroCosto', fd3CC.value)"></th>
+                  <th><input #fd3Pro type="text" class="tv3-col-input" [value]="filtroColD3['programa']||''" placeholder="Filtrar..." (input)="onFiltroColD3('programa', fd3Pro.value)"></th>
+                  <th><input #fd3RS  type="text" class="tv3-col-input" [value]="filtroColD3['razonSocial']||''" placeholder="Filtrar..." (input)="onFiltroColD3('razonSocial', fd3RS.value)"></th>
+                  <th><input #fd3Prd type="text" class="tv3-col-input" [value]="filtroColD3['producto']||''" placeholder="Filtrar..." (input)="onFiltroColD3('producto', fd3Prd.value)"></th>
+                  <th><input #fd3Des type="text" class="tv3-col-input" [value]="filtroColD3['descripcion']||''" placeholder="Filtrar..." (input)="onFiltroColD3('descripcion', fd3Des.value)"></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th><input #fd3Est type="text" class="tv3-col-input" [value]="filtroColD3['faseAprobacion1']||''" placeholder="Filtrar..." (input)="onFiltroColD3('faseAprobacion1', fd3Est.value)"></th>
+                  <th><input #fd3Mon type="text" class="tv3-col-input" [value]="filtroColD3['monedaPagoReal']||''" placeholder="Filtrar..." (input)="onFiltroColD3('monedaPagoReal', fd3Mon.value)"></th>
+                  <th></th>
+                  <th><input #fd3Sem type="text" class="tv3-col-input" [value]="filtroColD3['numeroSemana']||''" placeholder="Filtrar..." (input)="onFiltroColD3('numeroSemana', fd3Sem.value)"></th>
+                  <th><input #fd3Obs type="text" class="tv3-col-input" [value]="filtroColD3['observaciones']||''" placeholder="Filtrar..." (input)="onFiltroColD3('observaciones', fd3Obs.value)"></th>
+                  <th><input #fd3Usr type="text" class="tv3-col-input" [value]="filtroColD3['usuarioCreacion']||''" placeholder="Filtrar..." (input)="onFiltroColD3('usuarioCreacion', fd3Usr.value)"></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of fursD3Paginados; let i = index"
+                  [class.tv3-row--expanded]="expandedRowsD3.has(i)"
+                  (click)="toggleExpandRowD3(i)"
+                  [title]="expandedRowsD3.has(i) ? 'Clic para colapsar' : 'Clic para expandir'">
+                  <td [title]="item.codigo || ''">{{ item.codigo || '-' }}</td>
+                  <td class="tv3-wrap-cell" [title]="item.centroCosto || ''">{{ item.centroCosto || '-' }}</td>
+                  <td class="tv3-wrap-cell" [title]="item.programa || ''">{{ item.programa || '-' }}</td>
+                  <td class="tv3-wrap-cell" [title]="item.razonSocial || ''">{{ item.razonSocial || '-' }}</td>
+                  <td class="tv3-wrap-cell" [title]="item.producto || ''">{{ item.producto || '-' }}</td>
+                  <td class="tv3-wrap-cell" [title]="item.descripcion || ''">{{ item.descripcion || '-' }}</td>
+                  <td class="text-end fur-num" [title]="formatearNumero(item.cantidad)">{{ formatearNumero(item.cantidad) }}</td>
+                  <td class="text-end fur-num" [title]="formatearNumero(item.precioUnitarioMonedaOrigen)">{{ formatearNumero(item.precioUnitarioMonedaOrigen) }}</td>
+                  <td class="text-end fur-num" [title]="formatearNumero(item.precioTotalMonedaOrigen)">{{ formatearNumero(item.precioTotalMonedaOrigen) }}</td>
+                  <td class="text-end fur-num" [title]="formatearNumero(item.precioTotalDolares)">{{ formatearNumero(item.precioTotalDolares) }}</td>
+                  <td class="tv3-wrap-cell" [title]="item.faseAprobacion1 || ''">{{ item.faseAprobacion1 || '-' }}</td>
+                  <td [title]="item.monedaPagoReal || ''">{{ item.monedaPagoReal || '-' }}</td>
+                  <td [title]="formatearFecha(item.fechaLimite)">{{ formatearFecha(item.fechaLimite) }}</td>
+                  <td class="text-center" [title]="item.numeroSemana?.toString() || ''">{{ item.numeroSemana ?? '-' }}</td>
+                  <td class="tv3-wrap-cell" [title]="item.observaciones || ''">{{ item.observaciones || '-' }}</td>
+                  <td [title]="item.usuarioCreacion || ''">{{ item.usuarioCreacion || '-' }}</td>
+                  <td [title]="formatearFecha(item.fechaCreacion)">{{ formatearFecha(item.fechaCreacion) }}</td>
+                </tr>
+                <tr *ngIf="!fursD3Paginados.length">
+                  <td colspan="17" class="tv3-empty">
+                    <i class="k-icon k-i-info-circle"></i> Sin registros para mostrar
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paginación -->
+          <div class="tv3-pager">
+            <span class="tv3-pager__info">
+              Mostrando {{ (paginaD3-1)*tamPaginaD3+1 }}–{{ minD3(paginaD3*tamPaginaD3, fursD3Filtrados.length) }}
+              de {{ fursD3Filtrados.length }} registros
+            </span>
+            <div class="tv3-pager__nav">
+              <button class="tv3-page-btn" [disabled]="paginaD3===1" (click)="irPaginaD3(1)" title="Primera">
+                <i class="k-icon k-i-arrow-seek-left"></i>
+              </button>
+              <button class="tv3-page-btn" [disabled]="paginaD3===1" (click)="irPaginaD3(paginaD3-1)" title="Anterior">
+                <i class="k-icon k-i-arrow-chevron-left"></i>
+              </button>
+              <button *ngFor="let p of paginasD3" class="tv3-page-btn" [class.active]="p===paginaD3"
+                (click)="irPaginaD3(p)">{{ p }}</button>
+              <button class="tv3-page-btn" [disabled]="paginaD3===totalPaginasD3" (click)="irPaginaD3(paginaD3+1)" title="Siguiente">
+                <i class="k-icon k-i-arrow-chevron-right"></i>
+              </button>
+              <button class="tv3-page-btn" [disabled]="paginaD3===totalPaginasD3" (click)="irPaginaD3(totalPaginasD3)" title="Última">
+                <i class="k-icon k-i-arrow-seek-right"></i>
+              </button>
+              <select class="tv3-pagesize" (change)="cambiarTamPaginaD3(+$any($event.target).value)">
+                <option value="10"  [selected]="tamPaginaD3===10">10 / pág</option>
+                <option value="20"  [selected]="tamPaginaD3===20">20 / pág</option>
+                <option value="50"  [selected]="tamPaginaD3===50">50 / pág</option>
+                <option value="100" [selected]="tamPaginaD3===100">100 / pág</option>
+              </select>
+            </div>
+          </div>
+
+        </ng-container>
       </div>
     </div>
 
