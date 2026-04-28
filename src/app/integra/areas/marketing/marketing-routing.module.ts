@@ -72,6 +72,11 @@ import { MessengerFacebookChatComponent } from './campania-facebook/messenger-fa
 import { CampaniaRemarketingGeneralComponent } from './campanias-mailing/campania-remarketing-general/campania-remarketing-general.component';
 import { CategoriaArgumentosComponent } from './configuraciones/categoria-argumentos/categoria-argumentos.component';
 import { SeleccionEsquemasComponent } from './configuraciones/seleccion-esquemas/seleccion-esquemas.component';
+import { ResenaFacebookComponent } from './configuraciones/resena-facebook/resena-facebook.component';
+import { ResenaGoogleComponent } from './configuraciones/resena-google/resena-google.component';
+import { ResenaLinkedinComponent } from './configuraciones/resena-linkedin/resena-linkedin.component';
+import { ResenaComputrabajoComponent } from './configuraciones/resena-computrabajo/resena-computrabajo.component';
+import { ResenaGlassdoorComponent } from './configuraciones/resena-glassdoor/resena-glassdoor.component';
 const routes: Routes = [
   {
     path: '',
@@ -325,6 +330,11 @@ const routes: Routes = [
       {path:'CampaniaRemarketingGeneral',component:CampaniaRemarketingGeneralComponent},
       {path:'CategoriaArgumentos', component: CategoriaArgumentosComponent},
       {path:'seleccionEsquemas', component: SeleccionEsquemasComponent},
+      {path:'ResenaFacebook', component: ResenaFacebookComponent},
+      {path:'ResenaGoogle', component: ResenaGoogleComponent},
+      {path:'ResenaLinkedIn', component: ResenaLinkedinComponent},
+      {path:'ResenaComputrabajo', component: ResenaComputrabajoComponent},
+      {path:'ResenaGlassdoor', component: ResenaGlassdoorComponent},
     ],
   },
 ];

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Interfaces para el Dashboard de Programas de Capacitacion
  * Autor: Marco Villanueva Torres
  * Fecha: 2025-04-17
@@ -13,7 +13,6 @@ export interface IReporteDashboardResumen {
   programasFinalizados: number;
   totalDocentes: number;
   docentesActivos: number;
-  totalCoordinadores: number;
   totalSesiones: number;
 }
 
@@ -90,11 +89,16 @@ export interface IReporteDashboardFiltros {
   areas: string[];
   ciudades: string[];
   programasEspecificos: IReporteDashboardProgramaEspecificoItem[];
-  centrosCosto: string[];
+  centrosCosto: IReporteDashboardCentroCostoItem[];
 }
 
 // Item para combo de programas especificos
 export interface IReporteDashboardProgramaEspecificoItem {
+  id: number;
+  nombre: string;
+}
+// Item para combo de centros de costo
+export interface IReporteDashboardCentroCostoItem {
   id: number;
   nombre: string;
 }
@@ -149,9 +153,8 @@ export interface IReporteDashboardFiltroRequest {
   fechaFin?: Date | string;
   area?: string;
   ciudad?: string;
-  programaPadre?: string;
   idProgramaEspecificoPadre?: number;
-  centroCostoPadre?: string;
+  idCentroCostoPadre?: number;
 }
 
 // Datos de sesiones para vista de calendario
@@ -194,7 +197,7 @@ export interface IReporteDashboardSesionDetalle {
   programaEspecifico: string;
   estadoPrograma: string;
   centroCosto: string;
-  idSesion: number;
+  idPEspecificoSesion: number;
   fecha: Date | string;
   diaSemana: string;
   horario: string;
@@ -275,6 +278,7 @@ export interface IReporteDashboardCursoV3 {
   aula: string;
   coordinador: string;
   modalidadClasificada: string;
+  observacion: string;
 }
 
 // Seguimiento de clases por dia de semana (Lunes-Sabado)
@@ -350,7 +354,7 @@ export interface IReporteDashboardSeguimientoDocentePrograma {
 
 // Detalle de sesiones del seguimiento de docente (RS3)
 export interface IReporteDashboardSeguimientoDocenteSesion {
-  idSesion: number;
+  idPEspecificoSesion: number;
   idPEspecifico: number;
   programaGeneral: string;
   programa: string;
@@ -384,31 +388,82 @@ export interface IReporteDashboardSeguimientoDocenteFiltroRequest {
   fechaFin?: Date | string;
 }
 
-// ============================================
-// Dashboard 2: Notas de alumnos por programa
-// ============================================
-
-// Resumen por criterio de evaluacion (RS1 - para grafico)
-export interface IReporteDashboardNotaCriterioResumen {
-  idCriterioEvaluacion: number;
-  criterioEvaluacion: string;
-  conNota: number;
-  sinNota: number;
-  total: number;
+// PEspecifico filtrado por docente (IdProveedor)
+export interface IReporteDashboardPEspecificoPorDocente {
+  id: number;
+  nombre: string;
 }
 
-// Detalle de nota de un alumno por criterio (RS2 - para grilla)
-export interface IReporteDashboardNotaAlumnoDetalle {
+// ── Notas por PEspecifico (Dashboard 2) ─────────────────────────────────────
+
+// Encabezado de columna dinamica (un criterio de evaluacion)
+export interface INotaEvaluacionD2 {
+  id: number;
+  nombre: string;
+  porcentaje: number;
+}
+
+// Nota de un alumno para un criterio especifico
+export interface INotaCriterioValorD2 {
+  idEvaluacion: number;
+  nombreCriterio: string;
+  porcentaje: number;
+  nota: number;
+}
+
+// Fila de alumno con sus notas y promedio final
+export interface INotaAlumnoD2 {
   idMatriculaCabecera: number;
-  nombreAlumno: string;
-  idCriterioEvaluacion: number;
-  criterioEvaluacion: string;
-  nota: string;
-  programaEspecifico: string;
+  codigoMatricula: string;
+  alumno: string;
+  notas: INotaCriterioValorD2[];
+  promedioFinal: number;
 }
 
-// Contenedor con los 2 result sets del SP23
-export interface IReporteDashboardNotasAlumnos {
-  resumen: IReporteDashboardNotaCriterioResumen[];
-  detalle: IReporteDashboardNotaAlumnoDetalle[];
+// Respuesta completa del endpoint
+export interface INotasPorPEspecificoD2 {
+  evaluaciones: INotaEvaluacionD2[];
+  alumnos: INotaAlumnoD2[];
+  esOnline: boolean;
 }
+
+// ── Dashboard 3: FURs ─────────────────────────────────────────────────────────
+export interface IFurDashboard3 {
+  id: number;
+  codigo: string;
+  idCentroCosto?: number;
+  centroCosto: string;
+  programa: string;
+  idCiudad: number;
+  idFurTipoPedido: number;
+  numeroSemana?: number;
+  idProveedor?: number;
+  razonSocial: string;
+  idProducto?: number;
+  producto: string;
+  idProductoPresentacion?: number;
+  productoPresentacion: string;
+  idMoneda_Proveedor?: number;
+  fechaLimite: Date | string;
+  descripcion: string;
+  numeroCuenta: string;
+  cuenta: string;
+  cantidad: number;
+  idFaseAprobacion1: number;
+  faseAprobacion1: string;
+  precioUnitarioMonedaOrigen: number;
+  precioUnitarioDolares: number;
+  precioTotalMonedaOrigen: number;
+  precioTotalDolares: number;
+  usuarioCreacion: string;
+  usuarioModificacion: string;
+  fechaModificacion: Date | string;
+  fechaCreacion: Date | string;
+  observaciones: string;
+  idMonedaPagoReal?: number;
+  idPersonalAreaTrabajo?: number;
+  idCondicionTipoPago?: number;
+  monedaPagoReal: string;
+  idEmpresa?: number;
+}
+
