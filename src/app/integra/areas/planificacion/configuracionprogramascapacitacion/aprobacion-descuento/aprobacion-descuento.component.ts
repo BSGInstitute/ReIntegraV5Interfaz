@@ -60,7 +60,7 @@ export interface ApprovalRequest {
   programaNombre: string;
   descuentoCodigo: string;
   descuentoDescripcion?: string;
-  nivelRequerido: 1 | 2 | 3; // 1: Asesor, 2: Supervisor, 3: Gerencia
+  nivelRequerido: 1 | 2 | 3 | 4; // 1: Asesor, 2: Supervisor, 3: Gerencia, 4: Coordinador
   estado: 'pendiente' | 'aprobado' | 'rechazado';
   fechaSolicitud: string | Date;
   solicitadoPor?: string;
@@ -135,22 +135,22 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
   listaEstados: any[] = [];
   loadingEstados = false;
   
-  // Grupos de estados para el combo
+  // Grupos de estados para el combo (flujo jerárquico Coord → Super → Gerencia)
   gruposEstados = [
-    { 
-      codigo: 'pendiente', 
-      nombre: 'Pendiente', 
-      ids: [1, 6] // Pendiente, Pendiente Aprobacion Gerencia
+    {
+      codigo: 'pendiente',
+      nombre: 'Pendiente',
+      ids: [1, 6, 7] // Pendiente Coord, Pendiente Gerencia, Pendiente Super
     },
-    { 
-      codigo: 'aprobado', 
-      nombre: 'Aprobado', 
-      ids: [2, 4] // Aprobado por Coordinador, Aprobado por Gerencia
+    {
+      codigo: 'aprobado',
+      nombre: 'Aprobado',
+      ids: [2, 4, 8] // Aprobado Coord (nivel 4), Aprobado Gerencia, Aprobado Super (nivel 2)
     },
-    { 
-      codigo: 'rechazado', 
-      nombre: 'Rechazado', 
-      ids: [3, 5] // Rechazado por Coordinador, Rechazado por Gerencia
+    {
+      codigo: 'rechazado',
+      nombre: 'Rechazado',
+      ids: [3, 5, 9] // Rechazado Coord, Rechazado Gerencia, Rechazado Super
     }
   ];
   
@@ -167,32 +167,44 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
       return this.level as 1 | 2 | 3;
     }
     
-    // Si el idPersonal es 213, se muestra como Gerencia (nivel 3)
-    if (this.idPersonal === 213) {
+    // Si el idPersonal pertenece a Gerencia, se muestra como Gerencia (nivel 3)
+    if (this.esGerencia()) {
       return 3;
     }
-    
-    // Determinar nivel basado en el tipo de personal del usuario
+
+    // Si el idPersonal pertenece a Supervisor o Coordinador, es nivel 2
+    if (this.esSupervisor() || this.esCoordinador()) {
+      return 2;
+    }
+
+    // Fallback por tipoPersonal (compatibilidad)
     const tipoPersonal = this.getTipoPersonal();
     if (tipoPersonal === 'Coordinador' || tipoPersonal === 'Jefe') {
-      return 2; // Nivel 2: Supervisor (Jefes/Coordinadores)
+      return 2;
     }
-    
+
     return 3; // Gerencia por defecto
   }
 
   get title(): string {
-    const nivelTexto = this.getNivelTexto(this.userLevel);
-    return `Solicitudes de Aprobación - ${nivelTexto}`;
+    const rol = this.esGerencia()
+      ? 'Gerencia'
+      : this.esSupervisor()
+      ? 'Supervisor'
+      : this.esCoordinador()
+      ? 'Coordinador'
+      : this.getNivelTexto(this.userLevel);
+    return `Solicitudes de Aprobación - ${rol}`;
   }
 
-  getNivelTexto(nivel: 1 | 2 | 3): string {
+  getNivelTexto(nivel: number): string {
     const niveles: { [key: number]: string } = {
       1: 'Asesor',
       2: 'Supervisor',
-      3: 'Gerencia'
+      3: 'Gerencia',
+      4: 'Coordinador'
     };
-    return niveles[nivel] || 'Gerencia';
+    return niveles[nivel] || 'Supervisor';
   }
 
   get pendingCount(): number {
@@ -212,6 +224,27 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
   tipoPersonal: string = '';
   idPersonal: number = 0;
   archivosSeleccionados: File[] = [];
+
+  private readonly idsSupervisores: number[] = [135, 259];
+  private readonly idsCoordinadores: number[] = [4094, 5112, 4765, 6584, 6632];
+  private readonly idsGerencia: number[] = [213, 6589, 5276, 5564];
+
+  private esSupervisor(): boolean {
+    return this.idsSupervisores.includes(this.idPersonal);
+  }
+
+  private esCoordinador(): boolean {
+    return this.idsCoordinadores.includes(this.idPersonal);
+  }
+
+  private esGerencia(): boolean {
+    return this.idsGerencia.includes(this.idPersonal);
+  }
+
+  // Coordinador queda fuera: sus aprobaciones se hacen automáticas desde V6 al crear el descuento.
+  puedeVerTabPendientes(): boolean {
+    return this.esSupervisor() || this.esGerencia();
+  }
   
   // Cronograma
   loadingCronograma = false;
@@ -234,21 +267,13 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnInit(): void {
-    // Obtener datos del personal para determinar el nivel
     this.obtenerDatosPersonal();
-    
-    // Cargar datos de filtros
     this.loadDataInfo();
-    
-    // Configurar tab inicial según el nivel de usuario
-    // Solo Gerencia puede ver la pestaña de Pendientes
-    if (this.idPersonal!== 213) {
-      // Supervisor o Coordinador: mostrar directamente el histórico
+
+    if (!this.puedeVerTabPendientes()) {
       this.selectedTabIndex = 1;
     } else {
-      // Gerencia: mostrar pendientes por defecto
       this.selectedTabIndex = 0;
-      // Cargar pendientes automáticamente cuando se carga el componente
       setTimeout(() => {
         this.cargarPendientes();
       }, 500);
@@ -263,10 +288,8 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
   
   onTabChange(index: number): void {
     this.selectedTabIndex = index;
-    // Solo Gerencia (idPersonal === 213) puede acceder a la pestaña de Pendientes (index 0)
-    if (index === 0 && this.idPersonal === 213) {
-      // Tab Pendientes - solo para Gerencia
-      // Resetear paginación y cargar automáticamente
+    // Solo Supervisor/Gerencia acceden a Pendientes (index 0). Coordinador queda fuera.
+    if (index === 0 && this.puedeVerTabPendientes()) {
       this.numeroPagina = 1;
       this.registrosPorPagina = 10;
       this.cargarPendientes();
@@ -335,21 +358,42 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
     
-    // Validar que si la solicitud es de nivel gerencia (3), solo gerencia puede aprobar/rechazar
-    if ((action === 'approve' || action === 'reject') && request.nivelRequerido === 3 && this.idPersonal !== 213) {
-      this.alertaService.swalFireOptions({
-        icon: 'warning',
-        title: 'Acción no permitida',
-        text: 'Solo Gerencia puede aprobar o rechazar solicitudes de nivel Gerencia.'
-      });
-      return;
+    // Validar que el rol del usuario coincida con la firma pendiente de la solicitud.
+    if (action === 'approve' || action === 'reject') {
+      const rolRequerido = this.obtenerRolRequeridoSegunEstado(request as ApprovalRequest & { estadoOriginal?: number });
+      if (!this.usuarioTieneRol(rolRequerido)) {
+        this.alertaService.swalFireOptions({
+          icon: 'warning',
+          title: 'Acción no permitida',
+          text: `Solo ${rolRequerido} puede aprobar o rechazar esta solicitud en su estado actual.`
+        });
+        return;
+      }
     }
-    
+
     this.selectedRequest = request;
     this.actionType = action;
     this.commentsControl.setValue('');
     this.archivosSeleccionados = [];
     this.openDialog();
+  }
+
+  /**
+   * Determina qué rol puede firmar según el estado actual de la solicitud.
+   */
+  private obtenerRolRequeridoSegunEstado(request: ApprovalRequest & { estadoOriginal?: number }): 'Coordinador' | 'Supervisor' | 'Gerencia' {
+    switch (request.estadoOriginal) {
+      case 7: return 'Supervisor';
+      case 6: return 'Gerencia';
+      case 1:
+      default: return 'Coordinador';
+    }
+  }
+
+  private usuarioTieneRol(rol: 'Coordinador' | 'Supervisor' | 'Gerencia'): boolean {
+    if (rol === 'Gerencia') return this.esGerencia();
+    if (rol === 'Supervisor') return this.esSupervisor();
+    return this.esCoordinador();
   }
 
   verCronograma(request: ApprovalRequest): void {
@@ -436,29 +480,34 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
 
-    // Validar que si la solicitud es de nivel gerencia (3), solo gerencia puede aprobar/rechazar
-    if (this.selectedRequest.nivelRequerido === 3 && this.idPersonal !== 213) {
+    // El endpoint correcto se determina por el ESTADO ACTUAL de la solicitud,
+    // no por el nivel final del descuento.
+    const request = this.selectedRequest as ApprovalRequest & { estadoOriginal?: number };
+    const rolRequerido = this.obtenerRolRequeridoSegunEstado(request);
+
+    if (!this.usuarioTieneRol(rolRequerido)) {
       this.alertaService.swalFireOptions({
         icon: 'error',
         title: 'Acción no permitida',
-        text: 'Solo Gerencia puede aprobar o rechazar solicitudes de nivel Gerencia.'
+        text: `Solo ${rolRequerido} puede aprobar o rechazar esta solicitud en su estado actual.`
       });
       return;
     }
 
-    // Determinar qué método llamar según el nivel de aprobación
-    if (this.selectedRequest.nivelRequerido === 3) {
-      // Nivel Gerencia (3): usar endpoints de Gerencia
-      if (this.actionType === 'approve') {
+    if (this.actionType === 'approve') {
+      if (rolRequerido === 'Gerencia') {
         this.aprobarSolicitudGerencia();
-      } else if (this.actionType === 'reject') {
-        this.rechazarSolicitudGerencia();
-      }
-    } else {
-      // Nivel Asesor/Supervisor/Coordinador (1 o 2): usar endpoints de Coordinador
-      if (this.actionType === 'approve') {
+      } else if (rolRequerido === 'Supervisor') {
+        this.aprobarSolicitudSupervisor();
+      } else {
         this.aprobarSolicitudCoordinador();
-      } else if (this.actionType === 'reject') {
+      }
+    } else if (this.actionType === 'reject') {
+      if (rolRequerido === 'Gerencia') {
+        this.rechazarSolicitudGerencia();
+      } else if (rolRequerido === 'Supervisor') {
+        this.rechazarSolicitudSupervisor();
+      } else {
         this.rechazarSolicitudCoordinador();
       }
     }
@@ -586,54 +635,32 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
+  aprobarSolicitudSupervisor(): void {
+    this.ejecutarAprobacionPrimerNivel(constApiPlanificacion.AprobarSolicitudNivelSupervisor);
+  }
+
+  rechazarSolicitudSupervisor(): void {
+    this.ejecutarRechazoPrimerNivel(constApiPlanificacion.RechazarSolicitudNivelSupervisor);
+  }
+
   aprobarSolicitudCoordinador(): void {
-    if (!this.selectedRequest) return;
+    this.ejecutarAprobacionPrimerNivel(constApiPlanificacion.AprobarSolicitudNivelCoordinador);
+  }
 
-    // Extraer el ID de la solicitud del formato "REQ-{idTipoDescuentoSolicitud}"
-    const idMatch = this.selectedRequest.id.match(/REQ-(\d+)/);
-    if (!idMatch || !idMatch[1]) {
-      this.alertaService.swalFireOptions({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo obtener el ID de la solicitud'
-      });
-      return;
-    }
+  rechazarSolicitudCoordinador(): void {
+    this.ejecutarRechazoPrimerNivel(constApiPlanificacion.RechazarSolicitudNivelCoordinador);
+  }
 
-    const idSolicitud = parseInt(idMatch[1], 10);
+  private ejecutarAprobacionPrimerNivel(endpoint: string): void {
+    const formData = this.construirFormDataRespuesta();
+    if (!formData) return;
 
-    // Crear FormData según el DTO: TipoDescuentoSolicitudRespuestaEntradaDTO
-    const formData = new FormData();
-    formData.append('IdSolicitud', idSolicitud.toString());
-    formData.append('Usuario', this.userService.userData.userName);
-    
-    // ComentarioRespuesta es opcional
-    const comentarioRespuesta = this.commentsControl.value || '';
-    if (comentarioRespuesta) {
-      formData.append('ComentarioRespuesta', comentarioRespuesta);
-    }
-
-    // Agregar archivos si hay alguno seleccionado
-    if (this.archivosSeleccionados && this.archivosSeleccionados.length > 0) {
-      for (let i = 0; i < this.archivosSeleccionados.length; i++) {
-        formData.append('Files', this.archivosSeleccionados[i]);
-      }
-    }
-
-    // Llamar al endpoint de aprobación de coordinador usando insertarFormData2 para FormData
     this.integraService
-      .insertarFormData2(constApiPlanificacion.AprobarSolicitudNivelCoordinador, formData)
+      .insertarFormData2(endpoint, formData)
       .subscribe({
-        next: (resp: any) => {
+        next: () => {
           this.alertaService.mensajeExitoso('Solicitud aprobada correctamente');
-          
-          // Recargar datos del backend
-          if (this.selectedTabIndex === 0) {
-            this.cargarPendientes();
-          } else {
-            this.cargarHistorico();
-          }
-
+          this.recargarListadoActual();
           this.closeDialog();
         },
         error: (error) => {
@@ -647,54 +674,16 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
-  rechazarSolicitudCoordinador(): void {
-    if (!this.selectedRequest) return;
+  private ejecutarRechazoPrimerNivel(endpoint: string): void {
+    const formData = this.construirFormDataRespuesta();
+    if (!formData) return;
 
-    // Extraer el ID de la solicitud del formato "REQ-{idTipoDescuentoSolicitud}"
-    const idMatch = this.selectedRequest.id.match(/REQ-(\d+)/);
-    if (!idMatch || !idMatch[1]) {
-      this.alertaService.swalFireOptions({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo obtener el ID de la solicitud'
-      });
-      return;
-    }
-
-    const idSolicitud = parseInt(idMatch[1], 10);
-
-    // Crear FormData según el DTO: TipoDescuentoSolicitudRespuestaEntradaDTO
-    const formData = new FormData();
-    formData.append('IdSolicitud', idSolicitud.toString());
-    formData.append('Usuario', this.userService.userData.userName);
-    
-    // ComentarioRespuesta es opcional
-    const comentarioRespuesta = this.commentsControl.value || '';
-    if (comentarioRespuesta) {
-      formData.append('ComentarioRespuesta', comentarioRespuesta);
-    }
-
-    // Agregar archivos si hay alguno seleccionado
-    if (this.archivosSeleccionados && this.archivosSeleccionados.length > 0) {
-      for (let i = 0; i < this.archivosSeleccionados.length; i++) {
-        formData.append('Files', this.archivosSeleccionados[i]);
-      }
-    }
-
-    // Llamar al endpoint de rechazo de coordinador usando insertarFormData2 para FormData
     this.integraService
-      .insertarFormData2(constApiPlanificacion.RechazarSolicitudNivelCoordinador, formData)
+      .insertarFormData2(endpoint, formData)
       .subscribe({
-        next: (resp: any) => {
+        next: () => {
           this.alertaService.mensajeExitoso('Solicitud rechazada correctamente');
-          
-          // Recargar datos del backend
-          if (this.selectedTabIndex === 0) {
-            this.cargarPendientes();
-          } else {
-            this.cargarHistorico();
-          }
-
+          this.recargarListadoActual();
           this.closeDialog();
         },
         error: (error) => {
@@ -706,6 +695,46 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
           });
         }
       });
+  }
+
+  private construirFormDataRespuesta(): FormData | null {
+    if (!this.selectedRequest) return null;
+
+    const idMatch = this.selectedRequest.id.match(/REQ-(\d+)/);
+    if (!idMatch || !idMatch[1]) {
+      this.alertaService.swalFireOptions({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo obtener el ID de la solicitud'
+      });
+      return null;
+    }
+
+    const idSolicitud = parseInt(idMatch[1], 10);
+    const formData = new FormData();
+    formData.append('IdSolicitud', idSolicitud.toString());
+    formData.append('Usuario', this.userService.userData.userName);
+
+    const comentarioRespuesta = this.commentsControl.value || '';
+    if (comentarioRespuesta) {
+      formData.append('ComentarioRespuesta', comentarioRespuesta);
+    }
+
+    if (this.archivosSeleccionados && this.archivosSeleccionados.length > 0) {
+      for (let i = 0; i < this.archivosSeleccionados.length; i++) {
+        formData.append('Files', this.archivosSeleccionados[i]);
+      }
+    }
+
+    return formData;
+  }
+
+  private recargarListadoActual(): void {
+    if (this.selectedTabIndex === 0) {
+      this.cargarPendientes();
+    } else {
+      this.cargarHistorico();
+    }
   }
 
   closeDialog(): void {
@@ -849,17 +878,14 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
     this.loadingPendientes = true;
     this.numeroPagina = 1; // Resetear a primera página
     
-    // Determinar el estado pendiente según el rol
+    // Cada rol ve su propia bandeja de Pendientes (flujo jerárquico Coord → Super → Ger)
     let estadoPendiente: number;
-    if (this.idPersonal === 213 || this.userLevel === 3) {
-      // Gerencia: estado 6 (Pendiente Aprobacion Gerencia)
-      estadoPendiente = 6;
-    } else if (this.userLevel === 2) {
-      // Supervisor: estado 1 (Pendiente)
-      estadoPendiente = 1;
+    if (this.esGerencia()) {
+      estadoPendiente = 6; // Pendiente Aprobacion Gerencia
+    } else if (this.esSupervisor()) {
+      estadoPendiente = 7; // Pendiente Aprobacion Supervisor
     } else {
-      // Asesor: estado 1 (Pendiente)
-      estadoPendiente = 1;
+      estadoPendiente = 1; // Pendiente Aprobacion Coordinador (default, incluye Coord y fallback)
     }
     
     // El backend espera IdTipoDescuentoSolicitudEstado como array (List<int>)
@@ -1019,18 +1045,13 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
       return [];
     }
     return items.map(item => {
-      // Mapear el estado al formato esperado según el ID
+      // Mapear el estado al formato esperado según el ID (flujo jerárquico)
       let estado: 'pendiente' | 'aprobado' | 'rechazado' = 'pendiente';
-      // Estados 1 y 6 son pendientes
-      if (item.solicitudEstado === 1 || item.solicitudEstado === 6) {
+      if ([1, 6, 7].includes(item.solicitudEstado)) {
         estado = 'pendiente';
-      } 
-      // Estados 2 y 4 son aprobados
-      else if (item.solicitudEstado === 2 || item.solicitudEstado === 4) {
+      } else if ([2, 4, 8].includes(item.solicitudEstado)) {
         estado = 'aprobado';
-      } 
-      // Estados 3 y 5 son rechazados
-      else if (item.solicitudEstado === 3 || item.solicitudEstado === 5) {
+      } else if ([3, 5, 9].includes(item.solicitudEstado)) {
         estado = 'rechazado';
       }
       
@@ -1040,7 +1061,7 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
         alumnoId: '', // No viene en el DTO
         programaNombre: item.nombrePrograma,
         descuentoCodigo: item.tipoDescuento,
-        nivelRequerido: item.nivelAprobacion as 1 | 2 | 3, // 1: Asesor, 2: Supervisor, 3: Gerencia
+        nivelRequerido: item.nivelAprobacion as 1 | 2 | 3 | 4, // 1: Asesor, 2: Super, 3: Gerencia, 4: Coord
         estado: estado,
         fechaSolicitud: new Date(item.fecha),
         solicitadoPor: item.personalSolicitante || '', // Usuario que creó la solicitud
@@ -1068,12 +1089,15 @@ export class AprobacionDescuentoComponent implements OnInit, AfterViewInit, OnDe
    */
   private getEstadoNombrePorId(id: number): string {
     const estadosMap: { [key: number]: string } = {
-      1: 'Pendiente',
+      1: 'Pendiente Aprobacion Coordinador',
       2: 'Aprobado por Coordinador',
       3: 'Rechazado por Coordinador',
       4: 'Aprobado por Gerencia',
       5: 'Rechazado por Gerencia',
-      6: 'Pendiente Aprobacion Gerencia'
+      6: 'Pendiente Aprobacion Gerencia',
+      7: 'Pendiente Aprobacion Supervisor',
+      8: 'Aprobado por Supervisor',
+      9: 'Rechazado por Supervisor'
     };
     return estadosMap[id] || 'Pendiente';
   }

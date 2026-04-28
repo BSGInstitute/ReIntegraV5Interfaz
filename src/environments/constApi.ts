@@ -425,6 +425,7 @@ export const constApiComercial = {
   CentroCostoObtenerCombo: '/CentroCosto/ObtenerCombo',
   CentroCostoObtenerAutocomplete: '/CentroCosto/ObtenerAutocomplete',
   CentroCostoObtenerAutocompleteV2: '/CentroCosto/ObtenerAutocompleteV2',
+  CentroCostoObtenerAutocompleteV3: '/CentroCosto/ObtenerAutocompleteV3',
   CentroCostoObtenerAutocompleteCentroCosto:
     '/CentroCosto/ObtenerAutocompleteCentroCosto',
   CentroCostoObtenerRecientesAutocomplete:
@@ -2476,7 +2477,7 @@ export const constApiMarketing = {
   CrearCategoriaArgumento: '/CategoriaArgumentos/CrearCategoriaArgumento',
   EditarCategoriaArgumento: '/CategoriaArgumentos/EditarCategoriaArgumento',
   EliminarCategoriaArgumento: '/CategoriaArgumentos/EliminarCategoriaArgumento',
-    
+
   RemarketingEmbudoNivelEsquema: '/RemarketingEmbudoHistorico/ObtenerNivelEsquemaEmbudoRemarketing',
 
   // ── Selección de Esquemas BOT IA ──────────────────────────────────────────
@@ -2497,6 +2498,100 @@ export const constApiMarketing = {
   SeleccionEsquemasMensajeExactoInsertar:     '/MensajeExacto/Insertar',
   SeleccionEsquemasFaseMaximaObtenerLista:    '/EsquemaRespuestas/ObtenerListadoFase',
   SeleccionEsquemasPerfilObtenerLista:        '/EsquemaRespuestas/ObtenerListadoPerfil',
+
+  // ── REVIEWS FACEBOOK ─────────────────────────────────────────────────────────
+  // Módulo : (C) Reviews Facebook | Ruta: Marketing/ResenaFacebook
+  // Ctrl   : ResenaFacebookController
+  // Autor  : Max Mantilla | 13/04/2026
+  FacebookResenaObtenerGrilla:        '/FacebookResena/ObtenerGrilla',         // POST  body: ResenaFacebookGrillaFiltroDTO
+  FacebookResenaObtenerPaginas:       '/FacebookResena/ObtenerPaginas',         // GET   → cards
+  FacebookResenaObtenerCuentasCombo:  '/FacebookResena/ObtenerCuentasCombo',    // GET   → combo filtro
+  FacebookResenaMarcarResenaVisible:  '/FacebookResena/MarcarResenaVisible',    // POST  body: ResenaFacebookMarcarMostrarDTO
+  FacebookResenaMarcarResenaOculta:   '/FacebookResena/MarcarResenaOculta',     // POST  body: ResenaFacebookMarcarMostrarDTO
+  FacebookResenaSincronizar:          '/FacebookResena/SincronizarFacebookApi', // POST  async
+
+  // ── FACEBOOK CONFIGURACION (cuentas/páginas) ─────────────────────────────────
+  // Ctrl   : FacebookConfiguracionController
+  FacebookConfiguracionObtenerTodos:  '/FacebookConfiguracion/ObtenerTodos',     // GET   → lista
+  FacebookConfiguracionInsertar:      '/FacebookConfiguracion/Insertar',         // POST  body: FacebookConfiguracion
+  FacebookConfiguracionActualizar:    '/FacebookConfiguracion/Actualizar',       // PUT   body: FacebookConfiguracion
+  FacebookConfiguracionEliminar:      '/FacebookConfiguracion/Eliminar',         // DELETE /{id}
+
+  // Módulo : (C) Reviews Google | Ruta: Marketing/ResenaGoogle
+  // Ctrl   : ResenaGoogleController
+  // Autor  : Max Mantilla | 15/04/2026
+  GoogleResenaObtenerGrilla:          '/GoogleResena/ObtenerGrilla',             // POST  body: ResenaGoogleGrillaFiltroDTO
+  GoogleResenaObtenerSedes:           '/GoogleResena/ObtenerSedes',              // GET   → cards
+  GoogleResenaObtenerSedesCombo:      '/GoogleResena/ObtenerSedesCombo',         // GET   → combo filtro
+  GoogleResenaMarcarResenaVisible:    '/GoogleResena/MarcarResenaVisible',       // POST  body: ResenaGoogleMarcarMostrarDTO
+  GoogleResenaMarcarResenaOculta:     '/GoogleResena/MarcarResenaOculta',        // POST  body: ResenaGoogleMarcarMostrarDTO
+  GoogleResenaSincronizar:            '/GoogleResena/SincronizarGoogleApi',      // POST  async
+
+  // ── GOOGLE PLACES CONFIGURACION (sedes) ──────────────────────────────────────
+  // Ctrl   : GooglePlacesConfiguracionController
+  GooglePlacesConfiguracionObtenerTodos:  '/GooglePlacesConfiguracion/ObtenerTodos',    // GET
+  GooglePlacesConfiguracionInsertar:      '/GooglePlacesConfiguracion/Insertar',        // POST  body: GooglePlacesConfiguracion
+  GooglePlacesConfiguracionActualizar:    '/GooglePlacesConfiguracion/Actualizar',      // PUT   body: GooglePlacesConfiguracion
+  GooglePlacesConfiguracionEliminar:      '/GooglePlacesConfiguracion/Eliminar',        // DELETE /{id}
+
+  // ── REVIEWS LINKEDIN ──────────────────────────────────────────────────────────
+  // Módulo : (C) Reviews LinkedIn | Ruta: Marketing/ResenaLinkedin
+  // Ctrl   : ResenaLinkedinController
+  // Autor  : Max Mantilla | 16/04/2026
+  LinkedinResenaObtenerGrilla:         '/LinkedinResena/ObtenerGrilla',            // POST  body: ResenaLinkedinGrillaFiltroDTO
+  LinkedinResenaObtenerPaisesCombo:    '/LinkedinResena/ObtenerPaisesCombo',       // GET   → combo filtro
+  LinkedinResenaObtenerCiudadesCombo:  '/LinkedinResena/ObtenerCiudadesCombo',     // GET   → combo filtro (+ /{idPais})
+  LinkedinResenaMarcarResenaVisible:   '/LinkedinResena/MarcarResenaVisible',      // POST  body: ResenaLinkedinMarcarMostrarDTO
+  LinkedinResenaMarcarResenaOculta:    '/LinkedinResena/MarcarResenaOculta',       // POST  body: ResenaLinkedinMarcarMostrarDTO
+  LinkedinResenaInsertar:              '/LinkedinResena/Insertar',                // POST
+  LinkedinResenaActualizar:            '/LinkedinResena/Actualizar',              // PUT
+  LinkedinResenaEliminar:              '/LinkedinResena/Eliminar',                // DELETE /{id}
+  LinkedinResenaEliminarListado:       '/LinkedinResena/EliminarListado',         // DELETE body: [ids]
+
+  // ── LINKEDIN CONFIGURACION (única cuenta) ────────────────────────────────────
+  // Ctrl   : LinkedinConfiguracionController
+  LinkedinConfiguracionObtener:        '/LinkedinConfiguracion/Obtener',          // GET
+  LinkedinConfiguracionInsertar:       '/LinkedinConfiguracion/Insertar',         // POST  body: LinkedinConfiguracion
+  LinkedinConfiguracionActualizar:     '/LinkedinConfiguracion/Actualizar',       // PUT   body: LinkedinConfiguracion
+  LinkedinConfiguracionEliminar:       '/LinkedinConfiguracion/Eliminar',         // DELETE /{id}
+
+  // ── REVIEWS COMPUTRABAJO ──────────────────────────────────────────────────────
+  // Módulo : (C) Reviews Computrabajo | Ruta: Marketing/ResenaComputrabajo
+  // Ctrl   : ResenaComputrabajoController
+  // Autor  : Max Mantilla | 20/04/2026
+  ComputrabajoResenaObtenerGrilla:         '/ComputrabajoResena/ObtenerGrilla',
+  ComputrabajoResenaObtenerPaisesCombo:    '/ComputrabajoResena/ObtenerPaisesCombo',
+  ComputrabajoResenaObtenerCiudadesCombo:  '/ComputrabajoResena/ObtenerCiudadesCombo',
+  ComputrabajoResenaMarcarResenaVisible:   '/ComputrabajoResena/MarcarResenaVisible',
+  ComputrabajoResenaMarcarResenaOculta:    '/ComputrabajoResena/MarcarResenaOculta',
+  ComputrabajoResenaInsertar:              '/ComputrabajoResena/Insertar',
+  ComputrabajoResenaActualizar:            '/ComputrabajoResena/Actualizar',
+  ComputrabajoResenaEliminar:              '/ComputrabajoResena/Eliminar',
+  ComputrabajoResenaEliminarListado:       '/ComputrabajoResena/EliminarListado',
+
+  // ── REVIEWS GLASSDOOR ─────────────────────────────────────────────────────────
+  // Módulo : (C) Reviews Glassdoor | Ruta: Marketing/ResenaGlassdoor
+  // Ctrl   : ResenaGlassdoorController
+  // Autor  : Max Mantilla | 20/04/2026
+  GlassdoorResenaObtenerGrilla:         '/GlassdoorResena/ObtenerGrilla',
+  GlassdoorResenaObtenerPaisesCombo:    '/GlassdoorResena/ObtenerPaisesCombo',
+  GlassdoorResenaObtenerCiudadesCombo:  '/GlassdoorResena/ObtenerCiudadesCombo',
+  GlassdoorResenaMarcarResenaVisible:   '/GlassdoorResena/MarcarResenaVisible',
+  GlassdoorResenaMarcarResenaOculta:    '/GlassdoorResena/MarcarResenaOculta',
+  GlassdoorResenaInsertar:              '/GlassdoorResena/Insertar',
+  GlassdoorResenaActualizar:            '/GlassdoorResena/Actualizar',
+  GlassdoorResenaEliminar:              '/GlassdoorResena/Eliminar',
+  GlassdoorResenaEliminarListado:       '/GlassdoorResena/EliminarListado',
+
+  // ── CONFIG CUENTAS EMPLEADOR ─────────────────────────────────────────────────
+  ComputrabajoConfiguracionObtener:     '/ComputrabajoConfiguracion/Obtener',    // GET
+  ComputrabajoConfiguracionInsertar:    '/ComputrabajoConfiguracion/Insertar',   // POST
+  ComputrabajoConfiguracionActualizar:  '/ComputrabajoConfiguracion/Actualizar', // PUT
+  ComputrabajoConfiguracionEliminar:    '/ComputrabajoConfiguracion/Eliminar',   // DELETE /{id}
+  GlassdoorConfiguracionObtener:        '/GlassdoorConfiguracion/Obtener',       // GET
+  GlassdoorConfiguracionInsertar:       '/GlassdoorConfiguracion/Insertar',      // POST
+  GlassdoorConfiguracionActualizar:     '/GlassdoorConfiguracion/Actualizar',    // PUT
+  GlassdoorConfiguracionEliminar:       '/GlassdoorConfiguracion/Eliminar',      // DELETE /{id}
 
 };
 
@@ -2776,7 +2871,7 @@ export const constApiGestionPersonal = {
   InsertarTipoFormacion: '/TipoFormacion/Insertar',
   ActualizarTipoFormacion: '/TipoFormacion/Actualizar',
   EliminarTipoFormacion: '/TipoFormacion/Eliminar',
-  
+
 
    //Maestro Estado Curso
   ObtenerEstadoCurso: '/PEspecificoSesionEstado/Obtener',
@@ -3256,6 +3351,8 @@ export const constApiPlanificacion = {
   ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes',
   AprobarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudGerencia', //POST
   RechazarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudGerencia', //POST
+  AprobarSolicitudNivelSupervisor: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudSupervisor', //POST
+  RechazarSolicitudNivelSupervisor: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudSupervisor', //POST
   AprobarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudCoordinador', //POST
   RechazarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudCoordinador', //POST
   //Asociar Feedback Programas
@@ -4127,10 +4224,42 @@ export const constApiPlanificacion = {
   DocumentoPwObtenerDocumentoPWDuracion: '/DocumentoPw/ObtenerDocumentoPWDuracion',
   DocumentoPwObtenerDocumentoPWFechaInicio: '/DocumentoPw/ObtenerDocumentoPWFechaInicio',
   DocumentoPwObtenerDocumentoPWNotas: '/DocumentoPw/ObtenerDocumentoPWNotas',
-  
-  
+
+
   PEspecificoSesionActualizarEstadoCurso: '/PEspecificoSesionEstado/ActualizarEstadoCurso',
-  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion'
+  PEspecificoSesionActualizarEstadoObservacion: '/PEspecificoSesionEstado/ActualizarEstadoObservacion',
+
+  // ReporteDashboard - Dashboard de Programas de Capacitacion
+  ReporteDashboardObtenerResumen: '/ReporteDashboard/ObtenerResumen',
+  ReporteDashboardObtenerResumenPorEstado: '/ReporteDashboard/ObtenerResumenPorEstado',
+  ReporteDashboardObtenerResumenPorModalidad: '/ReporteDashboard/ObtenerResumenPorModalidad',
+  ReporteDashboardObtenerProgramasPorEstado: '/ReporteDashboard/ObtenerProgramasPorEstado',
+  ReporteDashboardObtenerDetalleCursos: '/ReporteDashboard/ObtenerDetalleCursos',
+  ReporteDashboardObtenerDocentesAsignados: '/ReporteDashboard/ObtenerDocentesAsignados',
+  ReporteDashboardObtenerGraficoPorMes: '/ReporteDashboard/ObtenerGraficoPorMes',
+  ReporteDashboardObtenerFiltros: '/ReporteDashboard/ObtenerFiltros',
+  ReporteDashboardObtenerDatosCompletos: '/ReporteDashboard/ObtenerDatosCompletos',
+  ReporteDashboardObtenerResumenSemanal: '/ReporteDashboard/ObtenerResumenSemanal',
+  ReporteDashboardObtenerSesionesCalendario: '/ReporteDashboard/ObtenerSesionesCalendario',
+  // Estados de Sesion
+  ReporteDashboardObtenerResumenPorEstadoSesion: '/ReporteDashboard/ObtenerResumenPorEstadoSesion',
+  ReporteDashboardObtenerSesionesPorEstado: '/ReporteDashboard/ObtenerSesionesPorEstado',
+  ReporteDashboardObtenerEvolucionEstadoSesion: '/ReporteDashboard/ObtenerEvolucionEstadoSesion',
+  ReporteDashboardObtenerKPIsEstadoSesion: '/ReporteDashboard/ObtenerKPIsEstadoSesion',
+
+  // Nuevas funciones ampliadas
+  ReporteDashboardObtenerCambiosEstado: '/ReporteDashboard/ObtenerCambiosEstado',
+  ReporteDashboardObtenerEstadosPorDia: '/ReporteDashboard/ObtenerEstadosPorDia',
+  ReporteDashboardObtenerDetalleCursosV3: '/ReporteDashboard/ObtenerDetalleCursosV3',
+  ReporteDashboardObtenerSeguimientoClases: '/ReporteDashboard/ObtenerSeguimientoClases',
+
+  // Dashboard 2: Seguimiento por Docente
+  ReporteDashboardObtenerDocentesFiltro: '/ReporteDashboard/ObtenerDocentesFiltro',
+  ReporteDashboardObtenerPEspecificoFiltro: '/ReporteDashboard/ObtenerPEspecificoFiltro',
+  ReporteDashboardObtenerPEspecificoPorDocente: '/ReporteDashboard/ObtenerPEspecificoPorDocente',
+  ReporteDashboardObtenerSeguimientoDocente: '/ReporteDashboard/ObtenerSeguimientoDocente',
+  ReporteDashboardObtenerNotasPorPEspecifico: '/ReporteDashboard/ObtenerNotasPorPEspecifico',
+  ReporteDashboardObtenerFursDashboard3: '/ReporteDashboard/ObtenerFursDashboard3'
 
 };
 

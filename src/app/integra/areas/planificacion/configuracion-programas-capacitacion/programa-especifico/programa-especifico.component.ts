@@ -465,7 +465,8 @@ export class ProgramaEspecificoComponent implements OnInit {
               modalRef.componentInstance.datosFormGeneracionAutomatica =
                 datosForm;
               modalRef.componentInstance.centroCostoGenerado = resp.body;
-            
+              modalRef.componentInstance.limiteGruposAlcanzado = resp.body.haAlcanzadoLimiteGrupos;
+
             }
           },
           error: (error) => {
@@ -586,7 +587,7 @@ export class ProgramaEspecificoComponent implements OnInit {
       this.loadingCcAutocomplete = true;
       this._integraService
         .postJsonResponse(
-          `${constApiComercial.CentroCostoObtenerAutocompleteV2}`,
+          `${constApiComercial.CentroCostoObtenerAutocompleteV3}`,
           JSON.stringify({ valor: event })
         )
         .subscribe({
