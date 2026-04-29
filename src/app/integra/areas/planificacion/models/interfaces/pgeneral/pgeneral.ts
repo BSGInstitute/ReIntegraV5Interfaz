@@ -325,6 +325,7 @@ export interface PgeneralVersionPrograma {
   creditoDisponibleTutorVirtual: number;
   cantidadWebinarAsignado: number;
   cantidadMesAccesoAdicionalWebinar: number;
+  gruposAsignados: number;
 }
 
 export interface PgeneralProyectoAplicacion {
