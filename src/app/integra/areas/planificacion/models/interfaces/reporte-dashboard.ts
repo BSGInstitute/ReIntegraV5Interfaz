@@ -278,6 +278,7 @@ export interface IReporteDashboardCursoV3 {
   aula: string;
   coordinador: string;
   modalidadClasificada: string;
+  observacion: string;
 }
 
 // Seguimiento de clases por dia de semana (Lunes-Sabado)

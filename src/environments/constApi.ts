@@ -2438,6 +2438,10 @@ export const constApiMarketing = {
     '/MessengerFacebookChat/EnviarMensajeTexto',
   ObtenerDatosGeneralesAlumnosPorPSID:
     '/MessengerFacebookChat/ObtenerDatosGeneralesAlumnosPorPSID',
+  CapturarRegistrosMessengerIA:
+    '/MessengerFacebookChat/CapturarRegistrosMessengerIA',
+  DesactivarInteraccionAutomaticaMessenger:
+    '/MessengerFacebookChat/DesactivarInteraccionAutomaticaMessenger',
 
     // CAMPAÑA REMARKETING GENERAL
   ObtenerListadoRemarketingGeneral: '/CampaniaRemarketingGeneral/ObtenerListadoCampania',
@@ -3347,6 +3351,8 @@ export const constApiPlanificacion = {
   ListarSolicitudesAprobacionDescuento: '/SolicitudNivelAprobacionDescuento/ListarSolicitudes',
   AprobarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudGerencia', //POST
   RechazarSolicitudNivelGerencia: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudGerencia', //POST
+  AprobarSolicitudNivelSupervisor: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudSupervisor', //POST
+  RechazarSolicitudNivelSupervisor: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudSupervisor', //POST
   AprobarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/AprobarSolicitudCoordinador', //POST
   RechazarSolicitudNivelCoordinador: '/SolicitudNivelAprobacionDescuento/RechazarSolicitudCoordinador', //POST
   //Asociar Feedback Programas

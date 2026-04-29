@@ -18,6 +18,9 @@ import {
 } from '@marketing/models/interfaces/messenger-facebook-chat';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
+import Swal from 'sweetalert2';
+import { HttpResponse } from '@angular/common/http';
+
 @Component({
   selector: 'app-messenger-facebook-chat-modal',
   templateUrl: './messenger-facebook-chat-modal.component.html',
@@ -170,4 +173,67 @@ export class MessengerFacebookChatModalComponent
       this.panelOpenIndex = null;
     }
   }
+
+  // Capturar Registros IA
+  abrirModalFlag: boolean = false;
+
+  emitirCapturarRegistrosIA() {
+    this.abrirModalFlag = true;
+    setTimeout(() => {
+      this.abrirModalFlag = false;
+    }, 100);
+  }
+
+  abrirModalFlagAlumnoIdx: number = -1;
+
+  emitirCapturarRegistrosIAParaAlumno(idx: number): void {
+    this.abrirModalFlagAlumnoIdx = idx;
+    setTimeout(() => {
+      this.abrirModalFlagAlumnoIdx = -1;
+    }, 100);
+  }
+
+  desactivarInteraccionIA(idAlumno: number) {
+      Swal.fire({
+        title:
+          '¿Desea desactivar la interacción automática del Asistente Whatsapp?',
+        icon: 'warning',
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Desactivar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.loaderdetalleAlumnosPorPSID = true;
+  
+            this.integraService
+              .postJsonResponse(
+                `${constApiMarketing.DesactivarInteraccionAutomaticaMessenger}/${this.identificadorAmbitoPagina}/${idAlumno}`,
+                null
+              )
+              .subscribe({
+                next: (response: HttpResponse<any>) => {
+                  Swal.fire({
+                    title: response.body.descripcion,
+                    icon: 'success',
+                  });
+                  this.loaderdetalleAlumnosPorPSID = false;
+                  console.log(response);
+                },
+                error: (error) => {
+                  this.loaderdetalleAlumnosPorPSID = false;
+                  console.error(
+                    'Error al desactivar la interacipon automática:',
+                    error
+                  );
+                  Swal.fire({
+                    title: 'Error al desactivar la interacipon automática',
+                    icon: 'error',
+                  });
+                },
+              });
+          
+        }
+      });
+    }
 }
