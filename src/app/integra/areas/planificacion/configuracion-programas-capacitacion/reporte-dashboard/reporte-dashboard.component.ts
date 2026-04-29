@@ -844,27 +844,29 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    * Procesa los datos para el grafico de resumen semanal
    */
   procesarDatosSemanal(datos: IReporteDashboardSemanal[]): void {
-    this.categoriasSemanas = datos.map(d => `S${d.semana}`);
+    const sorted = [...datos].sort((a, b) => a.semana - b.semana);
+    this.datosSemanal = sorted;
+    this.categoriasSemanas = sorted.map(d => `S${d.semana}`);
 
     this.seriesSemanal = [
       {
         name: 'Pendientes',
-        data: datos.map(d => d.sesionesPendientes),
+        data: sorted.map(d => d.sesionesPendientes),
         color: this.coloresSemanal['Pendientes']
       },
       {
         name: 'Realizadas',
-        data: datos.map(d => d.sesionesRealizadas),
+        data: sorted.map(d => d.sesionesRealizadas),
         color: this.coloresSemanal['Realizadas']
       },
       {
         name: 'Canceladas',
-        data: datos.map(d => d.sesionesCanceladas),
+        data: sorted.map(d => d.sesionesCanceladas),
         color: this.coloresSemanal['Canceladas']
       },
       {
         name: 'Reprogramadas',
-        data: datos.map(d => d.sesionesReprogramadas),
+        data: sorted.map(d => d.sesionesReprogramadas),
         color: this.coloresSemanal['Reprogramadas']
       }
     ];
