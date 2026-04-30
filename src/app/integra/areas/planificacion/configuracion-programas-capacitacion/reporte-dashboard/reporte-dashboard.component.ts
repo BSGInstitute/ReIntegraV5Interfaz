@@ -662,6 +662,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
         this.loading = false;
         this.cargarProgramas();
+        this.cargarCursos();
         this.cargarDocentes();
         this.cargarResumenSemanal();
         this.cargarEstadosSesion();
@@ -1080,9 +1081,6 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    */
   onTabChange(tab: string): void {
     this.activeTab = tab;
-    if (tab === 'cursos' && this.cursos.length === 0) {
-      this.cargarCursos();
-    }
   }
 
   /**
