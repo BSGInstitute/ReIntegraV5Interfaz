@@ -153,6 +153,9 @@ export class AsignacionDeDatosComponent implements OnInit {
   isActive: boolean = true;
 
   loaderModal: boolean = false;
+  openedAsignacionPaisAsesor: boolean = false;
+  asignacionPaisAsesor: string = '';
+  selectedAsesorId: number = null;
   createFormGroup(args: CreateFormGroupArgs): FormGroup {
     return this.formCrearSectorMarkeitng;
   }
@@ -2181,7 +2184,56 @@ AbrirModalAsiganacionDatos(isNew: boolean, OrigenSector: ObtenerOrigenSector) {
   });
 }
 
+  // Modal y guardado de Asignacion Pais Asesor
+  abrirModalModificarAsignacionPaisAsesor(id: number): void {
+    this.selectedAsesorId = id;
+    this.asignacionPaisAsesor = '';
+    this.loaderModal = true;
+    this.integraService
+      .getJsonResponse(`${constApiMarketing.ObtenerAsignacionPaisAsesor}/${id}`)
+      .subscribe({
+        next: (response: HttpResponse<any>) => {
+          this.asignacionPaisAsesor = response.body.asignacionPais;
+        },
+        error: (error) => {
+          this.loaderModal = false;
+          this.alertaService.notificationError(error.error);
+        },
+        complete: () => {
+          this.loaderModal = false;
+          this.openedAsignacionPaisAsesor = true;
+        },
+      });
+  }
 
+  cerrarModalModificarAsignacionPaisAsesor(): void {
+    this.openedAsignacionPaisAsesor = false;
+    this.asignacionPaisAsesor = '';
+    this.selectedAsesorId = null;
+  }
+
+  actualizarAsignacionPaisAsesor() {
+    const jsonRequest = {
+      idAsignacionRegular: this.selectedAsesorId,
+      asignacionPais: this.asignacionPaisAsesor
+    }
+
+    this.loaderModal = true;
+    this.integraService.postJsonResponse(
+        constApiMarketing.ActualizarAsignacionPaisAsesor, jsonRequest
+      )
+      .subscribe({
+        next: () => {
+          this.alertaService.mensajeExitoso('Asignación de país actualizada correctamente');
+        },
+        error: (error) => {
+          this.loaderModal = false;
+          this.alertaService.notificationError('Ocurrio un problema al actualizar la asignación de pais');
+        },
+        complete: () => {
+          this.loaderModal = false;
+          this.cerrarModalModificarAsignacionPaisAsesor();
+        },
+      });
+  }
 }
-
-//ListaBloqueProgramasOtrasAreasBusqueda
