@@ -169,6 +169,8 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
       this.nombrePersonal = this.usuario.nombreCompleto;
     }
 
+    this.obtenerCombos();
+
     if (this.data[1] == false) {
       this.idPersonal = this.data[0].idPersonal;
       this.celularAlumno = this.data[0].celular;
@@ -179,7 +181,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
         this.idAlumno = this.data[0].idAlumno;
       }
       this.obtenerChat();
-      this.obtenerCombos();
     }
     if (this.data[1] == true) {
       this.loaderMensajes = true;
@@ -342,6 +343,8 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
       .subscribe({
         next: (response: HttpResponse<any>) => {
           this.datosAlumno = response.body;
+          this.grilla = response.body.historialAlumno;
+          this.loader = false;
 
           if (
             this.datosAlumno != undefined ||
@@ -606,7 +609,6 @@ export class WhatsappFacebookOportunidadComponent implements OnInit {
     console.log(id);
     this.idAlumnoInput = id.idAlumno;
     this.idAlumnoExpansion = id.idAlumno;
-    this.obtenerGrilla();
     this.ObtenerDatosAlumnoWhatsApp();
     this.obtenerAsesor();
   }

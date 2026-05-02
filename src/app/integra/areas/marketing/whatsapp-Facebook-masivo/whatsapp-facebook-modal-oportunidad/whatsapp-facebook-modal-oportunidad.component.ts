@@ -794,14 +794,19 @@ export class WhatsappFacebookModalOportunidadComponent
     const valorSeleccionado =
       this.formExtraccionRegistros.value.rangoExtraccion;
 
-    let jsonRequest = {
-      rango: valorSeleccionado,
-      celularAlumno: this.celularAlumno,
-    };
+    const esMessenger = !!this.identificadorAmbitoPagina;
+
+    const jsonRequest = esMessenger
+      ? { rango: valorSeleccionado, identificadorAmbitoPagina: this.identificadorAmbitoPagina }
+      : { rango: valorSeleccionado, celularAlumno: this.celularAlumno };
+
+    const endpoint = esMessenger
+      ? constApiMarketing.CapturarRegistrosMessengerIA
+      : constApiMarketing.CapturarRegistrosModeloIA;
 
     this.integraService
       .postJsonResponse(
-        constApiMarketing.CapturarRegistrosModeloIA,
+        endpoint,
         jsonRequest
       )
       .subscribe({

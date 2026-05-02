@@ -48,6 +48,7 @@ const FORMULA_CATALOG: Record<number, { name: string; visibleFields: string[] }>
   4: { name: 'Ambos', visibleFields: ['porcentajeMatricula', 'fraccionesMatricula', 'porcentajeCuotas', 'cuotasAdicionales'] },
   5: { name: 'General', visibleFields: ['porcentajeGeneral'] },
   6: { name: 'Contado Normal', visibleFields: [] },
+  7: { name: 'General sin Matricula', visibleFields: ['porcentajeGeneral', 'fraccionesMatricula', 'cuotasAdicionales'] },
 };
 
 const APLICA_A_OPTIONS = [
