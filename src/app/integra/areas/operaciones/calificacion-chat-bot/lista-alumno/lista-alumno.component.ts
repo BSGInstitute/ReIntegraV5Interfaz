@@ -186,6 +186,11 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  onSearchFieldChange(): void {
+    this.searchTerm = '';
+    this.applyFilters();
+  }
+
   onTabChange(index: number): void {
     this.selectedTabIndex = index;
     this.searchTerm = '';

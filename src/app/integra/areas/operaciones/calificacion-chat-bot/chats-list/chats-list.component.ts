@@ -59,9 +59,15 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
   ngOnInit(): void {
     if (this.tipoOrigen === TipoOrigen.SEGMENTO) {
       this.loadHilosSegmento();
-    } else if (this.tipoOrigen === TipoOrigen.ALUMNO && this.fechaCorte) {
-      this.fechaRangoInicio = this.fechaCorte;
-      this.fechaRangoFin    = this.fechaFinInput;
+    } else if (this.tipoOrigen === TipoOrigen.ALUMNO) {
+      if (this.fechaCorte) {
+        this.fechaRangoInicio = this.fechaCorte;
+        this.fechaRangoFin    = this.fechaFinInput;
+      } else {
+        // Sin fechas (búsqueda por matrícula) → default: último mes → hoy
+        this.fechaRangoInicio = this.getDefaultFechaInicio();
+        this.fechaRangoFin    = new Date();
+      }
       this.loadHilosAlumno();
     }
   }
@@ -80,7 +86,14 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
       this.resetEstado();
       if (this.tipoOrigen === TipoOrigen.SEGMENTO) {
         this.loadHilosSegmento();
-      } else if (this.tipoOrigen === TipoOrigen.ALUMNO && this.fechaCorte) {
+      } else if (this.tipoOrigen === TipoOrigen.ALUMNO) {
+        if (this.fechaCorte) {
+          this.fechaRangoInicio = this.fechaCorte;
+          this.fechaRangoFin    = this.fechaFinInput;
+        } else {
+          this.fechaRangoInicio = this.getDefaultFechaInicio();
+          this.fechaRangoFin    = new Date();
+        }
         this.loadHilosAlumno();
       }
     }
@@ -164,6 +177,12 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
 
   private endOfDay(fecha: Date): Date {
     return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59);
+  }
+
+  private getDefaultFechaInicio(): Date {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 1);
+    return d;
   }
 
   // ============================================================================

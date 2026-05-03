@@ -14,7 +14,6 @@ import {
   VersionFormularioDTO,
   TipoEntradaDTO,
   InsertarRespuestaEvaluacionCompletaRequestDTO,
-  InsertarRespuestaEvaluacionCompletaWhatsappRequestDTO,
   RespuestaSeleccionadaDTO,
   RespuestaTextoDTO,
   ProblemaIdentificadoDTO,
@@ -304,9 +303,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
     this.isSubmitting = true;
     const evaluacion = this.buildEvaluacion();
 
-    const save$ = this.esWhatsApp()
-      ? this.chatService.insertarEvaluacionCompletaWhatsapp$(evaluacion)
-      : this.chatService.insertarEvaluacionCompleta$(evaluacion);
+    const save$ = this.chatService.insertarEvaluacionCompleta$(evaluacion);
 
     save$.pipe(
         takeUntil(this.destroy$),
@@ -329,7 +326,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
    * Solo se envía el idSolicitudProblema (ID del problema seleccionado en pregunta 13)
    * Principio: SRP - Construcción del DTO
    */
-  private buildEvaluacion(): InsertarRespuestaEvaluacionCompletaRequestDTO | InsertarRespuestaEvaluacionCompletaWhatsappRequestDTO {
+  private buildEvaluacion(): InsertarRespuestaEvaluacionCompletaRequestDTO {
     const formValue = this.evaluationForm.value;
     const respuestasSeleccionadas: RespuestaSeleccionadaDTO[] = [];
     const respuestasTexto: RespuestaTextoDTO[] = [];
@@ -414,17 +411,8 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
       problemasIdentificados
     };
 
-    if (this.esWhatsApp()) {
-      return {
-        ...basePayload,
-        idMedioComunicacion: this.idOrigen,
-        idOriginal: this.idHilo
-      } as InsertarRespuestaEvaluacionCompletaWhatsappRequestDTO;
-    }
-
     return {
       ...basePayload,
-      idChatbotPortalHiloChat: this.idHilo,
       idMedioComunicacion: this.idOrigen,
       idOriginal: this.idHilo
     } as InsertarRespuestaEvaluacionCompletaRequestDTO;

@@ -315,8 +315,13 @@ export class ChatService extends IntegraService {
     pageSize:    number,
     fechaFin?:   Date | null
   ): Observable<HttpResponse<PagedResponse<HiloChatPaginadoDTO>>> {
-    const payload: Record<string, unknown> = { idAlumno, fechaInicio, pageNumber, pageSize };
-    if (fechaFin) payload['fechaFin'] = fechaFin;
+    const payload: Record<string, unknown> = {
+      idAlumno,
+      fechaInicio,
+      fechaFin: fechaFin ?? new Date(),
+      pageNumber,
+      pageSize
+    };
     return this.postJsonResponse(
       constApiOperaciones.ObtenerHilosPaginadosPorAlumno,
       JSON.stringify(payload)
