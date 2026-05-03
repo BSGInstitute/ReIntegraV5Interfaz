@@ -1326,6 +1326,7 @@ export const constApiOperaciones = {
 ObtenerHilosChatConAlumnos: "/ChatDetalleIntegra/ObtenerHilosChatConAlumnos",
 ObtenerHilosChatPorSegmento: "/ChatDetalleIntegra/ObtenerHilosChatPorSegmento",
 ObtenerChatBotPorAlumno: "/ChatDetalleIntegra/ObtenerChatBotPorAlumno",
+ObtenerChatBotWhatsAppAtcPorAlumno: "/ChatDetalleIntegra/ObtenerChatBotWhatsAppAtcPorAlumno",
 ObtenerChatBotPorPortalSegmento: "/ChatDetalleIntegra/ObtenerChatBotPorPortalSegmento",
 InsertarRespuestaEvaluacionCompleta: "/ChatDetalleIntegra/InsertarRespuestaEvaluacionCompleta",
 ObtenerTiposEntradaActivos: "/ChatDetalleIntegra/ObtenerTiposEntradaActivos",
@@ -1335,6 +1336,10 @@ ObtenerRespuestasPorVersionFormulario: "/ChatDetalleIntegra/ObtenerRespuestasPor
 ObtenerRespuestasPorPregunta: "/ChatDetalleIntegra/ObtenerRespuestasPorPregunta",
 ObtenerPreguntasPorVersionFormulario: "/ChatDetalleIntegra/ObtenerPreguntasPorVersionFormulario",
 ObtenerRespuestasUsuarioPorFormularioAplicado: "/ChatDetalleIntegra/ObtenerRespuestasUsuarioPorFormularioAplicado",
+InsertarRespuestaEvaluacionCompletaWhatsapp: "/ChatDetalleIntegra/InsertarRespuestaEvaluacionCompletaWhatsapp",
+ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp: "/ChatDetalleIntegra/ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp",
+ObtenerHilosPaginadosPorAlumno: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorAlumno",
+ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
   };
 
 export const constApiMarketing = {

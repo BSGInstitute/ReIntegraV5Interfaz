@@ -1,18 +1,20 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil, finalize } from 'rxjs/operators';
+import { takeUntil, finalize, map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { ChatService } from '../services/chat.service';
 import { UserService } from '@shared/services/user.service';
 import { IntegraService } from '@shared/services/integra.service';
 import { constApiOperaciones } from 'src/environments/constApi';
-import { 
-  Chat, 
+import {
+  Chat,
   PreguntaEvaluacion2DTO,
   VersionFormularioDTO,
   TipoEntradaDTO,
   InsertarRespuestaEvaluacionCompletaRequestDTO,
+  InsertarRespuestaEvaluacionCompletaWhatsappRequestDTO,
   RespuestaSeleccionadaDTO,
   RespuestaTextoDTO,
   ProblemaIdentificadoDTO,
@@ -29,6 +31,8 @@ import {
 export class EvaluationFormComponent implements OnInit, OnDestroy {
   @Input() chat: any;
   @Input() idHilo!: number;
+  @Input() idOrigen: number = 1;
+  @Input() origen: string = 'Portal Web';
   @Output() backToChats = new EventEmitter<void>();
   @Output() evaluationSubmitted = new EventEmitter<void>();
 
@@ -39,13 +43,15 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
   versionSeleccionada: VersionFormularioDTO | null = null;
   preguntas: PreguntaEvaluacion2DTO[] = [];
   respuestasExistentes: RespuestaUsuarioPorFormularioAplicadoDTO[] = [];
-  
-  esFormularioYaCalificado = false;  // Indica si el hilo ya fue calificado
+
+  esFormularioYaCalificado = false;
   fechaCalificacion: Date | null = null;
 
   readonly TipoEntrada = TipoEntrada;
   readonly tipoEntradaLabels = TIPO_ENTRADA_LABELS;
-  readonly ID_VERSION_FORMULARIO = 1; // Versión para chatbot v1
+
+  // Versión resuelta dinámicamente según origen del canal
+  idVersionFormulario = 1;
 
   // Propiedades para combos en cascada: Tipo Solicitud -> Categoría -> Problema
   dataTipoReporte: any[] = [];
@@ -63,10 +69,15 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
   
   idSolicitudProblema: number | null = null; // ID del problema seleccionado para enviar al backend
 
-  // IDs de las preguntas especiales de cascada
-  readonly ID_PREGUNTA_TIPO_SOLICITUD = 11;
-  readonly ID_PREGUNTA_CATEGORIA = 12;
-  readonly ID_PREGUNTA_PROBLEMA = 13;
+  // Orden de las preguntas especiales de cascada (consistente en todas las versiones del formulario)
+  readonly ORDEN_TIPO_SOLICITUD = 90;
+  readonly ORDEN_CATEGORIA = 91;
+  readonly ORDEN_PROBLEMA = 92;
+
+  /** Resuelve el ID real de una pregunta de cascada buscando por su orden */
+  private idPreguntaPorOrden(orden: number): number | undefined {
+    return this.preguntas.find(p => p.orden === orden)?.id;
+  }
 
   private readonly destroy$ = new Subject<void>();
 
@@ -88,47 +99,76 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Carga los datos necesarios para el formulario
-   * Primero verifica si ya está calificado, luego carga preguntas
-   * Principio: SRP - Método dedicado a inicialización de datos
+   * Carga los datos necesarios para el formulario.
+   * Primero resuelve la versión según el canal (origen), luego verifica
+   * si el hilo ya fue calificado y carga las preguntas correspondientes.
    */
   private loadFormularioData(): void {
     this.isLoading = true;
-    
-    // Verificar si el chat ya está calificado usando idHilo
-    this.chatService.obtenerRespuestasFormularioAplicado$(this.idHilo)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          this.respuestasExistentes = response.body || [];
-          
-          if (this.respuestasExistentes.length > 0) {
-            // El chat YA está calificado
-            this.esFormularioYaCalificado = true;
-            this.fechaCalificacion = this.respuestasExistentes[0]?.fechaCreacion || null;
-            
-            // Cargar preguntas y prellenar formulario
-            this.loadPreguntasYPrellenar();
-          } else {
-            // El chat NO está calificado, cargar formulario vacío
-            this.esFormularioYaCalificado = false;
-            this.loadPreguntas();
-          }
-        },
-        error: (error) => {
-          console.error('Error verificando estado de calificación:', error);
-          // Si hay error, asumir que no está calificado y continuar
+
+    // 1. Resolver versión del formulario según el origen del canal
+    this.chatService.obtenerVersionesFormularioActivas$()
+      .pipe(
+        takeUntil(this.destroy$),
+        map(response => {
+          const versiones: VersionFormularioDTO[] = response.body || [];
+          const version = versiones.find(v =>
+            (v.idMedioComunicacion != null && v.idMedioComunicacion === this.idOrigen) ||
+            v.origen?.toLowerCase() === this.origen?.toLowerCase()
+          );
+          return version?.id ?? 1;
+        }),
+        catchError((err) => {
+          console.warn('[EvaluationForm] Error obteniendo versiones, usando fallback id=1', err);
+          return of(1);
+        })
+      )
+      .subscribe(idVersion => {
+        this.idVersionFormulario = idVersion;
+        this.verificarEstadoCalificacion();
+      });
+  }
+
+  /**
+   * Verifica si el hilo ya fue calificado usando el endpoint correcto según canal.
+   */
+  private verificarEstadoCalificacion(): void {
+    const esWA = this.esWhatsApp();
+    const respuestas$ = esWA
+      ? this.chatService.obtenerRespuestasFormularioAplicadoWhatsapp$(this.idHilo)
+      : this.chatService.obtenerRespuestasFormularioAplicado$(this.idHilo);
+
+    respuestas$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        this.respuestasExistentes = response.body || [];
+
+        if (this.respuestasExistentes.length > 0) {
+          this.esFormularioYaCalificado = true;
+          this.fechaCalificacion = this.respuestasExistentes[0]?.fechaCreacion || null;
+          this.loadPreguntasYPrellenar();
+        } else {
           this.esFormularioYaCalificado = false;
           this.loadPreguntas();
         }
-      });
+      },
+      error: (err) => {
+        console.warn(`[EvaluationForm] Error verificando calificación, asumiendo sin calificar`, err);
+        this.esFormularioYaCalificado = false;
+        this.loadPreguntas();
+      }
+    });
+  }
+
+  /** Retorna true si el hilo viene del canal WhatsApp */
+  private esWhatsApp(): boolean {
+    return this.origen === 'WhatsApp';
   }
 
   /**
    * Carga las preguntas del formulario
    */
   private loadPreguntas(): void {
-    this.chatService.obtenerPreguntasConRespuestas$(this.ID_VERSION_FORMULARIO)
+    this.chatService.obtenerPreguntasConRespuestas$(this.idVersionFormulario)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -136,7 +176,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
             (a: PreguntaEvaluacion2DTO, b: PreguntaEvaluacion2DTO) => a.orden - b.orden
           );
           this.versionSeleccionada = {
-            id: this.ID_VERSION_FORMULARIO,
+            id: this.idVersionFormulario,
             nombre: 'Evaluación Chatbot v1',
             descripcion: 'Formulario de evaluación inicial',
             origen: 'Chatbot',
@@ -157,7 +197,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
    * Carga preguntas y prellenado el formulario con respuestas existentes
    */
   private loadPreguntasYPrellenar(): void {
-    this.chatService.obtenerPreguntasConRespuestas$(this.ID_VERSION_FORMULARIO)
+    this.chatService.obtenerPreguntasConRespuestas$(this.idVersionFormulario)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -166,7 +206,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
           );
           
           this.versionSeleccionada = {
-            id: this.ID_VERSION_FORMULARIO,
+            id: this.idVersionFormulario,
             nombre: 'Evaluación Chatbot v1',
             descripcion: 'Formulario de evaluación inicial',
             origen: 'Chatbot',
@@ -264,8 +304,11 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
     this.isSubmitting = true;
     const evaluacion = this.buildEvaluacion();
 
-    this.chatService.insertarEvaluacionCompleta$(evaluacion)
-      .pipe(
+    const save$ = this.esWhatsApp()
+      ? this.chatService.insertarEvaluacionCompletaWhatsapp$(evaluacion)
+      : this.chatService.insertarEvaluacionCompleta$(evaluacion);
+
+    save$.pipe(
         takeUntil(this.destroy$),
         finalize(() => this.isSubmitting = false)
       )
@@ -274,7 +317,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
           this.evaluationSubmitted.emit();
         },
         error: (error) => {
-          console.error('Error guardando evaluación:', error);
+          console.error('[EvaluationForm] Error guardando evaluación:', error);
         }
       });
   }
@@ -286,7 +329,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
    * Solo se envía el idSolicitudProblema (ID del problema seleccionado en pregunta 13)
    * Principio: SRP - Construcción del DTO
    */
-  private buildEvaluacion(): InsertarRespuestaEvaluacionCompletaRequestDTO {
+  private buildEvaluacion(): InsertarRespuestaEvaluacionCompletaRequestDTO | InsertarRespuestaEvaluacionCompletaWhatsappRequestDTO {
     const formValue = this.evaluationForm.value;
     const respuestasSeleccionadas: RespuestaSeleccionadaDTO[] = [];
     const respuestasTexto: RespuestaTextoDTO[] = [];
@@ -296,11 +339,11 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
       const controlName = `pregunta_${pregunta.id}`;
       const valor = formValue[controlName];
 
-      // EXCLUIR las preguntas 11, 12 y 13 (combos en cascada) de respuestasSeleccionadas
-      // Solo se envía idSolicitudProblema (pregunta 13)
-      const esPreguntaCascada = pregunta.id === this.ID_PREGUNTA_TIPO_SOLICITUD ||
-                                 pregunta.id === this.ID_PREGUNTA_CATEGORIA ||
-                                 pregunta.id === this.ID_PREGUNTA_PROBLEMA;
+      // EXCLUIR preguntas de cascada (orden 90, 91, 92) de respuestasSeleccionadas
+      // Solo se envía idSolicitudProblema (orden 92)
+      const esPreguntaCascada = pregunta.orden === this.ORDEN_TIPO_SOLICITUD ||
+                                 pregunta.orden === this.ORDEN_CATEGORIA ||
+                                 pregunta.orden === this.ORDEN_PROBLEMA;
 
       // Solo procesar si tiene valor (importante para preguntas opcionales)
       if (this.tieneValor(valor) && !esPreguntaCascada) {
@@ -362,15 +405,29 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
       }
     });
     
-    return {
-      idChatbotPortalHiloChat: this.idHilo,
-      idVersionFormularioEvaluacionChatbot: this.ID_VERSION_FORMULARIO,
+    const basePayload = {
+      idVersionFormularioEvaluacionChatbot: this.idVersionFormulario,
       usuarioCreacion: this.userService.userName || 'Sistema',
       idSolicitudProblema: this.idSolicitudProblema || undefined,
-      respuestasSeleccionadas: respuestasSeleccionadas,
-      respuestasTexto: respuestasTexto,
-      problemasIdentificados: problemasIdentificados
+      respuestasSeleccionadas,
+      respuestasTexto,
+      problemasIdentificados
     };
+
+    if (this.esWhatsApp()) {
+      return {
+        ...basePayload,
+        idMedioComunicacion: this.idOrigen,
+        idOriginal: this.idHilo
+      } as InsertarRespuestaEvaluacionCompletaWhatsappRequestDTO;
+    }
+
+    return {
+      ...basePayload,
+      idChatbotPortalHiloChat: this.idHilo,
+      idMedioComunicacion: this.idOrigen,
+      idOriginal: this.idHilo
+    } as InsertarRespuestaEvaluacionCompletaRequestDTO;
   }
 
   /**
@@ -404,6 +461,16 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
 
     // Prellenar cada pregunta
     respuestasPorPregunta.forEach((respuestas, idPregunta) => {
+      // Preguntas de cascada (orden 90/91/92) se reconstruyen desde idSolicitudProblema — no tocar acá
+      const pregunta = this.preguntas.find(p => p.id === idPregunta);
+      if (pregunta && (
+        pregunta.orden === this.ORDEN_TIPO_SOLICITUD ||
+        pregunta.orden === this.ORDEN_CATEGORIA ||
+        pregunta.orden === this.ORDEN_PROBLEMA
+      )) {
+        return;
+      }
+
       const controlName = `pregunta_${idPregunta}`;
       const control = this.evaluationForm.get(controlName);
 
@@ -435,22 +502,32 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
           const valorASetear = primerRespuesta.idRespuestaEvaluacion;
           control.setValue(valorASetear);
           
-          // Prellenar combos en cascada si es necesario
-          if (idPregunta === this.ID_PREGUNTA_TIPO_SOLICITUD) {
-            this.selectedTipoReporte = valorASetear;
-            // Cargar categorías filtradas sin hacer llamadas
-            this.categoriaByTipoReporte(valorASetear);
-          } else if (idPregunta === this.ID_PREGUNTA_CATEGORIA) {
-            this.selectedCategoria = valorASetear;
-            // Cargar subcategorías filtradas sin hacer llamadas
-            this.subCategoriaByCategoria(valorASetear);
-          } else if (idPregunta === this.ID_PREGUNTA_PROBLEMA) {
-            this.selectedSubCategoria = valorASetear;
-            this.idSolicitudProblema = valorASetear;
-          }
         }
       }
     });
+
+    // Reconstruir cascada desde idSolicitudProblema — viene en la fila de orden 92 (subcategoría)
+    const idSolicitudProblema = this.respuestasExistentes
+      .find(r => r.ordenPregunta === this.ORDEN_PROBLEMA)?.idSolicitudProblema;
+    if (idSolicitudProblema) {
+      this.reconstruirCascadeDesdeSolicitudProblema(idSolicitudProblema);
+    }
+  }
+
+  /**
+   * Reconstruye los 3 combos en cascada a partir del idSolicitudProblema guardado.
+   * Navega inversamente: Problema → Categoría → TipoReporte
+   */
+  private reconstruirCascadeDesdeSolicitudProblema(idSolicitudProblema: number): void {
+    const subCategoria = this.dataSubCategoria.find((s: any) => s.id === idSolicitudProblema);
+    if (!subCategoria) return;
+
+    const categoria = this.dataCategoria.find((c: any) => c.id === subCategoria.idSolicitudCategoria);
+    if (!categoria) return;
+
+    this.categoriaByTipoReporte(categoria.idSolicitudTipoReporte);
+    this.subCategoriaByCategoria(subCategoria.idSolicitudCategoria);
+    this.solicitudBySubCategoria(idSolicitudProblema);
   }
 
   /**
@@ -605,8 +682,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
             this.ordenamientoAlfabetico(a, b, 'nombre')
           ) || [];
           
-          // Actualizar las respuestas de la pregunta 11 con los datos cargados
-          this.actualizarRespuestasPregunta(this.ID_PREGUNTA_TIPO_SOLICITUD, this.dataTipoReporte);
+          this.actualizarRespuestasPregunta(this.ORDEN_TIPO_SOLICITUD, this.dataTipoReporte);
         },
         error: error => {
           console.error('Error al cargar tipos de reporte:', error);
@@ -627,8 +703,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
             this.ordenamientoAlfabetico(a, b, 'nombre')
           ) || [];
           
-          // Actualizar las respuestas de la pregunta 12 con los datos cargados
-          this.actualizarRespuestasPregunta(this.ID_PREGUNTA_CATEGORIA, this.dataCategoria);
+          this.actualizarRespuestasPregunta(this.ORDEN_CATEGORIA, this.dataCategoria);
         },
         error: error => {
           console.error('Error al cargar categorías:', error);
@@ -645,12 +720,11 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<any[]>) => {
-          this.dataSubCategoria = response.body?.sort((a, b) => 
+          this.dataSubCategoria = response.body?.sort((a, b) =>
             this.ordenamientoAlfabetico(a, b, 'nombre')
           ) || [];
           
-          // Actualizar las respuestas de la pregunta 13 con los datos cargados
-          this.actualizarRespuestasPregunta(this.ID_PREGUNTA_PROBLEMA, this.dataSubCategoria);
+          this.actualizarRespuestasPregunta(this.ORDEN_PROBLEMA, this.dataSubCategoria);
         },
         error: error => {
           console.error('Error al cargar subcategorías:', error);
@@ -663,16 +737,15 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
    * @param idPregunta - ID de la pregunta a actualizar
    * @param datos - Array de datos del combo (tipo, categoría o subcategoría)
    */
-  private actualizarRespuestasPregunta(idPregunta: number, datos: any[]): void {
-    const pregunta = this.preguntas.find(p => p.id === idPregunta);
+  private actualizarRespuestasPregunta(ordenPregunta: number, datos: any[]): void {
+    const pregunta = this.preguntas.find(p => p.orden === ordenPregunta);
     if (pregunta && datos.length > 0) {
-      // Convertir los datos del combo al formato de respuestas esperado
       pregunta.respuestas = datos.map((item, index) => ({
         id: item.id,
         respuesta: item.nombre,
         orden: index + 1,
         estado: true,
-        idPreguntaEvaluacionChatbot: idPregunta,
+        idPreguntaEvaluacionChatbot: pregunta.id,
         idTipoEntradaEvaluacionChatbot: pregunta.idTipoEntradaEvaluacionChatbot
       }));
     }
@@ -703,8 +776,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
     this.selectedSubCategoria = undefined;
     this.idSolicitudProblema = null;
 
-    // Actualizar el control del formulario para pregunta 11
-    const controlTipo = this.evaluationForm?.get(`pregunta_${this.ID_PREGUNTA_TIPO_SOLICITUD}`);
+    const controlTipo = this.evaluationForm?.get(`pregunta_${this.idPreguntaPorOrden(this.ORDEN_TIPO_SOLICITUD)}`);
     if (controlTipo) {
       controlTipo.setValue(value);
     }
@@ -718,13 +790,13 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
         (s: any) => value === s.idSolicitudTipoReporte
       );
     }
-    
+
     this.isDisabledSubCategoria = true;
     this.dataSubCategoriaFiltro = [];
 
     // Limpiar controles dependientes
-    const controlCategoria = this.evaluationForm?.get(`pregunta_${this.ID_PREGUNTA_CATEGORIA}`);
-    const controlProblema = this.evaluationForm?.get(`pregunta_${this.ID_PREGUNTA_PROBLEMA}`);
+    const controlCategoria = this.evaluationForm?.get(`pregunta_${this.idPreguntaPorOrden(this.ORDEN_CATEGORIA)}`);
+    const controlProblema = this.evaluationForm?.get(`pregunta_${this.idPreguntaPorOrden(this.ORDEN_PROBLEMA)}`);
     if (controlCategoria) controlCategoria.setValue(null);
     if (controlProblema) controlProblema.setValue(null);
   }
@@ -739,8 +811,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
     this.selectedSubCategoria = undefined;
     this.idSolicitudProblema = null;
 
-    // Actualizar el control del formulario para pregunta 12
-    const controlCategoria = this.evaluationForm?.get(`pregunta_${this.ID_PREGUNTA_CATEGORIA}`);
+    const controlCategoria = this.evaluationForm?.get(`pregunta_${this.idPreguntaPorOrden(this.ORDEN_CATEGORIA)}`);
     if (controlCategoria) {
       controlCategoria.setValue(value);
     }
@@ -756,8 +827,30 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
     }
 
     // Limpiar control dependiente
-    const controlProblema = this.evaluationForm?.get(`pregunta_${this.ID_PREGUNTA_PROBLEMA}`);
+    const controlProblema = this.evaluationForm?.get(`pregunta_${this.idPreguntaPorOrden(this.ORDEN_PROBLEMA)}`);
     if (controlProblema) controlProblema.setValue(null);
+  }
+
+  /**
+   * Preguntas del grupo secundario (slice(4)) excluyendo Categoría (orden 91) y Subcategoría (orden 92)
+   * que se renderizan dentro del bloque de Tipo de Solicitud (orden 90) como grupo único numerado 5.
+   */
+  get preguntasGrupoSecundario(): PreguntaEvaluacion2DTO[] {
+    return this.preguntas.slice(4).filter(
+      p => p.orden !== this.ORDEN_CATEGORIA && p.orden !== this.ORDEN_PROBLEMA
+    );
+  }
+
+  /** Retorna el nombre de una pregunta por su orden (consistente entre versiones) */
+  getPreguntaNombrePorOrden(orden: number): string {
+    return this.preguntas.find(p => p.orden === orden)?.nombre ?? '';
+  }
+
+  /** Retorna el nombre de la subcategoría actualmente seleccionada (solo visual) */
+  get subCategoriaNombreSeleccionado(): string {
+    if (this.selectedSubCategoria == null) return '';
+    const item = this.dataSubCategoria.find((s: any) => s.id === this.selectedSubCategoria);
+    return item?.nombre ?? '';
   }
 
   /**
@@ -769,8 +862,7 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
     this.selectedSubCategoria = value;
     this.idSolicitudProblema = value;
 
-    // Actualizar el control del formulario para pregunta 13
-    const controlProblema = this.evaluationForm?.get(`pregunta_${this.ID_PREGUNTA_PROBLEMA}`);
+    const controlProblema = this.evaluationForm?.get(`pregunta_${this.idPreguntaPorOrden(this.ORDEN_PROBLEMA)}`);
     if (controlProblema) {
       controlProblema.setValue(value);
     }

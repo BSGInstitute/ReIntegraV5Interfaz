@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angu
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ChatService } from '../services/chat.service';
-import { ChatbotMensajeDTO, DATE_FORMAT_OPTIONS } from '../models/models';
+import { ChatbotMensajeDTO, ChatbotWhatsAppMensajeDTO, DATE_FORMAT_OPTIONS, SolicitudPorHiloDTO } from '../models/models';
 
 /**
  * Componente para mostrar la conversación de mensajes con formulario de evaluación
@@ -15,6 +15,9 @@ import { ChatbotMensajeDTO, DATE_FORMAT_OPTIONS } from '../models/models';
 })
 export class ChatMessagesComponent implements OnInit, OnDestroy {
   @Input() idHilo!: number;
+  @Input() idAlumno?: number;
+  @Input() idOrigen: number = 1;
+  @Input() origen: string = 'Portal Web';
   @Input() nombreAlumno?: string;
   @Input() codigoMatricula?: string;
   
@@ -24,7 +27,17 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   mensajes: ChatbotMensajeDTO[] = [];
   isLoading = false;
 
+  // Modal solicitudes
+  mostrarModalSolicitudes = false;
+  solicitudes: SolicitudPorHiloDTO[] = [];
+  loadingSolicitudes = false;
+
   private readonly destroy$ = new Subject<void>();
+
+  /** Mapea idOrigen al tipo esperado por el SP: 1=WhatsApp | 2=Portal Web */
+  get idChatbotTipo(): number {
+    return this.origen === 'WhatsApp' ? 1 : 2;
+  }
 
   constructor(private readonly chatService: ChatService) {}
 
@@ -38,23 +51,75 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Carga los mensajes del hilo desde el caché
-   * Los mensajes ya fueron cargados previamente por ChatsListComponent
-   * Principio: SRP - Método dedicado exclusivamente a cargar mensajes
+   * Carga los mensajes del hilo directamente desde el backend según el canal.
+   * Portal Web: filtra por idChatbotPortalHiloChat.
+   * WhatsApp: filtra por idHiloChatWhatsApp y mapea al DTO común.
    */
   loadMensajes(): void {
-    if (!this.idHilo) {
-      return;
-    }
+    if (!this.idHilo || !this.idAlumno) return;
 
-    // Simular loading para UX consistente
     this.isLoading = true;
-    
-    // Obtener mensajes del caché (no hace llamada API)
-    setTimeout(() => {
-      this.mensajes = this.chatService.obtenerMensajesDeCache(this.idHilo);
-      this.isLoading = false;
-    }, 300);
+
+    if (this.origen === 'WhatsApp') {
+      this.chatService.obtenerMensajesWhatsAppPorAlumno$(this.idAlumno)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            const todos: ChatbotWhatsAppMensajeDTO[] = response.body || [];
+            this.mensajes = todos
+              .filter(m => m.idHiloChatWhatsApp === this.idHilo)
+              .map(m => ({
+                idChatbotPortalHiloChat: m.idHiloChatWhatsApp,
+                idAlumno: m.idAlumno,
+                esUsuario: m.esUsuario,
+                contenido: m.contenido,
+                idContactoPortalSegmento: '',
+                fechaCreacion: m.fechaCreacion
+              }));
+            this.isLoading = false;
+          },
+          error: () => {
+            this.mensajes = [];
+            this.isLoading = false;
+          }
+        });
+    } else {
+      this.chatService.obtenerMensajesPorAlumno$(this.idAlumno)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            const todos: ChatbotMensajeDTO[] = response.body || [];
+            this.mensajes = todos.filter(m => m.idChatbotPortalHiloChat === this.idHilo);
+            this.isLoading = false;
+          },
+          error: () => {
+            this.mensajes = [];
+            this.isLoading = false;
+          }
+        });
+    }
+  }
+
+  abrirSolicitudes(): void {
+    this.mostrarModalSolicitudes = true;
+    if (this.solicitudes.length > 0) return; // ya cargadas
+    this.loadingSolicitudes = true;
+    this.chatService.obtenerSolicitudesPorHilo$(this.idHilo, this.idChatbotTipo)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.solicitudes = response.body || [];
+          this.loadingSolicitudes = false;
+        },
+        error: () => {
+          this.solicitudes = [];
+          this.loadingSolicitudes = false;
+        }
+      });
+  }
+
+  cerrarSolicitudes(): void {
+    this.mostrarModalSolicitudes = false;
   }
 
   /**

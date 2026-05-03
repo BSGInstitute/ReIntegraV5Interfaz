@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { 
-  Student, 
-  Chat, 
-  ViewState, 
-  AlumnoAgrupado, 
-  NoAlumnoAgrupado, 
+import { take } from 'rxjs/operators';
+import {
+  Student,
+  Chat,
+  AlumnoListadoDTO,
+  NoAlumnoAgrupado,
   ViewStateExtended,
   TipoOrigen
 } from '../models/models';
@@ -26,10 +26,14 @@ export class CalificacionChatBotComponent implements OnInit {
   selectedChat: Chat | null = null;
   
   // Nuevas propiedades para manejar alumnos y no alumnos
-  selectedAlumno: AlumnoAgrupado | null = null;
+  selectedAlumno: AlumnoListadoDTO | null = null;
   selectedNoAlumno: NoAlumnoAgrupado | null = null;
   tipoOrigen: TipoOrigen | null = null;
   
+  // Fechas seleccionadas en lista-alumno, se pasan a chats-list
+  fechaCorteGlobal: Date | null = null;
+  fechaFinGlobal: Date | null = null;
+
   // Propiedades para la vista de mensajes
   selectedHilo: any = null;
   idHiloSeleccionado: number | null = null;
@@ -44,7 +48,7 @@ export class CalificacionChatBotComponent implements OnInit {
   }
 
   private initializeData(): void {
-    this.chatService.loadStudents();
+    // La carga inicial la hace ListaAlumnoComponent en su propio ngOnInit
   }
 
   /**
@@ -80,8 +84,10 @@ export class CalificacionChatBotComponent implements OnInit {
    * Recarga los datos y actualiza la selección antes de volver a la lista
    */
   onEvaluacionGuardada(): void {
-    // Primero recargamos los datos del service
-    this.chatService.loadStudents();
+    // Recargar solo no alumnos si corresponde; alumnos se recargan con el rango de fechas activo
+    if (this.tipoOrigen === TipoOrigen.SEGMENTO) {
+      this.chatService.loadNoAlumnos();
+    }
     
     // Esperar un momento para que se carguen los datos actualizados
     setTimeout(() => {
@@ -106,24 +112,28 @@ export class CalificacionChatBotComponent implements OnInit {
    */
   private actualizarSeleccionConNuevosDatos(): void {
     if (this.tipoOrigen === TipoOrigen.ALUMNO && this.selectedAlumno) {
-      // Buscar el alumno actualizado en los datos recargados
-      this.chatService.alumnosAgrupados$.subscribe(alumnos => {
-        const alumnoActualizado = alumnos.find(a => a.idAlumno === this.selectedAlumno?.idAlumno);
-        if (alumnoActualizado) {
-          // Crear una nueva referencia para que Angular detecte el cambio
-          this.selectedAlumno = { ...alumnoActualizado };
+      this.chatService.alumnosListado$.pipe(take(1)).subscribe(alumnos => {
+        const actualizado = alumnos.find(a => a.idAlumno === this.selectedAlumno?.idAlumno);
+        if (actualizado) {
+          this.selectedAlumno = { ...actualizado };
         }
-      }).unsubscribe();
+      });
     } else if (this.tipoOrigen === TipoOrigen.SEGMENTO && this.selectedNoAlumno) {
-      // Buscar el noAlumno actualizado en los datos recargados
-      this.chatService.noAlumnosAgrupados$.subscribe(noAlumnos => {
-        const noAlumnoActualizado = noAlumnos.find(na => na.idContactoPortalSegmento === this.selectedNoAlumno?.idContactoPortalSegmento);
-        if (noAlumnoActualizado) {
-          // Crear una nueva referencia para que Angular detecte el cambio
-          this.selectedNoAlumno = { ...noAlumnoActualizado };
+      this.chatService.noAlumnosAgrupados$.pipe(take(1)).subscribe(noAlumnos => {
+        const actualizado = noAlumnos.find(na => na.idContactoPortalSegmento === this.selectedNoAlumno?.idContactoPortalSegmento);
+        if (actualizado) {
+          this.selectedNoAlumno = { ...actualizado };
         }
-      }).unsubscribe();
+      });
     }
+  }
+
+  onFechaCorteChange(fecha: Date | null): void {
+    this.fechaCorteGlobal = fecha;
+  }
+
+  onFechaFinChange(fecha: Date | null): void {
+    this.fechaFinGlobal = fecha;
   }
 
   /**
@@ -145,13 +155,6 @@ export class CalificacionChatBotComponent implements OnInit {
     this.currentView = ViewStateExtended.CHATS;
   }
 
-
-  /**
-   * Refresca los datos después de una evaluación
-   */
-  private refreshData(): void {
-    this.chatService.loadStudents();
-  }
 
   /**
    * Limpia las selecciones actuales

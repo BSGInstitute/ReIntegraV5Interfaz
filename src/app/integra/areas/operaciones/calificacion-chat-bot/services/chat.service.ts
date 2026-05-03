@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
-import { 
-  Student, 
-  Chat, 
-  Evaluation, 
-  FilterOptions, 
-  ChatbotHiloChatPorAlumnoDTO, 
+import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  ChatbotHiloChatPorAlumnoDTO,
   ChatbotHiloChatPorSegmentoDTO,
   AlumnoAgrupado,
   NoAlumnoAgrupado,
-  ChatbotMensajeDTO
+  ChatbotMensajeDTO,
+  ChatbotWhatsAppMensajeDTO,
+  PagedResponse,
+  HiloChatPaginadoDTO,
+  AlumnoListadoDTO,
+  SolicitudPorHiloDTO
 } from '../models/models';
 import { IntegraService } from '@shared/services/integra.service';
 import { constApiOperaciones } from 'src/environments/constApi';
@@ -21,41 +22,98 @@ import { constApiOperaciones } from 'src/environments/constApi';
 export class ChatService extends IntegraService {
   private readonly alumnosAgrupadosSubject = new BehaviorSubject<AlumnoAgrupado[]>([]);
   private readonly noAlumnosAgrupadosSubject = new BehaviorSubject<NoAlumnoAgrupado[]>([]);
-  private readonly studentsSubject = new BehaviorSubject<Student[]>([]);
-  private readonly chatsSubject = new BehaviorSubject<Chat[]>([]);
-  private readonly filtersSubject = new BehaviorSubject<FilterOptions>({});
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  private readonly alumnosListadoSubject = new BehaviorSubject<AlumnoListadoDTO[]>([]);
+  private readonly totalAlumnosSubject = new BehaviorSubject<number>(0);
 
   // Almacenamiento temporal de mensajes por hilo
   private mensajesCache: Map<number, ChatbotMensajeDTO[]> = new Map();
 
   readonly alumnosAgrupados$ = this.alumnosAgrupadosSubject.asObservable();
   readonly noAlumnosAgrupados$ = this.noAlumnosAgrupadosSubject.asObservable();
-  readonly students$ = this.studentsSubject.asObservable();
-  readonly chats$ = this.chatsSubject.asObservable();
-  readonly filters$ = this.filtersSubject.asObservable();
   readonly loading$ = this.loadingSubject.asObservable();
+  readonly alumnosListado$ = this.alumnosListadoSubject.asObservable();
+  readonly totalAlumnos$ = this.totalAlumnosSubject.asObservable();
 
-  loadStudents(): void {
+  loadStudents(fechaCorte?: Date): void {
     this.loadingSubject.next(true);
-    
-    forkJoin({
-      alumnos: this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatConAlumnos, {}),
-      segmentos: this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatPorSegmento, {})
-    }).subscribe({
-      next: ({ alumnos, segmentos }) => {
-        const alumnosAgrupados = this.agruparAlumnos(alumnos.body || []);
-        const noAlumnosAgrupados = this.agruparNoAlumnos(segmentos.body || []);
-        
-        this.alumnosAgrupadosSubject.next(alumnosAgrupados);
-        this.noAlumnosAgrupadosSubject.next(noAlumnosAgrupados);
-        this.loadingSubject.next(false);
-      },
-      error: (error) => {
-        console.error('Error cargando datos:', error);
-        this.loadingSubject.next(false);
-      }
-    });
+
+    const corte = fechaCorte ?? new Date(new Date().getFullYear(), 0, 1);
+
+    this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatConAlumnos, { fechaCorte: corte })
+      .subscribe({
+        next: (alumnos) => {
+          const response = alumnos.body as { items: ChatbotHiloChatPorAlumnoDTO[] } | null;
+          const alumnosAgrupados = this.agruparAlumnos(response?.items || []);
+          this.alumnosAgrupadosSubject.next(alumnosAgrupados);
+        },
+        error: (error) => {
+          console.error('Error cargando alumnos:', error);
+        }
+      });
+
+    this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatPorSegmento, {})
+      .subscribe({
+        next: (segmentos) => {
+          const noAlumnosAgrupados = this.agruparNoAlumnos(segmentos.body || []);
+          this.noAlumnosAgrupadosSubject.next(noAlumnosAgrupados);
+        },
+        error: (error) => {
+          console.error('Error cargando segmentos:', error);
+        },
+        complete: () => {
+          this.loadingSubject.next(false);
+        }
+      });
+  }
+
+  loadNoAlumnos(): void {
+    this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatPorSegmento, {})
+      .subscribe({
+        next: (segmentos) => {
+          const noAlumnosAgrupados = this.agruparNoAlumnos(segmentos.body || []);
+          this.noAlumnosAgrupadosSubject.next(noAlumnosAgrupados);
+        },
+        error: (error) => {
+          console.error('Error cargando segmentos:', error);
+        }
+      });
+  }
+
+  loadAlumnosPaginados(
+    pageNumber:       number,
+    pageSize:         number,
+    fechaInicio?:     Date | null,
+    fechaFin?:        Date | null,
+    codigoMatricula?: string
+  ): void {
+    this.loadingSubject.next(true);
+
+    const payload: Record<string, unknown> = { pageNumber, pageSize };
+
+    if (fechaInicio) {
+      payload['fechaInicio'] = fechaInicio;
+      // fechaFin siempre presente cuando hay fechaInicio — default: hoy
+      payload['fechaFin'] = fechaFin ?? new Date();
+    }
+
+    if (codigoMatricula) {
+      payload['codigoMatricula'] = codigoMatricula;
+    }
+
+    this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatConAlumnos, payload)
+      .subscribe({
+        next: (response) => {
+          const paged = response.body as { items: AlumnoListadoDTO[]; totalCount: number } | null;
+          this.alumnosListadoSubject.next(paged?.items || []);
+          this.totalAlumnosSubject.next(paged?.totalCount || 0);
+          this.loadingSubject.next(false);
+        },
+        error: (error) => {
+          console.error('Error cargando alumnos paginados:', error);
+          this.loadingSubject.next(false);
+        }
+      });
   }
 
   private agruparAlumnos(hilos: ChatbotHiloChatPorAlumnoDTO[]): AlumnoAgrupado[] {
@@ -68,6 +126,7 @@ export class ChatService extends IntegraService {
         agrupadoMap.set(key, {
           idAlumno: hilo.idAlumno,
           nombreAlumno: hilo.nombreAlumno,
+          email: hilo.email || '',
           codigoMatricula: hilo.codigoMatricula,
           estadoMatricula: hilo.estadoMatricula,
           codigoAreaDerivacion: hilo.codigoAreaDerivacion,
@@ -125,6 +184,13 @@ export class ChatService extends IntegraService {
   obtenerMensajesPorAlumno$(idAlumno: number): Observable<HttpResponse<ChatbotMensajeDTO[]>> {
     return this.postJsonResponse(
       constApiOperaciones.ObtenerChatBotPorAlumno,
+      JSON.stringify({ idAlumno })
+    );
+  }
+
+  obtenerMensajesWhatsAppPorAlumno$(idAlumno: number): Observable<HttpResponse<ChatbotWhatsAppMensajeDTO[]>> {
+    return this.postJsonResponse(
+      constApiOperaciones.ObtenerChatBotWhatsAppAtcPorAlumno,
       JSON.stringify({ idAlumno })
     );
   }
@@ -217,9 +283,8 @@ export class ChatService extends IntegraService {
   }
 
   /**
-   * Obtiene las respuestas de un formulario ya aplicado
+   * Obtiene las respuestas de un formulario ya aplicado (Portal Web)
    * @param idChatbotPortalHiloChat - ID del hilo de chat
-   * @returns Observable con las respuestas guardadas
    */
   obtenerRespuestasFormularioAplicado$(IdChatbotPortalHiloChat: number): Observable<HttpResponse<any>> {
     return this.postJsonResponse(
@@ -228,27 +293,57 @@ export class ChatService extends IntegraService {
     );
   }
 
-  // Métodos legacy - Mantener para compatibilidad
-  loadStudentChats(studentId: string): void {
-    // Deprecated: use obtenerMensajesPorAlumno$ instead
-  }
-
-  submitEvaluation(evaluation: Evaluation): Observable<HttpResponse<any>> {
+  /**
+   * Obtiene las respuestas de un formulario ya aplicado (WhatsApp)
+   * @param idChatbotWhatsAppHiloChat - ID del hilo de WhatsApp
+   */
+  obtenerRespuestasFormularioAplicadoWhatsapp$(idChatbotWhatsAppHiloChat: number): Observable<HttpResponse<any>> {
     return this.postJsonResponse(
-      constApiOperaciones.InsertarRespuestaEvaluacionCompleta,
-      JSON.stringify(evaluation)
-      );
+      constApiOperaciones.ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp,
+      JSON.stringify({ idChatbotWhatsAppHiloChat })
+    );
   }
 
-  updateFilters(filters: FilterOptions): void {
-    this.filtersSubject.next(filters);
+  /**
+   * Obtiene hilos de un alumno paginados (Portal Web + WhatsApp) con esCalificado precalculado.
+   * Reemplaza el patrón 2+N llamadas HTTP anterior.
+   */
+  obtenerHilosPaginados$(
+    idAlumno:    number,
+    fechaInicio: Date,
+    pageNumber:  number,
+    pageSize:    number,
+    fechaFin?:   Date | null
+  ): Observable<HttpResponse<PagedResponse<HiloChatPaginadoDTO>>> {
+    const payload: Record<string, unknown> = { idAlumno, fechaInicio, pageNumber, pageSize };
+    if (fechaFin) payload['fechaFin'] = fechaFin;
+    return this.postJsonResponse(
+      constApiOperaciones.ObtenerHilosPaginadosPorAlumno,
+      JSON.stringify(payload)
+    );
   }
 
-  getStudents(): Observable<Student[]> {
-    return this.students$;
+  /**
+   * Inserta la evaluación completa del chat para WhatsApp
+   * @param evaluacion - Datos de la evaluación completa
+   */
+  /**
+   * Obtiene las solicitudes vinculadas a un hilo de chat
+   * @param idHiloChat - ID del hilo
+   * @param idChatbotTipo - 1 = WhatsApp ATC | 2 = Portal Web
+   */
+  obtenerSolicitudesPorHilo$(idHiloChat: number, idChatbotTipo: number): Observable<HttpResponse<SolicitudPorHiloDTO[]>> {
+    return this.postJsonResponse(
+      constApiOperaciones.ObtenerSolicitudesPorHiloChat,
+      JSON.stringify({ idHiloChat, idChatbotTipo })
+    );
   }
 
-  clearChats(): void {
-    this.chatsSubject.next([]);
+  insertarEvaluacionCompletaWhatsapp$(evaluacion: any): Observable<HttpResponse<any>> {
+    return this.postJsonResponse(
+      constApiOperaciones.InsertarRespuestaEvaluacionCompletaWhatsapp,
+      JSON.stringify(evaluacion)
+    );
   }
+
 }

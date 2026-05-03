@@ -46,6 +46,7 @@ export interface ChatbotHiloChatPorAlumnoDTO {
   idChatbotPortalHiloChat: number;
   idAlumno?: number;
   nombreAlumno: string;
+  email?: string;
   idMatriculaCabecera?: number;
   codigoMatricula: string;
   idEstado_matricula?: number;
@@ -59,6 +60,8 @@ export interface ChatbotHiloChatPorAlumnoDTO {
   fechaCreacion: Date;
   idFormularioAplicadoChatbot?: number;  // ID del formulario aplicado para verificación (deprecated)
   esCalificadoFormulario: boolean;  // Flag que indica si el hilo ya fue calificado
+  idOrigen?: number;   // 1 = Portal Web, 2 = WhatsApp
+  origen?: string;     // 'Portal Web' | 'WhatsApp'
 }
 
 export interface ChatbotHiloChatPorSegmentoDTO {
@@ -77,6 +80,7 @@ export interface ChatbotHiloChatPorSegmentoDTO {
 export interface AlumnoAgrupado {
   idAlumno?: number;
   nombreAlumno: string;
+  email?: string;
   codigoMatricula: string;
   estadoMatricula: string;
   codigoAreaDerivacion?: number;
@@ -106,6 +110,19 @@ export interface ChatbotMensajeDTO {
   fechaCreacion?: Date;
 }
 
+export interface ChatbotWhatsAppMensajeDTO {
+  idHiloChatWhatsApp: number;
+  idAlumno?: number;
+  esUsuario: boolean;
+  contenido: string;
+  tipoMensaje: string;
+  waFile?: string | null;
+  waMimeType?: string | null;
+  waFileName?: string | null;
+  waCaption?: string | null;
+  fechaCreacion?: Date;
+}
+
 // DTOs del Formulario de Evaluación
 export interface TipoEntradaDTO {
   id: number;
@@ -121,6 +138,7 @@ export interface VersionFormularioDTO {
   origen: string;
   version: number;
   estado: boolean;
+  idMedioComunicacion?: number;
 }
 
 export interface RespuestaEvaluacionDTO {
@@ -144,12 +162,26 @@ export interface PreguntaEvaluacion2DTO {
   respuestas: RespuestaEvaluacionDTO[];
 }
 
-// DTO para enviar la evaluación completa (estructura real del backend)
+// DTO para enviar la evaluación completa — Portal Web
 export interface InsertarRespuestaEvaluacionCompletaRequestDTO {
   idChatbotPortalHiloChat: number;
   idVersionFormularioEvaluacionChatbot: number;
   usuarioCreacion: string;
-  idSolicitudProblema?: number; // ID del problema elegido de la cascada Tipo Solicitud -> Categoría -> Problema
+  idSolicitudProblema?: number;
+  respuestasSeleccionadas: RespuestaSeleccionadaDTO[];
+  respuestasTexto: RespuestaTextoDTO[];
+  problemasIdentificados: ProblemaIdentificadoDTO[];
+  idMedioComunicacion: number;
+  idOriginal: number;
+}
+
+// DTO para enviar la evaluación completa — WhatsApp (usa idMedioComunicacion + idOriginal en lugar de idChatbotPortalHiloChat)
+export interface InsertarRespuestaEvaluacionCompletaWhatsappRequestDTO {
+  idMedioComunicacion: number;
+  idOriginal: number;
+  idVersionFormularioEvaluacionChatbot: number;
+  usuarioCreacion: string;
+  idSolicitudProblema?: number;
   respuestasSeleccionadas: RespuestaSeleccionadaDTO[];
   respuestasTexto: RespuestaTextoDTO[];
   problemasIdentificados: ProblemaIdentificadoDTO[];
@@ -168,6 +200,49 @@ export interface ProblemaIdentificadoDTO {
   idRespuestaEvaluacionChatbot: number;
 }
 
+// Paginación server-side — hilos por alumno
+export interface PagedResponse<T> {
+  items:      T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize:   number;
+  totalPages: number;
+}
+
+export interface HiloChatPaginadoDTO {
+  idHilo:            number;
+  fechaCreacion:     Date;
+  origen:            string;   // 'Portal Web' | 'WhatsApp'
+  idOrigen:          number;   // 5 = Portal | 1 = WhatsApp
+  esCalificado:      boolean;
+  fechaCalificacion: Date | null;
+  ultimoMensaje?:    string;
+  totalMensajes?:    number;
+}
+
+export interface AlumnoListadoDTO {
+  idAlumno: number;
+  nombreAlumno: string;
+  email: string;
+  codigoMatricula: string;
+  estadoMatricula: string;
+  codigoAreaDerivacion?: number;
+  derivado: boolean;
+  totalChats: number;
+  pendientesCalificacion: number;
+  fechaUltimoChat: Date;
+}
+
+// DTO de solicitudes vinculadas a un hilo de chat
+export interface SolicitudPorHiloDTO {
+  idChatbotAlumnoSolicitud: number;
+  fechaVinculacion:         Date;
+  estadoSolicitud:          string;
+  detalleSolicitud:         string;
+  comentarioSolucion?:      string;
+  fechaSolicitud:           Date;
+}
+
 // DTO de respuesta de evaluación ya aplicada
 export interface RespuestaUsuarioPorFormularioAplicadoDTO {
   idPregunta: number;
@@ -181,5 +256,6 @@ export interface RespuestaUsuarioPorFormularioAplicadoDTO {
   esTextoLibre: boolean;
   esProblemaIdentificado: boolean;
   fechaCreacion: Date;
+  idSolicitudProblema?: number | null;  // del T_FormularioAplicado — para reconstruir cascada
 }
 

@@ -25,7 +25,68 @@
         <div class="card-header">
           <mat-icon>chat</mat-icon>
           <h3>Conversación</h3>
+          <span class="badge-canal" [ngClass]="origen === 'WhatsApp' ? 'whatsapp' : 'portal'">
+            <mat-icon class="canal-icon">{{ origen === 'WhatsApp' ? 'phone_iphone' : 'language' }}</mat-icon>
+            {{ origen }}
+          </span>
+          <button mat-stroked-button class="btn-solicitudes" (click)="abrirSolicitudes()">
+            <mat-icon>assignment</mat-icon>
+            Solicitudes
+          </button>
           <span class="message-count">{{ mensajes.length }} mensajes</span>
+        </div>
+
+        <!-- Modal Solicitudes -->
+        <div class="modal-overlay" *ngIf="mostrarModalSolicitudes" (click)="cerrarSolicitudes()">
+          <div class="modal-solicitudes" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+              <div class="modal-title">
+                <mat-icon>assignment</mat-icon>
+                <h3>Solicitudes — Chat #{{ idHilo }}</h3>
+              </div>
+              <button mat-icon-button (click)="cerrarSolicitudes()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <div *ngIf="loadingSolicitudes" class="modal-loading">
+                <mat-spinner diameter="40"></mat-spinner>
+                <p>Cargando solicitudes...</p>
+              </div>
+
+              <div *ngIf="!loadingSolicitudes && solicitudes.length === 0" class="modal-empty">
+                <mat-icon>inbox</mat-icon>
+                <p>No hay solicitudes vinculadas a este chat</p>
+              </div>
+
+              <div class="solicitudes-grid" *ngIf="!loadingSolicitudes && solicitudes.length > 0">
+                <div class="solicitud-card" *ngFor="let s of solicitudes; let i = index">
+
+                  <div class="solicitud-field">
+                    <span class="field-label">Fecha Solicitud</span>
+                    <span class="field-value">{{ s.fechaSolicitud | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+
+                  <div class="solicitud-field">
+                    <span class="field-label">Estado Solicitud</span>
+                    <span class="field-value estado-badge">{{ s.estadoSolicitud }}</span>
+                  </div>
+
+                  <div class="solicitud-field">
+                    <span class="field-label">Detalle Solicitud</span>
+                    <span class="field-value detalle">{{ s.detalleSolicitud }}</span>
+                  </div>
+
+                  <div class="solicitud-field" *ngIf="s.comentarioSolucion">
+                    <span class="field-label">Comentario Solución</span>
+                    <span class="field-value solucion">{{ s.comentarioSolucion }}</span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="chat-messages-scroll">
@@ -94,6 +155,8 @@
         <div class="form-wrapper">
           <app-evaluation-form
             [idHilo]="idHilo"
+            [idOrigen]="idOrigen"
+            [origen]="origen"
             (backToChats)="onBack()"
             (evaluationSubmitted)="onEvaluacionSubmitted()"
           ></app-evaluation-form>

@@ -1,8 +1,10 @@
 <div class="calificacion-chat-bot-container">
-  <!-- 1. Lista de Alumnos/No Alumnos -->
+  <!-- 1. Lista de Alumnos/No Alumnos — [hidden] en lugar de *ngIf para preservar estado -->
   <app-lista-alumno
-    *ngIf="currentView === viewStates.STUDENTS"
+    [hidden]="currentView !== viewStates.STUDENTS"
     (selectStudent)="onStudentSelected($any($event))"
+    (fechaCorteChange)="onFechaCorteChange($event)"
+    (fechaFinChange)="onFechaFinChange($event)"
   ></app-lista-alumno>
 
   <!-- 2. Lista de Hilos (agrupados por ID Hilo) -->
@@ -12,6 +14,8 @@
     [alumno]="selectedAlumno!"
     [noAlumno]="selectedNoAlumno!"
     [tipoOrigen]="tipoOrigen"
+    [fechaCorte]="fechaCorteGlobal"
+    [fechaFinInput]="fechaFinGlobal"
     (selectChat)="onChatSelected($event)"
     (backToList)="onBackToStudents()"
   ></app-chats-list>
@@ -20,6 +24,9 @@
   <app-chat-messages
     *ngIf="currentView === viewStates.CHAT_MESSAGES && idHiloSeleccionado"
     [idHilo]="idHiloSeleccionado"
+    [idAlumno]="selectedAlumno?.idAlumno"
+    [idOrigen]="selectedHilo?.idOrigen ?? 5"
+    [origen]="selectedHilo?.origen ?? 'Portal Web'"
     [nombreAlumno]="selectedAlumno?.nombreAlumno"
     [codigoMatricula]="selectedAlumno?.codigoMatricula"
     (backToHilos)="onBackToChats()"

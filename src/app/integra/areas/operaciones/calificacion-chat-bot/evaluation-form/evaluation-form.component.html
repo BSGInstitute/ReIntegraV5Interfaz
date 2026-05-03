@@ -192,81 +192,87 @@
               </mat-error>
             </div>
 
-            <!-- Preguntas desde la 5 en adelante -->
-            <div *ngFor="let pregunta of preguntas.slice(4); let i = index" class="pregunta-item">
+            <!-- Preguntas desde la 5 en adelante (IDs 12 y 13 se renderizan dentro del bloque 11) -->
+            <div *ngFor="let pregunta of preguntasGrupoSecundario; let i = index" class="pregunta-item">
               <div class="pregunta-header">
                 <span class="pregunta-numero">{{ i + 5 }}.</span>
                 <h3 class="pregunta-titulo">
-                  {{ pregunta.nombre }}
+                  {{ pregunta.orden === ORDEN_TIPO_SOLICITUD ? 'Clasificación de la Solicitud' : pregunta.nombre }}
                   <span class="required-indicator" *ngIf="pregunta.esRequerido">*</span>
                 </h3>
                 <mat-chip class="tipo-chip">{{ tipoEntradaLabels[pregunta.tipoEntrada] }}</mat-chip>
                 <mat-chip class="required-chip" *ngIf="!pregunta.esRequerido">Opcional</mat-chip>
-          </div>
+              </div>
 
-              <!-- COMBO ESPECIAL: Tipo de Solicitud (ID 11) -->
-              <mat-form-field
-                *ngIf="pregunta.id === ID_PREGUNTA_TIPO_SOLICITUD"
-                appearance="outline"
-                class="full-width respuesta-control">
-                <mat-label>Seleccione Tipo de Solicitud</mat-label>
-                <mat-select
-                  [(value)]="selectedTipoReporte"
-                  (selectionChange)="categoriaByTipoReporte($event.value)"
-                  [disabled]="esFormularioYaCalificado">
-                  <mat-option [value]="null">Seleccione</mat-option>
-                  <mat-option *ngFor="let tipo of dataTipoReporte" [value]="tipo.id">
-                    <div class="option-multiline">{{ tipo.nombre }}</div>
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+              <!-- COMBO ESPECIAL: Tipo de Solicitud (orden 90) + Categoría (91) + Subcategoría (92) agrupados -->
+              <ng-container *ngIf="pregunta.orden === ORDEN_TIPO_SOLICITUD">
+                <!-- Tipo de Solicitud -->
+                <label class="cascade-label">{{ getPreguntaNombrePorOrden(ORDEN_TIPO_SOLICITUD) }}</label>
+                <mat-form-field appearance="outline" class="full-width respuesta-control">
+                  <mat-label>Seleccione Tipo de Solicitud</mat-label>
+                  <mat-select
+                    [(value)]="selectedTipoReporte"
+                    (selectionChange)="categoriaByTipoReporte($event.value)"
+                    [disabled]="esFormularioYaCalificado">
+                    <mat-option [value]="null">Seleccione</mat-option>
+                    <mat-option *ngFor="let tipo of dataTipoReporte" [value]="tipo.id">
+                      <div class="option-multiline">{{ tipo.nombre }}</div>
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
 
-              <!-- COMBO ESPECIAL: Categoría de Solicitud (ID 12) -->
-              <mat-form-field
-                *ngIf="pregunta.id === ID_PREGUNTA_CATEGORIA"
-                appearance="outline"
-                class="full-width respuesta-control">
-                <mat-label>Seleccione Categoría</mat-label>
-                <mat-select
-                  [(value)]="selectedCategoria"
-                  (selectionChange)="subCategoriaByCategoria($event.value)"
-                  [disabled]="isDisabledCategoria || esFormularioYaCalificado">
-                  <mat-option [value]="null">Seleccione</mat-option>
-                  <mat-option *ngFor="let cat of dataCategoriaFiltro" [value]="cat.id">
-                    <div class="option-multiline">{{ cat.nombre }}</div>
-                  </mat-option>
-                  <mat-option *ngIf="dataCategoriaFiltro.length === 0" disabled>
-                    No existen registros configurados
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+                <!-- Categoría de Solicitud -->
+                <label class="cascade-label">{{ getPreguntaNombrePorOrden(ORDEN_CATEGORIA) }}</label>
+                <mat-form-field appearance="outline" class="full-width respuesta-control">
+                  <mat-label>Seleccione Categoría</mat-label>
+                  <mat-select
+                    [(value)]="selectedCategoria"
+                    (selectionChange)="subCategoriaByCategoria($event.value)"
+                    [disabled]="isDisabledCategoria || esFormularioYaCalificado">
+                    <mat-option [value]="null">Seleccione</mat-option>
+                    <mat-option *ngFor="let cat of dataCategoriaFiltro" [value]="cat.id">
+                      <div class="option-multiline">{{ cat.nombre }}</div>
+                    </mat-option>
+                    <mat-option *ngIf="dataCategoriaFiltro.length === 0" disabled>
+                      No existen registros configurados
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
 
-              <!-- COMBO ESPECIAL: Detalle del Problema (ID 13) -->
-              <mat-form-field
-                *ngIf="pregunta.id === ID_PREGUNTA_PROBLEMA"
-                appearance="outline"
-                class="full-width respuesta-control">
-                <mat-label>Seleccione Problema</mat-label>
-                <mat-select
-                  [(value)]="selectedSubCategoria"
-                  (selectionChange)="solicitudBySubCategoria($event.value)"
-                  [disabled]="isDisabledSubCategoria || esFormularioYaCalificado">
-                  <mat-option [value]="null">Seleccione</mat-option>
-                  <mat-option *ngFor="let sub of dataSubCategoriaFiltro" [value]="sub.id">
-                    <div class="option-multiline">{{ sub.nombre }}</div>
-                  </mat-option>
-                  <mat-option *ngIf="dataSubCategoriaFiltro.length === 0" disabled>
-                    No existen registros configurados
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+                <!-- Subcategoría de Solicitud -->
+                <label class="cascade-label">{{ getPreguntaNombrePorOrden(ORDEN_PROBLEMA) }}</label>
+                <mat-form-field appearance="outline" class="full-width respuesta-control">
+                  <mat-label>Seleccione Subcategoría</mat-label>
+                  <mat-select
+                    [(value)]="selectedSubCategoria"
+                    (selectionChange)="solicitudBySubCategoria($event.value)"
+                    [disabled]="isDisabledSubCategoria || esFormularioYaCalificado">
+                    <mat-option [value]="null">Seleccione</mat-option>
+                    <mat-option *ngFor="let sub of dataSubCategoriaFiltro" [value]="sub.id">
+                      <div class="option-multiline">{{ sub.titulo }}</div>
+                    </mat-option>
+                    <mat-option *ngIf="dataSubCategoriaFiltro.length === 0" disabled>
+                      No existen registros configurados
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
 
-              <!-- Selección Simple (Radio Buttons) - SOLO para preguntas que NO son 11, 12, 13 -->
+                <!-- Input visual: nombre completo de la subcategoría seleccionada -->
+                <mat-form-field
+                  *ngIf="subCategoriaNombreSeleccionado"
+                  appearance="outline"
+                  class="full-width respuesta-control">
+                  <mat-label>Descripción Subcategoria</mat-label>
+                  <input matInput [value]="subCategoriaNombreSeleccionado" disabled>
+                </mat-form-field>
+              </ng-container>
+
+              <!-- Selección Simple (Radio Buttons) - SOLO para preguntas que NO son cascada (orden 90, 91, 92) -->
               <mat-radio-group
-                *ngIf="pregunta.tipoEntrada === TipoEntrada.SELECCION_SIMPLE && 
-                       pregunta.id !== ID_PREGUNTA_TIPO_SOLICITUD && 
-                       pregunta.id !== ID_PREGUNTA_CATEGORIA && 
-                       pregunta.id !== ID_PREGUNTA_PROBLEMA"
+                *ngIf="pregunta.tipoEntrada === TipoEntrada.SELECCION_SIMPLE &&
+                       pregunta.orden !== ORDEN_TIPO_SOLICITUD &&
+                       pregunta.orden !== ORDEN_CATEGORIA &&
+                       pregunta.orden !== ORDEN_PROBLEMA"
                 [formControlName]="'pregunta_' + pregunta.id"
                 class="respuesta-control">
                 <mat-radio-button
