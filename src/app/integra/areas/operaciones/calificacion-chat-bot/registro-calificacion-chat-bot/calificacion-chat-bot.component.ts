@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { take } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Subject } from 'rxjs';
+import { take, skip, takeUntil } from 'rxjs/operators';
 import {
   Student,
   Chat,
@@ -16,7 +17,8 @@ import { ChatsListComponent } from '../chats-list/chats-list.component';
   templateUrl: './calificacion-chat-bot.component.html',
   styleUrls: ['./calificacion-chat-bot.component.scss']
 })
-export class CalificacionChatBotComponent implements OnInit {
+export class CalificacionChatBotComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
   // Referencia al componente de lista de hilos
   @ViewChild('chatsList') chatsListComponent?: ChatsListComponent;
   
@@ -45,6 +47,11 @@ export class CalificacionChatBotComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private initializeData(): void {
@@ -80,30 +87,27 @@ export class CalificacionChatBotComponent implements OnInit {
   }
 
   /**
-   * Maneja cuando se guarda la evaluación
-   * Recarga los datos y actualiza la selección antes de volver a la lista
+   * Maneja cuando se guarda la evaluación.
+   * Para no alumnos: espera a que el BehaviorSubject emita datos frescos
+   * antes de actualizar la selección, eliminando la dependencia de setTimeout.
    */
   onEvaluacionGuardada(): void {
-    // Recargar solo no alumnos si corresponde; alumnos se recargan con el rango de fechas activo
     if (this.tipoOrigen === TipoOrigen.SEGMENTO) {
+      this.chatService.noAlumnosAgrupados$
+        .pipe(skip(1), take(1), takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.actualizarSeleccionConNuevosDatos();
+          this.onBackToChats();
+          setTimeout(() => this.chatsListComponent?.recargarHilos(), 100);
+        });
       this.chatService.loadNoAlumnos();
-    }
-    
-    // Esperar un momento para que se carguen los datos actualizados
-    setTimeout(() => {
-      // Actualizar el alumno/noAlumno seleccionado con los nuevos datos
-      this.actualizarSeleccionConNuevosDatos();
-      
-      // Volver a la lista de hilos
-      this.onBackToChats();
-      
-      // Forzar recarga de la lista de hilos después de volver
+    } else {
       setTimeout(() => {
-        if (this.chatsListComponent) {
-          this.chatsListComponent.recargarHilos();
-        }
-      }, 100);
-    }, 800);
+        this.actualizarSeleccionConNuevosDatos();
+        this.onBackToChats();
+        setTimeout(() => this.chatsListComponent?.recargarHilos(), 100);
+      }, 800);
+    }
   }
 
   /**

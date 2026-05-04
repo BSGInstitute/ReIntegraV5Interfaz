@@ -73,7 +73,8 @@ export interface ChatbotHiloChatPorSegmentoDTO {
   derivacionCerrado?: boolean;
   fechaCreacion: Date;
   idFormularioAplicadoChatbot?: number;  // ID del formulario aplicado para verificación (deprecated)
-  esCalificadoFormulario: boolean;  // Flag que indica si el hilo ya fue calificado
+  esCalificadoFormulario: boolean;
+  fechaCalificacion?: Date | null;
 }
 
 // Agrupación de estudiantes

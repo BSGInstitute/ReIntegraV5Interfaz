@@ -255,11 +255,11 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
       if (!hilosMap.has(idHilo)) {
         hilosMap.set(idHilo, {
           idHilo,
-          fechaCreacion:    this.obtenerFechaCreacion(idHilo),
-          origen:           this.obtenerOrigen(idHilo),
-          esCalificado:     this.obtenerEstadoCalificacion(idHilo),
-          fechaCalificacion: null,
-          mensajes:         [],
+          fechaCreacion:     this.obtenerFechaCreacion(idHilo),
+          origen:            this.obtenerOrigen(idHilo),
+          esCalificado:      this.obtenerEstadoCalificacion(idHilo),
+          fechaCalificacion: this.obtenerFechaCalificacion(idHilo),
+          mensajes:          [],
         });
       }
 
@@ -288,6 +288,14 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
     if (this.noAlumno?.hilos) {
       const hilo = this.noAlumno.hilos.find(h => h.id === idHilo);
       return hilo?.fechaCreacion || null;
+    }
+    return null;
+  }
+
+  private obtenerFechaCalificacion(idHilo: number): Date | null {
+    if (this.noAlumno?.hilos) {
+      const hilo = this.noAlumno.hilos.find(h => h.id === idHilo);
+      return hilo?.fechaCalificacion || null;
     }
     return null;
   }
