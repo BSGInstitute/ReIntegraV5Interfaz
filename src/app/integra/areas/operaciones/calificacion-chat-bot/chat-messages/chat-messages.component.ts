@@ -16,6 +16,7 @@ import { ChatbotMensajeDTO, ChatbotWhatsAppMensajeDTO, DATE_FORMAT_OPTIONS, Soli
 export class ChatMessagesComponent implements OnInit, OnDestroy {
   @Input() idHilo!: number;
   @Input() idAlumno?: number;
+  @Input() idContactoPortalSegmento?: string;
   @Input() idOrigen: number = 1;
   @Input() origen: string = 'Portal Web';
   @Input() nombreAlumno?: string;
@@ -52,16 +53,34 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
 
   /**
    * Carga los mensajes del hilo directamente desde el backend según el canal.
-   * Portal Web: filtra por idChatbotPortalHiloChat.
-   * WhatsApp: filtra por idHiloChatWhatsApp y mapea al DTO común.
+   * Portal Web (alumno): filtra por idChatbotPortalHiloChat.
+   * WhatsApp (alumno): filtra por idHiloChatWhatsApp y mapea al DTO común.
+   * No alumno (segmento): filtra por idChatbotPortalHiloChat usando idContactoPortalSegmento.
    */
   loadMensajes(): void {
-    if (!this.idHilo || !this.idAlumno) return;
+    if (!this.idHilo) return;
+
+    const esNoAlumno = !this.idAlumno && !!this.idContactoPortalSegmento;
+    if (!this.idAlumno && !esNoAlumno) return;
 
     this.isLoading = true;
 
-    if (this.origen === 'WhatsApp') {
-      this.chatService.obtenerMensajesWhatsAppPorAlumno$(this.idAlumno)
+    if (esNoAlumno) {
+      this.chatService.obtenerMensajesPorSegmento$(this.idContactoPortalSegmento!)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            const todos: ChatbotMensajeDTO[] = response.body || [];
+            this.mensajes = todos.filter(m => m.idChatbotPortalHiloChat === this.idHilo);
+            this.isLoading = false;
+          },
+          error: () => {
+            this.mensajes = [];
+            this.isLoading = false;
+          }
+        });
+    } else if (this.origen === 'WhatsApp') {
+      this.chatService.obtenerMensajesWhatsAppPorAlumno$(this.idAlumno!)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response) => {
@@ -84,7 +103,7 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
           }
         });
     } else {
-      this.chatService.obtenerMensajesPorAlumno$(this.idAlumno)
+      this.chatService.obtenerMensajesPorAlumno$(this.idAlumno!)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response) => {

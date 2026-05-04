@@ -266,7 +266,14 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
       hilosMap.get(idHilo)!.mensajes.push(mensaje);
     });
 
-    return Array.from(hilosMap.values());
+    return Array.from(hilosMap.values()).map(hilo => {
+      const ultimo = hilo.mensajes[hilo.mensajes.length - 1];
+      return {
+        ...hilo,
+        totalMensajes: hilo.mensajes.length,
+        ultimoMensaje: ultimo?.contenido ?? null,
+      };
+    });
   }
 
   private obtenerEstadoCalificacion(idHilo: number): boolean {

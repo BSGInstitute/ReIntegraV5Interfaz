@@ -211,6 +211,9 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.fechaCorteChange.emit(null);
     }
+    if (this.fechaFin && this.fechaInicio && this.fechaFin < this.fechaInicio) {
+      this.fechaFin = null;
+    }
   }
 
   onBuscar(): void {
@@ -229,6 +232,7 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
   limpiarFechas(): void {
     this.fechaInicio = null;
     this.fechaFin = null;
+    this.alumnosCurrentPage = [];
     this.dataSourceAlumnos.data = [];
     this.totalAlumnos = 0;
     this.hasLoadedOnce = false;

@@ -823,6 +823,11 @@ export class EvaluationFormComponent implements OnInit, OnDestroy {
    * Preguntas del grupo secundario (slice(4)) excluyendo Categoría (orden 91) y Subcategoría (orden 92)
    * que se renderizan dentro del bloque de Tipo de Solicitud (orden 90) como grupo único numerado 5.
    */
+  get esCascadaIncompleta(): boolean {
+    if (this.selectedTipoReporte == null) return false;
+    return this.selectedCategoria == null || this.selectedSubCategoria == null;
+  }
+
   get preguntasGrupoSecundario(): PreguntaEvaluacion2DTO[] {
     return this.preguntas.slice(4).filter(
       p => p.orden !== this.ORDEN_CATEGORIA && p.orden !== this.ORDEN_PROBLEMA
