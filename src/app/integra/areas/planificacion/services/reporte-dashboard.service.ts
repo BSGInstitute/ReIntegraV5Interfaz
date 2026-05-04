@@ -1,4 +1,4 @@
-import { HttpResponse } from '@angular/common/http';
+﻿import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { constApiPlanificacion } from '@environments/constApi';
 import { AlertaService } from '@shared/services/alerta.service';
@@ -29,7 +29,9 @@ import {
   IReporteDashboardDocenteFiltro,
   IReporteDashboardPEspecificoFiltro,
   IReporteDashboardSeguimientoDocente,
-  IReporteDashboardNotasAlumnos
+  INotasPorPEspecificoD2,
+  IReporteDashboardPEspecificoPorDocente,
+  IFurDashboard3
 } from '@planificacion/models/interfaces/reporte-dashboard';
 
 /**
@@ -50,8 +52,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene el resumen de KPIs principales del dashboard
    */
-  obtenerResumen$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardResumen>> {
-    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerResumen$(anio?: number, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardResumen>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerResumen}${params}`
     );
@@ -60,8 +62,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene la distribucion de programas por estado
    */
-  obtenerResumenPorEstado$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardEstado[]>> {
-    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerResumenPorEstado$(anio?: number, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardEstado[]>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerResumenPorEstado}${params}`
     );
@@ -70,8 +72,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene la distribucion de programas por modalidad
    */
-  obtenerResumenPorModalidad$(anio?: number, estado?: string, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardModalidad[]>> {
-    const params = this.buildQueryParams({ anio, estado, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerResumenPorModalidad$(anio?: number, estado?: string, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardModalidad[]>> {
+    const params = this.buildQueryParams({ anio, estado, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerResumenPorModalidad}${params}`
     );
@@ -87,9 +89,9 @@ export class ReporteDashboardService {
     fechaFin?: string,
     modalidad?: string,
     idProgramaEspecificoPadre?: number,
-    centroCostoPadre?: string
+    idCentroCostoPadre?: number
   ): Observable<HttpResponse<IReporteDashboardPrograma[]>> {
-    const params = this.buildQueryParams({ estado, anio, fechaInicio, fechaFin, modalidad, idProgramaEspecificoPadre, centroCostoPadre });
+    const params = this.buildQueryParams({ estado, anio, fechaInicio, fechaFin, modalidad, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerProgramasPorEstado}${params}`
     );
@@ -104,9 +106,9 @@ export class ReporteDashboardService {
     fechaFin?: string,
     idProgramaPadre?: number,
     anio?: number,
-    centroCostoPadre?: string
+    idCentroCostoPadre?: number
   ): Observable<HttpResponse<IReporteDashboardCurso[]>> {
-    const params = this.buildQueryParams({ fecha, fechaInicio, fechaFin, idProgramaPadre, anio, centroCostoPadre });
+    const params = this.buildQueryParams({ fecha, fechaInicio, fechaFin, idProgramaPadre, anio, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerDetalleCursos}${params}`
     );
@@ -121,9 +123,9 @@ export class ReporteDashboardService {
     estado?: string,
     soloActivos?: boolean,
     idProgramaEspecificoPadre?: number,
-    centroCostoPadre?: string
+    idCentroCostoPadre?: number
   ): Observable<HttpResponse<IReporteDashboardDocente[]>> {
-    const params = this.buildQueryParams({ anio, idDocente, estado, soloActivos, idProgramaEspecificoPadre, centroCostoPadre });
+    const params = this.buildQueryParams({ anio, idDocente, estado, soloActivos, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerDocentesAsignados}${params}`
     );
@@ -132,8 +134,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene datos para grafico de programas por mes
    */
-  obtenerGraficoPorMes$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardGraficoPorMes[]>> {
-    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerGraficoPorMes$(anio?: number, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardGraficoPorMes[]>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerGraficoPorMes}${params}`
     );
@@ -166,9 +168,9 @@ export class ReporteDashboardService {
     mesInicio?: number,
     mesFin?: number,
     idProgramaEspecificoPadre?: number,
-    centroCostoPadre?: string
+    idCentroCostoPadre?: number
   ): Observable<HttpResponse<IReporteDashboardSemanal[]>> {
-    const params = this.buildQueryParams({ anio, mesInicio, mesFin, idProgramaEspecificoPadre, centroCostoPadre });
+    const params = this.buildQueryParams({ anio, mesInicio, mesFin, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerResumenSemanal}${params}`
     );
@@ -215,8 +217,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene resumen de sesiones agrupadas por estado de sesion
    */
-  obtenerResumenPorEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardEstadoSesion[]>> {
-    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerResumenPorEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardEstadoSesion[]>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerResumenPorEstadoSesion}${params}`
     );
@@ -225,8 +227,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene detalle de sesiones filtradas por estado
    */
-  obtenerSesionesPorEstado$(anio?: number, idEstadoSesion?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardSesionDetalle[]>> {
-    const params = this.buildQueryParams({ anio, idEstadoSesion, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerSesionesPorEstado$(anio?: number, idEstadoSesion?: number, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardSesionDetalle[]>> {
+    const params = this.buildQueryParams({ anio, idEstadoSesion, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerSesionesPorEstado}${params}`
     );
@@ -235,8 +237,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene evolucion mensual de estados de sesion
    */
-  obtenerEvolucionEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardEvolucionEstadoSesion[]>> {
-    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerEvolucionEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardEvolucionEstadoSesion[]>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerEvolucionEstadoSesion}${params}`
     );
@@ -245,8 +247,8 @@ export class ReporteDashboardService {
   /**
    * Obtiene KPIs de estados de sesion
    */
-  obtenerKPIsEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, centroCostoPadre?: string): Observable<HttpResponse<IReporteDashboardKPIsEstadoSesion>> {
-    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, centroCostoPadre });
+  obtenerKPIsEstadoSesion$(anio?: number, idProgramaEspecificoPadre?: number, idCentroCostoPadre?: number): Observable<HttpResponse<IReporteDashboardKPIsEstadoSesion>> {
+    const params = this.buildQueryParams({ anio, idProgramaEspecificoPadre, idCentroCostoPadre });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerKPIsEstadoSesion}${params}`
     );
@@ -288,12 +290,12 @@ export class ReporteDashboardService {
     fechaFin?: string,
     idProgramaPadre?: number,
     anio?: number,
-    centroCostoPadre?: string,
+    idCentroCostoPadre?: number,
     modalidadClasificada?: string,
     semanaInicio?: number,
     semanaFin?: number
   ): Observable<HttpResponse<IReporteDashboardCursoV3[]>> {
-    const params = this.buildQueryParams({ fecha, fechaInicio, fechaFin, idProgramaPadre, anio, centroCostoPadre, modalidadClasificada, semanaInicio, semanaFin });
+    const params = this.buildQueryParams({ fecha, fechaInicio, fechaFin, idProgramaPadre, anio, idCentroCostoPadre, modalidadClasificada, semanaInicio, semanaFin });
     return this._integraService.getJsonResponse(
       `${constApiPlanificacion.ReporteDashboardObtenerDetalleCursosV3}${params}`
     );
@@ -334,6 +336,16 @@ export class ReporteDashboardService {
   }
 
   /**
+   * Obtiene programas especificos donde el docente tiene sesiones asignadas
+   */
+  obtenerPEspecificoPorDocente$(idProveedor: number): Observable<HttpResponse<IReporteDashboardPEspecificoPorDocente[]>> {
+    const params = this.buildQueryParams({ idProveedor });
+    return this._integraService.getJsonResponse(
+      `${constApiPlanificacion.ReporteDashboardObtenerPEspecificoPorDocente}${params}`
+    );
+  }
+
+  /**
    * Obtiene seguimiento completo de un docente (KPIs + programas + sesiones)
    */
   obtenerSeguimientoDocente$(idDocente?: number, idPEspecifico?: number, anio?: number, fechaInicio?: string, fechaFin?: string): Observable<HttpResponse<IReporteDashboardSeguimientoDocente>> {
@@ -344,12 +356,24 @@ export class ReporteDashboardService {
   }
 
   /**
-   * Obtiene notas de alumnos por programa: RS1 resumen por criterio (grafico), RS2 detalle alumno x criterio
+   * Obtiene notas de alumnos calculadas por PEspecifico (Tareas, Asistencia, Promedio Final)
    */
-  obtenerNotasAlumnosPorPrograma$(idPEspecifico?: number): Observable<HttpResponse<IReporteDashboardNotasAlumnos>> {
-    const params = this.buildQueryParams({ idPEspecifico });
+  obtenerNotasPorPEspecifico$(idPEspecifico: number, grupo: number = 1): Observable<HttpResponse<INotasPorPEspecificoD2>> {
+    const params = this.buildQueryParams({ idPEspecifico, grupo });
     return this._integraService.getJsonResponse(
-      `${constApiPlanificacion.ReporteDashboardObtenerNotasAlumnosPorPrograma}${params}`
+      `${constApiPlanificacion.ReporteDashboardObtenerNotasPorPEspecifico}${params}`
     );
   }
+
+  // ── Dashboard 3: FURs ─────────────────────────────────────────────────────
+
+  /**
+   * Obtiene FURs del area 19, tipo PO, estados 3 y 5 para Dashboard 3
+   */
+  obtenerFursDashboard3$(): Observable<HttpResponse<IFurDashboard3[]>> {
+    return this._integraService.getJsonResponse(
+      constApiPlanificacion.ReporteDashboardObtenerFursDashboard3
+    );
+  }
+
 }

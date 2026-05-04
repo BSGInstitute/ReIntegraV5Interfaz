@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+﻿import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpResponse } from '@angular/common/http';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
+import { POPUP_CONTAINER } from '@progress/kendo-angular-popup';
 
 import { ReporteDashboardService } from '@planificacion/services/reporte-dashboard.service';
 import {
@@ -18,6 +19,7 @@ import {
   IReporteDashboardCompleto,
   IReporteDashboardFiltroRequest,
   IReporteDashboardProgramaEspecificoItem,
+  IReporteDashboardCentroCostoItem,
   IChartSeriesItem,
   IReporteDashboardEstadoSesion,
   IReporteDashboardSesionDetalle,
@@ -33,8 +35,11 @@ import {
   IReporteDashboardSeguimientoDocentePrograma,
   IReporteDashboardSeguimientoDocenteSesion,
   IReporteDashboardSeguimientoDocenteKPIs,
-  IReporteDashboardNotasAlumnos,
-  IReporteDashboardNotaAlumnoDetalle
+  INotasPorPEspecificoD2,
+  INotaAlumnoD2,
+  INotaEvaluacionD2,
+  IReporteDashboardPEspecificoPorDocente,
+  IFurDashboard3,
 } from '@planificacion/models/interfaces/reporte-dashboard';
 import { AlertaService } from '@shared/services/alerta.service';
 import { ExcelExportComponent } from '@progress/kendo-angular-excel-export';
@@ -48,7 +53,12 @@ import { process, State } from '@progress/kendo-data-query';
 @Component({
   selector: 'app-reporte-dashboard',
   templateUrl: './reporte-dashboard.component.html',
-  styleUrls: ['./reporte-dashboard.component.scss']
+  styleUrls: ['./reporte-dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{
+    provide: POPUP_CONTAINER,
+    useFactory: () => ({ nativeElement: document.body } as ElementRef)
+  }]
 })
 export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
@@ -75,7 +85,6 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     programasFinalizados: 0,
     totalDocentes: 0,
     docentesActivos: 0,
-    totalCoordinadores: 0,
     totalSesiones: 0
   };
 
@@ -112,15 +121,28 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   // Datos filtrados para los MultiSelect
   filteredProgramasEspecificos: IReporteDashboardProgramaEspecificoItem[] = [];
-  filteredCentrosCosto: string[] = [];
+  filteredCentrosCosto: IReporteDashboardCentroCostoItem[] = [];
+  filteredProgramasV3: IReporteDashboardProgramaEspecificoItem[] = [];
 
-  // Colores para graficos
+  // Paleta de colores distintos para estados sin mapeo explícito
+  private readonly _paletaEstados: string[] = [
+    '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
+    '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6366f1',
+    '#14b8a6', '#a855f7', '#fb923c', '#22c55e', '#e11d48'
+  ];
+
+  // Colores para graficos — incluye variantes con/sin tilde
   coloresEstado: { [key: string]: string } = {
-    'Lanzamiento': '#28a745',
-    'Ejecucion': '#007bff',
-    'Finalizado': '#6c757d',
-    'Cancelado': '#dc3545',
-    'Pendiente': '#ffc107'
+    'Lanzamiento':  '#10b981',
+    'Ejecucion':    '#3b82f6',
+    'Ejecución':    '#3b82f6',
+    'En Ejecucion': '#3b82f6',
+    'En Ejecución': '#3b82f6',
+    'Finalizado':   '#8b5cf6',
+    'Concluido':    '#8b5cf6',
+    'Cancelado':    '#ef4444',
+    'Pendiente':    '#f59e0b',
+    'Sin Estado':   '#94a3b8',
   };
 
   coloresModalidad: string[] = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1'];
@@ -185,6 +207,58 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   formFiltroCursosV3: FormGroup;
   readonly MODALIDADES_CLASIFICADAS = ['Inhouse', 'Presencial', 'Online'];
 
+  // Tabla V3 — filtro, orden y paginación client-side
+  filtroTablaV3: string = '';
+  filtroColV3: { [k: string]: string } = {};
+  ordenV3Campo: string = 'fecha';
+  ordenV3Dir: 'asc' | 'desc' = 'desc';
+  paginaV3: number = 1;
+  tamPaginaV3: number = 20;
+  expandedRowsV3 = new Set<number>();
+
+  get cursosV3Filtrados(): IReporteDashboardCursoV3[] {
+    let datos = this.cursosV3;
+    const txt = (this.filtroTablaV3 ?? '').toLowerCase().trim();
+    if (txt) {
+      const campos = ['modalidadClasificada', 'centroCostoPadre', 'programaEspecificoPadre',
+        'centroCostoHijo', 'curso', 'estadoSesion', 'docente', 'sede', 'diaSemana',
+        'horario', 'aula', 'observacion'];
+      datos = datos.filter(r => campos.some(k => String((r as any)[k] ?? '').toLowerCase().includes(txt)));
+    }
+    Object.entries(this.filtroColV3).forEach(([k, v]) => {
+      if (v?.trim()) {
+        const vl = v.toLowerCase().trim();
+        datos = datos.filter(r => String((r as any)[k] ?? '').toLowerCase().includes(vl));
+      }
+    });
+    const campo = this.ordenV3Campo;
+    const dir = this.ordenV3Dir;
+    return [...datos].sort((a: any, b: any) =>
+      dir === 'asc'
+        ? String(a[campo] ?? '').localeCompare(String(b[campo] ?? ''))
+        : String(b[campo] ?? '').localeCompare(String(a[campo] ?? ''))
+    );
+  }
+
+  get cursosV3Paginados(): IReporteDashboardCursoV3[] {
+    const inicio = (this.paginaV3 - 1) * this.tamPaginaV3;
+    return this.cursosV3Filtrados.slice(inicio, inicio + this.tamPaginaV3);
+  }
+
+  get totalPaginasV3(): number {
+    return Math.max(1, Math.ceil(this.cursosV3Filtrados.length / this.tamPaginaV3));
+  }
+
+  get paginasV3(): number[] {
+    const total = this.totalPaginasV3;
+    const curr = this.paginaV3;
+    const pages: number[] = [];
+    for (let i = Math.max(1, curr - 2); i <= Math.min(total, curr + 2); i++) { pages.push(i); }
+    return pages;
+  }
+
+  minV3(a: number, b: number): number { return Math.min(a, b); }
+
   // ── SEGUIMIENTO DE CLASES ────────────────────────────────────────────────
   loadingSeguimiento: boolean = false;
   datosSeguimiento: IReporteDashboardSeguimientoClase[] = [];
@@ -193,9 +267,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   formFiltroSeguimiento: FormGroup;
 
   readonly coloresSeguimiento: { [key: string]: string } = {
-    'Programadas': '#007bff',
-    'Ejecutadas':  '#28a745',
-    'Canceladas':  '#dc3545',
+    'Por Ejecutar': '#007bff',
+    'Ejecutadas':   '#28a745',
+    'Canceladas':   '#dc3545',
     'Reprogramadas': '#ffc107'
   };
 
@@ -234,8 +308,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     sort: [{ field: 'totalSesiones', dir: 'desc' }]
   };
 
-  // Tab principal (dashboard1 / dashboard2)
-  activeMainTab: 'dashboard1' | 'dashboard2' = 'dashboard1';
+  // Tab principal (dashboard1 / dashboard2 / dashboard3)
+  activeMainTab: 'dashboard1' | 'dashboard2' | 'dashboard3' = 'dashboard1';
+
+  // Flags de inicialización: una vez cargado el tab, el DOM se mantiene vivo
+  // y solo se oculta/muestra con [hidden] para evitar destruir/recrear charts
+  dashboard2Initialized = false;
+  dashboard3Initialized = false;
 
   // Tab activo (grillas dentro de dashboard1)
   activeTab: string = 'programas';
@@ -256,8 +335,10 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   docentesFiltroFiltered: IReporteDashboardDocenteFiltro[] = [];
   pEspecificoFiltro: IReporteDashboardPEspecificoFiltro[] = [];
   pEspecificoFiltroFiltered: IReporteDashboardPEspecificoFiltro[] = [];
+  pEspecificoPorDocenteFiltro: IReporteDashboardPEspecificoPorDocente[] = [];
   loadingDocentesFiltro: boolean = false;
   loadingPEspecificoFiltro: boolean = false;
+  loadingPEspecificoPorDocente: boolean = false;
   // Datos resultado
   seguimientoDocenteKPIs: IReporteDashboardSeguimientoDocenteKPIs = {
     docente: '', totalProgramas: 0, totalSesiones: 0,
@@ -281,12 +362,103 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     'Reprogramadas': '#ffc107',
     'Programadas': '#007bff'
   };
-  // Notas de alumnos
-  notasAlumnos: IReporteDashboardNotasAlumnos | null = null;
+  // ── Dashboard 3: FURs ─────────────────────────────────────────────────────
+  loadingD3: boolean = false;
+  fursDashboard3: IFurDashboard3[] = [];
+  stateD3: State = { skip: 0, take: 20, sort: [], filter: { logic: 'and', filters: [] } };
+  get gridDataD3(): any { return process(this.fursDashboard3, this.stateD3); }
+
+  // Tabla FURs — filtro, orden y paginación client-side
+  filtroTablaD3: string = '';
+  filtroColD3: { [k: string]: string } = {};
+  ordenD3Campo: string = 'fechaCreacion';
+  ordenD3Dir: 'asc' | 'desc' = 'desc';
+  paginaD3: number = 1;
+  tamPaginaD3: number = 20;
+  expandedRowsD3 = new Set<number>();
+
+  get fursD3Filtrados(): IFurDashboard3[] {
+    let datos = this.fursDashboard3;
+    const txt = (this.filtroTablaD3 ?? '').toLowerCase().trim();
+    if (txt) {
+      const campos = ['codigo', 'centroCosto', 'programa', 'razonSocial', 'producto',
+        'descripcion', 'faseAprobacion1', 'monedaPagoReal', 'observaciones', 'usuarioCreacion'];
+      datos = datos.filter(r => campos.some(k => String((r as any)[k] ?? '').toLowerCase().includes(txt)));
+    }
+    Object.entries(this.filtroColD3).forEach(([k, v]) => {
+      if (v?.trim()) {
+        const vl = v.toLowerCase().trim();
+        datos = datos.filter(r => String((r as any)[k] ?? '').toLowerCase().includes(vl));
+      }
+    });
+    const campo = this.ordenD3Campo;
+    const dir = this.ordenD3Dir;
+    return [...datos].sort((a: any, b: any) =>
+      dir === 'asc'
+        ? String(a[campo] ?? '').localeCompare(String(b[campo] ?? ''))
+        : String(b[campo] ?? '').localeCompare(String(a[campo] ?? ''))
+    );
+  }
+
+  get fursD3Paginados(): IFurDashboard3[] {
+    const inicio = (this.paginaD3 - 1) * this.tamPaginaD3;
+    return this.fursD3Filtrados.slice(inicio, inicio + this.tamPaginaD3);
+  }
+
+  get totalPaginasD3(): number {
+    return Math.max(1, Math.ceil(this.fursD3Filtrados.length / this.tamPaginaD3));
+  }
+
+  get paginasD3(): number[] {
+    const total = this.totalPaginasD3;
+    const curr = this.paginaD3;
+    const pages: number[] = [];
+    for (let i = Math.max(1, curr - 2); i <= Math.min(total, curr + 2); i++) { pages.push(i); }
+    return pages;
+  }
+
+  minD3(a: number, b: number): number { return Math.min(a, b); }
+
+  // ── Notas de alumnos por PEspecifico ──────────────────────────────────────
   loadingNotas: boolean = false;
-  notasDetalleData: IReporteDashboardNotaAlumnoDetalle[] = [];
-  stateNotas: State = { skip: 0, take: 15 };
-  get gridDataNotas(): any { return process(this.notasDetalleData, this.stateNotas); }
+  filtrarSinNotas: boolean = false;
+  evaluacionesD2: INotaEvaluacionD2[] = [];
+  alumnosNotas: INotaAlumnoD2[] = [];
+  stateNotas: State = { skip: 0, take: 15, sort: [{ field: 'alumno', dir: 'asc' }] };
+  get gridDataNotas(): any {
+    const datos = this.filtrarSinNotas
+      ? this.alumnosNotas.filter(a => this.esSinNota(a))
+      : this.alumnosNotas;
+    return process(datos, this.stateNotas);
+  }
+
+  obtenerNota(alumno: INotaAlumnoD2, idEvaluacion: number): number {
+    return (alumno.notas ?? []).find(n => n.idEvaluacion === idEvaluacion)?.nota ?? 0;
+  }
+
+  rowClassNotas = (context: any): string => {
+    return this.esSinNota(context.dataItem) ? 'fila-sin-notas' : '';
+  };
+
+  private esSinNota(a: INotaAlumnoD2): boolean {
+    return (a.notas ?? []).every(n => n.nota === 0) && (a.promedioFinal ?? 0) === 0;
+  }
+
+  get totalSinNota(): number {
+    return (this.alumnosNotas ?? []).filter(a => this.esSinNota(a)).length;
+  }
+
+  get totalConNota(): number {
+    return (this.alumnosNotas ?? []).length - this.totalSinNota;
+  }
+
+  get donutCalificacion(): { category: string; value: number; color: string }[] {
+    if (!(this.alumnosNotas ?? []).length) return [];
+    return [
+      { category: 'Calificados', value: this.totalConNota, color: '#28a745' },
+      { category: 'Sin nota',    value: this.totalSinNota,  color: '#dc3545' }
+    ];
+  }
 
   // Getters para datos procesados de grillas
   get gridDataProgramas(): any {
@@ -304,7 +476,8 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private _reporteDashboardService: ReporteDashboardService,
     private _alertaService: AlertaService,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
     this.formFiltro = this._formBuilder.group({
       anio: [null],
@@ -377,17 +550,14 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
             // Inicializar datos filtrados para los MultiSelect
             this.filteredProgramasEspecificos = this.filtros.programasEspecificos.slice(0, 50);
             this.filteredCentrosCosto = this.filtros.centrosCosto.slice(0, 50);
-
-            const anioActual = new Date().getFullYear();
-            if (this.filtros.anios.includes(anioActual)) {
-              this.formFiltro.get('anio')?.setValue(anioActual);
-            } else if (this.filtros.anios.length > 0) {
-              this.formFiltro.get('anio')?.setValue(this.filtros.anios[0]);
-            }
+            this.filteredProgramasV3 = this.filtros.programasEspecificos.slice(0, 50);
+            // No se auto-asigna anio: null = todos los anios en la carga inicial
           }
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -415,7 +585,18 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     } else {
       const filterLower = filter.toLowerCase();
       this.filteredCentrosCosto = this.filtros.centrosCosto
-        .filter(c => c.toLowerCase().includes(filterLower))
+        .filter(c => (c.nombre ?? '').toLowerCase().includes(filterLower))
+        .slice(0, 100);
+    }
+  }
+
+  onFilterProgramasV3(filter: string): void {
+    if (!filter || filter.length < 1) {
+      this.filteredProgramasV3 = this.filtros.programasEspecificos.slice(0, 50);
+    } else {
+      const fl = filter.toLowerCase();
+      this.filteredProgramasV3 = this.filtros.programasEspecificos
+        .filter(p => p.nombre?.toLowerCase().includes(fl))
         .slice(0, 100);
     }
   }
@@ -423,13 +604,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   /**
    * Obtiene los filtros actuales del formulario
    */
-  private getSelectedFilters(): { idProgramaEspecificoPadre?: number; centroCostoPadre?: string } {
+  private getSelectedFilters(): { idProgramaEspecificoPadre?: number; idCentroCostoPadre?: number } {
     const idsProgramas = this.formFiltro.get('idsProgramaEspecificoPadre')?.value as number[] || [];
-    const centrosCosto = this.formFiltro.get('centrosCostoPadre')?.value as string[] || [];
+    const centrosCosto = this.formFiltro.get('centrosCostoPadre')?.value as number[] || [];
 
     return {
       idProgramaEspecificoPadre: idsProgramas.length > 0 ? idsProgramas[0] : undefined,
-      centroCostoPadre: centrosCosto.length > 0 ? centrosCosto[0] : undefined
+      idCentroCostoPadre: centrosCosto.length > 0 ? centrosCosto[0] : undefined
     };
   }
 
@@ -439,13 +620,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarDatosDashboard(): void {
     this.loading = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
     forkJoin({
-      resumen: this._reporteDashboardService.obtenerResumen$(anio, idProgramaEspecificoPadre, centroCostoPadre),
-      estados: this._reporteDashboardService.obtenerResumenPorEstado$(anio, idProgramaEspecificoPadre, centroCostoPadre),
-      modalidades: this._reporteDashboardService.obtenerResumenPorModalidad$(anio, undefined, idProgramaEspecificoPadre, centroCostoPadre),
-      graficoPorMes: this._reporteDashboardService.obtenerGraficoPorMes$(anio, idProgramaEspecificoPadre, centroCostoPadre)
+      resumen: this._reporteDashboardService.obtenerResumen$(anio, idProgramaEspecificoPadre, idCentroCostoPadre),
+      estados: this._reporteDashboardService.obtenerResumenPorEstado$(anio, idProgramaEspecificoPadre, idCentroCostoPadre),
+      modalidades: this._reporteDashboardService.obtenerResumenPorModalidad$(anio, undefined, idProgramaEspecificoPadre, idCentroCostoPadre),
+      graficoPorMes: this._reporteDashboardService.obtenerGraficoPorMes$(anio, idProgramaEspecificoPadre, idCentroCostoPadre)
     })
     .pipe(takeUntil(this.destroy$))
     .subscribe({
@@ -455,12 +636,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.resumen = responses.resumen.body;
         }
 
-        // Grafico de estados (pie chart)
+        // Grafico de estados (donut chart)
         if (responses.estados.body) {
-          this.datosEstado = responses.estados.body.map(item => ({
+          this.datosEstado = responses.estados.body.map((item, i) => ({
             category: item.estado || 'Sin Estado',
             value: item.cantidadProgramas,
-            color: this.coloresEstado[item.estado || ''] || '#6c757d'
+            color: this.coloresEstado[item.estado || '']
+                   ?? this._paletaEstados[i % this._paletaEstados.length]
           }));
         }
 
@@ -480,13 +662,16 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
         this.loading = false;
         this.cargarProgramas();
+        this.cargarCursos();
         this.cargarDocentes();
         this.cargarResumenSemanal();
         this.cargarEstadosSesion();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loading = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -500,7 +685,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
     const estadosUnicos = [...new Set(datos.map(d => d.estadoPadre || 'Sin Estado'))];
 
-    this.seriesPorMes = estadosUnicos.map(estado => {
+    this.seriesPorMes = estadosUnicos.map((estado, i) => {
       const dataEstado = mesesUnicos.map(mes => {
         const item = datos.find(d => d.mes === mes && (d.estadoPadre || 'Sin Estado') === estado);
         return item ? item.cantidadProgramas : 0;
@@ -508,7 +693,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       return {
         name: estado,
         data: dataEstado,
-        color: this.coloresEstado[estado] || '#6c757d'
+        color: this.coloresEstado[estado] ?? this._paletaEstados[i % this._paletaEstados.length]
       };
     });
   }
@@ -519,9 +704,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarResumenSemanal(): void {
     this.loadingSemanal = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerResumenSemanal$(anio, undefined, undefined, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerResumenSemanal$(anio, undefined, undefined, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardSemanal[]>) => {
@@ -534,10 +719,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
             this.categoriasSemanas = [];
           }
           this.loadingSemanal = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingSemanal = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -548,11 +735,11 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarEstadosSesion(): void {
     this.loadingEstadosSesion = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
     forkJoin({
-      resumen: this._reporteDashboardService.obtenerResumenPorEstadoSesion$(anio, idProgramaEspecificoPadre, centroCostoPadre),
-      kpis: this._reporteDashboardService.obtenerKPIsEstadoSesion$(anio, idProgramaEspecificoPadre, centroCostoPadre)
+      resumen: this._reporteDashboardService.obtenerResumenPorEstadoSesion$(anio, idProgramaEspecificoPadre, idCentroCostoPadre),
+      kpis: this._reporteDashboardService.obtenerKPIsEstadoSesion$(anio, idProgramaEspecificoPadre, idCentroCostoPadre)
     })
     .pipe(takeUntil(this.destroy$))
     .subscribe({
@@ -574,10 +761,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         }
 
         this.loadingEstadosSesion = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loadingEstadosSesion = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -589,18 +778,20 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.loadingSesionesDetalle = true;
     this.estadoSesionSeleccionado = idEstadoSesion || null;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerSesionesPorEstado$(anio, idEstadoSesion, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerSesionesPorEstado$(anio, idEstadoSesion, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardSesionDetalle[]>) => {
           this.sesionesDetalle = response.body || [];
           this.loadingSesionesDetalle = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingSesionesDetalle = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -654,27 +845,29 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    * Procesa los datos para el grafico de resumen semanal
    */
   procesarDatosSemanal(datos: IReporteDashboardSemanal[]): void {
-    this.categoriasSemanas = datos.map(d => `S${d.semana}`);
+    const sorted = [...datos].sort((a, b) => a.semana - b.semana);
+    this.datosSemanal = sorted;
+    this.categoriasSemanas = sorted.map(d => `S${d.semana}`);
 
     this.seriesSemanal = [
       {
         name: 'Pendientes',
-        data: datos.map(d => d.sesionesPendientes),
+        data: sorted.map(d => d.sesionesPendientes),
         color: this.coloresSemanal['Pendientes']
       },
       {
         name: 'Realizadas',
-        data: datos.map(d => d.sesionesRealizadas),
+        data: sorted.map(d => d.sesionesRealizadas),
         color: this.coloresSemanal['Realizadas']
       },
       {
         name: 'Canceladas',
-        data: datos.map(d => d.sesionesCanceladas),
+        data: sorted.map(d => d.sesionesCanceladas),
         color: this.coloresSemanal['Canceladas']
       },
       {
         name: 'Reprogramadas',
-        data: datos.map(d => d.sesionesReprogramadas),
+        data: sorted.map(d => d.sesionesReprogramadas),
         color: this.coloresSemanal['Reprogramadas']
       }
     ];
@@ -801,18 +994,20 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarProgramas(): void {
     this.loadingProgramas = true;
     const { anio, estado, modalidad } = this.formFiltro.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerProgramasPorEstado$(estado, anio, undefined, undefined, modalidad, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerProgramasPorEstado$(estado, anio, undefined, undefined, modalidad, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardPrograma[]>) => {
           this.programas = response.body || [];
           this.loadingProgramas = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingProgramas = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -823,18 +1018,20 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarCursos(): void {
     this.loadingCursos = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerDetalleCursos$(undefined, undefined, undefined, idProgramaEspecificoPadre, anio, centroCostoPadre)
+    this._reporteDashboardService.obtenerDetalleCursos$(undefined, undefined, undefined, idProgramaEspecificoPadre, anio, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardCurso[]>) => {
           this.cursos = response.body || [];
           this.loadingCursos = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingCursos = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -845,18 +1042,20 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   cargarDocentes(): void {
     this.loadingDocentes = true;
     const anio = this.formFiltro.get('anio')?.value;
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
 
-    this._reporteDashboardService.obtenerDocentesAsignados$(anio, undefined, undefined, false, idProgramaEspecificoPadre, centroCostoPadre)
+    this._reporteDashboardService.obtenerDocentesAsignados$(anio, undefined, undefined, false, idProgramaEspecificoPadre, idCentroCostoPadre)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: HttpResponse<IReporteDashboardDocente[]>) => {
           this.docentes = response.body || [];
           this.loadingDocentes = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingDocentes = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -873,10 +1072,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    */
   limpiarFiltros(): void {
     this.formFiltro.reset();
-    const anioActual = new Date().getFullYear();
-    if (this.filtros.anios.includes(anioActual)) {
-      this.formFiltro.get('anio')?.setValue(anioActual);
-    }
+    // anio queda en null = todos los anios
     this.cargarDatosDashboard();
   }
 
@@ -885,9 +1081,6 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    */
   onTabChange(tab: string): void {
     this.activeTab = tab;
-    if (tab === 'cursos' && this.cursos.length === 0) {
-      this.cargarCursos();
-    }
   }
 
   /**
@@ -997,6 +1190,11 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     return `${e.category}\n${percent}%`;
   };
 
+  public labelOnlyPercent = (e: any): string => {
+    if (e.percentage < 0.05) return '';
+    return `${(e.percentage * 100).toFixed(0)}%`;
+  };
+
   /**
    * Tooltip para graficos
    */
@@ -1043,13 +1241,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
    * Carga los datos completos para exportacion a Excel
    */
   cargarDatosCompletos(): void {
-    const { idProgramaEspecificoPadre, centroCostoPadre } = this.getSelectedFilters();
+    const { idProgramaEspecificoPadre, idCentroCostoPadre } = this.getSelectedFilters();
     const filtro: IReporteDashboardFiltroRequest = {
       anio: this.formFiltro.get('anio')?.value,
       estado: this.formFiltro.get('estado')?.value,
       modalidad: this.formFiltro.get('modalidad')?.value,
       idProgramaEspecificoPadre,
-      centroCostoPadre
+      idCentroCostoPadre
     };
 
     this._reporteDashboardService.obtenerDatosCompletos$(filtro)
@@ -1062,9 +1260,11 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           } else if (this.datosCompletos.length === 0) {
             this._alertaService.notificationInfo('No hay datos para exportar');
           }
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1082,22 +1282,25 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.datosCambiosEstado = response.body || [];
           this.procesarDatosCambiosEstado(this.datosCambiosEstado);
           this.loadingCambiosEstado = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingCambiosEstado = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
 
   procesarDatosCambiosEstado(datos: IReporteDashboardCambioEstado[]): void {
-    this.categoriasCambiosEstado = datos.map(d =>
+    const datosOrdenados = [...datos].sort((a, b) => a.numeroSemana - b.numeroSemana);
+    this.categoriasCambiosEstado = datosOrdenados.map(d =>
       d.esSemanaActual ? `S${d.numeroSemana} (actual)` : `S${d.numeroSemana}`
     );
     this.seriesCambiosEstado = [
-      { name: 'Lanzamiento → Ejecución', data: datos.map(d => d.lanzamientoAEjecucion), color: '#28a745' },
-      { name: 'Ejecución → Concluido',   data: datos.map(d => d.ejecucionAConcluido),   color: '#007bff' },
-      { name: '→ Cancelado',             data: datos.map(d => d.aCancelado),             color: '#dc3545' }
+      { name: 'Lanzamiento → Ejecución', data: datosOrdenados.map(d => d.lanzamientoAEjecucion), color: '#28a745' },
+      { name: 'Ejecución → Concluido',   data: datosOrdenados.map(d => d.ejecucionAConcluido),   color: '#007bff' },
+      { name: '→ Cancelado',             data: datosOrdenados.map(d => d.aCancelado),             color: '#dc3545' }
     ];
   }
 
@@ -1130,10 +1333,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
         this.datosEstadosPorDia = response.body || [];
         this.procesarDatosEstadosPorDia(this.datosEstadosPorDia);
         this.loadingEstadosPorDia = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loadingEstadosPorDia = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -1149,13 +1354,13 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.categoriasEstadosPorDia = categoriasSet;
 
     const estadosUnicos = [...new Set(datos.map(d => d.estado))].filter(Boolean);
-    this.seriesEstadosPorDia = estadosUnicos.map(estado => ({
+    this.seriesEstadosPorDia = estadosUnicos.map((estado, i) => ({
       name: estado,
       data: categoriasSet.map(cat => {
         const item = datos.find(d => toKey(d) === cat && d.estado === estado);
         return item ? item.cantidadSesiones : 0;
       }),
-      color: this.coloresEstado[estado] || undefined
+      color: this.coloresEstado[estado] ?? this._paletaEstados[i % this._paletaEstados.length]
     }));
   }
 
@@ -1190,10 +1395,12 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       next: (response: HttpResponse<IReporteDashboardCursoV3[]>) => {
         this.cursosV3 = response.body || [];
         this.loadingCursosV3 = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loadingCursosV3 = false;
         this._reporteDashboardService.handleError(error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -1202,8 +1409,70 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.cargarCursosV3();
   }
 
+  limpiarFiltroCursosV3(): void {
+    this.formFiltroCursosV3.reset({ anio: new Date().getFullYear() });
+    this.filteredProgramasV3 = this.filtros.programasEspecificos.slice(0, 50);
+    this.filtroTablaV3 = '';
+    this.filtroColV3 = {};
+    this.paginaV3 = 1;
+    this.cargarCursosV3();
+  }
+
   onStateChangeCursosV3(state: State): void {
     this.stateCursosV3 = state;
+    this.cdr.markForCheck();
+  }
+
+  ordenarTablaV3(campo: string): void {
+    if (this.ordenV3Campo === campo) {
+      this.ordenV3Dir = this.ordenV3Dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.ordenV3Campo = campo;
+      this.ordenV3Dir = 'asc';
+    }
+    this.paginaV3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroTablaV3(valor: string): void {
+    this.filtroTablaV3 = valor;
+    this.paginaV3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroColV3(campo: string, valor: string): void {
+    this.filtroColV3 = { ...this.filtroColV3, [campo]: valor };
+    this.paginaV3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  irPaginaV3(pagina: number): void {
+    this.paginaV3 = Math.min(Math.max(1, pagina), this.totalPaginasV3);
+    this.expandedRowsV3.clear();
+    this.cdr.markForCheck();
+  }
+
+  cambiarTamPaginaV3(tam: number): void {
+    this.tamPaginaV3 = tam;
+    this.paginaV3 = 1;
+    this.expandedRowsV3.clear();
+    this.cdr.markForCheck();
+  }
+
+  toggleExpandRowV3(idx: number): void {
+    if (this.expandedRowsV3.has(idx)) {
+      this.expandedRowsV3.delete(idx);
+    } else {
+      this.expandedRowsV3.add(idx);
+    }
+    this.cdr.markForCheck();
+  }
+
+  modalidadFilterChange(value: string | null, filterService: any): void {
+    filterService.filter({
+      filters: value ? [{ field: 'modalidadClasificada', operator: 'eq', value }] : [],
+      logic: 'and'
+    });
   }
 
   getModalidadClasificadaBadgeClass(modalidad: string): string {
@@ -1239,38 +1508,52 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.datosSeguimiento = response.body || [];
           this.procesarDatosSeguimiento(this.datosSeguimiento);
           this.loadingSeguimiento = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.loadingSeguimiento = false;
           this._reporteDashboardService.handleError(error);
+          this.cdr.markForCheck();
         }
       });
   }
 
   procesarDatosSeguimiento(datos: IReporteDashboardSeguimientoClase[]): void {
-    // Agrupar por nroDiaSemana (independiente del idioma del servidor SQL)
-    const agrupado = new Map<number, IReporteDashboardSeguimientoClase>();
+    // Normalizar nombre de día (quita tildes, minúsculas) para comparar sin importar locale del servidor
+    const normalizar = (s: string) =>
+      (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+    // Agrupar por nombre de día normalizado
+    const agrupadoPorDia = new Map<string, IReporteDashboardSeguimientoClase>();
     datos.forEach(d => {
-      const nro = d.nroDiaSemana;
-      if (!agrupado.has(nro)) {
-        agrupado.set(nro, { ...d });
+      const key = normalizar(d.diaSemana ?? '');
+      if (!agrupadoPorDia.has(key)) {
+        agrupadoPorDia.set(key, { ...d });
       } else {
-        const ex = agrupado.get(nro)!;
-        ex.programadas  += d.programadas;
-        ex.ejecutadas   += d.ejecutadas;
-        ex.canceladas   += d.canceladas;
+        const ex = agrupadoPorDia.get(key)!;
+        ex.programadas   += d.programadas;
+        ex.ejecutadas    += d.ejecutadas;
+        ex.canceladas    += d.canceladas;
         ex.reprogramadas += d.reprogramadas;
         ex.totalSesiones += d.totalSesiones;
       }
     });
 
-    // Ordenar por numero de dia (2=Lunes ... 7=Sabado en SQL Server)
-    const diasOrdenados = [...agrupado.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1]);
+    // Orden fijo Lunes → Sábado; siempre muestra los 6 días aunque no tengan datos
+    const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
+    const diasOrdenados: IReporteDashboardSeguimientoClase[] = DIAS_SEMANA.map((nombre, idx) => {
+      const found = agrupadoPorDia.get(normalizar(nombre));
+      return found
+        ? { ...found, diaSemana: nombre }
+        : { nroDiaSemana: idx + 1, diaSemana: nombre, programadas: 0, ejecutadas: 0, canceladas: 0, reprogramadas: 0, totalSesiones: 0 } as IReporteDashboardSeguimientoClase;
+    });
+
+    this.datosSeguimiento = diasOrdenados;
     this.categoriasSeguimiento = diasOrdenados.map(d => d.diaSemana);
 
     this.seriesSeguimiento = [
-      { name: 'Programadas',   data: diasOrdenados.map(d => d.programadas),   color: this.coloresSeguimiento['Programadas'] },
+      { name: 'Por Ejecutar',   data: diasOrdenados.map(d => d.programadas),   color: this.coloresSeguimiento['Por Ejecutar'] },
       { name: 'Ejecutadas',    data: diasOrdenados.map(d => d.ejecutadas),    color: this.coloresSeguimiento['Ejecutadas'] },
       { name: 'Canceladas',    data: diasOrdenados.map(d => d.canceladas),    color: this.coloresSeguimiento['Canceladas'] },
       { name: 'Reprogramadas', data: diasOrdenados.map(d => d.reprogramadas), color: this.coloresSeguimiento['Reprogramadas'] }
@@ -1294,10 +1577,21 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   // DASHBOARD 2: Seguimiento por Docente
   // ═══════════════════════════════════════════════════════════════════════════
 
-  onMainTabChange(tab: 'dashboard1' | 'dashboard2'): void {
+  onMainTabChange(tab: 'dashboard1' | 'dashboard2' | 'dashboard3'): void {
     this.activeMainTab = tab;
-    if (tab === 'dashboard2' && this.docentesFiltro.length === 0) {
-      this.cargarDocentesFiltro();
+
+    if (tab === 'dashboard2') {
+      this.dashboard2Initialized = true;
+      if (this.docentesFiltro.length === 0) {
+        this.cargarDocentesFiltro();
+      }
+    }
+
+    if (tab === 'dashboard3') {
+      this.dashboard3Initialized = true;
+      if (this.fursDashboard3.length === 0) {
+        this.cargarFursDashboard3();
+      }
     }
   }
 
@@ -1310,8 +1604,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.docentesFiltro = response.body || [];
           this.docentesFiltroFiltered = this.docentesFiltro.slice(0, 50);
           this.loadingDocentesFiltro = false;
+          this.cdr.markForCheck();
         },
-        error: () => { this.loadingDocentesFiltro = false; }
+        error: () => { this.loadingDocentesFiltro = false; this.cdr.markForCheck(); }
       });
   }
 
@@ -1335,6 +1630,9 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   }
 
   cargarPEspecificoFiltro(busqueda?: string): void {
+    // Si hay docente seleccionado, no usar el buscador por texto
+    if (this.formFiltroD2.value.idDocente) return;
+
     if (!busqueda || busqueda.length < 2) {
       this.pEspecificoFiltroFiltered = this.pEspecificoFiltro.slice(0, 50);
       return;
@@ -1347,8 +1645,39 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
           this.pEspecificoFiltro = response.body || [];
           this.pEspecificoFiltroFiltered = this.pEspecificoFiltro;
           this.loadingPEspecificoFiltro = false;
+          this.cdr.markForCheck();
         },
-        error: () => { this.loadingPEspecificoFiltro = false; }
+        error: () => { this.loadingPEspecificoFiltro = false; this.cdr.markForCheck(); }
+      });
+  }
+
+  onDocenteValueChange(idDocente: number | null): void {
+    // Limpiar seleccion de PEspecifico cuando cambia el docente
+    this.formFiltroD2.patchValue({ idPEspecifico: null });
+    this.evaluacionesD2 = [];
+    this.alumnosNotas = [];
+
+    if (idDocente) {
+      this.cargarPEspecificoPorDocente(idDocente);
+    } else {
+      // Sin docente: volver al modo de búsqueda por texto
+      this.pEspecificoPorDocenteFiltro = [];
+      this.pEspecificoFiltroFiltered = this.pEspecificoFiltro.slice(0, 50);
+    }
+  }
+
+  cargarPEspecificoPorDocente(idProveedor: number): void {
+    this.loadingPEspecificoPorDocente = true;
+    this._reporteDashboardService.obtenerPEspecificoPorDocente$(idProveedor)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => { this.loadingPEspecificoPorDocente = false; this.cdr.markForCheck(); })
+      )
+      .subscribe({
+        next: (response: HttpResponse<IReporteDashboardPEspecificoPorDocente[]>) => {
+          this.pEspecificoPorDocenteFiltro = response.body || [];
+        },
+        error: () => { this.pEspecificoPorDocenteFiltro = []; }
       });
   }
 
@@ -1373,7 +1702,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     )
     .pipe(
       takeUntil(this.destroy$),
-      finalize(() => { this.loadingD2 = false; })
+      finalize(() => { this.loadingD2 = false; this.cdr.markForCheck(); })
     )
     .subscribe({
       next: (response: HttpResponse<IReporteDashboardSeguimientoDocente>) => {
@@ -1391,33 +1720,35 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Siempre cargar notas — el SP acepta @IdPEspecifico = NULL
-    this.cargarNotasAlumnos(idPEspecifico || undefined);
+    // Cargar notas si hay un PEspecifico seleccionado
+    if (idPEspecifico) {
+      this.cargarNotasPorPEspecifico(idPEspecifico);
+    } else {
+      this.evaluacionesD2 = [];
+      this.alumnosNotas = [];
+    }
   }
 
-  cargarNotasAlumnos(idPEspecifico?: number): void {
+  cargarNotasPorPEspecifico(idPEspecifico: number): void {
     this.loadingNotas = true;
-    this.notasAlumnos = null;
-    this.notasDetalleData = [];
-    this._reporteDashboardService.obtenerNotasAlumnosPorPrograma$(idPEspecifico)
-    .pipe(
-      takeUntil(this.destroy$),
-      finalize(() => { this.loadingNotas = false; })
-    )
-    .subscribe({
-      next: (response: HttpResponse<IReporteDashboardNotasAlumnos>) => {
-        const data = response.body;
-        if (data) {
-          this.notasAlumnos     = data;
-          this.notasDetalleData = data.detalle || [];
+    this._reporteDashboardService.obtenerNotasPorPEspecifico$(idPEspecifico)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => { this.loadingNotas = false; this.cdr.markForCheck(); })
+      )
+      .subscribe({
+        next: (response: HttpResponse<INotasPorPEspecificoD2>) => {
+          const data = response.body;
+          if (data) {
+            this.evaluacionesD2 = data.evaluaciones || [];
+            this.alumnosNotas   = data.alumnos || [];
+          }
+        },
+        error: () => {
+          this.evaluacionesD2 = [];
+          this.alumnosNotas   = [];
         }
-      },
-      error: () => {}
-    });
-  }
-
-  onStateChangeNotas(state: State): void {
-    this.stateNotas = state;
+      });
   }
 
   limpiarFiltroD2(): void {
@@ -1425,8 +1756,10 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     this.seguimientoDocenteKPIs    = { ...this._kpisVacio };
     this.seguimientoDocenteProgramas = [];
     this.seguimientoDocenteSesiones  = [];
-    this.notasAlumnos     = null;
-    this.notasDetalleData = [];
+    this.evaluacionesD2 = [];
+    this.alumnosNotas   = [];
+    this.pEspecificoPorDocenteFiltro = [];
+    this.pEspecificoFiltroFiltered = this.pEspecificoFiltro.slice(0, 50);
     this.buscarSeguimientoDocente();
   }
 
@@ -1447,6 +1780,81 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   onStateChangeD2Programas(state: State): void {
     this.stateD2Programas = state;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DASHBOARD 3: FURs
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  cargarFursDashboard3(): void {
+    this.loadingD3 = true;
+    this._reporteDashboardService.obtenerFursDashboard3$()
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => { this.loadingD3 = false; this.cdr.markForCheck(); })
+      )
+      .subscribe({
+        next: (response: HttpResponse<IFurDashboard3[]>) => {
+          this.fursDashboard3 = response.body || [];
+          this.paginaD3 = 1;
+          this.expandedRowsD3.clear();
+        },
+        error: () => { this.fursDashboard3 = []; }
+      });
+  }
+
+  onStateChangeD3(state: State): void {
+    this.stateD3 = state;
+  }
+
+  ordenarTablaD3(campo: string): void {
+    if (this.ordenD3Campo === campo) {
+      this.ordenD3Dir = this.ordenD3Dir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.ordenD3Campo = campo;
+      this.ordenD3Dir = 'asc';
+    }
+    this.paginaD3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroTablaD3(valor: string): void {
+    this.filtroTablaD3 = valor;
+    this.paginaD3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  onFiltroColD3(campo: string, valor: string): void {
+    this.filtroColD3 = { ...this.filtroColD3, [campo]: valor };
+    this.paginaD3 = 1;
+    this.cdr.markForCheck();
+  }
+
+  irPaginaD3(pagina: number): void {
+    this.paginaD3 = Math.min(Math.max(1, pagina), this.totalPaginasD3);
+    this.expandedRowsD3.clear();
+    this.cdr.markForCheck();
+  }
+
+  cambiarTamPaginaD3(tam: number): void {
+    this.tamPaginaD3 = tam;
+    this.paginaD3 = 1;
+    this.expandedRowsD3.clear();
+    this.cdr.markForCheck();
+  }
+
+  toggleExpandRowD3(idx: number): void {
+    if (this.expandedRowsD3.has(idx)) {
+      this.expandedRowsD3.delete(idx);
+    } else {
+      this.expandedRowsD3.add(idx);
+    }
+    this.cdr.markForCheck();
+  }
+
+  formatearNumero(valor: number | null | undefined, decimales: number = 2): string {
+    if (valor === null || valor === undefined) return '-';
+    return valor.toLocaleString('es-PE', { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
   }
 
   getEstadoSesionColor(idEstado: number): string {
