@@ -104,6 +104,7 @@ import { CalificacionChatBotComponent } from './calificacion-chat-bot/registro-c
 import { ListaAlumnoComponent } from './calificacion-chat-bot/lista-alumno/lista-alumno.component';
 import { ChatsListComponent } from './calificacion-chat-bot/chats-list/chats-list.component';
 import { EvaluationFormComponent } from './calificacion-chat-bot/evaluation-form/evaluation-form.component';
+import { ChatMessagesComponent } from './calificacion-chat-bot/chat-messages/chat-messages.component';
 import { NuevaAgendaAtcComponent } from './gestion-atencion-cliente/nueva-agenda-atc/nueva-agenda-atc.component';
 
 registerLocaleData(localeEs);
@@ -198,6 +199,7 @@ registerLocaleData(localeEs);
     ListaAlumnoComponent,
     ChatsListComponent,
     EvaluationFormComponent,
+    ChatMessagesComponent,
     NuevaAgendaAtcComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

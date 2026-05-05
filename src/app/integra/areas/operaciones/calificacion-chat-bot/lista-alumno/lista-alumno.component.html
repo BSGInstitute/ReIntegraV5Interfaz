@@ -1,75 +1,244 @@
-<div class="students-container">
-  <div class="filters-section">
-    <h2>Filtros</h2>
+<div class="card border-primary mb-3">
+  <div class="card-header bg-color-material pb-0">
+    <div class="row">
+      <h2 class="m-2 text-white" id="title_evaluacion">(O) Evaluacion ChatBot</h2>
+    </div>
+  </div>
+  <div class="card-body p-4">
+    <!-- Filtros -->
     <div class="filters-grid">
+      <!-- Selector de campo (solo tab Alumnos) -->
+      <mat-form-field appearance="outline" *ngIf="selectedTabIndex === 0">
+        <mat-label>Buscar por</mat-label>
+        <mat-select [(ngModel)]="searchField" (ngModelChange)="onSearchFieldChange()">
+          <mat-option value="nombre">Nombre</mat-option>
+          <mat-option value="matricula">Matrícula</mat-option>
+          <mat-option value="correo">Correo</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Input de búsqueda -->
       <mat-form-field appearance="outline">
-        <mat-label>Buscar alumno</mat-label>
-        <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" />
+        <mat-label>Buscar</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
+               [placeholder]="selectedTabIndex === 0
+                 ? (searchField === 'matricula' ? 'Buscar por matrícula'
+                   : searchField === 'correo'   ? 'Buscar por correo'
+                                                : 'Buscar por nombre')
+                 : 'ID Contacto Portal'" />
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Tipo de alumno</mat-label>
-        <mat-select [(ngModel)]="isRegisteredFilter" (ngModelChange)="applyFilters()">
-          <mat-option value="">Todos</mat-option>
-          <mat-option value="true">Registrado</mat-option>
-          <mat-option value="false">No Registrado</mat-option>
+        <mat-label>Área de Derivación</mat-label>
+        <mat-select [(ngModel)]="areaDerivacionFilter" (ngModelChange)="applyFilters()">
+          <mat-option value="">Todas</mat-option>
+          <mat-option value="no-derivado">No Derivado</mat-option>
+          <mat-option value="1">Atención al Cliente</mat-option>
+          <mat-option value="2">Comercial</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Estado de calificación</mat-label>
-        <mat-select [(ngModel)]="isRatedFilter" (ngModelChange)="applyFilters()">
+        <mat-label>Estado de Calificación</mat-label>
+        <mat-select [(ngModel)]="estadoCalificacionFilter" (ngModelChange)="applyFilters()">
           <mat-option value="">Todos</mat-option>
-          <mat-option value="true">Calificado</mat-option>
-          <mat-option value="false">No Calificado</mat-option>
+          <mat-option value="pendientes">Pendientes</mat-option>
+          <mat-option value="calificados">Calificados</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
+
+    <!-- Barra de búsqueda por rango de fechas -->
+    <div class="search-bar">
+      <mat-form-field appearance="outline" class="fecha-field">
+        <mat-label>Fecha inicio</mat-label>
+        <input matInput [matDatepicker]="pickerInicio" placeholder="dd/mm/aaaa"
+               [(ngModel)]="fechaInicio" (ngModelChange)="onFechaInicioChange()">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+        <mat-datepicker #pickerInicio></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="fecha-field">
+        <mat-label>Fecha fin</mat-label>
+        <input matInput [matDatepicker]="pickerFin" placeholder="dd/mm/aaaa"
+               [(ngModel)]="fechaFin" [min]="fechaInicio">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFin></mat-datepicker>
+        <mat-error *ngIf="fechaFin && fechaInicio && fechaFin < fechaInicio">
+          La fecha fin no puede ser menor a la fecha inicio
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" (click)="onBuscar()"
+              [disabled]="!fechaInicio && !(searchField === 'matricula' && searchTerm)"
+              class="buscar-btn">
+        <mat-icon>search</mat-icon> Buscar
+      </button>
+
+      <button mat-stroked-button *ngIf="hasLoadedOnce" (click)="limpiarFechas()" class="limpiar-btn">
+        <mat-icon>clear</mat-icon> Limpiar
+      </button>
+    </div>
+
+    <!-- Estado vacío: sin fecha seleccionada -->
+    <!-- <div *ngIf="!hasLoadedOnce" class="empty-state-hint">
+      <mat-icon>date_range</mat-icon>
+      <p>Seleccioná una fecha de corte y presioná <strong>Buscar</strong> para cargar los alumnos</p>
+    </div> -->
+
+  <!-- Tabs -->
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
+    <!-- Tab Alumnos -->
+    <mat-tab label="Alumnos">
+      <div class="table-section">
+        <table mat-table [dataSource]="dataSourceAlumnos" class="data-table">
+          <!-- Nombre Alumno -->
+          <ng-container matColumnDef="nombreAlumno">
+            <th mat-header-cell *matHeaderCellDef>Nombre Alumno</th>
+            <td mat-cell *matCellDef="let element">
+              <strong>{{ element.nombreAlumno }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Código Matrícula -->
+          <ng-container matColumnDef="codigoMatricula">
+            <th mat-header-cell *matHeaderCellDef>Código Matrícula</th>
+            <td mat-cell *matCellDef="let element">{{ element.codigoMatricula }}</td>
+          </ng-container>
+
+          <!-- Estado Matrícula -->
+          <ng-container matColumnDef="estadoMatricula">
+            <th mat-header-cell *matHeaderCellDef>Estado Matrícula</th>
+            <td mat-cell *matCellDef="let element">{{ element.estadoMatricula }}</td>
+          </ng-container>
+
+          <!-- Código Área Derivación -->
+          <ng-container matColumnDef="codigoAreaDerivacion">
+            <th mat-header-cell *matHeaderCellDef>Área Derivación</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge badge-area" [ngClass]="getAreaDerivacionColor(element.codigoAreaDerivacion, element.derivado)">
+                {{ getAreaDerivacionNombre(element.codigoAreaDerivacion, element.derivado) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Total Chats -->
+          <ng-container matColumnDef="totalChats">
+            <th mat-header-cell *matHeaderCellDef>Total Chats</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge-count">{{ element.totalChats }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Pendientes de Calificación -->
+          <ng-container matColumnDef="pendientesCalificacion">
+            <th mat-header-cell *matHeaderCellDef>Pendientes Calificación</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge" [ngClass]="getPendientesColor(element.pendientesCalificacion, element.totalChats)">
+                {{ element.pendientesCalificacion }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" (click)="onSelectAlumno(element)">
+                Ver Chats
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsAlumnos"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsAlumnos;"></tr>
+        </table>
+
+        <div *ngIf="hasLoadedOnce && dataSourceAlumnos.data.length === 0" class="no-data">
+          <mat-icon>inbox</mat-icon>
+          <p>No se encontraron alumnos</p>
+        </div>
+
+        <mat-paginator
+          #paginatorAlumnos
+          [length]="totalAlumnos"
+          [pageSizeOptions]="pageSizeOptions"
+          [pageSize]="pageSizeAlumnos"
+          showFirstLastButtons
+          aria-label="Seleccione página de alumnos">
+        </mat-paginator>
+      </div>
+    </mat-tab>
+
+    <!-- Tab No Alumnos -->
+    <mat-tab label="No Alumnos">
+      <div class="table-section">
+        <table mat-table [dataSource]="dataSourceNoAlumnos" class="data-table">
+          <!-- ID Contacto Portal Segmento -->
+          <ng-container matColumnDef="idContactoPortalSegmento">
+            <th mat-header-cell *matHeaderCellDef>ID Contacto Portal</th>
+            <td mat-cell *matCellDef="let element">
+              <strong>{{ element.idContactoPortalSegmento }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Código Área Derivación -->
+          <ng-container matColumnDef="codigoAreaDerivacion">
+            <th mat-header-cell *matHeaderCellDef>Área Derivación</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge badge-area" [ngClass]="getAreaDerivacionColor(element.codigoAreaDerivacion, element.derivado)">
+                {{ getAreaDerivacionNombre(element.codigoAreaDerivacion, element.derivado) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Total Chats -->
+          <ng-container matColumnDef="totalChats">
+            <th mat-header-cell *matHeaderCellDef>Total Chats</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge-count">{{ element.totalChats }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Pendientes de Calificación -->
+          <ng-container matColumnDef="pendientesCalificacion">
+            <th mat-header-cell *matHeaderCellDef>Pendientes Calificación</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge" [ngClass]="getPendientesColor(getPendientesNoAlumno(element), element.totalChats)">
+                {{ getPendientesNoAlumno(element) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="primary" (click)="onSelectNoAlumno(element)">
+                Ver Chats
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsNoAlumnos"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsNoAlumnos;"></tr>
+        </table>
+
+        <div *ngIf="dataSourceNoAlumnos.data.length === 0" class="no-data">
+          <mat-icon>inbox</mat-icon>
+          <p>No se encontraron registros</p>
+        </div>
+
+        <mat-paginator 
+          #paginatorNoAlumnos
+          [pageSizeOptions]="pageSizeOptions"
+          [pageSize]="pageSize"
+          showFirstLastButtons
+          aria-label="Seleccione página de no alumnos">
+        </mat-paginator>
   </div>
-
-  <div class="table-section">
-    <h2>Alumnos</h2>
-    <table mat-table [dataSource]="filteredStudents" class="students-table">
-      <!-- Nombre Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Nombre del Alumno</th>
-        <td mat-cell *matCellDef="let element">
-          <strong>{{ element.name }}</strong>
-          <span class="student-type" [ngClass]="{ registered: element.isRegistered, unregistered: !element.isRegistered }">
-            {{ getStudentType(element.isRegistered) }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- Total Chats Column -->
-      <ng-container matColumnDef="totalChats">
-        <th mat-header-cell *matHeaderCellDef>Total de Hilos</th>
-        <td mat-cell *matCellDef="let element">{{ element.totalChats }}</td>
-      </ng-container>
-
-      <!-- Average Rating Column -->
-      <ng-container matColumnDef="averageRating">
-        <th mat-header-cell *matHeaderCellDef>Promedio</th>
-        <td mat-cell *matCellDef="let element">
-          <span class="rating" [ngClass]="getRatingColor(element.averageRating)">
-            {{ element.averageRating > 0 ? (element.averageRating | number: '1.1-1') : 'Sin calificar' }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- Actions Column -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-raised-button color="primary" (click)="onSelectStudent(element)">
-            Ver Chats
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
 </div>
