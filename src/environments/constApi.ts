@@ -1322,7 +1322,26 @@ export const constApiOperaciones = {
     '/AgendaInformacionActividad/AgregarPEspecificoSesionEncuestaAlumno',
   AgregarComentarioEncuesta:
     '/AgendaInformacionActividad/AgregarComentarioEncuesta',
-};
+
+    //Calificacion Chat-Bot
+ObtenerHilosChatConAlumnos: "/ChatDetalleIntegra/ObtenerHilosChatConAlumnos",
+ObtenerHilosChatPorSegmento: "/ChatDetalleIntegra/ObtenerHilosChatPorSegmento",
+ObtenerChatBotPorAlumno: "/ChatDetalleIntegra/ObtenerChatBotPorAlumno",
+ObtenerChatBotWhatsAppAtcPorAlumno: "/ChatDetalleIntegra/ObtenerChatBotWhatsAppAtcPorAlumno",
+ObtenerChatBotPorPortalSegmento: "/ChatDetalleIntegra/ObtenerChatBotPorPortalSegmento",
+InsertarRespuestaEvaluacionCompleta: "/ChatDetalleIntegra/InsertarRespuestaEvaluacionCompleta",
+ObtenerTiposEntradaActivos: "/ChatDetalleIntegra/ObtenerTiposEntradaActivos",
+ObtenerVersionesFormularioActivas: "/ChatDetalleIntegra/ObtenerVersionesFormularioActivas",
+ObtenerPreguntasConRespuestas: "/ChatDetalleIntegra/ObtenerPreguntasConRespuestas",
+ObtenerRespuestasPorVersionFormulario: "/ChatDetalleIntegra/ObtenerRespuestasPorVersionFormulario",
+ObtenerRespuestasPorPregunta: "/ChatDetalleIntegra/ObtenerRespuestasPorPregunta",
+ObtenerPreguntasPorVersionFormulario: "/ChatDetalleIntegra/ObtenerPreguntasPorVersionFormulario",
+ObtenerRespuestasUsuarioPorFormularioAplicado: "/ChatDetalleIntegra/ObtenerRespuestasUsuarioPorFormularioAplicado",
+InsertarRespuestaEvaluacionCompletaWhatsapp: "/ChatDetalleIntegra/InsertarRespuestaEvaluacionCompletaWhatsapp",
+ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp: "/ChatDetalleIntegra/ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp",
+ObtenerHilosPaginadosPorAlumno: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorAlumno",
+ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
+  };
 
 export const constApiMarketing = {
   ///Prueba
