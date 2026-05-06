@@ -2153,6 +2153,8 @@ export const constApiMarketing = {
     '/AsignacionManual/CerrarOportunidadBRM1',
   AsignarManualmenteCerrarOportunidadNS:
     '/AsignacionManual/CerrarOportunidadNS',
+  ActualizarAsignacionPaisAsesor: '/AsignacionRegular/ActualizarAsignacionPaisAsesor',
+  ObtenerAsignacionPaisAsesor: '/AsignacionRegular/ObtenerAsignacionPaisAsesor',
 
   //Asignacion  Manual Oportunidad
 
