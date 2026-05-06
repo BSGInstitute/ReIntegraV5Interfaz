@@ -234,6 +234,15 @@ export interface AlumnoListadoDTO {
   fechaUltimoChat: Date;
 }
 
+export interface SegmentoListadoDTO {
+  idContactoPortalSegmento: string;
+  codigoAreaDerivacion?:    number;
+  derivado:                 boolean;
+  totalChats:               number;
+  pendientesCalificacion:   number;
+  fechaUltimoChat:          Date;
+}
+
 // DTO de solicitudes vinculadas a un hilo de chat
 export interface SolicitudPorHiloDTO {
   idChatbotAlumnoSolicitud: number;

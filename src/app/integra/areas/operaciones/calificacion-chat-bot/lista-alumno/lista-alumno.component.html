@@ -53,7 +53,7 @@
     <div class="search-bar">
       <mat-form-field appearance="outline" class="fecha-field">
         <mat-label>Fecha inicio</mat-label>
-        <input matInput [matDatepicker]="pickerInicio" placeholder="dd/mm/aaaa"
+        <input matInput [matDatepicker]="pickerInicio" placeholder="mm/dd/aaaa"
                [(ngModel)]="fechaInicio" (ngModelChange)="onFechaInicioChange()">
         <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
         <mat-datepicker #pickerInicio></mat-datepicker>
@@ -61,7 +61,7 @@
 
       <mat-form-field appearance="outline" class="fecha-field">
         <mat-label>Fecha fin</mat-label>
-        <input matInput [matDatepicker]="pickerFin" placeholder="dd/mm/aaaa"
+        <input matInput [matDatepicker]="pickerFin" placeholder="mm/dd/aaaa"
                [(ngModel)]="fechaFin" [min]="fechaInicio">
         <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
         <mat-datepicker #pickerFin></mat-datepicker>
@@ -71,12 +71,12 @@
       </mat-form-field>
 
       <button mat-flat-button color="primary" (click)="onBuscar()"
-              [disabled]="!fechaInicio && !(searchField === 'matricula' && searchTerm)"
+              [disabled]="(selectedTabIndex === 0 && !fechaInicio && !(searchField === 'matricula' && searchTerm)) || (selectedTabIndex === 1 && !fechaInicio)"
               class="buscar-btn">
         <mat-icon>search</mat-icon> Buscar
       </button>
 
-      <button mat-stroked-button *ngIf="hasLoadedOnce" (click)="limpiarFechas()" class="limpiar-btn">
+      <button mat-stroked-button *ngIf="hasLoadedOnce || hasLoadedOnceNoAlumnos" (click)="limpiarFechas()" class="limpiar-btn">
         <mat-icon>clear</mat-icon> Limpiar
       </button>
     </div>
@@ -205,8 +205,8 @@
           <ng-container matColumnDef="pendientesCalificacion">
             <th mat-header-cell *matHeaderCellDef>Pendientes Calificación</th>
             <td mat-cell *matCellDef="let element">
-              <span class="badge" [ngClass]="getPendientesColor(getPendientesNoAlumno(element), element.totalChats)">
-                {{ getPendientesNoAlumno(element) }}
+              <span class="badge" [ngClass]="getPendientesColor(element.pendientesCalificacion, element.totalChats)">
+                {{ element.pendientesCalificacion }}
               </span>
             </td>
           </ng-container>
@@ -225,15 +225,16 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumnsNoAlumnos;"></tr>
         </table>
 
-        <div *ngIf="dataSourceNoAlumnos.data.length === 0" class="no-data">
+        <div *ngIf="hasLoadedOnceNoAlumnos && dataSourceNoAlumnos.data.length === 0" class="no-data">
           <mat-icon>inbox</mat-icon>
           <p>No se encontraron registros</p>
         </div>
 
-        <mat-paginator 
+        <mat-paginator
           #paginatorNoAlumnos
+          [length]="totalNoAlumnos"
           [pageSizeOptions]="pageSizeOptions"
-          [pageSize]="pageSize"
+          [pageSize]="pageSizeNoAlumnos"
           showFirstLastButtons
           aria-label="Seleccione página de no alumnos">
         </mat-paginator>

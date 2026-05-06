@@ -1340,6 +1340,8 @@ ObtenerRespuestasUsuarioPorFormularioAplicado: "/ChatDetalleIntegra/ObtenerRespu
 InsertarRespuestaEvaluacionCompletaWhatsapp: "/ChatDetalleIntegra/InsertarRespuestaEvaluacionCompletaWhatsapp",
 ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp: "/ChatDetalleIntegra/ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp",
 ObtenerHilosPaginadosPorAlumno: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorAlumno",
+ObtenerHilosChatPorSegmentoPaginado: "/ChatDetalleIntegra/ObtenerHilosChatPorSegmentoPaginado",
+ObtenerHilosPaginadosPorSegmento: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorSegmento",
 ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
   };
 
