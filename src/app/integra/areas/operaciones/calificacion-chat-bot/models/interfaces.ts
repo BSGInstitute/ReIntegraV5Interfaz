@@ -109,6 +109,8 @@ export interface ChatbotMensajeDTO {
   contenido: string;
   idContactoPortalSegmento: string;
   fechaCreacion?: Date;
+  esBot?: number; // 1 = bot, 0 = asesor humano
+  personal?: string; // Nombre del asesor humano que respondió
 }
 
 export interface ChatbotWhatsAppMensajeDTO {
@@ -122,6 +124,8 @@ export interface ChatbotWhatsAppMensajeDTO {
   waFileName?: string | null;
   waCaption?: string | null;
   fechaCreacion?: Date;
+  esBot?: number; // 1 = bot, 0 = asesor humano
+  personal?: string; // Nombre del asesor humano que respondió
 }
 
 // DTOs del Formulario de Evaluación
