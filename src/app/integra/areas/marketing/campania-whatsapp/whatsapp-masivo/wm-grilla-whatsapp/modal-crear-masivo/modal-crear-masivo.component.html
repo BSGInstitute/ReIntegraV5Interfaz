@@ -1,0 +1,606 @@
+<!-- WRAPPER PRINCIPAL: altura fija, flex column, sin overflow -->
+<div class="mc-wrapper">
+
+  <!-- LOADER DE PRECARGA -->
+  <ng-container *ngIf="loadingPrecarga">
+    <div class="precarga-overlay">
+      <mat-progress-spinner mode="indeterminate" color="primary" diameter="48"></mat-progress-spinner>
+      <p class="mt-3 text-muted">Cargando informacion de los leads...</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!loadingPrecarga">
+
+    <!-- ZONA FIJA SUPERIOR (header + toolbar + tip) -->
+    <div class="mc-zona-fija-top">
+
+      <!-- HEADER -->
+      <div class="mc-header">
+        <div class="mc-header-left">
+          <span class="mc-titulo">Creacion Masiva de Oportunidades</span>
+          <span class="mc-subtitulo">{{ data.length }} conversaciones seleccionadas</span>
+        </div>
+        <div class="mc-header-counters">
+          <span class="mc-counter mc-counter--activos">Activos: {{ totalActivos }}</span>
+          <span class="mc-counter mc-counter--excluidos">Excluidos: {{ totalExcluidos }}</span>
+        </div>
+        <button mat-icon-button class="mc-close-btn" (click)="cerrarModal()" [disabled]="creandoOportunidades">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="mc-toolbar">
+        <!-- IA — Capturar datos -->
+        <button kendoButton themeColor="warning"
+          (click)="capturarDatosIA()"
+          [disabled]="true">
+          <span *ngIf="!procesandoIA">Capturar datos IA</span>
+          <span *ngIf="procesandoIA">&#9203; {{ iaProgreso.completados }} / {{ iaProgreso.total }}</span>
+        </button>
+        <button kendoButton themeColor="secondary"
+          (click)="calificarConIA()"
+          [disabled]="true">
+          <span *ngIf="!procesandoCalificacion">Calificar con IA</span>
+          <span *ngIf="procesandoCalificacion">&#9203; {{ calificacionProgreso.completados }} / {{ calificacionProgreso.total }}</span>
+        </button>
+
+        <div class="mc-toolbar-sep"></div>
+
+        <!-- Plantilla masiva -->
+        <kendo-dropdownlist
+          [data]="listaPlantillas"
+          textField="nombre"
+          valueField="id"
+          [(ngModel)]="plantillaMasivaId"
+          [valuePrimitive]="true"
+          [defaultItem]="{ nombre: '— Plantilla —', id: null }"
+          [kendoDropDownFilter]="filterSettings"
+          class="mc-dropdown-plantilla"
+        ></kendo-dropdownlist>
+
+        <!-- Inputs ocultos para archivo/imagen masivos -->
+        <input #inputArchivoMasivo type="file"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+          style="display:none"
+          (change)="onArchivoMasivoSeleccionado($event, 'doc')" />
+        <input #inputImagenMasiva type="file"
+          accept="image/*"
+          style="display:none"
+          (change)="onArchivoMasivoSeleccionado($event, 'img')" />
+
+        <button kendoButton themeColor="base" class="btn-archivo" (click)="abrirSelectorArchivoMasivo()" [disabled]="creandoOportunidades">
+          Archivo
+        </button>
+        <button kendoButton themeColor="base" class="btn-imagen" (click)="abrirSelectorImagenMasiva()" [disabled]="creandoOportunidades">
+          Imagen
+        </button>
+
+        <button
+          kendoButton
+          themeColor="primary"
+          (click)="ejecutarEnviosSeleccionados()"
+          [disabled]="enviandoMensajes || creandoOportunidades || loader">
+          Enviar seleccionados
+        </button>
+
+        <div class="mc-toolbar-sep"></div>
+
+        <!-- Confirmar perfiles -->
+        <button kendoButton themeColor="success" (click)="confirmarPerfilesMasivo()" [disabled]="creandoOportunidades || loader">
+          Confirmar perfiles
+        </button>
+
+        <div class="mc-toolbar-sep"></div>
+
+        <!-- Asesor masivo -->
+        <label class="mc-label-inline">Asesor masivo:</label>
+        <kendo-dropdownlist
+          [data]="listaAsesores"
+          textField="nombre"
+          valueField="id"
+          [(ngModel)]="asesorMasivoId"
+          [valuePrimitive]="true"
+          [defaultItem]="{ nombre: '— Seleccionar —', id: null }"
+          [kendoDropDownFilter]="filterSettings"
+          class="mc-dropdown-asesor"
+          (valueChange)="aplicarAsesorMasivo()"
+        ></kendo-dropdownlist>
+      </div>
+
+    </div>
+    <!-- /mc-zona-fija-top -->
+
+    <!-- ZONA SCROLLABLE (cards) -->
+    <div class="mc-body">
+
+      <!-- PANTALLA DE PROGRESO (durante creacion) -->
+      <ng-container *ngIf="creandoOportunidades">
+        <div class="mc-progreso">
+          <p class="mc-progreso-texto">Creando oportunidad para: <strong>{{ progresoNombreActual }}</strong></p>
+          <p class="mc-progreso-contador">{{ progresoActual }} de {{ progresoTotal }}</p>
+          <kendo-progressbar [value]="porcentajeProgreso" [label]="{ visible: true, format: 'percent' }"></kendo-progressbar>
+        </div>
+      </ng-container>
+
+      <!-- PANEL DE RESULTADOS (despues de crear) -->
+      <ng-container *ngIf="mostrarResultados && !creandoOportunidades">
+        <div class="mc-resultados">
+          <h4>Resultado de la creacion masiva</h4>
+          <div class="mc-resultados-resumen">
+            <span class="badge-ok">{{ exitoCreacion }} creadas</span>
+            <span class="badge-err" *ngIf="errorCreacionCount > 0">{{ errorCreacionCount }} con error</span>
+          </div>
+          <table class="mc-tabla-resultados" *ngIf="errorCreacionCount > 0">
+            <thead><tr><th>Alumno</th><th>Error</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of resultados">
+                <ng-container *ngIf="!r.exito">
+                  <td>{{ r.nombre }}</td>
+                  <td class="text-danger">{{ r.error }}</td>
+                </ng-container>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+      <!-- CARDS DE LEADS -->
+      <ng-container *ngIf="!creandoOportunidades">
+        <div
+          *ngFor="let lead of leads"
+          class="mc-lead-card"
+          [class.mc-lead-card--excluido]="lead.excluido"
+          [class.mc-lead-card--creado]="lead.oportunidadCreada"
+        >
+          <!-- HEADER DE LA CARD (siempre visible) -->
+          <div class="mc-card-header" (click)="toggleExpand(lead)">
+            <div class="mc-card-header-left">
+              <input
+                type="checkbox"
+                [(ngModel)]="lead.seleccionado"
+                (click)="$event.stopPropagation()"
+                (change)="toggleSeleccion(lead)"
+                [disabled]="lead.excluido || lead.oportunidadCreada"
+                class="mc-checkbox"
+              />
+              <span class="mc-alumno-id">{{ lead.idAlumno }}</span>
+              <span class="mc-alumno-nombre">{{ lead.nombre }}</span>
+              <span class="mc-alumno-pais">{{ lead.pais }}</span>
+              <span class="mc-alumno-celular">{{ lead.celular }}</span>
+              <span class="mc-alumno-email" *ngIf="lead.email">{{ lead.email }}</span>
+            </div>
+            <div class="mc-card-badges">
+              <!-- Badge: Calificacion IA -->
+              <span
+                *ngIf="lead.badgeCalificacion"
+                class="mc-badge"
+                [ngClass]="getBadgeCalificacionClass(lead.badgeCalificacion)"
+              >{{ lead.badgeCalificacion }}</span>
+              <!-- Badge: Perfil Confirmado -->
+              <span *ngIf="lead.perfilConfirmado" class="mc-badge mc-badge--confirmado">Perfil Confirmado</span>
+              <!-- Badge: Ultima captura -->
+              <span *ngIf="lead.fechaUltimaCaptura" class="mc-badge mc-badge--captura">
+                Ult. captura: {{ lead.fechaUltimaCaptura | date:'HH:mm dd/MM/yy' }}
+              </span>
+              <!-- Badge: Oportunidad creada -->
+              <span *ngIf="lead.oportunidadCreada" class="mc-badge mc-badge--creada">Oportunidad Creada</span>
+              <!-- Badge: Error -->
+              <span *ngIf="lead.errorCreacion" class="mc-badge mc-badge--error" [title]="lead.errorCreacion">Error</span>
+              <!-- Badges: Estado extraccion IA -->
+              <div class="mc-ia-badge" *ngIf="lead.iaEstado">
+                <span *ngIf="lead.iaEstado === 'procesando'" class="badge-procesando">Procesando IA...</span>
+                <span *ngIf="lead.iaEstado === 'completado'" class="badge-completado">Datos capturados</span>
+                <span *ngIf="lead.iaEstado === 'no_creable'" class="badge-no-creable">No creable</span>
+                <span *ngIf="lead.iaEstado === 'error'" class="badge-error">Error IA</span>
+              </div>
+              <!-- Badges: Estado calificacion IA -->
+              <div class="mc-ia-badge" *ngIf="lead.calificacionEstado">
+                <span *ngIf="lead.calificacionEstado === 'procesando'" class="badge-procesando">Calificando...</span>
+                <span *ngIf="lead.calificacionEstado === 'completado'" class="badge-calificado">
+                  {{ reemplazarGuion(lead.calificacionResultado?.calificacion) || 'Calificado' }}
+                </span>
+                <span *ngIf="lead.calificacionEstado === 'no_creable'" class="badge-no-creable">No creable</span>
+                <span *ngIf="lead.calificacionEstado === 'error'" class="badge-error">Error calificacion</span>
+              </div>
+            </div>
+            <mat-icon class="mc-expand-icon">{{ lead.expandido ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </div>
+
+          <!-- DATOS EXTRAIDOS POR IA — comparativo antes → después -->
+          <div class="mc-ia-datos" *ngIf="lead.iaEstado === 'completado' && lead.iaCambios?.length">
+            <div *ngFor="let cambio of lead.iaCambios" class="mc-ia-cambio">
+              <small>
+                <b>{{ cambio.campo }}:</b>
+                <span *ngIf="cambio.antes" class="mc-ia-antes">{{ cambio.antes }}</span>
+                <span *ngIf="cambio.antes" class="mc-ia-flecha"> → </span>
+                <span class="mc-ia-despues">{{ cambio.despues }}</span>
+              </small>
+            </div>
+          </div>
+
+          <!-- Diff datos IA -->
+          <div class="mc-ia-diff-box"
+               *ngIf="lead.iaDatosExtraidos && (lead.iaDatosExtraidos.nombre?.value || lead.iaDatosExtraidos.apellido?.value || lead.iaDatosExtraidos.email?.value)">
+            <div class="mc-ia-diff-header">
+              <span class="mc-ia-diff-icon">🤖</span>
+              <span>Datos detectados por IA</span>
+            </div>
+            <table class="mc-ia-diff-table">
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>Original</th>
+                  <th>Detectado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Nombre -->
+                <tr *ngIf="lead.iaDatosExtraidos.nombre?.value">
+                  <td>Nombre</td>
+                  <td class="mc-ia-original">{{ lead.nombre || '(vacío)' }}</td>
+                  <td class="mc-ia-nuevo">{{ lead.iaDatosExtraidos.nombre.value }}</td>
+                  <td class="mc-ia-acciones">
+                    <button class="mc-ia-btn-aceptar" [class.activo]="lead.iaNombreAceptado" (click)="lead.iaNombreAceptado = true" title="Aceptar">✓</button>
+                    <button class="mc-ia-btn-rechazar" [class.activo]="!lead.iaNombreAceptado" (click)="lead.iaNombreAceptado = false" title="Rechazar">✗</button>
+                  </td>
+                </tr>
+                <!-- Apellido -->
+                <tr *ngIf="lead.iaDatosExtraidos.apellido?.value">
+                  <td>Apellido</td>
+                  <td class="mc-ia-original">{{ lead.apellidoPaterno || '(vacío)' }}</td>
+                  <td class="mc-ia-nuevo">{{ lead.iaDatosExtraidos.apellido.value }}</td>
+                  <td class="mc-ia-acciones">
+                    <button class="mc-ia-btn-aceptar" [class.activo]="lead.iaApellidoAceptado" (click)="lead.iaApellidoAceptado = true" title="Aceptar">✓</button>
+                    <button class="mc-ia-btn-rechazar" [class.activo]="!lead.iaApellidoAceptado" (click)="lead.iaApellidoAceptado = false" title="Rechazar">✗</button>
+                  </td>
+                </tr>
+                <!-- Email -->
+                <tr *ngIf="lead.iaDatosExtraidos.email?.value">
+                  <td>Email</td>
+                  <td class="mc-ia-original">{{ lead.email || '(vacío)' }}</td>
+                  <td class="mc-ia-nuevo">{{ lead.iaDatosExtraidos.email.value }}</td>
+                  <td class="mc-ia-acciones">
+                    <button class="mc-ia-btn-aceptar" [class.activo]="lead.iaEmailAceptado" (click)="lead.iaEmailAceptado = true" title="Aceptar">✓</button>
+                    <button class="mc-ia-btn-rechazar" [class.activo]="!lead.iaEmailAceptado" (click)="lead.iaEmailAceptado = false" title="Rechazar">✗</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- CUERPO EXPANDIDO (grid 3 columnas x 2 filas) -->
+          <div class="mc-card-body" *ngIf="lead.expandido">
+
+            <!-- COLUMNA 1 (fila 1+2): Mensajes -->
+            <div class="mc-col mc-col--contexto">
+              <div class="mc-col-title">Mensajes (ultimas 48h)</div>
+              <div class="mc-mensajes-box">
+                <ng-container *ngIf="lead.mensajes.length > 0; else sinMensajes">
+                  <div
+                    *ngFor="let msg of lead.mensajes"
+                    class="mc-mensaje"
+                    [class.mc-mensaje--recibido]="msg.tipoMensaje === 1"
+                    [class.mc-mensaje--enviado]="msg.tipoMensaje === 2"
+                  >
+                    <span class="mc-mensaje-personal">{{ msg.personalFiltrado || (msg.tipoMensaje === 1 ? 'Cliente' : 'Personal') }}</span>
+                    <div class="mc-mensaje-contenido">
+                      <span *ngIf="esMensajeTexto(msg)" [innerHTML]="getMensajeTexto(msg)"></span>
+                      <a *ngIf="!esMensajeTexto(msg) && getMensajeUrl(msg)"
+                         [href]="getMensajeUrl(msg)"
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         class="mc-mensaje-link">
+                        {{ getMensajeLabel(msg) }}
+                      </a>
+                      <span *ngIf="!esMensajeTexto(msg) && !getMensajeUrl(msg)" class="mc-mensaje-sin-url">
+                        {{ getMensajeLabel(msg) }}
+                      </span>
+                    </div>
+                    <span class="mc-mensaje-fecha">{{ msg.fechaMensaje | date:'dd/MM HH:mm' }}</span>
+                  </div>
+                </ng-container>
+                <ng-template #sinMensajes>
+                  <p class="mc-sin-datos">Sin mensajes en las ultimas 48h</p>
+                </ng-template>
+              </div>
+            </div>
+
+            <!-- COLUMNA 2 (fila 1): Perfil Editable -->
+            <div class="mc-col mc-col--perfil">
+              <div class="mc-col-title">Perfil <span class="mc-tag-editable">EDITABLE</span></div>
+
+              <div class="mc-field">
+                <label>Cargo</label>
+                <kendo-dropdownlist
+                  [data]="listaCombosAtributos.comboCargo || []"
+                  textField="nombre" valueField="id"
+                  [(ngModel)]="lead.cargo"
+                  [valuePrimitive]="true"
+                  [kendoDropDownFilter]="filterSettings"
+                  [defaultItem]="{ nombre: 'Sin especificar', id: null }"
+                  (valueChange)="onPerfilCambiado(lead)"
+                  class="mc-kendo-field"
+                ></kendo-dropdownlist>
+              </div>
+
+              <div class="mc-field">
+                <label>Area Formacion</label>
+                <kendo-dropdownlist
+                  [data]="listaCombosAtributos.comboAreaFormacion || []"
+                  textField="nombre" valueField="id"
+                  [(ngModel)]="lead.areaFormacion"
+                  [valuePrimitive]="true"
+                  [kendoDropDownFilter]="filterSettings"
+                  [defaultItem]="{ nombre: 'Sin especificar', id: null }"
+                  (valueChange)="onPerfilCambiado(lead)"
+                  class="mc-kendo-field"
+                ></kendo-dropdownlist>
+              </div>
+
+              <div class="mc-field">
+                <label>Area Trabajo</label>
+                <kendo-dropdownlist
+                  [data]="listaCombosAtributos.comboAreaTrabajo || []"
+                  textField="nombre" valueField="id"
+                  [(ngModel)]="lead.areaTrabajo"
+                  [valuePrimitive]="true"
+                  [kendoDropDownFilter]="filterSettings"
+                  [defaultItem]="{ nombre: 'Sin especificar', id: null }"
+                  (valueChange)="onPerfilCambiado(lead)"
+                  class="mc-kendo-field"
+                ></kendo-dropdownlist>
+              </div>
+
+              <div class="mc-field">
+                <label>Industria</label>
+                <kendo-dropdownlist
+                  [data]="listaCombosAtributos.comboIndustria || []"
+                  textField="nombre" valueField="id"
+                  [(ngModel)]="lead.industria"
+                  [valuePrimitive]="true"
+                  [kendoDropDownFilter]="filterSettings"
+                  [defaultItem]="{ nombre: 'Sin especificar', id: null }"
+                  (valueChange)="onPerfilCambiado(lead)"
+                  class="mc-kendo-field"
+                ></kendo-dropdownlist>
+              </div>
+            </div>
+
+            <!-- COLUMNA 3 (fila 1): Config Oportunidad -->
+            <div class="mc-col mc-col--config">
+              <div class="mc-col-title">Config. Oportunidad</div>
+
+              <div class="mc-field mc-field--required">
+                <label>C. Costo <span class="mc-requerido">*</span></label>
+                <kendo-combobox
+                  [data]="lead.centroCostoItems"
+                  textField="nombre" valueField="id"
+                  [(ngModel)]="lead.idCentroCosto"
+                  [valuePrimitive]="true"
+                  [filterable]="true"
+                  (filterChange)="buscarCentroCosto($event, lead)"
+                  placeholder="Buscar centro de costo..."
+                  class="mc-kendo-field"
+                ></kendo-combobox>
+              </div>
+
+              <div class="mc-field mc-field--required">
+                <label>Origen <span class="mc-requerido">*</span></label>
+                <kendo-dropdownlist
+                  [data]="listaOrigen"
+                  textField="nombre" valueField="id"
+                  [(ngModel)]="lead.idOrigen"
+                  [valuePrimitive]="true"
+                  [kendoDropDownFilter]="filterSettings"
+                  [defaultItem]="{ nombre: 'Seleccione origen', id: null }"
+                  class="mc-kendo-field"
+                ></kendo-dropdownlist>
+              </div>
+
+              <div class="mc-field mc-field--required">
+                <label>Asesor <span class="mc-requerido">*</span></label>
+                <kendo-dropdownlist
+                  [data]="listaAsesores"
+                  textField="nombre" valueField="id"
+                  [(ngModel)]="lead.idAsesor"
+                  [valuePrimitive]="true"
+                  [kendoDropDownFilter]="filterSettings"
+                  [defaultItem]="{ nombre: 'Seleccione asesor', id: null }"
+                  (valueChange)="onAsesorIndividualCambiado(lead)"
+                  class="mc-kendo-field"
+                ></kendo-dropdownlist>
+              </div>
+
+              <div class="mc-field">
+                <label>Horario (Opcional)</label>
+                <mat-form-field appearance="outline" style="width:100%">
+                  <input matInput [matDatepicker]="pickerHorario" [(ngModel)]="lead.horario" name="horario_{{lead.idAlumno}}" placeholder="dd/mm/aaaa">
+                  <mat-datepicker-toggle matSuffix [for]="pickerHorario"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerHorario></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="mc-field mc-field--toggle">
+                <label>Activo</label>
+                <kendo-switch [(ngModel)]="lead.activo" onLabel="Si" offLabel="No"></kendo-switch>
+              </div>
+
+            </div>
+
+            <!-- FILA 2 (col 2+3): Historial Oportunidades -->
+            <div class="mc-col mc-col--historial">
+              <div class="mc-col-title">Historial Oportunidades</div>
+              <div class="mc-historial-box">
+                <ng-container *ngIf="lead.historialOportunidadesV2?.length; else sinHistorial">
+                  <table class="mc-tabla-historial">
+                    <thead>
+                      <tr>
+                        <th>Programa</th>
+                        <th>Fase Actual</th>
+                        <th>Fase Maxima</th>
+                        <th>Fecha</th>
+                        <th>Asesor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let h of lead.historialOportunidadesV2">
+                        <td>{{ h.nombrePrograma }}</td>
+                        <td><span class="mc-badge-tipo">{{ h.faseOportunidad }}</span></td>
+                        <td>{{ h.faseMaxima }}</td>
+                        <td>{{ h.fechaSolicitud | date:'dd/MM/yy' }}</td>
+                        <td>{{ h.asesor }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-container>
+                <ng-template #sinHistorial>
+                  <p class="mc-sin-datos">Sin historial previo</p>
+                </ng-template>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- FILA RESPUESTA (visible solo cuando expandido) -->
+          <div class="mc-card-respuesta" *ngIf="lead.expandido">
+
+            <!-- Inputs ocultos para subida de archivos individuales -->
+            <input type="file"
+              [id]="'inputDoc_' + lead.idAlumno"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              style="display:none"
+              (change)="onArchivoSeleccionado($event, lead, 'doc')" />
+            <input type="file"
+              [id]="'inputImg_' + lead.idAlumno"
+              accept="image/*"
+              style="display:none"
+              (change)="onArchivoSeleccionado($event, lead, 'img')" />
+
+            <span class="mc-respuesta-label">Respuesta:</span>
+
+            <div class="mc-respuesta-btns">
+              <button kendoButton fillMode="outline" size="small" title="Enviar documento"
+                class="btn-doc"
+                (click)="abrirSelectorArchivo(lead, 'doc')">Doc</button>
+              <button kendoButton fillMode="outline" size="small" title="Enviar imagen"
+                class="btn-img"
+                (click)="abrirSelectorArchivo(lead, 'img')">Img</button>
+              <button kendoButton fillMode="outline" size="small" title="Mensaje manual"
+                class="btn-manual"
+                [class.mc-btn-manual--activo]="lead.mostrarInputManual"
+                (click)="toggleMensajeManual(lead)">Manual</button>
+            </div>
+
+            <!-- Indicador de archivo individual staged -->
+            <div *ngIf="lead.archivoStagedUrl" class="mc-staged-badge">
+              <span>{{ lead.archivoStagedTipo === 'img' ? '🖼️' : '📄' }} {{ lead.archivoStagedNombre || 'Archivo listo' }}</span>
+              <button kendoButton fillMode="flat" size="small" (click)="lead.archivoStagedUrl = undefined">✕</button>
+            </div>
+
+            <!-- Textarea inline para mensaje manual -->
+            <div class="mc-input-manual" *ngIf="lead.mostrarInputManual">
+              <textarea
+                [(ngModel)]="lead.mensajeManual"
+                placeholder="Escribir mensaje..."
+                rows="2"
+                class="mc-textarea-manual"
+              ></textarea>
+              <button kendoButton
+                [themeColor]="lead.mensajePendiente ? 'success' : 'primary'"
+                size="small"
+                [disabled]="!lead.mensajeManual?.trim()"
+                (click)="enviarMensajeManual(lead)">
+                {{ lead.mensajePendiente ? '✓ Guardado' : 'Preparar envío' }}
+              </button>
+            </div>
+
+            <!-- Indicador de mensaje pendiente -->
+            <div *ngIf="lead.mensajePendiente" class="mc-staged-badge">
+              <span>💬 Mensaje listo: "{{ lead.mensajePendiente | slice:0:40 }}{{ lead.mensajePendiente.length > 40 ? '...' : '' }}"</span>
+              <button kendoButton fillMode="flat" size="small" (click)="lead.mensajePendiente = undefined">✕</button>
+            </div>
+
+            <!-- Selector de plantilla individual -->
+            <div class="mc-plantilla-individual">
+              <kendo-dropdownlist
+                [data]="listaPlantillas"
+                textField="nombre"
+                valueField="id"
+                [(ngModel)]="lead.idPlantillaIndividual"
+                [valuePrimitive]="true"
+                [defaultItem]="{ nombre: '— Plantilla —', id: null }"
+                [kendoDropDownFilter]="filterSettings"
+                class="mc-dropdown-plantilla-individual"
+              ></kendo-dropdownlist>
+              <button
+                kendoButton
+                [themeColor]="lead.plantillaPendiente ? 'success' : 'primary'"
+                size="small"
+                [disabled]="!lead.idPlantillaIndividual"
+                (click)="enviarPlantillaIndividual(lead)">
+                {{ lead.plantillaPendiente ? '✓ Confirmada' : 'Confirmar plantilla' }}
+              </button>
+            </div>
+
+          </div>
+
+          <!-- PIE DE CARD -->
+          <div class="mc-card-footer" *ngIf="!lead.oportunidadCreada && !lead.excluido">
+            <button
+              kendoButton
+              themeColor="error"
+              fillMode="outline"
+              size="small"
+              (click)="excluirLead(lead)"
+              [disabled]="creandoOportunidades"
+            >
+              Excluir
+            </button>
+          </div>
+          <div class="mc-card-footer" *ngIf="lead.excluido">
+            <button kendoButton themeColor="base" size="small" (click)="reincluirLead(lead)">
+              Reincluir
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+    <!-- /mc-body -->
+
+    <!-- ZONA FIJA INFERIOR (action bar) -->
+    <div class="mc-zona-fija-bottom">
+      <div class="mc-action-bar">
+        <div class="mc-action-bar-left">
+          <span class="mc-badge-count mc-badge-count--validos">Activos: {{ totalActivos }}</span>
+          <span class="mc-badge-count mc-badge-count--invalidos">Excluidos: {{ totalExcluidos }}</span>
+          <span class="mc-badge-count mc-badge-count--ops">Con config: {{ totalConCamposCompletos }}</span>
+          <small class="text-muted ms-2">Conteos automaticos</small>
+        </div>
+        <div class="mc-action-bar-right">
+          <button
+            kendoButton
+            themeColor="base"
+            (click)="cerrarModal()"
+            [disabled]="creandoOportunidades"
+          >Cancelar</button>
+          <button
+            kendoButton
+            themeColor="success"
+            class="mc-btn-crear"
+            (click)="iniciarCreacionMasiva()"
+            [disabled]="!puedeCrear"
+          >
+            Crear {{ totalConCamposCompletos }} Oportunidades
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- /mc-zona-fija-bottom -->
+
+  </ng-container>
+
+</div>
+<!-- /mc-wrapper -->

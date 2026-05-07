@@ -11,6 +11,7 @@ export interface ChatWhatsAppMarketing {
   tiempo: string;
   fecha: string;
   pais: string;
+  idPaisEmpresa?: number;
   numeroWhatsApp?: string;
   rango?: string | null;
   estadoInteraccion?: string | null;

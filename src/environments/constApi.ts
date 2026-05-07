@@ -2342,6 +2342,25 @@ export const constApiMarketing = {
   ValidarGuardadoDatosInteraccionAutomatica:
     '/WhatsAppMensajeEnviado/ValidarGuardadoDatosInteraccionAutomatica',
 
+  // Modal Masivo — endpoints generales
+  ObtenerDatosPreCargaMasiva: '/WhatsAppMensajeEnviado/ObtenerDatosPreCargaMasiva',
+  ActualizarDatosAlumnoMasivo: '/WhatsAppMensajeEnviado/ActualizarDatosAlumnoMasivo',
+  ObtenerCentroCostoPorAlumno: '/WhatsAppMensajeEnviado/ObtenerCentroCostoPorAlumno',
+
+  // Modal Masivo — IA (proxied via backend BSG)
+  IniciarExtraccionBatch: '/WhatsAppMensajeEnviado/IniciarExtraccionBatch',
+  ObtenerEstadoExtraccion: '/WhatsAppMensajeEnviado/ObtenerEstadoExtraccion',
+  ObtenerResultadosExtraccion: '/WhatsAppMensajeEnviado/ObtenerResultadosExtraccion',
+  IniciarCalificacionBatch: '/WhatsAppMensajeEnviado/IniciarCalificacionBatch',
+  ObtenerEstadoCalificacion: '/WhatsAppMensajeEnviado/ObtenerEstadoCalificacion',
+  ObtenerResultadosCalificacion: '/WhatsAppMensajeEnviado/ObtenerResultadosCalificacion',
+
+  // Modal Masivo — Historial y calificacion IA V2 (via WhatsAppMasivo controller)
+  ObtenerHistorialOportunidades: '/WhatsAppMasivo/ObtenerHistorialOportunidades',
+  IniciarCalificacionBatchV2: '/WhatsAppMasivo/IniciarCalificacionBatchV2',
+  ObtenerEstadoCalificacionV2: '/WhatsAppMasivo/ObtenerEstadoCalificacionV2',
+  ObtenerResultadosCalificacionV2: '/WhatsAppMasivo/ObtenerResultadosCalificacionV2',
+
   //SeguimientoOportunidadesMkt
   GenerarReporteFechaCreacionRegistro:
     '/ReporteSeguimientoOportunidades/GenerarReporteFechaCreacionRegistro',
