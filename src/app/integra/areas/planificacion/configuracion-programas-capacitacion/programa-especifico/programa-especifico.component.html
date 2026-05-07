@@ -262,6 +262,14 @@
             (cellClose)="gridProgramaEspecifico.cellCloseHandler($event)"
           >
             <ng-template kendoGridToolbarTemplate>
+              <button
+                themeColor="info"
+                kendoButton
+                icon="calendar"
+                (click)="abrirModalFeriados()"
+              >
+                Fechas Feriadas
+              </button>
               <kendo-grid-spacer></kendo-grid-spacer>
               <button
                 themeColor="success"
@@ -524,3 +532,217 @@
   <loading [loading]="loadingModalGeneracionAutomatica"></loading>
 </ng-template>
 <!-- #endregion Modal Generacion Automatica-->
+
+<!-- #region Modal Fechas Feriadas (CRUD) -->
+<ng-template #modalFeriados let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title w-100 mb-0">Fechas Feriadas</h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <kendo-grid
+      [kendoGridBinding]="gridFeriados.data"
+      [loading]="gridFeriados.loading"
+      [pageSize]="10"
+      [pageable]="{
+        buttonCount: 5,
+        info: true,
+        type: 'numeric',
+        pageSizes: [10, 20, 50],
+        previousNext: true,
+        position: 'bottom'
+      }"
+      [sortable]="true"
+      [resizable]="true"
+      filterable="menu"
+      [sort]="[{ field: 'dia', dir: 'desc' }]"
+    >
+      <ng-template kendoGridToolbarTemplate>
+        <kendo-grid-spacer></kendo-grid-spacer>
+        <button
+          themeColor="success"
+          kendoButton
+          icon="plus"
+          (click)="nuevoFeriado()"
+        >
+          Nuevo Feriado
+        </button>
+      </ng-template>
+      <kendo-grid-column
+        field="dia"
+        title="Fecha"
+        [width]="130"
+        headerClass="justify-content-center"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.dia | slice:0:10 }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        field="motivo"
+        title="Motivo"
+        [width]="280"
+        headerClass="justify-content-center"
+      ></kendo-grid-column>
+      <kendo-grid-column
+        field="nombreFrecuencia"
+        title="Frecuencia"
+        [width]="120"
+        headerClass="justify-content-center"
+      ></kendo-grid-column>
+      <kendo-grid-column
+        field="nombreCiudad"
+        title="Ciudad"
+        [width]="180"
+        headerClass="justify-content-center"
+      ></kendo-grid-column>
+      <kendo-grid-command-column
+        title="Acciones"
+        [width]="120"
+        headerClass="justify-content-center"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-center">
+            <button
+              themeColor="warning"
+              kendoButton
+              icon="pencil"
+              class="mx-1"
+              container="body"
+              ngbTooltip="Editar"
+              (click)="editarFeriado(dataItem)"
+            ></button>
+            <button
+              themeColor="error"
+              kendoButton
+              icon="trash"
+              class="mx-1"
+              container="body"
+              ngbTooltip="Eliminar"
+              (click)="eliminarFeriado(dataItem)"
+            ></button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 justify-content-end">
+      <button
+        themeColor="error"
+        icon="cancel"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+  <loading [loading]="loadingModalFeriados"></loading>
+</ng-template>
+
+<ng-template #modalFeriadoEdit let-modal>
+  <div class="modal-header">
+    <h2 class="modal-title w-100 mb-0">
+      {{ esNuevoFeriado ? 'Nuevo Feriado' : 'Editar Feriado' }}
+    </h2>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formFeriado" class="k-form k-form-horizontal">
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Fecha<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-datepicker
+          formControlName="dia"
+          format="yyyy-MM-dd"
+        ></kendo-datepicker>
+        <kendo-formerror>Fecha es requerida</kendo-formerror>
+      </kendo-formfield>
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Motivo<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-textbox formControlName="motivo" [maxlength]="200"></kendo-textbox>
+        <kendo-formerror>Motivo es requerido</kendo-formerror>
+      </kendo-formfield>
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Frecuencia<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="comboFrecuenciaFeriado"
+          textField="nombre"
+          valueField="id"
+          [valuePrimitive]="true"
+          formControlName="frecuencia"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Frecuencia es requerida</kendo-formerror>
+      </kendo-formfield>
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>País<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="comboPaisesFeriado"
+          textField="nombre"
+          valueField="id"
+          [valuePrimitive]="true"
+          [defaultItem]="{ id: null, nombre: 'Seleccione' }"
+          formControlName="idTroncalPais"
+          [kendoDropDownFilter]="filterSettings"
+          (valueChange)="onPaisFeriadoChange($event)"
+        ></kendo-dropdownlist>
+        <kendo-formerror>País es requerido</kendo-formerror>
+      </kendo-formfield>
+      <kendo-formfield orientation="horizontal">
+        <label class="k-label pt-0 d-flex align-items-start text-start">
+          <span>Ciudad<span class="text-danger fw-bold">*</span></span>
+        </label>
+        <kendo-dropdownlist
+          [data]="comboCiudadesFeriado"
+          textField="nombre"
+          valueField="id"
+          [valuePrimitive]="true"
+          [defaultItem]="{ id: null, nombre: 'Seleccione' }"
+          formControlName="idTroncalCiudad"
+          [kendoDropDownFilter]="filterSettings"
+        ></kendo-dropdownlist>
+        <kendo-formerror>Ciudad es requerida</kendo-formerror>
+      </kendo-formfield>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="k-form-buttons m-0 justify-content-end">
+      <button
+        themeColor="success"
+        icon="save"
+        kendoButton
+        (click)="guardarFeriado()"
+      >
+        Guardar
+      </button>
+      <button
+        themeColor="error"
+        icon="cancel"
+        kendoButton
+        (click)="modal.dismiss('Cross click')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+  <loading [loading]="loadingModalFeriados"></loading>
+</ng-template>
+<!-- #endregion Modal Fechas Feriadas -->

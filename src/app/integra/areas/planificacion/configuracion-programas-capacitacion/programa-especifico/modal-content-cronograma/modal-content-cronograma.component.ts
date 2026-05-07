@@ -42,6 +42,7 @@ import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import { ModalContentFrecuenciaComponent } from '../modal-content-frecuencia/modal-content-frecuencia.component';
 import { ModalContentRegistroFurComponent } from '../modal-content-registro-fur/modal-content-registro-fur.component';
+import { FeriadoConPaisDTO } from '../programa-especifico.component';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { forkJoin } from 'rxjs';
 import { cloneData } from '@shared/functions/clone-data';
@@ -93,6 +94,7 @@ export class ModalContentCronogramaComponent implements OnInit {
   @Input() programaEspecificoFUR: ProgramaEspecificoFUR[];
   @Input() esCronogramaGrupo: boolean = false;
   @Input() idsPespecificoSeleccionado: number[] = [];
+  @Input() feriados: FeriadoConPaisDTO[] = [];
 
   configurarWebinarOriginal: ConfigurarWebinar[] = [];
   aplicarConfigurarWebinar: boolean = false;
@@ -598,10 +600,35 @@ export class ModalContentCronogramaComponent implements OnInit {
     }
   }
 
+  obtenerFeriadoDeSesion(dataItem: CronogramaGrupo): FeriadoConPaisDTO | null {
+    if (!this.feriados || this.feriados.length === 0) return null;
+    if (dataItem == null || dataItem.fechaHoraInicio == null) return null;
+    const fecha =
+      dataItem.fechaHoraInicio instanceof Date
+        ? dataItem.fechaHoraInicio
+        : new Date(dataItem.fechaHoraInicio as any);
+    if (isNaN(fecha.getTime())) return null;
+    const yyyy = fecha.getFullYear();
+    const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dd = String(fecha.getDate()).padStart(2, '0');
+    const fechaIso = `${yyyy}-${mm}-${dd}`;
+    const mmdd = `${mm}-${dd}`;
+    return (
+      this.feriados.find((f) => {
+        if (!f.dia) return false;
+        const diaIso = f.dia.substring(0, 10);
+        if (f.frecuencia === 0) {
+          return diaIso.substring(5, 10) === mmdd;
+        }
+        return diaIso === fechaIso;
+      }) ?? null
+    );
+  }
   private configurarGridCronograma() {
     this.gridCronograma.rowCallback = (context: RowClassArgs) => {
       let dataItem = context.dataItem as CronogramaGrupo;
       const esReprogramada = dataItem.reprogramacion === true;
+      const esFeriado = this.obtenerFeriadoDeSesion(dataItem) != null;
       let colorClass: any = {};
       if (dataItem.color == 'color0') {
         colorClass = { color0: true };
@@ -624,7 +651,11 @@ export class ModalContentCronogramaComponent implements OnInit {
       } else {
         colorClass = { color9: true };
       }
-      return { ...colorClass, 'fila-reprogramada': esReprogramada };
+      return {
+        ...colorClass,
+        'fila-reprogramada': esReprogramada,
+        'fila-feriado': esFeriado,
+      };
     };
     this.gridCronograma.formGroup = this._formBuilder.group({
       fechaHoraInicio: null,

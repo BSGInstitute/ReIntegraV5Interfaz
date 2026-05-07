@@ -3544,6 +3544,17 @@ export const constApiPlanificacion = {
   TroncalesInsertar: '/Troncales/Insertar', //POST
   TroncalesActualizar: '/Troncales/Actualizar', //PUT
 
+  //FERIADO
+  FeriadoListar: '/Feriado/Listar', //GET
+  FeriadoObtenerPorId: '/Feriado/ObtenerPorId', //GET /{id}
+  FeriadoListarPorPaises: '/Feriado/ListarPorPaises', //GET ?idsTroncalPais=&idsTroncalPais=
+  FeriadoInsertar: '/Feriado/Insertar', //POST
+  FeriadoActualizar: '/Feriado/Actualizar', //PUT
+  FeriadoEliminar: '/Feriado/Eliminar', //DELETE /{id}
+  FeriadoComboTroncalCiudad: '/Feriado/ComboTroncalCiudad', //GET → { id, nombre, idTroncalPais }[]
+  FeriadoComboTroncalPais: '/Feriado/ComboTroncalPais', //GET → { id, nombre }[]
+  PEspecificoObtenerIdsTroncalPaisFeriado: '/PEspecifico/ObtenerIdsTroncalPaisFeriado', //GET /{idPespecifico} → number[]
+
   //ESCALA CALIFICACIO
   EscalaCalificacionObtener: '/EscalaCalificacion/Obtener', //GET
   EscalaCalificacionObtenerPorId: '/EscalaCalificacion/ObtenerPorId', //GET
