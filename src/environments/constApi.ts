@@ -2486,6 +2486,7 @@ export const constApiMarketing = {
 
   // CATEGORIA ARGUMENTOS
   ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',
+  ObtenerProgramasDisponiblesConfigurar: '/CategoriaArgumentos/ObtenerProgramasDisponiblesConfigurar',
   CrearProgramaConfigurado: '/CategoriaArgumentos/CrearProgramaConfigurado',
   EditarProgramaConfigurado: '/CategoriaArgumentos/EditarProgramaConfigurado',
   EliminarProgramaConfigurado: '/CategoriaArgumentos/EliminarProgramaConfigurado',

@@ -8,19 +8,31 @@
   >
     <i class="material-icons">refresh</i>
   </button>
-  <button
+    <button
     class="btn btn-success m-2"
     style="margin-left: auto"
-    (click)="abrirModalCrearPrograma()"
+    (click)="abrirModalAgregarPrograma()"
   >
     <mat-icon style="vertical-align: middle; margin-right: 4px">add</mat-icon>
     Agregar Programa
   </button>
+  
 </div>
 
-<!-- Tabla de Programas Configurados-->
+<!-- Filtro de búsqueda por nombre -->
+<mat-form-field appearance="outline" class="w-100">
+  <mat-label>Buscar programa</mat-label>
+  <input
+    matInput
+    [(ngModel)]="filtroNombre"
+    placeholder="Filtrar por nombre..."
+  />
+  <mat-icon matSuffix>search</mat-icon>
+</mat-form-field>
+
+<!-- Tabla de Programas Generales activos (pla.T_PGeneral) -->
 <kendo-grid
-  [kendoGridBinding]="listadoProgramasConfigurados || []"
+  [kendoGridBinding]="programasFiltradosGrilla"
   [style.width]="'100%'"
   [style.minWidth.px]="600"
   class="table-striped-rows"
@@ -34,7 +46,6 @@
     [width]="100"
     [headerStyle]="{
       justifyContent: 'center',
-
       verticalAlign: 'middle',
       fontWeight: '500'
     }"
@@ -49,7 +60,6 @@
     title="Nombre"
     [headerStyle]="{
       justifyContent: 'center',
-
       verticalAlign: 'middle',
       fontWeight: '500'
     }"
@@ -60,43 +70,10 @@
     </ng-template>
   </kendo-grid-column>
   <kendo-grid-column
-    field="usuarioModificacion"
-    title="Usuario Modificación"
-    [width]="250"
-    [headerStyle]="{
-      justifyContent: 'center',
-
-      verticalAlign: 'middle',
-      fontWeight: '500'
-    }"
-    [style]="{ textAlign: 'center' }"
-  >
-    <ng-template kendoGridCellTemplate let-dataItem>
-      {{ dataItem.usuarioModificacion }}
-    </ng-template>
-  </kendo-grid-column>
-  <kendo-grid-column
-    field="fechaModificacion"
-    title="Fecha Modificación"
-    [width]="250"
-    [headerStyle]="{
-      justifyContent: 'center',
-
-      verticalAlign: 'middle',
-      fontWeight: '500'
-    }"
-    [style]="{ textAlign: 'center' }"
-  >
-    <ng-template kendoGridCellTemplate let-dataItem>
-      {{ dataItem.fechaModificacion | date : "yyyy-MM-dd HH:mm:ss" }}
-    </ng-template>
-  </kendo-grid-column>
-  <kendo-grid-column
     title="Acciones"
     [width]="300"
     [headerStyle]="{
       justifyContent: 'center',
-
       verticalAlign: 'middle',
       fontWeight: '500'
     }"
@@ -105,12 +82,14 @@
     <ng-template kendoGridCellTemplate let-dataItem>
       <button
         class="bg-warning text-white mx-2 btn btn-sm"
+        title="Configurar argumentos"
         (click)="abrirModalEditarPrograma(dataItem.id)"
       >
         <i class="material-icons">edit</i>
       </button>
       <button
         class="bg-danger text-white mx-2 btn btn-sm"
+        title="Eliminar configuración de argumentos"
         (click)="eliminarProgramaConfigurado(dataItem.id)"
       >
         <i class="material-icons">delete</i>

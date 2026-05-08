@@ -6,18 +6,17 @@
     border-top-right-radius: 8px;
   "
 >
-  <h3 class="m-0" style="font-weight: 500">Nuevo Programa</h3>
+  <h3 class="m-0" style="font-weight: 500">Agregar Programa</h3>
   <button
     type="button"
-    aria-label="Close"
+    aria-label="Cerrar"
     class="btn-close btn-close-white"
     (click)="cerrarModalCrearPrograma()"
     style="margin-left: auto"
-  >
-    <span aria-hidden="true">&times;</span>
-  </button>
+  ></button>
 </div>
-<ng-container *ngIf="isLoadingProgramaGeneral">
+
+<ng-container *ngIf="isLoading">
   <div
     class="d-flex justify-content-center align-items-center"
     style="min-height: 180px"
@@ -25,32 +24,44 @@
     <mat-spinner></mat-spinner>
   </div>
 </ng-container>
-<form (ngSubmit)="crearProgramaConfigurado()" *ngIf="!isLoadingProgramaGeneral">
+
+<ng-container *ngIf="!isLoading">
   <div class="modal-body p-4">
-    <h4 class="fw-semibold mb-2">Nombre del programa</h4>
+    <h4 class="fw-semibold mb-2">Seleccioná el programa a configurar</h4>
+
     <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-label>Programa</mat-label>
       <input
         type="text"
         matInput
-        name="programaGeneral"
+        placeholder="Buscar programa..."
+        [formControl]="busquedaPrograma"
         [matAutocomplete]="autoPrograma"
-        [(ngModel)]="nombrePrograma"
-        (ngModelChange)="filtrarProgramas($event)"
-        (blur)="validarProgramaSeleccionado()"
-        placeholder="Seleccione el programa"
-        required
         autocomplete="off"
       />
-      <mat-autocomplete #autoPrograma="matAutocomplete">
+      <mat-autocomplete
+        #autoPrograma="matAutocomplete"
+        [displayWith]="displayNombrePrograma"
+        (optionSelected)="onProgramaSeleccionado($event)"
+      >
         <mat-option
           *ngFor="let programa of programasFiltrados"
-          [value]="programa.nombre"
+          [value]="programa"
         >
           {{ programa.nombre }}
         </mat-option>
+        <mat-option *ngIf="programasFiltrados.length === 0" disabled>
+          Sin resultados
+        </mat-option>
       </mat-autocomplete>
     </mat-form-field>
+
+    <p class="text-muted small mb-0">
+      Solo se muestran programas sin argumentos activos configurados.
+      Al confirmar, se abrirá el editor de argumentos directamente.
+    </p>
   </div>
+
   <div
     class="modal-footer p-3 d-flex gap-2 justify-content-end"
     style="border-top: 1px solid #eee"
@@ -63,15 +74,12 @@
       Cancelar
     </button>
     <button
-      type="submit"
+      type="button"
       class="btn btn-success"
-      [disabled]="isLoadingModalCrearPrograma"
+      [disabled]="!programaSeleccionado"
+      (click)="confirmarSeleccion()"
     >
-      Crear
-      <span
-        *ngIf="isLoadingModalCrearPrograma"
-        class="spinner-border spinner-border-sm ms-2"
-      ></span>
+      Confirmar
     </button>
   </div>
-</form>
+</ng-container>

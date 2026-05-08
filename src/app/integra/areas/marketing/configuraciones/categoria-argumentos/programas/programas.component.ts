@@ -1,13 +1,13 @@
 import { ViewChild } from '@angular/core';
 import { ModalEditarProgramaComponent } from './modal-editar-programa/modal-editar-programa.component';
+import { ModalCrearProgramaComponent } from './modal-crear-programa/modal-crear-programa.component';
 import { Component, OnInit } from '@angular/core';
 import { constApiMarketing } from '@environments/constApi';
-import { ProgramaConfigurado } from '@marketing/models/interfaces/categoria-argumentos';
+import { ProgramaGeneralListado } from '@marketing/models/interfaces/categoria-argumentos';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import Swal from 'sweetalert2';
 import { MatDialog } from '@angular/material/dialog';
-import { ModalCrearProgramaComponent } from './modal-crear-programa/modal-crear-programa.component';
 
 @Component({
   selector: 'app-programas',
@@ -17,9 +17,20 @@ import { ModalCrearProgramaComponent } from './modal-crear-programa/modal-crear-
 export class ProgramasComponent implements OnInit {
   @ViewChild(ModalEditarProgramaComponent)
 
-  // Grilla
-  listadoProgramasConfigurados: ProgramaConfigurado[] = [];
+  // Grilla — muestra programas que tienen al menos un argumento activo (Estado = 1)
+  listadoProgramasConfigurados: ProgramaGeneralListado[] = [];
   isLoading: boolean = false;
+
+  // Filtro de la grilla
+  filtroNombre: string = '';
+
+  get programasFiltradosGrilla(): ProgramaGeneralListado[] {
+    if (!this.filtroNombre.trim()) return this.listadoProgramasConfigurados;
+    const filtro = this.filtroNombre.trim().toLowerCase();
+    return this.listadoProgramasConfigurados.filter((p) =>
+      p.nombre.toLowerCase().includes(filtro)
+    );
+  }
 
   // Modal Editar Programa
   modalEditarPrograma!: ModalEditarProgramaComponent;
@@ -42,8 +53,7 @@ export class ProgramasComponent implements OnInit {
       .getJsonResponse(`${constApiMarketing.ObtenerListadoProgramaConfigurado}`)
       .subscribe({
         next: (data: any) => {
-          this.listadoProgramasConfigurados =
-            data.body as ProgramaConfigurado[];
+          this.listadoProgramasConfigurados = data.body as ProgramaGeneralListado[];
           this.isLoading = false;
         },
         error: (err) => {
@@ -60,7 +70,7 @@ export class ProgramasComponent implements OnInit {
 
   eliminarProgramaConfigurado(id: number): void {
     Swal.fire({
-      title: '¿Desea eliminar este programa?',
+      title: '¿Desea eliminar la configuración de argumentos de este programa?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Eliminar',
@@ -75,7 +85,7 @@ export class ProgramasComponent implements OnInit {
             next: (data: any) => {
               this._alertaService.mensajeIcon(
                 '¡Eliminado!',
-                'El registro ha sido eliminado.',
+                'La configuración de argumentos ha sido eliminada.',
                 'success'
               );
               this.obtenerProgramasConfigurados();
@@ -83,7 +93,7 @@ export class ProgramasComponent implements OnInit {
             error: (err) => {
               console.error('Error fetching :', err);
               this._alertaService.notificationError(
-                'Error al eliminar categoria'
+                'Error al eliminar la configuración'
               );
               this.isLoading = false;
             },
@@ -92,26 +102,28 @@ export class ProgramasComponent implements OnInit {
     });
   }
 
-  // Abrir y cerrar modal Crear Programa
-  abrirModalCrearPrograma(): void {
-    const dialogRef = this.dialog.open(ModalCrearProgramaComponent, {
-      width: '600px',
-      data: {},
-    });
-    dialogRef.afterClosed().subscribe((idProgramaCreado) => {
-      if (idProgramaCreado) {
-        this.recargarProgramasConfigurados();
-        this.abrirModalEditarPrograma(idProgramaCreado);
-      }
-    });
-  }
-
-  // Abrir modal Editar Programa
+  // Abrir modal Editar Programa (configurar argumentos del programa seleccionado)
   abrirModalEditarPrograma(id: number): void {
     const dialogRef = this.dialog.open(ModalEditarProgramaComponent, {
       data: {
         idPrograma: id,
       },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.obtenerProgramasConfigurados();
+    });
+  }
+
+  abrirModalAgregarPrograma(): void {
+    const ref = this.dialog.open(ModalCrearProgramaComponent, {
+      width: '600px',
+    });
+
+    ref.afterClosed().subscribe((programaSeleccionado: ProgramaGeneralListado | null) => {
+      if (programaSeleccionado?.id) {
+        this.abrirModalEditarPrograma(programaSeleccionado.id);
+      }
     });
   }
 }
