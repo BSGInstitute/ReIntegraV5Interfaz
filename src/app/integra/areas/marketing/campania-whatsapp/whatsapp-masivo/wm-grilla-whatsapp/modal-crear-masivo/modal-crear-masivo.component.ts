@@ -201,7 +201,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
       idAlumno: item.idAlumno,
       celular: item.celular,
       celularCompleto: item.numeroWhatsApp ?? item.celular,
-      nombre: item.alumno,
+      nombre: cargado?.alumno?.nombre1 || (cargado?.alumno as any)?.Nombre1 || item.alumno,
       apellidoPaterno: cargado?.alumno?.apellidoPaterno || (cargado?.alumno as any)?.ApellidoPaterno || '',
       pais: item.pais || '',
       idPaisEmpresa: item.idPaisEmpresa || 51,
