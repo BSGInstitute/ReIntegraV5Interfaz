@@ -324,6 +324,12 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
     if (filtro === 'no-derivado') return derivado === false;
     if (filtro === '1') return derivado === true && codigoArea === AreaDerivacionCodigo.ATENCION_CLIENTE;
     if (filtro === '2') return derivado === true && codigoArea === AreaDerivacionCodigo.COMERCIAL;
+    if (filtro === 'no-definido') {
+      if (derivado === false) return false;
+      return codigoArea == null
+          || (codigoArea !== AreaDerivacionCodigo.ATENCION_CLIENTE
+              && codigoArea !== AreaDerivacionCodigo.COMERCIAL);
+    }
     return true;
   }
 

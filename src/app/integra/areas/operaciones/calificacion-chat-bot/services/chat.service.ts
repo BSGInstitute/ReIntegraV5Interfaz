@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   ChatbotHiloChatPorAlumnoDTO,
   ChatbotHiloChatPorSegmentoDTO,
@@ -377,9 +378,30 @@ export class ChatService extends IntegraService {
       pageNumber,
       pageSize
     };
+    // El backend devuelve items mezclados (Portal y WhatsApp) discriminados por `origen`.
+    // - WhatsApp: contrato intacto -> trae `idHilo` e `idOrigen`.
+    // - Portal:   campos renombrados -> trae `idChatbotPortalHiloChat` (= idHilo) e
+    //                                    `idMedioComunicacion_Origen` (= idOrigen).
+    // Normalizamos los items de Portal al contrato interno comun (`idHilo` / `idOrigen`).
     return this.postJsonResponse(
       constApiOperaciones.ObtenerHilosPaginadosPorSegmento,
       JSON.stringify(payload)
+    ).pipe(
+      map((response: HttpResponse<PagedResponse<HiloChatPaginadoDTO>>) => {
+        if (!response.body) return response;
+        const items = (response.body.items || []).map(h => {
+          const raw = h as unknown as {
+            idChatbotPortalHiloChat?: number;
+            idMedioComunicacion_Origen?: number;
+          };
+          return {
+            ...h,
+            idHilo:   h.idHilo   ?? raw.idChatbotPortalHiloChat   ?? 0,
+            idOrigen: h.idOrigen ?? raw.idMedioComunicacion_Origen ?? 0
+          };
+        });
+        return response.clone({ body: { ...response.body, items } });
+      })
     );
   }
 
