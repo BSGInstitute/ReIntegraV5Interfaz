@@ -34,7 +34,7 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
   isLoading = false;
   displayedColumns: string[] = [
     'idHilo', 'fechaCreacion', 'origen',
-    'totalMensajes', 'ultimoMensaje', 'estado', 'fechaCalificacion', 'actions'
+    'totalMensajes', 'intervencionBot', 'ultimoMensaje', 'estado', 'fechaCalificacion', 'actions'
   ];
 
   // --- Datepicker: rango para filtrar server-side por fechaCreacion ---

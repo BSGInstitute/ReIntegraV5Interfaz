@@ -225,6 +225,7 @@ export interface HiloChatPaginadoDTO {
   fechaCalificacion: Date | null;
   ultimoMensaje?:    string;
   totalMensajes?:    number;
+  totalMensajesBot?: number;   // Cantidad de mensajes generados por el bot en el hilo
 }
 
 export interface AlumnoListadoDTO {
