@@ -95,7 +95,8 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
                 idContactoPortalSegmento: '',
                 fechaCreacion: m.fechaCreacion,
                 esBot: m.esBot,
-                personal: m.personal
+                personal: m.personal,
+                waType: m.waType
               }));
             this.isLoading = false;
           },
@@ -182,10 +183,12 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Asesor humano: esUsuario=false y esBot=0 (atención humana, no virtual).
+   * Asesor humano: esUsuario=false, esBot=0 y waType !== 'hsm'.
+   * Los mensajes con waType='hsm' son templates pre-aprobados de WhatsApp,
+   * no respuestas redactadas por el asesor.
    */
   esDelAsistente(mensaje: ChatbotMensajeDTO): boolean {
-    return !mensaje.esUsuario && mensaje.esBot === 0;
+    return !mensaje.esUsuario && mensaje.esBot === 0 && mensaje.waType !== 'hsm';
   }
 
   /**

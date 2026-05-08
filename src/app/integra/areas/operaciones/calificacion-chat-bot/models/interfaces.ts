@@ -111,6 +111,7 @@ export interface ChatbotMensajeDTO {
   fechaCreacion?: Date;
   esBot?: number; // 1 = bot, 0 = asesor humano
   personal?: string; // Nombre del asesor humano que respondió
+  waType?: string | null; // Tipo de mensaje WhatsApp ('hsm' = template pre-aprobado)
 }
 
 export interface ChatbotWhatsAppMensajeDTO {
@@ -118,7 +119,7 @@ export interface ChatbotWhatsAppMensajeDTO {
   idAlumno?: number;
   esUsuario: boolean;
   contenido: string;
-  tipoMensaje: string;
+  tipoMensaje: string | null;
   waFile?: string | null;
   waMimeType?: string | null;
   waFileName?: string | null;
@@ -126,6 +127,7 @@ export interface ChatbotWhatsAppMensajeDTO {
   fechaCreacion?: Date;
   esBot?: number; // 1 = bot, 0 = asesor humano
   personal?: string; // Nombre del asesor humano que respondió
+  waType?: string | null; // Tipo de mensaje WhatsApp ('hsm' = template pre-aprobado)
 }
 
 // DTOs del Formulario de Evaluación
