@@ -37,6 +37,7 @@ interface PespecificoWebinar {
   nombre: string;
   modalidad: string;
   codigo: string;
+  idProgramaGeneral?: number;
 }
 export interface Proveedor {
   id: number;
@@ -128,6 +129,7 @@ export interface PEspecificoPadreIndividual {
   idProgramaGeneral: number;
   ciudad: string;
   estadoPId: number;
+  idEstadoCupos: number;
   tipoId: number;
   origenPrograma?: number;
   idCiudad: number;
@@ -168,6 +170,7 @@ export interface InformacionPespecificoHijo {
   idPeriodoLectivo?: number;
   idCiclo?: number;
   idEstadoPEspecifico?: number;
+  idEstadoCupos?: number;
   idModalidadCurso?: number;
   idCursoMoodle?: number;
   idCursoMoodlePrueba?: number;
@@ -190,6 +193,7 @@ export interface DocenteAmbientePespecifico {
   idPeriodoLectivo?: number;
   idCiclo?: number;
   idEstadoPEspecifico?: number;
+  idEstadoCupos?: number;
   idModalidadCurso?: number;
   idCursoMoodle?: number;
   idCursoMoodlePrueba?: number;
@@ -372,8 +376,12 @@ export interface CentroCostoGenerado {
   centroCosto: CentroCosto;
   codigo: string;
   nombreProgramaEspecifico: string;
+  nombreProgramaEspecificoNumerico: string;
   nombreProgramaGeneral: string;
   codigoBanco: string;
+  gruposAsignados: number;
+  gruposCreados: number;
+  haAlcanzadoLimiteGrupos: boolean;
 }
 
 export interface CentroCosto {
@@ -455,6 +463,7 @@ export interface Pespecifico {
   idPeriodoLectivo?: number;
   resumenClaseActivo?: boolean;
   tutorVirtualActivo?: boolean;
+  idEstadoCupos?: number;
 }
 export interface GenerarPDFEnvio {
   idPespecifico: number;

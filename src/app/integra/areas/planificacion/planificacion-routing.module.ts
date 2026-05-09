@@ -87,6 +87,7 @@ import { CriterioTareaComponent } from './maestros/criterio-tarea/criterio-tarea
 import { GestionAcademicaComponent } from './coordinacion-docentes/gestion-academica/gestion-academica.component';
 import { ObservacionesPorEstadoComponent } from './maestros/observaciones-por-estado/observaciones-por-estado.component';
 import { EstadoCursoComponent } from './maestros/estado-curso/estado-curso.component';
+import { ReporteDashboardComponent } from './configuracion-programas-capacitacion/reporte-dashboard/reporte-dashboard.component';
 
 const routes: Routes = [
   {
@@ -300,6 +301,7 @@ const routes: Routes = [
       { path: 'GestionCursos', component: GestionAcademicaComponent },
       { path: 'MaestroEstadoCurso', component:EstadoCursoComponent},
       { path: 'ObservacionesEstadoCurso', component: ObservacionesPorEstadoComponent },
+      { path: 'Dashboard', component: ReporteDashboardComponent },
     ],
   },
 ];

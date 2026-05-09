@@ -34,6 +34,7 @@ import { OrigenSolicitudComponent } from './gestion-solicitudes/maestros/origen-
 import { EntregarBeneficiosAlumnosComponent } from './certificados-y-beneficios/entregar-beneficios-alumnos/entregar-beneficios-alumnos/entregar-beneficios-alumnos.component';
 import { ReporteCertificadoInstitutoComponent } from './reportes-atencion-cliente/reporte-certificado-instituto/reporte-certificado-instituto.component';
 import { CalificacionChatBotComponent } from './calificacion-chat-bot/registro-calificacion-chat-bot/calificacion-chat-bot.component';
+import { NuevaAgendaAtcComponent } from './gestion-atencion-cliente/nueva-agenda-atc/nueva-agenda-atc.component';
 
 const routes: Routes = [
   {
@@ -45,6 +46,7 @@ const routes: Routes = [
       { path: 'ConfiguracionCoordinadoras', component: ConfiguracionCoordinadorasComponent },
       { path: 'AgendaAtencionCliente', component: AgendaAtencionClienteComponent },
       { path: 'AgendaAtencionClienteRingover', component: AgendaAtencionClienteComponent },
+      { path: 'NuevaAgendaAtc', component: NuevaAgendaAtcComponent },
       { path: 'TipoReporte', component: TipoReporteComponent },
       { path: 'Categoria', component: CategoriaComponent },
       { path: 'SubCategoria', component: SubCategoriaComponent },

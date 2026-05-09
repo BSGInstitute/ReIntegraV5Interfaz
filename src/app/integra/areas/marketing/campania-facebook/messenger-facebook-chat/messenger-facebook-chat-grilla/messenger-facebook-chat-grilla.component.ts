@@ -52,6 +52,20 @@ export class MessengerFacebookChatGrillaComponent implements OnInit {
   }
 
   abrirChat(data: ResumenMessengerFacebookChat) {
-    this.chatClicked.emit(data.identificadorAmbitoPagina);
+    this.chatClicked.emit(data);
+  }
+
+  getColorClaseTipoMensaje(tipo: string): string {
+    switch (tipo) {
+      case 'Interesado':
+        return 'color-amarillo';
+      case 'No Interesado':
+      case 'Spam':
+        return 'color-rojo';
+      case 'Complejo':
+        return 'color-verde';
+      default:
+        return ''; // sin estilo si no coincide
+    }
   }
 }

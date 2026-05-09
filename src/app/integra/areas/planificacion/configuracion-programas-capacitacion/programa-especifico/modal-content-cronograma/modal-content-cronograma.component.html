@@ -81,8 +81,15 @@
             Nueva Sesion
           </button>
         </ng-template>
-        <kendo-grid-column field="fechaHoraInicio" title="Fecha" [width]="90" headerClass="justify-content-center">
+        <kendo-grid-column field="fechaHoraInicio" title="Fecha" [width]="110" headerClass="justify-content-center">
           <ng-template kendoGridCellTemplate let-dataItem>
+            <ng-container *ngIf="obtenerFeriadoDeSesion(dataItem) as feriado">
+              <span
+                class="badge-feriado me-1"
+                [attr.title]="'Feriado: ' + feriado.motivo"
+                >&#9888;</span
+              >
+            </ng-container>
             {{
             dataItem.fechaHoraInicio != null
             ? (dataItem.fechaHoraInicio | date : "dd/MM/yyyy")
@@ -315,6 +322,52 @@
     <div class="w-100 mt-2">
       <h2 class="modal-title w-100 mb-0">Programas Relacionados</h2>
     </div>
+    <div class="w-100 px-3 mb-2">
+      <div class="row g-3 align-items-start">
+        <div class="col-auto">
+          <label class="form-label fw-semibold mb-1 d-block">Año de Centro de Costo</label>
+          <kendo-dropdownlist [data]="anosDisponibles" textField="nombre" valueField="id" [valuePrimitive]="true"
+            [defaultItem]="{ id: null, nombre: 'Seleccione' }" [formControl]="formControlAnoCosto"
+            [kendoDropDownFilter]="filterSettings" [style.width]="'180px'">
+          </kendo-dropdownlist>
+        </div>
+        <div class="col">
+          <label class="form-label fw-semibold mb-1 d-block">Centros de Costo Relacionados</label>
+          <div class="border rounded p-2 position-relative" style="max-height: 160px; overflow-y: auto; min-height: 48px;">
+            <div *ngIf="loadingProgramasRelacionados" class="text-center text-muted small py-1">
+              Cargando...
+            </div>
+            <ng-container *ngIf="!loadingProgramasRelacionados">
+              <div *ngFor="let cc of programasRelacionadosCC" class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [id]="'cc-' + cc.id"
+                  [checked]="programasCheckboxSeleccionados.has(cc.id)"
+                  (change)="toggleProgramaCheckbox(cc.id)"
+                />
+                <label class="form-check-label" [for]="'cc-' + cc.id">
+                  {{ cc.nombre }}
+                </label>
+              </div>
+              <div *ngIf="programasRelacionadosCC.length === 0" class="text-muted small py-1">
+                Seleccione un año para ver los centros de costo relacionados
+              </div>
+            </ng-container>
+          </div>
+          <button
+            kendoButton
+            icon="plus"
+            themeColor="primary"
+            class="mt-2"
+            [disabled]="programasCheckboxSeleccionados.size === 0"
+            (click)="agregarProgramasSeleccionadosAlGrid()"
+          >
+            Agregar seleccionados ({{ programasCheckboxSeleccionados.size }})
+          </button>
+        </div>
+      </div>
+    </div>
     <div class="w-100 px-3">
       <div class="card">
         <div class="card-body bg-warning py-1">
@@ -326,6 +379,7 @@
             <div class="col-1">V.A.2</div>
             <div class="col-3">Valor Avance 2</div>
           </div>
+          <!--           
           <div class="row">
             <div class="col-1">O.P</div>
             <div class="col-3">Operador Promedio</div>
@@ -333,7 +387,7 @@
             <div class="col-3">Valor Promedio 1</div>
             <div class="col-1">V.P.2</div>
             <div class="col-3">Valor Promedio 2</div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -380,7 +434,7 @@
           </ng-template>
           <ng-template kendoGridEditTemplate let-formGroup="formGroup">
             <kendo-dropdownlist [formControl]="formGroup.get('idPespecifico')" class="d-flex" size="medium"
-              [data]="combosModulo.programaEspecificoWebinar" textField="nombre" valueField="id" [virtual]="true"
+              [data]="programasWebinarFiltrados" textField="nombre" valueField="id" [virtual]="true"
               [kendoDropDownFilter]="filterSettings" [defaultItem]="{ id: null, nombre: '<Seleccione>' }"
               [valuePrimitive]="true">
             </kendo-dropdownlist>
@@ -410,28 +464,6 @@
         <kendo-grid-column field="valorAvance" title="V.A.1" class="text-center" [width]="100" [filterable]="false"
           editor="numeric" headerClass="justify-content-center"></kendo-grid-column>
         <kendo-grid-column field="valorAvanceOpc" title="V.A.2" class="text-center" [width]="100" [filterable]="false"
-          editor="numeric" headerClass="justify-content-center"></kendo-grid-column>
-        <kendo-grid-column field="idOperadorComparacionPromedio" title="O.P" class="text-center" [width]="110"
-          [filterable]="false" headerClass="justify-content-center">
-          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-            {{
-            dataItem.idOperadorComparacionPromedio != null
-            ? obtenerNombreOperadorWebinar(
-            dataItem.idOperadorComparacionPromedio
-            )
-            : "Ingrese Nombre Programa Especifico"
-            }}
-          </ng-template>
-          <ng-template kendoGridEditTemplate let-formGroup="formGroup">
-            <kendo-dropdownlist [formControl]="formGroup.get('idOperadorComparacionPromedio')" class="d-flex"
-              size="medium" [data]="sourceOperadorWebinar" textField="nombre" valueField="id" [valuePrimitive]="true"
-              [defaultItem]="{ id: null, nombre: '<Seleccione>' }" [kendoDropDownFilter]="filterSettings">
-            </kendo-dropdownlist>
-          </ng-template>
-        </kendo-grid-column>
-        <kendo-grid-column field="valorPromedio" title="V.P.1" class="text-center" [width]="100" [filterable]="false"
-          editor="numeric" headerClass="justify-content-center"></kendo-grid-column>
-        <kendo-grid-column field="valorPromedioOpc" title="V.P.2" class="text-center" [width]="100" [filterable]="false"
           editor="numeric" headerClass="justify-content-center"></kendo-grid-column>
         <kendo-grid-command-column title="Opciones" [width]="80"
           headerClass="header-grid-single justify-content-center">
