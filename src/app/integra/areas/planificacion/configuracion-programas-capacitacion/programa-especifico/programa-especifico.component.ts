@@ -674,9 +674,15 @@ export class ProgramaEspecificoComponent implements OnInit {
     this._pEspecificoService.dataItemPespecificoTemp = dataItem;
     this.validarModalidad();
     this._pEspecificoService.esIndividual = false;
+    console.log('[Feriados] verConfiguracionPespecifico iniciado', {
+      idPespecifico: dataItem.id,
+      cursoIndividual: dataItem.cursoIndividual,
+    });
     if (dataItem.cursoIndividual == true) {
+      console.log('[Feriados] cursoIndividual = true -> ModuloSesionesCursoIndicidual');
       this.ModuloSesionesCursoIndicidual();
     } else {
+      console.warn('[Feriados] cursoIndividual = false -> NO se llamara a Feriado/ListarPorPaises (se abre modal sub-pespecifico)');
       this.abrirModalSubPespecifico();
     }
   }
@@ -739,16 +745,23 @@ export class ProgramaEspecificoComponent implements OnInit {
         this.gridProgramaEspecifico.loading = false;
         this._pEspecificoService.tieneFrecuencia = resp[0].body;
         let tienePadre = resp[1].body.estado;
+        console.log('[Feriados] ModuloSesionesCursoIndicidual checks', {
+          tieneFrecuencia: this._pEspecificoService.tieneFrecuencia,
+          tienePadre,
+        });
         if (tienePadre == true) {
+          console.warn('[Feriados] tienePadre = true -> NO se llamara a Feriado/ListarPorPaises (programa asociado a otro pespecifico)');
           this._alertaService.swalFireOptions({
             icon: 'info',
             title: '¡Error al Puntos de corte',
             html: `Este Curso esta asociado a otro Programa Especifico para poder ver su cronograma busque el Programa Especifico:<br><strong>${resp[1].body.estado}</strong>`,
           });
         } else if (this._pEspecificoService.tieneFrecuencia) {
+          console.log('[Feriados] tieneFrecuencia = true y sin padre -> abrirModalCronograma');
           this._pEspecificoService.esIndividual = true;
           this.abrirModalCronograma();
         } else {
+          console.warn('[Feriados] tieneFrecuencia = false -> NO se llamara a Feriado/ListarPorPaises (abre modal frecuencia)');
           this._pEspecificoService.esIndividual = false;
           const modalRef = this._modalService.open(
             ModalContentFrecuenciaComponent,
@@ -774,6 +787,7 @@ export class ProgramaEspecificoComponent implements OnInit {
   
   private abrirModalCronograma() {
     const idPe = this.dataItemPespecificoTemp.id;
+    console.log('[Feriados] abrirModalCronograma - solicitando idsTroncalPaisFeriado', { idPe });
     let observable1$ = this._pEspecificoService.obtenerCronogramaPEspecifico$(
       [],
       idPe,
@@ -797,14 +811,24 @@ export class ProgramaEspecificoComponent implements OnInit {
             HttpResponse<number[]>
           ]) => {
             const idsPaises = resp[3].body ?? [];
-            const feriados$: Observable<HttpResponse<FeriadoConPaisDTO[]>> =
-              idsPaises.length > 0
-                ? (this._integraService.getJsonResponse(
-                    `${constApiPlanificacion.FeriadoListarPorPaises}?${idsPaises
-                      .map((id) => `idsTroncalPais=${id}`)
-                      .join('&')}`
-                  ) as Observable<HttpResponse<FeriadoConPaisDTO[]>>)
-                : of({ body: [] } as HttpResponse<FeriadoConPaisDTO[]>);
+            console.log('[Feriados] idsTroncalPaisFeriado recibidos', {
+              idPe,
+              cantidad: idsPaises.length,
+              idsPaises,
+            });
+            let feriados$: Observable<HttpResponse<FeriadoConPaisDTO[]>>;
+            if (idsPaises.length > 0) {
+              const url = `${constApiPlanificacion.FeriadoListarPorPaises}?${idsPaises
+                .map((id) => `idsTroncalPais=${id}`)
+                .join('&')}`;
+              console.log('[Feriados] SE LLAMARA a Feriado/ListarPorPaises', { url });
+              feriados$ = this._integraService.getJsonResponse(
+                url
+              ) as Observable<HttpResponse<FeriadoConPaisDTO[]>>;
+            } else {
+              console.warn('[Feriados] idsPaises vacio -> NO se llamara a Feriado/ListarPorPaises (programa sin paises de feriado configurados)');
+              feriados$ = of({ body: [] } as HttpResponse<FeriadoConPaisDTO[]>);
+            }
             return forkJoin([
               of(resp[0]),
               of(resp[1]),
@@ -838,7 +862,11 @@ export class ProgramaEspecificoComponent implements OnInit {
           modalRef.componentInstance.cronogramaGrupo = resp[0].body;
           modalRef.componentInstance.configuracionWebinar = resp[1].body;
           modalRef.componentInstance.programaEspecificoFUR = resp[2].body;
-          modalRef.componentInstance.feriados = resp[3].body ?? [];
+          const feriadosBody = resp[3].body ?? [];
+          console.log('[Feriados] feriados cargados al modal cronograma', {
+            cantidad: feriadosBody.length,
+          });
+          modalRef.componentInstance.feriados = feriadosBody;
         },
         error: (error) => {
           let mensaje = this._alertaService.getMessageErrorService(error);
