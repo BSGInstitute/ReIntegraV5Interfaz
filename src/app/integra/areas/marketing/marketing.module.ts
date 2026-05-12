@@ -168,6 +168,7 @@ import { CalendarioWhatsappComponent } from './campania-whatsapp/calendario-what
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalEnviarPlantillaComponent } from './campania-whatsapp/whatsapp-masivo/wm-grilla-whatsapp/modal-enviar-plantilla/modal-enviar-plantilla.component';
 import { ModalMarcarTipoMensajeComponent } from './campania-whatsapp/whatsapp-masivo/wm-grilla-whatsapp/modal-marcar-tipo-mensaje/modal-marcar-tipo-mensaje.component';
+import { ModalCrearMasivoComponent } from './campania-whatsapp/whatsapp-masivo/wm-grilla-whatsapp/modal-crear-masivo/modal-crear-masivo.component';
 import { WhatsappFacebookModalOportunidadComponent } from './whatsapp-Facebook-masivo/whatsapp-facebook-modal-oportunidad/whatsapp-facebook-modal-oportunidad.component';
 import { ModalDetalleLeadFacebookComponent } from './campania-facebook/registro-lading-page-facebook/modal-detalle-lead-facebook/modal-detalle-lead-facebook.component';
 import { FacebookLeadsRecuperacionDatosService } from '@shared/services/facebook-leads-recuperacion-datos.service';
@@ -365,6 +366,7 @@ import { ResenaGlassdoorComponent } from './configuraciones/resena-glassdoor/res
     ModalDetalleLeadFacebookComponent,
     ModalEnviarPlantillaComponent,
     ModalMarcarTipoMensajeComponent,
+    ModalCrearMasivoComponent,
     WhatsappFacebookModalOportunidadComponent,
     ModalDetalleLeadFacebookComponent,
     MessengerFacebookChatComponent,

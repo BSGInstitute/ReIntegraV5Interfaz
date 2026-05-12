@@ -12,6 +12,7 @@ import { CalendarioWhatsappComponent } from '@marketing/campania-whatsapp/calend
 import { MenuSelectEvent } from '@progress/kendo-angular-menu';
 import { ModalEnviarPlantillaComponent } from './modal-enviar-plantilla/modal-enviar-plantilla.component';
 import { ModalMarcarTipoMensajeComponent } from './modal-marcar-tipo-mensaje/modal-marcar-tipo-mensaje.component';
+import { ModalCrearMasivoComponent } from './modal-crear-masivo/modal-crear-masivo.component';
 
 interface DialogData {
   dateRangeOption: string;
@@ -71,6 +72,32 @@ export class WmGrillaWhatsappComponent implements OnInit {
   selectAccionConjunto(event: MenuSelectEvent) {
     console.log(event);
     switch (event.item.text) {
+      case 'Crear Oportunidades Masivas':
+        if (this.mySelection.length === 0) {
+          this.alertaService.swalFireOptions({ icon: 'warning', title: 'Selecciona al menos una conversacion' });
+          return;
+        }
+        if (this.mySelection.length > 50) {
+          this.alertaService.swalFireOptions({ icon: 'warning', title: 'Maximo 50 conversaciones', text: `Tenes ${this.mySelection.length} seleccionadas` });
+          return;
+        }
+        const seleccionadosMasivo = this.grilla.filter((item, index) =>
+          this.mySelection.includes(this.mySelectionKey({ dataItem: item, index }))
+        );
+        const dialogMasivo = this.dialog.open(ModalCrearMasivoComponent, {
+          width: '95vw',
+          maxWidth: '1280px',
+          height: '92vh',
+          maxHeight: '92vh',
+          panelClass: 'modal-masivo-panel',
+          data: seleccionadosMasivo,
+          disableClose: true
+        });
+        dialogMasivo.afterClosed().subscribe(() => {
+          this.mySelection = [];
+          this.obtenerChatWhatsAppMarketing();
+        });
+        break;
       case 'Archivar':
         this.alertaService
           .swalFireOptions({

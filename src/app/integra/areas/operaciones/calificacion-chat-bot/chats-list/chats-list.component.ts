@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
@@ -7,8 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { ChatService } from '../services/chat.service';
 import {
   AlumnoListadoDTO,
-  NoAlumnoAgrupado,
-  ChatbotMensajeDTO,
+  SegmentoListadoDTO,
   HiloChatPaginadoDTO,
   TipoOrigen
 } from '../models/models';
@@ -20,7 +19,7 @@ import {
 })
 export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() alumno?: AlumnoListadoDTO;
-  @Input() noAlumno?: NoAlumnoAgrupado;
+  @Input() noAlumno?: SegmentoListadoDTO;
   @Input() tipoOrigen!: TipoOrigen;
   @Input() fechaCorte: Date | null = null;
   @Input() fechaFinInput: Date | null = null;
@@ -35,7 +34,7 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
   isLoading = false;
   displayedColumns: string[] = [
     'idHilo', 'fechaCreacion', 'origen',
-    'totalMensajes', 'ultimoMensaje', 'estado', 'fechaCalificacion', 'actions'
+    'totalMensajes', 'intervencionBot', 'ultimoMensaje', 'estado', 'fechaCalificacion', 'actions'
   ];
 
   // --- Datepicker: rango para filtrar server-side por fechaCreacion ---
@@ -47,6 +46,9 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
   origenFilter = '';
 
   totalHilos = 0;
+  pageIndex = 0;
+  pageSize  = 10;
+  pageSizeOptions: number[] = [10, 25, 50, 100];
 
   readonly TipoOrigen = TipoOrigen;
   private readonly destroy$ = new Subject<void>();
@@ -57,52 +59,59 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
   constructor(private readonly chatService: ChatService) {}
 
   ngOnInit(): void {
+    this.sincronizarRangoDesdeInputs();
+
     if (this.tipoOrigen === TipoOrigen.SEGMENTO) {
       this.loadHilosSegmento();
     } else if (this.tipoOrigen === TipoOrigen.ALUMNO) {
-      if (this.fechaCorte) {
-        this.fechaRangoInicio = this.fechaCorte;
-        this.fechaRangoFin    = this.fechaFinInput;
-      } else {
-        // Sin fechas (búsqueda por matrícula) → default: último mes → hoy
-        this.fechaRangoInicio = this.getDefaultFechaInicio();
-        this.fechaRangoFin    = new Date();
-      }
       this.loadHilosAlumno();
     }
   }
 
+  /** Hidrata fechaRangoInicio/Fin desde los inputs del padre con defaults razonables. */
+  private sincronizarRangoDesdeInputs(): void {
+    if (this.fechaCorte) {
+      this.fechaRangoInicio = this.fechaCorte;
+      // Si el padre no tiene fechaFin, default a hoy para que el datepicker no quede vacío
+      // y el query server-side tenga ambos lados del rango.
+      this.fechaRangoFin    = this.fechaFinInput ?? new Date();
+    } else {
+      // Sin fechas (búsqueda por matrícula) → default: último mes → hoy
+      this.fechaRangoInicio = this.getDefaultFechaInicio();
+      this.fechaRangoFin    = new Date();
+    }
+  }
+
   ngAfterViewInit(): void {
-    this.dataSource.sort      = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.paginator.page
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: PageEvent) => {
+        this.pageIndex = event.pageIndex;
+        this.pageSize  = event.pageSize;
+        this.recargarHilos();
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const alumnoChanged  = changes['alumno']     && !changes['alumno'].firstChange;
-    const noAlumnoChanged = changes['noAlumno']  && !changes['noAlumno'].firstChange;
-    const fechaChanged   = changes['fechaCorte'] && !changes['fechaCorte'].firstChange;
+    const alumnoChanged   = changes['alumno']        && !changes['alumno'].firstChange;
+    const noAlumnoChanged = changes['noAlumno']      && !changes['noAlumno'].firstChange;
+    const fechaInicioChg  = changes['fechaCorte']    && !changes['fechaCorte'].firstChange;
+    const fechaFinChg     = changes['fechaFinInput'] && !changes['fechaFinInput'].firstChange;
 
     if (alumnoChanged || noAlumnoChanged) {
       this.resetEstado();
-      if (this.tipoOrigen === TipoOrigen.SEGMENTO) {
-        this.loadHilosSegmento();
-      } else if (this.tipoOrigen === TipoOrigen.ALUMNO) {
-        if (this.fechaCorte) {
-          this.fechaRangoInicio = this.fechaCorte;
-          this.fechaRangoFin    = this.fechaFinInput;
-        } else {
-          this.fechaRangoInicio = this.getDefaultFechaInicio();
-          this.fechaRangoFin    = new Date();
-        }
-        this.loadHilosAlumno();
-      }
+      this.sincronizarRangoDesdeInputs();
+      this.resetPaginacion();
+      this.recargarHilos();
+      return;
     }
 
-    if (fechaChanged && this.tipoOrigen === TipoOrigen.ALUMNO) {
+    if (fechaInicioChg || fechaFinChg) {
       if (this.fechaCorte) {
-        this.fechaRangoInicio = this.fechaCorte;
-        this.fechaRangoFin    = null;
-        this.loadHilosAlumno();
+        this.sincronizarRangoDesdeInputs();
+        this.resetPaginacion();
+        this.recargarHilos();
       } else {
         this.resetDatos();
       }
@@ -128,13 +137,22 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
 
   onBuscarHilos(): void {
     if (!this.fechaRangoInicio) return;
-    this.loadHilosAlumno();
+    this.resetPaginacion();
+    this.recargarHilos();
   }
 
   limpiarRangoHilos(): void {
     this.fechaRangoInicio = this.fechaCorte;
     this.fechaRangoFin    = null;
-    this.loadHilosAlumno();
+    this.resetPaginacion();
+    this.recargarHilos();
+  }
+
+  private resetPaginacion(): void {
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
   }
 
   // ============================================================================
@@ -200,8 +218,8 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
     this.chatService.obtenerHilosPaginados$(
       this.alumno.idAlumno,
       this.fechaRangoInicio,
-      1,
-      500,
+      this.pageIndex + 1,
+      this.pageSize,
       this.fechaRangoFin
     )
     .pipe(takeUntil(this.destroy$))
@@ -221,87 +239,34 @@ export class ChatsListComponent implements OnInit, AfterViewInit, OnChanges, OnD
   }
 
   private loadHilosSegmento(): void {
-    if (!this.noAlumno?.idContactoPortalSegmento) {
-      this.isLoading = false;
+    if (!this.noAlumno?.idContactoPortalSegmento || !this.fechaRangoInicio) {
+      this.resetDatos();
       return;
     }
 
     this.isLoading = true;
 
-    this.chatService.obtenerMensajesPorSegmento$(this.noAlumno.idContactoPortalSegmento)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          const mensajes = response.body || [];
-          this.chatService.cachearMensajes(mensajes);
-          this.todosLosHilos = this.agruparMensajesPorHilo(mensajes);
-          this.totalHilos    = this.todosLosHilos.length;
-          this.applyClientFilters();
-          this.isLoading = false;
-        },
-        error: () => {
-          this.resetDatos();
-          this.isLoading = false;
-        }
-      });
-  }
-
-  private agruparMensajesPorHilo(mensajes: ChatbotMensajeDTO[]): any[] {
-    const hilosMap = new Map<number, any>();
-
-    mensajes.forEach(mensaje => {
-      const idHilo = mensaje.idChatbotPortalHiloChat;
-
-      if (!hilosMap.has(idHilo)) {
-        hilosMap.set(idHilo, {
-          idHilo,
-          fechaCreacion:     this.obtenerFechaCreacion(idHilo),
-          origen:            this.obtenerOrigen(idHilo),
-          esCalificado:      this.obtenerEstadoCalificacion(idHilo),
-          fechaCalificacion: this.obtenerFechaCalificacion(idHilo),
-          mensajes:          [],
-        });
+    this.chatService.obtenerHilosPaginadosPorSegmento$(
+      this.noAlumno.idContactoPortalSegmento,
+      this.fechaRangoInicio,
+      this.pageIndex + 1,
+      this.pageSize,
+      this.fechaRangoFin
+    )
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response) => {
+        const paged = response.body!;
+        this.todosLosHilos = paged.items;
+        this.totalHilos    = paged.totalCount;
+        this.applyClientFilters();
+        this.isLoading = false;
+      },
+      error: () => {
+        this.resetDatos();
+        this.isLoading = false;
       }
-
-      hilosMap.get(idHilo)!.mensajes.push(mensaje);
     });
-
-    return Array.from(hilosMap.values()).map(hilo => {
-      const ultimo = hilo.mensajes[hilo.mensajes.length - 1];
-      return {
-        ...hilo,
-        totalMensajes: hilo.mensajes.length,
-        ultimoMensaje: ultimo?.contenido ?? null,
-      };
-    });
-  }
-
-  private obtenerEstadoCalificacion(idHilo: number): boolean {
-    if (this.noAlumno?.hilos) {
-      const hilo = this.noAlumno.hilos.find(h => h.id === idHilo);
-      return hilo?.esCalificadoFormulario || false;
-    }
-    return false;
-  }
-
-  private obtenerFechaCreacion(idHilo: number): Date | null {
-    if (this.noAlumno?.hilos) {
-      const hilo = this.noAlumno.hilos.find(h => h.id === idHilo);
-      return hilo?.fechaCreacion || null;
-    }
-    return null;
-  }
-
-  private obtenerFechaCalificacion(idHilo: number): Date | null {
-    if (this.noAlumno?.hilos) {
-      const hilo = this.noAlumno.hilos.find(h => h.id === idHilo);
-      return hilo?.fechaCalificacion || null;
-    }
-    return null;
-  }
-
-  private obtenerOrigen(idHilo: number): string {
-    return 'Portal Web'; // Segmentos: solo Portal Web por ahora
   }
 
   // ============================================================================

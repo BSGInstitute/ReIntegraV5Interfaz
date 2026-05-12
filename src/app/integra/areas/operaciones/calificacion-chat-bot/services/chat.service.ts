@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   ChatbotHiloChatPorAlumnoDTO,
   ChatbotHiloChatPorSegmentoDTO,
@@ -11,6 +12,7 @@ import {
   PagedResponse,
   HiloChatPaginadoDTO,
   AlumnoListadoDTO,
+  SegmentoListadoDTO,
   SolicitudPorHiloDTO
 } from '../models/models';
 import { IntegraService } from '@shared/services/integra.service';
@@ -25,6 +27,8 @@ export class ChatService extends IntegraService {
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
   private readonly alumnosListadoSubject = new BehaviorSubject<AlumnoListadoDTO[]>([]);
   private readonly totalAlumnosSubject = new BehaviorSubject<number>(0);
+  private readonly segmentosListadoSubject = new BehaviorSubject<SegmentoListadoDTO[]>([]);
+  private readonly totalSegmentosSubject = new BehaviorSubject<number>(0);
 
   // Almacenamiento temporal de mensajes por hilo
   private mensajesCache: Map<number, ChatbotMensajeDTO[]> = new Map();
@@ -34,6 +38,8 @@ export class ChatService extends IntegraService {
   readonly loading$ = this.loadingSubject.asObservable();
   readonly alumnosListado$ = this.alumnosListadoSubject.asObservable();
   readonly totalAlumnos$ = this.totalAlumnosSubject.asObservable();
+  readonly segmentosListado$ = this.segmentosListadoSubject.asObservable();
+  readonly totalSegmentos$ = this.totalSegmentosSubject.asObservable();
 
   loadStudents(fechaCorte?: Date): void {
     this.loadingSubject.next(true);
@@ -94,7 +100,7 @@ export class ChatService extends IntegraService {
     if (fechaInicio) {
       payload['fechaInicio'] = fechaInicio;
       // fechaFin siempre presente cuando hay fechaInicio — default: hoy
-      payload['fechaFin'] = fechaFin ?? new Date();
+      payload['fechaFin'] = fechaFin ? this.toEndOfDay(fechaFin) : new Date();
     }
 
     if (codigoMatricula) {
@@ -111,6 +117,36 @@ export class ChatService extends IntegraService {
         },
         error: (error) => {
           console.error('Error cargando alumnos paginados:', error);
+          this.loadingSubject.next(false);
+        }
+      });
+  }
+
+  loadSegmentosPaginados(
+    pageNumber:   number,
+    pageSize:     number,
+    fechaInicio?: Date | null,
+    fechaFin?:    Date | null
+  ): void {
+    this.loadingSubject.next(true);
+
+    const payload: Record<string, unknown> = {
+      pageNumber,
+      pageSize,
+      fechaInicio: fechaInicio ?? null,
+      fechaFin:    fechaInicio ? (fechaFin ? this.toEndOfDay(fechaFin) : new Date()) : null
+    };
+
+    this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatPorSegmentoPaginado, payload)
+      .subscribe({
+        next: (response) => {
+          const paged = response.body as { items: SegmentoListadoDTO[]; totalCount: number } | null;
+          this.segmentosListadoSubject.next(paged?.items || []);
+          this.totalSegmentosSubject.next(paged?.totalCount || 0);
+          this.loadingSubject.next(false);
+        },
+        error: (error) => {
+          console.error('Error cargando segmentos paginados:', error);
           this.loadingSubject.next(false);
         }
       });
@@ -318,13 +354,54 @@ export class ChatService extends IntegraService {
     const payload: Record<string, unknown> = {
       idAlumno,
       fechaInicio,
-      fechaFin: fechaFin ?? new Date(),
+      fechaFin: fechaFin ? this.toEndOfDay(fechaFin) : new Date(),
       pageNumber,
       pageSize
     };
     return this.postJsonResponse(
       constApiOperaciones.ObtenerHilosPaginadosPorAlumno,
       JSON.stringify(payload)
+    );
+  }
+
+  obtenerHilosPaginadosPorSegmento$(
+    idContactoPortalSegmento: string,
+    fechaInicio: Date,
+    pageNumber:  number,
+    pageSize:    number,
+    fechaFin?:   Date | null
+  ): Observable<HttpResponse<PagedResponse<HiloChatPaginadoDTO>>> {
+    const payload: Record<string, unknown> = {
+      idContactoPortalSegmento,
+      fechaInicio,
+      fechaFin: fechaFin ? this.toEndOfDay(fechaFin) : new Date(),
+      pageNumber,
+      pageSize
+    };
+    // El backend devuelve items mezclados (Portal y WhatsApp) discriminados por `origen`.
+    // - WhatsApp: contrato intacto -> trae `idHilo` e `idOrigen`.
+    // - Portal:   campos renombrados -> trae `idChatbotPortalHiloChat` (= idHilo) e
+    //                                    `idMedioComunicacion_Origen` (= idOrigen).
+    // Normalizamos los items de Portal al contrato interno comun (`idHilo` / `idOrigen`).
+    return this.postJsonResponse(
+      constApiOperaciones.ObtenerHilosPaginadosPorSegmento,
+      JSON.stringify(payload)
+    ).pipe(
+      map((response: HttpResponse<PagedResponse<HiloChatPaginadoDTO>>) => {
+        if (!response.body) return response;
+        const items = (response.body.items || []).map(h => {
+          const raw = h as unknown as {
+            idChatbotPortalHiloChat?: number;
+            idMedioComunicacion_Origen?: number;
+          };
+          return {
+            ...h,
+            idHilo:   h.idHilo   ?? raw.idChatbotPortalHiloChat   ?? 0,
+            idOrigen: h.idOrigen ?? raw.idMedioComunicacion_Origen ?? 0
+          };
+        });
+        return response.clone({ body: { ...response.body, items } });
+      })
     );
   }
 
@@ -349,6 +426,11 @@ export class ChatService extends IntegraService {
       constApiOperaciones.InsertarRespuestaEvaluacionCompletaWhatsapp,
       JSON.stringify(evaluacion)
     );
+  }
+
+  private toEndOfDay(fecha: Date): Date {
+    const f = new Date(fecha);
+    return new Date(f.getFullYear(), f.getMonth(), f.getDate(), 23, 59, 59, 999);
   }
 
 }

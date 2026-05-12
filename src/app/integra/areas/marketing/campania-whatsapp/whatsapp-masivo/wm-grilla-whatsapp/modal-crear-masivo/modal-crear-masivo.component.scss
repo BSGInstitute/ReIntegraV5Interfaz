@@ -1,0 +1,678 @@
+// El ::ng-deep NO funciona para MatDialog overlay — usar styles.scss global
+// El :host tampoco tiene altura conocida — usar .mc-wrapper como raíz
+
+:host {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;       // CRÍTICO: permite que el flex chain respete el límite del dialog
+  overflow: hidden;
+}
+
+.mc-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;        // toma el 100% del surface del dialog
+  min-height: 0;       // CRÍTICO: sin esto los hijos no pueden estar acotados
+  overflow: hidden;
+  background: white;
+  border-radius: 16px;
+}
+
+.mc-zona-fija-top {
+  flex: 0 0 auto;      // NO crece NI se encoge — tamaño natural
+  display: flex;
+  flex-direction: column;
+}
+
+.mc-body {
+  flex: 1 1 0%;        // crece para llenar espacio disponible, base 0%
+  min-height: 0;       // CRÍTICO: sin esto flex no puede shrink below content
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 16px;
+  // SIN display:flex — debe ser block para que los hijos apilen naturalmente
+  // Con flex los cards se comprimen para caber en el espacio disponible
+  background: #f3f4f6;
+  // El scrollbar aparecerá AQUÍ dentro cuando el contenido supere el espacio
+}
+
+.mc-zona-fija-bottom {
+  flex: 0 0 auto;      // NO crece NI se encoge
+}
+
+// Variables
+$primary: #0f8a7e;
+$primary-dark: #0a6b62;
+$primary-light: #e6f5f3;
+$danger: #ef4444;
+$success: #10b981;
+$warning: #f59e0b;
+$purple: #8b5cf6;
+$border: #e2e8f0;
+$text-muted: #64748b;
+
+// Precarga
+.precarga-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+}
+
+// Header
+.mc-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  // Sin border-radius propio — .mc-wrapper tiene overflow:hidden + border-radius:16px
+  // que ya recorta las esquinas. Tener radius aquí creaba un gap blanco entre
+  // el header y las esquinas del wrapper.
+  background: linear-gradient(135deg, #0f8a7e 0%, #0a6b62 100%);
+  color: white;
+  flex-shrink: 0;
+  box-sizing: border-box;
+
+  &-left {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+}
+
+.mc-titulo { font-size: 1.1rem; font-weight: 700; }
+.mc-subtitulo { font-size: 0.78rem; opacity: 0.85; }
+
+.mc-header-counters {
+  display: flex;
+  gap: 12px;
+  margin-right: 8px;
+}
+
+.mc-counter {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  &--activos { background: rgba(255,255,255,0.2); }
+  &--excluidos { background: rgba(239,68,68,0.3); }
+}
+
+.mc-close-btn { color: white !important; }
+
+// Toolbar
+.mc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border-bottom: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.mc-toolbar-sep {
+  width: 1px;
+  height: 28px;
+  background: $border;
+  margin: 0 4px;
+}
+
+.mc-dropdown-plantilla { width: 180px; }
+.mc-dropdown-asesor { width: 180px; }
+.mc-label-inline { font-size: 0.82rem; color: $text-muted; white-space: nowrap; }
+.mc-btn-ia { opacity: 0.6; }
+
+// Tip
+.mc-tip {
+  background: #fef9c3;
+  border-left: 3px solid $warning;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+// Progreso
+.mc-progreso {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+  &-texto { font-size: 1rem; margin-bottom: 4px; }
+  &-contador { font-size: 0.85rem; color: $text-muted; margin-bottom: 12px; }
+}
+
+// Resultados
+.mc-resultados {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+  h4 { margin-bottom: 12px; font-weight: 700; }
+
+  &-resumen {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+}
+
+.badge-ok { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+.badge-err { background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+
+.mc-tabla-resultados {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+  th, td { padding: 6px 10px; border-bottom: 1px solid $border; text-align: left; }
+  th { font-weight: 600; color: $text-muted; }
+}
+
+// Lead Card
+.mc-lead-card {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid $border;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  overflow: hidden;
+  isolation: isolate;     // crea stacking context propio — evita bleeding de sombras externas
+  transition: all 0.2s;
+  margin-bottom: 10px;   // reemplaza el gap:10px que tenía .mc-body cuando era flex
+  min-height: fit-content; // nunca se comprime por debajo de su tamaño natural
+
+  &--excluido {
+    opacity: 0.45;
+    filter: grayscale(0.5);
+  }
+
+  &--creado {
+    border-color: $success;
+    border-width: 2px;
+
+    // Compensa el border extra (2px vs 1px) para que el header siga pegado al borde
+    .mc-card-header {
+      margin: -1px -1px 0 -1px;
+      padding: 11px 15px;  // 10px + 1px compensacion = mismo tamaño visual
+    }
+  }
+}
+
+// Card header
+.mc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: white;      // fondo explícito — evita que el background del card "asoma" en las esquinas redondeadas
+  cursor: pointer;
+  transition: background 0.15s;
+  // No border-radius aquí — el padre .mc-lead-card tiene overflow:hidden y border-radius,
+  // así el header queda contenido sin bordes blancos visibles en las esquinas.
+
+  &:hover { background: linear-gradient(90deg, $primary-light, white); }
+
+  &-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+}
+
+.mc-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: $primary; }
+.mc-alumno-id { font-size: 0.75rem; color: $text-muted; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+.mc-alumno-nombre { font-weight: 600; font-size: 0.9rem; }
+.mc-alumno-pais { font-size: 0.82rem; color: $text-muted; }
+.mc-alumno-celular { font-size: 0.82rem; color: $text-muted; }
+
+.mc-expand-icon { color: $text-muted; font-size: 20px; margin-left: auto; }
+
+// Badges del header
+.mc-card-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.mc-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+
+  &-creable { background: #dcfce7; color: #166534; }
+  &-no-creable { background: #fee2e2; color: #991b1b; }
+  &-revision { background: #fef9c3; color: #854d0e; }
+  &--confirmado { background: #dbeafe; color: #1e40af; }
+  &--captura { background: #ede9fe; color: #5b21b6; }
+  &--creada { background: #dcfce7; color: #166534; }
+  &--error { background: #fee2e2; color: #991b1b; cursor: help; }
+}
+
+// Card body (grid 3 columnas x 2 filas)
+// Mensajes ocupa toda la altura izquierda (2 filas)
+// Perfil y Config en fila 1 (col 2 y 3)
+// Historial en fila 2 (col 2+3)
+.mc-card-body {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "mensajes perfil config"
+    "mensajes historial historial";
+  gap: 0;
+  border-top: 1px solid $border;
+}
+
+.mc-col {
+  padding: 16px;
+  border-right: 1px solid $border;
+  background: white;
+
+  &--contexto {
+    grid-area: mensajes;
+    background: #fafbfc;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid $border;
+  }
+
+  &--perfil {
+    grid-area: perfil;
+    background: white;
+    border-right: 1px solid $border;
+    border-bottom: 1px solid $border;
+  }
+
+  &--config {
+    grid-area: config;
+    background: #fafbfc;
+    border-right: none;
+    border-bottom: 1px solid $border;
+  }
+
+  &--historial {
+    grid-area: historial;
+    background: white;
+    border-top: none;   // el border-bottom de perfil/config ya separa visualmente
+    border-right: none;
+  }
+
+  &-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+  }
+}
+
+.mc-tag-editable {
+  background: $warning;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+// Mensajes
+.mc-mensajes-box {
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 500px;
+  max-height: 500px;  // altura fija — el scroll vertical se activa al superar este límite
+  overflow-y: auto;
+  font-size: 0.8rem;
+}
+
+.mc-mensaje {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+  max-width: 85%;
+  padding: 6px 10px;
+  border-radius: 0 8px 8px 8px;
+  background: #f0f0f0;
+  align-self: flex-start;
+
+  &--recibido {
+    align-self: flex-start;
+    background: #f0f0f0;
+    border-radius: 0 8px 8px 8px;
+  }
+
+  &--enviado {
+    align-self: flex-end;
+    background: #dcf8c6;
+    border-radius: 8px 0 8px 8px;
+  }
+
+  &-personal {
+    font-size: 10px;
+    color: #666;
+    display: block;
+    margin-bottom: 2px;
+    font-weight: 600;
+  }
+
+  &-contenido {
+    font-size: 13px;
+
+    img { max-width: 100%; border-radius: 4px; }
+    audio { width: 100%; }
+  }
+
+  &-fecha {
+    font-size: 10px;
+    color: #999;
+    text-align: right;
+    margin-top: 2px;
+  }
+}
+
+// Historial
+.mc-historial-box { max-height: 180px; overflow-y: auto; }
+
+.mc-tabla-historial {
+  width: 100%;
+  font-size: 0.78rem;
+  border-collapse: collapse;
+  th, td { padding: 4px 8px; border-bottom: 1px solid $border; text-align: left; }
+  th { font-weight: 600; color: $text-muted; font-size: 0.72rem; }
+}
+
+.mc-badge-tipo {
+  background: #ffedd5; color: #9a3412;
+  padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;
+}
+
+// Campos de formulario
+.mc-field {
+  margin-bottom: 12px;
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 5px;
+  }
+
+  &--required label { color: #111827; }
+  &--toggle { display: flex; align-items: center; gap: 10px; }
+}
+
+.mc-kendo-field { width: 100%; }
+.mc-input-text {
+  width: 100%;
+  border: 1px solid $border;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  &:focus { outline: none; border-color: $primary; }
+}
+
+.mc-requerido { color: $danger; }
+.mc-separador { height: 1px; background: $border; margin: 12px 0; }
+.mc-sin-datos { font-size: 0.78rem; color: $text-muted; font-style: italic; padding: 8px 0; }
+
+// Fila Respuesta (separada, dentro del area expandida, encima del footer)
+.mc-card-respuesta {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid $border;
+  background: #f8fafc;
+  flex-wrap: wrap;
+}
+
+.mc-respuesta-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.mc-respuesta-btns { display: flex; gap: 6px; align-items: center; }
+
+// Botones de acción con colores de paleta (sin emojis)
+.btn-doc, .btn-archivo {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  border-color: #3b82f6 !important;
+  &:hover { background-color: #2563eb !important; border-color: #2563eb !important; }
+}
+
+.btn-img, .btn-imagen {
+  background-color: $purple !important;
+  color: white !important;
+  border-color: $purple !important;
+  &:hover { background-color: #7c3aed !important; border-color: #7c3aed !important; }
+}
+
+.btn-manual {
+  background-color: #f97316 !important;
+  color: white !important;
+  border-color: #f97316 !important;
+  &:hover { background-color: #ea6c09 !important; border-color: #ea6c09 !important; }
+  &.mc-btn-manual--activo {
+    background-color: $primary-light !important;
+    color: $primary !important;
+    border-color: $primary !important;
+  }
+}
+
+.mc-btn-manual--activo {
+  background: $primary-light !important;
+  color: $primary !important;
+  border-color: $primary !important;
+}
+
+.mc-input-manual {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  flex: 1 1 100%;   // en mc-card-respuesta se expande a toda la fila
+  width: 100%;
+}
+
+.mc-textarea-manual {
+  width: 100%;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  resize: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(15,138,126,0.1);
+  }
+}
+
+// Card footer
+.mc-card-footer {
+  padding: 8px 14px;
+  border-top: 1px solid $border;
+  display: flex;
+  justify-content: flex-end;
+  background: #fafafa;
+}
+
+// Action Bar
+.mc-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: white;
+  border-top: none;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+  flex-shrink: 0;
+  box-sizing: border-box;
+
+  &-left { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  &-right { display: flex; gap: 10px; align-items: center; }
+}
+
+.mc-badge-count {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  &--validos { background: #dcfce7; color: #166534; }
+  &--invalidos { background: #ffedd5; color: #9a3412; }
+  &--ops { background: #dbeafe; color: #1e40af; }
+}
+
+.mc-btn-crear {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  padding: 8px 20px !important;
+}
+
+// Extraccion IA / Calificacion IA
+.mc-ia-badge {
+  display: inline-flex;
+  align-items: center;
+
+  .badge-procesando  { color: #f57c00; font-size: 12px; }
+  .badge-completado  { color: #388e3c; font-size: 12px; }
+  .badge-calificado  { color: #1565c0; font-size: 12px; font-weight: 600; }
+  .badge-no-creable  { color: #7b1fa2; font-size: 12px; }
+  .badge-error       { color: #d32f2f; font-size: 12px; }
+}
+
+.mc-ia-datos {
+  padding: 6px 14px;
+  border-top: 1px solid $border;
+  font-size: 11px;
+  color: #555;
+  word-break: break-word;
+  background: #fefdf5;
+
+  .mc-ia-cambio {
+    margin-bottom: 2px;
+    .mc-ia-antes {
+      color: #999;
+      text-decoration: line-through;
+      font-size: 11px;
+    }
+    .mc-ia-flecha {
+      color: #555;
+      font-size: 11px;
+      margin: 0 2px;
+    }
+    .mc-ia-despues {
+      color: #2e7d32;
+      font-size: 11px;
+      font-weight: 600;
+    }
+  }
+}
+
+.mc-ia-diff-box {
+  background: #f0f4ff;
+  border: 1px solid #c7d4f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 6px 14px;
+
+  .mc-ia-diff-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: #3a5bbf;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mc-ia-diff-table {
+    width: 100%;
+    font-size: 11px;
+    border-collapse: collapse;
+
+    th {
+      color: #666;
+      font-weight: 500;
+      text-align: left;
+      padding: 2px 6px;
+      border-bottom: 1px solid #dde4f5;
+    }
+
+    td {
+      padding: 4px 6px;
+      vertical-align: middle;
+    }
+
+    .mc-ia-original { color: #999; text-decoration: line-through; }
+    .mc-ia-nuevo    { color: #2a4fbf; font-weight: 500; }
+
+    .mc-ia-acciones {
+      display: flex;
+      gap: 4px;
+    }
+
+    .mc-ia-btn-aceptar, .mc-ia-btn-rechazar {
+      border: 1px solid #ccc;
+      background: #fff;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1;
+      transition: all 0.15s;
+
+      &.activo {
+        font-weight: bold;
+      }
+    }
+
+    .mc-ia-btn-aceptar.activo {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #28a745;
+    }
+
+    .mc-ia-btn-rechazar.activo {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+  }
+}

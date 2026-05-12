@@ -1340,6 +1340,8 @@ ObtenerRespuestasUsuarioPorFormularioAplicado: "/ChatDetalleIntegra/ObtenerRespu
 InsertarRespuestaEvaluacionCompletaWhatsapp: "/ChatDetalleIntegra/InsertarRespuestaEvaluacionCompletaWhatsapp",
 ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp: "/ChatDetalleIntegra/ObtenerRespuestasUsuarioPorFormularioAplicadoWhatsapp",
 ObtenerHilosPaginadosPorAlumno: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorAlumno",
+ObtenerHilosChatPorSegmentoPaginado: "/ChatDetalleIntegra/ObtenerHilosChatPorSegmentoPaginado",
+ObtenerHilosPaginadosPorSegmento: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorSegmento",
 ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
   };
 
@@ -2363,6 +2365,25 @@ export const constApiMarketing = {
     '/WhatsAppMensajeEnviado/DesactivarInteraccionAutomaticaWhatsapp',
   ValidarGuardadoDatosInteraccionAutomatica:
     '/WhatsAppMensajeEnviado/ValidarGuardadoDatosInteraccionAutomatica',
+
+  // Modal Masivo — endpoints generales
+  ObtenerDatosPreCargaMasiva: '/WhatsAppMensajeEnviado/ObtenerDatosPreCargaMasiva',
+  ActualizarDatosAlumnoMasivo: '/WhatsAppMensajeEnviado/ActualizarDatosAlumnoMasivo',
+  ObtenerCentroCostoPorAlumno: '/WhatsAppMensajeEnviado/ObtenerCentroCostoPorAlumno',
+
+  // Modal Masivo — IA (proxied via backend BSG)
+  IniciarExtraccionBatch: '/WhatsAppMensajeEnviado/IniciarExtraccionBatch',
+  ObtenerEstadoExtraccion: '/WhatsAppMensajeEnviado/ObtenerEstadoExtraccion',
+  ObtenerResultadosExtraccion: '/WhatsAppMensajeEnviado/ObtenerResultadosExtraccion',
+  IniciarCalificacionBatch: '/WhatsAppMensajeEnviado/IniciarCalificacionBatch',
+  ObtenerEstadoCalificacion: '/WhatsAppMensajeEnviado/ObtenerEstadoCalificacion',
+  ObtenerResultadosCalificacion: '/WhatsAppMensajeEnviado/ObtenerResultadosCalificacion',
+
+  // Modal Masivo — Historial y calificacion IA V2 (via WhatsAppMasivo controller)
+  ObtenerHistorialOportunidades: '/WhatsAppMasivo/ObtenerHistorialOportunidades',
+  IniciarCalificacionBatchV2: '/WhatsAppMasivo/IniciarCalificacionBatchV2',
+  ObtenerEstadoCalificacionV2: '/WhatsAppMasivo/ObtenerEstadoCalificacionV2',
+  ObtenerResultadosCalificacionV2: '/WhatsAppMasivo/ObtenerResultadosCalificacionV2',
 
   //SeguimientoOportunidadesMkt
   GenerarReporteFechaCreacionRegistro:
@@ -3542,6 +3563,17 @@ export const constApiPlanificacion = {
   TroncalesObtenerCategoriaCombo: '/Troncales/ObtenerCategoriaCombo', //GET
   TroncalesInsertar: '/Troncales/Insertar', //POST
   TroncalesActualizar: '/Troncales/Actualizar', //PUT
+
+  //FERIADO
+  FeriadoListar: '/Feriado/Listar', //GET
+  FeriadoObtenerPorId: '/Feriado/ObtenerPorId', //GET /{id}
+  FeriadoListarPorPaises: '/Feriado/ListarPorPaises', //GET ?idsTroncalPais=&idsTroncalPais=
+  FeriadoInsertar: '/Feriado/Insertar', //POST
+  FeriadoActualizar: '/Feriado/Actualizar', //PUT
+  FeriadoEliminar: '/Feriado/Eliminar', //DELETE /{id}
+  FeriadoComboTroncalCiudad: '/Feriado/ComboTroncalCiudad', //GET → { id, nombre, idTroncalPais }[]
+  FeriadoComboTroncalPais: '/Feriado/ComboTroncalPais', //GET → { id, nombre }[]
+  PEspecificoObtenerIdsTroncalPaisFeriado: '/PEspecifico/ObtenerIdsTroncalPaisFeriado', //GET /{idPespecifico} → number[]
 
   //ESCALA CALIFICACIO
   EscalaCalificacionObtener: '/EscalaCalificacion/Obtener', //GET

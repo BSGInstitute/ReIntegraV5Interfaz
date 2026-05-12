@@ -5,7 +5,7 @@ import {
   Student,
   Chat,
   AlumnoListadoDTO,
-  NoAlumnoAgrupado,
+  SegmentoListadoDTO,
   ViewStateExtended,
   TipoOrigen
 } from '../models/models';
@@ -29,7 +29,7 @@ export class CalificacionChatBotComponent implements OnInit, OnDestroy {
   
   // Nuevas propiedades para manejar alumnos y no alumnos
   selectedAlumno: AlumnoListadoDTO | null = null;
-  selectedNoAlumno: NoAlumnoAgrupado | null = null;
+  selectedNoAlumno: SegmentoListadoDTO | null = null;
   tipoOrigen: TipoOrigen | null = null;
   
   // Fechas seleccionadas en lista-alumno, se pasan a chats-list
@@ -93,14 +93,14 @@ export class CalificacionChatBotComponent implements OnInit, OnDestroy {
    */
   onEvaluacionGuardada(): void {
     if (this.tipoOrigen === TipoOrigen.SEGMENTO) {
-      this.chatService.noAlumnosAgrupados$
+      this.chatService.segmentosListado$
         .pipe(skip(1), take(1), takeUntil(this.destroy$))
         .subscribe(() => {
           this.actualizarSeleccionConNuevosDatos();
           this.onBackToChats();
           setTimeout(() => this.chatsListComponent?.recargarHilos(), 100);
         });
-      this.chatService.loadNoAlumnos();
+      this.chatService.loadSegmentosPaginados(1, 20, this.fechaCorteGlobal, this.fechaFinGlobal);
     } else {
       setTimeout(() => {
         this.actualizarSeleccionConNuevosDatos();
@@ -123,8 +123,8 @@ export class CalificacionChatBotComponent implements OnInit, OnDestroy {
         }
       });
     } else if (this.tipoOrigen === TipoOrigen.SEGMENTO && this.selectedNoAlumno) {
-      this.chatService.noAlumnosAgrupados$.pipe(take(1)).subscribe(noAlumnos => {
-        const actualizado = noAlumnos.find(na => na.idContactoPortalSegmento === this.selectedNoAlumno?.idContactoPortalSegmento);
+      this.chatService.segmentosListado$.pipe(take(1)).subscribe(segmentos => {
+        const actualizado = segmentos.find(s => s.idContactoPortalSegmento === this.selectedNoAlumno?.idContactoPortalSegmento);
         if (actualizado) {
           this.selectedNoAlumno = { ...actualizado };
         }

@@ -109,6 +109,9 @@ export interface ChatbotMensajeDTO {
   contenido: string;
   idContactoPortalSegmento: string;
   fechaCreacion?: Date;
+  esBot?: number; // 1 = bot, 0 = asesor humano
+  personal?: string; // Nombre del asesor humano que respondió
+  waType?: string | null; // Tipo de mensaje WhatsApp ('hsm' = template pre-aprobado)
 }
 
 export interface ChatbotWhatsAppMensajeDTO {
@@ -116,12 +119,15 @@ export interface ChatbotWhatsAppMensajeDTO {
   idAlumno?: number;
   esUsuario: boolean;
   contenido: string;
-  tipoMensaje: string;
+  tipoMensaje: string | null;
   waFile?: string | null;
   waMimeType?: string | null;
   waFileName?: string | null;
   waCaption?: string | null;
   fechaCreacion?: Date;
+  esBot?: number; // 1 = bot, 0 = asesor humano
+  personal?: string; // Nombre del asesor humano que respondió
+  waType?: string | null; // Tipo de mensaje WhatsApp ('hsm' = template pre-aprobado)
 }
 
 // DTOs del Formulario de Evaluación
@@ -219,6 +225,7 @@ export interface HiloChatPaginadoDTO {
   fechaCalificacion: Date | null;
   ultimoMensaje?:    string;
   totalMensajes?:    number;
+  totalMensajesBot?: number;   // Cantidad de mensajes generados por el bot en el hilo
 }
 
 export interface AlumnoListadoDTO {
@@ -232,6 +239,15 @@ export interface AlumnoListadoDTO {
   totalChats: number;
   pendientesCalificacion: number;
   fechaUltimoChat: Date;
+}
+
+export interface SegmentoListadoDTO {
+  idContactoPortalSegmento: string;
+  codigoAreaDerivacion?:    number;
+  derivado:                 boolean;
+  totalChats:               number;
+  pendientesCalificacion:   number;
+  fechaUltimoChat:          Date;
 }
 
 // DTO de solicitudes vinculadas a un hilo de chat

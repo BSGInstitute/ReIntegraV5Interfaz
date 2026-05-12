@@ -93,7 +93,10 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
                 esUsuario: m.esUsuario,
                 contenido: m.contenido,
                 idContactoPortalSegmento: '',
-                fechaCreacion: m.fechaCreacion
+                fechaCreacion: m.fechaCreacion,
+                esBot: m.esBot,
+                personal: m.personal,
+                waType: m.waType
               }));
             this.isLoading = false;
           },
@@ -166,21 +169,26 @@ export class ChatMessagesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Determina si el mensaje es del usuario (alumno/contacto)
-   * esUsuario === true significa que es el alumno/contacto (usuario humano)
-   * esUsuario === false significa que es el bot/asistente virtual
+   * Alumno/contacto: usuario humano que inicia la conversación.
    */
   esDelAlumno(mensaje: ChatbotMensajeDTO): boolean {
     return mensaje.esUsuario;
   }
 
   /**
-   * Determina si el mensaje es del bot (asistente virtual)
-   * esUsuario === false significa que es el bot/asistente virtual
-   * esUsuario === true significa que es el alumno/contacto (usuario humano)
+   * Bot: asistente virtual. Backend envía esBot=1.
    */
   esDelBot(mensaje: ChatbotMensajeDTO): boolean {
-    return !mensaje.esUsuario;
+    return mensaje.esBot === 1;
+  }
+
+  /**
+   * Asesor humano: esUsuario=false, esBot=0 y waType !== 'hsm'.
+   * Los mensajes con waType='hsm' son templates pre-aprobados de WhatsApp,
+   * no respuestas redactadas por el asesor.
+   */
+  esDelAsistente(mensaje: ChatbotMensajeDTO): boolean {
+    return !mensaje.esUsuario && mensaje.esBot === 0 && mensaje.waType !== 'hsm';
   }
 
   /**
