@@ -401,31 +401,36 @@ export class ProgramaEspecificoComponent implements OnInit {
     }
   }
   existeSesionesPorIdPEspecifico(dataItem: PEspecificoPadreIndividual) {
-    this._pEspecificoService.dataItemPespecificoTemp = dataItem;
-    this._integraService
-      .getJsonResponse(
-        `${constApiPlanificacion.PEspecificoValidarPespecificoTieneSesiones}/${dataItem.id}`
-      )
-      .subscribe({
-        next: (resp: HttpResponse<boolean>) => {
-          const modalRef = this._modalService.open(
-            ModalContentCreacionPespecificoComponent,
-            {
-              size: 'xl',
-              backdrop: 'static',
-              keyboard: false
-            }
-          );
-          modalRef.componentInstance.pEspecificoService =
-            this._pEspecificoService;
-          modalRef.componentInstance.isNewPespecifico = false;
-          modalRef.componentInstance.tieneSesiones = resp.body;
-        },
-        error: (error) => {
-          let mensaje = this._alertaService.getMessageErrorService(error);
-          this._alertaService.notificationWarning(mensaje);
-        },
-      });
+    this.gridProgramaEspecifico.loading = true;
+    const tieneSesiones$ = this._integraService.getJsonResponse(
+      `${constApiPlanificacion.PEspecificoValidarPespecificoTieneSesiones}/${dataItem.id}`
+    ) as Observable<HttpResponse<boolean>>;
+    const datosFrescos$ = this._integraService.getJsonResponse(
+      `${constApiPlanificacion.PEspecificoObtenerProgramaEspecificoPadreIndividualPorId}/${dataItem.id}`
+    ) as Observable<HttpResponse<PEspecificoPadreIndividual>>;
+    forkJoin([tieneSesiones$, datosFrescos$]).subscribe({
+      next: (resp: [HttpResponse<boolean>, HttpResponse<PEspecificoPadreIndividual>]) => {
+        this.gridProgramaEspecifico.loading = false;
+        const datoActualizado = resp[1].body ?? dataItem;
+        this._pEspecificoService.dataItemPespecificoTemp = datoActualizado;
+        const modalRef = this._modalService.open(
+          ModalContentCreacionPespecificoComponent,
+          {
+            size: 'xl',
+            backdrop: 'static',
+            keyboard: false
+          }
+        );
+        modalRef.componentInstance.pEspecificoService = this._pEspecificoService;
+        modalRef.componentInstance.isNewPespecifico = false;
+        modalRef.componentInstance.tieneSesiones = resp[0].body;
+      },
+      error: (error) => {
+        this.gridProgramaEspecifico.loading = false;
+        let mensaje = this._alertaService.getMessageErrorService(error);
+        this._alertaService.notificationWarning(mensaje);
+      },
+    });
   }
   crearPespecifico() {
     this.disablebBtnpPespecifico = true;
