@@ -378,9 +378,12 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
         const primerLead = seleccionados[0];
         const payloadMasivo = {
           idPlantilla: this.plantillaMasivaId,
-          listaAlumnos: seleccionados.map(l => ({
+          idCentroCosto: seleccionados[0]?.idCentroCosto ?? 0,
+          usuario: '',
+          alumnos: seleccionados.map(l => ({
             idAlumno: l.idAlumno,
             celularWhatsApp: l.celular,
+            idPais: l.idPaisEmpresa ?? 51,
           }))
         };
         await this.service.enviarPlantillaMasiva(payloadMasivo).toPromise();
