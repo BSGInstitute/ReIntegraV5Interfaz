@@ -35,6 +35,7 @@ import { EntregarBeneficiosAlumnosComponent } from './certificados-y-beneficios/
 import { ReporteCertificadoInstitutoComponent } from './reportes-atencion-cliente/reporte-certificado-instituto/reporte-certificado-instituto.component';
 import { CalificacionChatBotComponent } from './calificacion-chat-bot/registro-calificacion-chat-bot/calificacion-chat-bot.component';
 import { NuevaAgendaAtcComponent } from './gestion-atencion-cliente/nueva-agenda-atc/nueva-agenda-atc.component';
+import { EstudioProgresivoComponent } from './tento/modos-juego/estudio-progresivo/estudio-progresivo.component';
 
 const routes: Routes = [
   {
@@ -76,6 +77,7 @@ const routes: Routes = [
       { path: 'BeneficioSolicitadoAlumno', component: EntregarBeneficiosAlumnosComponent},
       { path: 'ReporteCertificadoInstituto', component: ReporteCertificadoInstitutoComponent},
       { path: 'CalificacionChatBot', component: CalificacionChatBotComponent},
+      { path: 'EstudioProgresivoTento', component: EstudioProgresivoComponent },
       { path: '**', redirectTo: 'Retencion' },
     ]
   }

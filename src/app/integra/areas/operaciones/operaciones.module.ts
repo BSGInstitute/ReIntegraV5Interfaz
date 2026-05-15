@@ -106,6 +106,7 @@ import { ChatsListComponent } from './calificacion-chat-bot/chats-list/chats-lis
 import { EvaluationFormComponent } from './calificacion-chat-bot/evaluation-form/evaluation-form.component';
 import { ChatMessagesComponent } from './calificacion-chat-bot/chat-messages/chat-messages.component';
 import { NuevaAgendaAtcComponent } from './gestion-atencion-cliente/nueva-agenda-atc/nueva-agenda-atc.component';
+import { EstudioProgresivoComponent } from './tento/modos-juego/estudio-progresivo/estudio-progresivo.component';
 
 registerLocaleData(localeEs);
 @NgModule({
@@ -201,6 +202,7 @@ registerLocaleData(localeEs);
     EvaluationFormComponent,
     ChatMessagesComponent,
     NuevaAgendaAtcComponent,
+    EstudioProgresivoComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [{ provide: LOCALE_ID, useValue: "es-ES" }],

@@ -1343,6 +1343,20 @@ ObtenerHilosPaginadosPorAlumno: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorAlu
 ObtenerHilosChatPorSegmentoPaginado: "/ChatDetalleIntegra/ObtenerHilosChatPorSegmentoPaginado",
 ObtenerHilosPaginadosPorSegmento: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorSegmento",
 ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
+
+  // MaestroBsgTento
+  MaestroBsgTentoObtenerAreasConRuta: '/MaestroBsgTento/ObtenerAreasConRuta',
+  MaestroBsgTentoObtenerUnidadesPorArea: '/MaestroBsgTento/ObtenerUnidadesPorArea',
+  MaestroBsgTentoInsertarUnidad: '/MaestroBsgTento/InsertarUnidad',
+  MaestroBsgTentoActualizarUnidad: '/MaestroBsgTento/ActualizarUnidad',
+  MaestroBsgTentoActualizarOrdenUnidades: '/MaestroBsgTento/ActualizarOrdenUnidades',
+  MaestroBsgTentoEliminarUnidad: '/MaestroBsgTento/EliminarUnidad',
+  MaestroBsgTentoObtenerPasosPorUnidad: '/MaestroBsgTento/ObtenerPasosPorUnidad',
+  MaestroBsgTentoInsertarPaso: '/MaestroBsgTento/InsertarPaso',
+  MaestroBsgTentoActualizarPaso: '/MaestroBsgTento/ActualizarPaso',
+  MaestroBsgTentoActualizarOrdenPasos: '/MaestroBsgTento/ActualizarOrdenPasos',
+  MaestroBsgTentoEliminarPaso: '/MaestroBsgTento/EliminarPaso',
+  MaestroBsgTentoObtenerComboPrograma: '/MaestroBsgTento/ObtenerComboPrograma',
   };
 
 export const constApiMarketing = {
@@ -3229,6 +3243,9 @@ export const constApiPlanificacion = {
 
   ProgramaGeneralObtenerProgramasGenerales:
     '/ProgramaGeneral/ObtenerProgramasGenerales', //GET
+  ProgramaGeneralObtenerHabilitadoBsgTento: '/ProgramaGeneral/ObtenerHabilitadoBsgTento',
+  ProgramaGeneralActualizarHabilitadoBsgTento: '/ProgramaGeneral/ActualizarHabilitadoBsgTento',
+  ProgramaGeneralObtenerTodosHabilitadoBsgTento: '/ProgramaGeneral/ObtenerTodosHabilitadoBsgTento',
 
   /*Modulo Pespecifico */
   PEspecificoObtenerPorNombreAutocomplete:
@@ -3871,6 +3888,12 @@ export const constApiPlanificacion = {
     '/MaestroPreguntaProgramaCapacitacion/ImportarExcel', //
   MaestroPreguntaProgramaCapacitacionObtenerReportePreguntasInteractivasExportacionExcel:
     '/MaestroPreguntaProgramaCapacitacion/ObtenerReportePreguntasInteractivasExportacionExcel', //GET
+  MaestroPreguntaProgramaCapacitacionObtenerDificultades:
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerDificultades',
+  MaestroPreguntaProgramaCapacitacionActualizarDificultad:
+    '/MaestroPreguntaProgramaCapacitacion/ActualizarDificultad',
+  MaestroPreguntaProgramaCapacitacionObtenerDificultadPorIdPregunta:
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerDificultadPorIdPregunta',
   PGeneralTipoDescuentoAsociarDescuentos:
     '/PGeneralTipoDescuento/AsociarDescuentos',
   //GESTION DE MATERIAL

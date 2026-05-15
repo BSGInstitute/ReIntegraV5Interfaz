@@ -1,0 +1,209 @@
+<div class="ep-root">
+
+  <!-- Header -->
+  <div class="ep-page-header">
+    <div class="ep-page-header__left">
+      <span class="ep-section-label">BSG Tento / Modos de Juego</span>
+      <h1 class="ep-page-title">Estudio Progresivo</h1>
+    </div>
+    <div *ngIf="areas.length > 0" class="ep-stat-chip">
+      <span class="ep-stat-chip__num">{{ areas.length }}</span>
+      <span class="ep-stat-chip__label">áreas configurables</span>
+    </div>
+  </div>
+
+  <!-- Grid de áreas -->
+  <div class="ep-grid-wrapper">
+    <div *ngIf="loaderAreas" class="ep-loading">
+      <kendo-loader type="infinite-spinner" themeColor="primary" size="medium"></kendo-loader>
+      <span>Cargando áreas...</span>
+    </div>
+    <kendo-grid *ngIf="!loaderAreas" [data]="areas" class="ep-grid"
+      kendoGridExpandBy="id"
+      [expandedDetailKeys]="expandedAreaIds"
+      (detailExpand)="onDetailExpand($event)"
+      (detailCollapse)="onDetailCollapse($event)">
+
+      <ng-template kendoGridDetailTemplate let-dataItem>
+        <div class="ep-detail-row" *ngIf="areaSeleccionada?.id === dataItem.id">
+
+          <!-- Cabecera del detalle -->
+          <div class="ep-detail-header">
+            <span class="ep-detail-title">Unidades de Estudio</span>
+            <span class="ep-detail-area-tag">{{ dataItem.nombre }}</span>
+          </div>
+
+          <!-- Formulario (nueva/editar unidad) -->
+          <div *ngIf="modoFormUnidad" class="ep-form-panel">
+            <p class="ep-form-panel__title">{{ modoFormUnidad === 'nuevo' ? 'Nueva unidad' : 'Editar unidad' }}</p>
+            <div class="mb-2">
+              <label class="form-label">Título <span class="text-danger">*</span></label>
+              <input class="ep-input" [(ngModel)]="formUnidad.titulo" placeholder="Ej: Unidad 1 — Fundamentos" maxlength="200">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Descripción <span class="text-danger">*</span></label>
+              <textarea class="ep-input" [(ngModel)]="formUnidad.descripcion" rows="2" maxlength="500"></textarea>
+            </div>
+          </div>
+
+          <!-- Grid de unidades -->
+          <div *ngIf="!modoFormUnidad">
+            <div *ngIf="loaderUnidades" class="ep-loading">
+              <kendo-loader type="infinite-spinner" themeColor="primary" size="small"></kendo-loader>
+              <span>Cargando unidades...</span>
+            </div>
+            <kendo-grid *ngIf="!loaderUnidades" [data]="unidades" class="ep-inner-grid">
+              <kendo-grid-column field="orden" title="#" [width]="55"></kendo-grid-column>
+              <kendo-grid-column field="titulo" title="Título"></kendo-grid-column>
+              <kendo-grid-column field="descripcion" title="Descripción"></kendo-grid-column>
+              <kendo-grid-command-column title="Acciones" [width]="200" headerClass="justify-content-center">
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                  <div class="d-flex gap-1 justify-content-center">
+                    <button class="ep-icon-btn ep-icon-btn--ghost" [disabled]="rowIndex === 0" (click)="moverUnidadArriba(rowIndex)" title="Subir">
+                      <fa-icon [icon]="['fas', 'arrow-up']"></fa-icon>
+                    </button>
+                    <button class="ep-icon-btn ep-icon-btn--ghost" [disabled]="rowIndex === unidades.length - 1" (click)="moverUnidadAbajo(rowIndex)" title="Bajar">
+                      <fa-icon [icon]="['fas', 'arrow-down']"></fa-icon>
+                    </button>
+                    <button class="ep-icon-btn ep-icon-btn--info" (click)="abrirModalPasos(dataItem)" title="Ver pasos">
+                      <fa-icon [icon]="['fas', 'list-ol']"></fa-icon>
+                    </button>
+                    <button class="ep-icon-btn ep-icon-btn--warn" (click)="editarUnidad(dataItem)" title="Editar">
+                      <fa-icon [icon]="['fas', 'pencil-alt']"></fa-icon>
+                    </button>
+                    <button class="ep-icon-btn ep-icon-btn--danger" (click)="eliminarUnidad(dataItem)" title="Eliminar">
+                      <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+                    </button>
+                  </div>
+                </ng-template>
+              </kendo-grid-command-column>
+            </kendo-grid>
+          </div>
+
+          <!-- Footer del detalle (acciones) -->
+          <div class="ep-detail-actions">
+            <ng-container *ngIf="!modoFormUnidad">
+              <button class="ep-btn ep-btn--success" (click)="mostrarFormNuevaUnidad()">
+                <fa-icon [icon]="['fas', 'plus']"></fa-icon> Nueva unidad
+              </button>
+              <button class="ep-btn ep-btn--outline" *ngIf="ordenCambiadoUnidades"
+                [disabled]="loaderOrdenUnidades" (click)="guardarOrdenUnidades()">
+                <span *ngIf="!loaderOrdenUnidades">Guardar orden</span>
+                <kendo-loader *ngIf="loaderOrdenUnidades" type="infinite-spinner" size="small"></kendo-loader>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="modoFormUnidad">
+              <button class="ep-btn ep-btn--primary" [disabled]="loaderGuardarUnidad" (click)="guardarUnidad()">
+                <span *ngIf="!loaderGuardarUnidad">Guardar</span>
+                <kendo-loader *ngIf="loaderGuardarUnidad" type="infinite-spinner" themeColor="light" size="small"></kendo-loader>
+              </button>
+              <button class="ep-btn ep-btn--ghost" (click)="cancelarFormUnidad()">Cancelar</button>
+            </ng-container>
+          </div>
+
+        </div>
+
+        <!-- Estado cargando cuando la fila se expande pero aún no es la seleccionada -->
+        <div *ngIf="areaSeleccionada?.id !== dataItem.id" class="ep-loading">
+          <kendo-loader type="infinite-spinner" themeColor="primary" size="small"></kendo-loader>
+        </div>
+      </ng-template>
+
+      <kendo-grid-column field="nombre" title="Área de Conocimiento"></kendo-grid-column>
+      <kendo-grid-column field="descripcion" title="Descripción"></kendo-grid-column>
+    </kendo-grid>
+  </div>
+
+</div>
+
+<!-- ═══════════ MODAL PASOS ═══════════ -->
+<ng-template #modalGestionPasos let-modal>
+  <div class="ep-modal-header ep-modal-header--nested">
+    <div class="ep-modal-header__content">
+      <span class="ep-modal-context">{{ areaSeleccionada?.nombre }}</span>
+      <h5 class="ep-modal-title">Pasos — {{ unidadParaPasos?.titulo }}</h5>
+    </div>
+    <button type="button" class="btn-close" (click)="cerrarModalPasos()"></button>
+  </div>
+
+  <div class="ep-modal-body">
+    <!-- Formulario paso -->
+    <div *ngIf="modoFormPaso" class="ep-form-panel">
+      <p class="ep-form-panel__title">{{ modoFormPaso === 'nuevo' ? 'Nuevo paso' : 'Editar paso' }}</p>
+      <div class="mb-2">
+        <label class="form-label">Programa <span class="text-danger">*</span></label>
+        <kendo-dropdownlist
+          [data]="comboProgramas"
+          [textField]="'nombre'"
+          [valueField]="'id'"
+          [valuePrimitive]="true"
+          [(ngModel)]="formPaso.idPGeneral"
+          [defaultItem]="{ nombre: 'Seleccione un programa...', id: null }"
+          style="width:100%">
+        </kendo-dropdownlist>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Título <span class="text-danger">*</span></label>
+        <input class="ep-input" [(ngModel)]="formPaso.titulo" placeholder="Ej: Fundamentos" maxlength="200">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Descripción <span class="text-danger">*</span></label>
+        <textarea class="ep-input" [(ngModel)]="formPaso.descripcion" rows="2" maxlength="500"></textarea>
+      </div>
+    </div>
+
+    <!-- Grid pasos -->
+    <div *ngIf="!modoFormPaso">
+      <div *ngIf="loaderPasos" class="ep-loading">
+        <kendo-loader type="infinite-spinner" themeColor="primary" size="medium"></kendo-loader>
+      </div>
+      <kendo-grid *ngIf="!loaderPasos" [data]="pasos" class="ep-inner-grid">
+        <kendo-grid-column field="orden" title="#" [width]="55"></kendo-grid-column>
+        <kendo-grid-column field="nombrePGeneral" title="Programa"></kendo-grid-column>
+        <kendo-grid-column field="titulo" title="Título"></kendo-grid-column>
+        <kendo-grid-command-column title="Acciones" [width]="165" headerClass="justify-content-center">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <div class="d-flex gap-1 justify-content-center">
+              <button class="ep-icon-btn ep-icon-btn--ghost" [disabled]="rowIndex === 0" (click)="moverPasoArriba(rowIndex)" title="Subir">
+                <fa-icon [icon]="['fas', 'arrow-up']"></fa-icon>
+              </button>
+              <button class="ep-icon-btn ep-icon-btn--ghost" [disabled]="rowIndex === pasos.length - 1" (click)="moverPasoAbajo(rowIndex)" title="Bajar">
+                <fa-icon [icon]="['fas', 'arrow-down']"></fa-icon>
+              </button>
+              <button class="ep-icon-btn ep-icon-btn--warn" (click)="editarPaso(dataItem)" title="Editar">
+                <fa-icon [icon]="['fas', 'pencil-alt']"></fa-icon>
+              </button>
+              <button class="ep-icon-btn ep-icon-btn--danger" (click)="eliminarPaso(dataItem)" title="Eliminar">
+                <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-command-column>
+      </kendo-grid>
+    </div>
+  </div>
+
+  <div class="ep-modal-footer">
+    <!-- Sin formulario -->
+    <ng-container *ngIf="!modoFormPaso">
+      <button class="ep-btn ep-btn--success" (click)="mostrarFormNuevoPaso()">
+        <fa-icon [icon]="['fas', 'plus']"></fa-icon> Nuevo paso
+      </button>
+      <button class="ep-btn ep-btn--outline" *ngIf="ordenCambiadoPasos"
+        [disabled]="loaderOrdenPasos" (click)="guardarOrdenPasos()">
+        <span *ngIf="!loaderOrdenPasos">Guardar orden</span>
+        <kendo-loader *ngIf="loaderOrdenPasos" type="infinite-spinner" size="small"></kendo-loader>
+      </button>
+      <span class="flex-grow-1"></span>
+      <button class="ep-btn ep-btn--ghost" (click)="cerrarModalPasos()">Cerrar</button>
+    </ng-container>
+    <!-- Con formulario activo -->
+    <ng-container *ngIf="modoFormPaso">
+      <button class="ep-btn ep-btn--primary" [disabled]="loaderGuardarPaso" (click)="guardarPaso()">
+        <span *ngIf="!loaderGuardarPaso">Guardar</span>
+        <kendo-loader *ngIf="loaderGuardarPaso" type="infinite-spinner" themeColor="light" size="small"></kendo-loader>
+      </button>
+      <button class="ep-btn ep-btn--ghost" (click)="cancelarFormPaso()">Cancelar</button>
+    </ng-container>
+  </div>
+</ng-template>

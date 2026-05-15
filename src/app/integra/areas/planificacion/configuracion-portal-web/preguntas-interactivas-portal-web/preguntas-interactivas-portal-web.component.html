@@ -124,7 +124,7 @@
       <kendo-grid-command-column
         title="Acciones"
         [headerStyle]="{ color: '#5f75bd' }"
-        [width]="45"
+        [width]="70"
         [headerClass]="'justify-content-center'"
       >
         <ng-template kendoGridCellTemplate let-dataItem="dataItem">
@@ -157,6 +157,21 @@
               (click)="eliminarUnitario(dataItem)"
             >
               <span class="k-icon k-i-x k-icon-20"></span>
+            </button>
+
+            <button
+              kendoButton
+              themeColor="info"
+              fillMode="solid"
+              rounded="large"
+              size="large"
+              class="p-2 me-1 ms-1"
+              container="body"
+              placement="top"
+              ngbTooltip="Configurar Dificultad"
+              (click)="abrirModalDificultad(dataItem)"
+            >
+              <span class="k-icon k-i-chart-bar-stacked k-icon-20"></span>
             </button>
           </div>
         </ng-template>
@@ -1292,4 +1307,49 @@
     </div>
   </div>
   <loading [loading]="loaderImport"></loading>
+</ng-template>
+
+<!-- Modal Configuracion Dificultad -->
+<ng-template #modalConfiguracionDificultad let-modal>
+  <div class="modal-header">
+    <h3 class="modal-title m-0 fw-semibold">Configurar Nivel de Dificultad</h3>
+    <button type="button" class="btn-close" (click)="resetearModalDificultad()"></button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="loaderModalDificultad" class="text-center py-3">
+      <kendo-loader type="infinite-spinner" themeColor="primary" size="medium"></kendo-loader>
+    </div>
+    <div *ngIf="!loaderModalDificultad">
+      <div class="mb-3">
+        <kendo-dropdownlist
+          [data]="listaDificultades"
+          [textField]="'nivelDificultad'"
+          [valueField]="'idPreguntaProgramaCapacitacionDificultad'"
+          [(ngModel)]="idDificultadSeleccionada"
+          [defaultItem]="{ nivelDificultad: 'Seleccione una dificultad', idPreguntaProgramaCapacitacionDificultad: null }"
+          [valuePrimitive]="true"
+          style="width: 100%"
+        ></kendo-dropdownlist>
+      </div>
+        <small class="text-muted">Esta configuración solo aplica para BSG-TENTO</small>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      kendoButton
+      themeColor="base"
+      fillMode="solid"
+      (click)="resetearModalDificultad()"
+    >Cancelar</button>
+    <button
+      kendoButton
+      themeColor="primary"
+      fillMode="solid"
+      [disabled]="loaderModalDificultad || idDificultadSeleccionada === null"
+      (click)="guardarDificultad()"
+    >
+      <span *ngIf="!loaderGuardarDificultad">Guardar</span>
+      <kendo-loader *ngIf="loaderGuardarDificultad" type="infinite-spinner" themeColor="light" size="small"></kendo-loader>
+    </button>
+  </div>
 </ng-template>
