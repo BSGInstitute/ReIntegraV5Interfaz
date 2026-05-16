@@ -1,6 +1,9 @@
 import { ModalContentEditarPostulanteComponent } from './modal-content-editar-postulante/modal-content-editar-postulante.component';
 import { ModalContentAgregarPostulanteComponent } from './modal-content-agregar-postulante/modal-content-agregar-postulante.component';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { DpWhatsappV2Component } from '../dp-whatsapp-v2/dp-whatsapp-v2.component';
+import { Component, Injector, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { FormBuilder } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpResponse } from '@angular/common/http';
@@ -14,6 +17,7 @@ import {
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { IntegraService } from '@shared/services/integra.service';
 import { DatosDelPostulanteService } from '@gestionPersonas/services/datos-del-postulante.service';
+import { WhatsAppPostulanteV2Service } from '@gestionPersonas/services/whatsapp-postulante-v2.service';
 import { AlertaService } from '@shared/services/alerta.service';
 import { UserService } from '@shared/services/user.service';
 import { constApiGestionPersonal } from '@environments/constApi';
@@ -27,7 +31,7 @@ import { ModalContentaGregarProcesoComponent } from './modal-contenta-gregar-pro
   styleUrls: ['./dp-tabla-postulante.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class DpTablaPostulanteComponent implements OnInit {
+export class DpTablaPostulanteComponent implements OnInit, OnDestroy {
   //Seleccion
   mySelection: number[] = [];
 
@@ -56,13 +60,29 @@ export class DpTablaPostulanteComponent implements OnInit {
 
   gridDatosPostulante: KendoGrid = new KendoGrid();
 
+  /** Para limpiar las suscripciones SignalR al salir del módulo. */
+  private readonly _destroy$ = new Subject<void>();
+
+  /** Stack de notificaciones WhatsApp estilo card (top-center). */
+  waNotificaciones: Array<{
+    id: number;
+    nombrePostulante: string;
+    cuerpo: string;
+    hora: string;
+  }> = [];
+  private _waNotifId = 0;
+  /** Auto-dismiss tras 6s. */
+  private static readonly WA_TOAST_TTL_MS = 6000;
+
   constructor(
     private _integraService: IntegraService,
     private _datosPostulanteService: DatosDelPostulanteService,
     private _alertaService: AlertaService,
     private _userService: UserService,
     private _formBuilder: FormBuilder,
-    private _modalService: NgbModal
+    private _modalService: NgbModal,
+    private _injector: Injector,
+    private _whatsappV2: WhatsAppPostulanteV2Service
   ) {
     this._datosPostulanteService.getComboPostulante().subscribe({
       next: (data) => {
@@ -83,6 +103,94 @@ export class DpTablaPostulanteComponent implements OnInit {
     this.cargargrilla();
     this.recargaDeDatos();
     this.obtenerPostulantesFiltroManual();
+
+    // Hub WhatsApp V2: conectar al entrar al módulo GP para que el asesor reciba
+    // notificaciones de mensajes entrantes (`AgregarMensaje`, `recargarHistorial`)
+    // aun sin tener un chat abierto. `connect()` es idempotente: si ya está
+    // conectado, no-op. Si el modal de chat se abre luego, no re-conecta.
+    this._whatsappV2.connect().catch(() => {
+      /* la UI degrada vía `hubConnected$`; no bloqueamos la grilla por esto */
+    });
+
+    // Toast estilo WhatsApp en top-center. El service ya filtra por
+    // `idPostulanteActivo`: solo emite cuando el postulante NO es el actualmente
+    // abierto (evita ruido cuando ya estás viendo el chat).
+    this._whatsappV2.notificarMensaje$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((notif) => this.pushNotificacionWhatsApp(notif));
+  }
+
+  /**
+   * Resuelve el nombre del postulante para el toast. Prefiere los datos de la
+   * grilla (que ya viste/cargaste), cae al `waFrom` (número) como último recurso.
+   */
+  private resolverNombrePostulanteToast(
+    idPostulante: number | null,
+    waFrom: string | null
+  ): string {
+    if (idPostulante != null) {
+      const dataView: any = this.gridDatosPostulante?.view;
+      const data: DatosPostulante[] = Array.isArray(dataView)
+        ? dataView
+        : dataView?.data ?? [];
+      const match = data.find((d) => d.idPostulante === idPostulante);
+      if (match) {
+        const partes = [
+          match.nombre,
+          match.apellidoPaterno,
+          match.apellidoMaterno,
+        ]
+          .filter((s) => !!s && `${s}`.trim().length > 0)
+          .join(' ')
+          .trim();
+        if (partes) return partes;
+      }
+    }
+    return waFrom || 'Postulante';
+  }
+
+  /** Inserta una notificación en el stack y programa el auto-dismiss. */
+  private pushNotificacionWhatsApp(notif: {
+    waFrom?: string | null;
+    idPostulante?: number | null;
+    waBody?: string | null;
+  } | null): void {
+    if (!notif) return;
+    const id = ++this._waNotifId;
+    const item = {
+      id,
+      nombrePostulante: this.resolverNombrePostulanteToast(
+        notif.idPostulante ?? null,
+        notif.waFrom ?? null
+      ),
+      cuerpo: notif.waBody || 'Nuevo mensaje recibido',
+      hora: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    };
+    this.waNotificaciones = [item, ...this.waNotificaciones];
+    setTimeout(
+      () => this.cerrarNotificacionWhatsApp(id),
+      DpTablaPostulanteComponent.WA_TOAST_TTL_MS
+    );
+  }
+
+  /** Botón X de la card. */
+  cerrarNotificacionWhatsApp(id: number): void {
+    this.waNotificaciones = this.waNotificaciones.filter((n) => n.id !== id);
+  }
+
+  /** trackBy para *ngFor del stack de notificaciones. */
+  trackWaNotif(_idx: number, n: { id: number }): number {
+    return n.id;
+  }
+
+  ngOnDestroy(): void {
+    // Cerrar suscripciones y la conexión SignalR cuando el asesor sale del módulo.
+    this._destroy$.next();
+    this._destroy$.complete();
+    this._whatsappV2.disconnect();
   }
 
   //comboAreaFormacionExperiencia: ComboAreaFormacionExperiencia;
@@ -490,5 +598,35 @@ export class DpTablaPostulanteComponent implements OnInit {
     modalRef.componentInstance.datosPostulanteService =
       this._datosPostulanteService;
     modalRef.componentInstance.postulante = postulante;
+  }
+
+  /**
+   * Abre el chat 1-a-1 de WhatsApp V2 contra el postulante de la fila.
+   * El modal queda dueño del lifecycle del hub (idempotente) y de la UI
+   * de mensajería. NO toca V1 (botón "Enviar Whatsapp" de la toolbar y
+   * tab "Chat Whatsapp" del datos-postulante siguen funcionando).
+   */
+  abrirChatWhatsappV2(postulante: DatosPostulante): void {
+    const nombre = [
+      postulante?.nombre,
+      postulante?.apellidoPaterno,
+      postulante?.apellidoMaterno,
+    ]
+      .filter((s) => !!s && `${s}`.trim().length > 0)
+      .join(' ')
+      .trim();
+
+    const modalRef = this._modalService.open(DpWhatsappV2Component, {
+      size: 'md',
+      backdrop: 'static',
+      keyboard: false,
+      windowClass: 'wa-chat-modal',
+      injector: this._injector,
+    });
+    modalRef.componentInstance.idPostulante = postulante?.idPostulante;
+    modalRef.componentInstance.nombrePostulante = nombre || null;
+    modalRef.componentInstance.idPais = postulante?.idPais ?? null;
+    // El modal sanitiza internamente (solo dígitos). Pasamos crudo.
+    modalRef.componentInstance.celular = postulante?.celular ?? null;
   }
 }

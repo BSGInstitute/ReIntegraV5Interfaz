@@ -74,6 +74,9 @@ import { ModalHistorialPostulanteExperienciaComponent } from './proceso-seleccio
 import { ModalPostulanteExperienciaComponent } from './proceso-seleccion/datos-postulante/dp-tabla-postulante/modal-content-editar-postulante/dp-postulante-experiencia/modal-postulante-experiencia/modal-postulante-experiencia.component';
 import { ModalContentaGregarProcesoComponent } from './proceso-seleccion/datos-postulante/dp-tabla-postulante/modal-contenta-gregar-proceso/modal-contenta-gregar-proceso.component';
 import { DpWhatsappPostulantesComponent } from './proceso-seleccion/datos-postulante/dp-whatsapp-postulantes/dp-whatsapp-postulantes.component';
+import { DpWhatsappV2Component } from './proceso-seleccion/datos-postulante/dp-whatsapp-v2/dp-whatsapp-v2.component';
+import { DpWhatsappV2TemplatePickerComponent } from './proceso-seleccion/datos-postulante/dp-whatsapp-v2/dp-whatsapp-v2-template-picker/dp-whatsapp-v2-template-picker.component';
+import { WhatsAppPostulanteV2Service } from './services/whatsapp-postulante-v2.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InduccionPersonalComponent } from './gestion-personal/induccion-personal/induccion-personal.component';
 import { GestionContratosComponent } from './gestion-personal/gestion-contratos/gestion-contratos.component';
@@ -146,6 +149,8 @@ import { RegistroMarcadorFechaComponent } from './asistencia-personal/registro-m
     ModalPostulanteExperienciaComponent,
     ModalContentaGregarProcesoComponent,
     DpWhatsappPostulantesComponent,
+    DpWhatsappV2Component,
+    DpWhatsappV2TemplatePickerComponent,
     InduccionPersonalComponent,
     GestionContratosComponent,
     ModalContratoComponent,
@@ -187,6 +192,7 @@ import { RegistroMarcadorFechaComponent } from './asistencia-personal/registro-m
     AngularMaterialModule,
     SharedModule,
     FontAwesomeModule
-  ]
+  ],
+  providers: []
 })
 export class GestionPersonasModule { }

@@ -1,0 +1,107 @@
+<div class="wa-picker">
+  <!-- HEADER -->
+  <div class="wa-picker__header">
+    <div class="wa-picker__titulo">
+      <ng-container *ngIf="paso === 'lista'">
+        Enviar plantilla a {{ nombrePostulante || waTo || "postulante" }}
+      </ng-container>
+      <ng-container *ngIf="paso !== 'lista'">
+        <button
+          type="button"
+          class="wa-picker__back"
+          title="Volver a la lista"
+          [disabled]="paso === 'confirmando'"
+          (click)="volver()"
+        >
+          <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon>
+        </button>
+        <span class="wa-picker__titulo-texto">
+          {{ plantillaSeleccionada?.nombrePlantillaBase || "Vista previa" }}
+        </span>
+      </ng-container>
+    </div>
+    <button
+      type="button"
+      class="wa-picker__close"
+      title="Cerrar"
+      [disabled]="paso === 'confirmando'"
+      (click)="cerrar()"
+    >
+      <fa-icon [icon]="['fas', 'xmark']"></fa-icon>
+    </button>
+  </div>
+
+  <!-- BODY -->
+  <div class="wa-picker__body">
+    <!-- ESTADO 1 — LISTA -->
+    <ng-container *ngIf="paso === 'lista'">
+      <div class="wa-picker__loader" *ngIf="cargandoLista">
+        <kendo-loader themeColor="primary" size="medium"></kendo-loader>
+        <span>Cargando plantillas...</span>
+      </div>
+
+      <div
+        class="wa-picker__empty"
+        *ngIf="!cargandoLista && plantillas.length === 0"
+      >
+        No hay plantillas disponibles.
+      </div>
+
+      <ul class="wa-picker__lista" *ngIf="!cargandoLista && plantillas.length > 0">
+        <li
+          class="wa-picker__item"
+          *ngFor="let p of plantillas"
+          (click)="seleccionarPlantilla(p)"
+        >
+          <div class="wa-picker__item-nombre">{{ p.nombrePlantillaBase }}</div>
+          <div class="wa-picker__item-desc" *ngIf="p.descripcion">
+            {{ p.descripcion }}
+          </div>
+        </li>
+      </ul>
+    </ng-container>
+
+    <!-- ESTADO 2 — PREVIEW -->
+    <ng-container *ngIf="paso === 'preview'">
+      <div class="wa-picker__loader" *ngIf="cargandoPreview">
+        <kendo-loader themeColor="primary" size="medium"></kendo-loader>
+        <span>Generando vista previa...</span>
+      </div>
+
+      <div class="wa-picker__error" *ngIf="error && !cargandoPreview">
+        {{ error }}
+      </div>
+
+      <ng-container *ngIf="!cargandoPreview && preview">
+        <div class="wa-picker__preview">{{ preview.plantilla }}</div>
+      </ng-container>
+    </ng-container>
+
+    <!-- ESTADO 3 — CONFIRMANDO -->
+    <ng-container *ngIf="paso === 'confirmando'">
+      <div class="wa-picker__loader">
+        <kendo-loader themeColor="primary" size="medium"></kendo-loader>
+        <span>Enviando plantilla...</span>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="wa-picker__footer" *ngIf="paso === 'preview'">
+    <button
+      type="button"
+      class="wa-picker__btn wa-picker__btn--ghost"
+      (click)="cerrar()"
+    >
+      Cancelar
+    </button>
+    <button
+      type="button"
+      class="wa-picker__btn wa-picker__btn--primary"
+      [disabled]="!preview || cargandoPreview"
+      (click)="confirmar()"
+    >
+      Confirmar y enviar
+    </button>
+  </div>
+</div>
