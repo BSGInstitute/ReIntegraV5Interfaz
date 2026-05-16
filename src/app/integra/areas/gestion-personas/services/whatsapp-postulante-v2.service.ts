@@ -137,7 +137,8 @@ export class WhatsAppPostulanteV2Service implements OnDestroy {
   private static readonly BC_NAME = 'wa-gp-postulante';
   private static readonly STORAGE_KEY_PREFIX = 'wa-gp-dedup-';
   private static readonly DEDUP_TTL_MS = 10_000;
-  private static readonly UrlHubWhatsappPeru = environment.urlSignal + 'hubChatWhatsapp_Peru';
+  private static readonly UrlHubWhatsappPeru = 'https://integrav4-signalrcore.bsginstitute.com/hubChatWhatsapp_Peru';
+  //private static readonly UrlHubWhatsappPeru = environment.urlSignal + 'hubChatWhatsapp_Peru';
 
 
   constructor(

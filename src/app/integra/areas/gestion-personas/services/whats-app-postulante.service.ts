@@ -126,7 +126,7 @@ export class WhatsAppPostulanteService {
   async conectar() {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(
-        `${environment.urlSignal}hubChatWhatsapp_Peru?idUsuario=${this._userService.userData.idPersonal}&usuarioNombre=${this._userService.userData.userName}`
+        `https://integrav4-signalrcore.bsginstitute.com/hubChatWhatsapp_Peru?idUsuario=${this._userService.userData.idPersonal}&usuarioNombre=${this._userService.userData.userName}`
       )
       .withAutomaticReconnect()
       .build();
