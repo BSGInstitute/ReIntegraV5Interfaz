@@ -1,8 +1,7 @@
-export interface ProgramaConfigurado {
+/** DTO de listado de programas generales activos (pla.T_PGeneral). */
+export interface ProgramaGeneralListado {
   id: number;
   nombre: string;
-  usuarioModificacion: string;
-  fechaModificacion: Date;
 }
 
 export interface ProgramaGeneral {

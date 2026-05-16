@@ -31,6 +31,10 @@ export class ModalEditarProgramaComponent implements OnInit {
   isLoadingProgramaConfiguradoDetalle: boolean = false;
   programaConfiguradoDetalle: ProgramaConfiguradoDetalle | null = null;
 
+  // Estado visual del panel expandido
+  expandedCategoriaId: number | null = null;
+  isRefreshing: boolean = false;
+
   // Modal para crear argumento
   showModalCrearArgumento: boolean = false;
   argumentoNombre: string = '';
@@ -57,6 +61,7 @@ export class ModalEditarProgramaComponent implements OnInit {
 
   obtenerProgramaConfiguradoDetalle(): void {
     this.isLoadingProgramaConfiguradoDetalle = true;
+    this.isRefreshing = true;
 
     this.integraService
       .getJsonResponse(
@@ -67,6 +72,7 @@ export class ModalEditarProgramaComponent implements OnInit {
           this.programaConfiguradoDetalle =
             data.body as ProgramaConfiguradoDetalle;
           this.isLoadingProgramaConfiguradoDetalle = false;
+          this.isRefreshing = false;
 
           console.log(
             'Detalle Programa Configurado:',
@@ -77,8 +83,15 @@ export class ModalEditarProgramaComponent implements OnInit {
           console.error('Error fetching :', err);
           this._alertaService.notificationError('Error al obtener datos');
           this.isLoadingProgramaConfiguradoDetalle = false;
+          this.isRefreshing = false;
         },
       });
+  }
+
+  onPanelClosed(categoriaId: number): void {
+    if (!this.isRefreshing && this.expandedCategoriaId === categoriaId) {
+      this.expandedCategoriaId = null;
+    }
   }
 
   cerrarModal(): void {

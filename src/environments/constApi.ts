@@ -2507,6 +2507,7 @@ export const constApiMarketing = {
 
   // CATEGORIA ARGUMENTOS
   ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',
+  ObtenerProgramasDisponiblesConfigurar: '/CategoriaArgumentos/ObtenerProgramasDisponiblesConfigurar',
   CrearProgramaConfigurado: '/CategoriaArgumentos/CrearProgramaConfigurado',
   EditarProgramaConfigurado: '/CategoriaArgumentos/EditarProgramaConfigurado',
   EliminarProgramaConfigurado: '/CategoriaArgumentos/EliminarProgramaConfigurado',
@@ -3243,6 +3244,8 @@ export const constApiPlanificacion = {
   PEspecificoObtenerCombosModuloAsync: '/PEspecifico/ObtenerCombosModuloAsync',
   PEspecificoObtenerProgramaEspecificoPadreIndividual:
     '/PEspecifico/ObtenerProgramaEspecificoPadreIndividual',
+  PEspecificoObtenerProgramaEspecificoPadreIndividualPorId:
+    '/PEspecifico/ObtenerProgramaEspecificoPadreIndividualPorId',
   PEspecificoValidarPespecificoTieneSesiones:
     '/PEspecifico/ValidarPespecificoTieneSesiones',
   PEspecificoActualizarEstadoPrograma: '/PEspecifico/ActualizarEstadoPrograma', //PUT {idPespecifico}/{idEstadoPrograma}
