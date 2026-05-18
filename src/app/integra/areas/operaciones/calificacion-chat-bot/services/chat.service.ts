@@ -91,11 +91,12 @@ export class ChatService extends IntegraService {
     pageSize:         number,
     fechaInicio?:     Date | null,
     fechaFin?:        Date | null,
-    codigoMatricula?: string
+    codigoMatricula?: string,
+    intervencionBot:  number = 0
   ): void {
     this.loadingSubject.next(true);
 
-    const payload: Record<string, unknown> = { pageNumber, pageSize };
+    const payload: Record<string, unknown> = { pageNumber, pageSize, intervencionBot };
 
     if (fechaInicio) {
       payload['fechaInicio'] = fechaInicio;
@@ -123,16 +124,18 @@ export class ChatService extends IntegraService {
   }
 
   loadSegmentosPaginados(
-    pageNumber:   number,
-    pageSize:     number,
-    fechaInicio?: Date | null,
-    fechaFin?:    Date | null
+    pageNumber:      number,
+    pageSize:        number,
+    fechaInicio?:    Date | null,
+    fechaFin?:       Date | null,
+    intervencionBot: number = 0
   ): void {
     this.loadingSubject.next(true);
 
     const payload: Record<string, unknown> = {
       pageNumber,
       pageSize,
+      intervencionBot,
       fechaInicio: fechaInicio ?? null,
       fechaFin:    fechaInicio ? (fechaFin ? this.toEndOfDay(fechaFin) : new Date()) : null
     };
