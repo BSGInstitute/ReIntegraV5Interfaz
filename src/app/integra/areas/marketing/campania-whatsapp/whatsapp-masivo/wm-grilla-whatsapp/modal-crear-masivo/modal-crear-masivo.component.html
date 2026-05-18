@@ -106,6 +106,17 @@
           class="mc-dropdown-asesor"
           (valueChange)="aplicarAsesorMasivo()"
         ></kendo-dropdownlist>
+
+        <div class="mc-toolbar-sep"></div>
+
+        <button kendoButton
+                themeColor="base"
+                [disabled]="refreshando || creandoOportunidades"
+                (click)="refrescarLeads()"
+                title="Refrescar mensajes e historial de todos los leads">
+          <span *ngIf="!refreshando">&#8635; Actualizar</span>
+          <span *ngIf="refreshando">Actualizando...</span>
+        </button>
       </div>
 
     </div>
@@ -160,7 +171,6 @@
                 type="checkbox"
                 [(ngModel)]="lead.seleccionado"
                 (click)="$event.stopPropagation()"
-                (change)="toggleSeleccion(lead)"
                 [disabled]="lead.excluido || lead.oportunidadCreada"
                 class="mc-checkbox"
               />
@@ -219,56 +229,6 @@
             </div>
           </div>
 
-          <!-- Diff datos IA -->
-          <div class="mc-ia-diff-box"
-               *ngIf="lead.iaDatosExtraidos && (lead.iaDatosExtraidos.nombre?.value || lead.iaDatosExtraidos.apellido?.value || lead.iaDatosExtraidos.email?.value)">
-            <div class="mc-ia-diff-header">
-              <span class="mc-ia-diff-icon">🤖</span>
-              <span>Datos detectados por IA</span>
-            </div>
-            <table class="mc-ia-diff-table">
-              <thead>
-                <tr>
-                  <th>Campo</th>
-                  <th>Original</th>
-                  <th>Detectado</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Nombre -->
-                <tr *ngIf="lead.iaDatosExtraidos.nombre?.value">
-                  <td>Nombre</td>
-                  <td class="mc-ia-original">{{ lead.nombre || '(vacío)' }}</td>
-                  <td class="mc-ia-nuevo">{{ lead.iaDatosExtraidos.nombre.value }}</td>
-                  <td class="mc-ia-acciones">
-                    <button class="mc-ia-btn-aceptar" [class.activo]="lead.iaNombreAceptado" (click)="lead.iaNombreAceptado = true" title="Aceptar">✓</button>
-                    <button class="mc-ia-btn-rechazar" [class.activo]="!lead.iaNombreAceptado" (click)="lead.iaNombreAceptado = false" title="Rechazar">✗</button>
-                  </td>
-                </tr>
-                <!-- Apellido -->
-                <tr *ngIf="lead.iaDatosExtraidos.apellido?.value">
-                  <td>Apellido</td>
-                  <td class="mc-ia-original">{{ lead.apellidoPaterno || '(vacío)' }}</td>
-                  <td class="mc-ia-nuevo">{{ lead.iaDatosExtraidos.apellido.value }}</td>
-                  <td class="mc-ia-acciones">
-                    <button class="mc-ia-btn-aceptar" [class.activo]="lead.iaApellidoAceptado" (click)="lead.iaApellidoAceptado = true" title="Aceptar">✓</button>
-                    <button class="mc-ia-btn-rechazar" [class.activo]="!lead.iaApellidoAceptado" (click)="lead.iaApellidoAceptado = false" title="Rechazar">✗</button>
-                  </td>
-                </tr>
-                <!-- Email -->
-                <tr *ngIf="lead.iaDatosExtraidos.email?.value">
-                  <td>Email</td>
-                  <td class="mc-ia-original">{{ lead.email || '(vacío)' }}</td>
-                  <td class="mc-ia-nuevo">{{ lead.iaDatosExtraidos.email.value }}</td>
-                  <td class="mc-ia-acciones">
-                    <button class="mc-ia-btn-aceptar" [class.activo]="lead.iaEmailAceptado" (click)="lead.iaEmailAceptado = true" title="Aceptar">✓</button>
-                    <button class="mc-ia-btn-rechazar" [class.activo]="!lead.iaEmailAceptado" (click)="lead.iaEmailAceptado = false" title="Rechazar">✗</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
 
           <!-- CUERPO EXPANDIDO (grid 3 columnas x 2 filas) -->
           <div class="mc-card-body" *ngIf="lead.expandido">
