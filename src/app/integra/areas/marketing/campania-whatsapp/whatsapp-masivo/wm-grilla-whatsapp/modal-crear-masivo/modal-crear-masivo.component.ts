@@ -35,6 +35,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
   loader = false;
   loadingPrecarga = true;
   creandoOportunidades = false;
+  refreshando = false;
   progresoActual = 0;
   progresoTotal = 0;
   progresoNombreActual = '';
@@ -148,6 +149,45 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
         // Cargar historial de oportunidades V2 para cada lead (fire-and-forget)
         this.leads.forEach(lead => this._cargarHistorialLead(lead));
         this.loadingPrecarga = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  /** Refresca SOLO mensajes, historial y fechaUltimaCaptura de los leads actuales.
+   *  Conserva toda la configuracion del usuario (CC, Origen, Asesor, perfilConfirmado,
+   *  iaDatosExtraidos, calificacionResultado, seleccionado, excluido, etc.). */
+  refrescarLeads(): void {
+    if (!this.leads.length) return;
+    this.refreshando = true;
+    const idsAlumno = this.leads.map(l => l.idAlumno);
+    const celulares = this.leads.map(l => l.celular);
+    this.service.obtenerDatosPreCargaMasiva({ idsAlumno, celulares, horasAtras: 48 }).subscribe({
+      next: (response: HttpResponse<any>) => {
+        const datos = response.body || [];
+        datos.forEach((resultado: any) => {
+          const lead = this.leads.find(l => l.idAlumno === resultado.idAlumno);
+          if (!lead) return;
+          lead.mensajes = (resultado.mensajes || []).map((m: any): MensajeChat => ({
+            tipoMensaje:      m.tipoMensaje      ?? m.TipoMensaje      ?? 1,
+            mensajeHtml:      m.mensajeHtml      ?? m.MensajeHtml      ?? '',
+            waType:           m.waType           ?? m.WaType,
+            archivo:          m.archivo          ?? m.Archivo,
+            nombreArchivo:    m.nombreArchivo    ?? m.NombreArchivo,
+            fechaMensaje:     m.fechaMensaje     ?? m.FechaMensaje     ?? '',
+            personalFiltrado: m.personalFiltrado ?? m.PersonalFiltrado ?? ''
+          }));
+          lead.fechaUltimaCaptura = resultado.fechaUltimaCaptura
+            ? new Date(resultado.fechaUltimaCaptura)
+            : lead.fechaUltimaCaptura;
+        });
+        // Refrescar historial de oportunidades V2 para cada lead (fire-and-forget)
+        this.leads.forEach(lead => this._cargarHistorialLead(lead));
+        this.refreshando = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.refreshando = false;
         this.cdr.detectChanges();
       }
     });
@@ -338,9 +378,12 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
         const primerLead = seleccionados[0];
         const payloadMasivo = {
           idPlantilla: this.plantillaMasivaId,
-          listaAlumnos: seleccionados.map(l => ({
+          idCentroCosto: seleccionados[0]?.idCentroCosto ?? 0,
+          usuario: '',
+          alumnos: seleccionados.map(l => ({
             idAlumno: l.idAlumno,
             celularWhatsApp: l.celular,
+            idPais: l.idPaisEmpresa ?? 51,
           }))
         };
         await this.service.enviarPlantillaMasiva(payloadMasivo).toPromise();
@@ -356,57 +399,86 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
       }
 
       // 3. Envíos individuales por lead
+      const enviosFallidos: { nombre: string; celular: string; motivo: string }[] = [];
+
       for (const lead of seleccionados) {
         // 3a. Plantilla individual confirmada
         if (lead.plantillaPendiente && lead.idPlantillaIndividual) {
-          const payload = {
-            idPlantilla: lead.idPlantillaIndividual,
-            idCentroCosto: lead.idCentroCosto ?? null,
-            celularWhatsApp: lead.celular,
-            idPais: lead.idPaisEmpresa,
-            idAlumno: lead.idAlumno,
-            idPersonal: lead.idAsesor ?? 0,
-            usuario: '',
-          };
-          await this.integraService.postJsonResponse(constApiMarketing.EnvioPlantillas, payload).toPromise();
-          lead.plantillaPendiente = false;
-          lead.idPlantillaIndividual = null;
-          totalEnviados++;
+          try {
+            const payload = {
+              idPlantilla: lead.idPlantillaIndividual,
+              idCentroCosto: lead.idCentroCosto ?? null,
+              celularWhatsApp: lead.celular,
+              idPais: lead.idPaisEmpresa,
+              idAlumno: lead.idAlumno,
+              idPersonal: lead.idAsesor ?? 0,
+              usuario: '',
+            };
+            await this.integraService.postJsonResponse(constApiMarketing.EnvioPlantillas, payload).toPromise();
+            lead.plantillaPendiente = false;
+            lead.idPlantillaIndividual = null;
+            totalEnviados++;
+          } catch (err: any) {
+            enviosFallidos.push({ nombre: lead.nombre, celular: lead.celular, motivo: err?.message || 'Error al enviar' });
+          }
         }
 
         // 3b. Archivo individual staged
         if (lead.archivoStagedUrl) {
-          const waType = lead.archivoStagedTipo === 'img' ? 'image' : 'document';
-          const obj: WhatsAppMensajeArchivoCom = {
-            waTo: lead.celular,
-            waType,
-            waLink: lead.archivoStagedUrl,
-            waFileName: lead.archivoStagedNombre ?? '',
-            idPais: lead.idPaisEmpresa,
-            idAlumno: lead.idAlumno,
-            idPersonal: lead.idAsesor ?? 0,
-          };
-          await this.whatsappFacebookService.enviarMensajeApigraphWhatsappArchivo$(obj).toPromise();
-          lead.archivoStagedUrl = undefined;
-          lead.archivoStagedNombre = undefined;
-          lead.archivoStagedTipo = undefined;
-          totalEnviados++;
+          try {
+            const waType = lead.archivoStagedTipo === 'img' ? 'image' : 'document';
+            const obj: WhatsAppMensajeArchivoCom = {
+              waTo: lead.celular,
+              waType,
+              waLink: lead.archivoStagedUrl,
+              waFileName: lead.archivoStagedNombre ?? '',
+              idPais: lead.idPaisEmpresa,
+              idAlumno: lead.idAlumno,
+              idPersonal: lead.idAsesor ?? 0,
+            };
+            await this.whatsappFacebookService.enviarMensajeApigraphWhatsappArchivo$(obj).toPromise();
+            lead.archivoStagedUrl = undefined;
+            lead.archivoStagedNombre = undefined;
+            lead.archivoStagedTipo = undefined;
+            totalEnviados++;
+          } catch (err: any) {
+            enviosFallidos.push({ nombre: lead.nombre, celular: lead.celular, motivo: err?.message || 'Error al enviar' });
+          }
         }
 
         // 3c. Mensaje manual pendiente
         if (lead.mensajePendiente?.trim()) {
-          const payload = {
-            celularWhatsApp: lead.celular,
-            mensaje: lead.mensajePendiente,
-            idPais: lead.idPaisEmpresa,
-            idAlumno: lead.idAlumno,
-            idPersonal: lead.idAsesor ?? 0,
-            usuario: '',
-          };
-          await this.integraService.postJsonResponse(constApiMarketing.EnvioMensaje, payload).toPromise();
-          lead.mensajePendiente = undefined;
-          totalEnviados++;
+          try {
+            const payload = {
+              celularWhatsApp: lead.celular,
+              mensaje: lead.mensajePendiente,
+              idPais: lead.idPaisEmpresa,
+              idAlumno: lead.idAlumno,
+              idPersonal: lead.idAsesor ?? 0,
+              usuario: '',
+            };
+            await this.integraService.postJsonResponse(constApiMarketing.EnvioMensaje, payload).toPromise();
+            lead.mensajePendiente = undefined;
+            totalEnviados++;
+          } catch (err: any) {
+            enviosFallidos.push({ nombre: lead.nombre, celular: lead.celular, motivo: err?.message || 'Error al enviar' });
+          }
         }
+      }
+
+      if (enviosFallidos.length > 0) {
+        const filas = enviosFallidos
+          .map(f => `<tr><td style="padding:4px 8px">${f.nombre}</td><td style="padding:4px 8px">${f.celular}</td><td style="padding:4px 8px">${f.motivo}</td></tr>`)
+          .join('');
+        const html = `<table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="background:#f5f5f5">
+            <th style="padding:4px 8px;text-align:left">Nombre</th>
+            <th style="padding:4px 8px;text-align:left">Celular</th>
+            <th style="padding:4px 8px;text-align:left">Motivo</th>
+          </tr></thead>
+          <tbody>${filas}</tbody>
+        </table>`;
+        this.alertaService.swalFireOptions({ icon: 'warning', title: 'Algunos envíos fallaron', html });
       }
 
       if (totalEnviados > 0) {
@@ -524,6 +596,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
         error: (err) => {
           lead.errorCreacion = err?.error || 'Error al crear';
           this.resultados.push({ idAlumno: lead.idAlumno, nombre: lead.nombre, exito: false, error: lead.errorCreacion! });
+          resolve();
         },
         complete: () => resolve()
       });
