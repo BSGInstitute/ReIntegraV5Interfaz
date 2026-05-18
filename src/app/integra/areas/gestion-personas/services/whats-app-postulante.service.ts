@@ -126,14 +126,16 @@ export class WhatsAppPostulanteService {
   async conectar() {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(
-        `${environment.urlSignal}ChatWhatsappPostulanteHub?idUsuario=${this._userService.userData.idPersonal}&usuarioNombre=${this._userService.userData.userName}`
+        `https://integrav4-signalrcore.bsginstitute.com/hubChatWhatsapp_Peru?idUsuario=${this._userService.userData.idPersonal}&usuarioNombre=${this._userService.userData.userName}`
       )
       .withAutomaticReconnect()
       .build();
     this.hubConnection.serverTimeoutInMilliseconds = 300000;
     this.hubConnection.serverTimeoutInMilliseconds = 36000000;
     await this.startConnection();
-    await this.testMe('HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAs');
+    // `testMe` invocaba `TestMe` (método debug del hub V1, no existe en V2).
+    // Lo dejamos comentado por si vuelve algún día.
+    // await this.testMe('HOLA');
   }
 
   async testMe(mensaje: string): Promise<void> {
@@ -150,8 +152,10 @@ export class WhatsAppPostulanteService {
   async startConnection(): Promise<void> {
     try {
       await this.hubConnection.start();
+      // Hub `hubChatWhatsapp_Peru` espera `AsesorConectado(nombre, id)`.
+      // Antes invocaba `OperadorProcesoConectado` (método del hub V1 deprecado).
       this.hubConnection.invoke(
-        'OperadorProcesoConectado',
+        'AsesorConectado',
         this._userService.userData.userName,
         this._userService.userData.idPersonal
       );

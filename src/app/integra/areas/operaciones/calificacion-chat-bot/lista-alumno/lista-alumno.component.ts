@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ChatService } from '../services/chat.service';
@@ -16,7 +17,10 @@ import {
 @Component({
   selector: 'app-lista-alumno',
   templateUrl: './lista-alumno.component.html',
-  styleUrls: ['./lista-alumno.component.scss']
+  styleUrls: ['./lista-alumno.component.scss'],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'es-PE' }
+  ]
 })
 export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() selectStudent = new EventEmitter<any>();
@@ -64,19 +68,30 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
   // Filtros locales (se aplican sobre la página actual del servidor)
   searchTerm = '';
   searchField = 'nombre';
-  areaDerivacionFilter = '';
+  areaDerivacionFilter: string[] = [];
+  readonly areaDerivacionLabels: Record<string, string> = {
+    'no-derivado': 'No Derivado',
+    '1': 'Atención al Cliente',
+    '2': 'Comercial',
+    'no-definido': 'No Definido'
+  };
   estadoCalificacionFilter = '';
   fechaInicio: Date | null = null;
   fechaFin: Date | null = null;
+  intervencionBot = false;
 
   pageSizeOptions: number[] = [10, 20, 50, 100];
   pageSize = 20;
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly dateAdapter: DateAdapter<Date>
+  ) {}
 
   ngOnInit(): void {
+    this.dateAdapter.setLocale('es-PE');
     this.chatService.alumnosListado$
       .pipe(takeUntil(this.destroy$))
       .subscribe(alumnos => {
@@ -141,7 +156,8 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.pageSizeAlumnos,
       this.fechaInicio,
       this.fechaFin,
-      codigoMatricula
+      codigoMatricula,
+      this.intervencionBot ? 1 : 0
     );
   }
 
@@ -151,7 +167,8 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentPageNoAlumnos,
       this.pageSizeNoAlumnos,
       this.fechaInicio,
-      this.fechaFin
+      this.fechaFin,
+      this.intervencionBot ? 1 : 0
     );
   }
 
@@ -216,7 +233,7 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedTabIndex = index;
     this.searchTerm = '';
     this.searchField = 'nombre';
-    this.areaDerivacionFilter = '';
+    this.areaDerivacionFilter = [];
     this.estadoCalificacionFilter = '';
     this.applyFilters();
   }
@@ -319,18 +336,20 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
     return 'warning';
   }
 
-  private matchAreaDerivacion(codigoArea?: number, derivado?: boolean, filtro?: string): boolean {
-    if (!filtro) return true;
-    if (filtro === 'no-derivado') return derivado === false;
-    if (filtro === '1') return derivado === true && codigoArea === AreaDerivacionCodigo.ATENCION_CLIENTE;
-    if (filtro === '2') return derivado === true && codigoArea === AreaDerivacionCodigo.COMERCIAL;
-    if (filtro === 'no-definido') {
-      if (derivado === false) return false;
-      return codigoArea == null
-          || (codigoArea !== AreaDerivacionCodigo.ATENCION_CLIENTE
-              && codigoArea !== AreaDerivacionCodigo.COMERCIAL);
-    }
-    return true;
+  private matchAreaDerivacion(codigoArea?: number, derivado?: boolean, filtros?: string[]): boolean {
+    if (!filtros || filtros.length === 0) return true;
+    return filtros.some(filtro => {
+      if (filtro === 'no-derivado') return derivado === false;
+      if (filtro === '1') return derivado === true && codigoArea === AreaDerivacionCodigo.ATENCION_CLIENTE;
+      if (filtro === '2') return derivado === true && codigoArea === AreaDerivacionCodigo.COMERCIAL;
+      if (filtro === 'no-definido') {
+        if (derivado === false) return false;
+        return codigoArea == null
+            || (codigoArea !== AreaDerivacionCodigo.ATENCION_CLIENTE
+                && codigoArea !== AreaDerivacionCodigo.COMERCIAL);
+      }
+      return false;
+    });
   }
 
   private matchEstadoCalificacion(pendientes: number, total: number, filtro: string): boolean {

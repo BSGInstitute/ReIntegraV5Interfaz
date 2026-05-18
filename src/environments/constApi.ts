@@ -2507,6 +2507,7 @@ export const constApiMarketing = {
 
   // CATEGORIA ARGUMENTOS
   ObtenerListadoProgramaConfigurado: '/CategoriaArgumentos/ObtenerListadoProgramaConfigurado',
+  ObtenerProgramasDisponiblesConfigurar: '/CategoriaArgumentos/ObtenerProgramasDisponiblesConfigurar',
   CrearProgramaConfigurado: '/CategoriaArgumentos/CrearProgramaConfigurado',
   EditarProgramaConfigurado: '/CategoriaArgumentos/EditarProgramaConfigurado',
   EliminarProgramaConfigurado: '/CategoriaArgumentos/EliminarProgramaConfigurado',
@@ -3243,6 +3244,8 @@ export const constApiPlanificacion = {
   PEspecificoObtenerCombosModuloAsync: '/PEspecifico/ObtenerCombosModuloAsync',
   PEspecificoObtenerProgramaEspecificoPadreIndividual:
     '/PEspecifico/ObtenerProgramaEspecificoPadreIndividual',
+  PEspecificoObtenerProgramaEspecificoPadreIndividualPorId:
+    '/PEspecifico/ObtenerProgramaEspecificoPadreIndividualPorId',
   PEspecificoValidarPespecificoTieneSesiones:
     '/PEspecifico/ValidarPespecificoTieneSesiones',
   PEspecificoActualizarEstadoPrograma: '/PEspecifico/ActualizarEstadoPrograma', //PUT {idPespecifico}/{idEstadoPrograma}
@@ -5653,4 +5656,28 @@ export const constApi = {
   SubEstadoMatriculaEliminar: '/SubEstadoMatricula/Eliminar',
   SubEstadoMatriculaInsertar: '/SubEstadoMatricula/Insertar',
   SubEstadoMatriculaEditar: '/SubEstadoMatricula/Actualizar',
+};
+
+// WhatsApp Postulante V2 (GP) — backend slim ApiAtc en `api/WhatsAppMensajeEnviadoApiPostulante`
+// NO confundir con V1 (`/PostulanteWhatsApp/...`) consumido por `whats-app-postulante.service.ts`.
+export const constApiWhatsAppPostulanteV2 = {
+  MensajesPendientes: '/WhatsAppMensajeEnviadoApiPostulante/MensajesPendientes',
+  Conversaciones: '/WhatsAppMensajeEnviadoApiPostulante/Conversaciones',
+  Historial: '/WhatsAppMensajeEnviadoApiPostulante/Historial',
+  Enviar: '/WhatsAppMensajeEnviadoApiPostulante/Enviar',
+};
+
+// WhatsApp Postulante V2 — flujo de PLANTILLAS (GP)
+// 1 ruta slim (`Validar24h`) + 4 rutas legacy reusadas (combo / preview / envío / validar ultima).
+// Handoff backend: `handoff/gp-whatsapp-endpoints-front` (engram #30, revision 3).
+// Las rutas legacy (`/Postulante/...`, `/PostulanteWhatsApp/...`) ya están en producción y son
+// consumidas también por V1 (`whats-app-postulante.service.ts`). NO migrar.
+export const constApiWhatsAppPostulanteV2Templates = {
+  Validar24h:
+    '/WhatsAppMensajeEnviadoApiPostulante/ValidarMesajesEnviadosEn24Horas',
+  ObtenerComboPlantillas:
+    '/Postulante/ObtenerComboPlantillaEmailWhastAppPostulante',
+  GenerarPreview: '/PostulanteWhatsApp/GenerarPlantillaGPWhatsapp',
+  EnviarPlantilla: '/PostulanteWhatsApp/EnvioMensajePlantilla',
+  ValidarUltimaPlantilla: '/PostulanteWhatsApp/ValidarUltimaPlantillaEnviada',
 };

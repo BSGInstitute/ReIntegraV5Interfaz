@@ -24,10 +24,12 @@ import { PespecificoService } from '@planificacion/services/pespecifico.service'
 import { KendoGrid } from '@shared/models/kendo-grid';
 import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { ModalContentRegistroFurComponent } from '../modal-content-registro-fur/modal-content-registro-fur.component';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ModalContentCronogramaComponent } from '../modal-content-cronograma/modal-content-cronograma.component';
+import type { FeriadoConPaisDTO } from '../programa-especifico.component';
 import { ModalContentFrecuenciaComponent } from '../modal-content-frecuencia/modal-content-frecuencia.component';
 import { GridComponent } from '@progress/kendo-angular-grid';
 const idTemplate = '#modalSubPespecifico';
@@ -493,47 +495,93 @@ export class ModalContentSubPespecificoComponent implements OnInit {
     if(this.idsPespecificoSeleccionado.length > 0){
       this.idsPespecificoSeleccionado = this.idsPespecificoSeleccionado.filter(x => x != 0 && x)
     }
+    const idPe = this.dataItemPespecificoTemp.id;
+    console.log('[Feriados][SubPespecifico] verCronograma - solicitando idsTroncalPaisFeriado', { idPe });
     let observable1$ = this.pEspecificoService.obtenerCronogramaPEspecifico$(
       this.idsPespecificoSeleccionado,
-      this.dataItemPespecificoTemp.id,
+      idPe,
       this.pEspecificoService.esIndividual
     );
     let observable2$ = this.pEspecificoService.obtenerConfiguracionWebinar$(
-      this.dataItemPespecificoTemp.id
+      idPe
     );
     let observable3$ = this._integraService.getJsonResponse(
-      `${constApiFinanzas.FurObtenerFurProgramaEspecifico}/${this.dataItemPespecificoTemp.id}`
+      `${constApiFinanzas.FurObtenerFurProgramaEspecifico}/${idPe}`
     ) as Observable<HttpResponse<ProgramaEspecificoFUR[]>>;
-    const combined$ = forkJoin([observable1$, observable2$, observable3$]);
-    combined$.subscribe({
-      next: (
-        resp: [
+    let observable4$ = this._integraService.getJsonResponse(
+      `${constApiPlanificacion.PEspecificoObtenerIdsTroncalPaisFeriado}/${idPe}`
+    ) as Observable<HttpResponse<number[]>>;
+
+    forkJoin([observable1$, observable2$, observable3$, observable4$])
+      .pipe(
+        switchMap(
+          (resp: [
+            HttpResponse<CronogramaGrupo[]>,
+            HttpResponse<ConfigurarWebinar[]>,
+            HttpResponse<ProgramaEspecificoFUR[]>,
+            HttpResponse<number[]>
+          ]) => {
+            const idsPaises = resp[3].body ?? [];
+            console.log('[Feriados][SubPespecifico] idsTroncalPaisFeriado recibidos', {
+              idPe,
+              cantidad: idsPaises.length,
+              idsPaises,
+            });
+            let feriados$: Observable<HttpResponse<FeriadoConPaisDTO[]>>;
+            if (idsPaises.length > 0) {
+              const url = `${constApiPlanificacion.FeriadoListarPorPaises}?${idsPaises
+                .map((id) => `idsTroncalPais=${id}`)
+                .join('&')}`;
+              console.log('[Feriados][SubPespecifico] SE LLAMARA a Feriado/ListarPorPaises', { url });
+              feriados$ = this._integraService.getJsonResponse(
+                url
+              ) as Observable<HttpResponse<FeriadoConPaisDTO[]>>;
+            } else {
+              console.warn('[Feriados][SubPespecifico] idsPaises vacio -> NO se llamara a Feriado/ListarPorPaises');
+              feriados$ = of({ body: [] } as HttpResponse<FeriadoConPaisDTO[]>);
+            }
+            return forkJoin([
+              of(resp[0]),
+              of(resp[1]),
+              of(resp[2]),
+              feriados$,
+            ]);
+          }
+        )
+      )
+      .subscribe({
+        next: (resp: [
           HttpResponse<CronogramaGrupo[]>,
           HttpResponse<ConfigurarWebinar[]>,
-          HttpResponse<ProgramaEspecificoFUR[]>
-        ]
-      ) => {
-        const modalRef = this._modalService.open(
-          ModalContentCronogramaComponent,
-          {
-            size: 'xxl',
-            backdrop: 'static',
-            keyboard: false
-          }
-        );
-        modalRef.componentInstance.pEspecificoService = this.pEspecificoService;
-        modalRef.componentInstance.pEspecificoHijos = [];
-        modalRef.componentInstance.esCronogramaGrupo = true;
-        modalRef.componentInstance.idsPespecificoSeleccionado = this.idsPespecificoSeleccionado;
-        modalRef.componentInstance.cronogramaGrupo = resp[0].body;
-        modalRef.componentInstance.configuracionWebinar = resp[1].body;
-        modalRef.componentInstance.programaEspecificoFUR = resp[2].body;
-      },
-      error: (error) => {
-        let mensaje = this._alertaService.getMessageErrorService(error);
-        this._alertaService.notificationWarning(mensaje);
-      },
-    });
+          HttpResponse<ProgramaEspecificoFUR[]>,
+          HttpResponse<FeriadoConPaisDTO[]>
+        ]) => {
+          const modalRef = this._modalService.open(
+            ModalContentCronogramaComponent,
+            {
+              size: 'xxl',
+              backdrop: 'static',
+              keyboard: false
+            }
+          );
+          modalRef.componentInstance.pEspecificoService = this.pEspecificoService;
+          modalRef.componentInstance.pEspecificoHijos = [];
+          modalRef.componentInstance.esCronogramaGrupo = true;
+          modalRef.componentInstance.idsPespecificoSeleccionado = this.idsPespecificoSeleccionado;
+          modalRef.componentInstance.cronogramaGrupo = resp[0].body;
+          modalRef.componentInstance.configuracionWebinar = resp[1].body;
+          modalRef.componentInstance.programaEspecificoFUR = resp[2].body;
+          const feriadosBody = resp[3].body ?? [];
+          console.log('[Feriados][SubPespecifico] feriados cargados al modal cronograma', {
+            cantidad: feriadosBody.length,
+          });
+          modalRef.componentInstance.feriados = feriadosBody;
+        },
+        error: (error) => {
+          let mensaje = this._alertaService.getMessageErrorService(error);
+          this._alertaService.notificationWarning(mensaje);
+        },
+      });
   }
   agregarModuloCurso() {
     let item: InformacionPespecificoHijo = {
