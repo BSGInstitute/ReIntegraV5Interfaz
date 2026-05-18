@@ -102,6 +102,8 @@ export interface NotificacionEntrantePostulanteDTO {
   waFrom: string | null;
   idPostulante: number | null;
   waBody: string | null;
+  /** waType si está disponible en el evento. El hub hoy no lo manda → null. */
+  waType?: string | null;
   origen: number;
 }
 

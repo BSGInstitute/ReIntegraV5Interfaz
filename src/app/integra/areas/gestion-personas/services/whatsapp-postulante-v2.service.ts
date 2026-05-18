@@ -138,7 +138,7 @@ export class WhatsAppPostulanteV2Service implements OnDestroy {
   private static readonly STORAGE_KEY_PREFIX = 'wa-gp-dedup-';
   private static readonly DEDUP_TTL_MS = 10_000;
   private static readonly UrlHubWhatsappPeru = 'https://integrav4-signalrcore.bsginstitute.com/hubChatWhatsapp_Peru';
-  //private static readonly UrlHubWhatsappPeru = environment.urlSignal + 'hubChatWhatsapp_Peru';
+  // private static readonly UrlHubWhatsappPeru = environment.urlSignal + 'hubChatWhatsapp_Peru';
 
 
   constructor(
@@ -650,18 +650,18 @@ export class WhatsAppPostulanteV2Service implements OnDestroy {
     body: string,
     origen: number
   ): void {
-    if (this.isDuplicado('AgregarMensaje', waFrom, body)) return;
     const idPostulante = this.parseIdAlumno(idAlumno);
     if (idPostulante == null) return;
 
-    this.appendMensajeEntrante(idPostulante, waFrom, body, origen);
-
-    // Optimismo Meta: un mensaje ENTRANTE reabre la ventana de 24h sin
-    // necesidad de re-consultar el endpoint. Si la ventana ya estaba abierta
-    // (false), este set es no-op; si estaba cerrada (true) o sin validar (null),
-    // pasa a `false` y el container re-habilita el composer automáticamente
-    // vía suscripción a `ventanaCerradaPorPostulante$`.
+    // Reapertura de ventana 24h SIEMPRE que llegue un mensaje entrante,
+    // ANTES del dedup. Si el dedup lo filtra (multi-pestaña), igual queremos
+    // que la ventana se abra en esta pestaña — el postulante escribió.
     this.setVentanaCerrada(idPostulante, false);
+
+    // Dedup multi-pestaña: evita que otras pestañas appendeen el mismo mensaje.
+    if (this.isDuplicado('AgregarMensaje', waFrom, body)) return;
+
+    this.appendMensajeEntrante(idPostulante, waFrom, body, origen);
 
     // NOTA: el toast nativo lo emite el hub directamente vía el evento
     // `notificarMensaje` → handler `onNotificarMensaje`. NO duplicar acá.
