@@ -23,6 +23,7 @@ import {
   MensajeChatPostulanteDTO,
 } from '@gestionPersonas/models/whatsapp-postulante-v2.models';
 import { DpWhatsappV2TemplatePickerComponent } from './dp-whatsapp-v2-template-picker/dp-whatsapp-v2-template-picker.component';
+import { validarYFormatearNumero } from '@gestionPersonas/utils/whatsapp-numero.util';
 
 /**
  * @component DpWhatsappV2Component (GP — WhatsApp V2)
@@ -93,6 +94,8 @@ export class DpWhatsappV2Component
    *   - `null`  → aún no validada (loading sutil — UI mantiene composer habilitado)
    */
   ventanaCerrada: boolean | null = null;
+  /** true si el número del postulante no es válido para WhatsApp — bloquea el composer. */
+  numeroInvalido = false;
 
   private cantidadMensajesAnterior = 0;
   private requiereScroll = false;
@@ -123,18 +126,19 @@ export class DpWhatsappV2Component
   ) {}
 
   async ngOnInit(): Promise<void> {
-    // 0. Pre-set `waTo` desde el celular del postulante.
-    //    Formato esperado por backend: `idPais + celular_solo_digitos`
-    //    (ej. idPais=51 + celular='991 679 312' → waTo='51991679312').
-    //    Si el celular YA empieza con los dígitos del idPais, no se duplica.
-    //    Esto garantiza que `validar24h` SIEMPRE se dispare al abrir el modal,
-    //    aún si el postulante no tiene historial ni está en pendientes/conversaciones.
-    const celularFormateado = this.formatearNumeroWhatsApp(
-      this.celular,
-      this.idPais
-    );
-    if (celularFormateado) {
-      this.waTo = celularFormateado;
+    // 0. Validar y formatear el número del postulante (Perú/México/Colombia).
+    //    Si inválido → bloquear composer y mostrar alerta.
+    //    Si válido → pre-set waTo para garantizar que validar24h se dispare
+    //    aunque el postulante no tenga historial previo.
+    const validacion = validarYFormatearNumero(this.celular, this.idPais);
+    if (!validacion.valido) {
+      this.numeroInvalido = true;
+      if (validacion.mensaje) {
+        this._alerta.notificationWarning(validacion.mensaje);
+      }
+    } else {
+      this.numeroInvalido = false;
+      this.waTo = validacion.waTo;
     }
 
     // 1. Suscripción al estado del hub para el header (en línea / desconectado).
@@ -478,14 +482,16 @@ export class DpWhatsappV2Component
     );
     const fuente = fromPendientes ?? fromConversaciones;
     if (fuente) {
-      this.waTo = fuente.waFrom ?? null;
+      // DTO real usa `waNumero` (no `waFrom`) y `nombreCompleto` (no `nombrePostulante`).
+      this.waTo = fuente.waNumero ?? null;
       if (!this.nombrePostulante) {
-        this.nombrePostulante = fuente.nombrePostulante ?? null;
+        this.nombrePostulante = fuente.nombreCompleto ?? null;
+      }
+      // idPais viene en el DTO — si lo trae, prevalece sobre el @Input de la grilla.
+      if (fuente.idPais != null) {
+        this.idPais = fuente.idPais;
       }
     }
-    // idPais llega como @Input desde el caller (dp-tabla-postulante).
-    // Si el cache de pendientes/conversaciones lo trae explícito, prevalece.
-    // (Hoy los DTOs no lo exponen, así que se mantiene el @Input).
   }
 
   private cargarHistorial(id: number): void {
@@ -496,6 +502,8 @@ export class DpWhatsappV2Component
         this.requiereScroll = true;
         // Si el caller no nos pasó nombre y el cache de listas no tenía match,
         // tomamos el nombre y waTo desde el primer mensaje del historial.
+        // HistorialChatPostulanteDTO usa `nombrePostulante` (campo del historial, distinto
+        // del PendienteDTO que usa `nombreCompleto`).
         if (!this.nombrePostulante && historial?.nombrePostulante) {
           this.nombrePostulante = historial.nombrePostulante;
         }

@@ -1,0 +1,582 @@
+// Floating panel WhatsApp — GP module
+// Paleta BSG azul corporativo. Coexiste con el modal chat V2 existente.
+// Posición: fixed bottom-right. Tamaño del panel: 380×520px.
+
+// ─────────────────────────────────────────────────────────────────
+// Paleta BSG
+// ─────────────────────────────────────────────────────────────────
+$wa-primary:        #2c5f8a;
+$wa-primary-dark:   #234d70;
+$wa-primary-light:  #4a86b8;
+$wa-bg-pastel:      #eaf2fa;
+$wa-bubble-sent:    #d4e6f5;
+$wa-bubble-recv:    #ffffff;
+$wa-text-dark:      #1f2a37;
+$wa-text-muted:     #7a8c9d;
+$wa-composer-bg:    #f4f7fb;
+$wa-border-soft:    #d5dde6;
+
+// ─────────────────────────────────────────────────────────────────
+// FAB
+// ─────────────────────────────────────────────────────────────────
+.wa-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1050;
+
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, $wa-primary 0%, $wa-primary-dark 100%);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba($wa-primary, 0.40);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+
+  &:hover {
+    box-shadow: 0 6px 18px rgba($wa-primary, 0.50);
+    transform: scale(1.06);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  // Badge de pendientes
+  &__badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background-color: #e53935;
+    color: #ffffff;
+    font-size: 0.70rem;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    padding: 0 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    pointer-events: none;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Panel card (380×520 fixed)
+// ─────────────────────────────────────────────────────────────────
+.wa-panel {
+  position: fixed;
+  bottom: 86px;   // justo encima del FAB (52 + 24 + 10)
+  right: 24px;
+  z-index: 1049;
+
+  width: 380px;
+  height: 520px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+
+  // ─── Header ───
+  &__header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, $wa-primary 0%, $wa-primary-dark 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba($wa-primary, 0.18);
+  }
+
+  &__title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 120ms ease;
+    flex: 0 0 auto;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(255,255,255,0.15);
+    }
+  }
+
+  // Chat header extras
+  &__chat-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: $wa-primary-light;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex: 0 0 auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  &__chat-identidad {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__chat-nombre {
+    font-weight: 600;
+    font-size: 0.92rem;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__chat-numero {
+    font-size: 0.72rem;
+    opacity: 0.78;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ─── Tabs ───
+  &__tabs {
+    flex: 0 0 auto;
+    display: flex;
+    border-bottom: 2px solid $wa-border-soft;
+    background-color: #ffffff;
+  }
+
+  &__tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: $wa-text-muted;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 120ms ease, border-color 120ms ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    &--active {
+      color: $wa-primary;
+      border-bottom-color: $wa-primary;
+    }
+
+    &:hover:not(.wa-panel__tab--active) {
+      color: $wa-primary-light;
+    }
+  }
+
+  &__tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background-color: $wa-primary-light;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0 4px;
+
+    &--red {
+      background-color: #e53935;
+    }
+  }
+
+  // ─── Lista ───
+  &__lista {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #ffffff;
+    scrollbar-width: thin;
+    scrollbar-color: rgba($wa-primary, 0.20) transparent;
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($wa-primary, 0.18);
+      border-radius: 6px;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba($wa-border-soft, 0.60);
+    transition: background-color 120ms ease;
+
+    &:hover {
+      background-color: rgba($wa-primary, 0.05);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: $wa-primary-light;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex: 0 0 auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  }
+
+  &__item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__item-nombre {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: $wa-text-dark;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-preview {
+    font-size: 0.78rem;
+    color: $wa-text-muted;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-fecha {
+    font-size: 0.68rem;
+    color: $wa-text-muted;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding-top: 2px;
+  }
+
+  // ─── Empty state ───
+  &__empty {
+    color: $wa-text-muted;
+    text-align: center;
+    padding: 32px 16px;
+    font-style: italic;
+    font-size: 0.86rem;
+  }
+
+  // ─── Skeleton ───
+  &__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  &__skeleton-row {
+    display: flex;
+    &--enviado  { justify-content: flex-end; }
+    &--recibido { justify-content: flex-start; }
+  }
+
+  &__skeleton-bubble {
+    height: 34px;
+    border-radius: 12px;
+    background: linear-gradient(
+      90deg,
+      rgba($wa-primary, 0.08) 0%,
+      rgba($wa-primary, 0.15) 50%,
+      rgba($wa-primary, 0.08) 100%
+    );
+    background-size: 200% 100%;
+    animation: wa-fp-shimmer 1.4s ease-in-out infinite;
+  }
+
+  // ─── Chat body (burbujas) ───
+  &__cuerpo {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 12px;
+    background-color: $wa-bg-pastel;
+    scrollbar-width: thin;
+    scrollbar-color: rgba($wa-primary, 0.22) transparent;
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($wa-primary, 0.20);
+      border-radius: 6px;
+    }
+  }
+
+  // ─── Banner 24h cerrada / número inválido ───
+  &__banner {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background-color: #fff4e0;
+    color: #7a4f01;
+    border-top: 1px solid #f0d68d;
+    font-size: 0.78rem;
+    font-weight: 500;
+
+    fa-icon { color: #c98a02; }
+
+    &--error {
+      background-color: #fdecea;
+      color: #b71c1c;
+      border-top-color: #ef9a9a;
+      fa-icon { color: #b71c1c; }
+    }
+  }
+
+  // ─── Composer ───
+  &__composer {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: $wa-composer-bg;
+    border-top: 1px solid $wa-border-soft;
+  }
+
+  &__input-wrap {
+    flex: 1;
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 6px 12px;
+    border: 1px solid $wa-border-soft;
+    display: flex;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+
+    &:focus-within {
+      border-color: $wa-primary-light;
+      box-shadow: 0 0 0 3px rgba($wa-primary, 0.10);
+    }
+  }
+
+  &__textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.88rem;
+    min-height: 28px;
+    max-height: 96px;
+    color: $wa-text-dark;
+    padding: 2px 0;
+
+    &::placeholder {
+      color: $wa-text-muted;
+      opacity: 0.85;
+    }
+
+    &:disabled {
+      background-color: transparent;
+      cursor: not-allowed;
+    }
+  }
+
+  &__send {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, $wa-primary 0%, $wa-primary-dark 100%);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba($wa-primary, 0.28);
+    transition: transform 100ms ease, box-shadow 120ms ease;
+    flex: 0 0 auto;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 5px 12px rgba($wa-primary, 0.36);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.93);
+    }
+
+    &:disabled {
+      opacity: 0.40;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Bubble classes reutilizadas del componente dp-whatsapp-v2
+// (mismas clases CSS para coherencia visual)
+// ─────────────────────────────────────────────────────────────────
+.wa-chat {
+  &__mensaje {
+    display: flex;
+    margin-bottom: 4.4px;
+    animation: wa-fp-bubble-pop 260ms cubic-bezier(0.34, 1.45, 0.6, 1) both;
+
+    &--enviado  { justify-content: flex-end; }
+    &--recibido { justify-content: flex-start; }
+  }
+
+  &__burbuja {
+    max-width: 80%;
+    padding: 7px 11px 5px;
+    border-radius: 14px;
+    box-shadow: 0 2px 5px rgba($wa-primary, 0.09), 0 1px 2px rgba($wa-primary, 0.05);
+    position: relative;
+    line-height: 1.4;
+
+    .wa-chat__mensaje--enviado & {
+      background-color: $wa-bubble-sent;
+      border-bottom-right-radius: 4px;
+      color: $wa-text-dark;
+    }
+
+    .wa-chat__mensaje--recibido & {
+      background-color: $wa-bubble-recv;
+      border-bottom-left-radius: 4px;
+      color: $wa-text-dark;
+    }
+  }
+
+  &__texto {
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: $wa-text-dark;
+    font-size: 0.88rem;
+  }
+
+  &__media {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      display: block;
+    }
+  }
+
+  &__caption {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.80rem;
+    color: $wa-text-muted;
+  }
+
+  &__archivo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: $wa-primary;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__audio,
+  &__video {
+    max-width: 100%;
+    display: block;
+    border-radius: 6px;
+  }
+
+  &__template em {
+    color: $wa-primary;
+    font-style: italic;
+    margin-right: 3px;
+  }
+
+  &__hora {
+    font-size: 0.66rem;
+    color: $wa-text-muted;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  // ─── Status ticks (solo tipo === 1) ───
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.68rem;
+    line-height: 1;
+
+    &--sent,
+    &--delivered { color: $wa-text-muted; }
+    &--read      { color: #1f87e6; }
+    &--failed    { color: #d04444; }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Keyframes
+// ─────────────────────────────────────────────────────────────────
+@keyframes wa-fp-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@keyframes wa-fp-bubble-pop {
+  0%   { opacity: 0; transform: scale(0.88) translateY(6px); }
+  60%  { opacity: 1; transform: scale(1.02) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}

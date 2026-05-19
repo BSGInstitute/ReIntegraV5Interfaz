@@ -6,14 +6,18 @@
  * @backend handoff (engram): `handoff/gp-whatsapp-endpoints-front` (#30)
  */
 
+/**
+ * DTO real confirmado contra response del backend (mayo 2026):
+ * { idPostulante, nombreCompleto, waNumero, ultimoMensaje, fechaUltimoMensaje, idPais }
+ */
 export interface PendienteWhatsAppPostulanteDTO {
   idPostulante: number;
-  nombrePostulante: string | null;
-  waFrom: string | null;
+  nombreCompleto: string | null;
+  waNumero: string | null;
   ultimoMensaje: string | null;
   /** ISO-8601 */
   fechaUltimoMensaje: string;
-  waType: string | null;
+  idPais: number | null;
 }
 
 export interface ConversacionWhatsAppPostulanteDTO
