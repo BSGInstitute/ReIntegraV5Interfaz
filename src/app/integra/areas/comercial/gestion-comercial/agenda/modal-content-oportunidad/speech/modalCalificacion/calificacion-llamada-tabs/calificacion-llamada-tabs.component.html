@@ -1,0 +1,214 @@
+<div class="modal-header">
+  <h4 class="modal-title">Calificación de Llamada</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <!-- Tab Navigation -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'automatic'" (click)="switchTab('automatic')">
+        <i class="fas fa-robot me-2"></i>
+        Calificación
+      </button>
+    </li>
+    <!-- Tab Comparativa solo si existen ambas calificaciones -->
+    <li class="nav-item" *ngIf="mostrarTabComparativa">
+      <button class="nav-link" [class.active]="activeTab === 'comparison'" (click)="switchTab('comparison')">
+        <i class="fas fa-balance-scale me-2"></i>
+        Comparativa
+        <span class="badge bg-primary ms-2" *ngIf="getDiferenciaPuntaje() !== null">
+          {{ getDiferenciaPuntaje() | number:'1.1-1' }}
+        </span>
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Pestaña de Calificación (Automática + Manual) -->
+    <div class="tab-pane" [class.active]="activeTab === 'automatic'">
+      <!-- Estado inicial: Sin calificación automática -->
+      <div *ngIf="!tieneCalificacionAutomatica && !isAnalyzing" class="initial-state text-center py-5">
+        <div class="automatic-info mb-4">
+          <h4 class="mb-3">Calificación Automática</h4>
+          <p class="text-muted">
+            La llamada se calificará de forma automática con el esquema de calificación configurado y vigente en conjunto con herramientas de análisis inteligente.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-lg" (click)="analyzeCall()">
+          <i class="fas fa-magic me-2"></i>
+          Calificar Llamada Automáticamente
+        </button>
+      </div>
+
+      <!-- Estado de carga: Calificación automática en proceso -->
+      <div *ngIf="isAnalyzing" class="analyzing-state text-center py-5">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="mt-3">Analizando la llamada...</p>
+      </div>
+
+      <!-- Estado: Calificación automática completada -->
+      <div *ngIf="tieneCalificacionAutomatica && !isAnalyzing" class="completed-automatic-state">
+        <div class="analysis-results mb-4">
+          <div class="overall-score mb-4">
+            <h5>Puntaje General Automático</h5>
+            <div class="score-badge" [class]="getScoreBadgeClass(automaticScore)">
+              {{ automaticScore | number:'1.1-1' }}
+            </div>
+          </div>
+
+          <div class="key-points mb-4">
+            <h5>Puntos Clave</h5>
+            <ul class="list-group">
+              <li *ngFor="let point of automaticAnalysis.details.keyPoints" class="list-group-item">
+                {{ point }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="recommendations">
+            <h5>Recomendaciones</h5>
+            <ul class="list-group">
+              <li *ngFor="let rec of automaticAnalysis.details.recommendations" class="list-group-item">
+                {{ rec }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Sección de Calificación Manual (solo si no existe calificación manual) -->
+        <div *ngIf="permitirCalificacionManual" class="manual-section">
+          <div class="section-divider mb-4">
+            <h4>Calificación Manual</h4>
+            <p class="text-muted">
+              Ahora puedes realizar una calificación manual para comparar con la calificación automática.
+            </p>
+          </div>
+          
+          <!-- Formulario de Evaluación Manual -->
+          <form [formGroup]="evaluationForm">
+            <!-- Fases -->
+            <div *ngFor="let fase of configuracionActiva?.configuracion.fases" class="mb-4">
+              <h5>{{ fase.nombre }}</h5>
+              <div class="fase-score mb-2">
+                <span class="badge" [class]="getScoreBadgeClass(getFasePuntaje(fase))">
+                  {{ getFasePuntaje(fase) | number:'1.1-1' }}
+                </span>
+              </div>
+
+              <!-- Criterios -->
+              <div *ngFor="let criterio of controlVersionService.getCriteriosForFase(configuracionActiva, fase.id)" class="mb-3">
+                <div class="criterio-header">
+                  <h6>{{ criterio.nombreCriterio }}</h6>
+                  <p class="text-muted">{{ criterio.descripcion }}</p>
+                </div>
+
+                <!-- Lineamientos -->
+                <div *ngFor="let lineamiento of controlVersionService.getLineamientosForCriterio(configuracionActiva, criterio.id)" class="mb-2">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span>{{ lineamiento.nombreLineamiento }}</span>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-outline-primary" 
+                              [class.active]="getCriterioPuntaje(criterio.id) === 2"
+                              (click)="setCriterioScore(criterio.id, 2)">2</button>
+                      <button type="button" class="btn btn-outline-primary"
+                              [class.active]="getCriterioPuntaje(criterio.id) === 4"
+                              (click)="setCriterioScore(criterio.id, 4)">4</button>
+                      <button type="button" class="btn btn-outline-primary"
+                              [class.active]="getCriterioPuntaje(criterio.id) === 6"
+                              (click)="setCriterioScore(criterio.id, 6)">6</button>
+                      <button type="button" class="btn btn-outline-primary"
+                              [class.active]="getCriterioPuntaje(criterio.id) === 8"
+                              (click)="setCriterioScore(criterio.id, 8)">8</button>
+                      <button type="button" class="btn btn-outline-primary"
+                              [class.active]="getCriterioPuntaje(criterio.id) === 10"
+                              (click)="setCriterioScore(criterio.id, 10)">10</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Puntos Generales -->
+            <div *ngIf="configuracionActiva?.configuracion.puntosGenerales?.length" class="mb-4">
+              <h5>Puntos Generales</h5>
+              <div class="puntos-generales-score mb-2">
+                <span class="badge" [class]="getScoreBadgeClass(getPuntosGeneralesPuntaje())">
+                  {{ getPuntosGeneralesPuntaje() | number:'1.1-1' }}
+                </span>
+              </div>
+
+              <div *ngFor="let puntoGeneral of configuracionActiva.configuracion.puntosGenerales" class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6>{{ puntoGeneral.nombre }}</h6>
+                    <p class="text-muted">{{ puntoGeneral.descripcion }}</p>
+                  </div>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary"
+                            [class.active]="getPuntoGeneralPuntaje(puntoGeneral.id) === 2"
+                            (click)="setPuntoGeneralScore(puntoGeneral.id, 2)">2</button>
+                    <button type="button" class="btn btn-outline-primary"
+                            [class.active]="getPuntoGeneralPuntaje(puntoGeneral.id) === 4"
+                            (click)="setPuntoGeneralScore(puntoGeneral.id, 4)">4</button>
+                    <button type="button" class="btn btn-outline-primary"
+                            [class.active]="getPuntoGeneralPuntaje(puntoGeneral.id) === 6"
+                            (click)="setPuntoGeneralScore(puntoGeneral.id, 6)">6</button>
+                    <button type="button" class="btn btn-outline-primary"
+                            [class.active]="getPuntoGeneralPuntaje(puntoGeneral.id) === 8"
+                            (click)="setPuntoGeneralScore(puntoGeneral.id, 8)">8</button>
+                    <button type="button" class="btn btn-outline-primary"
+                            [class.active]="getPuntoGeneralPuntaje(puntoGeneral.id) === 10"
+                            (click)="setPuntoGeneralScore(puntoGeneral.id, 10)">10</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Comparativa -->
+    <div class="tab-pane" [class.active]="activeTab === 'comparison'">
+      <div class="comparison-content p-4">
+        <h4 class="mb-4">Comparativa de Calificaciones</h4>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="comparison-card manual">
+              <h5><i class="fas fa-edit me-2"></i>Manual</h5>
+              <div class="score-badge" [ngClass]="getComparativaClass('manual')">
+                {{ getComparativaScore('manual') | number:'1.1-1' }} / 10
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="comparison-card automatic">
+              <h5><i class="fas fa-robot me-2"></i>Automática</h5>
+              <div class="score-badge" [ngClass]="getComparativaClass('automatic')">
+                {{ getComparativaScore('automatic') | number:'1.1-1' }} / 10
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="diferencia-section mt-4">
+          <span class="diferencia-label">Diferencia:</span>
+          <span class="diferencia-value" [ngClass]="getDiferenciaClass()">
+            {{ getDiferenciaPuntaje() | number:'1.1-1' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancelar</button>
+  <button type="button" class="btn btn-primary" 
+          [disabled]="(activeTab === 'automatic' && !tieneCalificacionAutomatica) || 
+                     (activeTab === 'automatic' && permitirCalificacionManual && !isFormularioValidoParaGuardar())"
+          (click)="close(true)">
+    Guardar Calificación
+  </button>
+</div> 

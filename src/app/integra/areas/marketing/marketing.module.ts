@@ -191,6 +191,11 @@ import { EmbudoComponent } from './configuraciones/filtro-segmento/actualizar-fi
 import { CanvasPlantillaComponent } from './campanias-mailing/campania-remarketing-general/crear-editar-campania/canvas-plantilla/canvas-plantilla.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SeleccionEsquemasComponent } from './configuraciones/seleccion-esquemas/seleccion-esquemas.component';
+import { ResenaFacebookComponent } from './configuraciones/resena-facebook/resena-facebook.component';
+import { ResenaGoogleComponent } from './configuraciones/resena-google/resena-google.component';
+import { ResenaLinkedinComponent } from './configuraciones/resena-linkedin/resena-linkedin.component';
+import { ResenaComputrabajoComponent } from './configuraciones/resena-computrabajo/resena-computrabajo.component';
+import { ResenaGlassdoorComponent } from './configuraciones/resena-glassdoor/resena-glassdoor.component';
 
 
 @NgModule({
@@ -382,6 +387,11 @@ import { SeleccionEsquemasComponent } from './configuraciones/seleccion-esquemas
     EmbudoComponent,
     CanvasPlantillaComponent,
     SeleccionEsquemasComponent,
+    ResenaFacebookComponent,
+    ResenaGoogleComponent,
+    ResenaLinkedinComponent,
+    ResenaComputrabajoComponent,
+    ResenaGlassdoorComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { constApiPlanificacion, constApiGestionPersonal } from '@environments/constApi';
+import { constApiPlanificacion, constApiGestionPersonal, constApiComercial } from '@environments/constApi';
 import {
   NgbActiveModal,
   NgbModal,
@@ -42,6 +42,7 @@ import { AlertaService } from '@shared/services/alerta.service';
 import { IntegraService } from '@shared/services/integra.service';
 import { ModalContentFrecuenciaComponent } from '../modal-content-frecuencia/modal-content-frecuencia.component';
 import { ModalContentRegistroFurComponent } from '../modal-content-registro-fur/modal-content-registro-fur.component';
+import { FeriadoConPaisDTO } from '../programa-especifico.component';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { forkJoin } from 'rxjs';
 import { cloneData } from '@shared/functions/clone-data';
@@ -93,9 +94,58 @@ export class ModalContentCronogramaComponent implements OnInit {
   @Input() programaEspecificoFUR: ProgramaEspecificoFUR[];
   @Input() esCronogramaGrupo: boolean = false;
   @Input() idsPespecificoSeleccionado: number[] = [];
+  @Input() feriados: FeriadoConPaisDTO[] = [];
 
   configurarWebinarOriginal: ConfigurarWebinar[] = [];
   aplicarConfigurarWebinar: boolean = false;
+  formControlAnoCosto = new FormControl(null);
+  formControlProgramaWebinar = new FormControl(null);
+  anosDisponibles: { id: string; nombre: string }[] = [];
+  programasWebinarFiltrados: IComboBase1[] = [];
+
+  loadingProgramasRelacionados: boolean = false;
+  programasRelacionadosCC: IComboBase1[] = [];
+
+  private construirValorBusquedaCC(): string {
+    const nombre = this.dataItemPespecificoTemp?.nombre ?? '';
+    const ano = this.formControlAnoCosto.value as string;
+    const sinWebinar = nombre
+      .replace(/^webinar\s*[-–—]?\s*/i, '')
+      .replace(/^grupo\s*\d+\s*[-–—]?\s*/i, '')
+      .trim();
+    const yearMatch = sinWebinar.match(/\d{4}/);
+    const base = yearMatch
+      ? sinWebinar.substring(0, sinWebinar.indexOf(yearMatch[0])).trim()
+      : sinWebinar.trim();
+    return ano ? `${base} ${ano}` : base;
+  }
+
+  cargarProgramasRelacionadosPorCC(): void {
+    this.loadingProgramasRelacionados = true;
+    this.programasRelacionadosCC = [];
+    setTimeout(() => {
+      const valor = this.construirValorBusquedaCC();
+      if (!valor) {
+        this.loadingProgramasRelacionados = false;
+        return;
+      }
+      const valorLower = valor.toLowerCase();
+      const todos = this.combosModulo?.programaEspecificoWebinar ?? [];
+      this.programasRelacionadosCC = todos
+        .filter(p => {
+          const nombreLower = p.nombre?.toLowerCase() ?? '';
+          return nombreLower.includes(valorLower) && !nombreLower.includes('webinar');
+        })
+        .map(p => ({ id: p.id, nombre: p.nombre }));
+      this.loadingProgramasRelacionados = false;
+    }, 400);
+  }
+
+  get nombreProgramaWebinarSeleccionado(): string {
+    const id = this.formControlProgramaWebinar.value;
+    if (!id) return '';
+    return this.combosModulo?.programaEspecificoWebinar?.find(p => p.id === id)?.nombre ?? '';
+  }
   sourceOperadorWebinar = [
     { nombre: 'Igual', id: 2 },
     { nombre: 'Menor Igual', id: 3 },
@@ -196,6 +246,17 @@ export class ModalContentCronogramaComponent implements OnInit {
   initSubscribeObservables() {
     this.pEspecificoService.combosModulo$.subscribe((resp) => {
       this.combosModulo = resp;
+      const years = new Set<string>();
+      resp?.programaEspecificoWebinar?.forEach(p => {
+        const match = p.nombre?.match(/\d{4}/);
+        if (match) years.add(match[0]);
+      });
+      this.anosDisponibles = Array.from(years).sort().map(y => ({ id: y, nombre: y }));
+      this.programasWebinarFiltrados = (resp?.programaEspecificoWebinar ?? []).map(p => ({ id: p.id, nombre: p.nombre }));
+    });
+    this.formControlAnoCosto.valueChanges.subscribe(() => {
+      this.programasCheckboxSeleccionados = new Set();
+      this.cargarProgramasRelacionadosPorCC();
     });
     console.log("Combo Modulo", this.combosModulo);
     this.sourceCiclo = this.combosModulo.ciclo;
@@ -539,10 +600,35 @@ export class ModalContentCronogramaComponent implements OnInit {
     }
   }
 
+  obtenerFeriadoDeSesion(dataItem: CronogramaGrupo): FeriadoConPaisDTO | null {
+    if (!this.feriados || this.feriados.length === 0) return null;
+    if (dataItem == null || dataItem.fechaHoraInicio == null) return null;
+    const fecha =
+      dataItem.fechaHoraInicio instanceof Date
+        ? dataItem.fechaHoraInicio
+        : new Date(dataItem.fechaHoraInicio as any);
+    if (isNaN(fecha.getTime())) return null;
+    const yyyy = fecha.getFullYear();
+    const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dd = String(fecha.getDate()).padStart(2, '0');
+    const fechaIso = `${yyyy}-${mm}-${dd}`;
+    const mmdd = `${mm}-${dd}`;
+    return (
+      this.feriados.find((f) => {
+        if (!f.dia) return false;
+        const diaIso = f.dia.substring(0, 10);
+        if (f.frecuencia === 0) {
+          return diaIso.substring(5, 10) === mmdd;
+        }
+        return diaIso === fechaIso;
+      }) ?? null
+    );
+  }
   private configurarGridCronograma() {
     this.gridCronograma.rowCallback = (context: RowClassArgs) => {
       let dataItem = context.dataItem as CronogramaGrupo;
       const esReprogramada = dataItem.reprogramacion === true;
+      const esFeriado = this.obtenerFeriadoDeSesion(dataItem) != null;
       let colorClass: any = {};
       if (dataItem.color == 'color0') {
         colorClass = { color0: true };
@@ -565,7 +651,11 @@ export class ModalContentCronogramaComponent implements OnInit {
       } else {
         colorClass = { color9: true };
       }
-      return { ...colorClass, 'fila-reprogramada': esReprogramada };
+      return {
+        ...colorClass,
+        'fila-reprogramada': esReprogramada,
+        'fila-feriado': esFeriado,
+      };
     };
     this.gridCronograma.formGroup = this._formBuilder.group({
       fechaHoraInicio: null,
@@ -643,6 +733,11 @@ export class ModalContentCronogramaComponent implements OnInit {
     });
     this.gridConfiguracionWebinar.addEvent$.subscribe((resp) => {
       this.indexTemp = resp.rowIndex;
+      if (this.formControlProgramaWebinar.value) {
+        this.gridConfiguracionWebinar.formGroup.patchValue({
+          idPespecifico: this.formControlProgramaWebinar.value,
+        });
+      }
     });
     this.gridConfiguracionWebinar.saveEvent$.subscribe({
       next: (resp) => {
@@ -670,6 +765,69 @@ export class ModalContentCronogramaComponent implements OnInit {
     });
   }
   disableGuardarCambios: boolean = true;
+  programasCheckboxSeleccionados = new Set<number>();
+
+  toggleProgramaCheckbox(id: number): void {
+    if (this.programasCheckboxSeleccionados.has(id)) {
+      this.programasCheckboxSeleccionados.delete(id);
+    } else {
+      this.programasCheckboxSeleccionados.add(id);
+    }
+    this.programasCheckboxSeleccionados = new Set(this.programasCheckboxSeleccionados);
+  }
+
+  agregarProgramasSeleccionadosAlGrid(): void {
+    const existentes = new Set(
+      (this.gridConfiguracionWebinar.data as ConfigurarWebinar[]).map(x => x.idPespecifico)
+    );
+    const nuevosItems: ConfigurarWebinar[] = [];
+    this.programasCheckboxSeleccionados.forEach(idPespecifico => {
+      if (idPespecifico && !existentes.has(idPespecifico)) {
+        nuevosItems.push({
+          id: 0,
+          idPespecifico,
+          idPespecificoPadre: this.dataItemPespecificoTemp.id,
+          modalidad: '',
+          codigo: '',
+          idOperadorComparacionAvance: 10,
+          valorAvance: 0,
+          valorAvanceOpc: 0,
+          idOperadorComparacionPromedio: 1,
+          valorPromedio: 0,
+          valorPromedioOpc: 0,
+        });
+      }
+    });
+    if (nuevosItems.length === 0) {
+      this._alertaService.notificationWarning('Los programas seleccionados ya están registrados en la tabla');
+      return;
+    }
+    this.gridConfiguracionWebinar.loading = true;
+    const requests$ = nuevosItems.map(item =>
+      this._integraService.postJsonResponse(
+        constApiPlanificacion.ConfigurarWebinarInsertarConfiguracionWebinar,
+        JSON.stringify(item)
+      )
+    );
+    forkJoin(requests$).subscribe({
+      next: () => {
+        this._alertaService.toastOptions(
+          'Se registraron correctamente',
+          'success',
+          'top-right',
+          idTemplate
+        );
+        this.programasCheckboxSeleccionados = new Set();
+        this.obtenerConfiguracionWebinar();
+      },
+      error: (error) => {
+        this.gridConfiguracionWebinar.loading = false;
+        const mensaje = this._alertaService.getMessageErrorService(error);
+        this._alertaService.notificationWarning(mensaje);
+      },
+    });
+  }
+
   configurarGridDefinirFrecuencia() {
     this.gridDefinirFrecuencia.formGroup = this._formBuilder.group({
       idDiaSemana: [null, Validators.required],
@@ -933,8 +1091,8 @@ export class ModalContentCronogramaComponent implements OnInit {
       idOperadorComparacionAvance: datosForm.idOperadorComparacionAvance,
       valorAvance: datosForm.valorAvance,
       valorAvanceOpc: datosForm.valorAvanceOpc,
-      idOperadorComparacionPromedio: datosForm.idOperadorComparacionPromedio,
-      valorPromedio: datosForm.valorPromedio,
+      idOperadorComparacionPromedio: datosForm.idOperadorComparacionPromedio ?? 1,
+      valorPromedio: datosForm.valorPromedio ?? 0,
       valorPromedioOpc: datosForm.valorPromedioOpc,
       idPespecificoPadre: this.dataItemPespecificoTemp.id,
     };
@@ -1547,7 +1705,7 @@ export class ModalContentCronogramaComponent implements OnInit {
       } else {
         return true;
       }
-    });
+    }).map(x => ({ ...x, idOperadorComparacionPromedio: 1, valorPromedio: 0 }));
     let idsDeletes = this.configurarWebinarOriginal
       .filter((x) => !data.map((y) => y.id).includes(x.id))
       .map((s) => s.id);

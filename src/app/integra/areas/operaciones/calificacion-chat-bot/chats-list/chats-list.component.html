@@ -1,53 +1,195 @@
 <div class="chats-container">
+
+  <!-- Header -->
   <div class="header">
     <button mat-icon-button (click)="onBack()" class="back-button">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <div class="header-content">
-      <h2>Chats de {{ student.name }}</h2>
-      <p class="subtitle">Total de hilos: {{ chats.length }}</p>
+      <h2>{{ getTitulo() }}</h2>
+      <p class="subtitle">Total: {{ totalHilos }} chats</p>
     </div>
   </div>
 
-  <div class="table-section">
-    <table mat-table [dataSource]="chats" class="chats-table">
-      <!-- Content Column -->
-      <ng-container matColumnDef="content">
-        <th mat-header-cell *matHeaderCellDef>Contenido del Chat</th>
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Cargando chats...</p>
+  </div>
+
+  <!-- Filtros + Tabla -->
+  <div [hidden]="isLoading" class="table-section">
+
+    <div class="filters-section">
+
+      <!-- Fechas — dispara consulta server-side (alumno y segmento) -->
+      <div class="filter-row filter-group">
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Fecha inicio</mat-label>
+          <input matInput [matDatepicker]="pickerInicio" placeholder="mm/dd/aaaa"
+                 [(ngModel)]="fechaRangoInicio">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInicio></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="date-field">
+          <mat-label>Fecha fin</mat-label>
+          <input matInput [matDatepicker]="pickerFin" placeholder="mm/dd/aaaa"
+                 [(ngModel)]="fechaRangoFin">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFin></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary"
+                (click)="onBuscarHilos()"
+                [disabled]="!fechaRangoInicio"
+                class="buscar-btn">
+          <mat-icon>search</mat-icon> Buscar
+        </button>
+
+        <button mat-stroked-button
+                *ngIf="fechaRangoFin"
+                (click)="limpiarRangoHilos()"
+                class="limpiar-btn">
+          <mat-icon>clear</mat-icon> Limpiar
+        </button>
+      </div>
+
+      <!-- Filtros Estado y Canal -->
+      <div class="filter-row selects-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="estadoFilter" (ngModelChange)="applyFilters()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option value="pendiente">Pendiente</mat-option>
+            <mat-option value="calificado">Calificado</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Canal</mat-label>
+          <mat-select [(ngModel)]="origenFilter" (ngModelChange)="applyFilters()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option value="portal">Portal Web</mat-option>
+            <mat-option value="whatsapp">WhatsApp</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-scroll-wrapper">
+    <table mat-table [dataSource]="dataSource" matSort class="chats-table">
+
+      <ng-container matColumnDef="idHilo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por ID">ID Chat</th>
         <td mat-cell *matCellDef="let element">
-          <div class="chat-preview">{{ element.content | slice: 0: 100 }}...</div>
+          <strong class="hilo-id">#{{ element.idHilo }}</strong>
         </td>
       </ng-container>
 
-      <!-- Created At Column -->
-      <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef>Fecha</th>
-        <td mat-cell *matCellDef="let element">{{ formatDate(element.createdAt) }}</td>
+      <ng-container matColumnDef="fechaCreacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por fecha de creación">Fecha Creación</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="date-text">{{ element.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+      </td>
       </ng-container>
 
-      <!-- Is Rated Column -->
-      <ng-container matColumnDef="isRated">
-        <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <ng-container matColumnDef="origen">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por canal">Canal</th>
         <td mat-cell *matCellDef="let element">
-          <span class="status-badge" [ngClass]="getRatingStatusColor(element.isRated)">
-            {{ getRatingStatus(element.isRated) }}
+          <span class="badge-origen" [ngClass]="getOrigenClass(element.origen)">
+            <mat-icon class="origen-icon">{{ element.origen === 'WhatsApp' ? 'phone_iphone' : 'language' }}</mat-icon>
+            {{ element.origen || 'Portal Web' }}
           </span>
         </td>
       </ng-container>
 
-      <!-- Actions Column -->
+      <ng-container matColumnDef="totalMensajes">
+        <th mat-header-cell *matHeaderCellDef>Mensajes</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="badge-count">{{ element.totalMensajes ?? '—' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="intervencionBot">
+        <th mat-header-cell *matHeaderCellDef>Intervención Bot</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="badge-bot" [ngClass]="(element.totalMensajesBot ?? 0) > 0 ? 'bot-si' : 'bot-no'">
+            {{ (element.totalMensajesBot ?? 0) > 0 ? 'SI' : 'NO' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ultimoMensaje">
+        <th mat-header-cell *matHeaderCellDef>Último Mensaje</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="ultimo-mensaje" [title]="element.ultimoMensaje || ''">
+            {{ element.ultimoMensaje || '—' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="estado-container">
+            <mat-chip *ngIf="element.esCalificado" class="estado-chip calificado">
+              <mat-icon class="chip-icon">check_circle</mat-icon>
+              Calificado
+            </mat-chip>
+            <mat-chip *ngIf="!element.esCalificado" class="estado-chip pendiente">
+              <mat-icon class="chip-icon">pending</mat-icon>
+              Pendiente
+            </mat-chip>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fechaCalificacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Calificación</th>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="element.fechaCalificacion" class="date-text calificado-date">
+            {{ element.fechaCalificacion | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+          <span *ngIf="!element.fechaCalificacion" class="sin-calificar">
+            Sin calificar
+          </span>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-raised-button color="primary" (click)="onSelectChat(element)">
-            Calificar
+          <button mat-raised-button
+                  [color]="element.esCalificado ? 'accent' : 'primary'"
+                  (click)="onSelectHilo(element)">
+            <mat-icon>{{ element.esCalificado ? 'visibility' : 'rate_review' }}</mat-icon>
+            {{ element.esCalificado ? 'Ver Evaluación' : 'Calificar' }}
           </button>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hilo-row"></tr>
     </table>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="dataSource.data.length === 0 && !isLoading" class="no-data">
+      <mat-icon>inbox</mat-icon>
+      <p>No se encontraron chats para los filtros seleccionados</p>
+    </div>
+
+    <mat-paginator
+      [length]="totalHilos"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="pageSizeOptions"
+      showFirstLastButtons
+      aria-label="Seleccione página de chats">
+    </mat-paginator>
+
   </div>
 </div>
-

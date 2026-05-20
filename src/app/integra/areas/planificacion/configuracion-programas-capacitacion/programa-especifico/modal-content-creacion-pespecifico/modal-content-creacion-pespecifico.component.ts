@@ -50,6 +50,7 @@ interface FormPespecifico {
   urlDocumentoCronogramaGruposI: string;
   resumenClaseActivo: boolean;
   tutorVirtualActivo: boolean;
+  idEstadoCupos: number;
 }
 interface FormGeneracionAutomatica {
   idProgramaGeneral: number;
@@ -88,6 +89,7 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
   @Input() centroCostoGenerado: CentroCostoGenerado;
   @Input() ciudadSeleccionada: LocacionTroncal;
   @Input() datosFormGeneracionAutomatica: FormGeneracionAutomatica;
+  @Input() limiteGruposAlcanzado: boolean = false;
   loadingCreacionPespecifico: boolean = false;
   centroCostoTemp: CentroCosto;
   dataItemPespecificoTemp: PEspecificoPadreIndividual;
@@ -118,7 +120,12 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
     urlDocumentoCronogramaGruposI: [''],
     resumenClaseActivo: [false],
     tutorVirtualActivo: [false],
+    idEstadoCupos: [null],
   });
+  estadosCupos: IComboBase1[] = [
+    { id: 1, nombre: 'Con Cupos' },
+    { id: 2, nombre: 'Sin Cupos' },
+  ];
   filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
     operator: 'contains',
@@ -192,9 +199,15 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
         ...this.combosModulo.centroCosto,
       ];
       this.centroCostoFiltrado = [itemCentroCosto];
+      const esWebinar = this.centroCostoGenerado.nombreProgramaGeneral
+        ?.toLowerCase()
+        .includes('webinar');
+      const nombrePespecifico = esWebinar
+        ? this.centroCostoGenerado.nombreProgramaEspecificoNumerico
+        : this.centroCostoGenerado.nombreProgramaEspecifico;
       this.formPespecifico
         .get('nombrePespecifico')
-        .setValue(this.centroCostoGenerado.nombreProgramaEspecifico);
+        .setValue(nombrePespecifico);
       this.formPespecifico
         .get('codigo')
         .setValue(this.centroCostoGenerado.codigo);
@@ -483,6 +496,7 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
       idPeriodoLectivo: null,
       resumenClaseActivo: datosForm.resumenClaseActivo,
       tutorVirtualActivo: datosForm.tutorVirtualActivo,
+      idEstadoCupos: datosForm.idEstadoCupos,
     };
     return pespecifico;
   }
@@ -619,6 +633,7 @@ export class ModalContentCreacionPespecificoComponent implements OnInit {
     }
     this.formPespecifico.get('resumenClaseActivo').setValue(dataItem.resumenClaseActivo);
     this.formPespecifico.get('tutorVirtualActivo').setValue(dataItem.tutorVirtualActivo);
+    this.formPespecifico.get('idEstadoCupos').setValue(dataItem.idEstadoCupos);
 
   }
   pEspecificosAdicional : IComboBase1[] = [];

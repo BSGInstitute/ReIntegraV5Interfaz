@@ -1,11 +1,15 @@
 export interface ResumenMessengerFacebookChat {
   identificadorAmbitoPagina: string;
   idAlumno: number | null;
-  NnmbreAlumno: string;
+  nombreAlumno: string;
   nombrePagina: string;
   tipoMensaje: string;
   contenido: string | null;
   fechaMensaje: Date;
+  estadoInteraccion?: string | null;
+  requiereDerivacion?: boolean | null;
+  mensajeParaAsesor?: string | null;
+  tipoMensajeD?: string | null;
 }
 
 export interface ChatMessengerFacebook {

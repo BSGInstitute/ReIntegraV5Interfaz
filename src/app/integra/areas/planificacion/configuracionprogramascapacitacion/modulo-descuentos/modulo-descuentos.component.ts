@@ -48,6 +48,7 @@ const FORMULA_CATALOG: Record<number, { name: string; visibleFields: string[] }>
   4: { name: 'Ambos', visibleFields: ['porcentajeMatricula', 'fraccionesMatricula', 'porcentajeCuotas', 'cuotasAdicionales'] },
   5: { name: 'General', visibleFields: ['porcentajeGeneral'] },
   6: { name: 'Contado Normal', visibleFields: [] },
+  7: { name: 'General sin Matricula', visibleFields: ['porcentajeGeneral', 'fraccionesMatricula', 'cuotasAdicionales'] },
 };
 
 const APLICA_A_OPTIONS = [
@@ -199,8 +200,13 @@ export class ModuloDescuentosComponent implements OnInit, OnDestroy {
     return nivel?.nombre ?? 'Desconocido';
   }
 
-  getAplicaAText(aplicaProgramaCompleto: boolean): string {
-    return aplicaProgramaCompleto ? 'Programa completo' : 'Curso';
+  getAplicaAText(aplicaProgramaCompleto: boolean | number | string | null | undefined): string {
+    const aplica =
+      aplicaProgramaCompleto === true ||
+      aplicaProgramaCompleto === 1 ||
+      aplicaProgramaCompleto === '1' ||
+      aplicaProgramaCompleto === 'true';
+    return aplica ? 'Programa completo' : 'Curso';
   }
 
   isFieldVisible(fieldName: string): boolean {
@@ -334,21 +340,7 @@ export class ModuloDescuentosComponent implements OnInit, OnDestroy {
         )
         .subscribe({
           next: (response: HttpResponse<any>) => {
-            this.dataItemTemp.codigo = response.body.codigo;
-            this.dataItemTemp.descripcion = response.body.descripcion;
-            this.dataItemTemp.formula = response.body.formula;
-            this.dataItemTemp.nombreFormula = response.body.nombreFormula;
-            this.dataItemTemp.porcentajeGeneral = response.body.porcentajeGeneral;
-            this.dataItemTemp.porcentajeMatricula = response.body.porcentajeMatricula;
-            this.dataItemTemp.fraccionesMatricula = response.body.fraccionesMatricula;
-            this.dataItemTemp.porcentajeCuotas = response.body.porcentajeCuotas;
-            this.dataItemTemp.cuotasAdicionales = response.body.cuotasAdicionales;
-            this.dataItemTemp.idTipoDescuentoNivelAprobacion = response.body.idTipoDescuentoNivelAprobacion;
-            this.dataItemTemp.nombreNivelAprobacion = response.body.nombreNivelAprobacion;
-            this.dataItemTemp.activo = response.body.activo;
-            this.dataItemTemp.aplicaProgramaCompleto = response.body.aplicaProgramaCompleto;
-            // Refresh the table data
-            this.dataSource.data = [...this.dataSource.data];
+            this.obtenerDescuentos();
             this.loaderModal = false;
             Swal.fire(
               '¡Actualizado!',
