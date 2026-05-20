@@ -1345,18 +1345,47 @@ ObtenerHilosPaginadosPorSegmento: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorS
 ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
 
   // MaestroBsgTento
-  MaestroBsgTentoObtenerAreasConRuta: '/MaestroBsgTento/ObtenerAreasConRuta',
-  MaestroBsgTentoObtenerUnidadesPorArea: '/MaestroBsgTento/ObtenerUnidadesPorArea',
-  MaestroBsgTentoInsertarUnidad: '/MaestroBsgTento/InsertarUnidad',
-  MaestroBsgTentoActualizarUnidad: '/MaestroBsgTento/ActualizarUnidad',
-  MaestroBsgTentoActualizarOrdenUnidades: '/MaestroBsgTento/ActualizarOrdenUnidades',
-  MaestroBsgTentoEliminarUnidad: '/MaestroBsgTento/EliminarUnidad',
-  MaestroBsgTentoObtenerPasosPorUnidad: '/MaestroBsgTento/ObtenerPasosPorUnidad',
-  MaestroBsgTentoInsertarPaso: '/MaestroBsgTento/InsertarPaso',
-  MaestroBsgTentoActualizarPaso: '/MaestroBsgTento/ActualizarPaso',
-  MaestroBsgTentoActualizarOrdenPasos: '/MaestroBsgTento/ActualizarOrdenPasos',
-  MaestroBsgTentoEliminarPaso: '/MaestroBsgTento/EliminarPaso',
-  MaestroBsgTentoObtenerComboPrograma: '/MaestroBsgTento/ObtenerComboPrograma',
+  MaestroBsgTentoObtenerAreasConRuta: '/MaestroBsgTentoEstudioProgresivo/ObtenerAreasConRuta',
+  MaestroBsgTentoObtenerUnidadesPorArea: '/MaestroBsgTentoEstudioProgresivo/ObtenerUnidadesPorArea',
+  MaestroBsgTentoInsertarUnidad: '/MaestroBsgTentoEstudioProgresivo/InsertarUnidad',
+  MaestroBsgTentoActualizarUnidad: '/MaestroBsgTentoEstudioProgresivo/ActualizarUnidad',
+  MaestroBsgTentoActualizarOrdenUnidades: '/MaestroBsgTentoEstudioProgresivo/ActualizarOrdenUnidades',
+  MaestroBsgTentoEliminarUnidad: '/MaestroBsgTentoEstudioProgresivo/EliminarUnidad',
+  MaestroBsgTentoObtenerPasosPorUnidad: '/MaestroBsgTentoEstudioProgresivo/ObtenerPasosPorUnidad',
+  MaestroBsgTentoInsertarPaso: '/MaestroBsgTentoEstudioProgresivo/InsertarPaso',
+  MaestroBsgTentoActualizarPaso: '/MaestroBsgTentoEstudioProgresivo/ActualizarPaso',
+  MaestroBsgTentoActualizarOrdenPasos: '/MaestroBsgTentoEstudioProgresivo/ActualizarOrdenPasos',
+  MaestroBsgTentoEliminarPaso: '/MaestroBsgTentoEstudioProgresivo/EliminarPaso',
+  MaestroBsgTentoObtenerComboPrograma: '/MaestroBsgTentoEstudioProgresivo/ObtenerComboPrograma',
+
+  // MaestroBsgTentoLogros
+  MaestroBsgTentoLogrosObtenerTiposCondicion: '/MaestroBsgTentoLogros/ObtenerTiposCondicion',
+  MaestroBsgTentoLogrosObtenerLogros: '/MaestroBsgTentoLogros/ObtenerLogros',
+  MaestroBsgTentoLogrosInsertarLogro: '/MaestroBsgTentoLogros/InsertarLogro',
+  MaestroBsgTentoLogrosActualizarLogro: '/MaestroBsgTentoLogros/ActualizarLogro',
+  MaestroBsgTentoLogrosActualizarOrdenLogros: '/MaestroBsgTentoLogros/ActualizarOrdenLogros',
+  MaestroBsgTentoLogrosEliminarLogro: '/MaestroBsgTentoLogros/EliminarLogro',
+  MaestroBsgTentoLogrosObtenerMisiones: '/MaestroBsgTentoLogros/ObtenerMisiones',
+  MaestroBsgTentoLogrosInsertarMision: '/MaestroBsgTentoLogros/InsertarMision',
+  MaestroBsgTentoLogrosActualizarMision: '/MaestroBsgTentoLogros/ActualizarMision',
+  MaestroBsgTentoLogrosEliminarMision: '/MaestroBsgTentoLogros/EliminarMision',
+  MaestroBsgTentoLogrosObtenerTiposMision: '/MaestroBsgTentoLogros/ObtenerTiposMision',
+
+  // MaestroBsgTentoPowerUps
+  MaestroBsgTentoPowerUpsObtenerPowerUps: '/MaestroBsgTentoPowerUps/ObtenerPowerUps',
+  MaestroBsgTentoPowerUpsInsertarPowerUp: '/MaestroBsgTentoPowerUps/InsertarPowerUp',
+  MaestroBsgTentoPowerUpsActualizarPowerUp: '/MaestroBsgTentoPowerUps/ActualizarPowerUp',
+  MaestroBsgTentoPowerUpsActualizarOrdenPowerUps: '/MaestroBsgTentoPowerUps/ActualizarOrdenPowerUps',
+  MaestroBsgTentoPowerUpsEliminarPowerUp: '/MaestroBsgTentoPowerUps/EliminarPowerUp',
+  // MaestroBsgTentoSuscripciones
+  MaestroBsgTentoSuscripcionesObtenerPlanes: '/MaestroBsgTentoSuscripciones/ObtenerPlanes',
+  MaestroBsgTentoSuscripcionesInsertarPlan: '/MaestroBsgTentoSuscripciones/InsertarPlan',
+  MaestroBsgTentoSuscripcionesActualizarPlan: '/MaestroBsgTentoSuscripciones/ActualizarPlan',
+  MaestroBsgTentoSuscripcionesEliminarPlan: '/MaestroBsgTentoSuscripciones/EliminarPlan',
+  // MaestroBsgTentoSocial
+  MaestroBsgTentoSocialObtenerPublicaciones: '/MaestroBsgTentoSocial/ObtenerPublicaciones',
+  MaestroBsgTentoSocialActualizarVisibilidadPublicacion: '/MaestroBsgTentoSocial/ActualizarVisibilidadPublicacion',
+  MaestroBsgTentoSocialEliminarPublicacion: '/MaestroBsgTentoSocial/EliminarPublicacion',
   };
 
 export const constApiMarketing = {

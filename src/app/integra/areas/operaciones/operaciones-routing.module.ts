@@ -36,6 +36,10 @@ import { ReporteCertificadoInstitutoComponent } from './reportes-atencion-client
 import { CalificacionChatBotComponent } from './calificacion-chat-bot/registro-calificacion-chat-bot/calificacion-chat-bot.component';
 import { NuevaAgendaAtcComponent } from './gestion-atencion-cliente/nueva-agenda-atc/nueva-agenda-atc.component';
 import { EstudioProgresivoComponent } from './tento/modos-juego/estudio-progresivo/estudio-progresivo.component';
+import { LogrosComponent } from './tento/logros/logros.component';
+import { PowerUpsComponent } from './tento/tienda/power-ups/power-ups.component';
+import { SuscripcionesComponent } from './tento/tienda/suscripciones/suscripciones.component';
+import { ModeracionComponent } from './tento/social/moderacion/moderacion.component';
 
 const routes: Routes = [
   {
@@ -77,7 +81,11 @@ const routes: Routes = [
       { path: 'BeneficioSolicitadoAlumno', component: EntregarBeneficiosAlumnosComponent},
       { path: 'ReporteCertificadoInstituto', component: ReporteCertificadoInstitutoComponent},
       { path: 'CalificacionChatBot', component: CalificacionChatBotComponent},
-      { path: 'EstudioProgresivoTento', component: EstudioProgresivoComponent },
+      { path: 'ConfiguracionEstudioProgresivoTento', component: EstudioProgresivoComponent },
+      { path: 'ConfiguracionLogrosTento', component: LogrosComponent },
+      { path: 'ConfiguracionPowerUpsTento', component: PowerUpsComponent },
+      { path: 'ConfiguracionSuscripcionesTento', component: SuscripcionesComponent },
+      { path: 'ModeracionSocialTento', component: ModeracionComponent },
       { path: '**', redirectTo: 'Retencion' },
     ]
   }

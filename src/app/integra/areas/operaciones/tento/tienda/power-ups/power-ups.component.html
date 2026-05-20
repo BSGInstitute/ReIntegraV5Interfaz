@@ -1,0 +1,143 @@
+<div class="ep-root">
+  <div class="ep-page-header">
+    <div>
+      <span class="ep-section-label">BSG Tento / Tienda</span>
+      <h1 class="ep-page-title">Power-ups</h1>
+    </div>
+    <button class="ep-btn ep-btn--success" (click)="abrirModal(null)">
+      <fa-icon [icon]="['fas', 'plus']"></fa-icon> Nuevo Power-up
+    </button>
+  </div>
+
+  <div class="ep-card">
+    <div *ngIf="loaderPowerUps" class="ep-loading">
+      <kendo-loader type="infinite-spinner" themeColor="primary" size="medium"></kendo-loader>
+      <span>Cargando power-ups...</span>
+    </div>
+    <kendo-grid *ngIf="!loaderPowerUps" [data]="powerUps" class="ep-grid">
+      <kendo-grid-column field="orden" title="#" [width]="55"></kendo-grid-column>
+      <kendo-grid-column field="nombre" title="Nombre"></kendo-grid-column>
+      <kendo-grid-column title="Ícono" [width]="80">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ep-icon-preview" [style.background]="dataItem.colorHexadecimal + '33'">
+            <fa-icon [icon]="['fas', $any(dataItem.iconoCodigo || 'bolt')]" [style.color]="dataItem.colorHexadecimal"></fa-icon>
+          </span>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="costoMonedas" title="Monedas" [width]="90"></kendo-grid-column>
+      <kendo-grid-column field="costoPuntos" title="Puntos" [width]="90"></kendo-grid-column>
+      <kendo-grid-column title="Disponibilidad" [width]="160">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="d-flex gap-1 flex-wrap">
+            <span *ngIf="dataItem.disponibleTienda" class="ep-badge ep-badge--blue">Tienda</span>
+            <span *ngIf="dataItem.recompensaDisponible" class="ep-badge ep-badge--green">Recompensas</span>
+            <span *ngIf="dataItem.disponibleRuletaDiaria" class="ep-badge ep-badge--purple">Ruleta</span>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-command-column title="Acciones" [width]="130" headerClass="justify-content-center">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <div class="d-flex gap-1 justify-content-center">
+            <button class="ep-icon-btn ep-icon-btn--ghost" [disabled]="rowIndex === 0" (click)="moverArriba(rowIndex)" title="Subir">
+              <fa-icon [icon]="['fas', 'arrow-up']"></fa-icon>
+            </button>
+            <button class="ep-icon-btn ep-icon-btn--ghost" [disabled]="rowIndex === powerUps.length - 1" (click)="moverAbajo(rowIndex)" title="Bajar">
+              <fa-icon [icon]="['fas', 'arrow-down']"></fa-icon>
+            </button>
+            <button class="ep-icon-btn ep-icon-btn--warn" (click)="abrirModal(dataItem)" title="Editar">
+              <fa-icon [icon]="['fas', 'pencil-alt']"></fa-icon>
+            </button>
+            <button class="ep-icon-btn ep-icon-btn--danger" (click)="eliminar(dataItem)" title="Eliminar">
+              <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+  </div>
+
+  <div *ngIf="ordenCambiado" class="d-flex justify-content-end mt-2">
+    <button class="ep-btn ep-btn--outline" [disabled]="loaderOrden" (click)="guardarOrden()">
+      <span *ngIf="!loaderOrden">Guardar orden</span>
+      <kendo-loader *ngIf="loaderOrden" type="infinite-spinner" size="small"></kendo-loader>
+    </button>
+  </div>
+</div>
+
+<!-- MODAL CREATE/EDIT -->
+<ng-template #modalPowerUp let-modal>
+  <div class="ep-modal-header">
+    <div class="ep-modal-header__content">
+      <span class="ep-modal-context">BSG Tento / Tienda</span>
+      <h5 class="ep-modal-title">{{ modoForm === 'nuevo' ? 'Nuevo Power-up' : 'Editar Power-up' }}</h5>
+    </div>
+    <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+  </div>
+  <div class="ep-modal-body">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Código <span class="text-danger">*</span></label>
+        <input class="ep-input" [(ngModel)]="form.codigo" placeholder="ej: SALTAR" maxlength="30" style="text-transform:uppercase">
+      </div>
+      <div class="col-md-8">
+        <label class="form-label">Nombre <span class="text-danger">*</span></label>
+        <input class="ep-input" [(ngModel)]="form.nombre" maxlength="100">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Descripción <span class="text-danger">*</span></label>
+        <textarea class="ep-input" [(ngModel)]="form.descripcion" rows="2" maxlength="500"></textarea>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Efecto (técnico) <span class="text-danger">*</span></label>
+        <textarea class="ep-input" [(ngModel)]="form.efecto" rows="2" maxlength="300" placeholder="Descripción del efecto durante el gameplay"></textarea>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Costo Monedas <span class="text-danger">*</span></label>
+        <kendo-numerictextbox [(ngModel)]="form.costoMonedas" [min]="0" [decimals]="0" [format]="'n0'" style="width:100%"></kendo-numerictextbox>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Costo Puntos <span class="text-danger">*</span></label>
+        <kendo-numerictextbox [(ngModel)]="form.costoPuntos" [min]="0" [decimals]="0" [format]="'n0'" style="width:100%"></kendo-numerictextbox>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Ícono <span class="text-danger">*</span></label>
+        <kendo-dropdownlist [data]="iconosList" textField="etiqueta" valueField="codigo" [valuePrimitive]="true"
+          [(ngModel)]="form.iconoCodigo" [defaultItem]="{ etiqueta: 'Seleccione un ícono...', codigo: null }" style="width:100%"></kendo-dropdownlist>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Color</label>
+        <div class="d-flex gap-2 align-items-center">
+          <input type="color" [(ngModel)]="form.colorHexadecimal" class="form-control form-control-color" style="width:50px;height:38px;padding:2px">
+          <input class="ep-input" [(ngModel)]="form.colorHexadecimal" maxlength="7" style="width:110px">
+          <span class="ep-icon-preview" *ngIf="form.iconoCodigo" [style.background]="form.colorHexadecimal + '33'">
+            <fa-icon [icon]="['fas', $any(form.iconoCodigo)]" [style.color]="form.colorHexadecimal"></fa-icon>
+          </span>
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label d-block mb-2">Disponibilidad</label>
+        <div class="d-flex gap-4">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="swTienda" [(ngModel)]="form.disponibleTienda">
+            <label class="form-check-label" for="swTienda">Tienda</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="swRecompensas" [(ngModel)]="form.recompensaDisponible">
+            <label class="form-check-label" for="swRecompensas">Recompensas</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="swRuleta" [(ngModel)]="form.disponibleRuletaDiaria">
+            <label class="form-check-label" for="swRuleta">Ruleta Diaria</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ep-modal-footer">
+    <button class="ep-btn ep-btn--primary" [disabled]="loaderGuardar" (click)="guardar()">
+      <span *ngIf="!loaderGuardar">Guardar</span>
+      <kendo-loader *ngIf="loaderGuardar" type="infinite-spinner" themeColor="light" size="small"></kendo-loader>
+    </button>
+    <button class="ep-btn ep-btn--ghost" (click)="cerrarModal()">Cancelar</button>
+  </div>
+</ng-template>

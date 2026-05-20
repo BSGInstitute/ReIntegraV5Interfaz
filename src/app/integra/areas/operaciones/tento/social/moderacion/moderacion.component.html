@@ -1,0 +1,62 @@
+<div class="ep-root">
+  <div class="ep-page-header">
+    <div>
+      <span class="ep-section-label">BSG Tento / Social</span>
+      <h1 class="ep-page-title">Moderación de Publicaciones</h1>
+    </div>
+  </div>
+
+  <!-- Filtro de visibilidad -->
+  <div class="d-flex gap-2 mb-3">
+    <button class="ep-btn" [class.ep-btn--primary]="filtroVisible === null" [class.ep-btn--ghost]="filtroVisible !== null"
+      (click)="aplicarFiltro(null)">Todas</button>
+    <button class="ep-btn" [class.ep-btn--primary]="filtroVisible === true" [class.ep-btn--ghost]="filtroVisible !== true"
+      (click)="aplicarFiltro(true)">Visibles</button>
+    <button class="ep-btn" [class.ep-btn--primary]="filtroVisible === false" [class.ep-btn--ghost]="filtroVisible !== false"
+      (click)="aplicarFiltro(false)">Ocultas</button>
+  </div>
+
+  <div class="ep-card">
+    <div *ngIf="loaderPublicaciones" class="ep-loading">
+      <kendo-loader type="infinite-spinner" themeColor="primary" size="medium"></kendo-loader>
+      <span>Cargando publicaciones...</span>
+    </div>
+    <kendo-grid *ngIf="!loaderPublicaciones" [data]="publicaciones" class="ep-grid" [pageable]="true" [pageSize]="20">
+      <kendo-grid-column field="fechaCreacion" title="Fecha" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="nombre" title="Usuario" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="contenido" title="Publicación">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ep-content-cell" [title]="dataItem.contenido">{{ dataItem.contenido }}</span>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="cantidadLikes" title="Likes" [width]="75"></kendo-grid-column>
+      <kendo-grid-column title="Estado" [width]="110">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span [class]="dataItem.visible ? 'ep-badge-visible' : 'ep-badge-oculta'">
+            {{ dataItem.visible ? 'Visible' : 'Oculta' }}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-command-column title="Acciones" [width]="110" headerClass="justify-content-center">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="d-flex gap-1 justify-content-center">
+            <button class="ep-icon-btn"
+              [class.ep-icon-btn--warn]="dataItem.visible"
+              [class.ep-icon-btn--info]="!dataItem.visible"
+              (click)="toggleVisibilidad(dataItem)"
+              [title]="dataItem.visible ? 'Ocultar' : 'Mostrar'">
+              <fa-icon [icon]="['fas', dataItem.visible ? 'eye-slash' : 'eye']"></fa-icon>
+            </button>
+            <button class="ep-icon-btn ep-icon-btn--danger" (click)="eliminar(dataItem)" title="Eliminar">
+              <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-command-column>
+    </kendo-grid>
+  </div>
+</div>
