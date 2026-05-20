@@ -13,6 +13,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 
 import { AlertaService } from '@shared/services/alerta.service';
 import { WhatsAppPostulanteV2Service } from '@gestionPersonas/services/whatsapp-postulante-v2.service';
+import { DatosDelPostulanteService } from '@gestionPersonas/services/datos-del-postulante.service';
 import { validarYFormatearNumero } from '@gestionPersonas/utils/whatsapp-numero.util';
 import {
   ConversacionWhatsAppPostulanteDTO,
@@ -54,6 +55,8 @@ export class DpWhatsappFloatingPanelComponent
   tabActiva: 'activos' | 'pendientes' = 'activos';
   /** null = vista lista; number = vista chat del postulante seleccionado */
   postulanteSeleccionado: (PendienteWhatsAppPostulanteDTO | ConversacionWhatsAppPostulanteDTO) | null = null;
+  /** Tab dentro de la vista chat: 'chat' | 'perfil' */
+  tabChat: 'chat' | 'perfil' = 'chat';
 
   // ─── Listas ───
   pendientes: PendienteWhatsAppPostulanteDTO[] = [];
@@ -82,6 +85,7 @@ export class DpWhatsappFloatingPanelComponent
     private readonly _alerta: AlertaService,
     private readonly _cdr: ChangeDetectorRef,
     private readonly _datePipe: DatePipe,
+    private readonly _datosPostulanteService: DatosDelPostulanteService,
   
   ) {}
 
@@ -221,6 +225,7 @@ export class DpWhatsappFloatingPanelComponent
       this.idPais = item.idPais ?? null;
     }
 
+    this.tabChat = 'chat';
     this._whatsapp.setPostulanteActivo(item.idPostulante);
     this.cargarHistorial(item.idPostulante);
 
@@ -240,6 +245,18 @@ export class DpWhatsappFloatingPanelComponent
     this.ventanaCerrada = null;
     this.numeroInvalido = false;
     this.cantidadMensajesAnterior = 0;
+    this.tabChat = 'chat';
+  }
+
+  /** Filtra la grilla por el celular del postulante y cierra el panel. */
+  verEnGrilla(): void {
+    if (!this.postulanteSeleccionado) return;
+    // Emitimos waNumero (el campo celular del DTO). La grilla filtra por ese
+    // valor usando el filtro Kendo 'contains' sobre la columna 'celular'.
+    const numero = this.postulanteSeleccionado.waNumero ?? this.waTo;
+    if (!numero) return;
+    this._datosPostulanteService.filtrarPorPostulante$.next(numero);
+    this.cerrarPanel();
   }
 
   // ─────────────────────────────────────────────────────────────────

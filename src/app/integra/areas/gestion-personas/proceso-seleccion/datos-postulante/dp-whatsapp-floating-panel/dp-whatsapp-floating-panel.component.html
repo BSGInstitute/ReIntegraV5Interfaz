@@ -130,12 +130,7 @@
 
     <!-- Header chat -->
     <div class="wa-panel__header">
-      <button
-        type="button"
-        class="wa-panel__icon-btn"
-        title="Volver"
-        (click)="volverALista()"
-      >
+      <button type="button" class="wa-panel__icon-btn" title="Volver" (click)="volverALista()">
         <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon>
       </button>
 
@@ -147,23 +142,57 @@
         <div class="wa-panel__chat-nombre">
           {{ postulanteSeleccionado.nombreCompleto || waTo || 'Postulante' }}
         </div>
-        <div class="wa-panel__chat-numero" *ngIf="waTo">
-          +{{ waTo }}
+        <div class="wa-panel__chat-badge-row">
+          <span class="wa-panel__badge-wa">
+            <fa-icon [icon]="['fab', 'whatsapp']"></fa-icon> WhatsApp
+          </span>
+          <span class="wa-panel__chat-numero" *ngIf="waTo">{{ waTo }}</span>
         </div>
       </div>
 
-      <button
-        type="button"
-        class="wa-panel__icon-btn"
-        title="Cerrar"
-        (click)="cerrarPanel()"
-      >
+      <button type="button" class="wa-panel__icon-btn" title="Cerrar" (click)="cerrarPanel()">
         <fa-icon [icon]="['fas', 'xmark']"></fa-icon>
       </button>
     </div>
 
-    <!-- Body: mensajes -->
-    <div class="wa-panel__cuerpo" #scrollContainer>
+    <!-- Tabs Chat / Perfil -->
+    <div class="wa-panel__chat-tabs">
+      <button
+        class="wa-panel__chat-tab"
+        [class.wa-panel__chat-tab--active]="tabChat === 'chat'"
+        (click)="tabChat = 'chat'"
+      >Chat</button>
+      <button
+        class="wa-panel__chat-tab"
+        [class.wa-panel__chat-tab--active]="tabChat === 'perfil'"
+        (click)="tabChat = 'perfil'"
+      >Perfil</button>
+    </div>
+
+    <!-- ─── TAB PERFIL ─── -->
+    <div class="wa-panel__perfil" *ngIf="tabChat === 'perfil'">
+      <div class="wa-panel__perfil-avatar">
+        {{ getIniciales(postulanteSeleccionado.nombreCompleto, null) }}
+      </div>
+      <div class="wa-panel__perfil-nombre">
+        {{ postulanteSeleccionado.nombreCompleto || 'Postulante' }}
+      </div>
+      <div class="wa-panel__perfil-numero" *ngIf="waTo">
+        <fa-icon [icon]="['fab', 'whatsapp']"></fa-icon>
+        {{ waTo }}
+      </div>
+      <button
+        type="button"
+        class="wa-panel__perfil-btn-grilla"
+        (click)="verEnGrilla()"
+      >
+        <fa-icon [icon]="['fas', 'arrow-up-right-from-square']"></fa-icon>
+        Ver en grilla
+      </button>
+    </div>
+
+    <!-- ─── TAB CHAT — Body: mensajes ─── -->
+    <div class="wa-panel__cuerpo" #scrollContainer *ngIf="tabChat === 'chat'">
       <!-- Skeleton loader -->
       <div class="wa-panel__skeleton" *ngIf="cargandoHistorial" aria-hidden="true">
         <div class="wa-panel__skeleton-row wa-panel__skeleton-row--recibido">
@@ -277,19 +306,19 @@
     </div>
 
     <!-- Banner número inválido -->
-    <div class="wa-panel__banner wa-panel__banner--error" *ngIf="numeroInvalido">
+    <div class="wa-panel__banner wa-panel__banner--error" *ngIf="tabChat === 'chat' && numeroInvalido">
       <fa-icon [icon]="['fas', 'circle-exclamation']"></fa-icon>
       <span>Número inválido — no se puede enviar WhatsApp</span>
     </div>
 
     <!-- Banner ventana 24h cerrada -->
-    <div class="wa-panel__banner" *ngIf="!numeroInvalido && ventanaCerrada === true">
+    <div class="wa-panel__banner" *ngIf="tabChat === 'chat' && !numeroInvalido && ventanaCerrada === true">
       <fa-icon [icon]="['fas', 'triangle-exclamation']"></fa-icon>
       <span>Ventana de 24h cerrada — solo plantillas</span>
     </div>
 
-    <!-- Composer -->
-    <div class="wa-panel__composer">
+    <!-- Composer (solo en tab chat) -->
+    <div class="wa-panel__composer" *ngIf="tabChat === 'chat'">
       <div class="wa-panel__input-wrap">
         <textarea
           class="wa-panel__textarea"

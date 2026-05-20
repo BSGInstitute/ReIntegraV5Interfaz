@@ -51,6 +51,14 @@ export class DatosDelPostulanteService {
   ResultadoImportacion$ = new BehaviorSubject<ResultadoImportacion>(null);
   postulantesInsercionMasiva$ = new BehaviorSubject<ListaPostulante[]>(null);
 
+  /**
+   * Emite el `celular` (waNumero) del postulante que el panel flotante quiere
+   * encontrar en la grilla. `DpTablaPostulanteComponent` lo escucha y filtra
+   * el KendoGrid por celular (campo que el SP sí procesa).
+   * `null` = sin filtro activo.
+   */
+  filtrarPorPostulante$ = new BehaviorSubject<string | null>(null);
+
   historialPostulanteFormacion$ = new BehaviorSubject<
     HistorialPostulanteFormacion[]
   >(null);

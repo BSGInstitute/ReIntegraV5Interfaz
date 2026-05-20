@@ -63,6 +63,8 @@ export class DpTablaPostulanteComponent implements OnInit, OnDestroy {
   /** Para limpiar las suscripciones SignalR al salir del módulo. */
   private readonly _destroy$ = new Subject<void>();
 
+
+
   /** Stack de notificaciones WhatsApp estilo card (top-center). */
   waNotificaciones: Array<{
     id: number;
@@ -118,6 +120,30 @@ export class DpTablaPostulanteComponent implements OnInit, OnDestroy {
     this._whatsappV2.notificarMensaje$
       .pipe(takeUntil(this._destroy$))
       .subscribe((notif) => this.pushNotificacionWhatsApp(notif));
+
+    // Filtro desde el panel flotante de WhatsApp: inyecta el idPostulante
+    // en el array de filtros dinámicos del Kendo (filter.Filter.Filters)
+    // que es lo que el SP backend procesa.
+    this._datosPostulanteService.filtrarPorPostulante$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((celular) => {
+        if (!celular) return;
+        // Filtrar por celular usando el filtro dinámico del Kendo que el SP
+        // sí procesa. Usamos `startswith` para tolerar que la grilla guarde
+        // el número sin código de país (ej. '991679312') mientras el panel
+        // tiene '51991679312'. Los últimos 9 dígitos suelen ser únicos.
+        const celularLocal = celular.length > 9 ? celular.slice(-9) : celular;
+        this.gridDatosPostulante.gridState = {
+          ...this.gridDatosPostulante.gridState,
+          skip: 0,
+          filter: {
+            logic: 'and',
+            filters: [{ field: 'celular', operator: 'contains', value: celularLocal }],
+          },
+        };
+        this.obtenerPostulantesFiltroManual();
+        this._datosPostulanteService.filtrarPorPostulante$.next(null);
+      });
   }
 
   /**
