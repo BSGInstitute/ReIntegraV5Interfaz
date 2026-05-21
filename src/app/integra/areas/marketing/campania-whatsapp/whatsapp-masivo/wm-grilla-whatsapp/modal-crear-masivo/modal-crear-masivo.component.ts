@@ -11,6 +11,7 @@ import { Combo } from '../../models/combo- modulo-whatsapp';
 import { forkJoin, interval, Subscription } from 'rxjs';
 import { switchMap, takeWhile } from 'rxjs/operators';
 import { IntegraService } from '@shared/services/integra.service';
+import { UserService } from '@shared/services/user.service';
 import { constApiMarketing } from '@environments/constApi';
 import { WhatsAppMensajeArchivoCom } from '@comercial/models/interfaces/iagenda-historial-chat';
 
@@ -28,7 +29,8 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
     private alertaService: AlertaService,
     private cdr: ChangeDetectorRef,
     private whatsappFacebookService: WhatsappFacebookService,
-    private integraService: IntegraService
+    private integraService: IntegraService,
+    private userService: UserService
   ) {}
 
   // Estado general
@@ -246,6 +248,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
       pais: item.pais || '',
       idPaisEmpresa: item.idPaisEmpresa || 51,
       email: cargado?.alumno?.email1 || '',
+      idPersonalAsesor: item.idPersonal ?? 0,
       seleccionado: true,
       expandido: false,
       excluido: false,
@@ -373,21 +376,27 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
     let totalEnviados = 0;
 
     try {
-      // 1. Plantilla masiva → todos los seleccionados
+      const enviosFallidos: { nombre: string; celular: string; motivo: string }[] = [];
+
+      // 1. Plantilla masiva → lead por lead (mismo flujo que unitario)
       if (this.plantillaMasivaId) {
-        const primerLead = seleccionados[0];
-        const payloadMasivo = {
-          idPlantilla: this.plantillaMasivaId,
-          idCentroCosto: seleccionados[0]?.idCentroCosto ?? 0,
-          usuario: '',
-          alumnos: seleccionados.map(l => ({
-            idAlumno: l.idAlumno,
-            celularWhatsApp: l.celular,
-            idPais: l.idPaisEmpresa ?? 51,
-          }))
-        };
-        await this.service.enviarPlantillaMasiva(payloadMasivo).toPromise();
-        totalEnviados += seleccionados.length;
+        for (const lead of seleccionados) {
+          try {
+            const payload = {
+              idPlantilla: this.plantillaMasivaId,
+              idCentroCosto: lead.idCentroCosto ?? 0,
+              celularWhatsApp: lead.celular,
+              idPais: lead.idPaisEmpresa ?? 51,
+              idAlumno: lead.idAlumno,
+              idPersonal: lead.idPersonalAsesor ?? 0,
+              usuario: '',
+            };
+            await this.integraService.postJsonResponse(constApiMarketing.EnvioPlantillas, payload).toPromise();
+            totalEnviados++;
+          } catch (err: any) {
+            enviosFallidos.push({ nombre: lead.nombre, celular: lead.celular, motivo: err?.message || 'Error al enviar plantilla masiva' });
+          }
+        }
       }
 
       // 2. Archivo masivo → todos los seleccionados
@@ -399,7 +408,6 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
       }
 
       // 3. Envíos individuales por lead
-      const enviosFallidos: { nombre: string; celular: string; motivo: string }[] = [];
 
       for (const lead of seleccionados) {
         // 3a. Plantilla individual confirmada
@@ -411,7 +419,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
               celularWhatsApp: lead.celular,
               idPais: lead.idPaisEmpresa,
               idAlumno: lead.idAlumno,
-              idPersonal: lead.idAsesor ?? 0,
+              idPersonal: lead.idPersonalAsesor ?? 0,
               usuario: '',
             };
             await this.integraService.postJsonResponse(constApiMarketing.EnvioPlantillas, payload).toPromise();
@@ -434,7 +442,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
               waFileName: lead.archivoStagedNombre ?? '',
               idPais: lead.idPaisEmpresa,
               idAlumno: lead.idAlumno,
-              idPersonal: lead.idAsesor ?? 0,
+              idPersonal: lead.idPersonalAsesor ?? 0,
             };
             await this.whatsappFacebookService.enviarMensajeApigraphWhatsappArchivo$(obj).toPromise();
             lead.archivoStagedUrl = undefined;
@@ -454,7 +462,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
               mensaje: lead.mensajePendiente,
               idPais: lead.idPaisEmpresa,
               idAlumno: lead.idAlumno,
-              idPersonal: lead.idAsesor ?? 0,
+              idPersonal: lead.idPersonalAsesor ?? 0,
               usuario: '',
             };
             await this.integraService.postJsonResponse(constApiMarketing.EnvioMensaje, payload).toPromise();
@@ -741,7 +749,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
           waFileName: nombreArchivo,
           idPais: lead.idPaisEmpresa,
           idAlumno: lead.idAlumno,
-          idPersonal: lead.idAsesor ?? 0,
+          idPersonal: lead.idPersonalAsesor ?? 0,
         };
         this.whatsappFacebookService.enviarMensajeApigraphWhatsappArchivo$(obj).subscribe({
           next: () => { index++; enviarSiguiente(); },
