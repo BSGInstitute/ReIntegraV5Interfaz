@@ -99,9 +99,11 @@ export class ChatService extends IntegraService {
     const payload: Record<string, unknown> = { pageNumber, pageSize, intervencionBot };
 
     if (fechaInicio) {
-      payload['fechaInicio'] = fechaInicio;
+      // Serializar como ISO local (sin Z) para que el backend no aplique conversión UTC
+      // que correría el rango al día siguiente. Ver comentario en toLocalIsoString.
+      payload['fechaInicio'] = this.toLocalIsoString(fechaInicio);
       // fechaFin siempre presente cuando hay fechaInicio — default: hoy
-      payload['fechaFin'] = fechaFin ? this.toEndOfDay(fechaFin) : new Date();
+      payload['fechaFin'] = this.toLocalIsoString(fechaFin ? this.toEndOfDay(fechaFin) : new Date());
     }
 
     if (codigoMatricula) {
@@ -136,8 +138,11 @@ export class ChatService extends IntegraService {
       pageNumber,
       pageSize,
       intervencionBot,
-      fechaInicio: fechaInicio ?? null,
-      fechaFin:    fechaInicio ? (fechaFin ? this.toEndOfDay(fechaFin) : new Date()) : null
+      // ISO local (sin Z) — ver comentario en toLocalIsoString.
+      fechaInicio: fechaInicio ? this.toLocalIsoString(fechaInicio) : null,
+      fechaFin:    fechaInicio
+        ? this.toLocalIsoString(fechaFin ? this.toEndOfDay(fechaFin) : new Date())
+        : null
     };
 
     this.obtenerPorFiltro(constApiOperaciones.ObtenerHilosChatPorSegmentoPaginado, payload)
@@ -356,8 +361,9 @@ export class ChatService extends IntegraService {
   ): Observable<HttpResponse<PagedResponse<HiloChatPaginadoDTO>>> {
     const payload: Record<string, unknown> = {
       idAlumno,
-      fechaInicio,
-      fechaFin: fechaFin ? this.toEndOfDay(fechaFin) : new Date(),
+      // ISO local (sin Z) — ver comentario en toLocalIsoString.
+      fechaInicio: this.toLocalIsoString(fechaInicio),
+      fechaFin:    this.toLocalIsoString(fechaFin ? this.toEndOfDay(fechaFin) : new Date()),
       pageNumber,
       pageSize
     };
@@ -376,8 +382,9 @@ export class ChatService extends IntegraService {
   ): Observable<HttpResponse<PagedResponse<HiloChatPaginadoDTO>>> {
     const payload: Record<string, unknown> = {
       idContactoPortalSegmento,
-      fechaInicio,
-      fechaFin: fechaFin ? this.toEndOfDay(fechaFin) : new Date(),
+      // ISO local (sin Z) — ver comentario en toLocalIsoString.
+      fechaInicio: this.toLocalIsoString(fechaInicio),
+      fechaFin:    this.toLocalIsoString(fechaFin ? this.toEndOfDay(fechaFin) : new Date()),
       pageNumber,
       pageSize
     };
@@ -434,6 +441,29 @@ export class ChatService extends IntegraService {
   private toEndOfDay(fecha: Date): Date {
     const f = new Date(fecha);
     return new Date(f.getFullYear(), f.getMonth(), f.getDate(), 23, 59, 59, 999);
+  }
+
+  /**
+   * Serializa un Date a string ISO LOCAL (sin la 'Z' que indica UTC).
+   *
+   * Sin esto, JSON.stringify(date) llama a toISOString() y convierte a UTC: si el usuario
+   * en Perú (UTC-5) selecciona 19/05/2026, el backend recibe "2026-05-19T05:00:00.000Z" y
+   * peor: el fin de día queda como "2026-05-20T04:59:59.999Z" — el backend con DateTime
+   * (no DateTimeOffset) lee ese valor como "20 de mayo" e incluye registros del día siguiente.
+   *
+   * Devolviendo "2026-05-19T23:59:59.999" (sin Z) el backend lo interpreta como hora local
+   * y el filtro coincide con lo que el usuario seleccionó.
+   */
+  private toLocalIsoString(fecha: Date): string {
+    const pad   = (n: number, len = 2) => String(n).padStart(len, '0');
+    const yyyy  = fecha.getFullYear();
+    const mm    = pad(fecha.getMonth() + 1);
+    const dd    = pad(fecha.getDate());
+    const hh    = pad(fecha.getHours());
+    const mi    = pad(fecha.getMinutes());
+    const ss    = pad(fecha.getSeconds());
+    const ms    = pad(fecha.getMilliseconds(), 3);
+    return `${yyyy}-${mm}-${dd}T${hh}:${mi}:${ss}.${ms}`;
   }
 
 }
