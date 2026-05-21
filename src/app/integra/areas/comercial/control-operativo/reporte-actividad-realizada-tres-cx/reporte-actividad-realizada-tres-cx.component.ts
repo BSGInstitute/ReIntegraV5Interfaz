@@ -439,6 +439,10 @@ export class ReporteActividadRealizadaTresCxComponent implements OnInit {
           this.urlGrabacion = dataItem.nombreGrabacion;
           flagReproducir = true;
           break;
+      case 'Whatsapp Migrado':
+          this.urlGrabacion = dataItem.nombreGrabacion;
+          flagReproducir = true;
+          break;
       case 'Wolkbox':
         this._alertaService.swalFireOptions({
           icon: 'info',

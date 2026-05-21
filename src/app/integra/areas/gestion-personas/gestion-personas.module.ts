@@ -76,6 +76,7 @@ import { ModalContentaGregarProcesoComponent } from './proceso-seleccion/datos-p
 import { DpWhatsappPostulantesComponent } from './proceso-seleccion/datos-postulante/dp-whatsapp-postulantes/dp-whatsapp-postulantes.component';
 import { DpWhatsappV2Component } from './proceso-seleccion/datos-postulante/dp-whatsapp-v2/dp-whatsapp-v2.component';
 import { DpWhatsappV2TemplatePickerComponent } from './proceso-seleccion/datos-postulante/dp-whatsapp-v2/dp-whatsapp-v2-template-picker/dp-whatsapp-v2-template-picker.component';
+import { DpWhatsappFloatingPanelComponent } from './proceso-seleccion/datos-postulante/dp-whatsapp-floating-panel/dp-whatsapp-floating-panel.component';
 import { WhatsAppPostulanteV2Service } from './services/whatsapp-postulante-v2.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InduccionPersonalComponent } from './gestion-personal/induccion-personal/induccion-personal.component';
@@ -151,6 +152,7 @@ import { RegistroMarcadorFechaComponent } from './asistencia-personal/registro-m
     DpWhatsappPostulantesComponent,
     DpWhatsappV2Component,
     DpWhatsappV2TemplatePickerComponent,
+    DpWhatsappFloatingPanelComponent,
     InduccionPersonalComponent,
     GestionContratosComponent,
     ModalContratoComponent,

@@ -63,6 +63,8 @@ export class DpTablaPostulanteComponent implements OnInit, OnDestroy {
   /** Para limpiar las suscripciones SignalR al salir del módulo. */
   private readonly _destroy$ = new Subject<void>();
 
+
+
   /** Stack de notificaciones WhatsApp estilo card (top-center). */
   waNotificaciones: Array<{
     id: number;
@@ -118,6 +120,30 @@ export class DpTablaPostulanteComponent implements OnInit, OnDestroy {
     this._whatsappV2.notificarMensaje$
       .pipe(takeUntil(this._destroy$))
       .subscribe((notif) => this.pushNotificacionWhatsApp(notif));
+
+    // Filtro desde el panel flotante de WhatsApp: inyecta el idPostulante
+    // en el array de filtros dinámicos del Kendo (filter.Filter.Filters)
+    // que es lo que el SP backend procesa.
+    this._datosPostulanteService.filtrarPorPostulante$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((celular) => {
+        if (!celular) return;
+        // Filtrar por celular usando el filtro dinámico del Kendo que el SP
+        // sí procesa. Usamos `startswith` para tolerar que la grilla guarde
+        // el número sin código de país (ej. '991679312') mientras el panel
+        // tiene '51991679312'. Los últimos 9 dígitos suelen ser únicos.
+        const celularLocal = celular.length > 9 ? celular.slice(-9) : celular;
+        this.gridDatosPostulante.gridState = {
+          ...this.gridDatosPostulante.gridState,
+          skip: 0,
+          filter: {
+            logic: 'and',
+            filters: [{ field: 'celular', operator: 'contains', value: celularLocal }],
+          },
+        };
+        this.obtenerPostulantesFiltroManual();
+        this._datosPostulanteService.filtrarPorPostulante$.next(null);
+      });
   }
 
   /**
@@ -149,11 +175,41 @@ export class DpTablaPostulanteComponent implements OnInit, OnDestroy {
     return waFrom || 'Postulante';
   }
 
+  /**
+   * Convierte el `waBody` del evento SignalR en texto legible para el toast.
+   * Si el body es una URL de blob (media), muestra el tipo de archivo en lugar
+   * de la URL cruda.
+   */
+  private resolverCuerpoToast(
+    waBody: string | null | undefined,
+    waType?: string | null
+  ): string {
+    if (!waBody) return 'Nuevo mensaje recibido';
+    // Si waType está disponible, usarlo directamente.
+    if (waType) {
+      const tipos: Record<string, string> = {
+        image: '📷 Imagen',
+        document: '📄 Documento',
+        audio: '🎵 Audio',
+        video: '🎬 Video',
+        hsm: '📋 Plantilla',
+        template: '📋 Plantilla',
+      };
+      return tipos[waType] ?? waBody;
+    }
+    // Heurística: si parece una URL → es media.
+    if (/^https?:\/\//i.test(waBody.trim())) {
+      return '📎 Multimedia';
+    }
+    return waBody;
+  }
+
   /** Inserta una notificación en el stack y programa el auto-dismiss. */
   private pushNotificacionWhatsApp(notif: {
     waFrom?: string | null;
     idPostulante?: number | null;
     waBody?: string | null;
+    waType?: string | null;
   } | null): void {
     if (!notif) return;
     const id = ++this._waNotifId;
@@ -163,7 +219,7 @@ export class DpTablaPostulanteComponent implements OnInit, OnDestroy {
         notif.idPostulante ?? null,
         notif.waFrom ?? null
       ),
-      cuerpo: notif.waBody || 'Nuevo mensaje recibido',
+      cuerpo: this.resolverCuerpoToast(notif.waBody, notif.waType),
       hora: new Date().toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
