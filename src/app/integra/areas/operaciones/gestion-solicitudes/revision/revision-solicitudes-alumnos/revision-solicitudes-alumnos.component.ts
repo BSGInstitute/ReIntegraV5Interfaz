@@ -14,23 +14,31 @@ import { IFiltroEnvio, IFormReporte } from '@operaciones/models/interfaces/igest
 import { DropDownListComponent } from '@progress/kendo-angular-dropdowns';
 
 /**
- * DTO del mensaje devuelto por /ChatDetalleIntegra/ObtenerChatBotWhatsAppAtcPorSolicitudAlumno.
- * Mismo contrato que ChatbotWhatsAppMensajeDTO del módulo calificacion-chat-bot.
+ * DTO unificado de mensaje para el modal. Soporta los dos contratos que devuelven los endpoints:
+ *  - WhatsApp ATC (ObtenerChatBotWhatsAppAtcPorSolicitudAlumno): trae idHiloChatWhatsApp,
+ *    waType, waCaption, fechaCreacion.
+ *  - Portal/Aula Virtual (ObtenerChatBotPorSolicitud): trae idChatbotPortalHiloChat,
+ *    idContactoPortalSegmento. NO trae waType ni fechaCreacion.
+ * Los campos específicos son opcionales para que el mismo render funcione con ambos.
  */
 interface ChatMensajeAtcDTO {
-  idHiloChatWhatsApp: number;
   idAlumno: number;
   esUsuario: boolean;
   contenido: string;
+  esBot: number;
+  personal: string;
+  // Específicos de WhatsApp
+  idHiloChatWhatsApp?: number;
   tipoMensaje?: string | null;
   waFile?: string;
   waMimeType?: string;
   waFileName?: string;
   waCaption?: string;
-  fechaCreacion: string;
-  esBot: number;
-  personal: string;
-  waType: string;
+  fechaCreacion?: string;
+  waType?: string;
+  // Específicos de Portal Web / Aula Virtual
+  idChatbotPortalHiloChat?: number;
+  idContactoPortalSegmento?: string;
 }
 
 @Component({
@@ -751,18 +759,36 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
   }
 
   // ============================================================
-  // Modal Chat WhatsApp ATC
+  // Modal Chat — WhatsApp ATC o Portal/Aula Virtual según origen
   // ============================================================
 
   /**
-   * Abre el modal y consulta los mensajes del chat de WhatsApp ATC asociados a la solicitud
-   * actualmente cargada en formCategoria. El endpoint devuelve el formato de
-   * ChatbotWhatsAppMensajeDTO con las mismas categorías que chat-messages.component.
+   * Abre el modal y consulta los mensajes del chat asociados a la solicitud actualmente
+   * cargada. Decide qué endpoint usar según `origenSolicitud` del formCategoria:
+   *  - "Chatbot Whatsapp"     → ObtenerChatBotWhatsAppAtcPorSolicitudAlumno (formato WhatsApp).
+   *  - "Chatbot Aula virtual" → ObtenerChatBotPorSolicitud (formato Portal Web).
+   * Comparación case-insensitive + trim para tolerar variaciones del backend.
    */
-  abrirModalChatWhatsApp(): void {
+  abrirModalChat(): void {
     const idSolicitud = this.formCategoria.get('Id').value;
     if (!idSolicitud) {
       this.alertaService.swalFireOptions({ icon: 'warning', text: 'No hay solicitud cargada' });
+      return;
+    }
+
+    const origenRaw = this.formCategoria.get('origenSolicitud').value;
+    const origen = (origenRaw || '').toString().trim().toLowerCase();
+
+    let endpoint: string;
+    if (origen === 'chatbot whatsapp') {
+      endpoint = constApiOperaciones.ObtenerChatBotWhatsAppAtcPorSolicitudAlumno;
+    } else if (origen === 'chatbot aula virtual') {
+      endpoint = constApiOperaciones.ObtenerChatBotPorSolicitud;
+    } else {
+      this.alertaService.swalFireOptions({
+        icon: 'warning',
+        text: `Esta solicitud no tiene un origen de chat asociado (Origen: "${origenRaw || 'sin valor'}").`
+      });
       return;
     }
 
@@ -771,7 +797,7 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
     this.modalRefChatWhatsApp = this.modalService.open(this.modalChatWhatsApp, { size: 'lg', backdrop: 'static' });
 
     this.integraService
-      .postJsonResponse(constApiOperaciones.ObtenerChatBotWhatsAppAtcPorSolicitudAlumno, { idSolicitud })
+      .postJsonResponse(endpoint, { idSolicitud })
       .subscribe({
         next: (response: HttpResponse<ChatMensajeAtcDTO[]>) => {
           this.mensajesChatWhatsApp = response.body || [];

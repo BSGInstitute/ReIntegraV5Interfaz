@@ -1344,6 +1344,7 @@ ObtenerHilosChatPorSegmentoPaginado: "/ChatDetalleIntegra/ObtenerHilosChatPorSeg
 ObtenerHilosPaginadosPorSegmento: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorSegmento",
 ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
 ObtenerChatBotWhatsAppAtcPorSolicitudAlumno: "/ChatDetalleIntegra/ObtenerChatBotWhatsAppAtcPorSolicitudAlumno",
+ObtenerChatBotPorSolicitud: "/ChatDetalleIntegra/ObtenerChatBotPorSolicitud",
   };
 
 export const constApiMarketing = {
