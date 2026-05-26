@@ -1,0 +1,32 @@
+module.exports = {
+  preset: 'jest-preset-angular',
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  testEnvironment: 'jsdom',
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/', '<rootDir>/src/test.ts'],
+  testMatch: ['**/*.spec.ts'],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.spec.json',
+      stringifyContentPathRegex: '\\.html$',
+    },
+  },
+  moduleNameMapper: {
+    '^@modules/(.*)$':         '<rootDir>/src/app/modules/$1',
+    '^@shared/(.*)$':          '<rootDir>/src/app/shared/$1',
+    '^@environments/(.*)$':    '<rootDir>/src/environments/$1',
+    '^src/environments/(.*)$': '<rootDir>/src/environments/$1',
+    '^@comercial/(.*)$':       '<rootDir>/src/app/integra/areas/comercial/$1',
+    '^@finanzas/(.*)$':        '<rootDir>/src/app/integra/areas/finanzas/$1',
+    '^@gestionPersonas/(.*)$': '<rootDir>/src/app/integra/areas/gestion-personas/$1',
+    '^@marketing/(.*)$':       '<rootDir>/src/app/integra/areas/marketing/$1',
+    '^@planificacion/(.*)$':   '<rootDir>/src/app/integra/areas/planificacion/$1',
+    '^@reportes/(.*)$':        '<rootDir>/src/app/integra/areas/reportes/$1',
+    '^@operaciones/(.*)$':     '<rootDir>/src/app/integra/areas/operaciones/$1',
+    '^@apiIntegra/(.*)$':      '<rootDir>/src/app/core/api-integra/$1',
+    '^@integra/(.*)$':         '<rootDir>/src/app/integra/$1',
+    '^exceljs$':               '<rootDir>/node_modules/exceljs/dist/exceljs.min',
+  },
+  collectCoverage: false,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['html', 'text-summary'],
+};

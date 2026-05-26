@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { AsignacionOportunidadesComponent } from './asignacion-oportunidades.component';
 import { IntegraService } from '@shared/services/integra.service';
 import { UserService } from '@shared/services/user.service';
@@ -18,9 +19,9 @@ describe('AsignacionOportunidadesComponent', () => {
 
   beforeEach(async () => {
     integraServiceMock = {
-      getJsonResponse: jasmine.createSpy('getJsonResponse'),
-      postJsonResponse: jasmine.createSpy('postJsonResponse'),
-      postJsonResponseTimeOut: jasmine.createSpy('postJsonResponseTimeOut')
+      getJsonResponse: jest.fn(),
+      postJsonResponse: jest.fn(),
+      postJsonResponseTimeOut: jest.fn()
     };
 
     userServiceMock = {
@@ -29,14 +30,14 @@ describe('AsignacionOportunidadesComponent', () => {
     };
 
     alertaServiceMock = {
-      notificationWarning: jasmine.createSpy('notificationWarning'),
-      notificationSuccess: jasmine.createSpy('notificationSuccess'),
-      notificationError: jasmine.createSpy('notificationError')
+      notificationWarning: jest.fn(),
+      notificationSuccess: jest.fn(),
+      notificationError: jest.fn()
     };
 
     modalServiceMock = {
-      open: jasmine.createSpy('open'),
-      dismissAll: jasmine.createSpy('dismissAll')
+      open: jest.fn(),
+      dismissAll: jest.fn()
     };
 
     await TestBed.configureTestingModule({
@@ -46,7 +47,8 @@ describe('AsignacionOportunidadesComponent', () => {
         { provide: UserService, useValue: userServiceMock },
         { provide: AlertaService, useValue: alertaServiceMock },
         { provide: NgbModal, useValue: modalServiceMock }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AsignacionOportunidadesComponent);
@@ -110,7 +112,7 @@ describe('AsignacionOportunidadesComponent', () => {
 
       component.selectAll(mockEvent);
 
-      expect(component.gridData.data.every(item => item.seleccionado)).toBeTrue();
+      expect(component.gridData.data.every(item => item.seleccionado)).toBe(true);
     });
 
     it('debería deseleccionar todos los elementos cuando el checkbox se desmarca', () => {
@@ -120,7 +122,7 @@ describe('AsignacionOportunidadesComponent', () => {
 
       component.selectAll(mockEvent);
 
-      expect(component.gridData.data.every(item => !item.seleccionado)).toBeTrue();
+      expect(component.gridData.data.every(item => !item.seleccionado)).toBe(true);
     });
   });
 
@@ -224,11 +226,11 @@ describe('AsignacionOportunidadesComponent', () => {
 
     it('debería asignar oportunidades correctamente cuando destino es 1', () => {
       const mockResponse = new HttpResponse({ body: { success: true } });
-      integraServiceMock.postJsonResponseTimeOut.and.returnValue(of(mockResponse));
+      integraServiceMock.postJsonResponseTimeOut.mockReturnValue(of(mockResponse));
 
       component.inputPersonalSelecionado = 10;
       component.inputDestino = 1;
-      spyOn(component, 'loadGridData');
+      jest.spyOn(component, 'loadGridData');
 
       component.asignarOportunidades();
 
@@ -239,7 +241,7 @@ describe('AsignacionOportunidadesComponent', () => {
       };
 
       expect(integraServiceMock.postJsonResponseTimeOut).toHaveBeenCalledWith(
-        jasmine.stringContaining('AsignarOportunidadOperaciones'),
+        expect.stringContaining('AsignarOportunidadOperaciones'),
         expectedPayload
       );
       expect(alertaServiceMock.notificationSuccess).toHaveBeenCalledWith('Oportunidades asignadas correctamente');
@@ -251,22 +253,22 @@ describe('AsignacionOportunidadesComponent', () => {
 
     it('debería usar API de TabActual cuando destino es diferente de 1', () => {
       const mockResponse = new HttpResponse({ body: { success: true } });
-      integraServiceMock.postJsonResponseTimeOut.and.returnValue(of(mockResponse));
+      integraServiceMock.postJsonResponseTimeOut.mockReturnValue(of(mockResponse));
 
       component.inputPersonalSelecionado = 10;
       component.inputDestino = 2;
-      spyOn(component, 'loadGridData');
+      jest.spyOn(component, 'loadGridData');
 
       component.asignarOportunidades();
 
       expect(integraServiceMock.postJsonResponseTimeOut).toHaveBeenCalledWith(
-        jasmine.stringContaining('AsignarOportunidadTabActual'),
-        jasmine.any(Object)
+        expect.stringContaining('AsignarOportunidadTabActual'),
+        expect.any(Object)
       );
     });
 
     it('debería manejar errores correctamente', () => {
-      integraServiceMock.postJsonResponseTimeOut.and.returnValue(
+      integraServiceMock.postJsonResponseTimeOut.mockReturnValue(
         throwError(() => new Error('Error HTTP'))
       );
 
@@ -276,22 +278,22 @@ describe('AsignacionOportunidadesComponent', () => {
       component.asignarOportunidades();
 
       expect(alertaServiceMock.notificationError).toHaveBeenCalledWith('Error al asignar oportunidades');
-      expect(component.loadingCambio).toBeFalse();
+      expect(component.loadingCambio).toBe(false);
       expect(component.inputPersonalSelecionado).toBeNull();
       expect(component.inputDestino).toBeNull();
     });
 
     it('debería filtrar solo las oportunidades seleccionadas', () => {
       const mockResponse = new HttpResponse({ body: { success: true } });
-      integraServiceMock.postJsonResponseTimeOut.and.returnValue(of(mockResponse));
+      integraServiceMock.postJsonResponseTimeOut.mockReturnValue(of(mockResponse));
 
       component.inputPersonalSelecionado = 10;
       component.inputDestino = 1;
-      spyOn(component, 'loadGridData');
+      jest.spyOn(component, 'loadGridData');
 
       component.asignarOportunidades();
 
-      const calledPayload = integraServiceMock.postJsonResponseTimeOut.calls.argsFor(0)[1];
+      const calledPayload = integraServiceMock.postJsonResponseTimeOut.mock.calls[0][1];
       expect(calledPayload.ListaOportunidades).toEqual([1, 3]);
       expect(calledPayload.ListaOportunidades.length).toBe(2);
     });
@@ -360,11 +362,11 @@ describe('AsignacionOportunidadesComponent', () => {
       component.onEstadoMatriculaSelectionChange();
 
       expect(component.dataSubestadoMatricula.length).toBe(3);
-      expect(component.dataSubestadoMatricula).toContain(
-        jasmine.objectContaining({ id: 1, idEstadoMatricula: 5 })
+      expect(component.dataSubestadoMatricula).toContainEqual(
+        expect.objectContaining({ id: 1, idEstadoMatricula: 5 })
       );
-      expect(component.dataSubestadoMatricula).toContain(
-        jasmine.objectContaining({ id: 2, idEstadoMatricula: 10 })
+      expect(component.dataSubestadoMatricula).toContainEqual(
+        expect.objectContaining({ id: 2, idEstadoMatricula: 10 })
       );
     });
 
@@ -401,7 +403,7 @@ describe('AsignacionOportunidadesComponent', () => {
         }
       });
 
-      integraServiceMock.postJsonResponse.and.returnValue(of(mockResponse));
+      integraServiceMock.postJsonResponse.mockReturnValue(of(mockResponse));
 
       component.inputPersonal = [1];
       component.inputEmail = 'test@test.com';
@@ -411,10 +413,10 @@ describe('AsignacionOportunidadesComponent', () => {
       component.loadGridData();
 
       expect(component.gridData.data.length).toBe(2);
-      expect(component.gridData.data[0].seleccionado).toBeFalse();
-      expect(component.gridData.data[1].seleccionado).toBeFalse();
+      expect(component.gridData.data[0].seleccionado).toBe(false);
+      expect(component.gridData.data[1].seleccionado).toBe(false);
       expect(component.gridData.total).toBe(2);
-      expect(component.loadinGrid).toBeFalse();
+      expect(component.loadinGrid).toBe(false);
     });
 
     it('debería construir el filtro correctamente con valores null o undefined', () => {
@@ -422,7 +424,7 @@ describe('AsignacionOportunidadesComponent', () => {
         body: { lista: [], total: 0 }
       });
 
-      integraServiceMock.postJsonResponse.and.returnValue(of(mockResponse));
+      integraServiceMock.postJsonResponse.mockReturnValue(of(mockResponse));
 
       component.inputPersonal = null;
       component.inputEmail = undefined;
@@ -431,7 +433,7 @@ describe('AsignacionOportunidadesComponent', () => {
 
       component.loadGridData();
 
-      const calledPayload = integraServiceMock.postJsonResponse.calls.argsFor(0)[1];
+      const calledPayload = integraServiceMock.postJsonResponse.mock.calls[0][1];
 
       expect(calledPayload.Filtro.ListaPersonal).toEqual([]);
       expect(calledPayload.Filtro.Email).toBe('');
@@ -444,13 +446,13 @@ describe('AsignacionOportunidadesComponent', () => {
         body: { lista: [], total: 0 }
       });
 
-      integraServiceMock.postJsonResponse.and.returnValue(of(mockResponse));
+      integraServiceMock.postJsonResponse.mockReturnValue(of(mockResponse));
 
       component.inputModalidad = [0, 2];
 
       component.loadGridData();
 
-      const calledPayload = integraServiceMock.postJsonResponse.calls.argsFor(0)[1];
+      const calledPayload = integraServiceMock.postJsonResponse.mock.calls[0][1];
 
       expect(calledPayload.Filtro.ListaModalidad).toEqual(['Presencial', 'Online Sincronica']);
     });

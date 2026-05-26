@@ -1,4 +1,3 @@
-/// <reference types="jasmine" />
 /**
  * @module MarketingModule
  * @description Pruebas unitarias del ResenaGoogleComponent.
@@ -21,8 +20,8 @@ import { AlertaService } from '@shared/services/alerta.service';
 describe('ResenaGoogleComponent', () => {
   let component: ResenaGoogleComponent;
   let fixture: ComponentFixture<ResenaGoogleComponent>;
-  let integraService: jasmine.SpyObj<IntegraService>;
-  let alertaService: jasmine.SpyObj<AlertaService>;
+  let integraService: jest.Mocked<IntegraService>;
+  let alertaService: jest.Mocked<AlertaService>;
 
   const respuestaOk = (body: any) => of(new HttpResponse({ body, status: 200 }));
 
@@ -38,15 +37,21 @@ describe('ResenaGoogleComponent', () => {
   ];
 
   beforeEach(async () => {
-    const integraSpy = jasmine.createSpyObj<IntegraService>('IntegraService',
-      ['getJsonResponse', 'postJsonResponse', 'putJsonResponse', 'deleteJsonResponse']);
-    const alertaSpy  = jasmine.createSpyObj<AlertaService>('AlertaService',
-      ['notificationError', 'notificationSuccess']);
+    const integraSpy = {
+      getJsonResponse:    jest.fn(),
+      postJsonResponse:   jest.fn(),
+      putJsonResponse:    jest.fn(),
+      deleteJsonResponse: jest.fn(),
+    } as unknown as jest.Mocked<IntegraService>;
+    const alertaSpy = {
+      notificationError:   jest.fn(),
+      notificationSuccess: jest.fn(),
+    } as unknown as jest.Mocked<AlertaService>;
 
-    integraSpy.getJsonResponse.and.returnValue(respuestaOk(sedesMock));
-    integraSpy.postJsonResponse.and.returnValue(respuestaOk(resenasMock));
-    integraSpy.putJsonResponse.and.returnValue(respuestaOk(true));
-    integraSpy.deleteJsonResponse.and.returnValue(respuestaOk(true));
+    integraSpy.getJsonResponse.mockReturnValue(respuestaOk(sedesMock));
+    integraSpy.postJsonResponse.mockReturnValue(respuestaOk(resenasMock));
+    integraSpy.putJsonResponse.mockReturnValue(respuestaOk(true));
+    integraSpy.deleteJsonResponse.mockReturnValue(respuestaOk(true));
 
     await TestBed.configureTestingModule({
       declarations: [ResenaGoogleComponent],
@@ -57,8 +62,8 @@ describe('ResenaGoogleComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    integraService = TestBed.inject(IntegraService) as jasmine.SpyObj<IntegraService>;
-    alertaService  = TestBed.inject(AlertaService)  as jasmine.SpyObj<AlertaService>;
+    integraService = TestBed.inject(IntegraService) as jest.Mocked<IntegraService>;
+    alertaService  = TestBed.inject(AlertaService)  as jest.Mocked<AlertaService>;
 
     fixture = TestBed.createComponent(ResenaGoogleComponent);
     component = fixture.componentInstance;
@@ -79,7 +84,7 @@ describe('ResenaGoogleComponent', () => {
     });
 
     it('debe notificar error si falla la consulta de la grilla', () => {
-      integraService.postJsonResponse.and.returnValue(throwError(() => new Error('fail')));
+      integraService.postJsonResponse.mockReturnValue(throwError(() => new Error('fail')));
       component.ngOnInit();
       expect(alertaService.notificationError).toHaveBeenCalledWith('Error al obtener las reseñas.');
     });
@@ -120,14 +125,14 @@ describe('ResenaGoogleComponent', () => {
 
     it('alternarSeleccionResena debe alternar un Id', () => {
       component.alternarSeleccionResena(1, true);
-      expect(component.estaSeleccionada(1)).toBeTrue();
+      expect(component.estaSeleccionada(1)).toBe(true);
       component.alternarSeleccionResena(1, false);
-      expect(component.estaSeleccionada(1)).toBeFalse();
+      expect(component.estaSeleccionada(1)).toBe(false);
     });
 
     it('haySeleccionParcial debe ser true con selección parcial', () => {
       component.alternarSeleccionResena(1, true);
-      expect(component.haySeleccionParcial).toBeTrue();
+      expect(component.haySeleccionParcial).toBe(true);
     });
   });
 
@@ -139,7 +144,7 @@ describe('ResenaGoogleComponent', () => {
       component.fechaDesde = new Date(2026, 2, 1);
       component.fechaHasta = new Date(2026, 2, 31);
       component.buscar();
-      expect(component.filtro.esVisible).toBeFalse();
+      expect(component.filtro.esVisible).toBe(false);
       expect(component.filtro.valoracion).toBe(4);
       expect(component.filtro.fechaInicio).toBe('2026-03-01T00:00:00');
       expect(component.filtro.fechaFin).toBe('2026-03-31T23:59:59');
@@ -210,7 +215,7 @@ describe('ResenaGoogleComponent', () => {
   /** Comprueba que sincronizarDesdeGoogle abre la confirmación antes de invocar la Places API. */
   describe('Sincronización con Google API', () => {
     it('sincronizarDesdeGoogle abre Swal de confirmación', () => {
-      const fireSpy = spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: false } as any));
+      const fireSpy = jest.spyOn(Swal, 'fire').mockReturnValue(Promise.resolve({ isConfirmed: false } as any));
       component.sincronizarDesdeGoogle();
       expect(fireSpy).toHaveBeenCalled();
     });
@@ -219,8 +224,8 @@ describe('ResenaGoogleComponent', () => {
   /** Verifica que abrirConfiguraciones consulta el endpoint de sedes y abre el modal de administración con su tabla CRUD. */
   describe('Administración de sedes', () => {
     it('abrirConfiguraciones consulta el endpoint y abre el modal', fakeAsync(() => {
-      const fireSpy = spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: false } as any));
-      integraService.getJsonResponse.and.returnValue(respuestaOk([{ id: 1, nombreSede: 'BSG', identificadorCuenta: 'A', valoracion: 4.5, resenaTotal: 20, mostrar: true }]));
+      const fireSpy = jest.spyOn(Swal, 'fire').mockReturnValue(Promise.resolve({ isConfirmed: false } as any));
+      integraService.getJsonResponse.mockReturnValue(respuestaOk([{ id: 1, nombreSede: 'BSG', identificadorCuenta: 'A', valoracion: 4.5, resenaTotal: 20, mostrar: true }]));
       component.abrirConfiguraciones();
       tick();
       expect(fireSpy).toHaveBeenCalled();

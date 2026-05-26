@@ -5,13 +5,13 @@ import { TokenService } from '@shared/services/token.service';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
-  let tokenServiceSpy: jasmine.SpyObj<TokenService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let tokenServiceSpy: jest.Mocked<TokenService>;
+  let routerSpy: jest.Mocked<Router>;
 
   beforeEach(() => {
     // Crear spies (espías) para las dependencias
-    const tokenSpy = jasmine.createSpyObj('TokenService', ['validateToken']);
-    const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+    const tokenSpy = { validateToken: jest.fn() };
+    const routerSpyObj = { navigate: jest.fn() };
 
     TestBed.configureTestingModule({
       providers: [
@@ -22,8 +22,8 @@ describe('AuthGuard', () => {
     });
 
     guard = TestBed.inject(AuthGuard);
-    tokenServiceSpy = TestBed.inject(TokenService) as jasmine.SpyObj<TokenService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    tokenServiceSpy = TestBed.inject(TokenService) as jest.Mocked<TokenService>;
+    routerSpy = TestBed.inject(Router) as jest.Mocked<Router>;
   });
 
   // Prueba básica: Verifica que el guard se crea correctamente
@@ -35,7 +35,7 @@ describe('AuthGuard', () => {
     // Prueba: Retorna true si el token es válido
     it('debería retornar true cuando el token es válido', () => {
       // Configura el espía para que el token sea válido
-      tokenServiceSpy.validateToken.and.returnValue(true);
+      tokenServiceSpy.validateToken.mockReturnValue(true);
       const route = {} as any;
       const state = {} as any;
 
@@ -51,7 +51,7 @@ describe('AuthGuard', () => {
     // Prueba: Retorna false y redirige al login si el token es inválido
     it('debería retornar false y redirigir a login cuando el token es inválido', () => {
       // Configura el espía para que el token sea inválido
-      tokenServiceSpy.validateToken.and.returnValue(false);
+      tokenServiceSpy.validateToken.mockReturnValue(false);
       const route = {} as any;
       const state = {} as any;
 
@@ -68,13 +68,13 @@ describe('AuthGuard', () => {
     // Prueba: Navega a login antes de retornar false cuando el token es inválido
     it('debería navegar a login antes de retornar false cuando el token es inválido', () => {
       // Configura el espía para que el token sea inválido
-      tokenServiceSpy.validateToken.and.returnValue(false);
+      tokenServiceSpy.validateToken.mockReturnValue(false);
       const route = {} as any;
       const state = {} as any;
       const ordenNavegacion: string[] = [];
 
       // Simula el método navigate para registrar el orden de ejecución
-      routerSpy.navigate.and.callFake(() => {
+      routerSpy.navigate.mockImplementation(() => {
         ordenNavegacion.push('navigate');
         return Promise.resolve(true);
       });
