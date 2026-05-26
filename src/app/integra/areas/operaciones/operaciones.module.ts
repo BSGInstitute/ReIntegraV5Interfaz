@@ -1,6 +1,7 @@
 import { ConfiguracionCoordinadorasComponent } from './gestion-atencion-cliente/configuracion-coordinadoras/configuracion-coordinadoras.component';
 import { CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectFilterModule } from 'mat-select-filter';
 import { OperacionesRoutingModule } from './operaciones-routing.module';
@@ -216,6 +217,7 @@ registerLocaleData(localeEs);
   providers: [{ provide: LOCALE_ID, useValue: "es-ES" }],
   imports: [
     CommonModule,
+    FormsModule,
     KendoAngularModule,
     OperacionesRoutingModule,
     AngularMaterialModule,

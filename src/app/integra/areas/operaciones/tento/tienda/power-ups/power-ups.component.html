@@ -29,9 +29,11 @@
       <kendo-grid-column title="Disponibilidad" [width]="160">
         <ng-template kendoGridCellTemplate let-dataItem>
           <div class="d-flex gap-1 flex-wrap">
-            <span *ngIf="dataItem.disponibleTienda" class="ep-badge ep-badge--blue">Tienda</span>
-            <span *ngIf="dataItem.recompensaDisponible" class="ep-badge ep-badge--green">Recompensas</span>
-            <span *ngIf="dataItem.disponibleRuletaDiaria" class="ep-badge ep-badge--purple">Ruleta</span>
+            <ng-container *ngFor="let c of dataItem.canales">
+              <span *ngIf="c.disponible" [class]="'ep-badge ep-badge--' + obtenerClaseCanal(c.codigoCanalDistribucion)">
+                {{ c.nombreCanalDistribucion }}
+              </span>
+            </ng-container>
           </div>
         </ng-template>
       </kendo-grid-column>
@@ -116,18 +118,12 @@
       </div>
       <div class="col-12">
         <label class="form-label d-block mb-2">Disponibilidad</label>
-        <div class="d-flex gap-4">
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="swTienda" [(ngModel)]="form.disponibleTienda">
-            <label class="form-check-label" for="swTienda">Tienda</label>
-          </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="swRecompensas" [(ngModel)]="form.recompensaDisponible">
-            <label class="form-check-label" for="swRecompensas">Recompensas</label>
-          </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="swRuleta" [(ngModel)]="form.disponibleRuletaDiaria">
-            <label class="form-check-label" for="swRuleta">Ruleta Diaria</label>
+        <div class="d-flex gap-4 flex-wrap">
+          <div class="form-check form-switch" *ngFor="let c of form.canales; let i = index">
+            <input class="form-check-input" type="checkbox" role="switch" [id]="'swCanal_' + i" [(ngModel)]="c.disponible">
+            <label class="form-check-label" [for]="'swCanal_' + i">
+              {{ obtenerNombreCanal(c.idCanalDistribucion) }}
+            </label>
           </div>
         </div>
       </div>

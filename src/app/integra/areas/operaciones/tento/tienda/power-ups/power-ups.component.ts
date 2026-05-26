@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 
 // --- Interfaces ---
 interface BsgTentoPowerUp {
-  idPowerUp: number;
+  id: number;
   nombre: string;
   codigo: string;
   descripcion: string;
@@ -17,9 +17,24 @@ interface BsgTentoPowerUp {
   costoPuntos: number;
   iconoCodigo: string;
   colorHexadecimal: string;
-  disponibleTienda: boolean;
-  recompensaDisponible: boolean;
-  disponibleRuletaDiaria: boolean;
+  canales: PowerUpCanalDistribucion[];
+  orden: number;
+}
+
+interface PowerUpCanalDistribucion {
+  idPowerUpCanalDistribucion: number;
+  idPowerUp: number;
+  idCanalDistribucion: number;
+  disponible: boolean;
+  codigoCanalDistribucion: string;
+  nombreCanalDistribucion: string;
+}
+
+interface CanalDistribucion {
+  id: number;
+  codigo: string;
+  nombre: string;
+  descripcion: string;
   orden: number;
 }
 
@@ -33,6 +48,9 @@ export class PowerUpsComponent implements OnInit {
   // ===== LISTA =====
   powerUps: BsgTentoPowerUp[] = [];
   loaderPowerUps = false;
+
+  // ===== CATÁLOGO CANALES =====
+  canalesCatalogo: CanalDistribucion[] = [];
 
   // ===== MODAL =====
   @ViewChild('modalPowerUp') modalPowerUp: TemplateRef<any>;
@@ -55,9 +73,7 @@ export class PowerUpsComponent implements OnInit {
     costoPuntos: 0,
     iconoCodigo: null as string | null,
     colorHexadecimal: '#3B82F6',
-    disponibleTienda: true,
-    recompensaDisponible: true,
-    disponibleRuletaDiaria: true,
+    canales: [] as { idCanalDistribucion: number; disponible: boolean }[],
     orden: 1
   };
 
@@ -111,6 +127,14 @@ export class PowerUpsComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargar();
+    this.cargarCanalesCatalogo();
+  }
+
+  cargarCanalesCatalogo(): void {
+    this.integraService.getJsonResponse(constApiOperaciones.MaestroBsgTentoPowerUpsObtenerCanalesDistribucion).subscribe({
+      next: (resp: any) => { this.canalesCatalogo = resp.body || []; },
+      error: () => this._alertaService.notificationError('Error al obtener catálogo de canales')
+    });
   }
 
   // ===== HELPERS DE ALERTA =====
@@ -173,9 +197,10 @@ export class PowerUpsComponent implements OnInit {
         costoPuntos: item.costoPuntos,
         iconoCodigo: item.iconoCodigo || null,
         colorHexadecimal: item.colorHexadecimal || '#3B82F6',
-        disponibleTienda: item.disponibleTienda,
-        recompensaDisponible: item.recompensaDisponible,
-        disponibleRuletaDiaria: item.disponibleRuletaDiaria,
+        canales: this.canalesCatalogo.map(c => {
+          const existente = item?.canales?.find((puc: PowerUpCanalDistribucion) => puc.idCanalDistribucion === c.id);
+          return { idCanalDistribucion: c.id, disponible: existente?.disponible ?? true };
+        }),
         orden: item.orden
       };
     } else {
@@ -190,9 +215,7 @@ export class PowerUpsComponent implements OnInit {
         costoPuntos: 0,
         iconoCodigo: null,
         colorHexadecimal: '#3B82F6',
-        disponibleTienda: true,
-        recompensaDisponible: true,
-        disponibleRuletaDiaria: true,
+        canales: this.canalesCatalogo.map(c => ({ idCanalDistribucion: c.id, disponible: true })),
         orden: this.powerUps.length + 1
       };
     }
@@ -245,9 +268,7 @@ export class PowerUpsComponent implements OnInit {
         costoPuntos: this.form.costoPuntos,
         iconoCodigo: this.form.iconoCodigo,
         colorHexadecimal: this.form.colorHexadecimal,
-        disponibleTienda: this.form.disponibleTienda,
-        recompensaDisponible: this.form.recompensaDisponible,
-        disponibleRuletaDiaria: this.form.disponibleRuletaDiaria,
+        canales: this.form.canales,
         orden: this.powerUps.length + 1
       };
       this.integraService.postJsonResponse(constApiOperaciones.MaestroBsgTentoPowerUpsInsertarPowerUp, body)
@@ -265,7 +286,7 @@ export class PowerUpsComponent implements OnInit {
         });
     } else {
       const body = {
-        id: this.itemSeleccionado.idPowerUp,
+        id: this.itemSeleccionado.id,
         codigo: this.form.codigo.toUpperCase(),
         nombre: this.form.nombre,
         descripcion: this.form.descripcion,
@@ -274,9 +295,7 @@ export class PowerUpsComponent implements OnInit {
         costoPuntos: this.form.costoPuntos,
         iconoCodigo: this.form.iconoCodigo,
         colorHexadecimal: this.form.colorHexadecimal,
-        disponibleTienda: this.form.disponibleTienda,
-        recompensaDisponible: this.form.recompensaDisponible,
-        disponibleRuletaDiaria: this.form.disponibleRuletaDiaria,
+        canales: this.form.canales,
         orden: this.form.orden
       };
       this.integraService.putJsonResponse(constApiOperaciones.MaestroBsgTentoPowerUpsActualizarPowerUp, body)
@@ -300,7 +319,7 @@ export class PowerUpsComponent implements OnInit {
   eliminar(item: BsgTentoPowerUp): void {
     this.confirmar(`¿Eliminar el power-up "${item.nombre}"?`, () => {
       this.integraService.deleteJsonResponse(
-        `${constApiOperaciones.MaestroBsgTentoPowerUpsEliminarPowerUp}/${item.idPowerUp}`
+        `${constApiOperaciones.MaestroBsgTentoPowerUpsEliminarPowerUp}/${item.id}`
       ).subscribe({
         next: () => {
           this.cargar();
@@ -335,7 +354,7 @@ export class PowerUpsComponent implements OnInit {
 
   guardarOrden(): void {
     this.loaderOrden = true;
-    const body = this.powerUps.map((p, i) => ({ id: p.idPowerUp, orden: i + 1 }));
+    const body = this.powerUps.map((p, i) => ({ id: p.id, orden: i + 1 }));
     this.integraService.putJsonResponse(constApiOperaciones.MaestroBsgTentoPowerUpsActualizarOrdenPowerUps, body)
       .subscribe({
         next: () => {
@@ -348,5 +367,20 @@ export class PowerUpsComponent implements OnInit {
           this._alertaService.notificationError('Error al actualizar el orden');
         }
       });
+  }
+
+  // ===== HELPERS CANALES =====
+
+  obtenerNombreCanal(idCanalDistribucion: number): string {
+    return this.canalesCatalogo.find(c => c.id === idCanalDistribucion)?.nombre || '';
+  }
+
+  obtenerClaseCanal(codigo: string): string {
+    switch (codigo) {
+      case 'TIENDA': return 'blue';
+      case 'RECOMPENSAS': return 'green';
+      case 'RULETA_DIARIA': return 'purple';
+      default: return 'gray';
+    }
   }
 }

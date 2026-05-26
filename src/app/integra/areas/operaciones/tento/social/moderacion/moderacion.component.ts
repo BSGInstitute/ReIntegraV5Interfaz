@@ -25,6 +25,8 @@ export class ModeracionComponent implements OnInit {
   publicaciones: Publicacion[] = [];
   loaderPublicaciones = false;
   filtroVisible: boolean | null = null;
+  fechaInicio: Date;
+  fechaFin: Date = new Date();
 
   // Toast reutilizable (mismo patrón del proyecto)
   private toast = Swal.mixin({
@@ -45,6 +47,7 @@ export class ModeracionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.fechaInicio = this.calcularLunesSemanaActual();
     this.cargar();
   }
 
@@ -75,9 +78,12 @@ export class ModeracionComponent implements OnInit {
 
   cargar(): void {
     this.loaderPublicaciones = true;
-    const url = this.filtroVisible !== null
-      ? `${constApiOperaciones.MaestroBsgTentoSocialObtenerPublicaciones}?visible=${this.filtroVisible}`
-      : constApiOperaciones.MaestroBsgTentoSocialObtenerPublicaciones;
+    const inicio = this.formatearFechaInicio(this.fechaInicio);
+    const fin = this.formatearFechaFin(this.fechaFin);
+    let url = `${constApiOperaciones.MaestroBsgTentoSocialObtenerPublicaciones}?fechaInicio=${inicio}&fechaFin=${fin}`;
+    if (this.filtroVisible !== null) {
+      url += `&visible=${this.filtroVisible}`;
+    }
 
     this.integraService.getJsonResponse(url)
       .subscribe({
@@ -95,6 +101,31 @@ export class ModeracionComponent implements OnInit {
   aplicarFiltro(valor: boolean | null): void {
     this.filtroVisible = valor;
     this.cargar();
+  }
+
+  aplicarRangoFechas(): void {
+    this.cargar();
+  }
+
+  private calcularLunesSemanaActual(): Date {
+    const hoy = new Date();
+    const diaSemana = hoy.getDay(); // 0=domingo, 1=lunes...6=sabado
+    const diasARestar = diaSemana === 0 ? 6 : diaSemana - 1; // domingo retrocede 6, resto dia-1
+    return new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - diasARestar);
+  }
+
+  private formatearFechaInicio(fecha: Date): string {
+    const y = fecha.getFullYear();
+    const m = String(fecha.getMonth() + 1).padStart(2, '0');
+    const d = String(fecha.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}T00:00:00`;
+  }
+
+  private formatearFechaFin(fecha: Date): string {
+    const y = fecha.getFullYear();
+    const m = String(fecha.getMonth() + 1).padStart(2, '0');
+    const d = String(fecha.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}T23:59:59`;
   }
 
   toggleVisibilidad(item: Publicacion): void {

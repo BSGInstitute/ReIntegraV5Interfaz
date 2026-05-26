@@ -12,9 +12,24 @@ interface PlanSuscripcion {
   nombre: string;
   descripcion: string;
   esPremium: boolean;
-  powerUpsIlimitados: boolean;
-  incluyeAnuncio: boolean;
-  contenidoExclusivo: boolean;
+  orden: number;
+  beneficios: PlanSuscripcionBeneficio[];
+}
+
+interface PlanSuscripcionBeneficio {
+  id: number;
+  idPlanSuscripcion: number;
+  idBeneficio: number;
+  activo: boolean;
+  codigoBeneficio: string;
+  nombreBeneficio: string;
+}
+
+interface Beneficio {
+  id: number;
+  codigo: string;
+  nombre: string;
+  descripcion: string;
   orden: number;
 }
 
@@ -29,6 +44,9 @@ export class SuscripcionesComponent implements OnInit {
   planes: PlanSuscripcion[] = [];
   loaderPlanes = false;
 
+  // ===== CATALOGOS =====
+  beneficiosCatalogo: Beneficio[] = [];
+
   // ===== MODAL =====
   @ViewChild('modalPlan') modalPlan: TemplateRef<any>;
   modalRef: NgbModalRef = null;
@@ -37,14 +55,18 @@ export class SuscripcionesComponent implements OnInit {
   loaderGuardar = false;
 
   // ===== FORM =====
-  form = {
+  form: {
+    nombre: string;
+    descripcion: string;
+    esPremium: boolean;
+    orden: number;
+    beneficios: { idBeneficio: number; activo: boolean }[];
+  } = {
     nombre: '',
     descripcion: '',
     esPremium: false,
-    powerUpsIlimitados: false,
-    incluyeAnuncio: false,
-    contenidoExclusivo: false,
-    orden: 1
+    orden: 1,
+    beneficios: []
   };
 
   // Toast reutilizable (mismo patrón del proyecto)
@@ -68,6 +90,7 @@ export class SuscripcionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargar();
+    this.cargarBeneficiosCatalogo();
   }
 
   // ===== HELPERS DE ALERTA =====
@@ -114,6 +137,19 @@ export class SuscripcionesComponent implements OnInit {
       });
   }
 
+  cargarBeneficiosCatalogo(): void {
+    this.integraService.getJsonResponse(constApiOperaciones.MaestroBsgTentoSuscripcionesObtenerBeneficios).subscribe({
+      next: (resp: any) => { this.beneficiosCatalogo = resp.body || []; },
+      error: () => this._alertaService.notificationError('Error al obtener catálogo de beneficios')
+    });
+  }
+
+  // ===== HELPERS =====
+
+  obtenerNombreBeneficio(idBeneficio: number): string {
+    return this.beneficiosCatalogo.find(b => b.id === idBeneficio)?.nombre || '';
+  }
+
   // ===== MODAL =====
 
   abrirModal(item: PlanSuscripcion | null): void {
@@ -124,10 +160,11 @@ export class SuscripcionesComponent implements OnInit {
         nombre: item.nombre,
         descripcion: item.descripcion,
         esPremium: item.esPremium,
-        powerUpsIlimitados: item.powerUpsIlimitados,
-        incluyeAnuncio: item.incluyeAnuncio,
-        contenidoExclusivo: item.contenidoExclusivo,
-        orden: item.orden
+        orden: item.orden,
+        beneficios: this.beneficiosCatalogo.map(b => {
+          const existente = item?.beneficios?.find((pb: PlanSuscripcionBeneficio) => pb.idBeneficio === b.id);
+          return { idBeneficio: b.id, activo: existente?.activo ?? false };
+        })
       };
     } else {
       this.modoForm = 'nuevo';
@@ -136,10 +173,8 @@ export class SuscripcionesComponent implements OnInit {
         nombre: '',
         descripcion: '',
         esPremium: false,
-        powerUpsIlimitados: false,
-        incluyeAnuncio: false,
-        contenidoExclusivo: false,
-        orden: this.planes.length + 1
+        orden: this.planes.length + 1,
+        beneficios: this.beneficiosCatalogo.map(b => ({ idBeneficio: b.id, activo: false }))
       };
     }
     this.modalRef = this.modalService.open(this.modalPlan, {
@@ -174,10 +209,8 @@ export class SuscripcionesComponent implements OnInit {
         nombre: this.form.nombre,
         descripcion: this.form.descripcion,
         esPremium: this.form.esPremium,
-        powerUpsIlimitados: this.form.powerUpsIlimitados,
-        incluyeAnuncio: this.form.incluyeAnuncio,
-        contenidoExclusivo: this.form.contenidoExclusivo,
-        orden: this.form.orden
+        orden: this.form.orden,
+        beneficios: this.form.beneficios
       };
       this.integraService.postJsonResponse(constApiOperaciones.MaestroBsgTentoSuscripcionesInsertarPlan, body)
         .subscribe({
@@ -198,10 +231,8 @@ export class SuscripcionesComponent implements OnInit {
         nombre: this.form.nombre,
         descripcion: this.form.descripcion,
         esPremium: this.form.esPremium,
-        powerUpsIlimitados: this.form.powerUpsIlimitados,
-        incluyeAnuncio: this.form.incluyeAnuncio,
-        contenidoExclusivo: this.form.contenidoExclusivo,
-        orden: this.form.orden
+        orden: this.form.orden,
+        beneficios: this.form.beneficios
       };
       this.integraService.putJsonResponse(constApiOperaciones.MaestroBsgTentoSuscripcionesActualizarPlan, body)
         .subscribe({

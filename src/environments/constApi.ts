@@ -1377,15 +1377,19 @@ ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloCha
   MaestroBsgTentoPowerUpsActualizarPowerUp: '/MaestroBsgTentoPowerUps/ActualizarPowerUp',
   MaestroBsgTentoPowerUpsActualizarOrdenPowerUps: '/MaestroBsgTentoPowerUps/ActualizarOrdenPowerUps',
   MaestroBsgTentoPowerUpsEliminarPowerUp: '/MaestroBsgTentoPowerUps/EliminarPowerUp',
+  MaestroBsgTentoPowerUpsObtenerCanalesDistribucion: '/MaestroBsgTentoPowerUps/ObtenerCanalesDistribucion',
   // MaestroBsgTentoSuscripciones
   MaestroBsgTentoSuscripcionesObtenerPlanes: '/MaestroBsgTentoSuscripciones/ObtenerPlanes',
   MaestroBsgTentoSuscripcionesInsertarPlan: '/MaestroBsgTentoSuscripciones/InsertarPlan',
   MaestroBsgTentoSuscripcionesActualizarPlan: '/MaestroBsgTentoSuscripciones/ActualizarPlan',
   MaestroBsgTentoSuscripcionesEliminarPlan: '/MaestroBsgTentoSuscripciones/EliminarPlan',
+  MaestroBsgTentoSuscripcionesObtenerBeneficios: '/MaestroBsgTentoSuscripciones/ObtenerBeneficios',
+  MaestroBsgTentoSuscripcionesObtenerPlataformasTienda: '/MaestroBsgTentoSuscripciones/ObtenerPlataformasTienda',
   // MaestroBsgTentoSocial
   MaestroBsgTentoSocialObtenerPublicaciones: '/MaestroBsgTentoSocial/ObtenerPublicaciones',
   MaestroBsgTentoSocialActualizarVisibilidadPublicacion: '/MaestroBsgTentoSocial/ActualizarVisibilidadPublicacion',
   MaestroBsgTentoSocialEliminarPublicacion: '/MaestroBsgTentoSocial/EliminarPublicacion',
+  MaestroBsgTentoSocialObtenerTiposReaccion: '/MaestroBsgTentoSocial/ObtenerTiposReaccion',
   };
 
 export const constApiMarketing = {

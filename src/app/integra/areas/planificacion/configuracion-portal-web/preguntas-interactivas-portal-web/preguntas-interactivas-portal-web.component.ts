@@ -197,7 +197,7 @@ export class PreguntasInteractivasPortalWebComponent implements OnInit {
   idDificultadSeleccionada: number | null = null;
   preguntaSeleccionadaDificultad: PreguntaInteractiva | null = null;
   get dificultadSeleccionadaColor(): string | null {
-    const dif = this.listaDificultades.find(d => d.idPreguntaProgramaCapacitacionDificultad === this.idDificultadSeleccionada);
+    const dif = this.listaDificultades.find(d => d.id === this.idDificultadSeleccionada);
     return dif?.colorHexadecimal ?? null;
   }
 
