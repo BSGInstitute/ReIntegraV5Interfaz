@@ -358,7 +358,7 @@
           <div class="w-100"></div>
           <div class="col-2">
             <label style="margin-top: 1em;" class="k-label">
-              <span>Descripcion SubCategoria:</span>
+              <span>Descripcion SubCategoria 11:</span>
             </label>
           </div>
           <div class="col-10">
@@ -501,8 +501,13 @@
               <span>Fecha Registro:</span>
             </label>
           </div>
-          <div class="col-4">
-            <p class="customBorder" style="margin-top: 1em;color:darkgray">{{formCategoria.get('fechaRegistro').value}}</p>
+          <div class="col-4 d-flex align-items-center" style="gap: 8px;">
+            <p class="customBorder" style="margin-top: 1em; margin-bottom: 0; color:darkgray; flex: 1;">{{formCategoria.get('fechaRegistro').value}}</p>
+            <button type="button" class="btn btn-sm btn-outline-primary d-flex align-items-center" style="margin-top: 1em; gap: 4px;"
+                    (click)="abrirModalChat()">
+              <mat-icon style="font-size: 16px; width: 16px; height: 16px;">chat</mat-icon>
+              <span>Ver chat</span>
+            </button>
           </div>
           <div class="w-100"></div>
         </div>
@@ -558,6 +563,100 @@
       <button themeColor="error" class="hoverButton" kendoButton (click)="modal.dismiss('Cross click')">
         Cancelar
       </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ============================================================
+     Modal Chat WhatsApp ATC — replica del render de chat-messages
+     Mensajes con waType='hsm' no entran en ninguna categoría visible
+     (mismo comportamiento que el componente original).
+     ============================================================ -->
+<ng-template #modalChatWhatsApp let-modal>
+  <div class="modal-header chat-modal-header">
+    <div class="d-flex align-items-center" style="gap: 10px;">
+      <mat-icon>chat</mat-icon>
+      <h5 class="modal-title mb-0">Chat WhatsApp ATC</h5>
+      <span class="badge bg-success ms-2" *ngIf="!loadingChatWhatsApp">{{ mensajesChatWhatsApp.length }} mensajes</span>
+    </div>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body p-0">
+    <!-- Loading -->
+    <div *ngIf="loadingChatWhatsApp" class="chat-loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p>Cargando conversación...</p>
+    </div>
+
+    <!-- Sin mensajes -->
+    <div *ngIf="!loadingChatWhatsApp && mensajesChatWhatsApp.length === 0" class="chat-no-messages">
+      <mat-icon>chat_bubble_outline</mat-icon>
+      <p>No hay mensajes en esta conversación</p>
+    </div>
+
+    <!-- Lista de mensajes -->
+    <div *ngIf="!loadingChatWhatsApp && mensajesChatWhatsApp.length > 0" class="chat-messages-scroll">
+      <div class="messages-wrapper">
+        <div *ngFor="let mensaje of mensajesChatWhatsApp"
+             class="message-row"
+             [ngClass]="{
+               'message-alumno': esDelAlumno(mensaje),
+               'message-bot': esDelBot(mensaje),
+               'message-asistente': esDelAsistente(mensaje)
+             }">
+
+          <!-- Mensaje del Alumno (izquierda) -->
+          <div *ngIf="esDelAlumno(mensaje)" class="message-content">
+            <div class="avatar avatar-alumno">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="bubble bubble-alumno">
+              <div class="bubble-header">
+                <span class="sender-name">Alumno</span>
+              </div>
+              <div class="bubble-content">{{ mensaje.contenido }}</div>
+              <div class="bubble-footer" *ngIf="mensaje.fechaCreacion">
+                <span class="timestamp">{{ formatFechaChat(mensaje.fechaCreacion) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje del Bot (derecha) -->
+          <div *ngIf="esDelBot(mensaje)" class="message-content">
+            <div class="bubble bubble-bot">
+              <div class="bubble-header">
+                <span class="sender-name">Asistente Virtual</span>
+              </div>
+              <div class="bubble-content">{{ mensaje.contenido }}</div>
+              <div class="bubble-footer" *ngIf="mensaje.fechaCreacion">
+                <span class="timestamp">{{ formatFechaChat(mensaje.fechaCreacion) }}</span>
+              </div>
+            </div>
+            <div class="avatar avatar-bot">
+              <mat-icon>smart_toy</mat-icon>
+            </div>
+          </div>
+
+          <!-- Mensaje del Asesor (derecha, distinto al bot) -->
+          <div *ngIf="esDelAsistente(mensaje)" class="message-content">
+            <div class="bubble bubble-asistente">
+              <div class="bubble-header">
+                <span class="sender-name">{{ mensaje.personal || 'Asesor' }}</span>
+              </div>
+              <div class="bubble-content">{{ mensaje.contenido }}</div>
+              <div class="bubble-footer" *ngIf="mensaje.fechaCreacion">
+                <span class="timestamp">{{ formatFechaChat(mensaje.fechaCreacion) }}</span>
+              </div>
+            </div>
+            <div class="avatar avatar-asistente">
+              <mat-icon>support_agent</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </ng-template>

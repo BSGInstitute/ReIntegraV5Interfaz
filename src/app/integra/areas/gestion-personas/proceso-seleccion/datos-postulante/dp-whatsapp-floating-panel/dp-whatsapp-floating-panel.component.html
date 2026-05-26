@@ -1,0 +1,351 @@
+<!-- FAB WhatsApp floating button -->
+<button
+  type="button"
+  class="wa-fab"
+  title="WhatsApp"
+  (click)="togglePanel()"
+>
+  <fa-icon [icon]="['fab', 'whatsapp']" [size]="'lg'"></fa-icon>
+  <span
+    class="wa-fab__badge"
+    *ngIf="cantidadPendientes > 0"
+    aria-label="Mensajes pendientes"
+  >{{ cantidadPendientes }}</span>
+</button>
+
+<!-- Floating panel -->
+<div class="wa-panel" *ngIf="panelAbierto">
+
+  <!-- ─── LISTA VIEW ─── -->
+  <ng-container *ngIf="postulanteSeleccionado === null">
+
+    <!-- Header lista -->
+    <div class="wa-panel__header">
+      <span class="wa-panel__title">Conversaciones</span>
+      <button
+        type="button"
+        class="wa-panel__icon-btn"
+        title="Cerrar"
+        (click)="cerrarPanel()"
+      >
+        <fa-icon [icon]="['fas', 'xmark']"></fa-icon>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="wa-panel__tabs">
+      <button
+        type="button"
+        class="wa-panel__tab"
+        [class.wa-panel__tab--active]="tabActiva === 'activos'"
+        (click)="seleccionarTab('activos')"
+      >
+        Chats
+        <span class="wa-panel__tab-badge" *ngIf="activos.length > 0">
+          {{ activos.length }}
+        </span>
+      </button>
+      <button
+        type="button"
+        class="wa-panel__tab"
+        [class.wa-panel__tab--active]="tabActiva === 'pendientes'"
+        (click)="seleccionarTab('pendientes')"
+      >
+        Pendientes
+        <span class="wa-panel__tab-badge wa-panel__tab-badge--red" *ngIf="pendientes.length > 0">
+          {{ pendientes.length }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Lista Activos -->
+    <div class="wa-panel__lista" *ngIf="tabActiva === 'activos'">
+      <div
+        class="wa-panel__empty"
+        *ngIf="activos.length === 0"
+      >
+        Sin conversaciones activas
+      </div>
+      <div
+        class="wa-panel__item"
+        *ngFor="let item of activos; trackBy: trackByPostulante"
+        (click)="abrirChat(item)"
+        role="button"
+        tabindex="0"
+      >
+        <div class="wa-panel__avatar">
+          {{ getIniciales(item.nombreCompleto, null) }}
+        </div>
+        <div class="wa-panel__item-info">
+          <div class="wa-panel__item-nombre">
+            {{ item.nombreCompleto || item.waNumero }}
+          </div>
+          <div class="wa-panel__item-preview">
+            {{ item.ultimoMensaje || '' }}
+          </div>
+        </div>
+        <div class="wa-panel__item-fecha">
+          {{ formatearFecha(item.fechaUltimoMensaje) }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista Pendientes -->
+    <div class="wa-panel__lista" *ngIf="tabActiva === 'pendientes'">
+      <div
+        class="wa-panel__empty"
+        *ngIf="pendientes.length === 0"
+      >
+        Sin mensajes pendientes
+      </div>
+      <div
+        class="wa-panel__item"
+        *ngFor="let item of pendientes; trackBy: trackByPostulante"
+        (click)="abrirChat(item)"
+        role="button"
+        tabindex="0"
+      >
+        <div class="wa-panel__avatar">
+          {{ getIniciales(item.nombreCompleto, null) }}
+        </div>
+        <div class="wa-panel__item-info">
+          <div class="wa-panel__item-nombre">
+            {{ item.nombreCompleto || item.waNumero || 'Sin identificar' }}
+          </div>
+          <div class="wa-panel__item-preview">
+            {{ item.ultimoMensaje || '' }}
+          </div>
+        </div>
+        <div class="wa-panel__item-fecha">
+          {{ formatearFecha(item.fechaUltimoMensaje) }}
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+  <!-- ─── END LISTA VIEW ─── -->
+
+  <!-- ─── CHAT VIEW ─── -->
+  <ng-container *ngIf="postulanteSeleccionado !== null">
+
+    <!-- Header chat -->
+    <div class="wa-panel__header">
+      <button type="button" class="wa-panel__icon-btn" title="Volver" (click)="volverALista()">
+        <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon>
+      </button>
+
+      <div class="wa-panel__chat-avatar">
+        {{ getIniciales(postulanteSeleccionado.nombreCompleto, null) }}
+      </div>
+
+      <div class="wa-panel__chat-identidad">
+        <div class="wa-panel__chat-nombre">
+          {{ postulanteSeleccionado.nombreCompleto || waTo || 'Postulante' }}
+        </div>
+        <div class="wa-panel__chat-badge-row">
+          <span class="wa-panel__badge-wa">
+            <fa-icon [icon]="['fab', 'whatsapp']"></fa-icon> WhatsApp
+          </span>
+          <span class="wa-panel__chat-numero" *ngIf="waTo">{{ waTo }}</span>
+        </div>
+      </div>
+
+      <button type="button" class="wa-panel__icon-btn" title="Cerrar" (click)="cerrarPanel()">
+        <fa-icon [icon]="['fas', 'xmark']"></fa-icon>
+      </button>
+    </div>
+
+    <!-- Tabs Chat / Perfil -->
+    <div class="wa-panel__chat-tabs">
+      <button
+        class="wa-panel__chat-tab"
+        [class.wa-panel__chat-tab--active]="tabChat === 'chat'"
+        (click)="tabChat = 'chat'"
+      >Chat</button>
+      <button
+        class="wa-panel__chat-tab"
+        [class.wa-panel__chat-tab--active]="tabChat === 'perfil'"
+        (click)="tabChat = 'perfil'"
+      >Perfil</button>
+    </div>
+
+    <!-- ─── TAB PERFIL ─── -->
+    <div class="wa-panel__perfil" *ngIf="tabChat === 'perfil'">
+      <div class="wa-panel__perfil-avatar">
+        {{ getIniciales(postulanteSeleccionado.nombreCompleto, null) }}
+      </div>
+      <div class="wa-panel__perfil-nombre">
+        {{ postulanteSeleccionado.nombreCompleto || 'Postulante' }}
+      </div>
+      <div class="wa-panel__perfil-numero" *ngIf="waTo">
+        <fa-icon [icon]="['fab', 'whatsapp']"></fa-icon>
+        {{ waTo }}
+      </div>
+      <button
+        type="button"
+        class="wa-panel__perfil-btn-grilla"
+        (click)="verEnGrilla()"
+      >
+        <fa-icon [icon]="['fas', 'arrow-up-right-from-square']"></fa-icon>
+        Ver en grilla
+      </button>
+    </div>
+
+    <!-- ─── TAB CHAT — Body: mensajes ─── -->
+    <div class="wa-panel__cuerpo" #scrollContainer *ngIf="tabChat === 'chat'">
+      <!-- Skeleton loader -->
+      <div class="wa-panel__skeleton" *ngIf="cargandoHistorial" aria-hidden="true">
+        <div class="wa-panel__skeleton-row wa-panel__skeleton-row--recibido">
+          <div class="wa-panel__skeleton-bubble" style="width: 65%"></div>
+        </div>
+        <div class="wa-panel__skeleton-row wa-panel__skeleton-row--enviado">
+          <div class="wa-panel__skeleton-bubble" style="width: 50%"></div>
+        </div>
+        <div class="wa-panel__skeleton-row wa-panel__skeleton-row--recibido">
+          <div class="wa-panel__skeleton-bubble" style="width: 70%"></div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="!cargandoHistorial">
+        <div class="wa-panel__empty" *ngIf="mensajes.length === 0">
+          Sin mensajes aún
+        </div>
+
+        <div
+          class="wa-chat__mensaje"
+          *ngFor="let msg of mensajes; trackBy: trackByMensaje"
+          [class.wa-chat__mensaje--enviado]="msg.tipo === 1"
+          [class.wa-chat__mensaje--recibido]="msg.tipo === 2"
+        >
+          <div class="wa-chat__burbuja">
+            <ng-container [ngSwitch]="msg.waType">
+              <span *ngSwitchCase="'text'" class="wa-chat__texto">
+                {{ msg.waBody }}
+              </span>
+              <a
+                *ngSwitchCase="'image'"
+                [href]="msg.waFile"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="wa-chat__media"
+              >
+                <img [src]="msg.waFile" [alt]="msg.waCaption || ''" />
+                <span class="wa-chat__caption" *ngIf="msg.waCaption">{{ msg.waCaption }}</span>
+              </a>
+              <a
+                *ngSwitchCase="'document'"
+                [href]="msg.waFile"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="wa-chat__archivo"
+              >
+                <fa-icon [icon]="['fas', 'file']" [size]="'lg'"></fa-icon>
+                <span>{{ msg.waFileName || 'Descargar documento' }}</span>
+              </a>
+              <audio
+                *ngSwitchCase="'audio'"
+                controls
+                [src]="msg.waFile"
+                class="wa-chat__audio"
+              >Tu navegador no soporta el tag audio.</audio>
+              <video
+                *ngSwitchCase="'video'"
+                controls
+                [src]="msg.waFile"
+                class="wa-chat__video"
+              >Tu navegador no soporta el tag video.</video>
+              <span
+                *ngSwitchCase="'template'"
+                class="wa-chat__template"
+                [innerHTML]="msg.waCaption | safeHtml"
+              ></span>
+              <span
+                *ngSwitchCase="'hsm'"
+                class="wa-chat__template"
+                [innerHTML]="(msg.waCaption || msg.waBody) | safeHtml"
+              ></span>
+              <span *ngSwitchDefault class="wa-chat__texto">{{ msg.waBody }}</span>
+            </ng-container>
+
+            <div class="wa-chat__hora">
+              {{ msg.fechaCreacion | date : 'dd/MM HH:mm' }}
+              <span
+                class="wa-chat__status"
+                *ngIf="msg.tipo === 1 && msg.waStatus"
+                [ngSwitch]="msg.waStatus"
+              >
+                <fa-icon
+                  *ngSwitchCase="'sent'"
+                  [icon]="['fas', 'check']"
+                  class="wa-chat__status--sent"
+                  title="Enviado"
+                ></fa-icon>
+                <fa-icon
+                  *ngSwitchCase="'delivered'"
+                  [icon]="['fas', 'check-double']"
+                  class="wa-chat__status--delivered"
+                  title="Entregado"
+                ></fa-icon>
+                <fa-icon
+                  *ngSwitchCase="'read'"
+                  [icon]="['fas', 'check-double']"
+                  class="wa-chat__status--read"
+                  title="Leído"
+                ></fa-icon>
+                <fa-icon
+                  *ngSwitchCase="'failed'"
+                  [icon]="['fas', 'triangle-exclamation']"
+                  class="wa-chat__status--failed"
+                  [title]="msg.errorMessage || 'Error al enviar'"
+                ></fa-icon>
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Banner número inválido -->
+    <div class="wa-panel__banner wa-panel__banner--error" *ngIf="tabChat === 'chat' && numeroInvalido">
+      <fa-icon [icon]="['fas', 'circle-exclamation']"></fa-icon>
+      <span>Número inválido — no se puede enviar WhatsApp</span>
+    </div>
+
+    <!-- Banner ventana 24h cerrada -->
+    <div class="wa-panel__banner" *ngIf="tabChat === 'chat' && !numeroInvalido && ventanaCerrada === true">
+      <fa-icon [icon]="['fas', 'triangle-exclamation']"></fa-icon>
+      <span>Ventana de 24h cerrada — solo plantillas</span>
+    </div>
+
+    <!-- Composer (solo en tab chat) -->
+    <div class="wa-panel__composer" *ngIf="tabChat === 'chat'">
+      <div class="wa-panel__input-wrap">
+        <textarea
+          class="wa-panel__textarea"
+          rows="2"
+          [placeholder]="ventanaCerrada === true ? 'Solo plantillas disponibles' : 'Escribe un mensaje...'"
+          [value]="textoMensaje"
+          (input)="onTextoChange($event)"
+          [disabled]="enviando || !waTo || ventanaCerrada === true || numeroInvalido"
+        ></textarea>
+      </div>
+      <button
+        type="button"
+        class="wa-panel__send"
+        title="Enviar mensaje"
+        [disabled]="enviando || !waTo || ventanaCerrada === true || numeroInvalido || !textoMensaje.trim()"
+        (click)="enviar()"
+      >
+        <kendo-loader
+          *ngIf="enviando"
+          themeColor="light"
+          size="small"
+        ></kendo-loader>
+        <fa-icon *ngIf="!enviando" [icon]="['fas', 'paper-plane']"></fa-icon>
+      </button>
+    </div>
+
+  </ng-container>
+  <!-- ─── END CHAT VIEW ─── -->
+
+</div>

@@ -66,6 +66,7 @@ export interface LeadMasivoVM {
   pais: string;
   idPaisEmpresa: number;
   email: string;
+  idPersonalAsesor?: number; // idPersonal real del asesor del lead (viene del backend via ChatWhatsAppMarketing.idPersonal)
   // Estado del card
   seleccionado: boolean;
   expandido: boolean;

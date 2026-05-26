@@ -31,6 +31,10 @@
       (click)="onMainTabChange('dashboard3')">
       <i class="k-icon k-i-file-txt"></i> FURs
     </button>
+    <button class="db-main-nav__item" [class.active]="activeMainTab === 'dashboard4'"
+      (click)="onMainTabChange('dashboard4')">
+      <i class="k-icon k-i-clipboard-text"></i> Proyectos alumnos
+    </button>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
@@ -1277,6 +1281,588 @@
 
   </div>
   <!-- ══ FIN DASHBOARD 1 ══════════════════════════════════════════════ -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- DASHBOARD 4 — proyectos presentados por alumnos                  -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div *ngIf="dashboard4Initialized" [hidden]="activeMainTab !== 'dashboard4'">
+
+    <div class="filter-card mb-3">
+      <div class="filter-card__header">
+        <div class="filter-icon"><i class="k-icon k-i-filter"></i></div>
+        <h6>Filtros de proyectos presentados por alumnos</h6>
+      </div>
+      <div class="filter-card__body">
+        <form [formGroup]="formFiltroD4">
+          <div class="row align-items-end g-2 mb-2">
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Programa Específico"></kendo-label>
+                <kendo-multiselect formControlName="idsProgramaEspecifico"
+                  [data]="filteredPEspecificoD4" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [filterable]="true" [loading]="loadingCombosD4"
+                  (filterChange)="filtrarComboD4(dataPEspecificoD4, 'programa', $event)"
+                  placeholder="<Todos>" [autoClose]="false" [clearButton]="true">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Centro de Costo"></kendo-label>
+                <kendo-multiselect formControlName="idsCentroCosto"
+                  [data]="filteredCentroCostoD4" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [filterable]="true" [loading]="loadingCombosD4"
+                  (filterChange)="filtrarComboD4(dataCentroCostoD4, 'centroCosto', $event)"
+                  placeholder="<Todos>" [autoClose]="false" [clearButton]="true">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Docente"></kendo-label>
+                <kendo-multiselect formControlName="idsDocente"
+                  [data]="filteredDocentesD4" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [filterable]="true" [loading]="loadingCombosD4"
+                  (filterChange)="filtrarComboD4(dataDocentesD4, 'docente', $event)"
+                  placeholder="<Todos>" [autoClose]="false" [clearButton]="true">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Coordinadora"></kendo-label>
+                <kendo-multiselect formControlName="idsCoordinadora"
+                  [data]="filteredCoordinadorasD4" textField="nombre" valueField="id"
+                  [valuePrimitive]="true" [filterable]="true" [loading]="loadingCombosD4"
+                  (filterChange)="filtrarComboD4(dataCoordinadorasD4, 'coordinadora', $event)"
+                  placeholder="<Todos>" [autoClose]="false" [clearButton]="true">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+          </div>
+          <div class="row align-items-end g-2 mb-2">
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Código Matrícula"></kendo-label>
+                <kendo-dropdownlist formControlName="idCodigoMatricula" [data]="codigoMatriculaD4"
+                  textField="codigoMatricula" valueField="id" [valuePrimitive]="true"
+                  [filterable]="true" (filterChange)="obtenerCodigoMatriculaAutocompleteD4($event)"
+                  [defaultItem]="{ codigoMatricula: '<Todos>', id: null }">
+                </kendo-dropdownlist>
+                <kendo-formhint>*Ingrese cuatro caracteres como mínimo.</kendo-formhint>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Estado de revisión"></kendo-label>
+                <kendo-dropdownlist formControlName="idEstadoRevision" [data]="estadoRevisionD4"
+                  textField="nombre" valueField="id" [valuePrimitive]="true"
+                  [defaultItem]="{ id: null, nombre: 'Seleccionar...' }">
+                </kendo-dropdownlist>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Fecha Inicio"></kendo-label>
+                <kendo-datepicker #fechaInicioD4 formControlName="fechaInicial"
+                  format="yyyy-MM-dd" [max]="obtenerFechaActualD4" [incompleteDateValidation]="true">
+                </kendo-datepicker>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Fecha Fin"></kendo-label>
+                <kendo-datepicker formControlName="fechaFin" format="yyyy-MM-dd"
+                  [min]="fechaInicioD4.value" [incompleteDateValidation]="true">
+                </kendo-datepicker>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-4 d-flex justify-content-end gap-2 align-items-end">
+              <button kendoButton themeColor="primary" icon="search"
+                (click)="generarReporteD4()" [disabled]="loadingD4">Buscar</button>
+              <button kendoButton themeColor="base" icon="reset"
+                (click)="limpiarFiltroD4()" [disabled]="loadingD4">Limpiar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div *ngIf="loadingD4" class="loading-state" style="padding: 4rem 1rem;">
+      <kendo-loader type="infinite-spinner" size="large"></kendo-loader>
+      <p>Cargando dashboard de proyectos presentados...</p>
+    </div>
+
+    <ng-container *ngIf="!loadingD4 && dashboardCalificacionD4">
+      <div class="filter-card mb-3">
+        <div class="filter-card__header">
+          <div class="filter-icon"><i class="k-icon k-i-filter"></i></div>
+          <h6>Filtros del dashboard de calificación</h6>
+        </div>
+        <div class="filter-card__body">
+          <div class="row align-items-end g-2">
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Programa Específico"></kendo-label>
+                <kendo-multiselect [(ngModel)]="filtrosCalificacionD4.programas"
+                  [data]="opcionesProgramaDashboardD4" [valuePrimitive]="true"
+                  placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                  (valueChange)="recalcularDashboardCalificacionD4()">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Centro de Costo"></kendo-label>
+                <kendo-multiselect [(ngModel)]="filtrosCalificacionD4.centrosCosto"
+                  [data]="opcionesCentroCostoDashboardD4" [valuePrimitive]="true"
+                  placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                  (valueChange)="recalcularDashboardCalificacionD4()">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Docente"></kendo-label>
+                <kendo-multiselect [(ngModel)]="filtrosCalificacionD4.docentes"
+                  [data]="opcionesDocenteDashboardD4" [valuePrimitive]="true"
+                  placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                  (valueChange)="recalcularDashboardCalificacionD4()">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Fecha Inicio"></kendo-label>
+                <kendo-datepicker [(ngModel)]="filtrosCalificacionD4.fechaInicio"
+                  format="yyyy-MM-dd" (valueChange)="recalcularDashboardCalificacionD4()">
+                </kendo-datepicker>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Fecha Fin"></kendo-label>
+                <kendo-datepicker [(ngModel)]="filtrosCalificacionD4.fechaFin"
+                  format="yyyy-MM-dd" (valueChange)="recalcularDashboardCalificacionD4()">
+                </kendo-datepicker>
+              </kendo-formfield>
+            </div>
+            <div class="col-12 d-flex justify-content-end mt-2">
+              <button kendoButton themeColor="base" icon="reset" (click)="limpiarFiltrosCalificacionD4()">
+                Limpiar filtros de calificación
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider mb-3">
+        <div class="section-divider__icon"><i class="k-icon k-i-clipboard-text"></i></div>
+        <span class="section-divider__title">Dashboard proyectos presentados alumnos</span>
+        <div class="section-divider__line"></div>
+        <span class="badge bg-secondary ms-2">{{ dashboardFechaInicioD4 }} - {{ dashboardFechaFinD4 }}</span>
+      </div>
+
+      <div class="kpi-grid kpi-grid--d4 mb-3">
+        <div class="kpi-card kpi-card--blue" *ngFor="let tarjeta of dashboardCalificacionD4.estados" [style.--kpi-color]="tarjeta.color">
+          <div class="kpi-card__icon-wrap">
+            <i class="k-icon" [ngClass]="tarjeta.codigo === 'vencido' ? 'k-i-warning' : tarjeta.codigo === 'sin-proyecto' ? 'k-i-folder' : 'k-i-clipboard-text'"></i>
+          </div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ tarjeta.cantidad }}</div>
+            <div class="kpi-card__label">{{ tarjeta.nombre }}</div>
+            <small class="text-muted">{{ tarjeta.descripcion }}</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-card mb-3">
+        <div class="db-card__body d4-chip-bar">
+          <strong>Filtros:</strong>
+          <button kendoButton type="button" class="d4-chip" *ngFor="let filtro of dashboardFiltrosEstadoD4"
+            [look]="dashboardFiltroEstadoSeleccionadoD4 === filtro.codigo ? 'default' : 'outline'"
+            [themeColor]="dashboardFiltroEstadoSeleccionadoD4 === filtro.codigo ? 'primary' : 'base'"
+            (click)="seleccionarFiltroDashboardCalificacionD4(filtro)">
+            <span class="d4-dot" [style.background-color]="filtro.color"></span>
+            {{ filtro.nombre }}
+            <strong>{{ filtro.cantidad }}</strong>
+          </button>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-lg-7 mb-3">
+          <div class="db-card h-100">
+            <div class="db-card__header">
+              <h5 class="db-card__title"><i class="k-icon k-i-grid"></i> {{ dashboardCalificacionD4.titulo }}</h5>
+              <span class="badge badge-ejecucion">{{ dashboardCalificacionD4.total }} registros</span>
+            </div>
+            <div class="db-card__body--flush d4-table-wrap">
+              <table class="d4-table">
+                <thead>
+                  <tr>
+                    <th>Calificación de Proyectos Entregados</th>
+                    <th class="text-center">Cantidad</th>
+                    <th>Porcentaje</th>
+                    <th class="text-end">Tiempo Promedio Revisión</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let fila of dashboardCalificacionD4.filas" [class.d4-row-state]="fila.esEstado">
+                    <td [class.d4-substate]="!fila.esEstado">
+                      <span class="d4-dot" [style.background-color]="fila.color"></span>
+                      {{ fila.nombre }}
+                    </td>
+                    <td class="text-center"><strong>{{ fila.cantidad }}</strong></td>
+                    <td>
+                      <div class="d4-percent">
+                        <span class="d4-percent__bar"><span [style.width.%]="fila.porcentaje" [style.background-color]="fila.color"></span></span>
+                        <strong>{{ fila.porcentaje }}%</strong>
+                      </div>
+                    </td>
+                    <td class="text-end">{{ fila.tiempoPromedioRevision != null ? fila.tiempoPromedioRevision + ' días' : '-' }}</td>
+                  </tr>
+                  <tr class="d4-total-row">
+                    <td>Total general</td>
+                    <td class="text-center">{{ dashboardCalificacionD4.total }}</td>
+                    <td class="text-center">{{ dashboardCalificacionD4.total ? '100%' : '0%' }}</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-5 mb-3">
+          <div class="chart-card h-100">
+            <div class="chart-card__header">
+              <h5><i class="k-icon k-i-chart-donut"></i> Distribución por estado</h5>
+            </div>
+            <div class="chart-card__body">
+              <kendo-chart *ngIf="dashboardCalificacionD4.distribucion?.length" [style.height.px]="360">
+                <kendo-chart-area [background]="'transparent'" [margin]="{ top: 15, bottom: 5, left: 15, right: 15 }"></kendo-chart-area>
+                <kendo-chart-tooltip [shared]="false">
+                  <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category" let-percentage="percentage">
+                    <div class="chart-tooltip"><strong>{{ category }}</strong>Proyectos: {{ value }} · {{ (percentage * 100).toFixed(1) }}%</div>
+                  </ng-template>
+                </kendo-chart-tooltip>
+                <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+                <kendo-chart-series>
+                  <kendo-chart-series-item type="donut" [data]="dashboardCalificacionD4.distribucion" field="cantidad"
+                    categoryField="nombre" colorField="color" [holeSize]="60"
+                    [labels]="{ visible: true, content: labelOnlyPercent, color: '#ffffff', font: 'bold 12px Inter, sans-serif', background: 'transparent', position: 'center' }">
+                  </kendo-chart-series-item>
+                </kendo-chart-series>
+              </kendo-chart>
+              <div *ngIf="!dashboardCalificacionD4.distribucion?.length" class="empty-state">
+                <div class="empty-icon"><i class="k-icon k-i-chart-donut"></i></div>
+                <p>No hay datos disponibles para la distribución.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider mb-3 mt-2">
+        <div class="section-divider__icon"><i class="k-icon k-i-inbox"></i></div>
+        <span class="section-divider__title">Por estados de entrega</span>
+        <div class="section-divider__line"></div>
+        <span class="badge bg-secondary ms-2">{{ dashboardFechaInicioD4 }} - {{ dashboardFechaFinD4 }}</span>
+      </div>
+
+      <ng-container *ngIf="dashboardEntregaD4">
+        <div class="filter-card mb-3">
+          <div class="filter-card__header">
+            <div class="filter-icon"><i class="k-icon k-i-filter"></i></div>
+            <h6>Filtros del dashboard de entrega</h6>
+          </div>
+          <div class="filter-card__body">
+            <div class="row align-items-end g-2">
+              <div class="col-md-3">
+                <kendo-formfield>
+                  <kendo-label text="Programa Específico"></kendo-label>
+                  <kendo-multiselect [(ngModel)]="filtrosEntregaInternosD4.programas" [data]="opcionesProgramaDashboardD4"
+                    [valuePrimitive]="true" placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                    (valueChange)="recalcularDashboardEntregaD4()">
+                  </kendo-multiselect>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-3">
+                <kendo-formfield>
+                  <kendo-label text="Centro de Costo"></kendo-label>
+                  <kendo-multiselect [(ngModel)]="filtrosEntregaInternosD4.centrosCosto" [data]="opcionesCentroCostoDashboardD4"
+                    [valuePrimitive]="true" placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                    (valueChange)="recalcularDashboardEntregaD4()">
+                  </kendo-multiselect>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-2">
+                <kendo-formfield>
+                  <kendo-label text="Docente"></kendo-label>
+                  <kendo-multiselect [(ngModel)]="filtrosEntregaInternosD4.docentes" [data]="opcionesDocenteDashboardD4"
+                    [valuePrimitive]="true" placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                    (valueChange)="recalcularDashboardEntregaD4()">
+                  </kendo-multiselect>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-2">
+                <kendo-formfield>
+                  <kendo-label text="Fecha Inicio"></kendo-label>
+                  <kendo-datepicker [(ngModel)]="filtrosEntregaInternosD4.fechaInicio" format="yyyy-MM-dd"
+                    (valueChange)="recalcularDashboardEntregaD4()">
+                  </kendo-datepicker>
+                </kendo-formfield>
+              </div>
+              <div class="col-md-2">
+                <kendo-formfield>
+                  <kendo-label text="Fecha Fin"></kendo-label>
+                  <kendo-datepicker [(ngModel)]="filtrosEntregaInternosD4.fechaFin" format="yyyy-MM-dd"
+                    (valueChange)="recalcularDashboardEntregaD4()">
+                  </kendo-datepicker>
+                </kendo-formfield>
+              </div>
+              <div class="col-12 d-flex justify-content-end mt-2">
+                <button kendoButton themeColor="base" icon="reset" (click)="limpiarFiltrosEntregaD4()">
+                  Limpiar filtros de entrega
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-grid kpi-grid--d4 kpi-grid--d4-entrega mb-3">
+          <div class="kpi-card kpi-card--blue" *ngFor="let tarjeta of dashboardEntregaD4.estados" [style.--kpi-color]="tarjeta.color">
+            <div class="kpi-card__icon-wrap">
+              <i class="k-icon" [ngClass]="tarjeta.codigo === 'pendiente' ? 'k-i-clock' : tarjeta.codigo === 'reenviado' ? 'k-i-reload' : 'k-i-upload'"></i>
+            </div>
+            <div class="kpi-card__content">
+              <div class="kpi-card__value">{{ tarjeta.cantidad }}</div>
+              <div class="kpi-card__label">{{ tarjeta.nombre }}</div>
+              <small class="text-muted">{{ tarjeta.descripcion }}</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-card mb-3">
+          <div class="db-card__body d4-chip-bar">
+            <strong>Filtros:</strong>
+            <button kendoButton type="button" class="d4-chip" *ngFor="let filtro of dashboardFiltrosEntregaD4"
+              [look]="dashboardFiltroEntregaSeleccionadoD4 === filtro.codigo ? 'default' : 'outline'"
+              [themeColor]="dashboardFiltroEntregaSeleccionadoD4 === filtro.codigo ? 'primary' : 'base'"
+              (click)="seleccionarFiltroDashboardEntregaD4(filtro)">
+              <span class="d4-dot" [style.background-color]="filtro.color"></span>
+              {{ filtro.nombre }}
+              <strong>{{ filtro.cantidad }}</strong>
+            </button>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-lg-7 mb-3">
+            <div class="db-card h-100">
+              <div class="db-card__header">
+                <h5 class="db-card__title"><i class="k-icon k-i-grid"></i> {{ dashboardEntregaD4.titulo }}</h5>
+                <span class="badge badge-ejecucion">{{ dashboardEntregaD4.total }} registros</span>
+              </div>
+              <div class="db-card__body--flush d4-table-wrap">
+                <table class="d4-table">
+                  <thead>
+                    <tr>
+                      <th>Total proyectos</th>
+                      <th class="text-center">Cantidad</th>
+                      <th>Porcentaje</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let fila of dashboardEntregaD4.filas" [class.d4-row-state]="fila.esEstado">
+                      <td [class.d4-substate]="!fila.esEstado">
+                        <span class="d4-dot" [style.background-color]="fila.color"></span>
+                        {{ fila.nombre }}
+                      </td>
+                      <td class="text-center"><strong>{{ fila.cantidad }}</strong></td>
+                      <td>
+                        <div class="d4-percent">
+                          <span class="d4-percent__bar"><span [style.width.%]="fila.porcentaje" [style.background-color]="fila.color"></span></span>
+                          <strong>{{ fila.porcentaje }}%</strong>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="d4-total-row">
+                      <td>Total Proyectos</td>
+                      <td class="text-center">{{ dashboardEntregaD4.total }}</td>
+                      <td class="text-center">{{ dashboardEntregaD4.total ? '100%' : '0%' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5 mb-3">
+            <div class="chart-card h-100">
+              <div class="chart-card__header">
+                <h5><i class="k-icon k-i-chart-donut"></i> Distribución por entrega</h5>
+              </div>
+              <div class="chart-card__body">
+                <kendo-chart *ngIf="dashboardEntregaD4.distribucion?.length" [style.height.px]="360">
+                  <kendo-chart-area [background]="'transparent'" [margin]="{ top: 15, bottom: 5, left: 15, right: 15 }"></kendo-chart-area>
+                  <kendo-chart-tooltip [shared]="false">
+                    <ng-template kendoChartSeriesTooltipTemplate let-value="value" let-category="category" let-percentage="percentage">
+                      <div class="chart-tooltip"><strong>{{ category }}</strong>Proyectos: {{ value }} · {{ (percentage * 100).toFixed(1) }}%</div>
+                    </ng-template>
+                  </kendo-chart-tooltip>
+                  <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+                  <kendo-chart-series>
+                    <kendo-chart-series-item type="donut" [data]="dashboardEntregaD4.distribucion" field="cantidad"
+                      categoryField="nombre" colorField="color" [holeSize]="60"
+                      [labels]="{ visible: true, content: labelOnlyPercent, color: '#ffffff', font: 'bold 12px Inter, sans-serif', background: 'transparent', position: 'center' }">
+                    </kendo-chart-series-item>
+                  </kendo-chart-series>
+                </kendo-chart>
+                <div *ngIf="!dashboardEntregaD4.distribucion?.length" class="empty-state">
+                  <div class="empty-icon"><i class="k-icon k-i-chart-donut"></i></div>
+                  <p>No hay datos disponibles para la distribución.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="section-divider mb-3 mt-2">
+        <div class="section-divider__icon"><i class="k-icon k-i-user"></i></div>
+        <span class="section-divider__title">Por docente</span>
+        <div class="section-divider__line"></div>
+        <span class="badge bg-secondary ms-2">{{ dashboardFechaInicioD4 }} - {{ dashboardFechaFinD4 }}</span>
+      </div>
+
+      <div class="filter-card mb-3">
+        <div class="filter-card__header">
+          <div class="filter-icon"><i class="k-icon k-i-filter"></i></div>
+          <h6>Filtros del dashboard por docente</h6>
+        </div>
+        <div class="filter-card__body">
+          <div class="row align-items-end g-2">
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Programa Específico"></kendo-label>
+                <kendo-multiselect [(ngModel)]="filtrosDocentesInternosD4.programas" [data]="opcionesProgramaDashboardD4"
+                  [valuePrimitive]="true" placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                  (valueChange)="recalcularDashboardDocentesD4()">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-3">
+              <kendo-formfield>
+                <kendo-label text="Centro de Costo"></kendo-label>
+                <kendo-multiselect [(ngModel)]="filtrosDocentesInternosD4.centrosCosto" [data]="opcionesCentroCostoDashboardD4"
+                  [valuePrimitive]="true" placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                  (valueChange)="recalcularDashboardDocentesD4()">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Docente"></kendo-label>
+                <kendo-multiselect [(ngModel)]="filtrosDocentesInternosD4.docentes" [data]="opcionesDocenteDashboardD4"
+                  [valuePrimitive]="true" placeholder="<Todos>" [autoClose]="false" [clearButton]="true"
+                  (valueChange)="recalcularDashboardDocentesD4()">
+                </kendo-multiselect>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Fecha Inicio"></kendo-label>
+                <kendo-datepicker [(ngModel)]="filtrosDocentesInternosD4.fechaInicio" format="yyyy-MM-dd"
+                  (valueChange)="recalcularDashboardDocentesD4()">
+                </kendo-datepicker>
+              </kendo-formfield>
+            </div>
+            <div class="col-md-2">
+              <kendo-formfield>
+                <kendo-label text="Fecha Fin"></kendo-label>
+                <kendo-datepicker [(ngModel)]="filtrosDocentesInternosD4.fechaFin" format="yyyy-MM-dd"
+                  (valueChange)="recalcularDashboardDocentesD4()">
+                </kendo-datepicker>
+              </kendo-formfield>
+            </div>
+            <div class="col-12 d-flex justify-content-end mt-2">
+              <button kendoButton themeColor="base" icon="reset" (click)="limpiarFiltrosDocentesD4()">
+                Limpiar filtros por docente
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-grid kpi-grid--d4 kpi-grid--d4-docentes mb-3">
+        <div class="kpi-card kpi-card--blue">
+          <div class="kpi-card__icon-wrap"><i class="k-icon k-i-user"></i></div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ docentesActivosD4 }}</div>
+            <div class="kpi-card__label">Docentes activos</div>
+            <small class="text-muted">Con proyectos asignados en el período</small>
+          </div>
+        </div>
+        <div class="kpi-card kpi-card--green">
+          <div class="kpi-card__icon-wrap"><i class="k-icon k-i-clock"></i></div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ tiempoPromedioDocentesD4 != null ? tiempoPromedioDocentesD4 : '-' }}</div>
+            <div class="kpi-card__label">Tiempo prom. de calificación</div>
+            <small class="text-muted">Días desde la entrega del alumno</small>
+          </div>
+        </div>
+        <div class="kpi-card kpi-card--purple">
+          <div class="kpi-card__icon-wrap"><i class="k-icon k-i-percent"></i></div>
+          <div class="kpi-card__content">
+            <div class="kpi-card__value">{{ tasaObservacionD4 }}%</div>
+            <div class="kpi-card__label">Tasa de observación</div>
+            <small class="text-muted">Calificados observados sobre calificados</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-card mb-4">
+        <div class="db-card__body d4-docente-legend">
+          <span><i class="d4-dot" style="background-color: #1267d8;"></i> Pendiente de revisión</span>
+          <span><i class="d4-dot" style="background-color: #2ab34b;"></i> Calificado · En plazo</span>
+          <span><i class="d4-dot" style="background-color: #f5a623;"></i> Calificado · Por vencer</span>
+          <span><i class="d4-dot" style="background-color: #e53935;"></i> Calificado · Vencido</span>
+          <span><i class="d4-dot" style="background-color: #a3a3a3;"></i> Pendiente de entrega</span>
+        </div>
+        <div class="db-card__body--flush d4-docente-list">
+          <div class="d4-docente-row" *ngFor="let docente of dashboardDocentesD4">
+            <div class="d4-docente-row__info">
+              <strong>{{ docente.docente }}</strong>
+              <small>{{ docente.programa }}</small>
+            </div>
+            <div class="d4-docente-row__bar">
+              <span
+                *ngFor="let segmento of docente.segmentos"
+                [style.width.%]="segmento.porcentaje"
+                [style.background-color]="segmento.color"
+                [title]="segmento.nombre + ': ' + segmento.cantidad"
+              >
+                {{ segmento.cantidad }}
+              </span>
+            </div>
+            <div class="d4-docente-row__metricas">
+              <div><strong>{{ docente.total }}</strong><small>Total</small></div>
+              <div><strong>{{ docente.tiempoPromedio != null ? docente.tiempoPromedio + 'd' : '-' }}</strong><small>T. prom</small></div>
+            </div>
+          </div>
+          <div *ngIf="!dashboardDocentesD4.length" class="empty-state p-4">
+            <div class="empty-icon"><i class="k-icon k-i-user"></i></div>
+            <p>No hay docentes para mostrar.</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+  <!-- ══ FIN DASHBOARD 4 ═══════════════════════════════════════════════ -->
 
 
   <!-- ══════════════════════════════════════════════════════════════════ -->

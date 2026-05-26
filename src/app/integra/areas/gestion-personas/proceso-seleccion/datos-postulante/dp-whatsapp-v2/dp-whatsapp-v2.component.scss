@@ -1,0 +1,521 @@
+// Modal chat WhatsApp-style con paleta BSG (azul corporativo).
+// Cozy redesign: fondo pastel sólido, burbujas redondeadas con sombra suave,
+// animación pop en mount de cada mensaje, skeleton loader, dot online.
+
+// ─────────────────────────────────────────────────────────────────
+// Paleta corporativa BSG (azules en escala)
+// ─────────────────────────────────────────────────────────────────
+$wa-primary:        #2c5f8a;   // header + send button
+$wa-primary-dark:   #234d70;   // hover
+$wa-primary-light:  #4a86b8;   // avatar + accents
+$wa-bg-pastel:      #eaf2fa;   // body del chat (fondo solido)
+$wa-bubble-sent:    #d4e6f5;   // burbuja enviada (azul pastel mas oscuro)
+$wa-bubble-recv:    #ffffff;   // burbuja recibida (blanco puro)
+$wa-text-dark:      #1f2a37;   // texto principal
+$wa-text-muted:     #7a8c9d;   // timestamps + estados
+$wa-composer-bg:    #f4f7fb;   // footer composer
+$wa-online:         #4caf50;
+$wa-offline:        #d04444;
+$wa-border-soft:    #d5dde6;
+$wa-banner-bg:      #fff4e0;   // alert ventana 24h cerrada (warm — destaca)
+$wa-banner-fg:      #7a4f01;
+$wa-banner-border:  #f0d68d;
+$wa-banner-icon:    #c98a02;
+
+.wa-chat {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  min-height: 480px;
+  max-height: 80vh;
+  background-color: $wa-bg-pastel;
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+
+  // ───────── HEADER ─────────
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, $wa-primary 0%, $wa-primary-dark 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba($wa-primary, 0.18);
+  }
+
+  &__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 120ms ease;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.14);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+
+  &__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: $wa-primary-light;
+    color: #ffffff;
+    font-size: 1.05rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  &__identidad {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__nombre {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__numero {
+    font-size: 0.76rem;
+    line-height: 1.2;
+    opacity: 0.78;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.2px;
+  }
+
+  // ───────── BODY ─────────
+  &__cuerpo {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px;
+    background-color: $wa-bg-pastel;
+    background-image: none;
+
+    // Scrollbar discreto azul tenue
+    scrollbar-width: thin;
+    scrollbar-color: rgba($wa-primary, 0.25) transparent;
+    &::-webkit-scrollbar { width: 8px; }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($wa-primary, 0.22);
+      border-radius: 8px;
+    }
+  }
+
+  &__placeholder,
+  &__empty {
+    color: $wa-text-muted;
+    text-align: center;
+    padding: 24px 12px;
+    font-style: italic;
+    font-size: 0.88rem;
+  }
+
+  // ───────── SKELETON LOADER ─────────
+  &__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 0;
+  }
+
+  &__skeleton-row {
+    display: flex;
+
+    &--enviado {
+      justify-content: flex-end;
+    }
+    &--recibido {
+      justify-content: flex-start;
+    }
+  }
+
+  &__skeleton-bubble {
+    height: 38px;
+    border-radius: 14px;
+    background: linear-gradient(
+      90deg,
+      rgba($wa-primary, 0.10) 0%,
+      rgba($wa-primary, 0.18) 50%,
+      rgba($wa-primary, 0.10) 100%
+    );
+    background-size: 200% 100%;
+    animation: wa-skeleton-shimmer 1.4s ease-in-out infinite;
+
+    .wa-chat__skeleton-row--enviado & {
+      border-bottom-right-radius: 4px;
+    }
+    .wa-chat__skeleton-row--recibido & {
+      border-bottom-left-radius: 4px;
+    }
+  }
+
+  // ───────── MENSAJES ─────────
+  &__mensaje {
+    display: flex;
+    margin-bottom: 4px;
+
+    // Animación pop al montar — se dispara para mensajes nuevos (SignalR o send)
+    // así como en la carga inicial (efecto cascada).
+    animation: wa-bubble-pop 280ms cubic-bezier(0.34, 1.45, 0.6, 1) both;
+
+    &--enviado {
+      justify-content: flex-end;
+    }
+
+    &--recibido {
+      justify-content: flex-start;
+    }
+  }
+
+  // ───────── TYPING INDICATOR ─────────
+  &__typing {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+    animation: wa-bubble-pop 220ms ease-out;
+  }
+
+  &__typing-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: $wa-bubble-recv;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 6px rgba($wa-primary, 0.10),
+                0 1px 2px rgba($wa-primary, 0.06);
+  }
+
+  &__typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: $wa-primary-light;
+    animation: wa-typing-bounce 1.2s infinite ease-in-out;
+
+    &:nth-child(1) { animation-delay: 0s;    }
+    &:nth-child(2) { animation-delay: 0.18s; }
+    &:nth-child(3) { animation-delay: 0.36s; }
+  }
+
+  &__burbuja {
+    max-width: 75%;
+    padding: 8px 12px 6px;
+    border-radius: 14px;
+    box-shadow: 0 2px 6px rgba($wa-primary, 0.10),
+                0 1px 2px rgba($wa-primary, 0.06);
+    position: relative;
+    line-height: 1.4;
+
+    .wa-chat__mensaje--enviado & {
+      background-color: $wa-bubble-sent;
+      border-bottom-right-radius: 4px;
+      color: $wa-text-dark;
+    }
+
+    .wa-chat__mensaje--recibido & {
+      background-color: $wa-bubble-recv;
+      border-bottom-left-radius: 4px;
+      color: $wa-text-dark;
+    }
+  }
+
+  &__autor {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $wa-primary;
+    margin-bottom: 2px;
+  }
+
+  &__texto {
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: $wa-text-dark;
+    font-size: 0.92rem;
+  }
+
+  &__media {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+
+    img {
+      max-width: 100%;
+      max-height: 240px;
+      border-radius: 8px;
+      display: block;
+    }
+  }
+
+  &__caption {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: $wa-text-muted;
+  }
+
+  &__archivo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: $wa-primary;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__audio,
+  &__video {
+    max-width: 100%;
+    display: block;
+    border-radius: 8px;
+  }
+
+  &__template em {
+    color: $wa-primary;
+    font-style: italic;
+    margin-right: 4px;
+  }
+
+  &__hora {
+    font-size: 0.68rem;
+    color: $wa-text-muted;
+    margin-top: 2px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  // ───────── STATUS TICKS (solo `tipo === 1`) ─────────
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.72rem;
+    line-height: 1;
+
+    &--sent,
+    &--delivered {
+      color: $wa-text-muted;
+    }
+    &--read {
+      color: #1f87e6; // azul "leído" — más vibrante que el primary corporativo
+    }
+    &--failed {
+      color: $wa-offline;
+    }
+  }
+
+  // ───────── BANNER (ventana 24h cerrada / número inválido) ─────────
+  &__banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background-color: $wa-banner-bg;
+    color: $wa-banner-fg;
+    border-top: 1px solid $wa-banner-border;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    fa-icon { color: $wa-banner-icon; }
+
+    &--error {
+      background-color: #fdecea;
+      color: #b71c1c;
+      border-top-color: #ef9a9a;
+
+      fa-icon { color: #b71c1c; }
+    }
+  }
+
+  // ───────── COMPOSER ─────────
+  &__composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 10px 12px;
+    background-color: $wa-composer-bg;
+    border-top: 1px solid $wa-border-soft;
+  }
+
+  // Adjuntar + plantilla agrupados a la izquierda del textarea
+  &__composer-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex: 0 0 auto;
+  }
+
+  &__icon-btn--picker {
+    color: $wa-primary;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($wa-primary, 0.10);
+    }
+  }
+
+  &__input-wrap {
+    flex: 1;
+    background-color: #ffffff;
+    border-radius: 22px;
+    padding: 6px 14px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $wa-border-soft;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+
+    &:focus-within {
+      border-color: $wa-primary-light;
+      box-shadow: 0 0 0 3px rgba($wa-primary, 0.10);
+    }
+  }
+
+  &__staged {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    background-color: rgba($wa-primary, 0.10);
+    color: $wa-primary;
+    border-radius: 12px;
+    padding: 3px 10px;
+    margin: 2px 0;
+    align-self: flex-start;
+    max-width: 100%;
+  }
+
+  &__staged-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+
+  &__staged-clear {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: inherit;
+    padding: 0 2px;
+  }
+
+  &__textarea {
+    flex: 1;
+    resize: none;
+    border: none;
+    padding: 6px 0;
+    font-family: inherit;
+    font-size: 0.95rem;
+    min-height: 32px;
+    max-height: 120px;
+    outline: none;
+    background: transparent;
+    color: $wa-text-dark;
+
+    &::placeholder {
+      color: $wa-text-muted;
+      opacity: 0.85;
+    }
+
+    &:disabled {
+      background-color: transparent;
+      cursor: not-allowed;
+    }
+  }
+
+  &__send {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, $wa-primary 0%, $wa-primary-dark 100%);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba($wa-primary, 0.30);
+    transition: transform 100ms ease, box-shadow 120ms ease, background 120ms ease;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, $wa-primary-dark 0%, darken($wa-primary-dark, 5%) 100%);
+      box-shadow: 0 6px 14px rgba($wa-primary, 0.36);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Keyframes
+// ─────────────────────────────────────────────────────────────────
+
+@keyframes wa-bubble-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(8px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes wa-skeleton-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@keyframes wa-typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}

@@ -13,6 +13,34 @@ import { HttpResponse } from '@angular/common/http';
 import { IFiltroEnvio, IFormReporte } from '@operaciones/models/interfaces/igestionReclamos';
 import { DropDownListComponent } from '@progress/kendo-angular-dropdowns';
 
+/**
+ * DTO unificado de mensaje para el modal. Soporta los dos contratos que devuelven los endpoints:
+ *  - WhatsApp ATC (ObtenerChatBotWhatsAppAtcPorSolicitudAlumno): trae idHiloChatWhatsApp,
+ *    waType, waCaption, fechaCreacion.
+ *  - Portal/Aula Virtual (ObtenerChatBotPorSolicitud): trae idChatbotPortalHiloChat,
+ *    idContactoPortalSegmento. NO trae waType ni fechaCreacion.
+ * Los campos específicos son opcionales para que el mismo render funcione con ambos.
+ */
+interface ChatMensajeAtcDTO {
+  idAlumno: number;
+  esUsuario: boolean;
+  contenido: string;
+  esBot: number;
+  personal: string;
+  // Específicos de WhatsApp
+  idHiloChatWhatsApp?: number;
+  tipoMensaje?: string | null;
+  waFile?: string;
+  waMimeType?: string;
+  waFileName?: string;
+  waCaption?: string;
+  fechaCreacion?: string;
+  waType?: string;
+  // Específicos de Portal Web / Aula Virtual
+  idChatbotPortalHiloChat?: number;
+  idContactoPortalSegmento?: string;
+}
+
 @Component({
   selector: 'app-revision-solicitudes-alumnos',
   templateUrl: './revision-solicitudes-alumnos.component.html',
@@ -20,10 +48,10 @@ import { DropDownListComponent } from '@progress/kendo-angular-dropdowns';
   encapsulation: ViewEncapsulation.None,
   providers: [{ provide: LOCALE_ID, useValue: "es-ES" }],
 })
-
 export class RevisionSolicitudesAlumnosComponent implements OnInit {
   @ViewChild('modalDetalleSolicitud') modalDetalleSolicitud: any;
   @ViewChild('alumno')alumno: DropDownListComponent;
+  @ViewChild('modalChatWhatsApp') modalChatWhatsApp: any;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -139,6 +167,12 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
   sourceContacto: { id: number; nombreCompleto: string }[] = [];
   dataContacto: { id: number; nombreCompleto: string }[] = [];
   band :boolean=true;
+
+  // Modal Chat WhatsApp ATC — render replicado de chat-messages para visualizar conversación
+  // del alumno asociada a la solicitud actual.
+  mensajesChatWhatsApp: ChatMensajeAtcDTO[] = [];
+  loadingChatWhatsApp = false;
+  modalRefChatWhatsApp: any;
   formCategoria: FormGroup = this.formBuilder.group({
     Id: ['',[Validators.required]],
     prioridad: ['', [Validators.required]],
@@ -721,6 +755,86 @@ export class RevisionSolicitudesAlumnosComponent implements OnInit {
       html: `<p class='text-start'>${error.error}</p>
             <p class='text-start text-danger fs-6'>${error.message}</p>`,
       allowOutsideClick: false,
+    });
+  }
+
+  // ============================================================
+  // Modal Chat — WhatsApp ATC o Portal/Aula Virtual según origen
+  // ============================================================
+
+  /**
+   * Abre el modal y consulta los mensajes del chat asociados a la solicitud actualmente
+   * cargada. Decide qué endpoint usar según `origenSolicitud` del formCategoria:
+   *  - "Chatbot Whatsapp"     → ObtenerChatBotWhatsAppAtcPorSolicitudAlumno (formato WhatsApp).
+   *  - "Chatbot Aula virtual" → ObtenerChatBotPorSolicitud (formato Portal Web).
+   * Comparación case-insensitive + trim para tolerar variaciones del backend.
+   */
+  abrirModalChat(): void {
+    const idSolicitud = this.formCategoria.get('Id').value;
+    if (!idSolicitud) {
+      this.alertaService.swalFireOptions({ icon: 'warning', text: 'No hay solicitud cargada' });
+      return;
+    }
+
+    const origenRaw = this.formCategoria.get('origenSolicitud').value;
+    const origen = (origenRaw || '').toString().trim().toLowerCase();
+
+    let endpoint: string;
+    if (origen === 'chatbot whatsapp') {
+      endpoint = constApiOperaciones.ObtenerChatBotWhatsAppAtcPorSolicitudAlumno;
+    } else if (origen === 'chatbot aula virtual') {
+      endpoint = constApiOperaciones.ObtenerChatBotPorSolicitud;
+    } else {
+      this.alertaService.swalFireOptions({
+        icon: 'warning',
+        text: `Esta solicitud no tiene un origen de chat asociado (Origen: "${origenRaw || 'sin valor'}").`
+      });
+      return;
+    }
+
+    this.mensajesChatWhatsApp = [];
+    this.loadingChatWhatsApp = true;
+    this.modalRefChatWhatsApp = this.modalService.open(this.modalChatWhatsApp, { size: 'lg', backdrop: 'static' });
+
+    this.integraService
+      .postJsonResponse(endpoint, { idSolicitud })
+      .subscribe({
+        next: (response: HttpResponse<ChatMensajeAtcDTO[]>) => {
+          this.mensajesChatWhatsApp = response.body || [];
+          this.loadingChatWhatsApp = false;
+        },
+        error: () => {
+          this.mensajesChatWhatsApp = [];
+          this.loadingChatWhatsApp = false;
+          this.alertaService.swalFireOptions({ icon: 'error', text: 'No se pudo cargar el chat' });
+        }
+      });
+  }
+
+  /** Mensaje del alumno/contacto (izquierda). */
+  esDelAlumno(mensaje: ChatMensajeAtcDTO): boolean {
+    return mensaje.esUsuario;
+  }
+
+  /** Mensaje del bot (derecha, púrpura). */
+  esDelBot(mensaje: ChatMensajeAtcDTO): boolean {
+    return mensaje.esBot === 1;
+  }
+
+  /**
+   * Mensaje del asesor humano (derecha, verde). Los HSM (templates pre-aprobados) NO entran
+   * acá — replica del comportamiento del componente origen para que no se rendericen.
+   */
+  esDelAsistente(mensaje: ChatMensajeAtcDTO): boolean {
+    return !mensaje.esUsuario && mensaje.esBot === 0 && mensaje.waType !== 'hsm';
+  }
+
+  /** Formatea fecha del mensaje en es-ES con día, mes, año, hora y minutos. */
+  formatFechaChat(fecha?: string): string {
+    if (!fecha) return '';
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     });
   }
 

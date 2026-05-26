@@ -1,0 +1,268 @@
+<div class="wa-chat">
+  <!-- HEADER WhatsApp-style -->
+  <div class="wa-chat__header">
+    <button
+      type="button"
+      class="wa-chat__icon-btn"
+      title="Volver"
+      (click)="cerrar()"
+    >
+      <fa-icon [icon]="['fas', 'arrow-left']"></fa-icon>
+    </button>
+
+    <div class="wa-chat__avatar" aria-hidden="true">
+      <fa-icon [icon]="['fas', 'user']"></fa-icon>
+    </div>
+
+    <div class="wa-chat__identidad">
+      <div class="wa-chat__nombre">
+        {{ nombrePostulante || waTo || "Postulante" }}
+      </div>
+      <div class="wa-chat__numero" *ngIf="waTo">+{{ waTo }}</div>
+    </div>
+  </div>
+
+  <!-- BODY: burbujas -->
+  <div class="wa-chat__cuerpo" #scrollContainer>
+    <!-- Skeleton loader: 4 burbujas alternadas mientras carga el historial -->
+    <div class="wa-chat__skeleton" *ngIf="cargandoHistorial" aria-hidden="true">
+      <div class="wa-chat__skeleton-row wa-chat__skeleton-row--recibido">
+        <div class="wa-chat__skeleton-bubble" style="width: 60%"></div>
+      </div>
+      <div class="wa-chat__skeleton-row wa-chat__skeleton-row--enviado">
+        <div class="wa-chat__skeleton-bubble" style="width: 45%"></div>
+      </div>
+      <div class="wa-chat__skeleton-row wa-chat__skeleton-row--recibido">
+        <div class="wa-chat__skeleton-bubble" style="width: 70%"></div>
+      </div>
+      <div class="wa-chat__skeleton-row wa-chat__skeleton-row--enviado">
+        <div class="wa-chat__skeleton-bubble" style="width: 55%"></div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!cargandoHistorial">
+      <div class="wa-chat__empty" *ngIf="mensajes.length === 0">
+        Este postulante aún no tiene mensajes.
+      </div>
+
+      <div
+        class="wa-chat__mensaje"
+        *ngFor="let msg of mensajes; trackBy: trackByMensaje"
+        [class.wa-chat__mensaje--enviado]="msg.tipo === 1"
+        [class.wa-chat__mensaje--recibido]="msg.tipo === 2"
+      >
+        <div class="wa-chat__burbuja">
+          <div
+            class="wa-chat__autor"
+            *ngIf="msg.tipo === 1 && msg.nombrePersonal"
+          >
+            {{ msg.nombrePersonal }}
+          </div>
+
+          <ng-container [ngSwitch]="msg.waType">
+            <span *ngSwitchCase="'text'" class="wa-chat__texto">
+              {{ msg.waBody }}
+            </span>
+
+            <a
+              *ngSwitchCase="'image'"
+              [href]="msg.waFile"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="wa-chat__media"
+            >
+              <img [src]="msg.waFile" [alt]="msg.waCaption || ''" />
+              <span class="wa-chat__caption" *ngIf="msg.waCaption">
+                {{ msg.waCaption }}
+              </span>
+            </a>
+
+            <a
+              *ngSwitchCase="'document'"
+              [href]="msg.waFile"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="wa-chat__archivo"
+            >
+              <fa-icon [icon]="['fas', 'file']" [size]="'lg'"></fa-icon>
+              <span>{{ msg.waFileName || "Descargar documento" }}</span>
+            </a>
+
+            <audio
+              *ngSwitchCase="'audio'"
+              controls
+              [src]="msg.waFile"
+              class="wa-chat__audio"
+            >
+              Tu navegador no soporta el tag audio.
+            </audio>
+
+            <video
+              *ngSwitchCase="'video'"
+              controls
+              [src]="msg.waFile"
+              class="wa-chat__video"
+            >
+              Tu navegador no soporta el tag video.
+            </video>
+
+            <!-- waType='template' → enviado desde V2 (picker) -->
+            <span
+              *ngSwitchCase="'template'"
+              class="wa-chat__template"
+              [innerHTML]="msg.waCaption | safeHtml"
+            ></span>
+
+            <!-- waType='hsm' → plantillas del historial (V1 legacy + V2 store) -->
+            <span
+              *ngSwitchCase="'hsm'"
+              class="wa-chat__template"
+              [innerHTML]="(msg.waCaption || msg.waBody) | safeHtml"
+            ></span>
+
+            <span *ngSwitchDefault class="wa-chat__texto">
+              {{ msg.waBody }}
+            </span>
+          </ng-container>
+
+          <div class="wa-chat__hora">
+            {{ msg.fechaCreacion | date : "dd/MM HH:mm" }}
+            <span
+              class="wa-chat__status"
+              *ngIf="msg.tipo === 1 && msg.waStatus"
+              [ngSwitch]="msg.waStatus"
+            >
+              <fa-icon
+                *ngSwitchCase="'sent'"
+                [icon]="['fas', 'check']"
+                class="wa-chat__status--sent"
+                title="Enviado"
+              ></fa-icon>
+              <fa-icon
+                *ngSwitchCase="'delivered'"
+                [icon]="['fas', 'check-double']"
+                class="wa-chat__status--delivered"
+                title="Entregado"
+              ></fa-icon>
+              <fa-icon
+                *ngSwitchCase="'read'"
+                [icon]="['fas', 'check-double']"
+                class="wa-chat__status--read"
+                title="Leído"
+              ></fa-icon>
+              <fa-icon
+                *ngSwitchCase="'failed'"
+                [icon]="['fas', 'triangle-exclamation']"
+                class="wa-chat__status--failed"
+                [title]="msg.errorMessage || 'Error al enviar'"
+              ></fa-icon>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing indicator: 3 puntos animados antes de que aparezca el mensaje entrante -->
+      <div class="wa-chat__typing" *ngIf="mostrarTypingEntrante" aria-hidden="true">
+        <div class="wa-chat__typing-bubble">
+          <span class="wa-chat__typing-dot"></span>
+          <span class="wa-chat__typing-dot"></span>
+          <span class="wa-chat__typing-dot"></span>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- BANNER: Ventana 24h CERRADA -->
+  <!-- Banner número inválido -->
+  <div class="wa-chat__banner wa-chat__banner--error" *ngIf="numeroInvalido">
+    <fa-icon [icon]="['fas', 'circle-exclamation']"></fa-icon>
+    <span>Número inválido — no se puede enviar WhatsApp a este postulante</span>
+  </div>
+
+  <!-- Banner ventana 24h cerrada -->
+  <div class="wa-chat__banner" *ngIf="!numeroInvalido && ventanaCerrada === true">
+    <fa-icon [icon]="['fas', 'triangle-exclamation']"></fa-icon>
+    <span>Ventana de 24h cerrada — solo plantillas</span>
+  </div>
+
+  <!-- COMPOSER -->
+  <div class="wa-chat__composer">
+    <!-- input file oculto, lo dispara el botón adjuntar -->
+    <input
+      #fileInput
+      type="file"
+      hidden
+      (change)="onArchivoSeleccionado($event)"
+    />
+
+    <!-- Grupo izquierdo: adjuntar + plantillas (juntos) -->
+    <div class="wa-chat__composer-left">
+      <button
+        type="button"
+        class="wa-chat__icon-btn"
+        title="Adjuntar archivo"
+        [disabled]="enviando || !waTo || ventanaCerrada === true || numeroInvalido"
+        (click)="adjuntarArchivo()"
+      >
+        <fa-icon [icon]="['fas', 'paperclip']"></fa-icon>
+      </button>
+      <button
+        type="button"
+        class="wa-chat__icon-btn wa-chat__icon-btn--picker"
+        title="Enviar plantilla"
+        [disabled]="enviando || !waTo"
+        (click)="abrirPicker()"
+      >
+        <fa-icon [icon]="['fas', 'file-lines']"></fa-icon>
+      </button>
+    </div>
+
+    <div class="wa-chat__input-wrap">
+      <div class="wa-chat__staged" *ngIf="archivoStaged">
+        <fa-icon [icon]="['fas', 'file']"></fa-icon>
+        <span class="wa-chat__staged-name">{{ archivoStaged.name }}</span>
+        <button
+          type="button"
+          class="wa-chat__staged-clear"
+          (click)="quitarArchivoStaged()"
+          title="Quitar archivo"
+        >
+          <fa-icon [icon]="['fas', 'xmark']"></fa-icon>
+        </button>
+      </div>
+      <textarea
+        class="wa-chat__textarea"
+        rows="2"
+        [placeholder]="
+          ventanaCerrada === true
+            ? 'Solo plantillas (ventana de 24h cerrada)'
+            : 'Escribe un mensaje...'
+        "
+        [value]="textoMensaje"
+        (input)="onTextoChange($event)"
+        [disabled]="enviando || !waTo || ventanaCerrada === true || numeroInvalido"
+      ></textarea>
+    </div>
+
+    <button
+      type="button"
+      class="wa-chat__send"
+      title="Enviar mensaje"
+      [disabled]="
+        enviando ||
+        !waTo ||
+        ventanaCerrada === true ||
+        (!archivoStaged && !textoMensaje.trim())
+      "
+      (click)="enviar()"
+    >
+      <kendo-loader
+        *ngIf="enviando"
+        themeColor="light"
+        size="small"
+      ></kendo-loader>
+      <fa-icon *ngIf="!enviando" [icon]="['fas', 'paper-plane']"></fa-icon>
+    </button>
+  </div>
+</div>
+

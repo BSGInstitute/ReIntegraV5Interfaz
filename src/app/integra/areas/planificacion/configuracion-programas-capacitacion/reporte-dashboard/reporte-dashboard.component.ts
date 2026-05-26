@@ -44,6 +44,133 @@ import {
 import { AlertaService } from '@shared/services/alerta.service';
 import { ExcelExportComponent } from '@progress/kendo-angular-excel-export';
 import { process, State } from '@progress/kendo-data-query';
+import { IntegraService } from '@shared/services/integra.service';
+import { constApiFinanzas, constApiPlanificacion } from '@environments/constApi';
+
+interface IComboD4 {
+  id: number | null;
+  nombre: string;
+}
+
+interface ICombosProyectoAlumnoD4 {
+  obtenerCoordinadorasDocente: IComboD4[];
+  obtenerNombreProveedorParaHonorario: IComboD4[];
+  obtenerCombo: IComboD4[];
+  obtenerProgramaEspecifico: IComboD4[];
+}
+
+interface ICodigoMatriculaD4 {
+  id: number | null;
+  codigoMatricula: string;
+}
+
+interface IFiltroProyectoAlumnoD4 {
+  idsProgramaEspecifico: number[] | null;
+  idsCentroCosto: number[] | null;
+  idsDocente: number[] | null;
+  idsCoordinadora: number[] | null;
+  idCodigoMatricula: number | null;
+  idEstadoRevision: number | null;
+  fechaInicial: string | Date;
+  fechaFin: string | Date;
+}
+
+interface IProyectoPresentadoPorAlumnoD4 {
+  idEnvio: string;
+  programaEspecifico: string;
+  centroCosto: string;
+  codigoMatricula: string;
+  alumno: string;
+  nombreArchivo: string;
+  enlaceArchivo: string;
+  fechaEnvio: string;
+  horaEnvio: string;
+  fechaCalificacion: string;
+  horaCalificacion: string;
+  nota: string;
+  coordinadorAcademico: string;
+  docente: string;
+  responsableCoordinacion: string;
+  nroEnvio: string;
+  comentarios: string;
+  docenteCalificacion: string;
+  responsableCoordinacionDocenteCalificacion: string;
+  nombreArchivoRetroalimentacion: string;
+  urlArchivoSubidoRetroalimentacion: string;
+  estadoDevuelto: boolean | null;
+  estadoCalificacion: string | null;
+  subEstadoCalificacion: string | null;
+  estadoEntrega: string | null;
+  subEstadoEntrega: string | null;
+  estadoRevisionProyecto: string | null;
+  plazoCargaRevision: string | null;
+  fechaEnvioOriginal: string | null;
+  fechaCalificacionOriginal: string | null;
+}
+
+interface IDashboardEstadoResumenD4 {
+  codigo: string;
+  nombre: string;
+  cantidad: number;
+  porcentaje: number;
+  descripcion: string;
+  color: string;
+}
+
+interface IDashboardFilaD4 {
+  nombre: string;
+  cantidad: number;
+  porcentaje: number;
+  tiempoPromedioRevision?: number | null;
+  esEstado?: boolean;
+  nivel?: number;
+  color?: string;
+}
+
+interface IDashboardTablaD4 {
+  titulo: string;
+  total: number;
+  totalEntregados?: number;
+  filas: IDashboardFilaD4[];
+  estados?: IDashboardEstadoResumenD4[];
+  distribucion?: IDashboardFilaD4[];
+  mostrarTiempoRevision?: boolean;
+}
+
+interface IDashboardEstructuraCalificacionD4 {
+  estado: string;
+  subEstados: string[];
+}
+
+interface IDashboardEstructuraEntregaD4 {
+  estado: string;
+  subEstados: string[];
+}
+
+interface IDashboardFiltroEstadoD4 {
+  codigo: string;
+  nombre: string;
+  estado: string | null;
+  subEstado?: string | null;
+  cantidad: number;
+  color: string;
+}
+
+interface IFiltrosInternosDashboardD4 {
+  programas: string[];
+  centrosCosto: string[];
+  docentes: string[];
+  fechaInicio: Date | null;
+  fechaFin: Date | null;
+}
+
+interface IDashboardDocenteD4 {
+  docente: string;
+  programa: string;
+  total: number;
+  tiempoPromedio: number | null;
+  segmentos: IDashboardFilaD4[];
+}
 
 /**
  * Dashboard de Programas de Capacitacion
@@ -308,13 +435,14 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
     sort: [{ field: 'totalSesiones', dir: 'desc' }]
   };
 
-  // Tab principal (dashboard1 / dashboard2 / dashboard3)
-  activeMainTab: 'dashboard1' | 'dashboard2' | 'dashboard3' = 'dashboard1';
+  // Tab principal (dashboard1 / dashboard2 / dashboard3 / dashboard4)
+  activeMainTab: 'dashboard1' | 'dashboard2' | 'dashboard3' | 'dashboard4' = 'dashboard1';
 
   // Flags de inicialización: una vez cargado el tab, el DOM se mantiene vivo
   // y solo se oculta/muestra con [hidden] para evitar destruir/recrear charts
   dashboard2Initialized = false;
   dashboard3Initialized = false;
+  dashboard4Initialized = false;
 
   // Tab activo (grillas dentro de dashboard1)
   activeTab: string = 'programas';
@@ -419,6 +547,51 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   minD3(a: number, b: number): number { return Math.min(a, b); }
 
+  // ── Dashboard 4: Proyectos presentados por alumnos ────────────────────────
+  loadingD4: boolean = false;
+  loadingCombosD4: boolean = false;
+  formFiltroD4: FormGroup;
+  dataCoordinadorasD4: IComboD4[] = [];
+  dataDocentesD4: IComboD4[] = [];
+  dataCentroCostoD4: IComboD4[] = [];
+  dataPEspecificoD4: IComboD4[] = [];
+  filteredCoordinadorasD4: IComboD4[] = [];
+  filteredDocentesD4: IComboD4[] = [];
+  filteredCentroCostoD4: IComboD4[] = [];
+  filteredPEspecificoD4: IComboD4[] = [];
+  estadoRevisionD4: IComboD4[] = [
+    { nombre: 'Revisado', id: 1 },
+    { nombre: 'Pendiente', id: 2 }
+  ];
+  codigoMatriculaD4: ICodigoMatriculaD4[] = [];
+  reporteDashboardBaseD4: IProyectoPresentadoPorAlumnoD4[] = [];
+  dashboardCalificacionD4: IDashboardTablaD4 | null = null;
+  dashboardEntregaD4: IDashboardTablaD4 | null = null;
+  dashboardDocentesD4: IDashboardDocenteD4[] = [];
+  dashboardFechaInicioD4: string = '';
+  dashboardFechaFinD4: string = '';
+  dashboardFiltroEstadoSeleccionadoD4: string = 'todos';
+  dashboardFiltrosEstadoD4: IDashboardFiltroEstadoD4[] = [];
+  dashboardFiltroEntregaSeleccionadoD4: string = 'todos';
+  dashboardFiltrosEntregaD4: IDashboardFiltroEstadoD4[] = [];
+  filtrosCalificacionD4 = this.crearFiltrosInternosDashboardD4();
+  filtrosEntregaInternosD4 = this.crearFiltrosInternosDashboardD4();
+  filtrosDocentesInternosD4 = this.crearFiltrosInternosDashboardD4();
+  opcionesProgramaDashboardD4: string[] = [];
+  opcionesCentroCostoDashboardD4: string[] = [];
+  opcionesDocenteDashboardD4: string[] = [];
+
+  readonly estructuraCalificacionD4: IDashboardEstructuraCalificacionD4[] = [
+    { estado: 'Calificado', subEstados: ['Calificado observado', 'Calificado sin observaciones'] },
+    { estado: 'Pendiente de revisión', subEstados: ['En plazo', 'Por vencer', 'Vencido'] },
+    { estado: 'Sin proyecto (No aplica)', subEstados: ['No entregado aún'] }
+  ];
+
+  readonly estructuraEntregaD4: IDashboardEstructuraEntregaD4[] = [
+    { estado: 'Proyectos Pendientes de entrega', subEstados: ['Pendiente de entrega'] },
+    { estado: 'Proyectos entregados', subEstados: ['Primer envío', 'Reenviado'] }
+  ];
+
   // ── Notas de alumnos por PEspecifico ──────────────────────────────────────
   loadingNotas: boolean = false;
   filtrarSinNotas: boolean = false;
@@ -475,6 +648,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private _reporteDashboardService: ReporteDashboardService,
+    private _integraService: IntegraService,
     private _alertaService: AlertaService,
     private _formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef
@@ -521,6 +695,8 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       fechaInicio: [null],
       fechaFin: [null]
     });
+
+    this.formFiltroD4 = this.crearFormFiltroD4();
   }
 
   ngOnInit(): void {
@@ -1577,7 +1753,7 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
   // DASHBOARD 2: Seguimiento por Docente
   // ═══════════════════════════════════════════════════════════════════════════
 
-  onMainTabChange(tab: 'dashboard1' | 'dashboard2' | 'dashboard3'): void {
+  onMainTabChange(tab: 'dashboard1' | 'dashboard2' | 'dashboard3' | 'dashboard4'): void {
     this.activeMainTab = tab;
 
     if (tab === 'dashboard2') {
@@ -1591,6 +1767,16 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       this.dashboard3Initialized = true;
       if (this.fursDashboard3.length === 0) {
         this.cargarFursDashboard3();
+      }
+    }
+
+    if (tab === 'dashboard4') {
+      this.dashboard4Initialized = true;
+      if (!this.dataPEspecificoD4.length) {
+        this.cargarCombosD4();
+      }
+      if (!this.dashboardCalificacionD4 && !this.loadingD4) {
+        this.generarReporteD4();
       }
     }
   }
@@ -1850,6 +2036,784 @@ export class ReporteDashboardComponent implements OnInit, OnDestroy {
       this.expandedRowsD3.add(idx);
     }
     this.cdr.markForCheck();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DASHBOARD 4: Proyectos presentados por alumnos
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  private crearFormFiltroD4(): FormGroup {
+    return this._formBuilder.group({
+      idsProgramaEspecifico: [[]],
+      idsCentroCosto: [[]],
+      idsDocente: [[]],
+      idsCoordinadora: [[]],
+      idCodigoMatricula: [null],
+      idEstadoRevision: [null],
+      fechaInicial: [new Date()],
+      fechaFin: [new Date()]
+    });
+  }
+
+  get obtenerFechaActualD4(): Date {
+    return new Date();
+  }
+
+  cargarCombosD4(): void {
+    this.loadingCombosD4 = true;
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.ProyectoPresentadoPorAlumnoObtenerCombosModulo)
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.loadingCombosD4 = false; this.cdr.markForCheck(); }))
+      .subscribe({
+        next: (resp: HttpResponse<ICombosProyectoAlumnoD4>) => {
+          const body = resp.body;
+          this.dataCoordinadorasD4 = body?.obtenerCoordinadorasDocente || [];
+          this.dataDocentesD4 = body?.obtenerNombreProveedorParaHonorario || [];
+          this.dataCentroCostoD4 = body?.obtenerCombo || [];
+          this.dataPEspecificoD4 = body?.obtenerProgramaEspecifico || [];
+          this.filteredCoordinadorasD4 = this.dataCoordinadorasD4.slice(0, 80);
+          this.filteredDocentesD4 = this.dataDocentesD4.slice(0, 80);
+          this.filteredCentroCostoD4 = this.dataCentroCostoD4.slice(0, 80);
+          this.filteredPEspecificoD4 = this.dataPEspecificoD4.slice(0, 80);
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          if (mensaje) this._alertaService.notificationWarning(mensaje);
+        }
+      });
+  }
+
+  filtrarComboD4(origen: IComboD4[], destino: 'programa' | 'centroCosto' | 'docente' | 'coordinadora', filtro: string): void {
+    const data = !filtro
+      ? origen.slice(0, 80)
+      : origen.filter(item => (item.nombre || '').toLowerCase().includes(filtro.toLowerCase())).slice(0, 120);
+
+    if (destino === 'programa') this.filteredPEspecificoD4 = data;
+    if (destino === 'centroCosto') this.filteredCentroCostoD4 = data;
+    if (destino === 'docente') this.filteredDocentesD4 = data;
+    if (destino === 'coordinadora') this.filteredCoordinadorasD4 = data;
+  }
+
+  obtenerCodigoMatriculaAutocompleteD4(value: string): void {
+    if (!value || value.length < 4) return;
+
+    this._integraService
+      .obtenerPorFiltro(constApiFinanzas.MatriculaCabeceraObtenerCodigoMatriculaAutocomplete, { valor: value })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: HttpResponse<ICodigoMatriculaD4[]>) => {
+          this.codigoMatriculaD4 = response.body || [];
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  generarReporteD4(): void {
+    this.loadingD4 = true;
+    this.limpiarDashboardD4(false);
+
+    const dataForm: IFiltroProyectoAlumnoD4 = this.formFiltroD4.getRawValue();
+    const filtro = {
+      ProgramaEspecifico: dataForm.idsProgramaEspecifico,
+      CentroCosto: dataForm.idsCentroCosto,
+      Docente: dataForm.idsDocente,
+      Coordinadora: dataForm.idsCoordinadora,
+      CodigoMatricula: dataForm.idCodigoMatricula,
+      EstadoRevision: dataForm.idEstadoRevision,
+      FechaInicial: dataForm.fechaInicial,
+      FechaFin: dataForm.fechaFin
+    };
+
+    this._integraService
+      .postJsonResponse(constApiPlanificacion.ProyectoPresentadoPorAlumnoGenerarReporte, JSON.stringify(filtro))
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.loadingD4 = false; this.cdr.markForCheck(); }))
+      .subscribe({
+        next: (resp: HttpResponse<IProyectoPresentadoPorAlumnoD4[]>) => {
+          this.construirDashboardD4(resp.body || [], dataForm);
+        },
+        error: (error) => {
+          const mensaje = this._alertaService.getMessageErrorService(error);
+          if (mensaje) this._alertaService.notificationWarning(mensaje);
+        }
+      });
+  }
+
+  limpiarFiltroD4(): void {
+    this.formFiltroD4 = this.crearFormFiltroD4();
+    this.codigoMatriculaD4 = [];
+    this.dashboardFiltroEstadoSeleccionadoD4 = 'todos';
+    this.generarReporteD4();
+  }
+
+  limpiarDashboardD4(limpiarBase: boolean = true): void {
+    this.dashboardCalificacionD4 = null;
+    this.dashboardEntregaD4 = null;
+    this.dashboardDocentesD4 = [];
+    this.dashboardFechaInicioD4 = '';
+    this.dashboardFechaFinD4 = '';
+    this.dashboardFiltroEstadoSeleccionadoD4 = 'todos';
+    this.dashboardFiltrosEstadoD4 = [];
+    this.dashboardFiltroEntregaSeleccionadoD4 = 'todos';
+    this.dashboardFiltrosEntregaD4 = [];
+    this.limpiarTodosFiltrosDashboardInternosD4(false);
+    if (limpiarBase) this.reporteDashboardBaseD4 = [];
+  }
+
+  construirDashboardD4(reporte: IProyectoPresentadoPorAlumnoD4[], filtro: IFiltroProyectoAlumnoD4): void {
+    this.dashboardFechaInicioD4 = this.formatearFechaDashboardD4(filtro.fechaInicial);
+    this.dashboardFechaFinD4 = this.formatearFechaDashboardD4(filtro.fechaFin);
+    this.reporteDashboardBaseD4 = reporte;
+    this.dashboardFiltroEstadoSeleccionadoD4 = 'todos';
+    this.dashboardFiltroEntregaSeleccionadoD4 = 'todos';
+    this.inicializarOpcionesFiltrosDashboardD4(reporte);
+    this.limpiarTodosFiltrosDashboardInternosD4(false);
+    this.recalcularDashboardCalificacionD4();
+    this.recalcularDashboardEntregaD4();
+    this.recalcularDashboardDocentesD4();
+  }
+
+  inicializarOpcionesFiltrosDashboardD4(reporte: IProyectoPresentadoPorAlumnoD4[]): void {
+    this.opcionesProgramaDashboardD4 = this.obtenerValoresUnicosDashboardD4(reporte, item => item.programaEspecifico);
+    this.opcionesCentroCostoDashboardD4 = this.obtenerValoresUnicosDashboardD4(reporte, item => item.centroCosto);
+    this.opcionesDocenteDashboardD4 = this.obtenerValoresUnicosDashboardD4(reporte, item => item.docenteCalificacion || item.docente);
+  }
+
+  obtenerValoresUnicosDashboardD4(reporte: IProyectoPresentadoPorAlumnoD4[], selector: (item: IProyectoPresentadoPorAlumnoD4) => string): string[] {
+    return Array.from(new Set(reporte.map(selector).filter(valor => !!valor))).sort((a, b) => a.localeCompare(b));
+  }
+
+  crearFiltrosInternosDashboardD4(): IFiltrosInternosDashboardD4 {
+    return {
+      programas: [] as string[],
+      centrosCosto: [] as string[],
+      docentes: [] as string[],
+      fechaInicio: null,
+      fechaFin: null
+    };
+  }
+
+  limpiarTodosFiltrosDashboardInternosD4(recalcular: boolean = true): void {
+    this.filtrosCalificacionD4 = this.crearFiltrosInternosDashboardD4();
+    this.filtrosEntregaInternosD4 = this.crearFiltrosInternosDashboardD4();
+    this.filtrosDocentesInternosD4 = this.crearFiltrosInternosDashboardD4();
+    if (recalcular) {
+      this.recalcularDashboardCalificacionD4();
+      this.recalcularDashboardEntregaD4();
+      this.recalcularDashboardDocentesD4();
+    }
+  }
+
+  limpiarFiltrosCalificacionD4(): void {
+    this.filtrosCalificacionD4 = this.crearFiltrosInternosDashboardD4();
+    this.recalcularDashboardCalificacionD4();
+  }
+
+  limpiarFiltrosEntregaD4(): void {
+    this.filtrosEntregaInternosD4 = this.crearFiltrosInternosDashboardD4();
+    this.recalcularDashboardEntregaD4();
+  }
+
+  limpiarFiltrosDocentesD4(): void {
+    this.filtrosDocentesInternosD4 = this.crearFiltrosInternosDashboardD4();
+    this.recalcularDashboardDocentesD4();
+  }
+
+  recalcularDashboardCalificacionD4(): void {
+    const reporteFiltrado = this.obtenerReporteDashboardFiltradoD4(this.filtrosCalificacionD4);
+    this.dashboardFiltrosEstadoD4 = this.construirFiltrosEstadoCalificacionD4(reporteFiltrado);
+    if (!this.dashboardFiltrosEstadoD4.some(filtro => filtro.codigo === this.dashboardFiltroEstadoSeleccionadoD4)) this.dashboardFiltroEstadoSeleccionadoD4 = 'todos';
+    this.aplicarFiltroDashboardCalificacionD4(reporteFiltrado);
+    this.cdr.markForCheck();
+  }
+
+  recalcularDashboardEntregaD4(): void {
+    const reporteFiltrado = this.obtenerReporteDashboardFiltradoD4(this.filtrosEntregaInternosD4);
+    this.dashboardFiltrosEntregaD4 = this.construirFiltrosEstadoEntregaD4(reporteFiltrado);
+    if (!this.dashboardFiltrosEntregaD4.some(filtro => filtro.codigo === this.dashboardFiltroEntregaSeleccionadoD4)) this.dashboardFiltroEntregaSeleccionadoD4 = 'todos';
+    this.aplicarFiltroDashboardEntregaD4(reporteFiltrado);
+    this.cdr.markForCheck();
+  }
+
+  recalcularDashboardDocentesD4(): void {
+    const reporteFiltrado = this.obtenerReporteDashboardFiltradoD4(this.filtrosDocentesInternosD4);
+    this.dashboardDocentesD4 = this.construirDashboardDocentesD4(reporteFiltrado);
+    this.cdr.markForCheck();
+  }
+
+  obtenerReporteDashboardFiltradoD4(filtros: IFiltrosInternosDashboardD4): IProyectoPresentadoPorAlumnoD4[] {
+    return this.reporteDashboardBaseD4.filter(item => {
+      const docente = item.docenteCalificacion || item.docente;
+      const fechaEnvio = this.obtenerFechaDashboardD4(item.fechaEnvioOriginal || item.fechaEnvio);
+      return (
+        (!filtros.programas.length || filtros.programas.includes(item.programaEspecifico)) &&
+        (!filtros.centrosCosto.length || filtros.centrosCosto.includes(item.centroCosto)) &&
+        (!filtros.docentes.length || filtros.docentes.includes(docente)) &&
+        (!filtros.fechaInicio || (fechaEnvio && fechaEnvio >= filtros.fechaInicio)) &&
+        (!filtros.fechaFin || (fechaEnvio && fechaEnvio <= this.obtenerFechaFinInclusivaD4(filtros.fechaFin)))
+      );
+    });
+  }
+
+  obtenerFechaFinInclusivaD4(fecha: Date): Date {
+    return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), 23, 59, 59);
+  }
+
+  construirFiltrosEstadoCalificacionD4(reporte: IProyectoPresentadoPorAlumnoD4[]): IDashboardFiltroEstadoD4[] {
+    return [
+      { codigo: 'todos', nombre: 'Todos los estados', estado: null, cantidad: reporte.length, color: '#2f7dad' },
+      ...this.estructuraCalificacionD4.map(estructura => ({
+        codigo: this.obtenerCodigoFiltroEstadoD4(estructura.estado),
+        nombre: estructura.estado,
+        estado: estructura.estado,
+        cantidad: reporte.filter(item => this.obtenerEstadoCalificacionD4(item) === estructura.estado).length,
+        color: this.obtenerColorCalificacionD4(estructura.estado)
+      }))
+    ];
+  }
+
+  seleccionarFiltroDashboardCalificacionD4(filtro: IDashboardFiltroEstadoD4): void {
+    this.dashboardFiltroEstadoSeleccionadoD4 = filtro.codigo;
+    this.aplicarFiltroDashboardCalificacionD4(this.obtenerReporteDashboardFiltradoD4(this.filtrosCalificacionD4));
+  }
+
+  aplicarFiltroDashboardCalificacionD4(reporteBase: IProyectoPresentadoPorAlumnoD4[]): void {
+    const filtroSeleccionado = this.dashboardFiltrosEstadoD4.find(filtro => filtro.codigo === this.dashboardFiltroEstadoSeleccionadoD4);
+    const reporteFiltrado = filtroSeleccionado?.estado
+      ? reporteBase.filter(item => this.obtenerEstadoCalificacionD4(item) === filtroSeleccionado.estado)
+      : reporteBase;
+
+    this.dashboardCalificacionD4 = this.construirTablaCalificacionD4(reporteFiltrado);
+    this.dashboardCalificacionD4.estados = this.construirTarjetasCalificacionD4(
+      this.construirFilasCalificacionD4(reporteBase, reporteBase.length),
+      reporteBase.length
+    );
+    this.cdr.markForCheck();
+  }
+
+  construirTablaCalificacionD4(reporte: IProyectoPresentadoPorAlumnoD4[]): IDashboardTablaD4 {
+    const totalDashboard = reporte.length;
+    const filas = this.construirFilasCalificacionD4(reporte, totalDashboard);
+    const distribucion = this.construirDistribucionCalificacionD4(filas);
+
+    return {
+      titulo: 'POR ESTADOS DE CALIFICACIÓN',
+      total: totalDashboard,
+      totalEntregados: totalDashboard,
+      estados: this.construirTarjetasCalificacionD4(filas, totalDashboard),
+      distribucion,
+      filas,
+      mostrarTiempoRevision: true
+    };
+  }
+
+  construirFilasCalificacionD4(reporte: IProyectoPresentadoPorAlumnoD4[], totalEntregados: number): IDashboardFilaD4[] {
+    const estados: {
+      [key: string]: {
+        cantidad: number;
+        diasRevision: number;
+        revisados: number;
+        subEstados: { [key: string]: { cantidad: number; diasRevision: number; revisados: number } };
+      };
+    } = {};
+
+    reporte.forEach(item => {
+      const estado = this.obtenerEstadoCalificacionD4(item);
+      const subEstado = this.obtenerSubEstadoCalificacionD4(item, estado);
+      const diasRevision = this.obtenerDiasRevisionDashboardD4(item);
+
+      if (!estados[estado]) {
+        estados[estado] = { cantidad: 0, diasRevision: 0, revisados: 0, subEstados: {} };
+      }
+      if (!estados[estado].subEstados[subEstado]) {
+        estados[estado].subEstados[subEstado] = { cantidad: 0, diasRevision: 0, revisados: 0 };
+      }
+
+      estados[estado].cantidad++;
+      estados[estado].subEstados[subEstado].cantidad++;
+
+      if (diasRevision != null) {
+        estados[estado].diasRevision += diasRevision;
+        estados[estado].revisados++;
+        estados[estado].subEstados[subEstado].diasRevision += diasRevision;
+        estados[estado].subEstados[subEstado].revisados++;
+      }
+    });
+
+    return this.estructuraCalificacionD4.reduce((filas, estructura) => {
+      const grupoEstado = estados[estructura.estado] || { cantidad: 0, diasRevision: 0, revisados: 0, subEstados: {} };
+      filas.push({
+        nombre: estructura.estado,
+        cantidad: grupoEstado.cantidad,
+        porcentaje: this.calcularPorcentajeD4(grupoEstado.cantidad, totalEntregados),
+        tiempoPromedioRevision: grupoEstado.revisados ? Math.round(grupoEstado.diasRevision / grupoEstado.revisados) : null,
+        esEstado: true,
+        nivel: 0,
+        color: this.obtenerColorCalificacionD4(estructura.estado)
+      });
+
+      estructura.subEstados.forEach(subEstado => {
+        const filaSubEstado = grupoEstado.subEstados[subEstado] || { cantidad: 0, diasRevision: 0, revisados: 0 };
+        filas.push({
+          nombre: subEstado,
+          cantidad: filaSubEstado.cantidad,
+          porcentaje: this.calcularPorcentajeD4(filaSubEstado.cantidad, totalEntregados),
+          tiempoPromedioRevision: filaSubEstado.revisados ? Math.round(filaSubEstado.diasRevision / filaSubEstado.revisados) : null,
+          esEstado: false,
+          nivel: 1,
+          color: this.obtenerColorCalificacionD4(subEstado, estructura.estado)
+        });
+      });
+
+      return filas;
+    }, [] as IDashboardFilaD4[]);
+  }
+
+  construirTarjetasCalificacionD4(filas: IDashboardFilaD4[], total: number): IDashboardEstadoResumenD4[] {
+    const pendienteRevision = this.obtenerCantidadFilaD4(filas, 'Pendiente de revisión', true);
+    const sinProyecto = this.obtenerCantidadFilaD4(filas, 'Sin proyecto (No aplica)', true);
+    const enPlazo = this.obtenerCantidadFilaD4(filas, 'En plazo');
+    const porVencer = this.obtenerCantidadFilaD4(filas, 'Por vencer');
+    const vencido = this.obtenerCantidadFilaD4(filas, 'Vencido');
+
+    return [
+      { codigo: 'pendientes', nombre: 'TOTAL PENDIENTES REVISIÓN', cantidad: pendienteRevision, porcentaje: this.calcularPorcentajeD4(pendienteRevision, total), descripcion: 'Proyectos pendientes de revisión por docente', color: '#1f5f8b' },
+      { codigo: 'sin-proyecto', nombre: 'SIN PROYECTO', cantidad: sinProyecto, porcentaje: this.calcularPorcentajeD4(sinProyecto, total), descripcion: 'Alumno aún no envía su proyecto', color: '#8c8c8c' },
+      { codigo: 'en-plazo', nombre: 'EN PLAZO', cantidad: enPlazo, porcentaje: this.calcularPorcentajeD4(enPlazo, total), descripcion: '< 13 días sin calificación', color: '#2ab34b' },
+      { codigo: 'por-vencer', nombre: 'POR VENCER', cantidad: porVencer, porcentaje: this.calcularPorcentajeD4(porVencer, total), descripcion: 'Entre 13 y 15 días', color: '#f5a623' },
+      { codigo: 'vencido', nombre: 'VENCIDO', cantidad: vencido, porcentaje: this.calcularPorcentajeD4(vencido, total), descripcion: '> 15 días - alerta enviada', color: '#e53935' }
+    ];
+  }
+
+  construirDistribucionCalificacionD4(filas: IDashboardFilaD4[]): IDashboardFilaD4[] {
+    let estadoActual = '';
+    return filas.reduce((distribucion, fila) => {
+      if (fila.esEstado) {
+        estadoActual = fila.nombre;
+        if (!this.esEstadoPendienteProyectoD4(fila.nombre)) return distribucion;
+        distribucion.push({ ...fila, nombre: 'Sin proyecto' });
+        return distribucion;
+      }
+
+      const prefijo = estadoActual.toLowerCase().includes('pendiente') ? 'Pendiente' : estadoActual;
+      distribucion.push({ ...fila, nombre: `${prefijo} - ${fila.nombre}` });
+      return distribucion;
+    }, [] as IDashboardFilaD4[]);
+  }
+
+  obtenerCantidadFilaD4(filas: IDashboardFilaD4[], nombre: string, esEstado: boolean = false): number {
+    const fila = filas.find(item =>
+      item.nombre.toLowerCase() === nombre.toLowerCase() && (esEstado ? item.esEstado : !item.esEstado)
+    );
+    return fila ? fila.cantidad : 0;
+  }
+
+  construirFiltrosEstadoEntregaD4(reporte: IProyectoPresentadoPorAlumnoD4[]): IDashboardFiltroEstadoD4[] {
+    return [
+      { codigo: 'todos', nombre: 'Todos los estados', estado: null, cantidad: reporte.length, color: '#2f7dad' },
+      { codigo: 'pendiente-entrega', nombre: 'Pendiente', estado: null, subEstado: 'Pendiente de entrega', cantidad: reporte.filter(item => this.obtenerSubEstadoEntregaDashboardD4(item, this.obtenerEstadoEntregaDashboardD4(item)) === 'Pendiente de entrega').length, color: '#8c8c8c' },
+      { codigo: 'primer-envio', nombre: 'Primer envío', estado: null, subEstado: 'Primer envío', cantidad: reporte.filter(item => this.obtenerSubEstadoEntregaDashboardD4(item, this.obtenerEstadoEntregaDashboardD4(item)) === 'Primer envío').length, color: '#1aa6a6' },
+      { codigo: 'reenviado', nombre: 'Reenviado', estado: null, subEstado: 'Reenviado', cantidad: reporte.filter(item => this.obtenerSubEstadoEntregaDashboardD4(item, this.obtenerEstadoEntregaDashboardD4(item)) === 'Reenviado').length, color: '#9b51e0' }
+    ];
+  }
+
+  seleccionarFiltroDashboardEntregaD4(filtro: IDashboardFiltroEstadoD4): void {
+    this.dashboardFiltroEntregaSeleccionadoD4 = filtro.codigo;
+    this.aplicarFiltroDashboardEntregaD4(this.obtenerReporteDashboardFiltradoD4(this.filtrosEntregaInternosD4));
+  }
+
+  aplicarFiltroDashboardEntregaD4(reporteBase: IProyectoPresentadoPorAlumnoD4[]): void {
+    const filtroSeleccionado = this.dashboardFiltrosEntregaD4.find(filtro => filtro.codigo === this.dashboardFiltroEntregaSeleccionadoD4);
+    const reporteFiltrado = filtroSeleccionado?.subEstado
+      ? reporteBase.filter(item => this.obtenerSubEstadoEntregaDashboardD4(item, this.obtenerEstadoEntregaDashboardD4(item)) === filtroSeleccionado.subEstado)
+      : filtroSeleccionado?.estado
+      ? reporteBase.filter(item => this.obtenerEstadoEntregaDashboardD4(item) === filtroSeleccionado.estado)
+      : reporteBase;
+
+    this.dashboardEntregaD4 = this.construirTablaEntregaD4(reporteFiltrado);
+    this.dashboardEntregaD4.estados = this.construirTarjetasEntregaD4(
+      this.construirFilasEntregaD4(reporteBase, reporteBase.length),
+      reporteBase.length
+    );
+    this.cdr.markForCheck();
+  }
+
+  construirTablaEntregaD4(reporte: IProyectoPresentadoPorAlumnoD4[]): IDashboardTablaD4 {
+    const totalDashboard = reporte.length;
+    const filas = this.construirFilasEntregaD4(reporte, totalDashboard);
+    const distribucion = this.construirDistribucionEntregaD4(filas);
+
+    return {
+      titulo: 'POR ESTADOS DE ENTREGA',
+      total: totalDashboard,
+      estados: this.construirTarjetasEntregaD4(filas, totalDashboard),
+      distribucion,
+      filas,
+      mostrarTiempoRevision: false
+    };
+  }
+
+  construirFilasEntregaD4(reporte: IProyectoPresentadoPorAlumnoD4[], total: number): IDashboardFilaD4[] {
+    const estados: { [key: string]: { cantidad: number; subEstados: { [key: string]: { cantidad: number } } } } = {};
+
+    reporte.forEach(item => {
+      const estado = this.obtenerEstadoEntregaDashboardD4(item);
+      const subEstado = this.obtenerSubEstadoEntregaDashboardD4(item, estado);
+      if (!estados[estado]) estados[estado] = { cantidad: 0, subEstados: {} };
+      if (!estados[estado].subEstados[subEstado]) estados[estado].subEstados[subEstado] = { cantidad: 0 };
+      estados[estado].cantidad++;
+      estados[estado].subEstados[subEstado].cantidad++;
+    });
+
+    return this.estructuraEntregaD4.reduce((filas, estructura) => {
+      const grupoEstado = estados[estructura.estado] || { cantidad: 0, subEstados: {} };
+      filas.push({
+        nombre: estructura.estado,
+        cantidad: grupoEstado.cantidad,
+        porcentaje: this.calcularPorcentajeD4(grupoEstado.cantidad, total),
+        esEstado: true,
+        nivel: 0,
+        color: this.obtenerColorEntregaD4(estructura.estado)
+      });
+
+      estructura.subEstados.forEach(subEstado => {
+        const filaSubEstado = grupoEstado.subEstados[subEstado] || { cantidad: 0 };
+        filas.push({
+          nombre: subEstado,
+          cantidad: filaSubEstado.cantidad,
+          porcentaje: this.calcularPorcentajeD4(filaSubEstado.cantidad, total),
+          esEstado: false,
+          nivel: 1,
+          color: this.obtenerColorEntregaD4(subEstado, estructura.estado)
+        });
+      });
+
+      return filas;
+    }, [] as IDashboardFilaD4[]);
+  }
+
+  construirTarjetasEntregaD4(filas: IDashboardFilaD4[], total: number): IDashboardEstadoResumenD4[] {
+    const pendiente = this.obtenerCantidadFilaD4(filas, 'Proyectos Pendientes de entrega', true);
+    const primerEnvio = this.obtenerCantidadFilaD4(filas, 'Primer envío');
+    const reenviado = this.obtenerCantidadFilaD4(filas, 'Reenviado');
+
+    return [
+      { codigo: 'total', nombre: 'TOTAL PROYECTOS', cantidad: total, porcentaje: 100, descripcion: 'Alumnos del rango de fechas seleccionado', color: '#1f5f8b' },
+      { codigo: 'pendiente', nombre: 'PENDIENTE DE ENTREGA', cantidad: pendiente, porcentaje: this.calcularPorcentajeD4(pendiente, total), descripcion: 'El alumno aún no sube archivo', color: '#8c8c8c' },
+      { codigo: 'primer-envio', nombre: 'PRIMER ENVÍO', cantidad: primerEnvio, porcentaje: this.calcularPorcentajeD4(primerEnvio, total), descripcion: 'Versión única, sin reenvío', color: '#1aa6a6' },
+      { codigo: 'reenviado', nombre: 'REENVIADO', cantidad: reenviado, porcentaje: this.calcularPorcentajeD4(reenviado, total), descripcion: 'Versión ≥ 2 (tras observación)', color: '#9b51e0' }
+    ];
+  }
+
+  construirDistribucionEntregaD4(filas: IDashboardFilaD4[]): IDashboardFilaD4[] {
+    return filas.filter(fila => !fila.esEstado);
+  }
+
+  obtenerEstadoEntregaDashboardD4(item: IProyectoPresentadoPorAlumnoD4): string {
+    const subEstado = this.obtenerValorDashboardD4(item.subEstadoEntrega, '');
+    const estadoPorSubEstado = this.obtenerEstadoPorSubEstadoEntregaD4(subEstado);
+    if (estadoPorSubEstado) return estadoPorSubEstado;
+
+    const estado = this.obtenerValorDashboardD4(item.estadoEntrega, '');
+    if (estado) return this.normalizarEstadoEntregaD4(estado);
+    return (item.fechaEnvioOriginal || item.fechaEnvio) ? 'Proyectos entregados' : 'Proyectos Pendientes de entrega';
+  }
+
+  obtenerSubEstadoEntregaDashboardD4(item: IProyectoPresentadoPorAlumnoD4, estadoEntrega: string = null): string {
+    const subEstado = this.obtenerValorDashboardD4(item.subEstadoEntrega, '');
+    if (subEstado) return this.normalizarSubEstadoEntregaD4(subEstado, estadoEntrega);
+    const estado = estadoEntrega || this.obtenerEstadoEntregaDashboardD4(item);
+    if (estado === 'Proyectos Pendientes de entrega') return 'Pendiente de entrega';
+    return this.esReenviadoD4(item) ? 'Reenviado' : 'Primer envío';
+  }
+
+  obtenerEstadoPorSubEstadoEntregaD4(subEstado: string): string {
+    const valor = (subEstado || '').toLowerCase();
+    if (!valor) return '';
+    if (valor.includes('pendiente')) return 'Proyectos Pendientes de entrega';
+    if (valor.includes('primer') || valor.includes('reenviado') || valor.includes('reenv')) return 'Proyectos entregados';
+    return '';
+  }
+
+  normalizarEstadoEntregaD4(estado: string): string {
+    const valor = estado.toLowerCase();
+    if (valor.includes('pendiente')) return 'Proyectos Pendientes de entrega';
+    if (valor.includes('entregado') || valor.includes('envio') || valor.includes('envío')) return 'Proyectos entregados';
+    return estado;
+  }
+
+  normalizarSubEstadoEntregaD4(subEstado: string, estado: string): string {
+    const valor = subEstado.toLowerCase();
+    if (valor.includes('pendiente')) return 'Pendiente de entrega';
+    if (valor.includes('primer')) return 'Primer envío';
+    if (valor.includes('reenviado') || valor.includes('reenv')) return 'Reenviado';
+    if (estado === 'Proyectos Pendientes de entrega') return 'Pendiente de entrega';
+    return subEstado;
+  }
+
+  esReenviadoD4(item: IProyectoPresentadoPorAlumnoD4): boolean {
+    const nroEnvio = Number(item.nroEnvio || 0);
+    return nroEnvio >= 2;
+  }
+
+  obtenerColorEntregaD4(nombre: string, estado: string = ''): string {
+    const valor = `${estado} ${nombre}`.toLowerCase();
+    if (valor.includes('pendiente')) return '#8c8c8c';
+    if (valor.includes('primer')) return '#1aa6a6';
+    if (valor.includes('reenviado') || valor.includes('reenv')) return '#9b51e0';
+    if (valor.includes('entregado')) return '#2ab34b';
+    return '#8c8c8c';
+  }
+
+  construirDashboardDocentesD4(reporte: IProyectoPresentadoPorAlumnoD4[]): IDashboardDocenteD4[] {
+    const agrupado: {
+      [key: string]: {
+        docente: string;
+        programa: string;
+        total: number;
+        diasRevision: number;
+        revisados: number;
+        segmentos: { [key: string]: IDashboardFilaD4 };
+      };
+    } = {};
+
+    reporte.forEach(item => {
+      const docente = this.obtenerValorDashboardD4(item.docenteCalificacion || item.docente, 'Sin docente asignado');
+      if (!agrupado[docente]) {
+        agrupado[docente] = {
+          docente,
+          programa: this.obtenerValorDashboardD4(item.programaEspecifico || item.centroCosto, ''),
+          total: 0,
+          diasRevision: 0,
+          revisados: 0,
+          segmentos: {}
+        };
+      }
+
+      const segmento = this.obtenerSegmentoDocenteD4(item);
+      if (!agrupado[docente].segmentos[segmento]) {
+        agrupado[docente].segmentos[segmento] = {
+          nombre: segmento,
+          cantidad: 0,
+          porcentaje: 0,
+          color: this.obtenerColorSegmentoDocenteD4(segmento)
+        };
+      }
+
+      agrupado[docente].total++;
+      agrupado[docente].segmentos[segmento].cantidad++;
+
+      const diasRevision = this.obtenerDiasRevisionDashboardD4(item);
+      if (diasRevision != null) {
+        agrupado[docente].diasRevision += diasRevision;
+        agrupado[docente].revisados++;
+      }
+    });
+
+    return Object.values(agrupado)
+      .map(docente => ({
+        docente: docente.docente,
+        programa: docente.programa,
+        total: docente.total,
+        tiempoPromedio: docente.revisados ? Math.round((docente.diasRevision / docente.revisados) * 10) / 10 : null,
+        segmentos: this.obtenerSegmentosDocenteOrdenadosD4(docente.segmentos, docente.total)
+      }))
+      .sort((a, b) => b.total - a.total || a.docente.localeCompare(b.docente));
+  }
+
+  obtenerSegmentoDocenteD4(item: IProyectoPresentadoPorAlumnoD4): string {
+    const estadoEntrega = this.obtenerEstadoEntregaDashboardD4(item);
+    if (estadoEntrega === 'Proyectos Pendientes de entrega') return 'Pendiente de entrega';
+
+    const subEstadoCalificacion = this.obtenerSubEstadoCalificacionD4(
+      item,
+      this.obtenerEstadoCalificacionD4(item)
+    );
+    if (['En plazo', 'Por vencer', 'Vencido'].includes(subEstadoCalificacion)) {
+      return `Calificado - ${subEstadoCalificacion}`;
+    }
+    return this.obtenerEstadoCalificacionD4(item) === 'Pendiente de revisión'
+      ? 'Pendiente de revisión'
+      : 'Calificado - En plazo';
+  }
+
+  obtenerSegmentosDocenteOrdenadosD4(segmentos: { [key: string]: IDashboardFilaD4 }, total: number): IDashboardFilaD4[] {
+    const orden = [
+      'Pendiente de revisión',
+      'Calificado - En plazo',
+      'Calificado - Por vencer',
+      'Calificado - Vencido',
+      'Pendiente de entrega'
+    ];
+
+    return orden
+      .map(nombre => segmentos[nombre] || {
+        nombre,
+        cantidad: 0,
+        porcentaje: 0,
+        color: this.obtenerColorSegmentoDocenteD4(nombre)
+      })
+      .filter(segmento => segmento.cantidad > 0)
+      .map(segmento => ({
+        ...segmento,
+        porcentaje: this.calcularPorcentajeD4(segmento.cantidad, total)
+      }));
+  }
+
+  obtenerColorSegmentoDocenteD4(nombre: string): string {
+    const valor = nombre.toLowerCase();
+    if (valor.includes('pendiente de entrega')) return '#a3a3a3';
+    if (valor.includes('pendiente de revisión')) return '#1267d8';
+    if (valor.includes('en plazo')) return '#2ab34b';
+    if (valor.includes('por vencer')) return '#f5a623';
+    if (valor.includes('vencido')) return '#e53935';
+    return '#8c8c8c';
+  }
+
+  get docentesActivosD4(): number {
+    return this.dashboardDocentesD4.length;
+  }
+
+  get tiempoPromedioDocentesD4(): number | null {
+    const docentesConTiempo = this.dashboardDocentesD4.filter(docente => docente.tiempoPromedio != null);
+    if (!docentesConTiempo.length) return null;
+    return Math.round((docentesConTiempo.reduce((total, docente) => total + (docente.tiempoPromedio || 0), 0) / docentesConTiempo.length) * 10) / 10;
+  }
+
+  get tasaObservacionD4(): number {
+    const totalCalificados = this.reporteDashboardBaseD4.filter(item => this.obtenerEstadoCalificacionD4(item) === 'Calificado').length;
+    const observados = this.reporteDashboardBaseD4.filter(item => this.obtenerSubEstadoCalificacionD4(item, this.obtenerEstadoCalificacionD4(item)) === 'Calificado observado').length;
+    return this.calcularPorcentajeD4(observados, totalCalificados);
+  }
+
+  obtenerCodigoFiltroEstadoD4(estado: string): string {
+    return estado
+      .toLowerCase()
+      .replace(/[á]/g, 'a')
+      .replace(/[é]/g, 'e')
+      .replace(/[í]/g, 'i')
+      .replace(/[ó]/g, 'o')
+      .replace(/[ú]/g, 'u')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  calcularPorcentajeD4(cantidad: number, total: number): number {
+    return total ? Math.round((cantidad * 10000) / total) / 100 : 0;
+  }
+
+  obtenerEstadoCalificacionD4(item: IProyectoPresentadoPorAlumnoD4): string {
+    const subEstadoCalificacion = this.obtenerValorDashboardD4(item.subEstadoCalificacion, '');
+    const estadoPorSubEstado = this.obtenerEstadoPorSubEstadoCalificacionD4(subEstadoCalificacion);
+    if (estadoPorSubEstado) return estadoPorSubEstado;
+
+    const estadoCalificacion = this.obtenerValorDashboardD4(item.estadoCalificacion, '');
+    if (estadoCalificacion) return this.normalizarEstadoCalificacionD4(estadoCalificacion);
+    if (this.esPendienteProyectoCalificacionD4(item)) return 'Sin proyecto (No aplica)';
+    if (item.estadoDevuelto != null) return 'Devuelto';
+    if (item.fechaCalificacionOriginal || item.fechaCalificacion || item.nota) return 'Calificado';
+    return 'Pendiente de revisión';
+  }
+
+  obtenerEstadoPorSubEstadoCalificacionD4(subEstado: string): string {
+    const valor = subEstado.toLowerCase();
+    if (!valor) return '';
+    if (valor.includes('observado') || valor.includes('sin observaciones')) return 'Calificado';
+    if (valor.includes('en plazo') || valor.includes('por vencer') || valor.includes('vencido')) return 'Pendiente de revisión';
+    if (valor.includes('no entregado') || valor.includes('no aplica')) return 'Sin proyecto (No aplica)';
+    return '';
+  }
+
+  obtenerSubEstadoCalificacionD4(item: IProyectoPresentadoPorAlumnoD4, estadoCalificacion: string = null): string {
+    const subEstadoCalificacion = this.obtenerValorDashboardD4(item.subEstadoCalificacion, '');
+    if (subEstadoCalificacion) return this.normalizarSubEstadoCalificacionD4(subEstadoCalificacion, estadoCalificacion);
+    const estado = estadoCalificacion || this.obtenerEstadoCalificacionD4(item);
+    if (this.esEstadoPendienteProyectoD4(estado)) return 'No entregado aún';
+    if (item.estadoDevuelto != null) return 'Proyecto devuelto';
+    if (item.nota) return `Nota: ${item.nota}`;
+    return estado;
+  }
+
+  normalizarEstadoCalificacionD4(estado: string): string {
+    const valor = estado.toLowerCase();
+    if (valor.includes('sin proyecto') || valor.includes('no aplica')) return 'Sin proyecto (No aplica)';
+    if (valor.includes('pendiente')) return 'Pendiente de revisión';
+    if (valor.includes('calificado')) return 'Calificado';
+    return estado;
+  }
+
+  normalizarSubEstadoCalificacionD4(subEstado: string, estado: string): string {
+    const valor = subEstado.toLowerCase();
+    if (valor.includes('observado')) return 'Calificado observado';
+    if (valor.includes('sin observaciones')) return 'Calificado sin observaciones';
+    if (valor.includes('en plazo')) return 'En plazo';
+    if (valor.includes('por vencer')) return 'Por vencer';
+    if (valor.includes('vencido')) return 'Vencido';
+    if (valor.includes('no entregado')) return 'No entregado aún';
+    if (valor.includes('no aplica')) return 'No entregado aún';
+    if (this.esEstadoPendienteProyectoD4(estado)) return 'No entregado aún';
+    return subEstado;
+  }
+
+  esPendienteProyectoCalificacionD4(item: IProyectoPresentadoPorAlumnoD4): boolean {
+    const estadoCalificacion = this.obtenerValorDashboardD4(item.estadoCalificacion, '');
+    return !estadoCalificacion && !item.fechaEnvioOriginal && !item.fechaEnvio;
+  }
+
+  esEstadoPendienteProyectoD4(estado: string): boolean {
+    const valor = (estado || '').toLowerCase();
+    return valor.includes('sin proyecto') || valor.includes('no aplica');
+  }
+
+  obtenerColorCalificacionD4(nombre: string, estado: string = ''): string {
+    const valor = `${estado} ${nombre}`.toLowerCase();
+    if (valor.includes('sin proyecto') || valor.includes('pendiente de proyecto') || valor.includes('no entregado') || valor.includes('no aplica')) return '#8c8c8c';
+    if (valor.includes('en plazo')) return '#2ab34b';
+    if (valor.includes('por vencer')) return '#f5a623';
+    if (valor.includes('vencido')) return '#e53935';
+    if (valor.includes('observado')) return '#1267d8';
+    if (valor.includes('sin observaciones')) return '#5a9be7';
+    if (valor.includes('pendiente')) return '#1267d8';
+    if (valor.includes('calificado')) return '#2ab34b';
+    return '#8c8c8c';
+  }
+
+  obtenerValorDashboardD4(valor: string | null, valorDefecto: string): string {
+    return valor && valor.toString().trim() ? valor.toString().trim() : valorDefecto;
+  }
+
+  formatearFechaDashboardD4(fecha: string | Date): string {
+    if (!fecha) return '';
+    const fechaConvertida = new Date(fecha);
+    if (isNaN(fechaConvertida.getTime())) return fecha.toString();
+    const dia = fechaConvertida.getDate().toString().padStart(2, '0');
+    const mes = (fechaConvertida.getMonth() + 1).toString().padStart(2, '0');
+    const anio = fechaConvertida.getFullYear();
+    return `${dia}-${mes}-${anio}`;
+  }
+
+  obtenerDiasRevisionDashboardD4(item: IProyectoPresentadoPorAlumnoD4): number | null {
+    const fechaEnvio = item.fechaEnvioOriginal || item.fechaEnvio;
+    const fechaCalificacion = item.fechaCalificacionOriginal || item.fechaCalificacion;
+    if (!fechaEnvio) return null;
+    return this.obtenerDiasTranscurridosD4(fechaEnvio, fechaCalificacion);
+  }
+
+  obtenerFechaDashboardD4(fecha: string): Date | null {
+    if (!fecha) return null;
+    const partes = fecha.split('-');
+    if (partes.length === 3 && partes[0].length === 2) return new Date(`${partes[2]}-${partes[1]}-${partes[0]}`);
+
+    const fechaConvertida = new Date(fecha);
+    return isNaN(fechaConvertida.getTime()) ? null : fechaConvertida;
+  }
+
+  obtenerDiasTranscurridosD4(fEnvio: string, fRevisado: string): number {
+    const startDate = this.obtenerFechaDashboardD4(fEnvio);
+    const endDate = fRevisado ? this.obtenerFechaDashboardD4(fRevisado) : new Date();
+    if (!startDate || !endDate) return 0;
+
+    const timeDifferenceMs = endDate.getTime() - startDate.getTime();
+    return Math.max(0, Math.floor(timeDifferenceMs / (1000 * 60 * 60 * 24)));
   }
 
   formatearNumero(valor: number | null | undefined, decimales: number = 2): string {

@@ -78,6 +78,7 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
   estadoCalificacionFilter = '';
   fechaInicio: Date | null = null;
   fechaFin: Date | null = null;
+  intervencionBot = false;
 
   pageSizeOptions: number[] = [10, 20, 50, 100];
   pageSize = 20;
@@ -155,7 +156,8 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.pageSizeAlumnos,
       this.fechaInicio,
       this.fechaFin,
-      codigoMatricula
+      codigoMatricula,
+      this.intervencionBot ? 1 : 0
     );
   }
 
@@ -165,7 +167,8 @@ export class ListaAlumnoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentPageNoAlumnos,
       this.pageSizeNoAlumnos,
       this.fechaInicio,
-      this.fechaFin
+      this.fechaFin,
+      this.intervencionBot ? 1 : 0
     );
   }
 
