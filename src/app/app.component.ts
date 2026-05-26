@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { IntegraService } from '@shared/services/integra.service';
 import { UrlService } from '@shared/services/url.service';
 import { constApiGestionPersonal, constApiGlobal } from '@environments/constApi';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,8 @@ import { constApiGestionPersonal, constApiGlobal } from '@environments/constApi'
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit{
+  isSandbox = !environment.production;
+
   constructor(
     private router: Router,
     private titleService: Title,
