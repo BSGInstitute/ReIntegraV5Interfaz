@@ -1343,6 +1343,8 @@ ObtenerHilosPaginadosPorAlumno: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorAlu
 ObtenerHilosChatPorSegmentoPaginado: "/ChatDetalleIntegra/ObtenerHilosChatPorSegmentoPaginado",
 ObtenerHilosPaginadosPorSegmento: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorSegmento",
 ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
+ObtenerChatBotWhatsAppAtcPorSolicitudAlumno: "/ChatDetalleIntegra/ObtenerChatBotWhatsAppAtcPorSolicitudAlumno",
+ObtenerChatBotPorSolicitud: "/ChatDetalleIntegra/ObtenerChatBotPorSolicitud",
   };
 
 export const constApiMarketing = {
