@@ -29,12 +29,14 @@ import {
   IReporteCalidadProcesamientoCambioFase,
   IReporteCambioFase,
   IReporteCambioFaseOportunidad,
+  IReporteConsentimientoWhatsapp,
   IReporteConteoDatosFase,
   IReporteTasaCambio,
   IReporteTasaCambioPredictivo,
   IReporteTasaContacto,
   IReporteTasaContactoAmbos,
   IReporteTasaContactoConySinLlamada,
+  IReporteTasaContactoWhatsapp,
   ItemConteoFasePais,
   ReporteTasaCambio,
   ReporteTasaCambioPredictivo,
@@ -113,7 +115,11 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
   gridTasaContacto: KendoGrid = new KendoGrid();
   gridTasaContactoOtroMedio: KendoGrid = new KendoGrid();
   gridTasaContactoV2: KendoGrid = new KendoGrid();
+  gridTasaContactoV2LlamadasWhatsapp: KendoGrid = new KendoGrid();
+
   gridTasaFaseFinal: KendoGrid = new KendoGrid();
+  gridSolicitudesWhatsapp: KendoGrid = new KendoGrid();
+
 
   gridControlActividades: KendoGrid = new KendoGrid();
   gridTasaConversion: KendoGrid = new KendoGrid();
@@ -414,6 +420,7 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         this.btnBuscarDisabled = true;
         this.iniciarLoading();
         this.generarReporteTasaContactoV2AsyncReplica();
+        this.generarReporteTasaContactoV2LlamadasWhatsappAsyncReplica()
         this.generarReporteTasaContactoOtroMedioAsyncReplica();
         this.generarReporteV2ControlBicYEAcumuladoAsyncReplica();
         this.generarReporteV2AsyncReplica();
@@ -473,9 +480,17 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
     this.gridTasaContactoV2.showPopup = false;
     this.gridTasaContactoV2.data = [];
 
-    this.gridTasaFaseFinal.loading=true;
+    this.gridTasaContactoV2LlamadasWhatsapp.loading = true;
+    this.gridTasaContactoV2LlamadasWhatsapp.showPopup = false;
+    this.gridTasaContactoV2LlamadasWhatsapp.data = []
+
+    this.gridTasaFaseFinal.loading = true;
     this.gridTasaFaseFinal.showPopup = false;
     this.gridTasaFaseFinal.data = [];
+
+    this.gridSolicitudesWhatsapp.loading = true;
+    this.gridSolicitudesWhatsapp.showPopup = false;
+    this.gridSolicitudesWhatsapp.data = [];
 
     this.gridControlCambiodeFase.loading = true;
     this.gridControlCambiodeFase.showPopup = false;
@@ -643,6 +658,38 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
         error: (error) => {
           this.gridTasaContactoV2.loading = false;
           this.gridTasaFaseFinal.loading = false;
+          let mensaje = this.alertaService.getMessageErrorService(error);
+          this.alertaService.notificationWarning(mensaje);
+        },
+      });
+  }
+
+  generarReporteTasaContactoV2LlamadasWhatsappAsyncReplica(reload?: boolean) {
+    this.gridTasaContactoV2LlamadasWhatsapp.loading = true;
+    this.gridSolicitudesWhatsapp.loading = true;
+    this.integraReplicaService
+      .postJsonResponse(
+        constApiComercial.ReporteCambioDeFaseTresCxGenerarReporteTasaContactoWhatsappV2Async,
+        JSON.stringify(this.filtroForm)
+      )
+      .subscribe({
+        next: (resp: HttpResponse<IReporteTasaContactoWhatsapp>) => {
+          this.btnBuscarDisabled = false;
+          if (resp.body != null) {
+            this.setDataGridTasaContactoV2LlamadasWhatsapp(
+              resp.body.reporteTasaContactoLlamadasWhatsapp
+            );
+
+            this.setDataGridSolicitudesWhatsapp(resp.body.reporteConsentimientosWhatsapp);
+
+          }
+          //if (!reload) {
+          //  this.generarReporteLlamadaActividad();
+          //}
+        },
+        error: (error) => {
+          this.gridTasaContactoV2.loading = false;
+          this.gridSolicitudesWhatsapp.loading = false;
           let mensaje = this.alertaService.getMessageErrorService(error);
           this.alertaService.notificationWarning(mensaje);
         },
@@ -1417,6 +1464,96 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
     this.gridTasaContactoV2.loading = false;
   }
 
+    /**
+   * Carga los datos para la tabla de Tasa de contacto
+   * @param reporteTasaContactoLlamadasWhatsapp
+   */
+  setDataGridTasaContactoV2LlamadasWhatsapp(
+    reporteTasaContactoLlamadasWhatsapp: IReporteTasaContacto
+  ) {
+    let tasaContacto =
+      (reporteTasaContactoLlamadasWhatsapp.totalLlamadasEjecutadas/
+        reporteTasaContactoLlamadasWhatsapp.totalLlamadas) *
+      100;
+    /*let tasaContactoEjecutadoManual =
+      ((reporteTasaContactoLlamadasWhatsapp.totalLlamadasEjecutadasConLlamada + reporteTasaContactoLlamadasWhatsapp.totalLlamadasManual)/
+        reporteTasaContactoLlamadasWhatsapp.totalLlamadas) *
+      100;
+    let tasaContactoEjecutadoContestaCorta =
+      ((reporteTasaContactoLlamadasWhatsapp.totalLlamadasEjecutadasConLlamada + reporteTasaContactoLlamadasWhatsapp.totalLlamadasManual + reporteTasaContactoLlamadasWhatsapp.totalLlamadasContestaCorta)/
+        reporteTasaContactoLlamadasWhatsapp.totalLlamadas) *
+      100;
+    let tasaContactoEjecutadoContestaOcupado =
+      ((reporteTasaContactoLlamadasWhatsapp.totalLlamadasEjecutadasConLlamada + reporteTasaContactoLlamadasWhatsapp.totalLlamadasManual + reporteTasaContactoLlamadasWhatsapp.totalLlamadasContestaCorta + reporteTasaContacto.totalLlamadasContestaOcupado)/
+        reporteTasaContactoLlamadasWhatsapp.totalLlamadas) *
+      100;
+    let cambioFaseEjecutada =
+      (reporteTasaContactoConySinLlamada.cambiosFaseConLlamada /
+        reporteTasaContactoLlamadasWhatsapp.totalLlamadasEjecutadasConLlamada) *
+      100;*/
+    this.gridTasaContactoV2LlamadasWhatsapp.data = [
+      {
+        descripcion: 'Número de actividades totales',
+        valor: reporteTasaContactoLlamadasWhatsapp.totalLlamadas,
+      },
+      {
+        descripcion: 'Número de actividades ejecutadas',
+        valor: reporteTasaContactoLlamadasWhatsapp.totalLlamadasEjecutadas,
+      },
+      //{
+      //  descripcion: 'Actividades reprogramadas manuales',
+      //  valor: reporteTasaContactoLlamadasWhatsapp.totalLlamadasManual,
+      //},
+      //{
+      //  descripcion: 'Actividades reprogramadas Contesta y Corta',
+      //  valor: reporteTasaContactoLlamadasWhatsapp.totalLlamadasContestaCorta,
+      //},
+      //{
+      //  descripcion: 'Actividades reprogramadas Contesta esta Ocupado no puede atender en este momento',
+      //  valor: reporteTasaContactoLlamadasWhatsapp.totalLlamadasContestaOcupado,
+      //},
+      {
+        descripcion: 'Tasa de contacto ejecutadas',
+        valor: !isNaN(tasaContacto) ? `${tasaContacto.toFixed(0)}%` : '0.0%',
+      },
+      //{
+      //  descripcion: 'Tasa de contacto (Ejecutadas+Manuales)',
+      //  valor: !isNaN(tasaContactoEjecutadoManual) ? `${tasaContactoEjecutadoManual.toFixed(0)}%` : '0.0%',
+      //},
+      //{
+      //  descripcion: 'Tasa de contacto (Ejecutadas+Manuales+Contesta y Corta)',
+      //  valor: !isNaN(tasaContactoEjecutadoContestaCorta) ? `${tasaContactoEjecutadoContestaCorta.toFixed(0)}%` : '0.0%',
+      //},
+      //{
+      //  descripcion: 'Tasa de contacto (Ejecutadas+Manuales+Contesta y Corta+Contesta esta Ocupado)',
+      //  valor: !isNaN(tasaContactoEjecutadoContestaOcupado) ? `${tasaContactoEjecutadoContestaOcupado.toFixed(0)}%` : '0.0%',
+      //},
+      // {
+      //   descripcion: 'Número de cambios de fase (solo con llamadas)',
+      //   valor: reporteTasaContactoConySinLlamada.cambiosFaseConLlamada,
+      // },
+      // {
+      //   descripcion: 'Número de cambios de fase (sin llamadas)',
+      //   valor: reporteTasaContactoConySinLlamada.cambiosFaseSinLlamada,
+      // },
+      //{
+      //  descripcion: '% Cambios de fase ejecutadas',
+      //  valor: !isNaN(cambioFaseEjecutada)
+      //    ? `${cambioFaseEjecutada.toFixed(0)}%`
+      //    : '0.0%',
+      //},
+      //{
+      //  descripcion: 'Oportunidades pasadas a fase final (con llamada real asociada)',
+      //  valor: reporteTasaContactoConySinLlamada.cambiosFaseOCconLlamada,
+      //},
+      // {
+      //   descripcion: 'Oportunidades pasadas a fase final (sin llamadas)',
+      //   valor: reporteTasaContactoConySinLlamada.cambiosFaseOCsinLlamada,
+      // },
+    ];
+    this.gridTasaContactoV2LlamadasWhatsapp.loading = false;
+  }
+
   /**
    * Carga los datos para la tabla de Tasa de contacto
    * @param reporteTasaContacto
@@ -1437,6 +1574,36 @@ export class ReporteCambioFaseTresCxComponent implements OnInit {
       }
     ];
     this.gridTasaFaseFinal.loading = false;
+  }
+
+  /**
+   * Carga los datos para la tabla de Tasa de contacto
+   * @param reporteSolicitudesWhatsapp
+   */
+
+  setDataGridSolicitudesWhatsapp(
+    reporteSolicitudesWhatsapp: IReporteConsentimientoWhatsapp
+  ) {
+    
+    this.gridSolicitudesWhatsapp.data = [
+      {
+        descripcion: 'Cantidad Total de Solicitudes Enviadas',
+        valor: reporteSolicitudesWhatsapp.cantidadTotal,
+      },
+      {
+        descripcion: 'Cantidad Solicitudes Aprobadas',
+        valor: reporteSolicitudesWhatsapp.cantidadAprobados,
+      },
+      {
+        descripcion: 'Cantidad Solicitudes Pendientes de Confirmar',
+        valor: reporteSolicitudesWhatsapp.cantidadPendientes,
+      },
+      {
+        descripcion: 'Cantidad Solicitudes Rechazadas',
+        valor: reporteSolicitudesWhatsapp.cantidadRechazados,
+      }
+    ];
+    this.gridSolicitudesWhatsapp.loading = false;
   }
 
   /**

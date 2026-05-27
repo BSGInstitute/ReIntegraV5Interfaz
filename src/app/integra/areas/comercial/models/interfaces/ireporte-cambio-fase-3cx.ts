@@ -294,9 +294,21 @@ export interface IReporteTasaContactoConySinLlamada {
   cambiosFaseOCotroMedio: number;
 
 }
+export interface IReporteConsentimientoWhatsapp {
+  cantidadTotal: number;
+  cantidadAprobados: number;
+  cantidadRechazados: number;
+  cantidadPendientes: number;
+
+}
 export interface IReporteTasaContactoAmbos {
   reporteTasaContacto: IReporteTasaContacto;
   reporteTasaContactoConySinLlamada: IReporteTasaContactoConySinLlamada;
+}
+
+export interface IReporteTasaContactoWhatsapp{
+  reporteTasaContactoLlamadasWhatsapp: IReporteTasaContacto;
+  reporteConsentimientosWhatsapp: IReporteConsentimientoWhatsapp;
 }
 export interface IComboReporteCambioFase {
   centroCostos: Array<{ id: number; nombre: string }>;

@@ -33,6 +33,8 @@ export const constApiComercial = {
     '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxOtroMedioAsync',
   ReporteCambioDeFaseTresCxGenerarReporteTasaContactoTresCxV2Async:
     '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxV2Async',
+  ReporteCambioDeFaseTresCxGenerarReporteTasaContactoWhatsappV2Async:
+    '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoWhatsappV2Async',
   ReporteCambioDeFaseTresCxGenerarReporteV2IntegraAsync:
     '/ReporteCambioDeFaseTresCx/GenerarReporteV2IntegraAsync',
   ReporteCambioDeFaseTresCxGenerarAcumuladoTiempoContactoEfectivo:
