@@ -1,4 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
+
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
   FormBuilder,
@@ -141,6 +142,7 @@ interface EstadoCascadaCombo {
 export class PreguntasInteractivasPortalWebComponent implements OnInit {
   @ViewChild('modalConfiguracionRespuesta') modalConfiguracionRespuesta: any;
   @ViewChild('modalConfiguracionImportar') modalConfiguracionImportar: any;
+  @ViewChild('modalConfiguracionDificultad') modalConfiguracionDificultad: any;
   @ViewChild('calificacionAutomatica', { static: false }) calificacionAutomatica: ElementRef<HTMLInputElement>;
   @ViewChild('calificacionManual', { static: false }) calificacionManual: ElementRef<HTMLInputElement>;
 
@@ -188,6 +190,16 @@ export class PreguntasInteractivasPortalWebComponent implements OnInit {
 
   modalRefEditar: NgbModalRef = null;
   modalRefImportar: NgbModalRef = null;
+  modalRefDificultad: NgbModalRef = null;
+  loaderModalDificultad: boolean = false;
+  loaderGuardarDificultad: boolean = false;
+  listaDificultades: any[] = [];
+  idDificultadSeleccionada: number | null = null;
+  preguntaSeleccionadaDificultad: PreguntaInteractiva | null = null;
+  get dificultadSeleccionadaColor(): string | null {
+    const dif = this.listaDificultades.find(d => d.id === this.idDificultadSeleccionada);
+    return dif?.colorHexadecimal ?? null;
+  }
 
   archivoImportado = new FormControl(null);
   formConfiguracionPreguntas: FormGroup = this._formBuilder.group({
@@ -248,6 +260,7 @@ export class PreguntasInteractivasPortalWebComponent implements OnInit {
     this.obtener();
     this.obtenerFiltros();
     this.obtenerReporte();
+    this.obtenerDificultades();
     this.cargarConfiguracionGridCantidadIntentos();
     this.cargarConfiguracionGridConfiguracionRespuesta();
   }
@@ -288,6 +301,16 @@ export class PreguntasInteractivasPortalWebComponent implements OnInit {
           this._alertaService.notificationWarning(`Surgio un error: ${err}`);
         },
       });
+  }
+  obtenerDificultades(): void {
+    this._integraService.getJsonResponse(constApiPlanificacion.MaestroPreguntaProgramaCapacitacionObtenerDificultades).subscribe({
+      next: (data: any) => {
+        this.listaDificultades = data.body;
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudieron cargar los niveles de dificultad', 'error');
+      }
+    });
   }
   obtenerFiltros(): void {
     this._integraService
@@ -1189,5 +1212,60 @@ export class PreguntasInteractivasPortalWebComponent implements OnInit {
           indiceCapitulo
         ].listaSubSeccionProgramaCapacitacion;
     }
+  }
+
+  abrirModalDificultad(dataSource: PreguntaInteractiva): void {
+    this.preguntaSeleccionadaDificultad = dataSource;
+    this.idDificultadSeleccionada = null;
+    this.loaderModalDificultad = true;
+    this.modalRefDificultad = this._modalService.open(this.modalConfiguracionDificultad, {
+      size: 'md',
+      centered: true,
+      backdrop: 'static'
+    });
+    this._integraService.getJsonResponse(`${constApiPlanificacion.MaestroPreguntaProgramaCapacitacionObtenerDificultadPorIdPregunta}/${dataSource.id}`).subscribe({
+      next: (dificultadActual: any) => {
+        this.idDificultadSeleccionada = dificultadActual.body?.idPreguntaProgramaCapacitacionDificultad ?? null;
+        this.loaderModalDificultad = false;
+      },
+      error: () => {
+        this.loaderModalDificultad = false;
+        Swal.fire('Error', 'No se pudo cargar la dificultad de la pregunta', 'error');
+      }
+    });
+  }
+
+  guardarDificultad(): void {
+    if (this.idDificultadSeleccionada === null) return;
+    this.loaderGuardarDificultad = true;
+    const body = {
+      id: this.preguntaSeleccionadaDificultad.id,
+      idPreguntaProgramaCapacitacionDificultad: this.idDificultadSeleccionada
+    };
+    this._integraService
+      .putJsonResponse(constApiPlanificacion.MaestroPreguntaProgramaCapacitacionActualizarDificultad, body)
+      .subscribe({
+        next: () => {
+          this.loaderGuardarDificultad = false;
+          this.resetearModalDificultad();
+          Swal.fire({ icon: 'success', title: 'Dificultad actualizada', timer: 1500, showConfirmButton: false });
+          this.obtener();
+        },
+        error: (err: any) => {
+          this.loaderGuardarDificultad = false;
+          Swal.fire('Error', err?.error || 'No se pudo actualizar la dificultad', 'error');
+        }
+      });
+  }
+
+  resetearModalDificultad(): void {
+    if (this.modalRefDificultad) {
+      this.modalRefDificultad.close();
+      this.modalRefDificultad = null;
+    }
+    this.preguntaSeleccionadaDificultad = null;
+    this.idDificultadSeleccionada = null;
+    this.loaderGuardarDificultad = false;
+    this.loaderModalDificultad = false;
   }
 }

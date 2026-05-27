@@ -33,6 +33,8 @@ export const constApiComercial = {
     '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxOtroMedioAsync',
   ReporteCambioDeFaseTresCxGenerarReporteTasaContactoTresCxV2Async:
     '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoTresCxV2Async',
+  ReporteCambioDeFaseTresCxGenerarReporteTasaContactoWhatsappV2Async:
+    '/ReporteCambioDeFaseTresCx/GenerarReporteTasaContactoWhatsappV2Async',
   ReporteCambioDeFaseTresCxGenerarReporteV2IntegraAsync:
     '/ReporteCambioDeFaseTresCx/GenerarReporteV2IntegraAsync',
   ReporteCambioDeFaseTresCxGenerarAcumuladoTiempoContactoEfectivo:
@@ -1345,6 +1347,53 @@ ObtenerHilosPaginadosPorSegmento: "/ChatDetalleIntegra/ObtenerHilosPaginadosPorS
 ObtenerSolicitudesPorHiloChat: "/ChatDetalleIntegra/ObtenerSolicitudesPorHiloChat",
 ObtenerChatBotWhatsAppAtcPorSolicitudAlumno: "/ChatDetalleIntegra/ObtenerChatBotWhatsAppAtcPorSolicitudAlumno",
 ObtenerChatBotPorSolicitud: "/ChatDetalleIntegra/ObtenerChatBotPorSolicitud",
+
+  // MaestroBsgTento
+  MaestroBsgTentoObtenerAreasConRuta: '/MaestroBsgTentoEstudioProgresivo/ObtenerAreasConRuta',
+  MaestroBsgTentoObtenerUnidadesPorArea: '/MaestroBsgTentoEstudioProgresivo/ObtenerUnidadesPorArea',
+  MaestroBsgTentoInsertarUnidad: '/MaestroBsgTentoEstudioProgresivo/InsertarUnidad',
+  MaestroBsgTentoActualizarUnidad: '/MaestroBsgTentoEstudioProgresivo/ActualizarUnidad',
+  MaestroBsgTentoActualizarOrdenUnidades: '/MaestroBsgTentoEstudioProgresivo/ActualizarOrdenUnidades',
+  MaestroBsgTentoEliminarUnidad: '/MaestroBsgTentoEstudioProgresivo/EliminarUnidad',
+  MaestroBsgTentoObtenerPasosPorUnidad: '/MaestroBsgTentoEstudioProgresivo/ObtenerPasosPorUnidad',
+  MaestroBsgTentoInsertarPaso: '/MaestroBsgTentoEstudioProgresivo/InsertarPaso',
+  MaestroBsgTentoActualizarPaso: '/MaestroBsgTentoEstudioProgresivo/ActualizarPaso',
+  MaestroBsgTentoActualizarOrdenPasos: '/MaestroBsgTentoEstudioProgresivo/ActualizarOrdenPasos',
+  MaestroBsgTentoEliminarPaso: '/MaestroBsgTentoEstudioProgresivo/EliminarPaso',
+  MaestroBsgTentoObtenerComboPrograma: '/MaestroBsgTentoEstudioProgresivo/ObtenerComboPrograma',
+
+  // MaestroBsgTentoLogros
+  MaestroBsgTentoLogrosObtenerTiposCondicion: '/MaestroBsgTentoLogros/ObtenerTiposCondicion',
+  MaestroBsgTentoLogrosObtenerLogros: '/MaestroBsgTentoLogros/ObtenerLogros',
+  MaestroBsgTentoLogrosInsertarLogro: '/MaestroBsgTentoLogros/InsertarLogro',
+  MaestroBsgTentoLogrosActualizarLogro: '/MaestroBsgTentoLogros/ActualizarLogro',
+  MaestroBsgTentoLogrosActualizarOrdenLogros: '/MaestroBsgTentoLogros/ActualizarOrdenLogros',
+  MaestroBsgTentoLogrosEliminarLogro: '/MaestroBsgTentoLogros/EliminarLogro',
+  MaestroBsgTentoLogrosObtenerMisiones: '/MaestroBsgTentoLogros/ObtenerMisiones',
+  MaestroBsgTentoLogrosInsertarMision: '/MaestroBsgTentoLogros/InsertarMision',
+  MaestroBsgTentoLogrosActualizarMision: '/MaestroBsgTentoLogros/ActualizarMision',
+  MaestroBsgTentoLogrosEliminarMision: '/MaestroBsgTentoLogros/EliminarMision',
+  MaestroBsgTentoLogrosObtenerTiposMision: '/MaestroBsgTentoLogros/ObtenerTiposMision',
+
+  // MaestroBsgTentoPowerUps
+  MaestroBsgTentoPowerUpsObtenerPowerUps: '/MaestroBsgTentoPowerUps/ObtenerPowerUps',
+  MaestroBsgTentoPowerUpsInsertarPowerUp: '/MaestroBsgTentoPowerUps/InsertarPowerUp',
+  MaestroBsgTentoPowerUpsActualizarPowerUp: '/MaestroBsgTentoPowerUps/ActualizarPowerUp',
+  MaestroBsgTentoPowerUpsActualizarOrdenPowerUps: '/MaestroBsgTentoPowerUps/ActualizarOrdenPowerUps',
+  MaestroBsgTentoPowerUpsEliminarPowerUp: '/MaestroBsgTentoPowerUps/EliminarPowerUp',
+  MaestroBsgTentoPowerUpsObtenerCanalesDistribucion: '/MaestroBsgTentoPowerUps/ObtenerCanalesDistribucion',
+  // MaestroBsgTentoSuscripciones
+  MaestroBsgTentoSuscripcionesObtenerPlanes: '/MaestroBsgTentoSuscripciones/ObtenerPlanes',
+  MaestroBsgTentoSuscripcionesInsertarPlan: '/MaestroBsgTentoSuscripciones/InsertarPlan',
+  MaestroBsgTentoSuscripcionesActualizarPlan: '/MaestroBsgTentoSuscripciones/ActualizarPlan',
+  MaestroBsgTentoSuscripcionesEliminarPlan: '/MaestroBsgTentoSuscripciones/EliminarPlan',
+  MaestroBsgTentoSuscripcionesObtenerBeneficios: '/MaestroBsgTentoSuscripciones/ObtenerBeneficios',
+  MaestroBsgTentoSuscripcionesObtenerPlataformasTienda: '/MaestroBsgTentoSuscripciones/ObtenerPlataformasTienda',
+  // MaestroBsgTentoSocial
+  MaestroBsgTentoSocialObtenerPublicaciones: '/MaestroBsgTentoSocial/ObtenerPublicaciones',
+  MaestroBsgTentoSocialActualizarVisibilidadPublicacion: '/MaestroBsgTentoSocial/ActualizarVisibilidadPublicacion',
+  MaestroBsgTentoSocialEliminarPublicacion: '/MaestroBsgTentoSocial/EliminarPublicacion',
+  MaestroBsgTentoSocialObtenerTiposReaccion: '/MaestroBsgTentoSocial/ObtenerTiposReaccion',
   };
 
 export const constApiMarketing = {
@@ -3244,6 +3293,9 @@ export const constApiPlanificacion = {
 
   ProgramaGeneralObtenerProgramasGenerales:
     '/ProgramaGeneral/ObtenerProgramasGenerales', //GET
+  ProgramaGeneralObtenerHabilitadoBsgTento: '/ProgramaGeneral/ObtenerHabilitadoBsgTento',
+  ProgramaGeneralActualizarHabilitadoBsgTento: '/ProgramaGeneral/ActualizarHabilitadoBsgTento',
+  ProgramaGeneralObtenerTodosHabilitadoBsgTento: '/ProgramaGeneral/ObtenerTodosHabilitadoBsgTento',
 
   /*Modulo Pespecifico */
   PEspecificoObtenerPorNombreAutocomplete:
@@ -3888,6 +3940,12 @@ export const constApiPlanificacion = {
     '/MaestroPreguntaProgramaCapacitacion/ImportarExcel', //
   MaestroPreguntaProgramaCapacitacionObtenerReportePreguntasInteractivasExportacionExcel:
     '/MaestroPreguntaProgramaCapacitacion/ObtenerReportePreguntasInteractivasExportacionExcel', //GET
+  MaestroPreguntaProgramaCapacitacionObtenerDificultades:
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerDificultades',
+  MaestroPreguntaProgramaCapacitacionActualizarDificultad:
+    '/MaestroPreguntaProgramaCapacitacion/ActualizarDificultad',
+  MaestroPreguntaProgramaCapacitacionObtenerDificultadPorIdPregunta:
+    '/MaestroPreguntaProgramaCapacitacion/ObtenerDificultadPorIdPregunta',
   PGeneralTipoDescuentoAsociarDescuentos:
     '/PGeneralTipoDescuento/AsociarDescuentos',
   //GESTION DE MATERIAL

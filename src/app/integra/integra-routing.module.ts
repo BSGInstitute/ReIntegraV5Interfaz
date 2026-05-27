@@ -10,7 +10,7 @@ const routes: Routes = [
     children: [
       {
         path: 'Planificacion',
-        canActivateChild: [ModuloGuard],
+        // canActivateChild: [ModuloGuard],
         loadChildren: () =>
           import('@integra/areas/planificacion/planificacion.module').then(
             (m) => m.PlanificacionModule
@@ -50,7 +50,7 @@ const routes: Routes = [
       },
       {
         path: 'Operaciones',
-        canActivateChild: [ModuloGuard],
+        // canActivateChild: [ModuloGuard],
         loadChildren: () =>
           import('@integra/areas/operaciones/operaciones.module').then(
             (m) => m.OperacionesModule

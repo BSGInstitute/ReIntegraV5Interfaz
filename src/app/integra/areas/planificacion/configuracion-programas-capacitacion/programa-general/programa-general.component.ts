@@ -66,6 +66,11 @@ export class ProgramaGeneralComponent implements OnInit {
     operator: 'contains',
   };
   subAreasCapacitacion: any[];
+
+  habilitadoBsgTentoActual: boolean | null = null;
+  dataItemBsgTento: any = null;
+  bsgTentoMap: { [key: number]: boolean | null } = {};
+
   ngOnInit(): void {
     this._pgeneralService.ready();
     this.formFiltro.get('subArea').disable();
@@ -116,6 +121,7 @@ export class ProgramaGeneralComponent implements OnInit {
         next: (resp) => {
           this.gridProgramaGeneral.data = resp.body;
           console.log(resp.body);
+          this.cargarEstadosBsgTento();
         },
         error: (error) => {
           let mensaje = this._alertaService.getMessageErrorService(error);
@@ -360,5 +366,73 @@ export class ProgramaGeneralComponent implements OnInit {
       }
     );
     modalRef.componentInstance.pgeneralService = this._pgeneralService;
+  }
+
+  cargarEstadosBsgTento(): void {
+    this._integraService
+      .getJsonResponse(constApiPlanificacion.ProgramaGeneralObtenerTodosHabilitadoBsgTento)
+      .subscribe({
+        next: (resp: any) => {
+          this.bsgTentoMap = {};
+          (resp.body || []).forEach((item: any) => {
+            this.bsgTentoMap[item.id] = item.habilitadoBsgTento;
+          });
+        },
+        error: () => {} // silencioso — es información visual auxiliar
+      });
+  }
+
+  toggleBsgTento(dataItem: any): void {
+    this.dataItemBsgTento = dataItem;
+    this._integraService
+      .getJsonResponse(`${constApiPlanificacion.ProgramaGeneralObtenerHabilitadoBsgTento}/${dataItem.id}`)
+      .subscribe({
+        next: (resp: any) => {
+          const estadoActual: boolean = resp.body ?? false;
+          const nuevoEstado = !estadoActual;
+          const accion = nuevoEstado ? 'habilitar' : 'deshabilitar';
+          this._alertaService.swalFireOptions({
+            icon: 'question',
+            title: `¿Desea ${accion} BSG Tento para este programa?`,
+            showCancelButton: true,
+            confirmButtonText: 'Sí',
+            cancelButtonText: 'No',
+          }).then((result: any) => {
+            if (result.isConfirmed) {
+              this._integraService
+                .putJsonResponse(`${constApiPlanificacion.ProgramaGeneralActualizarHabilitadoBsgTento}/${dataItem.id}/${nuevoEstado}`, {})
+                .subscribe({
+                  next: () => {
+                    this.bsgTentoMap[dataItem.id] = nuevoEstado;
+                    this.dataItemBsgTento = null;
+                    this.habilitadoBsgTentoActual = null;
+                    this._alertaService.swalFireOptions({
+                      icon: 'success',
+                      title: `BSG Tento ${nuevoEstado ? 'habilitado' : 'deshabilitado'}`,
+                      timer: 1500,
+                      showConfirmButton: false,
+                    });
+                  },
+                  error: (error: any) => {
+                    let resp = this._alertaService.getErrorResponse(error);
+                    this._alertaService.swalFireOptions({
+                      icon: 'error',
+                      title: 'No se pudo actualizar',
+                      text: `${resp.titulo}: ${resp.mensaje}`,
+                    });
+                  }
+                });
+            }
+          });
+        },
+        error: (error: any) => {
+          let resp = this._alertaService.getErrorResponse(error);
+          this._alertaService.swalFireOptions({
+            icon: 'error',
+            title: 'No se pudo obtener el estado BSG Tento',
+            text: `${resp.titulo}: ${resp.mensaje}`,
+          });
+        }
+      });
   }
 }
