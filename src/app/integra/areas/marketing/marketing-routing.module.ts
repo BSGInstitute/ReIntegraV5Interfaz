@@ -77,6 +77,7 @@ import { ResenaGoogleComponent } from './configuraciones/resena-google/resena-go
 import { ResenaLinkedinComponent } from './configuraciones/resena-linkedin/resena-linkedin.component';
 import { ResenaComputrabajoComponent } from './configuraciones/resena-computrabajo/resena-computrabajo.component';
 import { ResenaGlassdoorComponent } from './configuraciones/resena-glassdoor/resena-glassdoor.component';
+import { AlumnoCasoExitoComponent } from './configuraciones/alumno-caso-exito/alumno-caso-exito.component';
 const routes: Routes = [
   {
     path: '',
@@ -335,6 +336,7 @@ const routes: Routes = [
       {path:'ResenaLinkedIn', component: ResenaLinkedinComponent},
       {path:'ResenaComputrabajo', component: ResenaComputrabajoComponent},
       {path:'ResenaGlassdoor', component: ResenaGlassdoorComponent},
+      {path:'AlumnoCasoExito', component: AlumnoCasoExitoComponent},
     ],
   },
 ];

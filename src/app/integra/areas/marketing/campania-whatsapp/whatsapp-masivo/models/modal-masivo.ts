@@ -44,6 +44,7 @@ export interface LeadPreCargado {
   mensajes: MensajeChat[];
   cargadoOk: boolean;
   errorCarga?: string;
+  idCodigoPais?: number;
 }
 
 export interface MensajeChat {

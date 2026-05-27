@@ -1,0 +1,212 @@
+<div class="ace-contenedor">
+
+  <!-- Cabecera -->
+  <div class="ace-contenedor__cabecera">Casos de Éxito · Portal Web</div>
+
+  <!-- Indicadores / KPIs -->
+  <div class="ace-seccion-metricas">
+    <div class="ace-toggle-seccion" (click)="metricasVisibles = !metricasVisibles">
+      <mat-icon class="ace-toggle-seccion__icono"
+                [class.ace-toggle-seccion__icono--abierto]="metricasVisibles">expand_more</mat-icon>
+      <span>Indicadores de casos de éxito</span>
+    </div>
+    <div class="ace-colapsable" [class.ace-colapsable--abierto]="metricasVisibles">
+      <div class="ace-grilla-indicadores">
+        <div class="ace-tarjeta-indicador" style="--i:0">
+          <mat-icon class="ace-tarjeta-indicador__icono ace-tarjeta-indicador__icono--total">emoji_events</mat-icon>
+          <div class="ace-tarjeta-indicador__cuerpo">
+            <span class="ace-tarjeta-indicador__numero">{{ kpiTotal | number }}</span>
+            <span class="ace-tarjeta-indicador__etiqueta">Total Casos</span>
+          </div>
+        </div>
+        <div class="ace-tarjeta-indicador" style="--i:1">
+          <mat-icon class="ace-tarjeta-indicador__icono ace-tarjeta-indicador__icono--visibles">visibility</mat-icon>
+          <div class="ace-tarjeta-indicador__cuerpo">
+            <span class="ace-tarjeta-indicador__numero">{{ kpiVisibles | number }}</span>
+            <span class="ace-tarjeta-indicador__etiqueta">Visibles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección principal -->
+  <div class="ace-seccion-gestion">
+
+    <!-- Toolbar -->
+    <div class="ace-barra-acciones">
+      <button mat-raised-button class="ace-boton ace-boton--nuevo" (click)="nuevoCaso()" matTooltip="Nuevo caso de éxito">
+        <mat-icon>add</mat-icon> <span>Nuevo</span>
+      </button>
+      <button mat-raised-button
+              class="ace-boton ace-boton--reordenar"
+              [class.ace-boton--reordenar-activo]="modoReordenar"
+              (click)="toggleModoReordenar()"
+              matTooltip="Reordenar casos por drag-and-drop">
+        <mat-icon>swap_vert</mat-icon>
+        <span>{{ modoReordenar ? 'Salir de reordenar' : 'Reordenar' }}</span>
+      </button>
+      <span class="ace-barra-acciones__espaciador"></span>
+      <button mat-icon-button class="ace-boton--recargar" (click)="consultarCasos()" [disabled]="cargandoGrilla" matTooltip="Recargar">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+
+    <!-- Panel drag-and-drop para reordenar -->
+    <div *ngIf="modoReordenar" class="ace-panel-reordenar-wrapper">
+      <div class="ace-panel-reordenar"
+           cdkDropList
+           [cdkDropListData]="casosOrdenables"
+           (cdkDropListDropped)="dropCaso($event)">
+        <div *ngFor="let t of casosOrdenables; let i = index" cdkDrag class="ace-item-drag">
+          <mat-icon cdkDragHandle class="ace-item-drag__handle">drag_indicator</mat-icon>
+          <img *ngIf="t.urlFotoPerfil" [src]="t.urlFotoPerfil" [alt]="t.nombreAlumno" class="ace-item-drag__foto">
+          <div *ngIf="!t.urlFotoPerfil" class="ace-item-drag__foto ace-item-drag__foto--placeholder">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="ace-item-drag__info">
+            <strong>{{ t.nombreAlumno }}</strong>
+            <span>{{ t.nombrePrograma }}</span>
+            <span class="ace-item-drag__pais">{{ t.nombrePais }}</span>
+          </div>
+          <span class="ace-item-drag__posicion" [matTooltip]="'Posición actual: ' + t.posicion">
+            {{ i + 1 }}
+          </span>
+          <!-- Drag preview placeholder -->
+          <div *cdkDragPlaceholder class="ace-item-drag__placeholder"></div>
+        </div>
+      </div>
+      <div class="ace-acciones-reordenar">
+        <button mat-raised-button color="primary" (click)="guardarOrden()">
+          <mat-icon>save</mat-icon> Guardar orden
+        </button>
+        <button mat-stroked-button (click)="cancelarReorden()">
+          <mat-icon>close</mat-icon> Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Grilla Kendo -->
+    <kendo-grid #grid
+      *ngIf="!modoReordenar"
+      [kendoGridBinding]="casos"
+      [loading]="cargandoGrilla"
+      [sortable]="true"
+      [filterable]="true"
+      [reorderable]="true"
+      [resizable]="true"
+      [pageable]="pagerConfig"
+      [pageSize]="20"
+      [scrollable]="'scrollable'"
+      class="ace-grilla">
+
+      <!-- Posición -->
+      <kendo-grid-column field="posicion" title="Pos." [width]="70" filter="numeric">
+        <ng-template kendoGridCellTemplate let-t>
+          <span class="ace-celda-posicion">{{ t.posicion }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Foto -->
+      <kendo-grid-column title="Foto" [width]="70" [sortable]="false" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-t>
+          <div class="ace-celda-foto">
+            <img *ngIf="t.urlFotoPerfil" [src]="t.urlFotoPerfil" [alt]="t.nombreAlumno" class="ace-foto-thumb">
+            <div *ngIf="!t.urlFotoPerfil" class="ace-foto-thumb ace-foto-thumb--placeholder">
+              <mat-icon>person</mat-icon>
+            </div>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Nombre Alumno -->
+      <kendo-grid-column field="nombreAlumno" title="Alumno" [minResizableWidth]="160">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell [column]="column" [filter]="filter" operator="contains"></kendo-grid-string-filter-cell>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-t>
+          <strong class="ace-celda-nombre">{{ t.nombreAlumno }}</strong>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Nombre Programa -->
+      <kendo-grid-column field="nombrePrograma" title="Programa" [minResizableWidth]="180">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell [column]="column" [filter]="filter" operator="contains"></kendo-grid-string-filter-cell>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-t>
+          <span class="ace-celda-programa">{{ t.nombrePrograma }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- País -->
+      <kendo-grid-column field="nombrePais" title="País" [width]="100">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell [column]="column" [filter]="filter" operator="contains"></kendo-grid-string-filter-cell>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-t>
+          <span class="ace-etiqueta-pais">{{ t.nombrePais || '—' }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Testimonio -->
+      <kendo-grid-column field="testimonio" title="Testimonio" [minResizableWidth]="200">
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+          <kendo-grid-string-filter-cell [column]="column" [filter]="filter" operator="contains"></kendo-grid-string-filter-cell>
+        </ng-template>
+        <ng-template kendoGridCellTemplate let-t>
+          <p class="ace-texto-testimonio"
+             [matTooltip]="t.testimonio || ''"
+             matTooltipClass="ace-tooltip-extenso">{{ t.testimonio || '—' }}</p>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Visibilidad -->
+      <kendo-grid-column field="estadoVisibilidad" title="Visible" [width]="90" [sortable]="true" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-t>
+          <div class="ace-celda-visible">
+            <button mat-icon-button
+                    class="ace-boton-icono ace-boton-icono--visibilidad"
+                    (click)="toggleVisibilidad(t)"
+                    [disabled]="procesandoVisibilidad"
+                    [matTooltip]="t.estadoVisibilidad ? 'Visible — clic para ocultar' : 'Oculto — clic para mostrar'">
+              <mat-icon [ngClass]="t.estadoVisibilidad ? 'ace-icono-visible--activo' : 'ace-icono-visible--inactivo'">
+                {{ t.estadoVisibilidad ? 'visibility' : 'visibility_off' }}
+              </mat-icon>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Acciones -->
+      <kendo-grid-column title="Acciones" [width]="88" [sortable]="false" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-t>
+          <div class="ace-celda-acciones">
+            <button mat-icon-button class="ace-boton-icono ace-boton-icono--editar"
+                    (click)="editarCaso(t)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="ace-boton-icono ace-boton-icono--eliminar"
+                    (click)="eliminarCaso(t)" matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Sin resultados -->
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ace-sin-resultados">
+          <mat-icon>emoji_events</mat-icon>
+          <p>No se encontraron casos de éxito.</p>
+          <div class="ace-sin-resultados__acciones">
+            <button mat-stroked-button (click)="consultarCasos()">
+              <mat-icon>refresh</mat-icon> Recargar
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </kendo-grid>
+
+  </div>
+</div>

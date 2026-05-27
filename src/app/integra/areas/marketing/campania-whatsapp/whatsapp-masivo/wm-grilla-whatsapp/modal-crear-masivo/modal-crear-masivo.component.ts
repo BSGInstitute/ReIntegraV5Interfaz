@@ -246,7 +246,7 @@ export class ModalCrearMasivoComponent implements OnInit, OnDestroy {
       nombre: cargado?.alumno?.nombre1 || (cargado?.alumno as any)?.Nombre1 || item.alumno,
       apellidoPaterno: cargado?.alumno?.apellidoPaterno || (cargado?.alumno as any)?.ApellidoPaterno || '',
       pais: item.pais || '',
-      idPaisEmpresa: item.idPaisEmpresa || 51,
+      idPaisEmpresa: item.idPaisEmpresa || cargado?.idCodigoPais || 51,
       email: cargado?.alumno?.email1 || '',
       idPersonalAsesor: item.idPersonal ?? 0,
       seleccionado: true,

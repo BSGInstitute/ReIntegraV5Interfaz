@@ -196,6 +196,7 @@ import { ResenaGoogleComponent } from './configuraciones/resena-google/resena-go
 import { ResenaLinkedinComponent } from './configuraciones/resena-linkedin/resena-linkedin.component';
 import { ResenaComputrabajoComponent } from './configuraciones/resena-computrabajo/resena-computrabajo.component';
 import { ResenaGlassdoorComponent } from './configuraciones/resena-glassdoor/resena-glassdoor.component';
+import { AlumnoCasoExitoComponent } from './configuraciones/alumno-caso-exito/alumno-caso-exito.component';
 
 
 @NgModule({
@@ -392,6 +393,7 @@ import { ResenaGlassdoorComponent } from './configuraciones/resena-glassdoor/res
     ResenaLinkedinComponent,
     ResenaComputrabajoComponent,
     ResenaGlassdoorComponent,
+    AlumnoCasoExitoComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [

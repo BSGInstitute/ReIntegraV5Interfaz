@@ -2638,6 +2638,19 @@ export const constApiMarketing = {
   GlassdoorConfiguracionActualizar:     '/GlassdoorConfiguracion/Actualizar',    // PUT
   GlassdoorConfiguracionEliminar:       '/GlassdoorConfiguracion/Eliminar',      // DELETE /{id}
 
+  // ── ALUMNO CASO EXITO PW ──────────────────────────────────────────────────────
+  // Módulo : (C) Alumno Caso Exito | Ruta: Marketing/AlumnoCasoExito
+  // Ctrl   : AlumnoCasoExitoController
+  // Autor  : Miguel Valdivia | 27/05/2026
+  AlumnoCasoExitoObtener:                '/AlumnoCasoExito/Obtener',
+  AlumnoCasoExitoObtenerCombo:           '/AlumnoCasoExito/ObtenerCombo',
+  AlumnoCasoExitoObtenerPorId:           '/AlumnoCasoExito/ObtenerPorId',
+  AlumnoCasoExitoInsertarConArchivo:     '/AlumnoCasoExito/InsertarConArchivo',
+  AlumnoCasoExitoActualizarConArchivo:   '/AlumnoCasoExito/ActualizarConArchivo',
+  AlumnoCasoExitoEliminar:               '/AlumnoCasoExito/Eliminar',
+  AlumnoCasoExitoActualizarVisibilidad:  '/AlumnoCasoExito/ActualizarVisibilidad',
+  AlumnoCasoExitoActualizarPosiciones:   '/AlumnoCasoExito/ActualizarPosiciones',
+
 };
 
 export const constApiGestionPersonal = {
