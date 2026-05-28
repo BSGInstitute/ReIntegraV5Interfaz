@@ -23,29 +23,23 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: false
 
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: nm-cache
-        with:
-          path: node_modules
-          key: nm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Cache Angular build
-        uses: actions/cache@v4
-        with:
-          path: .angular/cache
-          key: angular-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: angular-${{ runner.os }}-
 
       - name: Install dependencies
-        if: steps.nm-cache.outputs.cache-hit != 'true'
-        run: nice -n 10 npm ci --ignore-scripts
+        run: |
+          HASH=$(sha256sum package-lock.json | cut -d' ' -f1)
+          HASH_FILE=".node-modules-hash"
+          if [ -d node_modules ] && [ -f "$HASH_FILE" ] && [ "$(cat $HASH_FILE)" = "$HASH" ]; then
+            echo "node_modules up to date — skipping install"
+          else
+            nice -n 10 npm ci --ignore-scripts
+            echo "$HASH" > "$HASH_FILE"
+          fi
 
       - name: Run tests
         run: nice -n 10 npm test -- --ci --no-coverage
