@@ -1,0 +1,66 @@
+name: Post-Deploy Healthcheck
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      compose-file:
+        required: true
+        type: string
+      healthcheck-url:
+        required: true
+        type: string
+      image-tag:
+        required: true
+        type: string
+
+jobs:
+  healthcheck:
+    runs-on: self-hosted
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for container to stabilize
+        run: sleep 10
+
+      - name: Health check
+        run: |
+          for i in 1 2 3; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "${{ inputs.healthcheck-url }}" || echo "000")
+            if [[ "$STATUS" == "200" ]]; then
+              echo "✅ Health check passed (attempt $i): HTTP $STATUS"
+              exit 0
+            fi
+            echo "⚠️ Attempt $i failed: HTTP $STATUS"
+            [[ $i -lt 3 ]] && sleep 10
+          done
+          echo "❌ Health check failed after 3 attempts"
+          exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "⚠️ Healthcheck failed — initiating rollback for ${{ inputs.environment }}..."
+
+          REPO=$(echo "${{ inputs.image-tag }}" | cut -d: -f1)
+
+          # Sort all <env>-sha-* images by creation time descending, pick 2nd newest
+          ROLLBACK_TAG=$(docker images "$REPO" --format "{{.CreatedAt}}\t{{.Tag}}" \
+            | grep -v "buildcache" \
+            | grep -E "\t${{ inputs.environment }}-" \
+            | sort -r \
+            | awk 'NR==2{print $2}')
+
+          if [[ -z "$ROLLBACK_TAG" ]]; then
+            echo "❌ No rollback image found on runner — manual intervention required"
+            exit 1
+          fi
+
+          ROLLBACK_IMAGE="$REPO:$ROLLBACK_TAG"
+          echo "Rolling back to: $ROLLBACK_IMAGE"
+          IMAGE_TAG=$ROLLBACK_IMAGE docker compose -f ${{ inputs.compose-file }} up -d
+          echo "✅ Rollback complete — verify the app manually"

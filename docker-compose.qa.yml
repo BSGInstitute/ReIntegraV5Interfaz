@@ -1,11 +1,31 @@
 services:
   frontend:
     image: ${IMAGE_TAG}
+    container_name: integra-v5-interfaz
+    pull_policy: always
     ports:
       - "8443:80"
+    environment:
+      - NODE_ENV=qa
+    restart: unless-stopped
+    stop_grace_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+        reservations:
+          memory: 64m
+          cpus: "0.1"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - app-network
-    restart: unless-stopped
 
 networks:
   app-network:

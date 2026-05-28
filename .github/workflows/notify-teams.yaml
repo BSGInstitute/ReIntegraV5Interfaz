@@ -1,0 +1,278 @@
+name: Notify
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      test-status:
+        required: false
+        type: string
+        default: skipped
+      build-status:
+        required: false
+        type: string
+        default: skipped
+      deploy-status:
+        required: true
+        type: string
+      healthcheck-status:
+        required: false
+        type: string
+        default: skipped
+      commit-message:
+        required: false
+        type: string
+        default: ''
+      run-url:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+      actor:
+        required: true
+        type: string
+      actor-email:
+        required: false
+        type: string
+        default: ''
+    secrets:
+      DISCORD_WEBHOOK_URL:
+        required: true
+      SMTP_HOST:
+        required: true
+      SMTP_USER:
+        required: true
+      SMTP_PASSWORD:
+        required: true
+      NOTIFY_TO:
+        required: true
+
+jobs:
+  notify:
+    runs-on: self-hosted
+    timeout-minutes: 3
+
+    steps:
+      # ── Discord ──────────────────────────────────────────────────────────────
+      - name: Discord notification
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TEST_STATUS:    ${{ inputs.test-status }}
+          BUILD_STATUS:   ${{ inputs.build-status }}
+          DEPLOY_STATUS:  ${{ inputs.deploy-status }}
+          HEALTH_STATUS:  ${{ inputs.healthcheck-status }}
+          COMMIT_MESSAGE: ${{ inputs.commit-message }}
+          ENVIRONMENT:    ${{ inputs.environment }}
+          BRANCH:         ${{ inputs.branch }}
+          SHA:            ${{ inputs.sha }}
+          ACTOR:          ${{ inputs.actor }}
+          RUN_URL:        ${{ inputs.run-url }}
+        run: |
+          python3 << 'PYEOF'
+          import json, subprocess, os, sys, tempfile
+
+          e = os.environ
+
+          test   = e["TEST_STATUS"]
+          build  = e["BUILD_STATUS"]
+          deploy = e["DEPLOY_STATUS"]
+          health = e["HEALTH_STATUS"]
+          env    = e["ENVIRONMENT"].upper()
+
+          commit_msg = e.get("COMMIT_MESSAGE", "").split('\n')[0][:80].strip()
+          sha_short  = e["SHA"][:7]
+
+          def emoji(s):
+              return {"success": "✅", "failure": "❌", "skipped": "⏭️"}.get(s, "❓")
+
+          # Determine what failed (first failed step wins)
+          failed_in = None
+          if test   == "failure": failed_in = "Tests"
+          elif build  == "failure": failed_in = "Docker Build"
+          elif deploy == "failure": failed_in = "Deploy"
+          elif health == "failure": failed_in = "Healthcheck"
+
+          if not failed_in:
+              color, icon, title = 5763719,  "✅", f"Deploy {env} exitoso"
+          elif health == "failure" and deploy == "success":
+              color, icon, title = 16744512, "⚠️", f"Deploy {env} OK — healthcheck falló"
+          else:
+              color, icon, title = 15548997, "❌", f"Deploy {env} falló en: {failed_in}"
+
+          description = f"**Commit** `{sha_short}`"
+          if commit_msg:
+              description += f" — {commit_msg}"
+
+          payload = {
+              "embeds": [{
+                  "title":       f"{icon} {title}",
+                  "description": description,
+                  "color":       color,
+                  "url":         e["RUN_URL"],
+                  "footer":      {"text": "IntegraV5Interfaz"},
+                  "fields": [
+                      {"name": "Ambiente",     "value": env,           "inline": True},
+                      {"name": "Branch",       "value": e["BRANCH"],   "inline": True},
+                      {"name": "Iniciado por", "value": e["ACTOR"],    "inline": True},
+                      {"name": "Tests",        "value": emoji(test),   "inline": True},
+                      {"name": "Build",        "value": emoji(build),  "inline": True},
+                      {"name": "Deploy",       "value": emoji(deploy), "inline": True},
+                      {"name": "Healthcheck",  "value": emoji(health), "inline": True},
+                  ],
+              }]
+          }
+
+          # Write payload to temp file and send via curl (avoids urllib/Discord compatibility issues)
+          with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+              json.dump(payload, f, ensure_ascii=False)
+              tmp = f.name
+
+          result = subprocess.run(
+              ["curl", "-s", "-w", "\n%{http_code}", "-X", "POST",
+               "-H", "Content-Type: application/json",
+               "--data", f"@{tmp}",
+               e["DISCORD_WEBHOOK_URL"]],
+              capture_output=True, text=True
+          )
+          os.unlink(tmp)
+
+          lines    = result.stdout.strip().split('\n')
+          http_code = lines[-1].strip()
+          print(f"Discord notification sent: HTTP {http_code}")
+
+          if http_code not in ("200", "204"):
+              print(result.stderr or result.stdout, file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+
+      # ── Email ────────────────────────────────────────────────────────────────
+      - name: Email notification
+        continue-on-error: true
+        env:
+          SMTP_HOST:      ${{ secrets.SMTP_HOST }}
+          SMTP_USER:      ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD:  ${{ secrets.SMTP_PASSWORD }}
+          NOTIFY_TO:      ${{ secrets.NOTIFY_TO }}
+          ACTOR_EMAIL:    ${{ inputs.actor-email }}
+          TEST_STATUS:    ${{ inputs.test-status }}
+          BUILD_STATUS:   ${{ inputs.build-status }}
+          DEPLOY_STATUS:  ${{ inputs.deploy-status }}
+          HEALTH_STATUS:  ${{ inputs.healthcheck-status }}
+          COMMIT_MESSAGE: ${{ inputs.commit-message }}
+          ENVIRONMENT:    ${{ inputs.environment }}
+          BRANCH:         ${{ inputs.branch }}
+          SHA:            ${{ inputs.sha }}
+          ACTOR:          ${{ inputs.actor }}
+          RUN_URL:        ${{ inputs.run-url }}
+        run: |
+          python3 << 'PYEOF'
+          import smtplib, os, sys
+          from email.mime.text import MIMEText
+          from email.mime.multipart import MIMEMultipart
+
+          e = os.environ
+
+          test   = e["TEST_STATUS"]
+          build  = e["BUILD_STATUS"]
+          deploy = e["DEPLOY_STATUS"]
+          health = e["HEALTH_STATUS"]
+          env    = e["ENVIRONMENT"].upper()
+
+          commit_msg = e.get("COMMIT_MESSAGE", "").split('\n')[0][:80].strip()
+          sha_short  = e["SHA"][:7]
+
+          def emoji(s):
+              return {"success": "✅", "failure": "❌", "skipped": "⏭️"}.get(s, "❓")
+
+          def row_color(s):
+              return {"failure": "#fff0f0", "success": "#f0fff0"}.get(s, "transparent")
+
+          # Determine what failed
+          failed_in = None
+          if test   == "failure": failed_in = "Tests"
+          elif build  == "failure": failed_in = "Docker Build"
+          elif deploy == "failure": failed_in = "Deploy"
+          elif health == "failure": failed_in = "Healthcheck"
+
+          any_failure = failed_in is not None
+          if not any_failure:
+              color_hex, icon, title = "57F287", "✅", f"Deploy {env} exitoso"
+          elif health == "failure" and deploy == "success":
+              color_hex, icon, title = "FF8040", "⚠️", f"Deploy {env} OK — healthcheck falló"
+          else:
+              color_hex, icon, title = "ED4245", "❌", f"Deploy {env} falló en: {failed_in}"
+
+          html = f"""
+          <html><body style="font-family:sans-serif;max-width:600px;margin:auto;padding:20px">
+            <div style="border-left:4px solid #{color_hex};padding:16px;background:#f9f9f9;border-radius:4px">
+              <h2 style="margin:0">{icon} {title}</h2>
+              <p style="color:#666;margin:6px 0 0;font-size:13px">
+                IntegraV5Interfaz &nbsp;·&nbsp;
+                Commit <code>{sha_short}</code>{f" — {commit_msg}" if commit_msg else ""}
+              </p>
+            </div>
+            <table style="width:100%;border-collapse:collapse;margin-top:20px;font-size:14px">
+              <tr style="background:{row_color(test)}">
+                <td style="padding:9px 8px;border-bottom:1px solid #eee;color:#666;width:140px"><b>Tests</b></td>
+                <td style="padding:9px 8px;border-bottom:1px solid #eee">{emoji(test)} {test}</td>
+              </tr>
+              <tr style="background:{row_color(build)}">
+                <td style="padding:9px 8px;border-bottom:1px solid #eee;color:#666"><b>Build</b></td>
+                <td style="padding:9px 8px;border-bottom:1px solid #eee">{emoji(build)} {build}</td>
+              </tr>
+              <tr style="background:{row_color(deploy)}">
+                <td style="padding:9px 8px;border-bottom:1px solid #eee;color:#666"><b>Deploy</b></td>
+                <td style="padding:9px 8px;border-bottom:1px solid #eee">{emoji(deploy)} {deploy}</td>
+              </tr>
+              <tr style="background:{row_color(health)}">
+                <td style="padding:9px 8px;border-bottom:1px solid #eee;color:#666"><b>Healthcheck</b></td>
+                <td style="padding:9px 8px;border-bottom:1px solid #eee">{emoji(health)} {health}</td>
+              </tr>
+              <tr>
+                <td style="padding:9px 8px;border-bottom:1px solid #eee;color:#666"><b>Branch</b></td>
+                <td style="padding:9px 8px;border-bottom:1px solid #eee">{e['BRANCH']}</td>
+              </tr>
+              <tr>
+                <td style="padding:9px 8px;color:#666"><b>Iniciado por</b></td>
+                <td style="padding:9px 8px">{e['ACTOR']}</td>
+              </tr>
+            </table>
+            <div style="margin-top:24px">
+              <a href="{e['RUN_URL']}"
+                 style="background:#0076D7;color:white;padding:10px 20px;border-radius:4px;text-decoration:none;font-weight:bold">
+                Ver ejecución
+              </a>
+            </div>
+          </body></html>
+          """
+
+          # Recipient list: fixed + pusher (dedup)
+          recipients  = [r.strip() for r in e['NOTIFY_TO'].split(',') if r.strip()]
+          actor_email = e.get('ACTOR_EMAIL', '').strip()
+          if actor_email and actor_email not in recipients:
+              recipients.append(actor_email)
+
+          msg            = MIMEMultipart('alternative')
+          msg['Subject'] = f"[IntegraV5] {title}"
+          msg['From']    = e['SMTP_USER']
+          msg['To']      = ', '.join(recipients)
+          msg.attach(MIMEText(html, 'html'))
+
+          try:
+              with smtplib.SMTP(e['SMTP_HOST'], 587, timeout=15) as server:
+                  server.ehlo()
+                  server.starttls()
+                  server.login(e['SMTP_USER'], e['SMTP_PASSWORD'])
+                  server.sendmail(e['SMTP_USER'], recipients, msg.as_string())
+                  print(f"Email sent to {', '.join(recipients)}")
+          except Exception as ex:
+              print(f"Email notification failed: {ex}", file=sys.stderr)
+              sys.exit(1)
+          PYEOF

@@ -114,51 +114,31 @@ jobs:
       - name: Prune old images
         run: docker image prune -f
 
-  # ── 4. Notificación de fallo ──────────────────────────────────────────────
-  notify-failure:
-    needs: [test, build-push, deploy]
-    runs-on: self-hosted
-    if: failure()
-    steps:
-      - name: Send Discord notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          COMMIT_MSG: ${{ github.event.head_commit.message }}
-          COMMIT_SHA: ${{ github.sha }}
-          ACTOR: ${{ github.actor }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          TEST_RESULT: ${{ needs.test.result }}
-          BUILD_RESULT: ${{ needs.build-push.result }}
-          DEPLOY_RESULT: ${{ needs.deploy.result }}
-        run: |
-          if [ "$TEST_RESULT" = "failure" ]; then
-            FAILED_JOB="Tests (Jest)"
-          elif [ "$BUILD_RESULT" = "failure" ]; then
-            FAILED_JOB="Build & Push Docker"
-          elif [ "$DEPLOY_RESULT" = "failure" ]; then
-            FAILED_JOB="Deploy"
-          else
-            FAILED_JOB="Desconocido"
-          fi
+  # ── 4. Post-Deploy Healthcheck ────────────────────────────────────────────
+  healthcheck:
+    needs: [build-push, deploy]
+    uses: ./.github/workflows/post-deploy-healthcheck.yaml
+    with:
+      environment: qa
+      compose-file: docker-compose.qa.yml
+      healthcheck-url: http://localhost:8443
+      image-tag: ${{ needs.build-push.outputs.image-tag }}
 
-          curl -s -X POST "$DISCORD_WEBHOOK" \
-            -H "Content-Type: application/json" \
-            -d "$(jq -n \
-              --arg job  "$FAILED_JOB" \
-              --arg sha  "${COMMIT_SHA:0:7}" \
-              --arg msg  "${COMMIT_MSG%%$'\n'*}" \
-              --arg who  "$ACTOR" \
-              --arg url  "$RUN_URL" \
-              '{
-                embeds: [{
-                  title: "❌ Deploy QA fallido",
-                  color: 15158332,
-                  fields: [
-                    {name: "Job fallido", value: $job,  inline: true},
-                    {name: "Autor",       value: $who,  inline: true},
-                    {name: "Commit",      value: ("`" + $sha + "` " + $msg)},
-                    {name: "Ver log",     value: $url}
-                  ],
-                  footer: {text: "IntegraV5Interfaz · QA"}
-                }]
-              }')"
+  # ── 5. Notificación (siempre) ─────────────────────────────────────────────
+  notify:
+    needs: [test, build-push, deploy, healthcheck]
+    if: always()
+    uses: ./.github/workflows/notify-teams.yaml
+    with:
+      environment: qa
+      test-status: ${{ needs.test.result }}
+      build-status: ${{ needs.build-push.result }}
+      deploy-status: ${{ needs.deploy.result }}
+      healthcheck-status: ${{ needs.healthcheck.result }}
+      commit-message: ${{ github.event.head_commit.message }}
+      run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      branch: ${{ github.ref_name }}
+      sha: ${{ github.sha }}
+      actor: ${{ github.actor }}
+      actor-email: ${{ github.event.pusher.email }}
+    secrets: inherit
