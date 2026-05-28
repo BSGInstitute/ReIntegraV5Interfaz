@@ -11,7 +11,7 @@ RUN --mount=type=cache,target=/root/.npm \
     npm ci --ignore-scripts
 COPY . .
 RUN --mount=type=cache,target=/app/.angular \
-    NODE_OPTIONS=--max_old_space_size=4096 npm run build -- --configuration $BUILD_CONFIG
+    NODE_OPTIONS=--max_old_space_size=1536 npm run build -- --configuration $BUILD_CONFIG
 
 # ===========================================
 # ETAPA 2: Servir con Nginx
