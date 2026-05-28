@@ -20,7 +20,7 @@ jobs:
   # ── 1. Tests ───────────────────────────────────────────────────────────────
   test:
     runs-on: self-hosted
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +28,13 @@ jobs:
         with:
           node-version: 18
           cache: npm
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: nm-cache
+        with:
+          path: node_modules
+          key: nm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Cache Angular build
         uses: actions/cache@v4
@@ -37,6 +44,7 @@ jobs:
           restore-keys: angular-${{ runner.os }}-
 
       - name: Install dependencies
+        if: steps.nm-cache.outputs.cache-hit != 'true'
         run: nice -n 10 npm ci --ignore-scripts
 
       - name: Run tests
@@ -44,16 +52,34 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=512
 
+      - name: Build Angular
+        run: nice -n 10 npm run build -- --configuration qa
+        env:
+          NODE_OPTIONS: --max_old_space_size=1536
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-qa
+          path: dist/integra-v5-interfaz
+          retention-days: 1
+
   # ── 2. Docker Build & Push ─────────────────────────────────────────────────
   build-push:
     needs: test
     runs-on: self-hosted
-    timeout-minutes: 40
+    timeout-minutes: 10
     outputs:
       image-tag: ${{ steps.sha-tag.outputs.value }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-qa
+          path: dist/integra-v5-interfaz
 
       - name: Lowercase image name
         run: echo "IMAGE_LOWER=${{ env.REGISTRY }}/$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
@@ -86,7 +112,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: BUILD_CONFIG=qa
           cache-from: type=registry,ref=${{ env.IMAGE_LOWER }}:buildcache-qa
           cache-to: type=registry,ref=${{ env.IMAGE_LOWER }}:buildcache-qa,mode=max
 
