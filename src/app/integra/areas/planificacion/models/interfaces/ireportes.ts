@@ -113,6 +113,8 @@ export interface ReporteEncuesta {
   encuesta: string
   nombreDocente: string
   fechaCreacion: string
+  area?: string
+  subArea?: string
   preguntas: Pregunta[]
 }
 

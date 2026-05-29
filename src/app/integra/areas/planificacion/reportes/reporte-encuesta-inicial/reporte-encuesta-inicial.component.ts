@@ -268,6 +268,14 @@ export class ReporteEncuestaInicialComponent implements OnInit {
       field: 'nombreDocente',
       title: 'Docente'
     })
+    this.arrayColumnas.push({
+      field: 'area',
+      title: 'Area'
+    })
+    this.arrayColumnas.push({
+      field: 'subArea',
+      title: 'Sub Area'
+    })
     data[0].preguntas.forEach(p => {
       if([3,4,5].includes(p.idTipoPregunta)){
         p.enunciadoPregunta = this.convertirHTML(p.enunciadoPregunta)
@@ -306,6 +314,8 @@ export class ReporteEncuestaInicialComponent implements OnInit {
       obj.nombreDocente = x.nombreDocente;
       obj.fechaCreacion = x.fechaCreacion;
       obj.fechaCreacion = datePipeTransform(obj.fechaCreacion, 'yyyy-MM-dd');
+      obj.area = x.area ?? '';
+      obj.subArea = x.subArea ?? '';
       x.preguntas.forEach(p => {
         if([3,4,5].includes(p.idTipoPregunta)){
           let resp = p.respuestas.find(z => z.validado == true)

@@ -188,6 +188,30 @@ export class ReporteEncuestaDocenteComponent implements OnInit {
         title: 'Docente',
       });
       this.arrayColumnas.push({
+        field: 'area',
+        title: 'Area',
+      });
+      this.arrayColumnas.push({
+        field: 'subArea',
+        title: 'Sub Area',
+      });
+      this.arrayColumnas.push({
+        field: 'tipoEncuesta',
+        title: 'Tipo Encuesta',
+      });
+      this.arrayColumnas.push({
+        field: 'subTipoEncuesta',
+        title: 'Sub Tipo Encuesta',
+      });
+      this.arrayColumnas.push({
+        field: 'coordinadorDocente',
+        title: 'Coordinador Docente',
+      });
+      this.arrayColumnas.push({
+        field: 'promedio',
+        title: 'Promedio',
+      });
+      this.arrayColumnas.push({
         field: 'fechaRealizada',
         title: 'Fecha de Sesión',
       });
@@ -288,6 +312,12 @@ export class ReporteEncuestaDocenteComponent implements OnInit {
         obj.cursoGeneral = x.cursoGeneral;
         obj.cursoEspecifico = x.cursoEspecifico;
         obj.docente = x.docente;
+        obj.area = x.area ?? '';
+        obj.subArea = x.subArea ?? '';
+        obj.tipoEncuesta = x.tipoEncuesta ?? '';
+        obj.subTipoEncuesta = x.subTipoEncuesta ?? '';
+        obj.coordinadorDocente = x.coordinadorDocente ?? '';
+        obj.promedio = x.promedio ?? '';
         obj.fechaRealizada = datePipeTransform(x.fechaRealizada, 'yyyy-MM-dd HH:mm:ss');
         obj.fechaIngreso = datePipeTransform(x.fechaIngreso, 'yyyy-MM-dd HH:mm:ss');
         obj.pregunta1 = x.pregunta1;
