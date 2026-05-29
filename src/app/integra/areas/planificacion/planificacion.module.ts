@@ -114,6 +114,7 @@ import { PgProblemasClienteComponent } from './configuracion-programas-capacitac
 import { PgResumenRequisitosCertificacionComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-resumen-requisitos-certificacion/pg-resumen-requisitos-certificacion.component';
 import { PgPresentacionArgumentoComponent } from './configuracion-programas-capacitacion/programa-general/modal-content-pgeneral-configuraciones/pg-presentacion-argumento/pg-presentacion-argumento.component';
 import { CategoriaEncuestaOnlineComponent } from './maestros/encuesta-online/categoria-encuesta-online/categoria-encuesta-online.component';
+import { TipoSubTipoEncuestaComponent } from './maestros/encuesta-online/tipo-subtipo-encuesta/tipo-subtipo-encuesta.component';
 import { PreguntaEncuestaOnlineComponent } from './maestros/encuesta-online/pregunta-encuesta-online/pregunta-encuesta-online.component';
 import { EncuestaComponent } from './maestros/encuesta-online/encuesta/encuesta.component';
 import { EncuestaProgramaOnlineComponent } from './maestros/encuesta-online/encuesta-programa/encuesta-programa-online/encuesta-programa-online.component';
@@ -255,6 +256,7 @@ import { ReporteDashboardComponent } from './configuracion-programas-capacitacio
     PgResumenRequisitosCertificacionComponent,
     PgPresentacionArgumentoComponent,
     PgArgumentoMotivacionComponent,
+    TipoSubTipoEncuestaComponent,
     CategoriaEncuestaOnlineComponent,
     PreguntaEncuestaOnlineComponent,
     EncuestaComponent,
