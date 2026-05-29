@@ -4185,8 +4185,26 @@ export const constApiPlanificacion = {
   ObtenerVersionEncuestaSincronico:
     '/EncuestaOnline/ObtenerVersionEncuestaSincronico',
 
-  ObtenerTipoEncuesta: '/TipoEncuestum/ObtenerCombo',
-  ObtenerTipoModalidad: '/TipoEncuestum/ObtenerComboTipoModalidad',
+  ObtenerTipoEncuesta:      '/TipoEncuestum/ObtenerCombo',
+  ObtenerTipoModalidad:     '/TipoEncuestum/ObtenerComboTipoModalidad',
+  ObtenerTodoTipoEncuesta:  '/EncuestaOnline/ObtenerTodoTipoEncuesta',
+  InsertarTipoEncuesta:     '/EncuestaOnline/InsertarTipoEncuesta',
+  ActualizarTipoEncuesta:   '/EncuestaOnline/ActualizarTipoEncuesta',
+  EliminarTipoEncuesta:           '/EncuestaOnline/EliminarTipoEncuesta',
+  ContarAsociacionesPorTipo:      '/EncuestaOnline/ContarAsociacionesPorTipo',
+  ContarAsociacionesPorSubTipo:   '/EncuestaOnline/ContarAsociacionesPorSubTipo',
+
+  /* SubTipo Encuesta */
+  ObtenerSubTipoEncuesta:       '/EncuestaOnline/ObtenerSubTipoEncuesta',
+  ObtenerComboSubTipoEncuesta:  '/EncuestaOnline/ObtenerComboSubTipoEncuesta',
+  InsertarSubTipoEncuesta:      '/EncuestaOnline/InsertarSubTipoEncuesta',
+  ActualizarSubTipoEncuesta:    '/EncuestaOnline/ActualizarSubTipoEncuesta',
+  EliminarSubTipoEncuesta:      '/EncuestaOnline/EliminarSubTipoEncuesta',
+
+  /* TipoSubTipo Encuesta (asociaciones) */
+  ObtenerTipoSubTipoEncuesta:   '/EncuestaOnline/ObtenerTipoSubTipoEncuesta',
+  InsertarTipoSubTipoEncuesta:  '/EncuestaOnline/InsertarTipoSubTipoEncuesta',
+  EliminarTipoSubTipoEncuesta:  '/EncuestaOnline/EliminarTipoSubTipoEncuesta',
 
   ObtenerPreguntaEncuestaOnline:
     '/PreguntaEncuestaOnline/ObtenerPreguntaEncuestaOnline',

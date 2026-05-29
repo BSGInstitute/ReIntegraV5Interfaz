@@ -1,0 +1,246 @@
+<!-- ============================================================
+     MODAL: TIPO ENCUESTA (Crear / Editar)
+     ============================================================ -->
+<ng-template #modalTipo let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0">{{ nombreModal }}</h2>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formTipo">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">
+                Nombre <strong class="text-danger">*</strong>
+              </label>
+              <kendo-textbox formControlName="nombre" placeholder="Ingrese nombre del tipo"
+                showSuccessIcon="initial" showErrorIcon="initial">
+              </kendo-textbox>
+              <kendo-formerror>El nombre es obligatorio</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="actionModalTipo()">
+      {{ btnModalNombre }}
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close()">Cancelar</button>
+  </div>
+</ng-template>
+
+<!-- ============================================================
+     MODAL: SUBTIPO ENCUESTA (Crear / Editar)
+     ============================================================ -->
+<ng-template #modalSubTipo let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0">{{ nombreModal }}</h2>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formSubTipo">
+      <fieldset class="k-form-fieldset">
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">
+                Nombre <strong class="text-danger">*</strong>
+              </label>
+              <kendo-textbox formControlName="nombre" placeholder="Ingrese nombre del subtipo"
+                showSuccessIcon="initial" showErrorIcon="initial">
+              </kendo-textbox>
+              <kendo-formerror>El nombre es obligatorio</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="actionModalSubTipo()">
+      {{ btnModalNombre }}
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.close()">Cancelar</button>
+  </div>
+</ng-template>
+
+<!-- ============================================================
+     MODAL: ASOCIAR TIPO → SUBTIPO
+     ============================================================ -->
+<ng-template #modalAsociacion let-modal>
+  <app-loader *ngIf="loaderModal"></app-loader>
+  <div class="modal-header">
+    <h2 class="modal-title m-0 p-0">Asociar Tipo → SubTipo</h2>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form class="k-form" [formGroup]="formAsociacion">
+      <fieldset class="k-form-fieldset">
+        <div class="row mb-3">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">Tipo Encuesta <strong class="text-danger">*</strong></label>
+              <kendo-dropdownlist
+                formControlName="idTipoEncuesta"
+                [data]="comboTipoEncuesta"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [defaultItem]="{ id: null, nombre: 'Seleccionar' }">
+              </kendo-dropdownlist>
+              <kendo-formerror>Seleccione un tipo de encuesta</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col k-form-horizontal">
+            <kendo-formfield orientation="horizontal">
+              <label class="k-label">SubTipo Encuesta <strong class="text-danger">*</strong></label>
+              <kendo-dropdownlist
+                formControlName="idSubTipoEncuesta"
+                [data]="comboSubTipoEncuesta"
+                textField="nombre"
+                valueField="id"
+                [valuePrimitive]="true"
+                [defaultItem]="{ id: null, nombre: 'Seleccionar' }">
+              </kendo-dropdownlist>
+              <kendo-formerror>Seleccione un subtipo de encuesta</kendo-formerror>
+            </kendo-formfield>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="insertAsociacion()">Asociar</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close()">Cancelar</button>
+  </div>
+</ng-template>
+
+<!-- ============================================================
+     PÁGINA PRINCIPAL
+     ============================================================ -->
+<div class="row">
+
+  <!-- =============================================
+       SECCIÓN 1: TIPO ENCUESTA
+       ============================================= -->
+  <div class="col-12 mb-4">
+    <div class="card">
+      <div class="card-header bg-color-material">
+        <h1 class="text-white">Tipo Encuesta</h1>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col">
+            <ng-template #cellTipo let-dataItem="dataItem" let-field="field" let-itemValue="itemValue">
+              <ng-container *ngIf="field === 'fechaModificacion'; else defaultCellTipo">
+                {{ itemValue | date: 'dd/MM/yyyy HH:mm' }}
+              </ng-container>
+              <ng-template #defaultCellTipo>{{ itemValue }}</ng-template>
+            </ng-template>
+
+            <k-grid-edit
+              [gridData]="listaTipo"
+              [loader]="loaderTipo"
+              [columns]="gridTipo.columns"
+              [commands]="gridTipo.comands"
+              [readOnlyColumns]="gridTipo.readOnlyColumns"
+              [gridConfig]="gridTipo.gridConfig"
+              [gridState]="gridTipo.gridState"
+              [commandAdd]="'external'"
+              [commandEdit]="'external'"
+              (OnGridEvents)="gridEventsTipo($event)"
+              [cellTemplateRef]="cellTipo">
+            </k-grid-edit>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       SECCIÓN 3: SUBTIPO ENCUESTA
+       ============================================= -->
+  <div class="col-12 mb-4">
+    <div class="card">
+      <div class="card-header bg-color-material">
+        <h1 class="text-white">SubTipo Encuesta</h1>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col">
+            <ng-template #cellSubTipo let-dataItem="dataItem" let-field="field" let-itemValue="itemValue">
+              <ng-container *ngIf="field === 'fechaModificacion'; else defaultCell">
+                {{ itemValue | date: 'dd/MM/yyyy HH:mm' }}
+              </ng-container>
+              <ng-template #defaultCell>{{ itemValue }}</ng-template>
+            </ng-template>
+
+            <k-grid-edit
+              [gridData]="listaSubTipo"
+              [loader]="loader"
+              [columns]="gridSubTipo.columns"
+              [commands]="gridSubTipo.comands"
+              [readOnlyColumns]="gridSubTipo.readOnlyColumns"
+              [gridConfig]="gridSubTipo.gridConfig"
+              [gridState]="gridSubTipo.gridState"
+              [commandAdd]="'external'"
+              [commandEdit]="'external'"
+              (OnGridEvents)="gridEventsSubTipo($event)"
+              [cellTemplateRef]="cellSubTipo">
+            </k-grid-edit>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================
+       SECCIÓN 4: ASOCIACIONES TIPO → SUBTIPO
+       ============================================= -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-color-material d-flex justify-content-between align-items-center">
+        <h1 class="text-white m-0">Asociación Tipo → SubTipo Encuesta</h1>
+        <button class="btn btn-light btn-sm" (click)="openModalAsociacion()">
+          <i class="k-icon k-i-plus"></i> Nueva Asociación
+        </button>
+      </div>
+      <div class="card-body p-4">
+        <div class="row">
+          <div class="col">
+            <ng-template #cellAsociacion let-dataItem="dataItem" let-field="field" let-itemValue="itemValue">
+              <ng-container *ngIf="field === 'fechaModificacion'; else defaultCellAsoc">
+                {{ itemValue | date: 'dd/MM/yyyy HH:mm' }}
+              </ng-container>
+              <ng-template #defaultCellAsoc>{{ itemValue }}</ng-template>
+            </ng-template>
+
+            <k-grid-edit
+              [gridData]="listaAsociacion"
+              [loader]="loaderAsociacion"
+              [columns]="gridAsociacion.columns"
+              [commands]="gridAsociacion.comands"
+              [readOnlyColumns]="gridAsociacion.readOnlyColumns"
+              [gridConfig]="gridAsociacion.gridConfig"
+              [gridState]="gridAsociacion.gridState"
+              [commandAdd]="'none'"
+              [commandEdit]="'none'"
+              [toolbarTemplate]="false"
+              (OnGridEvents)="gridEventsAsociacion($event)"
+              [cellTemplateRef]="cellAsociacion">
+            </k-grid-edit>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

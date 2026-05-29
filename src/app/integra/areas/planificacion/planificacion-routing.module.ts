@@ -69,6 +69,7 @@ import { EnvioMaterialDigitalComponent } from './gestion-material/envio-material
 import { EntregaMaterialFisicoComponent } from './gestion-material/entrega-material-fisico/entrega-material-fisico.component';
 import { DocumentosPortalWebComponent } from './configuracionPortalWeb/documentos-portal-web/documentos-portal-web.component';
 import { CategoriaEncuestaOnlineComponent } from './maestros/encuesta-online/categoria-encuesta-online/categoria-encuesta-online.component';
+import { TipoSubTipoEncuestaComponent } from './maestros/encuesta-online/tipo-subtipo-encuesta/tipo-subtipo-encuesta.component';
 import { PreguntaEncuestaOnlineComponent } from './maestros/encuesta-online/pregunta-encuesta-online/pregunta-encuesta-online.component';
 import { EncuestaComponent } from './maestros/encuesta-online/encuesta/encuesta.component';
 import { EncuestaProgramaOnlineComponent } from './maestros/encuesta-online/encuesta-programa/encuesta-programa-online/encuesta-programa-online.component';
@@ -286,6 +287,7 @@ const routes: Routes = [
       },
 
       //Encuesta Online
+      { path: 'TipoSubTipoEncuesta', component: TipoSubTipoEncuestaComponent },
       { path: 'CategoriaEncuestaOnline', component: CategoriaEncuestaOnlineComponent },
       { path: 'PreguntaEncuestaOnline', component: PreguntaEncuestaOnlineComponent },
       { path: 'Encuesta', component: EncuestaComponent },
